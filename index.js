@@ -37,43 +37,29 @@ app.use(helmet());
 //app.use(hpp());
 
 
-// 1. list all ingredients
-app.get('/api/ingredients', function () {
+// 0. main
+app.get('/', function () {
   var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(req, res) {
-    var sql, _ref2, _ref3, rows;
-
+    var message;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            _context.prev = 0;
-            sql = 'SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image\n                 FROM nobsc_ingredients';
-            _context.next = 4;
-            return pool.execute(sql);
-
-          case 4:
-            _ref2 = _context.sent;
-            _ref3 = _slicedToArray(_ref2, 1);
-            rows = _ref3[0];
+            try {
+              message = "No Bullshit Cooking Backend API";
 
 
-            res.send(rows);
+              res.send(message);
+            } catch (err) {
+              console.log(err);
+            }
 
-            _context.next = 13;
-            break;
-
-          case 10:
-            _context.prev = 10;
-            _context.t0 = _context['catch'](0);
-
-            console.log(_context.t0);
-
-          case 13:
+          case 1:
           case 'end':
             return _context.stop();
         }
       }
-    }, _callee, undefined, [[0, 10]]);
+    }, _callee, undefined);
   }));
 
   return function (_x, _x2) {
@@ -81,55 +67,99 @@ app.get('/api/ingredients', function () {
   };
 }());
 
-// 2. list specific ingredient
-app.get('/api/ingredients/:id', function () {
-  var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(req, res) {
-    var id, sql, _ref5, _ref6, rows;
+// 1. list all ingredients
+app.get('/ingredients', function () {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(req, res) {
+    var sql, _ref3, _ref4, rows;
 
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
             _context2.prev = 0;
-            id = req.params.id; // sanitize and validate
+            sql = 'SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image\n                 FROM nobsc_ingredients';
+            _context2.next = 4;
+            return pool.execute(sql);
 
-            sql = 'SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image\n                 FROM nobsc_ingredients\n                 WHERE ingredient_id = ?';
-            _context2.next = 5;
-            return pool.execute(sql, [id]);
-
-          case 5:
-            _ref5 = _context2.sent;
-            _ref6 = _slicedToArray(_ref5, 1);
-            rows = _ref6[0];
+          case 4:
+            _ref3 = _context2.sent;
+            _ref4 = _slicedToArray(_ref3, 1);
+            rows = _ref4[0];
 
 
             res.send(rows);
 
-            _context2.next = 14;
+            _context2.next = 13;
             break;
 
-          case 11:
-            _context2.prev = 11;
+          case 10:
+            _context2.prev = 10;
             _context2.t0 = _context2['catch'](0);
 
             console.log(_context2.t0);
 
-          case 14:
+          case 13:
           case 'end':
             return _context2.stop();
         }
       }
-    }, _callee2, undefined, [[0, 11]]);
+    }, _callee2, undefined, [[0, 10]]);
   }));
 
   return function (_x3, _x4) {
-    return _ref4.apply(this, arguments);
+    return _ref2.apply(this, arguments);
+  };
+}());
+
+// 2. list specific ingredient
+app.get('/ingredients/:id', function () {
+  var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(req, res) {
+    var id, sql, _ref6, _ref7, rows;
+
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            _context3.prev = 0;
+            id = req.params.id; // sanitize and validate
+
+            sql = 'SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image\n                 FROM nobsc_ingredients\n                 WHERE ingredient_id = ?';
+            _context3.next = 5;
+            return pool.execute(sql, [id]);
+
+          case 5:
+            _ref6 = _context3.sent;
+            _ref7 = _slicedToArray(_ref6, 1);
+            rows = _ref7[0];
+
+
+            res.send(rows);
+
+            _context3.next = 14;
+            break;
+
+          case 11:
+            _context3.prev = 11;
+            _context3.t0 = _context3['catch'](0);
+
+            console.log(_context3.t0);
+
+          case 14:
+          case 'end':
+            return _context3.stop();
+        }
+      }
+    }, _callee3, undefined, [[0, 11]]);
+  }));
+
+  return function (_x5, _x6) {
+    return _ref5.apply(this, arguments);
   };
 }());
 
 /*
 // 3. submit new ingredient
-app.post('/api/ingredients/', async (req, res) => {
+app.post('/ingredients/', async (req, res) => {
   try {
     const { id, name, typeId, image } = req.params;  // sanitize and validate
     const sql = `INSERT INTO nobsc_ingredients
@@ -147,7 +177,7 @@ app.post('/api/ingredients/', async (req, res) => {
 
 
 // 4. edit specific ingredient
-app.put('/api/ingredients/:id', async (req, res) => {
+app.put('/ingredients/:id', async (req, res) => {
   try {
     const id = req.params.id;  // sanitize and validate
     const sql = `UPDATE ingredient_id, ingredient_name
@@ -164,7 +194,7 @@ app.put('/api/ingredients/:id', async (req, res) => {
 
 
 // 5. delete specific ingredient
-app.delete('/api/ingredients/:id', async (req, res) => {
+app.delete('/ingredients/:id', async (req, res) => {
   try {
     const id = req.params.id;  // sanitize and validate
     const sql = `DELETE ingredient_id, ingredient_name

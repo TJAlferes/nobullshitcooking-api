@@ -33,8 +33,21 @@ app.use(helmet());
 //app.use(hpp());
 
 
+// 0. main
+app.get('/', async (req, res) => {
+  try {
+    const message = "No Bullshit Cooking Backend API";
+  
+    res.send(message);
+
+  } catch(err) {
+    console.log(err);
+  }
+});
+
+
 // 1. list all ingredients
-app.get('/api/ingredients', async (req, res) => {
+app.get('/ingredients', async (req, res) => {
   try {
     const sql = `SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image
                  FROM nobsc_ingredients`;
@@ -49,7 +62,7 @@ app.get('/api/ingredients', async (req, res) => {
 
 
 // 2. list specific ingredient
-app.get('/api/ingredients/:id', async (req, res) => {
+app.get('/ingredients/:id', async (req, res) => {
   try {
     const id = req.params.id;  // sanitize and validate
     const sql = `SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image
@@ -66,7 +79,7 @@ app.get('/api/ingredients/:id', async (req, res) => {
 
 /*
 // 3. submit new ingredient
-app.post('/api/ingredients/', async (req, res) => {
+app.post('/ingredients/', async (req, res) => {
   try {
     const { id, name, typeId, image } = req.params;  // sanitize and validate
     const sql = `INSERT INTO nobsc_ingredients
@@ -84,7 +97,7 @@ app.post('/api/ingredients/', async (req, res) => {
 
 
 // 4. edit specific ingredient
-app.put('/api/ingredients/:id', async (req, res) => {
+app.put('/ingredients/:id', async (req, res) => {
   try {
     const id = req.params.id;  // sanitize and validate
     const sql = `UPDATE ingredient_id, ingredient_name
@@ -101,7 +114,7 @@ app.put('/api/ingredients/:id', async (req, res) => {
 
 
 // 5. delete specific ingredient
-app.delete('/api/ingredients/:id', async (req, res) => {
+app.delete('/ingredients/:id', async (req, res) => {
   try {
     const id = req.params.id;  // sanitize and validate
     const sql = `DELETE ingredient_id, ingredient_name
