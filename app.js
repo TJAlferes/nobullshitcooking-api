@@ -1,6 +1,8 @@
 // move this file into one folder down?
 //import express from 'express';
 //import mysql from 'mysql2/promise';
+require('babel-polyfill');
+
 require('dotenv').config();
 
 const compression = require('compression');
