@@ -52,15 +52,16 @@ app.get('/api/ingredients/:id', async (req, res) => {
   }
 });
 
-
+/*
 // 3. submit new ingredient
 app.post('/api/ingredients/', async (req, res) => {
   try {
+    const { id, name, typeId, image } = req.params;  // sanitize and validate
     const sql = `INSERT INTO nobsc_ingredients
                  (ingredient_id, ingredient_name, ingredient_type_id, ingredient_image)
                  VALUES
                  (?, ?, ?, ?)`;
-    const [rows, fields] = await pool.execute(sql, []);
+    const [ rows ] = await pool.execute(sql, [id, name, typeId, image]);
   
     res.send(rows);
 
@@ -86,7 +87,7 @@ app.put('/api/ingredients/:id', async (req, res) => {
   }
 });
 
-/*
+
 // 5. delete specific ingredient
 app.delete('/api/ingredients/:id', async (req, res) => {
   try {
