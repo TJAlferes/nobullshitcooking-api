@@ -10,9 +10,11 @@
   "license": "ISC",
   "dependencies": {
     "compression": "^1.7.2",
+    "cors": "^2.8.4",
     "dotenv": "^5.0.1",
     "express": "^4.16.3",
     "helmet": "^3.12.1",
+    "hpp": "^0.2.2",
     "mysql2": "^1.5.3",
     "pm2": "^2.10.4"
   }

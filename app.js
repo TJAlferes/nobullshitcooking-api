@@ -2,8 +2,15 @@
 //import express from 'express';
 //import mysql from 'mysql2/promise';
 require('dotenv').config();
+
+const compression = require('compression');
+const cors = require('cors');
+const helmet = require('helmet');
+//const hpp = require('hpp');
+
 const express = require('express');
 const mysql = require('mysql2/promise');
+
 
 const app = express();
 
@@ -18,13 +25,16 @@ const pool = mysql.createPool({
 });
 
 
-// app.use();
+app.use(compression());
+app.use(cors());
+app.use(helmet());
+//app.use(hpp());
 
 
 // 1. list all ingredients
 app.get('/api/ingredients', async (req, res) => {
   try {
-    const sql = `SELECT ingredient_id, ingredient_name
+    const sql = `SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image
                  FROM nobsc_ingredients`;
     const [ rows ] = await pool.execute(sql);
   
@@ -40,7 +50,7 @@ app.get('/api/ingredients', async (req, res) => {
 app.get('/api/ingredients/:id', async (req, res) => {
   try {
     const id = req.params.id;  // sanitize and validate
-    const sql = `SELECT ingredient_id, ingredient_name
+    const sql = `SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image
                  FROM nobsc_ingredients
                  WHERE ingredient_id = ?`;
     const [ rows ] = await pool.execute(sql, [id]);
