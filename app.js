@@ -1,0 +1,110 @@
+// move this file into one folder down?
+//import express from 'express';
+//import mysql from 'mysql2/promise';
+require('dotenv').config();
+const express = require('express');
+const mysql = require('mysql2/promise');
+
+const app = express();
+
+const pool = mysql.createPool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+  waitForConnections: process.env.DB_WAIT_FOR_CONNECTIONS,
+  connectionLimit: process.env.DB_CONNECTION_LIMIT,
+  queueLimit: process.env.DB_QUEUE_LIMIT
+});
+
+
+// app.use();
+
+
+// 1. list all ingredients
+app.get('/api/ingredients', async (req, res) => {
+  try {
+    const sql = `SELECT ingredient_id, ingredient_name
+                 FROM nobsc_ingredients`;
+    const [ rows ] = await pool.execute(sql);
+  
+    res.send(rows);
+
+  } catch(err) {
+    console.log(err);
+  }
+});
+
+
+// 2. list specific ingredient
+app.get('/api/ingredients/:id', async (req, res) => {
+  try {
+    const id = req.params.id;  // sanitize and validate
+    const sql = `SELECT ingredient_id, ingredient_name
+                 FROM nobsc_ingredients
+                 WHERE ingredient_id = ?`;
+    const [ rows ] = await pool.execute(sql, [id]);
+  
+    res.send(rows);
+
+  } catch(err) {
+    console.log(err);
+  }
+});
+
+
+// 3. submit new ingredient
+app.post('/api/ingredients/', async (req, res) => {
+  try {
+    const sql = `INSERT INTO nobsc_ingredients
+                 (ingredient_id, ingredient_name, ingredient_type_id, ingredient_image)
+                 VALUES
+                 (?, ?, ?, ?)`;
+    const [rows, fields] = await pool.execute(sql, []);
+  
+    res.send(rows);
+
+  } catch(err) {
+    console.log(err);
+  }
+});
+
+
+// 4. edit specific ingredient
+app.put('/api/ingredients/:id', async (req, res) => {
+  try {
+    const id = req.params.id;  // sanitize and validate
+    const sql = `UPDATE ingredient_id, ingredient_name
+                 FROM nobsc_ingredients
+                 WHERE ingredient_id = ?`;
+    const [ rows ] = await pool.execute(sql, [id]);
+
+    res.send(rows);
+
+  } catch(err) {
+    console.log(err);
+  }
+});
+
+/*
+// 5. delete specific ingredient
+app.delete('/api/ingredients/:id', async (req, res) => {
+  try {
+    const id = req.params.id;  // sanitize and validate
+    const sql = `DELETE ingredient_id, ingredient_name
+                 FROM nobsc_ingredients
+                 WHERE ingredient_id = ?
+                 LIMIT 1`;
+    const [ rows ] = await pool.execute(sql, [id]);
+
+    res.send(rows);
+
+  } catch(err) {
+    console.log(err);
+  }
+});
+*/
+
+const PORT = process.env.PORT || 1337;
+
+app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
