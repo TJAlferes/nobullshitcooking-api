@@ -77,7 +77,7 @@ app.get('/ingredients/:id', async (req, res) => {
   }
 });
 
-/*
+
 // 3. submit new ingredient
 app.post('/ingredients/', async (req, res) => {
   try {
