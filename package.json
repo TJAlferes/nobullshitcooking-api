@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "transpile": "babel app.js -o index.js",
-    "start": "node ./node_modules/pm2/bin/pm2 start index.js && pm2 startup"
+    "start": "node ./node_modules/pm2/bin/pm2 start index.js && pm2 save && pm2 startup"
   },
   "author": "",
   "license": "ISC",
