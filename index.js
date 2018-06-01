@@ -3,7 +3,7 @@
 //import mysql from 'mysql2/promise';
 //require('babel-polyfill');
 
-//require('dotenv').config();
+require('dotenv').config();
 
 const compression = require('compression');
 const cors = require('cors');
@@ -16,12 +16,11 @@ const mysql = require('mysql2/promise');
 
 const app = express();
 
-const pool = mysql.createConnection({
-  host: process.env.RDS_HOSTNAME,
-  user: process.env.RDS_USERNAME,
-  password: process.env.RDS_PASSWORD,
-  database: process.env.RDS_DB_NAME,
-  port: process.env.RDS_PORT
+const pool = mysql.createPool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE
 });
 
 
@@ -127,9 +126,8 @@ app.get('/', async (req, res) => {
   try {
     const sql = `SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image
                  FROM nobsc_ingredients`;
-    await pool.connect();
     const [ rows ] = await pool.execute(sql);
-    await pool.end();
+
     res.send(rows);
 
   } catch(err) {
