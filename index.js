@@ -16,15 +16,12 @@ const mysql = require('mysql2/promise');
 
 const app = express();
 
-const pool = mysql.createPool({
+const pool = mysql.createConnection({
   host: process.env.RDS_HOSTNAME,
   user: process.env.RDS_USERNAME,
   password: process.env.RDS_PASSWORD,
   database: process.env.RDS_DB_NAME,
-  port: process.env.RDS_PORT,
-  waitForConnections: process.env.DB_WAIT_FOR_CONNECTIONS,
-  connectionLimit: process.env.DB_CONNECTION_LIMIT,
-  queueLimit: process.env.DB_QUEUE_LIMIT
+  port: process.env.RDS_PORT
 });
 
 
@@ -130,8 +127,9 @@ app.get('/', async (req, res) => {
   try {
     const sql = `SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image
                  FROM nobsc_ingredients`;
+    await pool.connect();
     const [ rows ] = await pool.execute(sql);
-  
+    await pool.end();
     res.send(rows);
 
   } catch(err) {
@@ -139,7 +137,7 @@ app.get('/', async (req, res) => {
   }
 });
 
-
+/*
 // 2. list specific ingredient
 app.get('/ingredients/:id', async (req, res) => {
   try {
@@ -156,7 +154,7 @@ app.get('/ingredients/:id', async (req, res) => {
   }
 });
 
-/*
+
 // 3. submit new ingredient
 app.post('/ingredients/', async (req, res) => {
   try {
