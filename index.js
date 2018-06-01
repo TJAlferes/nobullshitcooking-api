@@ -3,7 +3,7 @@
 //import mysql from 'mysql2/promise';
 //require('babel-polyfill');
 
-require('dotenv').config();
+//require('dotenv').config();
 
 const compression = require('compression');
 const cors = require('cors');
@@ -17,10 +17,11 @@ const mysql = require('mysql2/promise');
 const app = express();
 
 const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
+  host: process.env.RDS_HOSTNAME,
+  user: process.env.RDS_USERNAME,
+  password: process.env.RDS_PASSWORD,
+  database: process.env.RDS_DB_NAME,
+  port: process.env.RDS_PORT,
   waitForConnections: process.env.DB_WAIT_FOR_CONNECTIONS,
   connectionLimit: process.env.DB_CONNECTION_LIMIT,
   queueLimit: process.env.DB_QUEUE_LIMIT
