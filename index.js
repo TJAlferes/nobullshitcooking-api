@@ -125,11 +125,11 @@ app.get('/', (req, res) => {
 
 
 // 1. list all ingredients
-app.get('/ingredients', (req, res) => {
+app.get('/ingredients', async (req, res) => {
   try {
     const sql = `SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image
                  FROM nobsc_ingredients`;
-    const [ rows ] = pool.execute(sql);
+    const [ rows ] = await pool.execute(sql);
   
     res.send(rows);
 
@@ -140,13 +140,13 @@ app.get('/ingredients', (req, res) => {
 
 
 // 2. list specific ingredient
-app.get('/ingredients/:id', (req, res) => {
+app.get('/ingredients/:id', async (req, res) => {
   try {
     const id = req.params.id;  // sanitize and validate
     const sql = `SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image
                  FROM nobsc_ingredients
                  WHERE ingredient_id = ?`;
-    const [ rows ] = pool.execute(sql, [id]);
+    const [ rows ] = await pool.execute(sql, [id]);
   
     res.send(rows);
 
