@@ -110,7 +110,7 @@ if (req.param.s && typeof req.param.s === 'number') {
 
 
 
-
+/*
 // 0. main
 app.get('/', (req, res) => {
   try {
@@ -122,10 +122,10 @@ app.get('/', (req, res) => {
     console.log(err);
   }
 });
-
+*/
 
 // 1. list all ingredients
-app.get('/ingredients', async (req, res) => {
+app.get('/', async (req, res) => {
   try {
     const sql = `SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image
                  FROM nobsc_ingredients`;
