@@ -114,7 +114,7 @@ if (req.param.s && typeof req.param.s === 'number') {
 
 
 
-/*
+
 // 0. main
 app.get('/', (req, res) => {
   try {
@@ -126,10 +126,10 @@ app.get('/', (req, res) => {
     console.log(err);
   }
 });
-*/
+
 
 // 1. list all ingredients
-app.get('/', async (req, res) => {
+app.get('/ingredients', async (req, res) => {
   try {
     const sql = `SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image
                  FROM nobsc_ingredients`;
@@ -142,7 +142,7 @@ app.get('/', async (req, res) => {
   }
 });
 
-/*
+
 // 2. list specific ingredient
 app.get('/ingredients/:id', async (req, res) => {
   try {
@@ -159,7 +159,7 @@ app.get('/ingredients/:id', async (req, res) => {
   }
 });
 
-
+/*
 // 3. submit new ingredient
 app.post('/ingredients/', async (req, res) => {
   try {
