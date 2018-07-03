@@ -1,3 +1,5 @@
+/*
+
 const stripePackage = require('stripe');
 const { calculateCost } = require('../libs/billing-lib');
 const { success, failure } = require('../libs/response-lib');
@@ -25,3 +27,5 @@ export async function main(event, context, callback) {
     callback(null, failure({message: err.message}));
   }
 }
+
+*/

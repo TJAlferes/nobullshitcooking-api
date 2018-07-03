@@ -1,3 +1,5 @@
+/*
+
 // >>>>>>>>>>>>>>>>>>>> start pagination logic
 let display = 25;  // set number of ingredients to list per page
 
@@ -63,14 +65,14 @@ let start = ((req.param.s) && (typeof req.param.s === 'number'))
 if (checkedTypes.length > 1) {  // return multiple checked ingredient types (filter)
   let inNamed = "";
   let parameters = [];
+
   //checkedTypes
-  /*
   foreach (checkedTypes as j => chTy) {
     let key = ":id" + j;
     inNamed .= "key, ";
     parameters[key] = chTy;
   }
-  */
+  
   //let inNamedSet = rtrim(inNamed, ", ");
   let inNamedSet = inNamed.slice(0, -2);
   const sql = `
@@ -81,14 +83,14 @@ if (checkedTypes.length > 1) {  // return multiple checked ingredient types (fil
     LIMIT :start, :display
   `;  // named in mysql2?
   const [ rows ] = await pool.execute(sql, [included, start, display]);
-  /*
+  
   foreach (parameters as k => chType) {
     $stmt->bindValue(k, chType);
   }
   $stmt->bindValue(':start', start, PDO::PARAM_INT);
   $stmt->bindValue(':display', display, PDO::PARAM_INT);
   $stmt->execute();
-  */
+  
 }
 
 if (checkedTypes.length == 1) {  // return single checked ingredient type (filter)
@@ -115,3 +117,5 @@ if (checkedTypes.length == 0) {  // return all ingredient types (no filter)
 }
 
 // >>>>>>>>>>>>>>>>>>>> end filter logic
+
+*/

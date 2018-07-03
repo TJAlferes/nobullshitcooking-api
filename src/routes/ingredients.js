@@ -89,8 +89,7 @@ router.delete('/:id', async (req, res) => {
 // 6. list all ingredient types
 router.get('/types', async (req, res) => {
   try {
-    const sql = `SELECT ingredient_type_id, ingredient_type_name
-                 FROM nobsc_ingredient_types`;
+    const sql = `SELECT * FROM nobsc_ingredient_types`;
     const [ rows ] = await pool.execute(sql);
 
     res.send(rows);
