@@ -1,7 +1,9 @@
 //require('babel-polyfill');  // pollutes globals?
 require('dotenv').config();
+
 const express = require('express');
 const mysql = require('mysql2/promise');
+
 const compression = require('compression');
 const cors = require('cors');
 const helmet = require('helmet');
