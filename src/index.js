@@ -6,7 +6,7 @@ const compression = require('compression');
 const cors = require('cors');
 const helmet = require('helmet');
 //const hpp = require('hpp');
-const morgan = require('morgan');
+//const morgan = require('morgan');
 const bodyParser = require('body-parser');
 
 const equipment = require('./routes/equipment');
@@ -37,9 +37,13 @@ app.use(compression());
 app.use(cors());
 app.use(helmet());
 //app.use(hpp());
-app.use(morgan());
+//app.use(morgan());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
+// or
+//const urlencodedParser = bodyParser.urlencoded({extended: false});
+//const jsonParser = bodyParser.json();
+// and manually apply them as second argument to route methods
 
 
 
@@ -59,7 +63,11 @@ app.get('/', (req, res) => {
 app.use('/equipment', equipment);
 app.use('/ingredients', ingredients);
 app.use('/recipes', recipes);
+/*
+if (process.env.NODE_ENV === 'production') {
 
+}
+*/
 
 
 // Lastly, handle errors
