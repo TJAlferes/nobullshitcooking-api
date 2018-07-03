@@ -1,6 +1,23 @@
 const express = require('express');
 const router = express.Router();
 
+
+const mysql = require('mysql2/promise');
+const pool = mysql.createPool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+  //host: process.env.RDS_HOSTNAME,
+  //user: process.env.RDS_USERNAME,
+  //password: process.env.RDS_PASSWORD,
+  //database: process.env.RDS_DB_NAME,
+  waitForConnections: process.env.DB_WAIT_FOR_CONNECTIONS,
+  connectionLimit: process.env.DB_CONNECTION_LIMIT,
+  queueLimit: process.env.DB_QUEUE_LIMIT
+});
+
+
 // 1. list all ingredients
 router.get('/', async (req, res) => {
   try {
@@ -89,15 +106,17 @@ router.delete('/:id', async (req, res) => {
 // 6. list all ingredient types
 router.get('/types', async (req, res) => {
   try {
-    const sql = `SELECT * FROM nobsc_ingredient_types`;
+    const sql = `SELECT ingredient_type_id, ingredient_type_name
+                 FROM nobsc_ingredient_types`;
     const [ rows ] = await pool.execute(sql);
-
+    console.log(rows);
     res.send(rows);
 
   } catch(err) {
     console.log(err);
   }
 });
+
 
 
 // 7. list specific ingredient type     (is this one needed?)
@@ -134,3 +153,5 @@ router.get('/by-type/:id', async (req, res) => {
     console.log(err);
   }
 });
+
+module.exports = router;

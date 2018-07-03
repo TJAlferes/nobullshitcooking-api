@@ -135,3 +135,5 @@ router.get('/by-type/:id', async (req, res) => {
     console.log(err);
   }
 });
+
+module.exports = router;
