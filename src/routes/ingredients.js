@@ -119,7 +119,7 @@ router.get('/types/all', async (req, res) => {
     const sql = `SELECT ingredient_type_id, ingredient_type_name
                  FROM nobsc_ingredient_types`;
     const [ rows ] = await pool.execute(sql);
-    console.log(rows);
+
     res.send(rows);
 
   } catch(err) {
@@ -146,9 +146,7 @@ router.get('/types/:id', async (req, res) => {
 });
 
 
-//8. list all ingredients of specified type(s)     (this is the most important one)
-//     >>>>>     here, either make the route '/ingredients-by-type/:id' or read query
-//     >>>>>     add logic for determining and querying any give number types simultaeneously
+// 8. list all ingredients of specified type (user checks ONE type)
 router.get('/by-type/:id', async (req, res) => {
   try {
     const id = req.params.id;  // sanitize and validate
@@ -159,6 +157,35 @@ router.get('/by-type/:id', async (req, res) => {
   
     res.send(rows);
 
+  } catch(err) {
+    console.log(err);
+  }
+});
+
+
+// 9. list all ingredients of specified types (user checks multiple types)
+router.post('/of-types', async (req, res) => {
+  try {
+    const types = req.body.types;  // sanitize and validate
+
+    let ids = types.join(', '); // converts array to string for SQL query
+    console.log(ids);
+
+    let placeholders = '';
+    types.forEach(type => { // generate appropriate number of placeholders for SQL query
+      placeholders += '?,';
+    });
+    const placeholderString = placeholders.slice(0, -1);  // this just removes the comma at the end
+    console.log(placeholderString);
+    /*
+    const sql = `SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image
+                 FROM nobsc_ingredients
+                 WHERE ingredient_type_id = ${placeholderString}`;
+    const [ rows ] = await pool.execute(sql, [ids]);
+  
+    res.send(rows);
+    console.log(rows);
+    */
   } catch(err) {
     console.log(err);
   }

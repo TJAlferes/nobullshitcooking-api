@@ -49,12 +49,11 @@ app.use(helmet());
 //app.use(hpp());
 //app.use(morgan());
 app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
+app.use(bodyParser.json());  // or new built-in middleware: app.use(express.json())
 // or
 //const urlencodedParser = bodyParser.urlencoded({extended: false});
 //const jsonParser = bodyParser.json();
 // and manually apply them as second argument to route methods
-
 
 // Then, define all our routes
 // 0. main

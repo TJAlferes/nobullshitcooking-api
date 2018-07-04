@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node build/bundle.js",
-    "dev:build": "webpack --config webpack.config.js",
+    "dev:start": "set NODE_ENV=development&& nodemon src/index.js",
+    "build": "webpack --config webpack.production.config.js",
+    "dev:build": "rimraf build-dev && webpack --config webpack.development.config.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "transpile": "babel app.js -o index.js"
   },
@@ -32,6 +34,7 @@
     "babel-preset-env": "^1.7.0",
     "babel-preset-stage-0": "^6.24.1",
     "nodemon": "^1.17.5",
+    "rimraf": "^2.6.2",
     "webpack": "^4.14.0",
     "webpack-cli": "^3.0.8",
     "webpack-node-externals": "^1.7.2"
