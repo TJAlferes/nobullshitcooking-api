@@ -130,7 +130,11 @@ router.post('/', async (req, res) => {
       // pagination (up to 25 ingredients per page)
       let total = rowCount[0].total;
       let pages = (total > display) ? Math.ceil(total / display) : 1;
-
+      
+      console.log('total: ' + total);
+      console.log('rows: ' + rows);
+      console.log('pages: ' + pages);
+      console.log('starting: ' + starting);
       let resObj = {rows, pages, starting};
       res.send(resObj);
     }
