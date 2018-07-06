@@ -28,7 +28,7 @@ const pool = (process.env.NODE_ENV === 'production') ? (
 );
 
 
-// 1. list ingredients
+// 1. list ingredients (for Ingredients.js on frontend)
 router.post('/', async (req, res) => {
   try {
     const types = (req.body.types)
@@ -84,6 +84,7 @@ router.post('/', async (req, res) => {
     if (types.length == 1) {
       console.log('### types.length == 1 ###');
       let id = `${types}`;  // convert array element to string for SQL query
+      console.log('id: ' + id);
 
       let queryIngredients = `
         SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image
@@ -102,6 +103,10 @@ router.post('/', async (req, res) => {
       let total = rowCount[0].total;
       let pages = (total > display) ? Math.ceil(total / display) : 1;
 
+      console.log('total: ' + total);
+      console.log('rows: ' + rows);
+      console.log('pages: ' + pages);
+      console.log('starting: ' + starting);
       let resObj = {rows, pages, starting};
       res.send(resObj);
     }
@@ -153,7 +158,7 @@ router.post('/', async (req, res) => {
 
 
 
-// 2. list specific ingredient
+// 2. list specific ingredient (for Ingredient.js on frontend)
 router.get('/:id', async (req, res) => {
   try {
     const id = req.params.id;  // sanitize and validate
@@ -256,6 +261,7 @@ router.get('/types/:id', async (req, res) => {
 });
 
 
+/*
 // 8. list all ingredients of specified type (user checks ONE type)
 router.get('/by-type/:id', async (req, res) => {
   try {
@@ -273,6 +279,7 @@ router.get('/by-type/:id', async (req, res) => {
 });
 
 
+
 // 9. list all ingredients of specified types (user checks multiple types)
 router.post('/of-types', async (req, res) => {
   try {
@@ -287,7 +294,7 @@ router.post('/of-types', async (req, res) => {
     });
     const placeholderString = placeholders.slice(0, -1);  // this just removes the comma at the end
     console.log(placeholderString);
-    /*
+    
     const sql = `SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image
                  FROM nobsc_ingredients
                  WHERE ingredient_type_id = ${placeholderString}`;
@@ -295,10 +302,10 @@ router.post('/of-types', async (req, res) => {
   
     res.send(rows);
     console.log(rows);
-    */
+    
   } catch(err) {
     console.log(err);
   }
 });
-
+*/
 module.exports = router;
