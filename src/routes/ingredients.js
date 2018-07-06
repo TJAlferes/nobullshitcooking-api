@@ -28,19 +28,129 @@ const pool = (process.env.NODE_ENV === 'production') ? (
 );
 
 
-// 1. list all ingredients
-router.get('/', async (req, res) => {
+// 1. list ingredients
+router.post('/', async (req, res) => {
   try {
-    const sql = `SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image
-                 FROM nobsc_ingredients`;
-    const [ rows ] = await pool.execute(sql);
+    const types = (req.body.types)
+      ? req.body.types
+      : [];
+    console.log('--------------');
+    console.log('req.body.types: ' + req.body.types);
+    console.log('types: ' + types);
+    const starting = ((req.body.start) && (typeof req.body.start === 'string'))
+      ? req.body.start
+      : 0;
+    console.log('req.body.start: ' + req.body.start);
+    console.log('starting: ' + starting);
+    const display = 25;
 
-    res.send(rows);
 
+    // query all ingredients of checked ingredient types (multiple filters checked on frontend UI)
+    if (types.length > 1) {
+      console.log('### types.length > 1 ###');
+
+      let ids = [];
+      for (i = 0; i < types.length; i++) {
+        ids.push(types[i]);
+      };
+      console.log('ids: ' + ids);
+
+      const placeholders = '?, '.repeat(types.length - 1) + '?';
+      console.log('placeholders: ' + placeholders);
+
+      let queryIngredients = `
+        SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image
+        FROM nobsc_ingredients
+        WHERE ingredient_type_id IN (${placeholders})
+        ORDER BY ingredient_name ASC
+        LIMIT ${starting}, ${display}
+      `;
+      const [ rows ] = await pool.execute(queryIngredients, ids);
+
+      let countIngredients = `SELECT COUNT(*) AS total FROM nobsc_ingredients WHERE ingredient_type_id IN (${placeholders})`;
+      const [ rowCount ] = await pool.execute(countIngredients, ids);
+
+
+      // pagination (up to 25 ingredients per page)
+      let total = rowCount[0].total;
+      let pages = (total > display) ? Math.ceil(total / display) : 1;
+
+      let resObj = {rows, pages, starting};
+      res.send(resObj);
+    }
+  
+
+    // query all ingredients of checked ingredient type (one filter checked on frontend UI)
+    if (types.length == 1) {
+      console.log('### types.length == 1 ###');
+      let id = `${types}`;  // convert array element to string for SQL query
+
+      let queryIngredients = `
+        SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image
+        FROM nobsc_ingredients
+        WHERE ingredient_type_id = ?
+        ORDER BY ingredient_name ASC
+        LIMIT ${starting}, ${display}
+      `;
+      const [ rows ] = await pool.execute(queryIngredients, [id]);
+
+      let countIngredients = 'SELECT COUNT(*) AS total FROM nobsc_ingredients WHERE ingredient_type_id = ?';
+      const [ rowCount ] = await pool.execute(countIngredients, [id]);
+
+
+      // pagination (up to 25 ingredients per page)
+      let total = rowCount[0].total;
+      let pages = (total > display) ? Math.ceil(total / display) : 1;
+
+      let resObj = {rows, pages, starting};
+      res.send(resObj);
+    }
+  
+
+    // query all ingredients (no filtration on frontend UI)
+    if (types.length == 0) {
+      console.log('### types.length == 0 ###');
+      let queryIngredients = `
+        SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image
+        FROM nobsc_ingredients
+        ORDER BY ingredient_name ASC
+        LIMIT ${starting}, ${display}
+      `;
+      const [ rows ] = await pool.execute(queryIngredients);
+
+      let countIngredients = "SELECT COUNT(*) AS total FROM nobsc_ingredients";
+      const [ rowCount ] = await pool.execute(countIngredients);
+
+
+      // pagination (up to 25 ingredients per page)
+      let total = rowCount[0].total;
+      let pages = (total > display) ? Math.ceil(total / display) : 1;
+
+      let resObj = {rows, pages, starting};
+      res.send(resObj);
+    }
+    /*
+    // pagination (up to 25 ingredients per page)
+    let total = rowCount[0].total;
+    let pages = (total > display) ? Math.ceil(total / display) : 1;
+
+    let resObj = {rows, pages, starting};
+    res.send(resObj);
+    */
   } catch(err) {
     console.log(err);
   }
 });
+
+
+
+
+
+
+
+
+
+
 
 
 // 2. list specific ingredient
