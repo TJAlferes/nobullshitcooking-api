@@ -26,7 +26,7 @@ const pool = (process.env.NODE_ENV === 'production') ? (
 );
 
 
-// 1. list ingredients (for Ingredients.js on frontend)
+// 1. list ingredients
 router.post('/', async (req, res) => {
   try {
     const types = (req.body.types) ? req.body.types : [];
@@ -100,7 +100,7 @@ router.post('/', async (req, res) => {
 });
 
 
-// 2. list specific ingredient (for Ingredient.js on frontend)
+// 2. list specific ingredient
 router.get('/:id', async (req, res) => {
   try {
     const id = req.params.id;  // sanitize and validate
