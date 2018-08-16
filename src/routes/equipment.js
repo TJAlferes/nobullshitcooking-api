@@ -94,31 +94,12 @@ router.post('/', async (req, res) => {
       let resObj = {rows, pages, starting};
       res.send(resObj);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    const sql = `
+    /*const sql = `
       SELECT equipment_id, equipment_name, equipment_type_id, equipment_image
       FROM nobsc_equipment
     `;
     const [ rows ] = await pool.execute(sql);
-    res.send(rows);
+    res.send(rows);*/
   } catch(err) {
     console.log(err);
   }
@@ -136,7 +117,7 @@ router.get('/:id', async (req, res) => {
         e.equipment_type_id AS equipment_type_id,
         e.equipment_image AS equipment_image,
         t.equipment_type_name AS equipment_type_name
-      FROM nobsc_equipment_types
+      FROM nobsc_equipment_types t
       LEFT JOIN nobsc_equipment e ON e.equipment_type_id = t.equipment_type_id
       WHERE equipment_id = ?
     `;
