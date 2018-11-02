@@ -41,14 +41,22 @@ router.post('/', async (req, res) => {
       };
       const placeholders = '?, '.repeat(types.length - 1) + '?';
       let queryIngredients = `
-        SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image
+        SELECT
+          ingredient_id,
+          ingredient_name,
+          ingredient_type_id,
+          ingredient_image
         FROM nobsc_ingredients
         WHERE ingredient_type_id IN (${placeholders})
         ORDER BY ingredient_name ASC
         LIMIT ${starting}, ${display}
       `;
       const [ rows ] = await pool.execute(queryIngredients, ids);
-      let countIngredients = `SELECT COUNT(*) AS total FROM nobsc_ingredients WHERE ingredient_type_id IN (${placeholders})`;
+      let countIngredients = `
+        SELECT COUNT(*) AS total
+        FROM nobsc_ingredients
+        WHERE ingredient_type_id IN (${placeholders})
+      `;
       const [ rowCount ] = await pool.execute(countIngredients, ids);
       // pagination (up to 25 ingredients per page)
       let total = rowCount[0].total;
@@ -61,14 +69,22 @@ router.post('/', async (req, res) => {
     if (types.length == 1) {
       let id = `${types}`;  // convert array element to string for SQL query
       let queryIngredients = `
-        SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image
+        SELECT
+          ingredient_id,
+          ingredient_name,
+          ingredient_type_id,
+          ingredient_image
         FROM nobsc_ingredients
         WHERE ingredient_type_id = ?
         ORDER BY ingredient_name ASC
         LIMIT ${starting}, ${display}
       `;
       const [ rows ] = await pool.execute(queryIngredients, [id]);
-      let countIngredients = 'SELECT COUNT(*) AS total FROM nobsc_ingredients WHERE ingredient_type_id = ?';
+      let countIngredients = `
+        SELECT COUNT(*) AS total
+        FROM nobsc_ingredients
+        WHERE ingredient_type_id = ?
+      `;
       const [ rowCount ] = await pool.execute(countIngredients, [id]);
       // pagination (up to 25 ingredients per page)
       let total = rowCount[0].total;
@@ -80,7 +96,11 @@ router.post('/', async (req, res) => {
     // query all ingredients (no filtration on frontend UI)
     if (types.length == 0) {
       let queryIngredients = `
-        SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image
+        SELECT
+          ingredient_id,
+          ingredient_name,
+          ingredient_type_id,
+          ingredient_image
         FROM nobsc_ingredients
         ORDER BY ingredient_name ASC
         LIMIT ${starting}, ${display}
