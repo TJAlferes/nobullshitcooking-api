@@ -24,7 +24,7 @@
     "hpp": "^0.2.2",
     "morgan": "^1.9.1",
     "mysql2": "^1.6.4",
-    "stripe": "^6.18.0",
+    "stripe": "^6.20.0",
     "superstruct": "^0.5.4"
   },
   "devDependencies": {
@@ -34,9 +34,9 @@
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-stage-0": "^6.24.1",
-    "nodemon": "^1.18.7",
+    "nodemon": "^1.18.9",
     "rimraf": "^2.6.2",
-    "webpack": "^4.27.1",
+    "webpack": "^4.28.2",
     "webpack-cli": "^3.1.2",
     "webpack-node-externals": "^1.7.2"
   }
