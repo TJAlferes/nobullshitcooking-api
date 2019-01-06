@@ -1,0 +1,39 @@
+version: '3.6'
+services:
+
+  # MySQL
+  mysql:
+    container_name: mysql
+    image: mysql
+    volumes:
+      - ./change/me
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: changeme
+    ports:
+      - "3306:3306"
+
+  # Redis
+  redis:
+    container_name: redis
+    image: redis
+    ports:
+      - "6379:6379"
+
+  # NOBSC Backend API
+  nobsc-backend-api:
+    container_name: nobsc-backend-api
+    build: ./
+    restart: always
+    command: npm start
+    working_dir: /changeme
+    volumes:
+      - ./change/me
+    environment:
+      MYSQL_URI:
+      REDIS_URI: redis://redis:6379
+      NODE_ENV: "development"
+    #env_file:
+    #  - ./.private/api-keys.env "Alterative way to insert env vars"
+    ports:
+      - "3003:3003"

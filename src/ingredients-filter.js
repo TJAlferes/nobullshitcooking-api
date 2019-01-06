@@ -1,3 +1,4 @@
+/*
 function ingredientsFilter() {
 
   const types = req.body.types;  // sanitize and validate
@@ -117,3 +118,4 @@ function ingredientsFilter() {
 }
 
 module.exports = ingredientsFilter;
+*/
