@@ -5,9 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node build/bundle.js",
-    "dev:start": "set NODE_ENV=development&& nodemon src/index.js",
-    "build": "webpack --config webpack.production.config.js",
-    "dev:build": "rimraf build-dev && webpack --config webpack.development.config.js",
+    "dev": "nodemon src/index.js",
+    "build": "webpack --config webpack.prod.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "transpile": "babel app.js -o index.js"
   },

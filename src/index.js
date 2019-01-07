@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2/promise');
 const session = require("express-session");
+const redis = require('redis');
 const RedisStore = require("connect-redis")(session);
 const compression = require('compression');
 const cors = require('cors');
@@ -10,12 +11,11 @@ const helmet = require('helmet');
 //const hpp = require('hpp');
 //const morgan = require('morgan');
 const bodyParser = require('body-parser');
-// move these three into a routes/index.js
 const { equipmentRoutes, ingredientRoutes, recipeRoutes } = require('./routes');
 
-app.disable('x-powered-by'); // doesn't csurf do this for you?
-
 const app = express();
+
+const RedisClient = redis.createClient({host: 'redis-server'});
 
 const pool = (process.env.NODE_ENV === 'production') ? (
   mysql.createPool({
@@ -38,6 +38,8 @@ const pool = (process.env.NODE_ENV === 'production') ? (
     queueLimit: process.env.DB_QUEUE_LIMIT
   })
 );
+
+app.disable('x-powered-by'); // doesn't csurf do this for you?
 
 app.use(
   session({
