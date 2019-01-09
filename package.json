@@ -16,6 +16,7 @@
     "@babel/plugin-proposal-class-properties": "^7.2.3",
     "@babel/plugin-proposal-object-rest-spread": "^7.2.0",
     "@babel/polyfill": "^7.2.5",
+    "bcrypt": "^3.0.3",
     "body-parser": "^1.18.3",
     "compression": "^1.7.3",
     "connect-redis": "^3.4.0",
@@ -26,6 +27,7 @@
     "express-session": "^1.15.6",
     "helmet": "^3.15.0",
     "hpp": "^0.2.2",
+    "joi": "^14.3.1",
     "morgan": "^1.9.1",
     "mysql2": "^1.6.4",
     "redis": "^2.8.0",
@@ -41,7 +43,7 @@
     "nodemon": "^1.18.9",
     "rimraf": "^2.6.3",
     "webpack": "^4.28.3",
-    "webpack-cli": "^3.2.0",
+    "webpack-cli": "^3.2.1",
     "webpack-node-externals": "^1.7.2"
   }
 }

@@ -1,53 +1,44 @@
-version: '3.6'
+version: "3.6"
 services:
-
   # MySQL
-  mysql:
-    container_name: mysql
+  mysql-dev:
+    container_name: mysql-dev
     image: mysql
     volumes:
-      - db_data:/var/lib/mysql
+      - dbdata:/var/lib/mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: nobsc
     ports:
       - "3306:3306"
-    expose:
-      - "3306"
-
   # Redis
-  redis-server:
-    container_name: redis-server
+  redis-dev:
+    container_name: redis-dev
     image: redis
+    volumes:
+      - cachedata:/data
     ports:
       - "6379:6379"
-
   # NOBSC API
   nobsc-api:
     container_name: nobsc-api
-    #build: .
     build:
       dockerfile: Dockerfile.dev
       context: ./
     restart: always
-    command: npm start
     #working_dir: ./
     depends_on:
-      - mysql
-      - redis-server
+      - mysql-dev
+      - redis-dev
     volumes:
-      - ./node_modules
-      #- /tmp/:/tmp/
-    environment:
-      MYSQL_URI: mysql://root:password@localhost:3306/nobsc
-      #MYSQL_DATABASE:
-      #MYSQL_USER:
-      #MYSQL_PASSWORD:
-      REDIS_URI: redis://redis:6379
-      #REDIS_HOST:
-      #REDIS_PORT:
-      NODE_ENV: "development"
-    #env_file:
-    #  - ./.private/api-keys.env "Alterative way to insert env vars"
+      - /usr/app/node_modules
+      - .:/usr/app
+    env_file: .env
     ports:
       - "3003:3003"
+volumes:
+  dbdata:
+    driver: local
+  cachedata:
+    driver: local

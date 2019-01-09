@@ -15,7 +15,8 @@ const { equipmentRoutes, ingredientRoutes, recipeRoutes } = require('./routes');
 
 const app = express();
 
-const RedisClient = redis.createClient({host: 'redis-server'});
+const RedisClient = redis.createClient({host: 'redis-dev'});
+//const RedisClient = redis.createClient(process.env.REDIS_URI);
 
 const pool = (process.env.NODE_ENV === 'production') ? (
   mysql.createPool({
@@ -29,13 +30,14 @@ const pool = (process.env.NODE_ENV === 'production') ? (
   })
 ) : (
   mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
-    waitForConnections: process.env.DB_WAIT_FOR_CONNECTIONS,
-    connectionLimit: process.env.DB_CONNECTION_LIMIT,
-    queueLimit: process.env.DB_QUEUE_LIMIT
+    host: 'mysql-dev'
+    //host: process.env.DB_HOST,
+    //user: process.env.DB_USER,
+    //password: process.env.DB_PASSWORD,
+    //database: process.env.DB_DATABASE,
+    //waitForConnections: process.env.DB_WAIT_FOR_CONNECTIONS,
+    //connectionLimit: process.env.DB_CONNECTION_LIMIT,
+    //queueLimit: process.env.DB_QUEUE_LIMIT
   })
 );
 
