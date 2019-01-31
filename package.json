@@ -31,7 +31,7 @@
     "morgan": "^1.9.1",
     "mysql2": "^1.6.4",
     "redis": "^2.8.0",
-    "stripe": "^6.22.0",
+    "stripe": "^6.23.0",
     "superstruct": "^0.5.4"
   },
   "devDependencies": {
