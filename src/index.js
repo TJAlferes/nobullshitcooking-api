@@ -3,8 +3,11 @@ require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2/promise');
 const session = require("express-session");
-const redis = require('redis');
-const RedisStore = require("connect-redis")(session);
+
+// Not using yet, simply storing session in filesystem for now
+//const redis = require('redis');
+//const RedisStore = require("connect-redis")(session);
+
 const compression = require('compression');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -15,7 +18,7 @@ const { equipmentRoutes, ingredientRoutes, recipeRoutes } = require('./routes');
 
 const app = express();
 
-const RedisClient = redis.createClient({host: 'redis-dev'});
+//const RedisClient = redis.createClient({host: 'redis-dev'});
 //const RedisClient = redis.createClient(process.env.REDIS_URI);
 
 const pool = (process.env.NODE_ENV === 'production') ? (
@@ -43,7 +46,7 @@ const pool = (process.env.NODE_ENV === 'production') ? (
 
 app.disable('x-powered-by'); // doesn't csurf do this for you?
 
-app.use(
+/*app.use(
   session({
     store: new RedisStore({
       port: process.env.REDIS_PORT || "6379",
@@ -60,11 +63,11 @@ app.use(
       secure: true
     }
   })
-);
+);*/
 
 //app.use(express.json()); ?
 
-// First, set up third-party middleware
+// third-party middleware
 //app.use(csurf()); in what order?
 app.use(compression());
 app.use(cors());
@@ -77,23 +80,23 @@ app.use(bodyParser.json());  // or new built-in middleware: app.use(express.json
 //const urlencodedParser = bodyParser.urlencoded({extended: false});
 //const jsonParser = bodyParser.json();
 // and manually apply them as second argument to route methods
+app.use(session({secret: 'very secret', resave: false, saveUninitialized: true}));
 
-// Then, define all our routes
-// 0. main
+// our routes
 app.get('/', (req, res) => {
   try {
     const message = "No Bullshit Cooking Backend API";
-  
     res.send(message);
-
   } catch(err) {
     console.log(err);
   }
 });
-
-app.use('/equipment', equipmentRoutes);
-app.use('/ingredients', ingredientRoutes);
 app.use('/recipes', recipeRoutes);
+app.use('/ingredients', ingredientRoutes);
+app.use('/equipment', equipmentRoutes);
+app.use('/user', userRoutes);
+app.use('/auth', authRoutes);
+
 /*
 if (process.env.NODE_ENV === 'production') {
 
@@ -104,7 +107,7 @@ if (process.env.NODE_ENV === 'production') {
   res.sendFile(path.join(__dirname, "..", "dist", "index.html"));
 });*/
 
-// Lastly, handle errors
+// handle errors
 app.use((req, res, next) => {
   const error = new Error('Not found');
   error.status = 404;
@@ -122,9 +125,11 @@ app.use((error, req, res, next) => {
 
 /*app.use((error, req, res, next) => {
   logger.error(error);
-  res.status(error.status || 500).json({ error: error.message });
+  res.status(error.status || 500)
+  .json({
+    error: error.message
+  });
 });*/
-
 
 
 const PORT = process.env.PORT || 3003;
