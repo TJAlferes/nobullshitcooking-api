@@ -1,30 +1,34 @@
-const express = require('express');
-const mysql = require('mysql2/promise');
+const pool = require('../data-access/dbPoolConnection');  // move?
+const Recipe = require('../data-access/Recipe');
 
-const router = express.Router();
+// object versus class?
+const recipeController = {
+  viewRecipe: async function(req, res) {  // split into three methods?
+    try {
 
-const pool = (process.env.NODE_ENV === 'production') ? (
-  mysql.createPool({
-    host: process.env.RDS_HOSTNAME,
-    user: process.env.RDS_USERNAME,
-    password: process.env.RDS_PASSWORD,
-    database: process.env.RDS_DB_NAME,
-    waitForConnections: process.env.DB_WAIT_FOR_CONNECTIONS,
-    connectionLimit: process.env.DB_CONNECTION_LIMIT,
-    queueLimit: process.env.DB_QUEUE_LIMIT
-  })
-) : (
-  mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
-    waitForConnections: process.env.DB_WAIT_FOR_CONNECTIONS,
-    connectionLimit: process.env.DB_CONNECTION_LIMIT,
-    queueLimit: process.env.DB_QUEUE_LIMIT
-  })
-);
+      const recipe = new Recipe(pool);
 
+    } catch(err) {
+      console.log(err);  // res the error, safely
+    }
+  },
+  viewRecipeDetail: async function(req, res) {
+    try {
+      const recipeId = req.params.id;  // sanitize and validate
+      const recipe = new Recipe(pool);
+      const [ row ] = await recipe.viewRecipeById(recipeId);
+      res.send(row);
+    } catch(err) {
+      console.log(err);  // res the error, safely
+    }
+  }
+};
+
+module.exports = recipeController;
+
+
+
+/*
 // 1. list all recipes
 router.get('/', async (req, res) => {
   try {
@@ -102,7 +106,7 @@ router.post('/', async (req, res) => {
     console.log(err);
   }
 });
-/*
+
 // 4. edit specific recipe
 router.put('/:id', async (req, res) => {
   try {
@@ -135,7 +139,7 @@ router.delete('/:id', async (req, res) => {
     console.log(err);
   }
 });
-*/
+
 // 6. list all recipe types
 router.get('/types/all', async (req, res) => {
   try {
@@ -185,3 +189,4 @@ router.get('/by-type/:id', async (req, res) => {
 });
 
 module.exports = router;
+*/

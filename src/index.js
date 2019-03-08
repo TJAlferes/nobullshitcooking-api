@@ -18,10 +18,13 @@ const csurf = require('csurf');
 const bodyParser = require('body-parser');
 const {
   equipmentRoutes,
+  equipmentTypeRoutes,
   ingredientRoutes,
+  ingredientTypeRoutes,
   recipeRoutes,
-  userRoutes,
-  staffRoutes
+  recipeTypeRoutes,
+  staffRoutes,
+  userRoutes
 } = require('./routes');
 
 const app = express();
@@ -100,10 +103,13 @@ app.get('/', (req, res) => {
   }
 });
 app.use('/equipment', equipmentRoutes);
-app.use('/ingredients', ingredientRoutes);
-app.use('/recipes', recipeRoutes);
-app.use('/user', userRoutes);
+app.use('/equipment-type', equipmentTypeRoutes);
+app.use('/ingredient', ingredientRoutes);
+app.use('/ingredient-type', ingredientTypeRoutes);
+app.use('/recipe', recipeRoutes);
+app.use('/recipe-type', recipeTypeRoutes);
 app.use('/staff', staffRoutes);
+app.use('/user', userRoutes);
 
 
 

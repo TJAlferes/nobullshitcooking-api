@@ -1,15 +1,23 @@
-const express = require('express');
+const { Router } = require('express');
 
 const equipmentController = require('../controllers/equipment');
 
-const router = express.Router();
+const router = Router();
 
 // /v1/... ?
-// catchExceptions()?
 
 // for /equipment/...
 
-router.post('/', equipmentController.viewEquipment);
-router.get('/:equipmentId', equipmentController.viewEquipmentDetail);
+router.post(
+  '/',
+  /* some validation, */
+  catchExceptions(equipmentController.viewEquipment)
+);
+
+router.get(
+  '/:equipmentId',
+  /* some validation, */
+  catchExceptions(equipmentController.viewEquipmentDetail)
+);
 
 module.exports = router;

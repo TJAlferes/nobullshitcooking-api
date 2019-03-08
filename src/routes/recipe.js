@@ -1,15 +1,23 @@
-const express = require('express');
+const { Router } = require('express');
 
 const recipeController = require('../controllers/recipe');
 
-const router = express.Router();
+const router = Router();
 
 // /v1/... ?
-// catchExceptions()?
 
-// for /recipes/...
+// for /recipe/...
 
-router.post('/', recipeController.viewRecipes);
-router.get('/:recipeId', recipeController.viewRecipeDetail);
+router.post(
+  '/',
+  /* some validation, */
+  catchExceptions(recipeController.viewRecipes)
+);
+
+router.get(
+  '/:recipeId',
+  /* some validation, */
+  catchExceptions(recipeController.viewRecipeDetail)
+);
 
 module.exports = router;

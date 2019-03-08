@@ -1,9 +1,10 @@
 class Recipe {
   constructor(pool) {
-    //super(props);
-    this.pool = pool;  // .bind(this)?
+    this.pool = pool;
   }
   
+  // to do: counts and cusines (and cardio!)
+
   viewAllRecipes() {
     const sql = `
       SELECT recipe_id, recipe_name, recipe_type_id, recipe_image

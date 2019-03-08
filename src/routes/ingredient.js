@@ -1,15 +1,23 @@
-const express = require('express');
+const { Router } = require('express');
 
 const ingredientController = require('../controllers/ingredient');
 
-const router = express.Router();
+const router = Router();
 
 // /v1/... ?
-// catchExceptions()?
 
 // for /ingredient/...
 
-router.post('/', ingredientController.viewIngredients);
-router.get('/:ingredientId', ingredientController.viewIngredientDetail);
+router.post(
+  '/',
+  /* some validation, */
+  catchExceptions(ingredientController.viewIngredients)
+);
+
+router.get(
+  '/:ingredientId',
+  /* some validation, */
+  catchExceptions(ingredientController.viewIngredientDetail)
+);
 
 module.exports = router;
