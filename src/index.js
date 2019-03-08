@@ -8,41 +8,49 @@ const session = require("express-session");
 //const redis = require('redis');
 //const RedisStore = require("connect-redis")(session);
 
+//const expressRateLimit = require('express-rate-limit);
 const compression = require('compression');
 const cors = require('cors');
 const helmet = require('helmet');
+const csurf = require('csurf');
 //const hpp = require('hpp');
 //const morgan = require('morgan');
 const bodyParser = require('body-parser');
-const { equipmentRoutes, ingredientRoutes, recipeRoutes } = require('./routes');
+const {
+  equipmentRoutes,
+  ingredientRoutes,
+  recipeRoutes,
+  userRoutes,
+  staffRoutes
+} = require('./routes');
 
 const app = express();
 
 //const RedisClient = redis.createClient({host: 'redis-dev'});
 //const RedisClient = redis.createClient(process.env.REDIS_URI);
 
-const pool = (process.env.NODE_ENV === 'production') ? (
-  mysql.createPool({
-    host: process.env.RDS_HOSTNAME,
-    user: process.env.RDS_USERNAME,
-    password: process.env.RDS_PASSWORD,
-    database: process.env.RDS_DB_NAME,
-    waitForConnections: process.env.DB_WAIT_FOR_CONNECTIONS,
-    connectionLimit: process.env.DB_CONNECTION_LIMIT,
-    queueLimit: process.env.DB_QUEUE_LIMIT
-  })
-) : (
-  mysql.createPool({
-    host: 'mysql-dev'
-    //host: process.env.DB_HOST,
-    //user: process.env.DB_USER,
-    //password: process.env.DB_PASSWORD,
-    //database: process.env.DB_DATABASE,
-    //waitForConnections: process.env.DB_WAIT_FOR_CONNECTIONS,
-    //connectionLimit: process.env.DB_CONNECTION_LIMIT,
-    //queueLimit: process.env.DB_QUEUE_LIMIT
-  })
-);
+// why is this here?
+// also, move into a default export?
+const pool = process.env.NODE_ENV === 'production'
+? mysql.createPool({
+  host: process.env.RDS_HOSTNAME,
+  user: process.env.RDS_USERNAME,
+  password: process.env.RDS_PASSWORD,
+  database: process.env.RDS_DB_NAME,
+  waitForConnections: process.env.DB_WAIT_FOR_CONNECTIONS,
+  connectionLimit: process.env.DB_CONNECTION_LIMIT,
+  queueLimit: process.env.DB_QUEUE_LIMIT
+})
+: mysql.createPool({
+  //host: 'mysql-dev'
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+  waitForConnections: process.env.DB_WAIT_FOR_CONNECTIONS,
+  connectionLimit: process.env.DB_CONNECTION_LIMIT,
+  queueLimit: process.env.DB_QUEUE_LIMIT
+});
 
 app.disable('x-powered-by'); // doesn't csurf do this for you?
 
@@ -68,34 +76,36 @@ app.disable('x-powered-by'); // doesn't csurf do this for you?
 //app.use(express.json()); ?
 
 // third-party middleware
-//app.use(csurf()); in what order?
+//app.use(expressRateLimit());
 app.use(compression());
 app.use(cors());
 app.use(helmet());
+app.use(csurf());  // move up?
 //app.use(hpp());
 //app.use(morgan());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());  // or new built-in middleware: app.use(express.json())
-// or
+// (or
 //const urlencodedParser = bodyParser.urlencoded({extended: false});
 //const jsonParser = bodyParser.json();
-// and manually apply them as second argument to route methods
-app.use(session({secret: 'very secret', resave: false, saveUninitialized: true}));
+// and manually apply them as second argument to route methods)
+app.use(session({secret: 'very secret', resave: false, saveUninitialized: true}));  // move up?
 
 // our routes
 app.get('/', (req, res) => {
   try {
-    const message = "No Bullshit Cooking Backend API";
-    res.send(message);
+    res.send("No Bullshit Cooking Backend API");
   } catch(err) {
     console.log(err);
   }
 });
-app.use('/recipes', recipeRoutes);
-app.use('/ingredients', ingredientRoutes);
 app.use('/equipment', equipmentRoutes);
+app.use('/ingredients', ingredientRoutes);
+app.use('/recipes', recipeRoutes);
 app.use('/user', userRoutes);
-app.use('/auth', authRoutes);
+app.use('/staff', staffRoutes);
+
+
 
 /*
 if (process.env.NODE_ENV === 'production') {
@@ -123,13 +133,23 @@ app.use((error, req, res, next) => {
   });
 });
 
-/*app.use((error, req, res, next) => {
+/*
+app.use((error, req, res, next) => {
+  console.log(error);
+  const status = error.statusCode || 500;
+  const message = error.message;
+  const data = error.data;
+  res.status(status).json({ message: message, data: data });
+});
+
+app.use((error, req, res, next) => {
   logger.error(error);
   res.status(error.status || 500)
   .json({
     error: error.message
   });
-});*/
+});
+*/
 
 
 const PORT = process.env.PORT || 3003;

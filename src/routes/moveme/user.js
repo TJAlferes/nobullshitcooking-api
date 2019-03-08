@@ -1,3 +1,4 @@
+/*
 const { Router } = require("express");
 const catchExceptions = require("../lib/utils/catchExceptions");
 const validateIncomingUserRequest = require("../lib/services/userService/validateIncomingUserRequest");
@@ -48,3 +49,4 @@ router.post(
 );
 
 module.exports = router;
+*/
