@@ -1,10 +1,11 @@
 class RecipeType {
   constructor(pool) {
-    //super(props);
-    this.pool = pool;  // .bind(this)?
+    this.pool = pool;
+    this.viewAllRecipeTypes = this.viewAllRecipeTypes.bind(this);
+    this.viewRecipeTypeById = this.viewRecipeTypeById.bind(this);
   }
 
-  viewRecipeTypes() {
+  viewAllRecipeTypes() {
     const sql = `
       SELECT recipe_type_id, recipe_type_name
       FROM nobsc_recipe_types
@@ -12,7 +13,7 @@ class RecipeType {
     return pool.execute(sql);
   }
 
-  viewRecipeType(typeId) {
+  viewRecipeTypeById(typeId) {
     const sql = `
       SELECT recipe_type_id, recipe_type_name
       FROM nobsc_recipe_types

@@ -90,7 +90,7 @@ class Equipment {
     const { id, name, typeId, image } = equipmentInfo;
     const sql = `
       INSERT INTO nobsc_equipment
-      equipment_id, equipment_name, equipment_type_id, equipment_image)
+      (equipment_id, equipment_name, equipment_type_id, equipment_image)
       VALUES
       (?, ?, ?, ?)
     `;
@@ -103,13 +103,14 @@ class Equipment {
       UPDATE nobsc_equipment
       SET equipment_name = ?, equipment_type_id = ?, equipment_image = ?
       WHERE equipment_id = ?
+      LIMIT 1
     `;
     return pool.execute(sql, [name, typeId, image, id]);
   }
 
   deleteEquipment(equipmentId) {
     const sql = `
-      DELETE equipment_id, equipment_name
+      DELETE
       FROM nobsc_equipment
       WHERE equipment_id = ?
       LIMIT 1

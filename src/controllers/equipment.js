@@ -59,6 +59,36 @@ const equipmentController = {
     } catch(err) {
       console.log(err);  // res the error, safely
     }
+  },
+  createEquipment: async function(req, res) {
+    try {
+      const equipmentInfo = req.body.equipmentInfo;  // sanitize and validate
+      const equipment = new Equipment(pool);
+      const [ row ] = await equipment.createEquipment(equipmentInfo);
+      res.send(row);
+    } catch(err) {
+      console.log(err);  // res the error, safely
+    }
+  },
+  updateEquipment: async function(req, res) {
+    try {
+      const equipmentInfo = req.body.equipmentInfo;  // sanitize and validate
+      const equipment = new Equipment(pool);
+      const [ row ] = await equipment.createEquipment(equipmentInfo);
+      res.send(row);
+    } catch(err) {
+      console.log(err);  // res the error, safely
+    }
+  },
+  deleteEquipment: async function(req, res) {
+    try {
+      const equipmentId = req.body.equipmentId;  // sanitize and validate
+      const equipment = new Equipment(pool);
+      const [ row ] = await equipment.deleteEquipment(equipmentId);
+      res.send(row);
+    } catch(err) {
+      console.log(err);  // res the error, safely
+    }
   }
 };
 

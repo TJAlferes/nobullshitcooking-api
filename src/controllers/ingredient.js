@@ -29,7 +29,7 @@ const ingredientController = {
       if (types.length == 1) {
         let typeId = `${types}`;  // convert array element to string for SQL query
         const [ rows ] = await ingredient.viewIngredientsOfType(starting, display, typeId);
-        const [ rowCount ] = await ingredient.countIngredientOfType(typeId);
+        const [ rowCount ] = await ingredient.countIngredientsOfType(typeId);
         // pagination (up to 25 ingredients per page) (why repeat 3 times?)
         let total = rowCount[0].total;
         let pages = (total > display) ? Math.ceil(total / display) : 1;
@@ -55,6 +55,36 @@ const ingredientController = {
       const ingredientId = req.params.id;  // sanitize and validate
       const ingredient = new Ingredient(pool);
       const [ row ] = await ingredient.viewIngredientById(ingredientId);
+      res.send(row);
+    } catch(err) {
+      console.log(err);  // res the error, safely
+    }
+  },
+  createIngredient: async function(req, res) {
+    try {
+      const ingredientInfo = req.body.ingredientInfo;  // sanitize and validate
+      const ingredient = new Ingredient(pool);
+      const [ row ] = await ingredient.createIngredient(ingredientInfo);
+      res.send(row);
+    } catch(err) {
+      console.log(err);  // res the error, safely
+    }
+  },
+  updateIngredient: async function(req, res) {
+    try {
+      const ingredientInfo = req.body.ingredientInfo;  // sanitize and validate
+      const ingredient = new Ingredient(pool);
+      const [ row ] = await ingredient.createIngredient(ingredientInfo);
+      res.send(row);
+    } catch(err) {
+      console.log(err);  // res the error, safely
+    }
+  },
+  deleteIngredient: async function(req, res) {
+    try {
+      const ingredientId = req.body.ingredientId;  // sanitize and validate
+      const ingredient = new Ingredient(pool);
+      const [ row ] = await ingredient.deleteIngredient(ingredientId);
       res.send(row);
     } catch(err) {
       console.log(err);  // res the error, safely
