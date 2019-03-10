@@ -8,7 +8,7 @@ const router = Router();
 
 // for /ingredient-type/...
 
-router.post(
+router.get(
   '/',
   /* some validation, */
   catchExceptions(ingredientTypeController.viewAllIngredientTypes)

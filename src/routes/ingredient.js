@@ -8,7 +8,7 @@ const router = Router();
 
 // for /ingredient/...
 
-router.post(
+router.get(
   '/',
   /* some validation, */
   catchExceptions(ingredientController.viewIngredients)
@@ -18,6 +18,24 @@ router.get(
   '/:ingredientId',
   /* some validation, */
   catchExceptions(ingredientController.viewIngredientDetail)
+);
+
+router.post(
+  '/create',
+  /* some validation, */
+  catchExceptions(ingredientController.createIngredient)
+);
+
+router.put(
+  '/update',
+  /* some validation, */
+  catchExceptions(ingredientController.updateIngredient)
+);
+
+router.delete(
+  '/delete',
+  /* some validation, */
+  catchExceptions(ingredientController.deleteIngredient)
 );
 
 module.exports = router;

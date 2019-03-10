@@ -8,7 +8,7 @@ const router = Router();
 
 // for /recipe/...
 
-router.post(
+router.get(
   '/',
   /* some validation, */
   catchExceptions(recipeController.viewRecipes)
@@ -18,6 +18,24 @@ router.get(
   '/:recipeId',
   /* some validation, */
   catchExceptions(recipeController.viewRecipeDetail)
+);
+
+router.post(
+  '/create',
+  /* some validation, */
+  catchExceptions(recipeController.createRecipe)
+);
+
+router.put(
+  '/update',
+  /* some validation, */
+  catchExceptions(recipeController.updateRecipe)
+);
+
+router.delete(
+  '/delete',
+  /* some validation, */
+  catchExceptions(recipeController.deleteRecipe)
 );
 
 module.exports = router;

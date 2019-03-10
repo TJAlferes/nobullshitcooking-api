@@ -8,7 +8,7 @@ const router = Router();
 
 // for /equipment-type/...
 
-router.post(
+router.get(
   '/',
   /* some validation, */
   catchExceptions(equipmentTypeController.viewAllEquipmentTypes)
