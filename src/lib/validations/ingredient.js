@@ -8,29 +8,23 @@ but may use an npm package like superstruct in the future
 const utils = require('../utils/validation');
 
 const REQUIRED_PROPERTIES = [
-  'recipeId',
-  'recipeName',
-  'recipeTypeId',
-  'recipeImage',
-  'authorId',
-  'created',
-  'steps'
+  'ingredientId',
+  'ingredientName',
+  'ingredientTypeId'
 ];
 const ALLOWED_PROPERTIES = [
-  'equipmentImage',
-  'ingredientsImage',
-  'cookingImage'
+  'ingredientImage'
 ];
 const VALID_PROPERTIES = REQUIRED_PROPERTIES.concat(ALLOWED_PROPERTIES);
 
-module.exports.validate = function(recipe) {
-  return Promise.resolve(recipe)
+module.exports.validate = function(ingredient) {
+  return Promise.resolve(ingredient)
   .then(utils.validateMissedProperties(REQUIRED_PROPERTIES))
   .then(utils.checkInvalidProperties(VALID_PROPERTIES))
-  .then(recipe => {
+  .then(ingredient => {
     for (let prop of ALLOWED_PROPERTIES) {
-      recipe[prop] = recipe[prop] || '';
+      ingredient[prop] = ingredient[prop] || '';
     }
-    return recipe;
+    return ingredient;
   });
 };

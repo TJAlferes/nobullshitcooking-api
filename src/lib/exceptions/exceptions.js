@@ -7,7 +7,7 @@ class Exception extends Error {
     this.name = name;
     this.message = message;
     this.payload = payload;
-    Error.captureStackTrace(this, Exception);
+    Error.captureStackTrace(this, Exception);  // !
   }
 
   toString() {

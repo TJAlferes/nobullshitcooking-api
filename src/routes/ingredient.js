@@ -1,5 +1,6 @@
 const { Router } = require('express');
 
+const catchExceptions = require('../lib/utils/catchExceptions');
 const ingredientController = require('../controllers/ingredient');
 
 const router = Router();

@@ -1,24 +1,42 @@
-const express = require('express');
-//const { body } = require('express-validator/check');
+const { Router } = require('express');
 
-const userRecipeController = require('../../controllers/user/recipe');
 const userIsAuth = require('../../lib/utils/userIsAuth');
+const catchExceptions = require('../../lib/utils/catchExceptions');
+const userRecipeController = require('../../controllers/user/recipe');
 
-const router = express.Router();
-//const isValid = [];
+const router = Router();
 
 // /v1/... ?
-// catchExceptions()?
 
 // for /user/recipe/...
 
-router.post('/create', userIsAuth, /*isValid,*/ userRecipeController.createRecipe);
+router.get(
+  '/',
+  catchExceptions(userRecipeController.viewRecipes)
+);
+router.get(
+  '/:recipeId',
+  catchExceptions(userRecipeController.viewRecipe)
+);
 
-router.get('/recipes', userRecipeController.viewRecipes);
-router.get('/:recipeId', userRecipeController.viewRecipe);
+router.post(
+  '/create',
+  userIsAuth,
+  /*isValid,*/
+  catchExceptions(userRecipeController.createRecipe)
+);
 
-router.put('/edit/:recipeId', userIsAuth, /*isValid,*/ userRecipeController.updateRecipe);
+router.put(
+  '/edit/:recipeId',
+  userIsAuth,
+  /*isValid,*/
+  catchExceptions(userRecipeController.updateRecipe)
+);
 
-router.delete('/delete/:recipeId', userIsAuth, userRecipeController.deleteRecipe);
+router.delete(
+  '/delete/:recipeId',
+  userIsAuth,
+  catchExceptions(userRecipeController.deleteRecipe)
+);
 
 module.exports = router;

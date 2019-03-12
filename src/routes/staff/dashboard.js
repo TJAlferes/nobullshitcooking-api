@@ -1,15 +1,19 @@
-const express = require('express');
+const { Router } = require('express');
 
-const staffDashboardController = require('../../controllers/staff/dashboard');
 const staffIsAuth = require('../../lib/utils/staffIsAuth');
+const catchExceptions = require('../../lib/utils/catchExceptions');
+const staffDashboardController = require('../../controllers/staff/dashboard');
 
-const router = express.Router();
+const router = Router();
 
 // /v1/... ?
-// catchExceptions()?
 
 // for /staff/dashboard/...
 
-router.get('/dashboard', staffIsAuth, staffDashboardController.viewDashboard);
+router.get(
+  '/dashboard',
+  staffIsAuth,
+  catchExceptions(staffDashboardController.viewDashboard)
+);
 
 module.exports = router;

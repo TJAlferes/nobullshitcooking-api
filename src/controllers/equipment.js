@@ -1,5 +1,6 @@
 const pool = require('../data-access/dbPoolConnection');  // move?
 const Equipment = require('../data-access/Equipment');
+const validator = require('../lib/validations/equipment');
 
 // object versus class?
 const equipmentController = {
@@ -63,6 +64,7 @@ const equipmentController = {
   createEquipment: async function(req, res) {
     try {
       const equipmentInfo = req.body.equipmentInfo;  // sanitize and validate
+      validator.validate(equipmentInfo);  // implement control flow here
       const equipment = new Equipment(pool);
       const [ row ] = await equipment.createEquipment(equipmentInfo);
       res.send(row);
@@ -73,6 +75,7 @@ const equipmentController = {
   updateEquipment: async function(req, res) {
     try {
       const equipmentInfo = req.body.equipmentInfo;  // sanitize and validate
+      validator.validate(equipmentInfo);  // implement control flow here
       const equipment = new Equipment(pool);
       const [ row ] = await equipment.createEquipment(equipmentInfo);
       res.send(row);

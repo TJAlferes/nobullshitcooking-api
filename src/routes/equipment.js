@@ -1,5 +1,6 @@
 const { Router } = require('express');
 
+const catchExceptions = require('../lib/utils/catchExceptions');
 const equipmentController = require('../controllers/equipment');
 
 const router = Router();

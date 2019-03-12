@@ -1,5 +1,6 @@
 const pool = require('../data-access/dbPoolConnection');  // move?
 const Ingredient = require('../data-access/Ingredient');
+const validator = require('../lib/validations/ingredient');
 
 // object versus class?
 const ingredientController = {
@@ -63,6 +64,7 @@ const ingredientController = {
   createIngredient: async function(req, res) {
     try {
       const ingredientInfo = req.body.ingredientInfo;  // sanitize and validate
+      validator.validate(ingredientInfo);  // implement control flow here
       const ingredient = new Ingredient(pool);
       const [ row ] = await ingredient.createIngredient(ingredientInfo);
       res.send(row);
@@ -73,6 +75,7 @@ const ingredientController = {
   updateIngredient: async function(req, res) {
     try {
       const ingredientInfo = req.body.ingredientInfo;  // sanitize and validate
+      validator.validate(ingredientInfo);  // implement control flow here
       const ingredient = new Ingredient(pool);
       const [ row ] = await ingredient.createIngredient(ingredientInfo);
       res.send(row);

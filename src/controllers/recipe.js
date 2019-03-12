@@ -1,5 +1,6 @@
 const pool = require('../data-access/dbPoolConnection');  // move?
 const Recipe = require('../data-access/Recipe');
+const validator = require('../lib/validations/recipe');
 
 // object versus class?
 const recipeController = {
@@ -63,6 +64,7 @@ const recipeController = {
   createRecipe: async function(req, res) {
     try {
       const recipeInfo = req.body.recipeInfo;  // sanitize and validate
+      validator.validate(recipeInfo);  // implement control flow here
       const recipe = new Recipe(pool);
       const [ row ] = await recipe.createRecipe(recipeInfo);
       res.send(row);
@@ -73,6 +75,7 @@ const recipeController = {
   updateRecipe: async function(req, res) {
     try {
       const recipeInfo = req.body.recipeInfo;  // sanitize and validate
+      validator.validate(recipeInfo);  // implement control flow here
       const recipe = new Recipe(pool);
       const [ row ] = await recipe.updateRecipe(recipeInfo);
       res.send(row);
