@@ -1,9 +1,9 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const session = require('express-session');
+//const express = require('express');
+//const bodyParser = require('body-parser');
+//const session = require('express-session');
 const bcrypt = require('bcrypt');  // or bcryptjs?
 
-//const Staff = require('../../models/staff'); ?
+const Staff = require('../../data-access/staff/Staff');
 
 const SALT_ROUNDS = 10;
 
