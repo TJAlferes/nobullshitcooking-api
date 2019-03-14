@@ -1,13 +1,10 @@
 //require('babel-polyfill');  // pollutes globals?
 require('dotenv').config();
 const express = require('express');
-const mysql = require('mysql2/promise');
 const session = require("express-session");
 
-// Not using yet, simply storing session in filesystem for now
 //const redis = require('redis');
-//const RedisStore = require("connect-redis")(session);
-
+//const RedisStore = require("connect-redis")(session);  // Not using yet, simply storing session in filesystem for now
 //const expressRateLimit = require('express-rate-limit);
 const compression = require('compression');
 const cors = require('cors');
@@ -16,6 +13,7 @@ const csurf = require('csurf');
 //const hpp = require('hpp');
 //const morgan = require('morgan');
 const bodyParser = require('body-parser');
+
 const {
   equipmentRoutes,
   equipmentTypeRoutes,
@@ -31,31 +29,6 @@ const app = express();
 
 //const RedisClient = redis.createClient({host: 'redis-dev'});
 //const RedisClient = redis.createClient(process.env.REDIS_URI);
-
-// why is this here?
-// also, move into a default export?
-const pool = process.env.NODE_ENV === 'production'
-? mysql.createPool({
-  host: process.env.RDS_HOSTNAME,
-  user: process.env.RDS_USERNAME,
-  password: process.env.RDS_PASSWORD,
-  database: process.env.RDS_DB_NAME,
-  waitForConnections: process.env.DB_WAIT_FOR_CONNECTIONS,
-  connectionLimit: process.env.DB_CONNECTION_LIMIT,
-  queueLimit: process.env.DB_QUEUE_LIMIT
-})
-: mysql.createPool({
-  //host: 'mysql-dev'
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
-  waitForConnections: process.env.DB_WAIT_FOR_CONNECTIONS,
-  connectionLimit: process.env.DB_CONNECTION_LIMIT,
-  queueLimit: process.env.DB_QUEUE_LIMIT
-});
-
-app.disable('x-powered-by'); // doesn't csurf do this for you?
 
 /*app.use(
   session({

@@ -26,6 +26,7 @@
     "elasticsearch": "^15.4.1",
     "express": "^4.16.4",
     "express-session": "^1.15.6",
+    "googleapis": "^38.0.0",
     "helmet": "^3.16.0",
     "hpp": "^0.2.2",
     "http-aws-es": "^6.0.0",
