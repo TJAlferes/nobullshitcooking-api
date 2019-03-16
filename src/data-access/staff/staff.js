@@ -3,6 +3,7 @@ class Staff {
     this.pool = pool;
     this.viewAllStaff = this.viewAllStaff.bind(this);
     this.viewStaffById = this.viewStaffById.bind(this);
+    this.getStaffByName = this.getStaffByName.bind(this);
     this.createStaff = this.createStaff.bind(this);
     this.updateStaff = this.updateStaff.bind(this);
     this.deleteStaff = this.deleteStaff.bind(this);
@@ -25,6 +26,15 @@ class Staff {
       WHERE staff_id = ?
     `;
     return pool.execute(sql, [staffId]);
+  }
+
+  getStaffByName(staffname) {
+    const sql = `
+      SELECT staff_id, staffname, password
+      FROM nobsc_staff
+      WHERE staffname = ?
+    `;
+    return pool.execute(sql, [staffname]);
   }
 
   createStaff(staffInfo) {

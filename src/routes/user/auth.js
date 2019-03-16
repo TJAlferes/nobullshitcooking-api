@@ -11,19 +11,19 @@ const router = Router();
 // for /user/auth/...
 
 router.get(
-  '/logout',
+  '/auth/logout',
   userIsAuth,
   catchExceptions(userAuthController.logout)
 );
 
 router.post(
-  '/login',
+  '/auth/login',
   /*validation, */
   catchExceptions(userAuthController.login)
 );
 
 router.post(
-  '/register',
+  '/auth/register',
   /*validation, */
   catchExceptions(userAuthController.register)
 );

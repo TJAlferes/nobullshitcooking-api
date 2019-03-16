@@ -11,20 +11,20 @@ const router = Router();
 // for /staff/auth/...
 
 router.get(
-  '/logout',
+  '/auth/logout',
   staffIsAuth,
   catchExceptions(staffAuthController.logout)
 );
 
 router.post(
-  '/login',
-  /*validation, */
+  '/auth/login',
+  !staffIsAuth,
   catchExceptions(staffAuthController.login)
 );
 
 router.post(
-  '/register',
-  /*validation, */
+  '/auth/register',
+  !staffIsAuth,
   catchExceptions(staffAuthController.register)
 );
 

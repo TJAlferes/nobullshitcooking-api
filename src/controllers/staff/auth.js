@@ -1,37 +1,41 @@
-//const express = require('express');
-//const bodyParser = require('body-parser');
-//const session = require('express-session');
 const bcrypt = require('bcrypt');  // or bcryptjs?
 
+const pool = require('../data-access/dbPoolConnection');
 const Staff = require('../../data-access/staff/Staff');
+const validator = require('../lib/validations/staff');
 
 const SALT_ROUNDS = 10;
 
-exports.logout = async (req, res) => {
-  await req.session.destroy();
-  res.end();  // ??? redirect?
-};
-
-exports.login = async (req, res) => {
-  const { staffname, password } = req.body;
-  // TO DO: VALIDATE THOSE TWO ^
-  const staff = await Staff.findOne({staffname});
-  if (staff) {
-    const isCorrectPassword = await bcrypt.compare(password, staff.password);
-    if (isCorrectPassword) {
-      req.session.staffId = staff.id;
-      return res.redirect('/staff/dashboard');
+const staffAuthController = {
+  register: async function(req, res) {
+    const staffInfo = req.body.staffInfo;
+    validator.validate(staffInfo);  // implement control flow here
+    // TO DO: VALIDATE THOSE TWO ^
+    const staff = new Staff(pool);
+    const staffExists = await staff.getStaffByName({staffname});
+    if (staffExists) //res.something(staffname already taken);
+    const encryptedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+    await staff.createStaff({staffname, password: encryptedPassword});
+    res.redirect('/staff/login');
+  },
+  login: async function(req, res) {
+    const staffInfo = req.body.staffInfo;
+    validator.validate(staffInfo);  // implement control flow here
+    const staff = new Staff(pool);
+    const staffExists = await staff.getStaffByName({staffname});
+    if (staffExists) {
+      const isCorrectPassword = await bcrypt.compare(password, staff.password);
+      if (isCorrectPassword) {
+        req.session.staffId = staff.staff_id;
+        return res.redirect('/staff/dashboard');
+      }
     }
+    res.redirect('/401');
+  },
+  logout: async function(req, res) {
+    await req.session.destroy();
+    res.end();  // ??? redirect?
   }
-  res.redirect('/401');
 };
 
-exports.register = async (req, res) => {
-  const { staffname, password } = req.body;
-  // TO DO: VALIDATE THOSE TWO ^
-  // TO DO: CHECK IF STAFFNAME ALREADY EXISTS IN MYSQL DB
-  const encryptedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-  const staff = new Staff({staffname, password: encryptedPassword});
-  await staff.save();
-  res.redirect('/staff/login');
-};
+module.exports = staffAuthController;
