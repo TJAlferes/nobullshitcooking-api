@@ -11,10 +11,7 @@ const REQUIRED_PROPERTIES = [
   'email',
   'password',
   'staffname',
-  'avatar',
-  'plan',
-  'savedRecipes',
-  'createdRecipes'
+  'avatar'
 ];
 const ALLOWED_PROPERTIES = [];
 const VALID_PROPERTIES = REQUIRED_PROPERTIES.concat(ALLOWED_PROPERTIES);

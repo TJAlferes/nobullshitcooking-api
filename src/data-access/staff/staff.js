@@ -7,6 +7,8 @@ class Staff {
     this.createStaff = this.createStaff.bind(this);
     this.updateStaff = this.updateStaff.bind(this);
     this.deleteStaff = this.deleteStaff.bind(this);
+    this.viewPlan = this.viewPlan.bind(this);
+    this.updatePlan = this.updatePlan.bind(this);
   }
 
   viewAllStaff(starting, display) {
@@ -38,25 +40,25 @@ class Staff {
   }
 
   createStaff(staffInfo) {
-    const { id, name, password, avatar } = staffInfo;
+    const { email, password, staffname, avatar, plan } = staffInfo;
     const sql = `
       INSERT INTO nobsc_staff
-      (staff_id, staffname, password, avatar)
+      (email, password, staffname, avatar, plan)
       VALUES
-      (?, ?, ?, ?)
-    `;
-    return pool.execute(sql, [id, name, password, avatar]);
+      (?, ?, ?, ?, ?)
+    `;  // plan must be valid JSON
+    return pool.execute(sql, [email, password, staffname, avatar, plan]);
   }
 
   updateStaff(staffInfo) {
-    const { id, name, password, avatar } = staffInfo;
+    const { staffId, email, password, staffname, avatar } = staffInfo;
     const sql = `
       UPDATE nobsc_staff
-      SET staffname = ?, password = ?, avatar = ?
+      SET email = ?, password = ?, staffname = ?, avatar = ?
       WHERE staff_id = ?
       LIMIT 1
     `;
-    return pool.execute(sql, [name, password, avatar, id]);
+    return pool.execute(sql, [email, password, staffname, avatar, staffId]);
   }
 
   deleteStaff(staffId) {
@@ -67,6 +69,26 @@ class Staff {
       LIMIT 1
     `;
     return pool.execute(sql, [staffId]);
+  }
+
+  viewPlan(staffId) {
+    const sql = `
+      SELECT plan
+      FROM nobsc_staff
+      WHERE staff_id = ?
+    `;  // JSON_EXTRACT() JSON_UNQUOTE() ?
+    return pool.execute(sql, [staffId]);
+  }
+
+  updatePlan(staffInfo) {
+    const { staffId, plan } = staffInfo;
+    const sql = `
+      UPDATE nobsc_staff
+      SET plan = ?
+      WHERE staff_id = ?
+      LIMIT 1
+    `;  // must be valid JSON, two options, either update the entire JSON or update only what needs to be updated
+    return pool.execute(sql, [plan, staffId]);
   }
 }
 

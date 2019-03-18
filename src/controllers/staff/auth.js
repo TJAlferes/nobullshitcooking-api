@@ -10,6 +10,7 @@ const staffAuthController = {
   register: async function(req, res) {
     const staffInfo = req.body.staffInfo;
     validator.validate(staffInfo);  // implement control flow here
+    const { staffname, password } = staffInfo;
     // TO DO: VALIDATE THOSE TWO ^
     const staff = new Staff(pool);
     const staffExists = await staff.getStaffByName({staffname});
@@ -21,6 +22,7 @@ const staffAuthController = {
   login: async function(req, res) {
     const staffInfo = req.body.staffInfo;
     validator.validate(staffInfo);  // implement control flow here
+    const { staffname, password } = staffInfo;
     const staff = new Staff(pool);
     const staffExists = await staff.getStaffByName({staffname});
     if (staffExists) {

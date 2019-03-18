@@ -6,6 +6,8 @@ class User {
     this.createUser = this.createUser.bind(this);
     this.updateUser = this.updateUser.bind(this);
     this.deleteUser = this.deleteUser.bind(this);
+    this.viewPlan = this.viewPlan.bind(this);
+    this.updatePlan = this.updatePlan.bind(this);
   }
 
   viewAllUsers(starting, display) {
@@ -28,25 +30,25 @@ class User {
   }
 
   createUser(userInfo) {
-    const { id, name, password, avatar } = userInfo;
+    const { email, password, username, avatar, plan } = userInfo;
     const sql = `
       INSERT INTO nobsc_users
-      (user_id, username, password, avatar)
+      (email, password, username, avatar, plan)
       VALUES
-      (?, ?, ?, ?)
-    `;
-    return pool.execute(sql, [id, name, password, avatar]);
+      (?, ?, ?, ?, ?)
+    `;  // plan must be valid JSON
+    return pool.execute(sql, [email, password, username, avatar, plan]);
   }
 
   updateUser(userInfo) {
-    const { id, name, password, avatar } = userInfo;
+    const { userId, email, password, username, avatar } = userInfo;
     const sql = `
       UPDATE nobsc_users
-      SET username = ?, password = ?, avatar = ?
+      SET email = ?, password = ?, username = ?, avatar = ?
       WHERE user_id = ?
       LIMIT 1
     `;
-    return pool.execute(sql, [name, password, avatar, id]);
+    return pool.execute(sql, [email, password, username, avatar, userId]);
   }
 
   deleteUser(userId) {
@@ -57,6 +59,26 @@ class User {
       LIMIT 1
     `;
     return pool.execute(sql, [userId]);
+  }
+
+  viewPlan(userId) {
+    const sql = `
+      SELECT plan
+      FROM nobsc_users
+      WHERE user_id = ?
+    `;  // JSON_EXTRACT() JSON_UNQUOTE() ?
+    return pool.execute(sql, [userId]);
+  }
+
+  updatePlan(userInfo) {
+    const { userId, plan } = userInfo;
+    const sql = `
+      UPDATE nobsc_users
+      SET plan = ?
+      WHERE user_id = ?
+      LIMIT 1
+    `;  // must be valid JSON, two options, either update the entire JSON or update only what needs to be updated
+    return pool.execute(sql, [plan, userId]);
   }
 }
 
