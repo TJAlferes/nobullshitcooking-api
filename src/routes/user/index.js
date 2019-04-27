@@ -1,11 +1,15 @@
+const { Router } = require('express');
+
 const userAuthRouter = require('./auth');
 const userDashboardRouter = require('./dashboard');
 const userPlanRouter = require('./plan');
 const userRecipeRouter = require('./recipe');
 
-module.exports = {
-  userAuthRouter,
-  userDashboardRouter,
-  userPlanRouter,
-  userRecipeRouter
-};
+const router = Router();
+
+router.use('/auth', userAuthRouter);
+router.use('/dashboard', userDashboardRouter);
+router.use('/plan', userPlanRouter);
+router.use('/recipe', userRecipeRouter);
+
+module.exports = router;

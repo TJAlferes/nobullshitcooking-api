@@ -12,11 +12,12 @@ const router = Router();
 
 router.get(
   '/',
-  catchExceptions(userRecipeController.viewRecipes)
+  catchExceptions(userRecipeController.viewRecipe)
 );
+
 router.get(
   '/:recipeId',
-  catchExceptions(userRecipeController.viewRecipe)
+  catchExceptions(userRecipeController.viewRecipeDetail)
 );
 
 router.post(

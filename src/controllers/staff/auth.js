@@ -1,8 +1,8 @@
 const bcrypt = require('bcrypt');  // or bcryptjs?
 
-const pool = require('../data-access/dbPoolConnection');
+const pool = require('../../data-access/dbPoolConnection');
 const Staff = require('../../data-access/staff/Staff');
-const validator = require('../lib/validations/staff');
+const validator = require('../../lib/validations/staff');
 
 const SALT_ROUNDS = 10;
 
@@ -11,10 +11,9 @@ const staffAuthController = {
     const staffInfo = req.body.staffInfo;
     validator.validate(staffInfo);  // implement control flow here
     const { staffname, password } = staffInfo;
-    // TO DO: VALIDATE THOSE TWO ^
     const staff = new Staff(pool);
     const staffExists = await staff.getStaffByName({staffname});
-    if (staffExists) //res.something(staffname already taken);
+    if (staffExists) return res.send('staffname already taken');
     const encryptedPassword = await bcrypt.hash(password, SALT_ROUNDS);
     await staff.createStaff({staffname, password: encryptedPassword});
     res.redirect('/staff/login');

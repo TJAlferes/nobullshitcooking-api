@@ -1,4 +1,4 @@
-const pool = require('../data-access/dbPoolConnection');
+const pool = require('../../data-access/dbPoolConnection');
 const User = require('../../data-access/user/User');
 
 const userPlanController = {

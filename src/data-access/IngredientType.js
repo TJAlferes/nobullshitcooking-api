@@ -10,7 +10,7 @@ class IngredientType {
       SELECT ingredient_type_id, ingredient_type_name
       FROM nobsc_ingredient_types
     `;
-    return pool.execute(sql);
+    return this.pool.execute(sql);
   }
 
   viewIngredientTypeById(typeId) {
@@ -19,7 +19,7 @@ class IngredientType {
       FROM nobsc_ingredient_types
       WHERE ingredient_type_id = ?
     `;
-    return pool.execute(sql, [typeId]);
+    return this.pool.execute(sql, [typeId]);
   }
 }
 

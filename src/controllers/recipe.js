@@ -61,6 +61,12 @@ const recipeController = {
       console.log(err);  // res the error, safely
     }
   },
+  /*
+
+
+  // these three should only be in controllers/staff/ or controllers/user/, not in controllers/
+
+  
   createRecipe: async function(req, res) {
     try {
       const recipeInfo = req.body.recipeInfo;  // sanitize and validate
@@ -93,6 +99,9 @@ const recipeController = {
       console.log(err);  // res the error, safely
     }
   }
+
+
+  */
 };
 
 module.exports = recipeController;

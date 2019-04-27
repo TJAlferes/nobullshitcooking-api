@@ -51,12 +51,18 @@ const app = express();
 
 //app.use(express.json()); ?
 
-// third-party middleware
+
+
+/*
+
+third-party middleware
+
+*/
 //app.use(expressRateLimit());
-app.use(compression());
+//app.use(session({secret: 'very secret', resave: false, saveUninitialized: true}));  // move up?
 app.use(cors());
+app.use(compression());
 app.use(helmet());
-app.use(csurf());  // move up?
 //app.use(hpp());
 //app.use(morgan());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -65,9 +71,16 @@ app.use(bodyParser.json());  // or new built-in middleware: app.use(express.json
 //const urlencodedParser = bodyParser.urlencoded({extended: false});
 //const jsonParser = bodyParser.json();
 // and manually apply them as second argument to route methods)
-app.use(session({secret: 'very secret', resave: false, saveUninitialized: true}));  // move up?
+//app.use(session({secret: 'very secret', resave: false, saveUninitialized: true}));  // move up?
+//app.use(csurf());  // must be called after cookies/sessions
 
-// our routes
+
+
+/*
+
+our routes
+
+*/
 app.get('/', (req, res) => {
   try {
     res.send("No Bullshit Cooking Backend API");
@@ -98,7 +111,7 @@ if (process.env.NODE_ENV === 'production') {
 
 // handle errors
 app.use((req, res, next) => {
-  const error = new Error('Not found');
+  const error = new Error('Not found!!!');
   error.status = 404;
   next(error);
 });

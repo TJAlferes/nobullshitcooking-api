@@ -1,4 +1,4 @@
-const pool = require('../data-access/dbPoolConnection');
+const pool = require('../../data-access/dbPoolConnection');
 const Staff = require('../../data-access/staff/Staff');
 
 const staffPlanController = {

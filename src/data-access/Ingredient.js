@@ -18,7 +18,7 @@ class Ingredient {
       SELECT COUNT(*) AS total
       FROM nobsc_ingredients
     `;
-    return pool.execute(sql);
+    return this.pool.execute(sql);
   }
 
   countIngredientsOfType(typeId) {
@@ -27,7 +27,7 @@ class Ingredient {
       FROM nobsc_ingredients
       WHERE ingredient_type_id = ?
     `;
-    return pool.execute(sql, [typeId]);
+    return this.pool.execute(sql, [typeId]);
   }
 
   countIngredientsOfTypes(placeholders, typeIds) {  // typeIds must be an array
@@ -36,7 +36,7 @@ class Ingredient {
       FROM nobsc_ingredients
       WHERE ingredient_type_id IN (${placeholders})
     `;
-    return pool.execute(sql, typeIds);
+    return this.pool.execute(sql, typeIds);
   }
 
   viewAllIngredients(starting, display) {
@@ -44,9 +44,9 @@ class Ingredient {
       SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image
       FROM nobsc_ingredients
       ORDER BY ingredient_name ASC
-      LIMIT ${starting}, ${display}
+      LIMIT ?, ?
     `;
-    return pool.execute(sql);
+    return this.pool.execute(sql, [starting, display]);
   }
 
   viewIngredientsOfType(starting, display, typeId) {
@@ -57,7 +57,7 @@ class Ingredient {
       ORDER BY ingredient_name ASC
       LIMIT ${starting}, ${display}
     `;
-    return pool.execute(sql, [typeId]);
+    return this.pool.execute(sql, [typeId]);
   }
 
   viewIngredientsOfTypes(starting, display, placeholders, typeIds) {  // typeIds must be an array
@@ -68,7 +68,7 @@ class Ingredient {
       ORDER BY ingredient_name ASC
       LIMIT ${starting}, ${display}
     `;
-    return pool.execute(sql, typeIds);
+    return this.pool.execute(sql, typeIds);
   }
 
   viewIngredientById(ingredientId) {
@@ -83,7 +83,7 @@ class Ingredient {
       LEFT JOIN nobsc_ingredients i ON i.ingredient_type_id = t.ingredient_type_id
       WHERE ingredient_id = ?
     `;
-    return pool.execute(sql, [ingredientId]);
+    return this.pool.execute(sql, [ingredientId]);
   }
 
   createIngredient(ingredientInfo) {
@@ -94,7 +94,7 @@ class Ingredient {
       VALUES
       (?, ?, ?, ?)
     `;
-    return pool.execute(sql, [id, name, typeId, image]);
+    return this.pool.execute(sql, [id, name, typeId, image]);
   }
 
   updateIngredient(ingredientInfo) {
@@ -105,7 +105,7 @@ class Ingredient {
       WHERE ingredient_id = ?
       LIMIT 1
     `;
-    return pool.execute(sql, [name, typeId, image, id]);
+    return this.pool.execute(sql, [name, typeId, image, id]);
   }
 
   deleteIngredient(ingredientId) {
@@ -115,7 +115,7 @@ class Ingredient {
       WHERE ingredient_id = ?
       LIMIT 1
     `;
-    return pool.execute(sql, [ingredientId]);
+    return this.pool.execute(sql, [ingredientId]);
   }
 }
 

@@ -1,36 +1,42 @@
-//const bodyParser = require('body-parser');
-//const session = require('express-session');
 const bcrypt = require('bcrypt');  // or bcryptjs?
 
+const pool = require('../../data-access/dbPoolConnection');
 const User = require('../../data-access/user/User');
+const validator = require('../../lib/validations/user');
 
 const SALT_ROUNDS = 10;
 
-exports.logout = async (req, res) => {
-  await req.session.destroy();
-  res.end();  // ??? redirect?
-};
-
-exports.login = async (req, res) => {
-  const { username, password } = req.body;
-  // TO DO: VALIDATE THOSE TWO ^
-  const user = await User.findOne({username});
-  if (user) {
-    const isCorrectPassword = await bcrypt.compare(password, user.password);
-    if (isCorrectPassword) {
-      req.session.userId = user.id;
-      return res.redirect('/user/dashboard');
+const userAuthController = {
+  register: async function(req, res) {
+    const userInfo = req.body.userInfo;
+    validator.validate(userInfo);  // implement control flow here
+    const { username, password } = userInfo;
+    const user = new User(pool);
+    const userExists = await user.getUserByName({username});
+    if (userExists) return res.send('username already taken');
+    const encryptedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+    await user.createUser({username, password: encryptedPassword});
+    res.redirect('/user/login');
+  },
+  login: async function(req, res) {
+    const userInfo = req.body.userInfo;
+    validator.validate(userInfo);  // implement control flow here
+    const { username, password } = userInfo;
+    const user = new User(pool);
+    const userExists = await user.getUserByName({username});
+    if (userExists) {
+      const isCorrectPassword = await bcrypt.compare(password, user.password);
+      if (isCorrectPassword) {
+        req.session.userId = user.user_id;
+        return res.redirect('/user/dashboard');
+      }
     }
+    res.redirect('/401');
+  },
+  logout: async function(req, res) {
+    await req.session.destroy();
+    res.end();  // ??? redirect?
   }
-  res.redirect('/401');
 };
 
-exports.register = async (req, res) => {
-  const { username, password } = req.body;
-  // TO DO: VALIDATE THOSE TWO ^
-  // TO DO: CHECK IF USERNAME ALREADY EXISTS IN MYSQL DB
-  const encryptedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-  const user = new User({username, password: encryptedPassword});
-  await user.save();
-  res.redirect('/user/login');
-};
+module.exports = userAuthController;

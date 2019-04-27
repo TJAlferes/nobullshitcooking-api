@@ -14,7 +14,7 @@ const ingredientTypeController = {
   },
   viewIngredientTypeById: async function(req, res) {
     try {
-      const typeId = req.params.id;  // sanitize and validate
+      const typeId = req.params.ingredientTypeId;  // sanitize and validate
       const ingredientType = new IngredientType(pool);
       const [ rows ] = await ingredientType.viewIngredientTypeById(typeId);
       res.send(rows);

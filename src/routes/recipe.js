@@ -21,22 +21,28 @@ router.get(
   catchExceptions(recipeController.viewRecipeDetail)
 );
 
+/*
+
+
 router.post(
   '/create',
-  /* some validation, */
+  //some validation,
   catchExceptions(recipeController.createRecipe)
 );
 
 router.put(
   '/update',
-  /* some validation, */
+  //some validation
   catchExceptions(recipeController.updateRecipe)
 );
 
 router.delete(
   '/delete',
-  /* some validation, */
+  // some validation
   catchExceptions(recipeController.deleteRecipe)
 );
+
+
+*/
 
 module.exports = router;
