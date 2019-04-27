@@ -34,7 +34,8 @@
     "mysql2": "^1.6.5",
     "nodemailer": "^5.1.1",
     "session-file-store": "^1.2.0",
-    "stripe": "^6.31.1"
+    "stripe": "^6.31.1",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.4.4",

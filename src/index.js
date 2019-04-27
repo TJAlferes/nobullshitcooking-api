@@ -91,7 +91,7 @@ app.use(bodyParser.json());  // or new built-in middleware: app.use(express.json
 //app.use(csurf());  // must be called after cookies/sessions
 app.use(helmet());
 //app.use(cors());
-//app.use(csurf());  // must be called after cookies/sessions  // TO DO ASAP: find out why this is causing 403s on POST but not on GET
+app.use(csurf());  // must be called after cookies/sessions  // TO DO ASAP: find out why this is causing 403s on POST but not on GET, also, what are the 204 no contents all about?
 app.use(compression());
 /*
 
