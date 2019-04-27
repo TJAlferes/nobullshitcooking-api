@@ -1,3 +1,4 @@
+'use strict';
 //require('babel-polyfill');  // pollutes globals?
 require('dotenv').config();
 const express = require('express');
@@ -52,6 +53,19 @@ const app = express();
 //app.use(express.json()); ?
 
 
+let sessionOptions = {
+  secret: 'very secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {}
+};
+
+if (app.get('env') === 'production') {
+  app.set('trust proxy', 1);  // trust first proxy
+  sessionOptions.cookie.secure = true;  // serve secure cookies
+}
+
+
 
 /*
 
@@ -59,10 +73,12 @@ third-party middleware
 
 */
 //app.use(expressRateLimit());
-//app.use(session({secret: 'very secret', resave: false, saveUninitialized: true}));  // move up?
-app.use(cors());
-app.use(compression());
-app.use(helmet());
+app.use(session(sessionOptions));
+app.use(cors());  // before session?
+//app.options('*', cors())
+//app.use(cors());
+//app.use(compression());
+//app.use(helmet());
 //app.use(hpp());
 //app.use(morgan());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -71,11 +87,12 @@ app.use(bodyParser.json());  // or new built-in middleware: app.use(express.json
 //const urlencodedParser = bodyParser.urlencoded({extended: false});
 //const jsonParser = bodyParser.json();
 // and manually apply them as second argument to route methods)
-//app.use(session({secret: 'very secret', resave: false, saveUninitialized: true}));  // move up?
+//app.use(session({secret: 'very secret', resave: false, saveUninitialized: false}));  // move up?
 //app.use(csurf());  // must be called after cookies/sessions
-
-
-
+app.use(helmet());
+//app.use(cors());
+//app.use(csurf());  // must be called after cookies/sessions  // TO DO ASAP: find out why this is causing 403s on POST but not on GET
+app.use(compression());
 /*
 
 our routes
