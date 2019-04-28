@@ -32,6 +32,7 @@ const staffAuthController = {
         req.session.staffId = staff.staff_id;
         let CSRFToken = uuidv4();
         req.ression.csrfToken = CSRFToken;
+        console.log('alright...');
         return res.send({CSRFToken});
         //return res.redirect('/staff/dashboard');
       }

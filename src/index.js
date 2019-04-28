@@ -93,6 +93,9 @@ app.use(helmet());
 //app.use(cors());
 app.use(csurf());  // must be called after cookies/sessions  // TO DO ASAP: find out why this is causing 403s on POST but not on GET, also, what are the 204 no contents all about?
 app.use(compression());
+
+
+
 /*
 
 our routes
@@ -101,6 +104,13 @@ our routes
 app.get('/', (req, res) => {
   try {
     res.send("No Bullshit Cooking Backend API");
+  } catch(err) {
+    console.log(err);
+  }
+});
+app.get('/auth/get-csrf-token', (req, res) => {
+  try {
+    res.json({csrfToken: '123456'});
   } catch(err) {
     console.log(err);
   }
@@ -127,11 +137,11 @@ if (process.env.NODE_ENV === 'production') {
 });*/
 
 // handle errors
-app.use((req, res, next) => {
+/*app.use((req, res, next) => {
   const error = new Error('Not found!!!');
   error.status = 404;
   next(error);
-});
+});*/
 
 app.use((error, req, res, next) => {
   res.status(error.status || 500);

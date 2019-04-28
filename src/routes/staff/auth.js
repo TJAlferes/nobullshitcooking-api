@@ -10,6 +10,7 @@ const router = Router();
 
 // for /staff/auth/...
 
+// change from get to delete?
 router.get(
   '/logout',
   staffIsAuth,
