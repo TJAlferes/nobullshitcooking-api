@@ -3,7 +3,7 @@
 require('dotenv').config();
 const express = require('express');
 const session = require("express-session");
-
+const sessionFileStore = require('session-file-store');
 //const redis = require('redis');
 //const RedisStore = require("connect-redis")(session);  // Not using yet, simply storing session in filesystem for now
 //const expressRateLimit = require('express-rate-limit);
@@ -28,6 +28,7 @@ const {
 
 const app = express();
 
+
 //const RedisClient = redis.createClient({host: 'redis-dev'});
 //const RedisClient = redis.createClient(process.env.REDIS_URI);
 
@@ -50,20 +51,21 @@ const app = express();
   })
 );*/
 
-//app.use(express.json()); ?
-
+const FileStore = sessionFileStore(session);
 
 let sessionOptions = {
+  store: new FileStore,
+  name: 'connect.sid',
   secret: 'very secret',
   resave: false,
   saveUninitialized: false,
-  cookie: {}
+  //cookie: {}
 };
 
-if (app.get('env') === 'production') {
+/*if (app.get('env') === 'production') {
   app.set('trust proxy', 1);  // trust first proxy
   sessionOptions.cookie.secure = true;  // serve secure cookies
-}
+}*/
 
 
 
@@ -91,7 +93,7 @@ app.use(bodyParser.json());  // or new built-in middleware: app.use(express.json
 //app.use(csurf());  // must be called after cookies/sessions
 app.use(helmet());
 //app.use(cors());
-app.use(csurf());  // must be called after cookies/sessions  // TO DO ASAP: find out why this is causing 403s on POST but not on GET, also, what are the 204 no contents all about?
+app.use(csurf());  // must be called after cookies/sessions
 app.use(compression());
 
 
@@ -109,8 +111,13 @@ app.get('/', (req, res) => {
   }
 });
 app.get('/auth/get-csrf-token', (req, res) => {
+  console.log('get-csrf-token reached');
   try {
-    res.json({csrfToken: '123456'});
+    let CSRFToken = req.csrfToken();
+    req.session.csrfToken = CSRFToken;
+    console.log(req.session);
+    console.log(req.session.csrfToken);
+    res.json({csrfToken: CSRFToken});
   } catch(err) {
     console.log(err);
   }

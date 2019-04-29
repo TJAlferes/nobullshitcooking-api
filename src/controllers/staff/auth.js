@@ -22,7 +22,8 @@ const staffAuthController = {
   },
   login: async function(req, res) {
     const staffInfo = req.body.staffInfo;
-    validator.validate(staffInfo);  // implement control flow here
+    console.log('staffInfo', staffInfo);
+    //validator.validate(staffInfo);  // implement control flow here
     const { staffname, password } = staffInfo;
     const staff = new Staff(pool);
     const staffExists = await staff.getStaffByName({staffname});
@@ -30,10 +31,12 @@ const staffAuthController = {
       const isCorrectPassword = await bcrypt.compare(password, staff.password);
       if (isCorrectPassword) {
         req.session.staffId = staff.staff_id;
-        let CSRFToken = uuidv4();
+        //let CSRFToken = uuidv4();
+        //let CSRFToken = req.csrfToken();
+        let CSRFToken = req.session.CSRFToken;
         req.ression.csrfToken = CSRFToken;
         console.log('alright...');
-        return res.send({CSRFToken});
+        return res.json({csrfToken: CSRFToken});
         //return res.redirect('/staff/dashboard');
       }
     }
