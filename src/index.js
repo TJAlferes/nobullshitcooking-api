@@ -93,7 +93,14 @@ app.use(bodyParser.json());  // or new built-in middleware: app.use(express.json
 //app.use(csurf());  // must be called after cookies/sessions
 app.use(helmet());
 //app.use(cors());
-app.use(csurf());  // must be called after cookies/sessions
+
+
+
+// https://github.com/pillarjs/understanding-csrf
+//app.use(csurf());  // must be called after cookies/sessions
+
+
+
 app.use(compression());
 
 
@@ -110,18 +117,42 @@ app.get('/', (req, res) => {
     console.log(err);
   }
 });
+
+
+
+//https://github.com/pillarjs/understanding-csrf
+// ask someone
 app.get('/auth/get-csrf-token', (req, res) => {
   console.log('get-csrf-token reached');
   try {
     let CSRFToken = req.csrfToken();
     req.session.csrfToken = CSRFToken;
+    console.log(req.headers);
     console.log(req.session);
-    console.log(req.session.csrfToken);
+    console.log('req.session.csrfToken 1: ' + req.session.csrfToken);
     res.json({csrfToken: CSRFToken});
   } catch(err) {
     console.log(err);
   }
 });
+app.get('/auth/simple-test', (req, res) => {
+  console.log('simple-test reached');
+  try {
+    //let CSRFToken = req.headers['x-csrf-token'];
+    //let csrfToken = req.get('X-CSRF-Token');
+    //console.log(req.headers);
+    //console.log(req.session);
+    console.log("req.headers['x-csrf-token']: " + req.headers['x-csrf-token']);
+    //console.log('req.session.csrfToken 2: ' + req.session.csrfToken);
+    console.log("req.get('X-CSRF-Token'): " + req.get('X-CSRF-Token'))
+    res.json({ast: 'a simple test'});
+  } catch(err) {
+    console.log(err);
+  }
+});
+
+
+
 app.use('/equipment', equipmentRoutes);
 app.use('/equipment-type', equipmentTypeRoutes);
 app.use('/ingredient', ingredientRoutes);

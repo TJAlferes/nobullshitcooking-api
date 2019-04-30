@@ -3,6 +3,7 @@ class Staff {
     this.pool = pool;
     this.viewAllStaff = this.viewAllStaff.bind(this);
     this.viewStaffById = this.viewStaffById.bind(this);
+    this.getStaffByEmail = this.getStaffByEmail.bind(this);
     this.getStaffByName = this.getStaffByName.bind(this);
     this.createStaff = this.createStaff.bind(this);
     this.updateStaff = this.updateStaff.bind(this);
@@ -30,9 +31,22 @@ class Staff {
     return pool.execute(sql, [staffId]);
   }
 
+  async getStaffByEmail(email) {
+    const sql = `
+      SELECT staff_id, email, pass, staffname
+      FROM nobsc_staff
+      WHERE email = ?
+    `;
+    const [ staffByEmail ] = await this.pool.execute(sql, [email]);
+    if (!staffByEmail) throw new Error("no staff by that email");
+    //console.log('method get Staff By Email called');
+    //console.log(staffByEmail);
+    return staffByEmail;
+  }
+
   getStaffByName(staffname) {
     const sql = `
-      SELECT staff_id, staffname, password
+      SELECT staff_id, email, pass, staffname
       FROM nobsc_staff
       WHERE staffname = ?
     `;

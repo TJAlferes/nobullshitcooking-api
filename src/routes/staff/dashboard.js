@@ -11,7 +11,7 @@ const router = Router();
 // for /staff/dashboard/...
 
 router.get(
-  '/dashboard',
+  '/',
   staffIsAuth,
   catchExceptions(staffDashboardController.viewDashboard)
 );
