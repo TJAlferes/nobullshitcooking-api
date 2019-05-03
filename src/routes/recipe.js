@@ -12,7 +12,7 @@ const router = Router();
 router.get(
   '/',
   /* some validation, */
-  catchExceptions(recipeController.viewRecipes)
+  catchExceptions(recipeController.viewRecipe)
 );
 
 router.get(
