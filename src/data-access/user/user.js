@@ -3,6 +3,8 @@ class User {
     this.pool = pool;
     this.viewAllUsers = this.viewAllUsers.bind(this);
     this.viewUserById = this.viewUserById.bind(this);
+    this.getUserByEmail = this.getUserByEmail.bind(this);  // get-- are for auth only, use view-- for public purposes
+    this.getUserByName = this.getUserByName.bind(this);  // get-- are for auth only, use view-- for public purposes
     this.createUser = this.createUser.bind(this);
     this.updateUser = this.updateUser.bind(this);
     this.deleteUser = this.deleteUser.bind(this);
@@ -10,67 +12,103 @@ class User {
     this.updatePlan = this.updatePlan.bind(this);
   }
 
-  viewAllUsers(starting, display) {
+  async viewAllUsers(starting, display) {
     const sql = `
       SELECT username, avatar
       FROM nobsc_users
       ORDER BY username ASC
-      LIMIT ${starting}, ${display}
+      LIMIT ?, ?
     `;  // important (security): use ?, ? in LIMIT instead?
-    return pool.execute(sql);
+    const [ allUsers ] = await this.pool.execute(sql, [starting, display]);
+    if (!allUsers) throw new Error("viewAllUsers failed");
+    return allUsers;
   }
 
-  viewUserById(userId) {  // profile and plan info too (separate table?) (public or private option)
+  async viewUserById(userId) {  // profile and plan info too (separate table?) (public or private option)
     const sql = `
       SELECT username, avatar
       FROM nobsc_users
       WHERE user_id = ?
     `;
-    return pool.execute(sql, [userId]);
+    const [ user ] = await this.pool.execute(sql, [userId]);
+    if (!user) throw new Error("viewUserById failed");
+    return user;
   }
 
-  createUser(userInfo) {
+  async getUserByEmail(email) {
+    const sql = `
+      SELECT user_id, email, pass, username
+      FROM nobsc_users
+      WHERE email = ?
+    `;
+    const [ userByEmail ] = await this.pool.execute(sql, [email]);
+    if (!userByEmail) throw new Error("getUserByEmail failed");
+    return userByEmail;
+  }
+
+  async getUserByName(username) {
+    const sql = `
+      SELECT user_id, email, pass, username
+      FROM nobsc_users
+      WHERE username = ?
+    `;
+    const [ userByName ] = await this.pool.execute(sql, [username]);
+    if (!userByName) throw new Error("getUserByName failed");
+    return userByName;
+  }
+
+  async createUser(userInfo) {
     const { email, password, username, avatar, plan } = userInfo;
+    console.log(email, password, username, avatar, plan);
     const sql = `
       INSERT INTO nobsc_users
-      (email, password, username, avatar, plan)
+      (email, pass, username, avatar, plan)
       VALUES
       (?, ?, ?, ?, ?)
     `;  // plan must be valid JSON
-    return pool.execute(sql, [email, password, username, avatar, plan]);
+    const [ createdUser ] = await this.pool.execute(sql, [email, password, username, avatar, plan]);
+    console.log(createdUser)
+    if (!createdUser) throw new Error("createUser failed");
+    return createdUser;
   }
 
-  updateUser(userInfo) {
+  async updateUser(userInfo) {
     const { userId, email, password, username, avatar } = userInfo;
     const sql = `
       UPDATE nobsc_users
-      SET email = ?, password = ?, username = ?, avatar = ?
+      SET email = ?, pass = ?, username = ?, avatar = ?
       WHERE user_id = ?
       LIMIT 1
     `;
-    return pool.execute(sql, [email, password, username, avatar, userId]);
+    const [ updatedUser ] = await this.pool.execute(sql, [email, password, username, avatar, userId]);
+    if (!updatedUser) throw new Error("updateUser failed");
+    return updatedUser;
   }
 
-  deleteUser(userId) {
+  async deleteUser(userId) {
     const sql = `
       DELETE
       FROM nobsc_users
       WHERE user_id = ?
       LIMIT 1
     `;
-    return pool.execute(sql, [userId]);
+    const [ deletedUser ] = await this.pool.execute(sql, [userId]);
+    if (!deletedUser) throw new Error("deleteUser failed");
+    return deletedUser;
   }
 
-  viewPlan(userId) {
+  async viewPlan(userId) {
     const sql = `
       SELECT plan
       FROM nobsc_users
       WHERE user_id = ?
     `;  // JSON_EXTRACT() JSON_UNQUOTE() ?
-    return pool.execute(sql, [userId]);
+    const [ plan ] = await this.pool.execute(sql, [userId]);
+    if (!plan) throw new Error("viewPlan failed");
+    return plan;
   }
 
-  updatePlan(userInfo) {
+  async updatePlan(userInfo) {
     const { userId, plan } = userInfo;
     const sql = `
       UPDATE nobsc_users
@@ -78,7 +116,9 @@ class User {
       WHERE user_id = ?
       LIMIT 1
     `;  // must be valid JSON, two options, either update the entire JSON or update only what needs to be updated
-    return pool.execute(sql, [plan, userId]);
+    const [ updatedPlan ] = await this.pool.execute(sql, [plan, userId]);
+    if (!updatedPlan) throw new Error("updatePlan failed");
+    return updatedPlan;
   }
 }
 

@@ -3,8 +3,8 @@ class Staff {
     this.pool = pool;
     this.viewAllStaff = this.viewAllStaff.bind(this);
     this.viewStaffById = this.viewStaffById.bind(this);
-    this.getStaffByEmail = this.getStaffByEmail.bind(this);
-    this.getStaffByName = this.getStaffByName.bind(this);
+    this.getStaffByEmail = this.getStaffByEmail.bind(this);  // get-- are for auth only, use view-- for public purposes
+    this.getStaffByName = this.getStaffByName.bind(this);  // get-- are for auth only, use view-- for public purposes
     this.createStaff = this.createStaff.bind(this);
     this.updateStaff = this.updateStaff.bind(this);
     this.deleteStaff = this.deleteStaff.bind(this);
@@ -12,23 +12,27 @@ class Staff {
     this.updatePlan = this.updatePlan.bind(this);
   }
 
-  viewAllStaff(starting, display) {
+  async viewAllStaff(starting, display) {
     const sql = `
       SELECT staffname, avatar
       FROM nobsc_staff
       ORDER BY staffname ASC
-      LIMIT ${starting}, ${display}
-    `;  // important (security): use ?, ? in LIMIT instead?
-    return pool.execute(sql);
+      LIMIT ?, ?
+    `;
+    const [ allStaff ] = await this.pool.execute(sql, [starting, display]);
+    if (!allStaff) throw new Error("viewAllStaff failed");
+    return allStaff;
   }
 
-  viewStaffById(staffId) {
+  async viewStaffById(staffId) {
     const sql = `
       SELECT staffname, avatar
       FROM nobsc_staff
       WHERE staff_id = ?
     `;
-    return pool.execute(sql, [staffId]);
+    const [ staff ] = await this.pool.execute(sql, [staffId]);
+    if (!staff) throw new Error("viewStaffById failed");
+    return staff;
   }
 
   async getStaffByEmail(email) {
@@ -38,63 +42,71 @@ class Staff {
       WHERE email = ?
     `;
     const [ staffByEmail ] = await this.pool.execute(sql, [email]);
-    if (!staffByEmail) throw new Error("no staff by that email");
-    //console.log('method get Staff By Email called');
-    //console.log(staffByEmail);
+    if (!staffByEmail) throw new Error("getStaffByEmail failed");
     return staffByEmail;
   }
 
-  getStaffByName(staffname) {
+  async getStaffByName(staffname) {
     const sql = `
       SELECT staff_id, email, pass, staffname
       FROM nobsc_staff
       WHERE staffname = ?
     `;
-    return pool.execute(sql, [staffname]);
+    const [ staffByName ] = await this.pool.execute(sql, [staffname]);
+    if (!staffByName) throw new Error("getStaffByName failed");
+    return staffByName;
   }
 
-  createStaff(staffInfo) {
+  async createStaff(staffInfo) {
     const { email, password, staffname, avatar, plan } = staffInfo;
     const sql = `
       INSERT INTO nobsc_staff
-      (email, password, staffname, avatar, plan)
+      (email, pass, staffname, avatar, plan)
       VALUES
       (?, ?, ?, ?, ?)
     `;  // plan must be valid JSON
-    return pool.execute(sql, [email, password, staffname, avatar, plan]);
+    const [ createdStaff ] = await this.pool.execute(sql, [email, password, staffname, avatar, plan]);
+    if (!createdStaff) throw new Error("createdStaff failed");
+    return createdStaff;
   }
 
-  updateStaff(staffInfo) {
+  async updateStaff(staffInfo) {
     const { staffId, email, password, staffname, avatar } = staffInfo;
     const sql = `
       UPDATE nobsc_staff
-      SET email = ?, password = ?, staffname = ?, avatar = ?
+      SET email = ?, pass = ?, staffname = ?, avatar = ?
       WHERE staff_id = ?
       LIMIT 1
     `;
-    return pool.execute(sql, [email, password, staffname, avatar, staffId]);
+    const [ updatedStaff ] = await this.pool.execute(sql, [email, password, staffname, avatar, staffId]);
+    if (!updatedStaff) throw new Error("updateStaff failed");
+    return updatedStaff;
   }
 
-  deleteStaff(staffId) {
+  async deleteStaff(staffId) {
     const sql = `
       DELETE
       FROM nobsc_staff
       WHERE staff_id = ?
       LIMIT 1
     `;
-    return pool.execute(sql, [staffId]);
+    const [ deletedStaff ] = await this.pool.execute(sql, [staffId]);
+    if (!deletedStaff) throw new Error("deleteStaff failed");
+    return deletedStaff;
   }
 
-  viewPlan(staffId) {
+  async viewPlan(staffId) {
     const sql = `
       SELECT plan
       FROM nobsc_staff
       WHERE staff_id = ?
     `;  // JSON_EXTRACT() JSON_UNQUOTE() ?
-    return pool.execute(sql, [staffId]);
+    const [ plan ] = await this.pool.execute(sql, [staffId]);
+    if (!plan) throw new Error("viewPlan failed");
+    return plan;
   }
 
-  updatePlan(staffInfo) {
+  async updatePlan(staffInfo) {
     const { staffId, plan } = staffInfo;
     const sql = `
       UPDATE nobsc_staff
@@ -102,7 +114,9 @@ class Staff {
       WHERE staff_id = ?
       LIMIT 1
     `;  // must be valid JSON, two options, either update the entire JSON or update only what needs to be updated
-    return pool.execute(sql, [plan, staffId]);
+    const [ updatedPlan ] = await this.pool.execute(sql, [plan, staffId]);
+    if (!updatedPlan) throw new Error("updatePlan failed");
+    return updatedPlan;
   }
 }
 

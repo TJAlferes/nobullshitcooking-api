@@ -1,6 +1,6 @@
 const { Router } = require('express');
 
-const userIsAuth = require('../../lib/utils/userIsAuth');
+//const userIsAuth = require('../../lib/utils/userIsAuth');
 const catchExceptions = require('../../lib/utils/catchExceptions');
 const userAuthController = require('../../controllers/user/auth');
 
@@ -10,9 +10,9 @@ const router = Router();
 
 // for /user/auth/...
 
-router.get(
+router.post(
   '/logout',
-  userIsAuth,
+  //userIsAuth,
   catchExceptions(userAuthController.logout)
 );
 

@@ -11,7 +11,7 @@ const router = Router();
 // for /staff/auth/...
 
 // change from get to delete?
-router.get(
+router.post(
   '/logout',
   staffIsAuth,
   catchExceptions(staffAuthController.logout)

@@ -1,7 +1,7 @@
-const checkCSRF = require('./checkCSRF');
+//const checkCSRF = require('./checkCSRF');
 
 module.exports = function(req, res, next) {
-  if (req.session.userId) return checkCSRF(req, res, next);  // return next();
+  //if (req.session.userId) return checkCSRF(req, res, next);  // return next();
   res.clearCookie('connect.sid');  // sufficient???
-  res.redirect('/401');  // set this up?
+  res.end();  // set this up?
 };
