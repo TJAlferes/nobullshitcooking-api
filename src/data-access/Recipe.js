@@ -15,65 +15,71 @@ class Recipe {
   
   // to do: cusines
 
-  countAllRecipes() {
+  async countAllRecipes() {
     const sql = `
       SELECT COUNT(*) AS total
       FROM nobsc_recipes
     `;
-    return pool.execute(sql);
+    const [ allRecipesCount ] = await this.pool.execute(sql);
+    return allRecipesCount;
   }
 
-  countRecipesOfType(typeId) {
+  async countRecipesOfType(typeId) {
     const sql = `
       SELECT COUNT(*) AS total
       FROM nobsc_recipes
       WHERE recipe_type_id = ?
     `;
-    return pool.execute(sql, [typeId]);
+    const [ allRecipesOfTypeCount ] = await this.pool.execute(sql, [typeId]);
+    return allRecipesOfTypeCount;
   }
 
-  countRecipesOfTypes(placeholders, typeIds) {  // typeIds must be an array
+  async countRecipesOfTypes(placeholders, typeIds) {  // typeIds must be an array
     const sql = `
       SELECT COUNT(*) AS total
       FROM nobsc_recipes
       WHERE recipe_type_id IN (${placeholders})
     `;
-    return pool.execute(sql, typeIds);
+    const [ allRecipesOfTypesCount ] = await this.pool.execute(sql, typeIds);
+    return allRecipesOfTypesCount;
   }
 
-  viewAllRecipes(starting, display) {
+  async viewAllRecipes(starting, display) {
     const sql = `
       SELECT recipe_id, recipe_name, recipe_type_id, recipe_image
       FROM nobsc_recipes
       ORDER BY recipe_name ASC
-      LIMIT ${starting}, ${display}
+      LIMIT ?, ?
     `;
-    return pool.execute(sql);
+    const [ allRecipes ] = await this.pool.execute(sql, [starting, display]);
+    return allRecipes;
   }
 
-  viewRecipesOfType(starting, display, typeId) {
+  async viewRecipesOfType(starting, display, typeId) {
     const sql = `
       SELECT recipe_id, recipe_name, recipe_type_id, recipe_image
       FROM nobsc_recipes
       WHERE recipe_type_id = ?
       ORDER BY recipe_name ASC
       LIMIT ${starting}, ${display}
-    `;
-    return pool.execute(sql, [typeId]);
+    `;  // TO DO: change to ? for security
+    const [ allRecipesOfType ] = await this.pool.execute(sql, [typeId]);
+    return allRecipesOfType;
   }
 
-  viewRecipesOfTypes(starting, display, placeholders, typeIds) {  // typeIds must be an array
+  async viewRecipesOfTypes(starting, display, placeholders, typeIds) {  // typeIds must be an array
     const sql = `
       SELECT recipe_id, recipe_name, recipe_type_id, recipe_image
       FROM nobsc_recipes
       WHERE recipe_type_id IN (${placeholders})
       ORDER BY recipe_name ASC
       LIMIT ${starting}, ${display}
-    `;
-    return pool.execute(sql, typeIds);
+    `;  // TO DO: change to ? for security
+    const [ allRecipesOfTypes ] = await this.pool.execute(sql, typeIds);
+    return allRecipesOfTypes;
   }
 
-  viewRecipeById(recipeId) {
+  async viewRecipeById(recipeId) {
     const sql = `
       SELECT
         r.recipe_id AS recipe_id,
@@ -85,10 +91,11 @@ class Recipe {
       LEFT JOIN nobsc_recipes r ON r.recipe_type_id = t.recipe_type_id
       WHERE recipe_id = ?
     `;  // ... Is this right?
-    return pool.execute(sql, [recipeId]);
+    const [ recipe ] = await this.pool.execute(sql, [recipeId]);
+    return recipe;
   }
 
-  createRecipe(recipeInfo) {
+  async createRecipe(recipeInfo) {
     const { id, name, typeId, image, equipmentImage, ingredientsImage, cookingImage } = recipeInfo;
     const sql = `
       INSERT INTO nobsc_recipes
@@ -96,10 +103,11 @@ class Recipe {
       VALUES
       (?, ?, ?, ?, ?, ?, ?)
     `;
-    return pool.execute(sql, [id, name, typeId, image, equipmentImage, ingredientsImage, cookingImage]);
+    const [ createdRecipe ] = await this.pool.execute(sql, [id, name, typeId, image, equipmentImage, ingredientsImage, cookingImage]);
+    return createdRecipe;
   }
   
-  updateRecipe(recipeInfo) {
+  async updateRecipe(recipeInfo) {
     const { id, name, typeId, image, equipmentImage, ingredientsImage, cookingImage } = recipeInfo;
     const sql = `
       UPDATE nobsc_recipes
@@ -107,17 +115,19 @@ class Recipe {
       WHERE recipe_id = ?
       LIMIT 1
     `;
-    return pool.execute(sql, [name, typeId, image, equipmentImage, ingredientsImage, cookingImage, id]);
+    const [ updatedRecipe ] = await this.pool.execute(sql, [name, typeId, image, equipmentImage, ingredientsImage, cookingImage, id]);
+    return updatedRecipe;
   }
   
-  deleteRecipe(recipeId) {
+  async deleteRecipe(recipeId) {
     const sql = `
       DELETE
       FROM nobsc_recipes
       WHERE recipe_id = ?
       LIMIT 1
     `;
-    return pool.execute(sql, [recipeId]);
+    const [ deletedRecipe ] = await this.pool.execute(sql, [recipeId]);
+    return deletedRecipe;
   }
 }
 

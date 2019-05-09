@@ -13,65 +13,71 @@ class Equipment {
     this.deleteEquipment = this.deleteEquipment.bind(this);
   }
   
-  countAllEquipment() {
+  async countAllEquipment() {
     const sql = `
       SELECT COUNT(*) AS total
       FROM nobsc_equipment
     `;
-    return pool.execute(sql);
+    const [ allEquipmentCount ] = await this.pool.execute(sql);
+    return allEquipmentCount;
   }
 
-  countEquipmentOfType(typeId) {
+  async countEquipmentOfType(typeId) {
     const sql = `
       SELECT COUNT(*) AS total
       FROM nobsc_equipment
       WHERE equipment_type_id = ?
     `;
-    return pool.execute(sql, [typeId]);
+    const [ allEquipmentOfTypeCount ] = await this.pool.execute(sql, [typeId]);
+    return allEquipmentOfTypeCount;
   }
 
-  countEquipmentOfTypes(placeholders, typeIds) {  // typeIds must be an array
+  async countEquipmentOfTypes(placeholders, typeIds) {  // typeIds must be an array
     const sql = `
       SELECT COUNT(*) AS total
       FROM nobsc_equipment
       WHERE equipment_type_id IN (${placeholders})
     `;
-    return pool.execute(sql, typeIds);
+    const [ allEquipmentOfTypesCount ] = await this.pool.execute(sql, typeIds);
+    return allEquipmentOfTypesCount;
   }
 
-  viewAllEquipment(starting, display) {
+  async viewAllEquipment(starting, display) {
     const sql = `
       SELECT equipment_id, equipment_name, equipment_type_id, equipment_image
       FROM nobsc_equipment
       ORDER BY equipment_name ASC
-      LIMIT ${starting}, ${display}
+      LIMIT ?, ?
     `;
-    return pool.execute(sql);
+    const [ allEqupiment ] = await this.pool.execute(sql, [starting, display]);
+    return allEqupiment;
   }
 
-  viewEquipmentOfType(starting, display, typeId) {
+  async viewEquipmentOfType(starting, display, typeId) {
     const sql = `
       SELECT equipment_id, equipment_name, equipment_type_id, equipment_image
       FROM nobsc_equipment
       WHERE equipment_type_id = ?
       ORDER BY equipment_name ASC
       LIMIT ${starting}, ${display}
-    `;
-    return pool.execute(sql, [typeId]);
+    `;  // TO DO: change to ? for security
+    const [ allEqupimentOfType ] = await this.pool.execute(sql, [typeId]);
+    return allEqupimentOfType;
   }
 
-  viewEquipmentOfTypes(starting, display, placeholders, typeIds) {  // typeIds must be an array
+  async viewEquipmentOfTypes(starting, display, placeholders, typeIds) {  // typeIds must be an array
     const sql = `
       SELECT equipment_id, equipment_name, equipment_type_id, equipment_image
       FROM nobsc_equipment
       WHERE equipment_type_id IN (${placeholders})
       ORDER BY equipment_name ASC
       LIMIT ${starting}, ${display}
-    `;
-    return pool.execute(sql, typeIds);
+    `;  // TO DO: change to ? for security
+    const [ allEqupimentOfTypes ] = await this.pool.execute(sql, typeIds);
+    return allEqupimentOfTypes;
   }
 
-  viewEquipmentById(equipmentId) {
+  async viewEquipmentById(equipmentId) {
     const sql = `
       SELECT
         e.equipment_id AS equipment_id,
@@ -83,10 +89,11 @@ class Equipment {
       LEFT JOIN nobsc_equipment e ON e.equipment_type_id = t.equipment_type_id
       WHERE equipment_id = ?
     `;  // ... Is this right?
-    return pool.execute(sql, [equipmentId]);
+    const [ equipment ] = await this.pool.execute(sql, [equipmentId]);
+    return equipment;
   }
 
-  createEquipment(equipmentInfo) {
+  async createEquipment(equipmentInfo) {
     const { id, name, typeId, image } = equipmentInfo;
     const sql = `
       INSERT INTO nobsc_equipment
@@ -94,10 +101,11 @@ class Equipment {
       VALUES
       (?, ?, ?, ?)
     `;
-    return pool.execute(sql, [id, name, typeId, image]);
+    const [ createdEquipment ] = await this.pool.execute(sql, [id, name, typeId, image]);
+    return createdEquipment;
   }
 
-  updateEquipment(equipmentInfo) {
+  async updateEquipment(equipmentInfo) {
     const { id, name, typeId, image } = equipmentInfo;
     const sql = `
       UPDATE nobsc_equipment
@@ -105,17 +113,19 @@ class Equipment {
       WHERE equipment_id = ?
       LIMIT 1
     `;
-    return pool.execute(sql, [name, typeId, image, id]);
+    const [ updatedEquipment ] = await this.pool.execute(sql, [name, typeId, image, id]);
+    return updatedEquipment;
   }
 
-  deleteEquipment(equipmentId) {
+  async deleteEquipment(equipmentId) {
     const sql = `
       DELETE
       FROM nobsc_equipment
       WHERE equipment_id = ?
       LIMIT 1
     `;
-    return pool.execute(sql, [equipmentId]);
+    const [ deletedEquipment ] = await this.pool.execute(sql, [equipmentId]);
+    return deletedEquipment;
   }
 }
 

@@ -13,65 +13,71 @@ class Ingredient {
     this.deleteIngredient = this.deleteIngredient.bind(this);
   }
 
-  countAllIngredients() {
+  async countAllIngredients() {
     const sql = `
       SELECT COUNT(*) AS total
       FROM nobsc_ingredients
     `;
-    return this.pool.execute(sql);
+    const [ allIngredientsCount ] = await this.pool.execute(sql);
+    return allIngredientsCount;
   }
 
-  countIngredientsOfType(typeId) {
+  async countIngredientsOfType(typeId) {
     const sql = `
       SELECT COUNT(*) AS total
       FROM nobsc_ingredients
       WHERE ingredient_type_id = ?
     `;
-    return this.pool.execute(sql, [typeId]);
+    const [ allIngredientsOfTypeCount ] = await this.pool.execute(sql, [typeId]);
+    return allIngredientsOfTypeCount;
   }
 
-  countIngredientsOfTypes(placeholders, typeIds) {  // typeIds must be an array
+  async countIngredientsOfTypes(placeholders, typeIds) {  // typeIds must be an array
     const sql = `
       SELECT COUNT(*) AS total
       FROM nobsc_ingredients
       WHERE ingredient_type_id IN (${placeholders})
     `;
-    return this.pool.execute(sql, typeIds);
+    const [ allIngredientsOfTypesCount ] = await this.pool.execute(sql, typeIds);
+    return allIngredientsOfTypesCount;
   }
 
-  viewAllIngredients(starting, display) {
+  async viewAllIngredients(starting, display) {
     const sql = `
       SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image
       FROM nobsc_ingredients
       ORDER BY ingredient_name ASC
       LIMIT ?, ?
     `;
-    return this.pool.execute(sql, [starting, display]);
+    const [ allIngredients ] = await this.pool.execute(sql, [starting, display]);
+    return allIngredients;
   }
 
-  viewIngredientsOfType(starting, display, typeId) {
+  async viewIngredientsOfType(starting, display, typeId) {
     const sql = `
       SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image
       FROM nobsc_ingredients
       WHERE ingredient_type_id = ?
       ORDER BY ingredient_name ASC
       LIMIT ${starting}, ${display}
-    `;
-    return this.pool.execute(sql, [typeId]);
+    `;  // TO DO: change to ? for security
+    const [ allIngredientsOfType ] = await this.pool.execute(sql, [typeId]);
+    return allIngredientsOfType;
   }
 
-  viewIngredientsOfTypes(starting, display, placeholders, typeIds) {  // typeIds must be an array
+  async viewIngredientsOfTypes(starting, display, placeholders, typeIds) {  // typeIds must be an array
     const sql = `
       SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image
       FROM nobsc_ingredients
       WHERE ingredient_type_id IN (${placeholders})
       ORDER BY ingredient_name ASC
       LIMIT ${starting}, ${display}
-    `;
-    return this.pool.execute(sql, typeIds);
+    `;  // TO DO: change to ? for security 
+    const [ allIngredientsOfTypes ] = await this.pool.execute(sql, typeIds);
+    return allIngredientsOfTypes;
   }
 
-  viewIngredientById(ingredientId) {
+  async viewIngredientById(ingredientId) {
     const sql = `
       SELECT
         i.ingredient_id AS ingredient_id,
@@ -83,10 +89,11 @@ class Ingredient {
       LEFT JOIN nobsc_ingredients i ON i.ingredient_type_id = t.ingredient_type_id
       WHERE ingredient_id = ?
     `;
-    return this.pool.execute(sql, [ingredientId]);
+    const [ ingredient ] = await this.pool.execute(sql, [ingredientId]);
+    return ingredient;
   }
 
-  createIngredient(ingredientInfo) {
+  async createIngredient(ingredientInfo) {
     const { id, name, typeId, image } = ingredientInfo;
     const sql = `
       INSERT INTO nobsc_ingredients
@@ -94,10 +101,11 @@ class Ingredient {
       VALUES
       (?, ?, ?, ?)
     `;
-    return this.pool.execute(sql, [id, name, typeId, image]);
+    const [ createdIngredient ] = await this.pool.execute(sql, [id, name, typeId, image]);
+    return createdIngredient;
   }
 
-  updateIngredient(ingredientInfo) {
+  async updateIngredient(ingredientInfo) {
     const { id, name, typeId, image } = ingredientInfo;
     const sql = `
       UPDATE nobsc_ingredients
@@ -105,17 +113,19 @@ class Ingredient {
       WHERE ingredient_id = ?
       LIMIT 1
     `;
-    return this.pool.execute(sql, [name, typeId, image, id]);
+    const [ updatedIngredient ] = await this.pool.execute(sql, [name, typeId, image, id]);
+    return updatedIngredient;
   }
 
-  deleteIngredient(ingredientId) {
+  async deleteIngredient(ingredientId) {
     const sql = `
       DELETE
       FROM nobsc_ingredient
       WHERE ingredient_id = ?
       LIMIT 1
     `;
-    return this.pool.execute(sql, [ingredientId]);
+    const [ edIngredient ] = await this.pool.execute(sql, [ingredientId]);
+    return deletedIngredient;
   }
 }
 

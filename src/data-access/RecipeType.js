@@ -5,21 +5,23 @@ class RecipeType {
     this.viewRecipeTypeById = this.viewRecipeTypeById.bind(this);
   }
 
-  viewAllRecipeTypes() {
+  async viewAllRecipeTypes() {
     const sql = `
       SELECT recipe_type_id, recipe_type_name
       FROM nobsc_recipe_types
     `;
-    return pool.execute(sql);
+    const [ allRecipeTypes ] = await this.pool.execute(sql);
+    return allRecipeTypes;
   }
 
-  viewRecipeTypeById(typeId) {
+  async viewRecipeTypeById(typeId) {
     const sql = `
       SELECT recipe_type_id, recipe_type_name
       FROM nobsc_recipe_types
       WHERE recipe_type_id = ?
     `;
-    return pool.execute(sql, [typeId]);
+    const [ recipeType ] = await this.pool.execute(sql, [typeId]);
+    return recipeType;
   }
 }
 

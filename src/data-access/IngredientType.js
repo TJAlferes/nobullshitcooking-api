@@ -5,21 +5,23 @@ class IngredientType {
     this.viewIngredientTypeById = this.viewIngredientTypeById.bind(this);
   }
 
-  viewAllIngredientTypes() {
+  async viewAllIngredientTypes() {
     const sql = `
       SELECT ingredient_type_id, ingredient_type_name
       FROM nobsc_ingredient_types
     `;
-    return this.pool.execute(sql);
+    const [ allIngredientTypes ] = await this.pool.execute(sql);
+    return allIngredientTypes;
   }
 
-  viewIngredientTypeById(typeId) {
+  async viewIngredientTypeById(typeId) {
     const sql = `
       SELECT ingredient_type_id, ingredient_type_name
       FROM nobsc_ingredient_types
       WHERE ingredient_type_id = ?
     `;
-    return this.pool.execute(sql, [typeId]);
+    const [ ingredientType] = await this.pool.execute(sql, [typeId]);
+    return ingredientType;
   }
 }
 

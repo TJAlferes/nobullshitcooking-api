@@ -5,21 +5,23 @@ class EquipmentType {
     this.viewEquipmentTypeById = this.viewEquipmentTypeById.bind(this);
   }
 
-  viewAllEquipmentTypes() {
+  async viewAllEquipmentTypes() {
     const sql = `
       SELECT equipment_type_id, equipment_type_name
       FROM nobsc_equipment_types
     `;
-    return pool.execute(sql);
+    const [ allEquipmentTypes ] = await this.pool.execute(sql);
+    return allEquipmentTypes;
   }
 
-  viewEquipmentTypeById(typeId) {
+  async viewEquipmentTypeById(typeId) {
     const sql = `
       SELECT equipment_type_id, equipment_type_name
       FROM nobsc_equipment_types
       WHERE equipment_type_id = ?
     `;
-    return pool.execute(sql, [typeId]);
+    const [ equipmentType ] = await this.pool.execute(sql, [typeId]);
+    return equipmentType;
   }
 }
 

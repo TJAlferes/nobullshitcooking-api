@@ -18,7 +18,7 @@ class User {
       FROM nobsc_users
       ORDER BY username ASC
       LIMIT ?, ?
-    `;  // important (security): use ?, ? in LIMIT instead?
+    `;
     const [ allUsers ] = await this.pool.execute(sql, [starting, display]);
     if (!allUsers) throw new Error("viewAllUsers failed");
     return allUsers;
