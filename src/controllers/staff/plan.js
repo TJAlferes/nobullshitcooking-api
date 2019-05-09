@@ -2,7 +2,7 @@ const pool = require('../../data-access/dbPoolConnection');
 const Staff = require('../../data-access/staff/Staff');
 
 const staffPlanController = {
-  viewPlan: async function(req, res) {
+  viewPlan: async function(req, res, next) {
     try {
       //const staffInfo = req.body.staffInfo;
       //validator.validate(staffInfo);  // implement control flow here
@@ -13,11 +13,12 @@ const staffPlanController = {
         const [ plan ] = await staff.viewPlan(staffId);
         res.send(plan);
       }
+      next();
     } catch (err) {
-      console.log(err);  // res the error, safely
+      next(err);
     }
   },
-  updatePlan: async function(req, res) {
+  updatePlan: async function(req, res, next) {
     try {
       //const staffInfo = req.body.staffInfo;
       //validator.validate(staffInfo);  // implement control flow here
@@ -29,8 +30,9 @@ const staffPlanController = {
         res.end();
       }
       res.end();
+      next();
     } catch (err) {
-      console.log(err);  // res the error, safely
+      next(err);
     }
   }
 };

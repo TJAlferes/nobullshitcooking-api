@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');  // or bcryptjs?
+const bcrypt = require('bcrypt');
 
 const pool = require('../../data-access/dbPoolConnection');
 const User = require('../../data-access/user/User');
@@ -34,60 +34,70 @@ const DEFAULT_PLAN = {
   26: [],
   27: [],
   28: []
-};  // move me
+};
 
 const userAuthController = {
-  register: async function(req, res) {
-    const email = req.body.userInfo.email;
-    const password = req.body.userInfo.password;
-    const username = req.body.userInfo.username;
-    //validator.validate(userInfo);  // implement control flow here
-    const user = new User(pool);
-    const emailExists = await user.getUserByEmail(email);
-    if (emailExists === []) return res.send('email already in use... lost your password?');
-    const userExists = await user.getUserByName(username);
-    if (userExists === []) return res.send('username already taken');
-    const encryptedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-    await user.createUser({email, password: encryptedPassword, username, avatar: '', plan: DEFAULT_PLAN});
-    res.send('be yay');
-  },
-  login: async function(req, res) {
-    const email = req.body.userInfo.email;
-    const password = req.body.userInfo.password;
-    //validator.validate(userInfo);  // implement control flow here
-    const user = new User(pool);
-    const userExists = await user.getUserByEmail(email);
-    if (userExists[0].email === email) {
-      const isCorrectPassword = await bcrypt.compare(password, userExists[0].pass);
-      if (isCorrectPassword) {
-        const userId = userExists[0].user_id;
-        req.session.userId = userId;
-        const userData = await user.viewUserById(userId);
-        const username = userData[0].username;
-        const avatar = userData[0].avatar;
-        return res.json({username, avatar});
-      }
-      return res.send('incorrect email or password')
-    }
-    res.end();
-  },
-  logout: async function(req, res) {
+  register: async function(req, res, next) {
     try {
-      //console.log(req.sessionID);
-      //console.log(req.headers.cookie);
+      const email = req.body.userInfo.email;
+      const password = req.body.userInfo.password;
+      const username = req.body.userInfo.username;
+      //validator.validate(userInfo);  // implement control flow here
+      // return if already logged in
+      const user = new User(pool);
+      const emailExists = await user.getUserByEmail(email);
+      if (emailExists !== []) {
+        res.send('email already in use... lost your password?');
+        next();
+      }
+      const userExists = await user.getUserByName(username);
+      if (userExists !== []) {
+        res.send('username already taken');
+        next();
+      }
+      const encryptedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+      await user.createUser({email, password: encryptedPassword, username, avatar: '', plan: DEFAULT_PLAN});
+      res.send('be yay');
+      next();
+    } catch(err) {
+      next(err);
+    }
+  },
+  login: async function(req, res, next) {
+    try {
+      const email = req.body.userInfo.email;
+      const password = req.body.userInfo.password;
+      //validator.validate(userInfo);  // implement control flow here
+      const user = new User(pool);
+      const userExists = await user.getUserByEmail(email);
+      if (userExists[0].email === email) {
+        const isCorrectPassword = await bcrypt.compare(password, userExists[0].pass);
+        if (isCorrectPassword) {
+          const userId = userExists[0].user_id;
+          req.session.userId = userId;
+          const userData = await user.viewUserById(userId);
+          const username = userData[0].username;
+          const avatar = userData[0].avatar;
+          return res.json({username, avatar});
+        }
+        return res.send('incorrect email or password')
+      }
+      res.end();
+      next();
+    } catch(err) {
+      next(err);
+    }
+  },
+  logout: async function(req, res, next) {
+    try {
       await req.session.destroy(err => {
-        console.log('here1');
         if (err) return next(err);
-        console.log('here2');
         res.clearCookie('connect.sid');
-        console.log('here3');
-        //res.end();  //res.json({});  ??? res.redirect('/home')?
-        //res.send('logged out');
-        // not perfect yet, sometimes not finding file...
+        res.end();  //res.json({});  ??? res.redirect('/home')?
       });
-    } catch (err) {
-      console.log('here4err');
-      console.log(err);
+      next();
+    } catch(err) {
+      next(err);
     }
   }
 };
