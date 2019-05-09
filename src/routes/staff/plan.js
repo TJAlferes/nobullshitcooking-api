@@ -10,13 +10,13 @@ const router = Router();
 
 // for /staff/plan/...
 
-router.get(
+router.post(
   '/plan/view',
   staffIsAuth,
   catchExceptions(staffPlanController.viewPlan)
 );
 
-router.post(
+router.put(
   '/plan/update',
   staffIsAuth,
   catchExceptions(staffPlanController.updatePlan)

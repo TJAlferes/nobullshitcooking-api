@@ -10,7 +10,7 @@ const router = Router();
 
 // for /user/dashboard/...
 
-router.get(
+router.post(
   '/dashboard',
   userIsAuth,
   catchExceptions(userDashboardController.viewDashboard)

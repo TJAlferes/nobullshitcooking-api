@@ -10,7 +10,7 @@ const router = Router();
 
 // for /user/recipe/...
 
-router.get(
+router.post(
   '/',
   catchExceptions(userRecipeController.viewRecipe)
 );

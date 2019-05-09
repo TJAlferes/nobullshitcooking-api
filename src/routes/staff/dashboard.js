@@ -10,7 +10,7 @@ const router = Router();
 
 // for /staff/dashboard/...
 
-router.get(
+router.post(
   '/',
   staffIsAuth,
   catchExceptions(staffDashboardController.viewDashboard)

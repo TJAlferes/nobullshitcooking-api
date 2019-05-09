@@ -26,7 +26,7 @@ const {
   userRoutes
 } = require('./routes');
 
-
+// TO DO: Possibly remove try catch blocks in controllers
 
 /*
 

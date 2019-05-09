@@ -10,13 +10,13 @@ const router = Router();
 
 // for /user/plan/...
 
-router.get(
+router.post(
   '/plan/view',
   userIsAuth,
   catchExceptions(userPlanController.viewPlan)
 );
 
-router.post(
+router.put(
   '/plan/update',
   userIsAuth,
   catchExceptions(userPlanController.updatePlan)
