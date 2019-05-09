@@ -11,13 +11,11 @@ const router = Router();
 
 router.get(
   '/',
-  /* some validation, */
   catchExceptions(equipmentTypeController.viewAllEquipmentTypes)
 );
 
 router.get(
   '/:equipmentTypeId',
-  /* some validation, */
   catchExceptions(equipmentTypeController.viewEquipmentTypeById)
 );
 

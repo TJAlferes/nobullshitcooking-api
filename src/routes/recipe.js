@@ -9,40 +9,14 @@ const router = Router();
 
 // for /recipe/...
 
-router.get(
+router.post(
   '/',
-  /* some validation, */
   catchExceptions(recipeController.viewRecipe)
 );
 
 router.get(
   '/:recipeId',
-  /* some validation, */
   catchExceptions(recipeController.viewRecipeDetail)
 );
-
-/*
-
-
-router.post(
-  '/create',
-  //some validation,
-  catchExceptions(recipeController.createRecipe)
-);
-
-router.put(
-  '/update',
-  //some validation
-  catchExceptions(recipeController.updateRecipe)
-);
-
-router.delete(
-  '/delete',
-  // some validation
-  catchExceptions(recipeController.deleteRecipe)
-);
-
-
-*/
 
 module.exports = router;

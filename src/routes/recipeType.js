@@ -11,13 +11,11 @@ const router = Router();
 
 router.get(
   '/',
-  /* some validation, */
   catchExceptions(recipeTypeController.viewAllRecipeTypes)
 );
 
 router.get(
   '/:recipeTypeId',
-  /* some validation, */
   catchExceptions(recipeTypeController.viewRecipeTypeById)
 );
 
