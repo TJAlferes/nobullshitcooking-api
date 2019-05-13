@@ -3,6 +3,9 @@
 /*
 Rolling our own little validations and errors for now,
 but may use an npm package like superstruct in the future
+
+Update May 12th 2019 -- going with express-validator for now,
+will keep this code around just in case.
 */
 
 const exceptions = require('../exceptions/exceptions');
