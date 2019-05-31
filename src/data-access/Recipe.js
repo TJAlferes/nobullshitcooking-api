@@ -14,6 +14,7 @@ class Recipe {
   }
   
   // to do: cusines
+  // to do: steps
 
   async countAllRecipes() {
     const sql = `
@@ -90,7 +91,7 @@ class Recipe {
       FROM nobsc_recipe_types t
       LEFT JOIN nobsc_recipes r ON r.recipe_type_id = t.recipe_type_id
       WHERE recipe_id = ?
-    `;  // ... Is this right?
+    `;  // ... Is this right? you need cuisine and steps
     const [ recipe ] = await this.pool.execute(sql, [recipeId]);
     return recipe;
   }
@@ -99,7 +100,7 @@ class Recipe {
     const { id, name, typeId, image, equipmentImage, ingredientsImage, cookingImage } = recipeInfo;
     const sql = `
       INSERT INTO nobsc_recipes
-      (recipe_id, recipe_name, recipe_type_id, recipe_image, equipment_image, ingredients_image, cooking_image)
+      (recipe_id, recipe_name, recipe_type_id, required_equipment, required_ingredients, required_subrecipes, recipe_image, equipment_image, ingredients_image, cooking_image)
       VALUES
       (?, ?, ?, ?, ?, ?, ?)
     `;
