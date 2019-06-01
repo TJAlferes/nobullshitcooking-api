@@ -22,6 +22,8 @@ const {
   ingredientTypeRoutes,
   recipeRoutes,
   recipeTypeRoutes,
+  cuisineRoutes,
+  measurementRoutes,
   staffRoutes,
   userRoutes
 } = require('./routes');
@@ -133,6 +135,8 @@ app.use('/ingredient', ingredientRoutes);
 app.use('/ingredient-type', ingredientTypeRoutes);
 app.use('/recipe', recipeRoutes);
 app.use('/recipe-type', recipeTypeRoutes);
+app.use('/cuisine', cuisineRoutes);
+app.use('/measurement', measurementRoutes);
 app.use('/staff', staffRoutes);
 app.use('/user', userRoutes);
 

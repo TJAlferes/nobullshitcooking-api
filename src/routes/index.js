@@ -4,6 +4,8 @@ const ingredientRoutes = require('./ingredient');
 const ingredientTypeRoutes = require('./ingredientType');
 const recipeRoutes = require('./recipe');
 const recipeTypeRoutes = require('./recipeType');
+const cuisineRoutes = require('./cuisine');
+const measurementRoutes = require('./measurement');
 const staffRoutes = require('./staff/index');
 const userRoutes = require('./user/index');
 
@@ -14,6 +16,8 @@ module.exports = {
   ingredientTypeRoutes,
   recipeRoutes,
   recipeTypeRoutes,
+  cuisineRoutes,
+  measurementRoutes,
   staffRoutes,
   userRoutes
 };

@@ -20,7 +20,7 @@ class IngredientType {
       FROM nobsc_ingredient_types
       WHERE ingredient_type_id = ?
     `;
-    const [ ingredientType] = await this.pool.execute(sql, [typeId]);
+    const [ ingredientType ] = await this.pool.execute(sql, [typeId]);
     return ingredientType;
   }
 }
