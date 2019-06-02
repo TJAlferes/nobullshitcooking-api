@@ -1,7 +1,6 @@
 const pool = require('../data-access/dbPoolConnection');  // move?
 const EquipmentType = require('../data-access/EquipmentType');
 
-// object versus class?
 const equipmentTypeController = {
   viewAllEquipmentTypes: async function(req, res, next) {
     try {
@@ -15,9 +14,10 @@ const equipmentTypeController = {
   },
   viewEquipmentTypeById: async function(req, res, next) {
     try {
-      const typeId = req.params.id;  // sanitize and validate
+      const equipmentTypeId = req.params.equipmentTypeId;
+      if (equipmentTypeId < 1 || equipmentTypeId > 5) throw new Error('invalid equipment type');
       const equipmentType = new EquipmentType(pool);
-      const [ rows ] = await equipmentType.viewEquipmentTypeById(typeId);
+      const [ rows ] = await equipmentType.viewEquipmentTypeById(equipmentTypeId);
       res.send(rows);
       next();
     } catch(err) {

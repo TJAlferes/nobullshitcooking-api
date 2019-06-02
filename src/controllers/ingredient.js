@@ -2,7 +2,6 @@ const pool = require('../data-access/dbPoolConnection');  // move?
 const Ingredient = require('../data-access/Ingredient');
 const validator = require('../lib/validations/ingredient');
 
-// object versus class?
 const ingredientController = {
   viewIngredient: async function(req, res, next) {  // split into three methods?
     try {
@@ -24,8 +23,7 @@ const ingredientController = {
         // pagination (up to 25 ingredients per page) (why repeat 3 times?)
         let total = rowCount[0].total;
         let pages = (total > display) ? Math.ceil(total / display) : 1;
-        let resObj = {rows, pages, starting};
-        res.send(resObj);
+        res.send({rows, pages, starting});
       }
 
       // query all ingredients of checked ingredient type (one filter checked on frontend UI)
@@ -36,8 +34,7 @@ const ingredientController = {
         // pagination (up to 25 ingredients per page) (why repeat 3 times?)
         let total = rowCount[0].total;
         let pages = (total > display) ? Math.ceil(total / display) : 1;
-        let resObj = {rows, pages, starting};
-        res.send(resObj);
+        res.send({rows, pages, starting});
       }
 
       // query all ingredients (no filtration on frontend UI)
@@ -47,8 +44,7 @@ const ingredientController = {
         // pagination (up to 25 ingredients per page) (why repeat 3 times?)
         let total = rowCount[0].total;
         let pages = (total > display) ? Math.ceil(total / display) : 1;
-        let resObj = {rows, pages, starting};
-        res.send(resObj);
+        res.send({rows, pages, starting});
       }
 
       next();
@@ -58,7 +54,7 @@ const ingredientController = {
   },
   viewIngredientDetail: async function(req, res, next) {
     try {
-      const ingredientId = req.params.ingredientId;  // sanitize and validate
+      const ingredientId = req.params.ingredientId;
       const ingredient = new Ingredient(pool);
       const [ row ] = await ingredient.viewIngredientById(ingredientId);
       res.send(row);

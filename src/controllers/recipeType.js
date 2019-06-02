@@ -1,7 +1,6 @@
 const pool = require('../data-access/dbPoolConnection');  // move?
 const RecipeType = require('../data-access/RecipeType');
 
-// object versus class?
 const recipeTypeController = {
   viewAllRecipeTypes: async function(req, res, next) {
     try {
@@ -15,9 +14,10 @@ const recipeTypeController = {
   },
   viewRecipeTypeById: async function(req, res, next) {
     try {
-      const typeId = req.params.id;  // sanitize and validate
+      const recipeTypeId = req.params.recipeTypeId;
+      if (recipeTypeId < 1 || recipeTypeId > 12) throw new Error('invalid recipe type');
       const recipeType = new RecipeType(pool);
-      const [ rows ] = await recipeType.viewRecipeTypeById(typeId);
+      const [ rows ] = await recipeType.viewRecipeTypeById(recipeTypeId);
       res.send(rows);
       next();
     } catch(err) {
