@@ -1,6 +1,7 @@
 const pool = require('../../data-access/dbPoolConnection');
 const Recipe = require('../../data-access/Recipe');
 const validator = require('../../lib/validations/recipe');
+const signS3Images1 = require('../../lib/utils/signS3');
 
 const staffRecipeController = {
   createRecipe: async function(req, res, next) {
