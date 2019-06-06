@@ -3,7 +3,7 @@ const Recipe = require('../data-access/Recipe');
 const validator = require('../lib/validations/recipe');
 
 const recipeController = {
-  viewRecipe: async function(req, res, next) {  // split into three methods?
+  viewRecipe: async function(req, res, next) {
     try {
       // sanitize, validate
       const types = (req.body.types) ? req.body.types : [];
@@ -14,98 +14,114 @@ const recipeController = {
 
       // maybe it's time to switch to graphql...
 
-      // query all recipes of checked recipe types (multiple recipe type filters checked on frontend UI)
-      if (types.length > 1) {
-        let typeIds = [];
-        for (i = 0; i < types.length; i++) {
-          typeIds.push(types[i]);
-        };
-        const placeholders = '?, '.repeat(types.length - 1) + '?';
-        const [ rows ] = await recipe.viewRecipesOfTypes(starting, display, placeholders, typeIds);
-        const [ rowCount ] = await recipe.countRecipesOfTypes(placeholders, typeIds);
-        
-        let total = rowCount[0].total;
-        let pages = (total > display) ? Math.ceil(total / display) : 1;
-        res.send({rows, pages, starting});
-      }
+      // unit test this
 
-      // query all recipes of checked recipe type (one recipe type filter checked on frontend UI)
-      if (types.length == 1) {
-        let typeId = `${types}`;  // convert array element to string for SQL query
-        const [ rows ] = await recipe.viewRecipesOfType(starting, display, typeId);
-        const [ rowCount ] = await recipe.countRecipesOfType(typeId);
-        
-        let total = rowCount[0].total;
-        let pages = (total > display) ? Math.ceil(total / display) : 1;
-        res.send({rows, pages, starting});
-      }
-
-      // query all recipes (no recipe type filtration on frontend UI)
-      if (types.length == 0) {
-        const [ rows ] = await recipe.viewAllRecipes(starting, display);
-        const [ rowCount ] = await recipe.countAllRecipes();
-        
-        let total = rowCount[0].total;
-        let pages = (total > display) ? Math.ceil(total / display) : 1;
-        res.send({rows, pages, starting});
-      }
-
-      
-
-
+      // --------------------------------------------------
 
       if (cuisines.length > 1) {
+
         let cuisineIds = [];
-        for (i = 0; i < cuisines.length; i++) {
-          cuisineIds.push(cuisines[i]);
-        };
+        for (i = 0; i < cuisines.length; i++) cuisineIds.push(cuisines[i]);
         const cuisinePlaceholders = '?, '.repeat(cuisines.length - 1) + '?';
+
         if (types.length > 1) {
-          const [ rows ] = await recipe.viewRecipesOfCuisinesAndTypes();
+          let typeIds = [];
+          for (i = 0; i < types.length; i++) typeIds.push(types[i]);
+          const typePlaceholders = '?, '.repeat(types.length - 1) + '?';
+          const [ rows ] = await recipe.viewRecipesOfCuisinesAndTypes(starting, display, cuisinePlaceholders, cuisineIds, typePlaceholders, typeIds);
+          const [ rowCount ] = await recipe.countRecipesOfCuisinesAndTypes(cuisinePlaceholders, cuisineIds, typePlaceholders, typeIds);
+          let total = rowCount[0].total;
+          let pages = (total > display) ? Math.ceil(total / display) : 1;
+          return res.send({rows, pages, starting});
         }
+
         if (types.length == 1) {
-          const [ rows ] = await recipe.viewRecipesOfCuisinesAndType();
+          let typeId = `${types}`;
+          const [ rows ] = await recipe.viewRecipesOfCuisinesAndType(starting, display, cuisinePlaceholders, cuisineIds, typeId);
+          const [ rowCount ] = await recipe.countRecipesOfCuisinesAndType(cuisinePlaceholders, cuisineIds, typeId);
+          let total = rowCount[0].total;
+          let pages = (total > display) ? Math.ceil(total / display) : 1;
+          return res.send({rows, pages, starting});
         }
+
         if (types.length == 0) {
           const [ rows ] = await recipe.viewRecipesOfCuisines(starting, display, cuisinePlaceholders, cuisineIds);
           const [ rowCount ] = await recipe.countRecipesOfCuisines(cuisinePlaceholders, cuisineIds);
           let total = rowCount[0].total;
           let pages = (total > display) ? Math.ceil(total / display) : 1;
-          res.send({rows, pages, starting});
+          return res.send({rows, pages, starting});
         }
+
       }
 
+      // --------------------------------------------------
+
       if (cuisines.length == 1) {
-        let cuisineId = `${cuisines}`;  // convert array element to string for SQL query
+
+        let cuisineId = `${cuisines}`;
+
         if (types.length > 1) {
-          const [ rows ] = await recipe.viewRecipesOfCuisineAndTypes();
+          let typeIds = [];
+          for (i = 0; i < types.length; i++) typeIds.push(types[i]);
+          const typePlaceholders = '?, '.repeat(types.length - 1) + '?';
+          const [ rows ] = await recipe.viewRecipesOfCuisineAndTypes(starting, display, cuisineId, typePlaceholders, typeIds);
+          const [ rowCount ] = await recipe.countRecipesOfCuisineAndTypes(cuisineId, typePlaceholders, typeIds);
+          let total = rowCount[0].total;
+          let pages = (total > display) ? Math.ceil(total / display) : 1;
+          return res.send({rows, pages, starting});
         }
+
         if (types.length == 1) {
-          const [ rows ] = await recipe.viewRecipesOfCuisineAndType();
+          let typeId = `${types}`;
+          const [ rows ] = await recipe.viewRecipesOfCuisineAndType(starting, display, cuisineId, typeId);
+          const [ rowCount ] = await recipe.countRecipesOfCuisineAndType(cuisineId, typeId);
+          let total = rowCount[0].total;
+          let pages = (total > display) ? Math.ceil(total / display) : 1;
+          return res.send({rows, pages, starting});
         }
+
         if (types.length == 0) {
           const [ rows ] = await recipe.viewRecipesOfCuisine(starting, display, cuisineId);
           const [ rowCount ] = await recipe.countRecipesOfCuisine(cuisineId);
           let total = rowCount[0].total;
           let pages = (total > display) ? Math.ceil(total / display) : 1;
-          res.send({rows, pages, starting});
+          return res.send({rows, pages, starting});
         }
+
       }
 
+      // --------------------------------------------------
+
       if (cuisines.length == 0) {
+
         if (types.length > 1) {
-          const [ rows ] = await recipe.viewRecipesOfTypes();
+          let typeIds = [];
+          for (i = 0; i < types.length; i++) typeIds.push(types[i]);
+          const typePlaceholders = '?, '.repeat(types.length - 1) + '?';
+          const [ rows ] = await recipe.viewRecipesOfTypes(starting, display, typePlaceholders, typeIds);
+          const [ rowCount ] = await recipe.countRecipesOfTypes(typePlaceholders, typeIds);
+          let total = rowCount[0].total;
+          let pages = (total > display) ? Math.ceil(total / display) : 1;
+          return res.send({rows, pages, starting});
         }
+
         if (types.length == 1) {
-          const [ rows ] = await recipe.viewRecipesOfType();
+          let typeId = `${types}`;
+          const [ rows ] = await recipe.viewRecipesOfType(starting, display, typeId);
+          const [ rowCount ] = await recipe.countRecipesOfType(typeId);
+          let total = rowCount[0].total;
+          let pages = (total > display) ? Math.ceil(total / display) : 1;
+          return res.send({rows, pages, starting});
         }
+
         if (types.length == 0) {
           const [ rows ] = await recipe.viewAllRecipes(starting, display);
           const [ rowCount ] = await recipe.countAllRecipes();
           let total = rowCount[0].total;
           let pages = (total > display) ? Math.ceil(total / display) : 1;
-          res.send({rows, pages, starting});
+          return res.send({rows, pages, starting});
         }
+
       }
 
       next();

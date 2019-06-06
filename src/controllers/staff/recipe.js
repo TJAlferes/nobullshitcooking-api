@@ -6,7 +6,8 @@ const staffRecipeController = {
   createRecipe: async function(req, res, next) {
     try {
       const recipeInfo = req.body.recipeInfo;  // sanitize and validate
-      validator.validate(recipeInfo);  // implement control flow here
+      //validator.validate(recipeInfo);  // implement control flow here
+      console.log(recipeInfo);
       const recipe = new Recipe(pool);
       const [ row ] = await recipe.createRecipe(recipeInfo);
       res.send(row);
