@@ -7,8 +7,8 @@ class Cuisine {
 
   async viewAllCuisines() {
     const sql = `
-      SELECT ingredient_type_id, ingredient_type_name
-      FROM nobsc_ingredient_types
+      SELECT cuisine_id, cuisine_name
+      FROM nobsc_cuisines
     `;
     const [ allCuisines ] = await this.pool.execute(sql);
     return allCuisines;
@@ -16,9 +16,9 @@ class Cuisine {
 
   async viewCuisineById(cuisineId) {
     const sql = `
-      SELECT ingredient_type_id, ingredient_type_name
-      FROM nobsc_ingredient_types
-      WHERE ingredient_type_id = ?
+      SELECT cuisine_id, cuisine_name
+      FROM nobsc_cuisines
+      WHERE cuisine_id = ?
     `;
     const [ cuisine ] = await this.pool.execute(sql, [cuisineId]);
     return cuisine;

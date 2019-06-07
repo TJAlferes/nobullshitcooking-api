@@ -21,6 +21,7 @@ class IngredientType {
       WHERE ingredient_type_id = ?
     `;
     const [ ingredientType ] = await this.pool.execute(sql, [typeId]);
+    console.log(ingredientType);
     return ingredientType;
   }
 }

@@ -5,7 +5,7 @@ const ingredientTypeController = {
   viewAllIngredientTypes: async function(req, res, next) {
     try {
       const ingredientType = new IngredientType(pool);
-      const [ rows ] = await ingredientType.viewAllIngredientTypes();
+      const rows = await ingredientType.viewAllIngredientTypes();
       res.send(rows);
       next();
     } catch(err) {
@@ -17,8 +17,8 @@ const ingredientTypeController = {
       const ingredientTypeId = req.params.ingredientTypeId;
       if (ingredientTypeId < 1 || ingredientTypeId > 18) throw new Error('invalid ingredient type');
       const ingredientType = new IngredientType(pool);
-      const [ rows ] = await ingredientType.viewIngredientTypeById(ingredientTypeId);
-      res.send(rows);
+      const [ row ] = await ingredientType.viewIngredientTypeById(ingredientTypeId);
+      res.send(row);
       next();
     } catch(err) {
       next(err);

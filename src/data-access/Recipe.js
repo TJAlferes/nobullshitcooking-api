@@ -51,7 +51,7 @@ class Recipe {
     return allRecipesOfTypeCount;
   }
 
-  async countRecipesOfTypes(placeholders, typeIds) {  // typeIds must be an array
+  async countRecipesOfTypes(placeholders, typeIds) {
     const sql = `
       SELECT COUNT(*) AS total
       FROM nobsc_recipes
@@ -71,7 +71,7 @@ class Recipe {
     return allRecipesOfCuisineCount;
   }
 
-  async countRecipesOfCuisines(placeholders, cuisineIds) {  // typeIds must be an array
+  async countRecipesOfCuisines(placeholders, cuisineIds) {
     const sql = `
       SELECT COUNT(*) AS total
       FROM nobsc_recipes
@@ -148,7 +148,7 @@ class Recipe {
     return allRecipesOfType;
   }
 
-  async viewRecipesOfTypes(starting, display, placeholders, typeIds) {  // typeIds must be an array
+  async viewRecipesOfTypes(starting, display, placeholders, typeIds) {
     const sql = `
       SELECT recipe_id, title, recipe_image
       FROM nobsc_recipes
@@ -172,7 +172,7 @@ class Recipe {
     return allRecipesOfCuisine;
   }
 
-  async viewRecipesOfCuisines(starting, display, placeholders, cuisineIds) {  // typeIds must be an array
+  async viewRecipesOfCuisines(starting, display, placeholders, cuisineIds) {
     const sql = `
       SELECT recipe_id, title, recipe_image
       FROM nobsc_recipes
@@ -249,10 +249,10 @@ class Recipe {
         r.ingredients_image as ingredients_image,
         r.cooking_image as cooking_image,
         t.recipe_type_name AS recipe_type_name,
-        c.cuisine AS cuisine
-      FROM nobsc_recipe_types t
-      LEFT JOIN nobsc_recipes r ON r.recipe_type_id = t.recipe_type_id
-      LEFT JOIN nobsc_recipes r ON r.cuisine_id = c.cuisine_id
+        c.cuisine_name AS cuisine_name
+      FROM nobsc_recipes r
+      LEFT JOIN nobsc_recipe_types t ON r.recipe_type_id = t.recipe_type_id
+      LEFT JOIN nobsc_cuisines c ON r.cuisine_id = c.cuisine_id
       WHERE recipe_id = ?
     `;
     const [ recipe ] = await this.pool.execute(sql, [recipeId]);

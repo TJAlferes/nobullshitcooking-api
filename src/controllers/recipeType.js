@@ -5,7 +5,7 @@ const recipeTypeController = {
   viewAllRecipeTypes: async function(req, res, next) {
     try {
       const recipeType = new RecipeType(pool);
-      const [ rows ] = await recipeType.viewAllRecipeTypes();
+      const rows = await recipeType.viewAllRecipeTypes();
       res.send(rows);
       next();
     } catch(err) {
@@ -17,8 +17,8 @@ const recipeTypeController = {
       const recipeTypeId = req.params.recipeTypeId;
       if (recipeTypeId < 1 || recipeTypeId > 12) throw new Error('invalid recipe type');
       const recipeType = new RecipeType(pool);
-      const [ rows ] = await recipeType.viewRecipeTypeById(recipeTypeId);
-      res.send(rows);
+      const [ row ] = await recipeType.viewRecipeTypeById(recipeTypeId);
+      res.send(row);
       next();
     } catch(err) {
       next(err);

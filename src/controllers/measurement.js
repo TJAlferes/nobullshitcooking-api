@@ -5,7 +5,7 @@ const measurementController = {
   viewAllMeasurements: async function(req, res, next) {
     try {
       const measurement = new Measurement(pool);
-      const [ rows ] = await measurement.viewAllMeasurements();
+      const rows = await measurement.viewAllMeasurements();
       res.send(rows);
       next();
     } catch(err) {
@@ -17,8 +17,8 @@ const measurementController = {
       const measurementId = req.params.measurementId;
       if (measurementId < 1 || measurementId > 12) throw new Error('invalid measurement');
       const measurement = new Measurement(pool);
-      const [ rows ] = await measurement.viewMeasurementById(measurementId);
-      res.send(rows);
+      const [ row ] = await measurement.viewMeasurementById(measurementId);
+      res.send(row);
       next();
     } catch(err) {
       next(err);
