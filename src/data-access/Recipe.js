@@ -7,12 +7,20 @@ class Recipe {
     this.countRecipesOfTypes = this.countRecipesOfTypes.bind(this);
     this.countRecipesOfCuisine = this.countRecipesOfCuisine.bind(this);
     this.countRecipesOfCuisines = this.countRecipesOfCuisines.bind(this);
+    this.countRecipesOfCuisinesAndTypes = this.countRecipesOfCuisinesAndTypes.bind(this);
+    this.countRecipesOfCuisinesAndType = this.countRecipesOfCuisinesAndType.bind(this);
+    this.countRecipesOfCuisineAndTypes = this.countRecipesOfCuisineAndTypes.bind(this);
+    this.countRecipesOfCuisineAndType = this.countRecipesOfCuisineAndType.bind(this);
 
     this.viewAllRecipes = this.viewAllRecipes.bind(this);
     this.viewRecipesOfType = this.viewRecipesOfType.bind(this);
     this.viewRecipesOfTypes = this.viewRecipesOfTypes.bind(this);
     this.viewRecipesOfCuisine = this.viewRecipesOfCuisine.bind(this);
     this.viewRecipesOfCuisines = this.viewRecipesOfCuisines.bind(this);
+    this.viewRecipesOfCuisinesAndTypes = this.viewRecipesOfCuisinesAndTypes.bind(this);
+    this.viewRecipesOfCuisinesAndType = this.viewRecipesOfCuisinesAndType.bind(this);
+    this.viewRecipesOfCuisineAndTypes = this.viewRecipesOfCuisineAndTypes.bind(this);
+    this.viewRecipesOfCuisineAndType = this.viewRecipesOfCuisineAndType.bind(this);
     this.viewRecipeById = this.viewRecipeById.bind(this);
 
     this.createRecipe = this.createRecipe.bind(this);
@@ -73,6 +81,45 @@ class Recipe {
     return allRecipesOfCuisinesCount;
   }
 
+  async countRecipesOfCuisinesAndTypes(cuisinePlaceholders, typePlaceholders, ids) {
+    const sql=`
+      SELECT COUNT(*) AS total
+      FROM nobsc_recipes
+      WHERE cuisine_id IN (${cuisinePlaceholders}) AND recipe_type_id IN (${typePlaceholders})
+    `;
+    const [ allRecipesOfCuisinesAndTypesCount ] = await this.pool.execute(sql, ids);
+    return allRecipesOfCuisinesAndTypesCount;
+  }
+
+  async countRecipesOfCuisinesAndType(cuisinePlaceholders, ids) {
+    const sql=`
+      SELECT COUNT(*) AS total
+      FROM nobsc_recipes
+      WHERE cuisine_id IN (${cuisinePlaceholders})
+    `;
+    const [ allRecipesOfCuisinesAndTypeCount ] = await this.pool.execute(sql, ids);
+    return allRecipesOfCuisinesAndTypeCount;
+  }
+
+  async countRecipesOfCuisineAndTypes(typePlaceholders, ids) {
+    const sql=`
+      SELECT COUNT(*) AS total
+      FROM nobsc_recipes
+      WHERE cuisine_id = ? AND recipe_type_id IN (${typePlaceholders})
+    `;
+    const [ allRecipesOfCuisineAndTypesCount ] = await this.pool.execute(sql, ids);
+    return allRecipesOfCuisineAndTypesCount;
+  }
+
+  async countRecipesOfCuisineAndType(ids) {
+    const sql=`
+      SELECT COUNT(*) AS total
+      FROM nobsc_recipes
+      WHERE cuisine_id = ? AND recipe_type_id = ?
+    `;
+    const [ allRecipesOfCuisineAndTypeCount ] = await this.pool.execute(sql, ids);
+    return allRecipesOfCuisineAndTypeCount;
+  }
 
   /*
   viewing methods
@@ -135,6 +182,54 @@ class Recipe {
     `;  // TO DO: change to ? for security
     const [ allRecipesOfCuisines ] = await this.pool.execute(sql, cuisineIds);
     return allRecipesOfCuisines;
+  }
+
+  async viewRecipesOfCuisinesAndTypes(starting, display, cuisinePlaceholders, typePlaceholders, ids) {
+    const sql = `
+      SELECT recipe_id, title, recipe_image
+      FROM nobsc_recipes
+      WHERE cuisine_id IN (${cuisinePlaceholders}) AND recipe_type_id IN (${typePlaceholders})
+      ORDER BY title ASC
+      LIMIT ${starting}, ${display}
+    `;
+    const [ allRecipesOfCuisinesAndTypes ] = await this.pool.execute(sql, ids);
+    return allRecipesOfCuisinesAndTypes;
+  }
+
+  async viewRecipesOfCuisinesAndType(starting, display, cuisinePlaceholders, ids) {
+    const sql = `
+      SELECT recipe_id, title, recipe_image
+      FROM nobsc_recipes
+      WHERE cuisine_id IN (${cuisinePlaceholders}) AND recipe_type_id = ?
+      ORDER BY title ASC
+      LIMIT ${starting}, ${display}
+    `;
+    const [ allRecipes ] = await this.pool.execute(sql, ids);
+    return allRecipes;
+  }
+
+  async viewRecipesOfCuisineAndTypes(starting, display, typePlaceholders, ids) {
+    const sql = `
+      SELECT recipe_id, title, recipe_image
+      FROM nobsc_recipes
+      WHERE cuisine_id = ? AND recipe_type_id IN (${typePlaceholders})
+      ORDER BY title ASC
+      LIMIT ${starting}, ${display}
+    `;
+    const [ allRecipes ] = await this.pool.execute(sql, ids);
+    return allRecipes;
+  }
+
+  async viewRecipesOfCuisineAndType(starting, display, ids) {
+    const sql = `
+      SELECT recipe_id, title, recipe_image
+      FROM nobsc_recipes
+      WHERE cuisine_id = ? AND recipe_type_id = ?
+      ORDER BY title ASC
+      LIMIT ${starting}, ${display}
+    `;
+    const [ allRecipes ] = await this.pool.execute(sql, ids);
+    return allRecipes;
   }
 
   async viewRecipeById(recipeId) {
