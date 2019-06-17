@@ -23,6 +23,7 @@ class Recipe {
     this.viewRecipesOfCuisineAndType = this.viewRecipesOfCuisineAndType.bind(this);
     this.viewRecipeById = this.viewRecipeById.bind(this);
     this.viewRecipeTitlesByIds = this.viewRecipeTitlesByIds.bind(this);
+    this.viewRecipesForSubmitEditForm = viewRecipesForSubmitEditForm.bind(this);
 
     this.createRecipe = this.createRecipe.bind(this);
     this.updateRecipe = this.updateRecipe.bind(this);
@@ -260,6 +261,7 @@ class Recipe {
     return recipe;
   }
 
+  // YOU CAN REMOVE THIS
   async viewRecipeTitlesByIds(placeholders, recipeIds) {
     const sql = `
       SELECT recipe_id, title
@@ -268,6 +270,16 @@ class Recipe {
     `;
     const [ recipeTitles ] = await this.pool.execute(sql, recipeIds);
     return recipeTitles;
+  }
+
+  async viewRecipesForSubmitEditForm() {
+    const sql = `
+      SELECT recipe_id, recipe_type_id, cuisine_id, title
+      FROM nobsc_recipes
+      ORDER BY title ASC
+    `;
+    const [ allRecipes ] = await this.pool.execute(sql);
+    return allRecipes;
   }
 
   /*

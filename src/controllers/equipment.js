@@ -52,6 +52,15 @@ const equipmentController = {
     } catch(err) {
       next(err);
     }
+  },
+  viewEquipmentForSubmitEditForm: async function(req, res, next) {
+    try {
+      const equipment = new Equipment(pool);
+      const rows = await equipment.viewEquipmentForSubmitEditForm();
+      res.send(rows);
+    } catch(err) {
+      next(err);
+    }
   }
 };
 

@@ -8,6 +8,7 @@ class Ingredient {
     this.viewIngredientsOfType = this.viewIngredientsOfType.bind(this);
     this.viewIngredientsOfTypes = this.viewIngredientsOfTypes.bind(this);
     this.viewIngredientById = this.viewIngredientById.bind(this);
+    this.viewIngredientsForSubmitEditForm = viewIngredientsForSubmitEditForm.bind(this);
     this.createIngredient = this.createIngredient.bind(this);
     this.updateIngredient = this.updateIngredient.bind(this);
     this.deleteIngredient = this.deleteIngredient.bind(this);
@@ -91,6 +92,16 @@ class Ingredient {
     `;
     const [ ingredient ] = await this.pool.execute(sql, [ingredientId]);
     return ingredient;
+  }
+
+  async viewIngredientsForSubmitEditForm() {
+    const sql = `
+      SELECT ingredient_id, ingredient_type_id, ingredient_name
+      FROM nobsc_ingredients
+      ORDER BY ingredient_name ASC
+    `;
+    const [ allIngredients ] = await this.pool.execute(sql);
+    return allIngredients;
   }
 
   async createIngredient(ingredientInfo) {

@@ -12,7 +12,7 @@ const AWS_S3_BUCKET_IMAGES_1 = process.env.AWS_S3_BUCKET_IMAGES_1;
 
 module.exports = async function(req, res, next) {
   try {
-    const fileName = `${uuidv4()}${req.body.fileName}`;  // do in React instead?
+    const fileName = `${uuidv4()}${req.body.fileName}`;  // do in React instead?  date instead of uuid?
     const fileType = req.body.fileType;
     const s3 = new AWS.S3();
     const getSignedUrlPromise = (operation, params) => {

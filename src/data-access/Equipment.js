@@ -8,6 +8,7 @@ class Equipment {
     this.viewEquipmentOfType = this.viewEquipmentOfType.bind(this);
     this.viewEquipmentOfTypes = this.viewEquipmentOfTypes.bind(this);
     this.viewEquipmentById = this.viewEquipmentById.bind(this);
+    this.viewEquipmentForSubmitEditForm = viewEquipmentForSubmitEditForm.bind(this);
     this.createEquipment = this.createEquipment.bind(this);
     this.updateEquipment = this.updateEquipment.bind(this);
     this.deleteEquipment = this.deleteEquipment.bind(this);
@@ -91,6 +92,16 @@ class Equipment {
     `;  // ... Is this right?
     const [ equipment ] = await this.pool.execute(sql, [equipmentId]);
     return equipment;
+  }
+
+  async viewEquipmentForSubmitEditForm() {
+    const sql = `
+      SELECT equipment_id, equipment_type_id, equipment_name
+      FROM nobsc_equipment
+      ORDER BY equipment_name ASC
+    `;
+    const [ allEquipment ] = await this.pool.execute(sql);
+    return allEquipment;
   }
 
   async createEquipment(equipmentInfo) {

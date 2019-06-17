@@ -160,11 +160,19 @@ const recipeController = {
   viewRecipeTitlesByIds: async function(req, res, next) {
     try {
       const recipeIds = (req.body.recipeIds) ? req.body.recipeIds : [];
-      console.log("in controller: ", recipeIds);
       const placeholders = '?, '.repeat(recipeIds.length - 1) + '?';
       const recipe = new Recipe(pool);
       const rows = await recipe.viewRecipeTitlesByIds(placeholders, recipeIds);
-      console.log("in controller: ", rows);
+      res.send(rows);
+    } catch(err) {
+      next(err);
+    }
+  },
+  viewRecipesForSubmitEditForm: async function(req, res, next) {
+    try {
+      const recipe = new Recipe(pool);
+      const rows = await recipe.viewRecipesForSubmitEditForm();
+      console.log('rows in recipe controller: ', rows);
       res.send(rows);
     } catch(err) {
       next(err);
