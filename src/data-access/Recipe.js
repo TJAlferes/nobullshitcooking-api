@@ -22,6 +22,7 @@ class Recipe {
     this.viewRecipesOfCuisineAndTypes = this.viewRecipesOfCuisineAndTypes.bind(this);
     this.viewRecipesOfCuisineAndType = this.viewRecipesOfCuisineAndType.bind(this);
     this.viewRecipeById = this.viewRecipeById.bind(this);
+    this.viewRecipeTitlesByIds = this.viewRecipeTitlesByIds.bind(this);
 
     this.createRecipe = this.createRecipe.bind(this);
     this.updateRecipe = this.updateRecipe.bind(this);
@@ -257,6 +258,16 @@ class Recipe {
     `;
     const [ recipe ] = await this.pool.execute(sql, [recipeId]);
     return recipe;
+  }
+
+  async viewRecipeTitlesByIds(placeholders, recipeIds) {
+    const sql = `
+      SELECT recipe_id, title
+      FROM nobsc_recipes
+      WHERE recipe_id IN (${placeholders})
+    `;
+    const [ recipeTitles ] = await this.pool.execute(sql, recipeIds);
+    return recipeTitles;
   }
 
   /*

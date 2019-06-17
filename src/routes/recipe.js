@@ -14,6 +14,11 @@ router.post(
   catchExceptions(recipeController.viewRecipe)
 );
 
+router.post(
+  '/titles',
+  catchExceptions(recipeController.viewRecipeTitlesByIds)
+);
+
 router.get(
   '/:recipeId',
   catchExceptions(recipeController.viewRecipeDetail)
