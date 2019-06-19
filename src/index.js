@@ -2,7 +2,7 @@
 //require('babel-polyfill');  // pollutes globals?
 require('dotenv').config();
 const express = require('express');
-const graphqlHTTP = require('express-graphql');
+const expressGraphQL = require('express-graphql');
 const { buildSchema } = require('graphql');
 const session = require("express-session");
 const sessionFileStore = require('session-file-store');
@@ -217,7 +217,7 @@ app.use('/measurement', measurementRoutes);
 app.use('/staff', staffRoutes);
 app.use('/user', userRoutes);
 
-app.use('/graphql', graphqlHTTP({
+app.use('/graphql', expressGraphQL({
   schema,
   rootValue,
   graphiql: true
