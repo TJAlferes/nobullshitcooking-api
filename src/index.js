@@ -2,6 +2,8 @@
 //require('babel-polyfill');  // pollutes globals?
 require('dotenv').config();
 const express = require('express');
+const graphqlHTTP = require('express-graphql');
+const { buildSchema } = require('graphql');
 const session = require("express-session");
 const sessionFileStore = require('session-file-store');
 //const redis = require('redis');
@@ -13,7 +15,8 @@ const helmet = require('helmet');
 //const csurf = require('csurf');
 //const hpp = require('hpp');
 //const morgan = require('morgan');
-const bodyParser = require('body-parser');
+const bodyParser = require('body-parser');  // you can use native express now
+const crypto = require('crypto');
 
 const {
   equipmentRoutes,
@@ -35,6 +38,80 @@ const {
 1. setup
 
 */
+//CHANGE AND MOVE
+const db = {
+  users: [
+    { id: '1', email: 'alex@gmail.com', name: 'Alex', avatarUrl: 'https://gravatar.com/...' },
+    { id: '2', email: 'max@gmail.com', name: 'Max', avatarUrl: 'https://gravatar.com/...' }
+  ],
+  messages: [
+    { id: '1', userId: '1', body: 'Hello', createdAt: Date.now() },
+    { id: '2', userId: '2', body: 'Hi', createdAt: Date.now() },
+    { id: '3', userId: '1', body: 'What\'s up?', createdAt: Date.now() }
+  ]
+}
+
+// CHANGE AND MOVE
+class User {
+  constructor (user) {
+    Object.assign(this, user)
+  }
+
+  get messages () {
+    return db.messages.filter(message => message.userId === this.id)
+  }
+}
+
+// CHANGE AND PROBABLY MOVE
+const schema = buildSchema(`
+  type Query {
+    users: [User!]!
+    user(id: ID!): User
+    messages: [Message!]!
+  }
+
+  type Mutation {
+    addUser(email: String!, name: String): User!
+  }
+
+  type User {
+    id: ID!
+    email: String!
+    name: String
+    avatarUrl: String
+    messages: [Message!]!
+  }
+
+  type Message {
+    id: ID!
+    body: String!
+    createdAt: String!
+  }
+`);
+
+// CHANGE AND PROBABLY MOVE
+const rootValue = {
+  users: function() {
+    return db.users.map(user => new User(user));
+  },
+  user: function(args) {
+    const user = db.users.find(user => user.id === args.id);
+    return user && new User(user);
+  },
+  messages: function() {
+    return db.messages;
+  },
+  addUser: function({ email, name }) {
+    const user = {
+      id: crypto.randomBytes(10).toString('hex'),
+      email,
+      name
+    };
+    db.users.push(user);
+    return user;
+  }
+};
+
 const app = express();
 const FileStore = sessionFileStore(session);
 //const RedisStore = connectRedis(session);  // Not using yet, simply storing session in filesystem for now
@@ -139,6 +216,12 @@ app.use('/cuisine', cuisineRoutes);
 app.use('/measurement', measurementRoutes);
 app.use('/staff', staffRoutes);
 app.use('/user', userRoutes);
+
+app.use('/graphql', graphqlHTTP({
+  schema,
+  rootValue,
+  graphiql: true
+}));
 
 
 
