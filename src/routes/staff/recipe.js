@@ -18,7 +18,7 @@ router.post(
 );
 
 router.put(
-  '/edit/:recipeId',
+  '/update/:recipeId',
   staffIsAuth,
   /*isValid,*/
   catchExceptions(staffRecipeController.updateRecipe)

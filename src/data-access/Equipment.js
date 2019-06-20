@@ -33,7 +33,7 @@ class Equipment {
     return allEquipmentOfTypeCount;
   }
 
-  async countEquipmentOfTypes(placeholders, typeIds) {  // typeIds must be an array
+  async countEquipmentOfTypes(placeholders, typeIds) {
     const sql = `
       SELECT COUNT(*) AS total
       FROM nobsc_equipment
@@ -66,7 +66,7 @@ class Equipment {
     return allEqupimentOfType;
   }
 
-  async viewEquipmentOfTypes(starting, display, placeholders, typeIds) {  // typeIds must be an array
+  async viewEquipmentOfTypes(starting, display, placeholders, typeIds) {
     const sql = `
       SELECT equipment_id, equipment_name, equipment_type_id, equipment_image
       FROM nobsc_equipment

@@ -18,7 +18,7 @@ router.post(
 );
 
 router.put(
-  '/edit/:equipmentId',
+  '/update/:equipmentId',
   staffIsAuth,
   /*isValid,*/
   catchExceptions(staffEquipmentController.updateEquipment)

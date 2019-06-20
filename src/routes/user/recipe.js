@@ -11,16 +11,6 @@ const router = Router();
 // for /user/recipe/...
 
 router.post(
-  '/',
-  catchExceptions(userRecipeController.viewRecipe)
-);
-
-router.get(
-  '/:recipeId',
-  catchExceptions(userRecipeController.viewRecipeDetail)
-);
-
-router.post(
   '/create',
   userIsAuth,
   /*isValid,*/
@@ -28,7 +18,7 @@ router.post(
 );
 
 router.put(
-  '/edit/:recipeId',
+  '/update/:recipeId',
   userIsAuth,
   /*isValid,*/
   catchExceptions(userRecipeController.updateRecipe)
@@ -38,6 +28,18 @@ router.delete(
   '/delete/:recipeId',
   userIsAuth,
   catchExceptions(userRecipeController.deleteRecipe)
+);
+
+router.post(
+  '/',
+  userIsAuth,
+  catchExceptions(userRecipeController.viewRecipe)
+);
+
+router.get(
+  '/:recipeId',
+  userIsAuth,
+  catchExceptions(userRecipeController.viewRecipeDetail)
 );
 
 module.exports = router;

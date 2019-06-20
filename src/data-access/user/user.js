@@ -1,15 +1,40 @@
 class User {
   constructor(pool) {
     this.pool = pool;
+
     this.viewAllUsers = this.viewAllUsers.bind(this);
     this.viewUserById = this.viewUserById.bind(this);
+
     this.getUserByEmail = this.getUserByEmail.bind(this);  // get-- are for auth only, use view-- for public purposes
     this.getUserByName = this.getUserByName.bind(this);  // get-- are for auth only, use view-- for public purposes
+
     this.createUser = this.createUser.bind(this);
     this.updateUser = this.updateUser.bind(this);
     this.deleteUser = this.deleteUser.bind(this);
+
     this.viewPlan = this.viewPlan.bind(this);
     this.updatePlan = this.updatePlan.bind(this);
+
+    this.viewUserEquipment = this.viewUserEquipment.bind(this);
+    this.viewUserEquipmentDetail = this.viewUserEquipmentDetail.bind(this);
+    this.createUserEquipment = this.createUserEquipment.bind(this);
+    this.updateUserEquipment = this.updateUserEquipment.bind(this);
+    this.deleteUserEquipment = this.deleteUserEquipment.bind(this);
+
+    this.viewUserIngredient = this.viewUserIngredient.bind(this);
+    this.viewUserIngredientDetail = this.viewUserIngredientDetail.bind(this);
+    this.createUserIngredient = this.createUserIngredient.bind(this);
+    this.updateUserIngredient = this.updateUserIngredient.bind(this);
+    this.deleteUserIngredient = this.deleteUserIngredient.bind(this);
+
+    this.viewUserRecipe = this.viewUserRecipe.bind(this);
+    this.viewUserRecipeDetail = this.viewUserRecipeDetail.bind(this);
+    this.viewUserEquipmentForSubmitEditForm = this.viewUserEquipmentForSubmitEditForm.bind(this);
+    this.viewUserIngredientsForSubmitEditForm = this.viewUserIngredientsForSubmitEditForm.bind(this);
+    this.viewUserRecipesForSubmitEditForm = this.viewUserRecipesForSubmitEditForm.bind(this);
+    this.createUserRecipe = this.createUserRecipe.bind(this);
+    this.updateUserRecipe = this.updateUserRecipe.bind(this);
+    this.deleteUserRecipe = this.deleteUserRecipe.bind(this);
   }
 
   async viewAllUsers(starting, display) {
@@ -119,6 +144,85 @@ class User {
     const [ updatedPlan ] = await this.pool.execute(sql, [plan, userId]);
     if (!updatedPlan) throw new Error("updatePlan failed");
     return updatedPlan;
+  }
+
+  /*
+  For now, we're storing JSON columns in the User table,
+  but if performance becomes an issue,
+  then fallback to storing FKs to user_ids in the
+  nobsc_plans, nobsc_equipment, nobsc_ingredients, and nobsc_recipes tables
+  */
+  async viewUserEquipment(userInfo, ) {
+    const { userId } = userInfo;
+    const { }
+  }
+
+  async viewUserEquipmentDetail() {
+
+  }
+
+  async createUserEquipment() {
+
+  }
+
+  async updateUserEquipment() {
+
+  }
+
+  async deleteUserEquipment() {
+
+  }
+
+  async viewUserIngredient() {
+
+  }
+
+  async viewUserIngredientDetail() {
+
+  }
+
+  async createUserIngredient() {
+
+  }
+
+  async updateUserIngredient() {
+
+  }
+
+  async deleteUserIngredient() {
+
+  }
+
+  async viewUserRecipe() {
+
+  }
+
+  async viewUserRecipeDetail() {
+
+  }
+
+  async viewUserEquipmentForSubmitEditForm() {
+
+  }
+
+  async viewUserIngredientsForSubmitEditForm() {
+
+  }
+
+  async viewUserRecipesForSubmitEditForm() {
+
+  }
+
+  async createUserRecipe() {
+
+  }
+
+  async updateUserRecipe() {
+
+  }
+
+  async deleteUserRecipe() {
+
   }
 }
 
