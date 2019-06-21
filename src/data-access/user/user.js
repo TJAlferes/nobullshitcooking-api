@@ -2,12 +2,11 @@ class User {
   constructor(pool) {
     this.pool = pool;
 
-    this.viewAllUsers = this.viewAllUsers.bind(this);
-    this.viewUserById = this.viewUserById.bind(this);
-
     this.getUserByEmail = this.getUserByEmail.bind(this);  // get-- are for auth only, use view-- for public purposes
     this.getUserByName = this.getUserByName.bind(this);  // get-- are for auth only, use view-- for public purposes
 
+    this.viewAllUsers = this.viewAllUsers.bind(this);
+    this.viewUserById = this.viewUserById.bind(this);
     this.createUser = this.createUser.bind(this);
     this.updateUser = this.updateUser.bind(this);
     this.deleteUser = this.deleteUser.bind(this);
@@ -37,29 +36,6 @@ class User {
     this.deleteUserRecipe = this.deleteUserRecipe.bind(this);
   }
 
-  async viewAllUsers(starting, display) {
-    const sql = `
-      SELECT username, avatar
-      FROM nobsc_users
-      ORDER BY username ASC
-      LIMIT ?, ?
-    `;
-    const [ allUsers ] = await this.pool.execute(sql, [starting, display]);
-    if (!allUsers) throw new Error("viewAllUsers failed");
-    return allUsers;
-  }
-
-  async viewUserById(userId) {  // profile and plan info too (separate table?) (public or private option)
-    const sql = `
-      SELECT username, avatar
-      FROM nobsc_users
-      WHERE user_id = ?
-    `;
-    const [ user ] = await this.pool.execute(sql, [userId]);
-    if (!user) throw new Error("viewUserById failed");
-    return user;
-  }
-
   async getUserByEmail(email) {
     const sql = `
       SELECT user_id, email, pass, username
@@ -80,6 +56,29 @@ class User {
     const [ userByName ] = await this.pool.execute(sql, [username]);
     if (!userByName) throw new Error("getUserByName failed");
     return userByName;
+  }
+
+  async viewAllUsers(starting, display) {
+    const sql = `
+      SELECT username, avatar
+      FROM nobsc_users
+      ORDER BY username ASC
+      LIMIT ?, ?
+    `;
+    const [ allUsers ] = await this.pool.execute(sql, [starting, display]);
+    if (!allUsers) throw new Error("viewAllUsers failed");
+    return allUsers;
+  }
+
+  async viewUserById(userId) {
+    const sql = `
+      SELECT username, avatar
+      FROM nobsc_users
+      WHERE user_id = ?
+    `;
+    const [ user ] = await this.pool.execute(sql, [userId]);
+    if (!user) throw new Error("viewUserById failed");
+    return user;
   }
 
   async createUser(userInfo) {
@@ -122,12 +121,16 @@ class User {
     return deletedUser;
   }
 
+  /*
+  the user's plan
+  */
+
   async viewPlan(userId) {
     const sql = `
       SELECT plan
       FROM nobsc_users
       WHERE user_id = ?
-    `;  // JSON_EXTRACT() JSON_UNQUOTE() ?
+    `;
     const [ plan ] = await this.pool.execute(sql, [userId]);
     if (!plan) throw new Error("viewPlan failed");
     return plan;
@@ -140,39 +143,101 @@ class User {
       SET plan = ?
       WHERE user_id = ?
       LIMIT 1
-    `;  // must be valid JSON, two options, either update the entire JSON or update only what needs to be updated
+    `;
     const [ updatedPlan ] = await this.pool.execute(sql, [plan, userId]);
     if (!updatedPlan) throw new Error("updatePlan failed");
     return updatedPlan;
   }
 
   /*
+  user created equipment
+  */
+
+  /*
   For now, we're storing JSON columns in the User table,
   but if performance becomes an issue,
   then fallback to storing FKs to user_ids in the
-  nobsc_plans, nobsc_equipment, nobsc_ingredients, and nobsc_recipes tables
+  nobsc_user_plans, nobsc_user_equipment, nobsc_user_ingredients, and nobsc_user_recipes tables
+
+  For favorited/bookmarked recipes, use m:n linking table nobsc_favorite_recipes
+  between nobsc_users and nobsc_recipes
   */
-  async viewUserEquipment(userInfo, ) {
+  async viewAllUserEquipment(userInfo) {
     const { userId } = userInfo;
-    const { }
+    const sql = `
+      SELECT equipment
+      FROM nobsc_users
+      WHERE user_id = ?
+    `;
+    const [ allUserEquipment ] = await this.pool.execute(sql, [userId]);
+    if (!allUserEquipment) throw new Error("viewAllUserEquipment failed");
+    return allUserEquipment;
   }
 
-  async viewUserEquipmentDetail() {
+  async viewUserEquipmentDetail(userInfo) {
+    const { userId, equipmentId } = userInfo;
+    const sql = `
+      SELECT
+      equipment->'$.user_equipment_name',
+      equipment->'$.user_equipment_image',
+      equipment->'$.user_equipment_description'
+      FROM nobsc_users
+      WHERE user_id = ? AND equipment->'$.user_equipment_id' = ?
+    `;
+    const [ userEquipment ] = await this.pool.execute(sql, [userId, equipmentId]);
+    if (!userEquipment) throw new Error("viewUserEquipmentDetail failed");
+    return userEquipment;
+  }
+
+  async createUserEquipment(userInfo) {
+    const {
+      userId,
+      equipmentId,
+      equipmentTypeId,
+      equipmentName,
+      equipmentImage,
+      equipmentDescription
+    } = userInfo;
+    const sql = `
+      JSON_INSERT
+    `;
 
   }
 
-  async createUserEquipment() {
+  async updateUserEquipment(userInfo) {
+    const {
+      userId,
+      equipmentId,
+      equipmentTypeId,
+      equipmentName,
+      equipmentImage,
+      equipmentDescription
+    } = userInfo;
+    const sql = `
+      UPDATE equipment
+      SET equipment = JSON_REPLACE(
+        equipment,
+        '$.user_equipment_type_id', ?,
+        '$.user_equipment_name', ?,
+        '$.user_equipment_image', ?,
+        '$.user_equipment_description', ?
+      )
+      WHERE user_id = ? AND equipment->'$.user_equipment_id' = ?
+    `;
+    // JSON_INSERT -- if not exist, add
+    // JSON_REPLACE -- if exist, replace
+    // JSON_SET -- if not exist, add, else, replace
 
   }
 
-  async updateUserEquipment() {
-
+  async deleteUserEquipment(userInfo) {
+    const { userId, equipmentId } = userInfo;
   }
 
-  async deleteUserEquipment() {
-
-  }
-
+  /*
+  user created ingredients
+  */
+  
   async viewUserIngredient() {
 
   }
@@ -193,6 +258,10 @@ class User {
 
   }
 
+  /*
+  user created recipes
+  */
+  
   async viewUserRecipe() {
 
   }
