@@ -8,8 +8,6 @@ class Staff {
     this.createStaff = this.createStaff.bind(this);
     this.updateStaff = this.updateStaff.bind(this);
     this.deleteStaff = this.deleteStaff.bind(this);
-    this.viewPlan = this.viewPlan.bind(this);
-    this.updatePlan = this.updatePlan.bind(this);
   }
 
   async viewAllStaff(starting, display) {
@@ -93,30 +91,6 @@ class Staff {
     const [ deletedStaff ] = await this.pool.execute(sql, [staffId]);
     if (!deletedStaff) throw new Error("deleteStaff failed");
     return deletedStaff;
-  }
-
-  async viewPlan(staffId) {
-    const sql = `
-      SELECT plan
-      FROM nobsc_staff
-      WHERE staff_id = ?
-    `;  // JSON_EXTRACT() JSON_UNQUOTE() ?
-    const [ plan ] = await this.pool.execute(sql, [staffId]);
-    if (!plan) throw new Error("viewPlan failed");
-    return plan;
-  }
-
-  async updatePlan(staffInfo) {
-    const { staffId, plan } = staffInfo;
-    const sql = `
-      UPDATE nobsc_staff
-      SET plan = ?
-      WHERE staff_id = ?
-      LIMIT 1
-    `;  // must be valid JSON, two options, either update the entire JSON or update only what needs to be updated
-    const [ updatedPlan ] = await this.pool.execute(sql, [plan, staffId]);
-    if (!updatedPlan) throw new Error("updatePlan failed");
-    return updatedPlan;
   }
 }
 

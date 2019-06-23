@@ -2,7 +2,9 @@ const bcrypt = require('bcrypt');
 
 const pool = require('../../data-access/dbPoolConnection');
 const User = require('../../data-access/user/User');
-const validator = require('../../lib/validations/user');
+const validUserEntity = require('../../lib/validations/user/user');
+const validRegisterRequest = require('../../lib/validations/user/register');
+const validLoginRequest = require('../../lib/validations/user/login');
 
 const SALT_ROUNDS = 10;
 const DEFAULT_PLAN = {
@@ -42,7 +44,8 @@ const userAuthController = {
       const email = req.body.userInfo.email;
       const password = req.body.userInfo.password;
       const username = req.body.userInfo.username;
-      //validator.validate(userInfo);  // implement control flow here
+      validRegisterRequest({email, password, username});
+      // implement control flow here
       // return if already logged in
       const user = new User(pool);
       const emailExists = await user.getUserByEmail(email);
@@ -56,8 +59,15 @@ const userAuthController = {
         next();
       }
       const encryptedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-      await user.createUser({email, password: encryptedPassword, username, avatar: '', plan: DEFAULT_PLAN});
-      res.send('be yay');
+      const userToCreate = {
+        email,
+        password: encryptedPassword,
+        username,
+        plan: DEFAULT_PLAN
+      };
+      validUserEntity(userToCreate);
+      await user.createUser(userToCreate);
+      res.send('user account created');
       next();
     } catch(err) {
       next(err);
@@ -67,7 +77,9 @@ const userAuthController = {
     try {
       const email = req.body.userInfo.email;
       const password = req.body.userInfo.password;
-      //validator.validate(userInfo);  // implement control flow here
+      validLoginRequest({email, password});
+      // implement control flow here
+      // SANITIZE ALSO
       const user = new User(pool);
       const userExists = await user.getUserByEmail(email);
       if (userExists[0].email === email) {

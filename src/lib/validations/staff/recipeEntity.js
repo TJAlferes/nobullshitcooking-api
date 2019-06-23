@@ -24,9 +24,8 @@ const validRequiredSubrecipe = struct({
   subrecipe: 'string'
 });
 
-const validRecipe = struct(
+const validRecipeEntity = struct(
   {
-    recipeId: 'number',
     recipeTypeId: 'number',
     cuisineId: 'number',
     title: 'string',
@@ -48,4 +47,4 @@ const validRecipe = struct(
   }
 );
 
-module.exports = validRecipe;
+module.exports = validRecipeEntity;
