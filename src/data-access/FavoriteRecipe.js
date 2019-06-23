@@ -8,10 +8,17 @@ class FavoriteRecipe {
   }
 
   async viewMostFavorited(limit) {
-    const sql = `
+    /*const sql = `
       SELECT recipe_id
       FROM nobsc_favorite_recipes
       ORDER BY COUNT(user_id) DESC
+      LIMIT ?
+    `;*/
+    const sql = `
+      SELECT recipe_id, COUNT(recipe_id) AS tally
+      FROM nobsc_favorite_recipes
+      GROUP BY recipe_id
+      ORDER BY tally DESC
       LIMIT ?
     `;
     const [ mostFavorited ] = this.pool.execute(sql, [limit]);
