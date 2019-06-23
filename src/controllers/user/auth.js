@@ -7,36 +7,6 @@ const validRegisterRequest = require('../../lib/validations/user/register');
 const validLoginRequest = require('../../lib/validations/user/login');
 
 const SALT_ROUNDS = 10;
-const DEFAULT_PLAN = {
-  1: [],
-  2: [],
-  3: [],
-  4: [],
-  5: [],
-  6: [],
-  7: [],
-  8: [],
-  9: [],
-  10: [],
-  11: [],
-  12: [],
-  13: [],
-  14: [],
-  15: [],
-  16: [],
-  17: [],
-  18: [],
-  19: [],
-  20: [],
-  21: [],
-  22: [],
-  23: [],
-  24: [],
-  25: [],
-  26: [],
-  27: [],
-  28: []
-};
 
 const userAuthController = {
   register: async function(req, res, next) {
@@ -59,13 +29,11 @@ const userAuthController = {
         next();
       }
       const encryptedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-      const userToCreate = {
+      const userToCreate = validUserEntity({
         email,
         password: encryptedPassword,
-        username,
-        plan: DEFAULT_PLAN
-      };
-      validUserEntity(userToCreate);
+        username
+      });  // (we set it to a const to get the returned defaults also)
       await user.createUser(userToCreate);
       res.send('user account created');
       next();
