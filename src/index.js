@@ -2,6 +2,7 @@
 //require('babel-polyfill');  // pollutes globals?
 require('dotenv').config();
 const express = require('express');
+const expressPinoLogger = require('express-pino-logger');
 const expressGraphQL = require('express-graphql');
 const { buildSchema } = require('graphql');
 const session = require("express-session");
@@ -14,7 +15,6 @@ const cors = require('cors');
 const helmet = require('helmet');
 //const csurf = require('csurf');
 //const hpp = require('hpp');
-//const morgan = require('morgan');
 const bodyParser = require('body-parser');  // you can use native express now
 const crypto = require('crypto');
 
@@ -158,6 +158,7 @@ if (app.get('env') === 'production') {
 2. connect third-party middleware
 
 */
+app.use(expressPinoLogger);
 //app.use(expressRateLimit());
 /*app.use(
   session({
@@ -182,7 +183,6 @@ app.use(cors(corsOptions));  // before session?
 //app.use(compression());
 //app.use(helmet());
 //app.use(hpp());
-//app.use(morgan());
 //app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());  // or new built-in middleware: app.use(express.json())
 app.use(helmet());
