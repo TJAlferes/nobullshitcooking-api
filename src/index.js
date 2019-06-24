@@ -85,7 +85,7 @@ const rateLimiterOptions = {windowMs: 1 * 60 * 1000, max: 100};
 2. middleware
 ##############################################################################*/
 
-app.use(expressPinoLogger);
+app.use(expressPinoLogger());
 app.use(expressRateLimit(rateLimiterOptions));
 /*app.use(
   session({
@@ -153,36 +153,10 @@ process.on('unhandledRejection', (reason, promise) => {
   console.log('Unhandled Rejection at:', reason.stack || reason);
 });
 
-/*app.use((req, res, next) => {
-  const error = new Error('Not found!!!');
-  error.status = 404;
-  next(error);
-});*/
-
 app.use((error, req, res, next) => {
-  res.status(error.status || 500);
-  res.json({
-    error: {
-      message: error.message
-    }
-  });
+  req.log.error(error)
+  res.status(error.status || 500).json({error: {message: error.message}});
 });
-
-/*app.use((error, req, res, next) => {
-  console.log(error);
-  const status = error.statusCode || 500;
-  const message = error.message;
-  const data = error.data;
-  res.status(status).json({ message: message, data: data });
-});
-
-app.use((error, req, res, next) => {
-  logger.error(error);
-  res.status(error.status || 500)
-  .json({
-    error: error.message
-  });
-});*/
 
 
 
