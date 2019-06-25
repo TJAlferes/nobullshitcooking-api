@@ -1,15 +1,18 @@
 const pool = require('../data-access/dbPoolConnection');  // move?
 const Recipe = require('../data-access/Recipe');
-const validator = require('../lib/validations/recipe');
+const validRecipesRequest = require('../lib/validations/recipesRequest');
+const validRecipeRequest = require('../lib/validations/recipeRequest');
+const validRecipeTitlesRequest = require('../lib/validations/recipeTitlesRequest');
 
 const recipeController = {
   viewRecipe: async function(req, res, next) {
     try {
-      // sanitize, validate
-      const types = (req.body.types) ? req.body.types : [];
-      const cuisines = (req.body.cuisines) ? req.body.cuisines : [];
-      const starting = (req.body.start) ? req.body.start : 0;
-      const display = 25;
+      const types = (req.body.types) ? req.sanitize(req.body.types) : [];
+      const cuisines = (req.body.cuisines) ? req.sanitize(req.body.cuisines) : [];
+      const starting = (req.body.start) ? req.sanitize(req.body.start) : 0;
+      const display = 25;  // to do: allow user on FE to change this
+      validRecipesRequest({types, cuisines, starting, display});
+
       const recipe = new Recipe(pool);
 
       // maybe it's time to switch to graphql...
@@ -148,7 +151,8 @@ const recipeController = {
   },
   viewRecipeDetail: async function(req, res, next) {
     try {
-      const recipeId = req.params.recipeId;
+      const recipeId = req.sanitize(req.params.recipeId);
+      validRecipeRequest({recipeId});
       const recipe = new Recipe(pool);
       const [ row ] = await recipe.viewRecipeById(recipeId);
       res.send(row);
@@ -159,7 +163,8 @@ const recipeController = {
   },
   viewRecipeTitlesByIds: async function(req, res, next) {
     try {
-      const recipeIds = (req.body.recipeIds) ? req.body.recipeIds : [];
+      const recipeIds = (req.body.recipeIds) ? req.sanitize(req.body.recipeIds) : [];
+      validRecipeTitlesRequest({recipeIds});
       const placeholders = '?, '.repeat(recipeIds.length - 1) + '?';
       const recipe = new Recipe(pool);
       const rows = await recipe.viewRecipeTitlesByIds(placeholders, recipeIds);
@@ -172,7 +177,6 @@ const recipeController = {
     try {
       const recipe = new Recipe(pool);
       const rows = await recipe.viewRecipesForSubmitEditForm();
-      console.log('rows in recipe controller: ', rows);
       res.send(rows);
     } catch(err) {
       next(err);

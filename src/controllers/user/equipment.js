@@ -1,5 +1,5 @@
 const pool = require('../../data-access/dbPoolConnection');
-const User = require('../../data-access/User');  // CREATE JSON COLUMNS FOR user_equipment, user_ingredients, and user_recipes IN USER TABLE
+const User = require('../../data-access/User');
 const validator = require('../../lib/validations/equipment');
 
 const userEquipmentController = {

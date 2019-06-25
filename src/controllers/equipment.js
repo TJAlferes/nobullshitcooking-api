@@ -1,14 +1,16 @@
 const pool = require('../data-access/dbPoolConnection');  // move?
 const Equipment = require('../data-access/Equipment');
-const validator = require('../lib/validations/equipment');
+const validEquipmentsRequest = require('../lib/validations/EquipmentsRequest');
+const validEquipmentRequest = require('../lib/validations/EquipmentRequest');
 
 const equipmentController = {
   viewEquipment: async function(req, res, next) {
     try {
-      // sanitize, validate
-      const types = (req.body.types) ? req.body.types : [];
-      const starting = (req.body.start) ? req.body.start : 0;
-      const display = 25;
+      const types = (req.body.types) ? req.sanitize(req.body.types) : [];
+      const starting = (req.body.start) ? req.sanitize(req.body.start) : 0;
+      const display = 25;  // to do: allow user on FE to change this
+      validEquipmentsRequest({types, starting, display});
+
       const equipment = new Equipment(pool);
 
       if (types.length > 1) {
@@ -44,7 +46,8 @@ const equipmentController = {
   },
   viewEquipmentDetail: async function(req, res, next) {
     try {
-      const equipmentId = req.params.equipmentId;
+      const equipmentId = req.sanitize(req.params.equipmentId);
+      validEquipmentRequest({equipmentId});
       const equipment = new Equipment(pool);
       const [ rows ] = await equipment.viewEquipmentById(equipmentId);
       res.send(rows);

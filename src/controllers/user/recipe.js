@@ -2,11 +2,11 @@ const pool = require('../../data-access/dbPoolConnection');
 const Recipe = require('../../data-access/Recipe');
 const validator = require('../../lib/validations/recipe');
 
-// NOTE: controllers should look like this (no try catch) if catchExceptions is working correctly
+// NOTE: controllers should look like this (no try catch) if catchExceptions is working correctly (... huh?)
 
 // TO DO: make only load recipes submitted by this user
 
-const staffRecipeController = {
+const userRecipeController = {
   viewRecipe: async function(req, res, next) {  // split into three methods?
     // sanitize, validate
     const types = (req.body.types) ? req.body.types : [];
@@ -81,4 +81,4 @@ const staffRecipeController = {
   }
 };
 
-module.exports = staffRecipeController;
+module.exports = userRecipeController;
