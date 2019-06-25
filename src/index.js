@@ -14,6 +14,7 @@ const sessionFileStore = require('session-file-store');
 const compression = require('compression');
 const cors = require('cors');
 const helmet = require('helmet');
+const expressSanitizer = require('express-sanitizer');  // Use something else? This is popular, yet is based on abandonware...
 //const csurf = require('csurf');  // no longer needed?
 //const hpp = require('hpp');
 
@@ -26,6 +27,7 @@ const {
   recipeTypeRoutes,
   cuisineRoutes,
   measurementRoutes,
+  favoriteRecipeRoutes,
   staffRoutes,
   userRoutes
 } = require('./routes');
@@ -107,11 +109,12 @@ app.use(expressRateLimit(rateLimiterOptions));
 );*/
 app.use(session(sessionOptions));
 app.use(cors(corsOptions));  // before session?
-//app.use(compression());
-//app.use(helmet());
+//app.use(compression());  // elasticbeanstalk already does?
+//app.use(helmet());  // get working
 //app.use(hpp());
 //app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.json());
+app.use(expressSanitizer());  // must be called after express.json()
 app.use(helmet());
 //app.use(cors());
 // https://github.com/pillarjs/understanding-csrf
@@ -139,6 +142,7 @@ app.use('/recipe', recipeRoutes);
 app.use('/recipe-type', recipeTypeRoutes);
 app.use('/cuisine', cuisineRoutes);
 app.use('/measurement', measurementRoutes);
+app.use('/favorite-recipe', favoriteRecipeRoutes);
 app.use('/staff', staffRoutes);
 app.use('/user', userRoutes);
 //app.use('/graphql', expressGraphQL({schema, rootValue, graphiql: true}));

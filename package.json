@@ -27,6 +27,7 @@
     "express": "^4.17.1",
     "express-graphql": "^0.8.0",
     "express-pino-logger": "^4.0.0",
+    "express-sanitizer": "^1.0.5",
     "express-session": "^1.16.2",
     "googleapis": "^38.0.0",
     "graphql": "^14.3.1",

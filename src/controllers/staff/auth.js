@@ -2,62 +2,41 @@ const bcrypt = require('bcrypt');
 
 const pool = require('../../data-access/dbPoolConnection');
 const Staff = require('../../data-access/staff/Staff');
-const validator = require('../../lib/validations/staff');
+const validLoginRequest = require('../../lib/validations/staff/loginRequest');
+const validRegisterRequest = require('../../lib/validations/staff/registerRequest');
+const validStaffEntity = require('../../lib/validations/staff/staffEntity');
 
 const SALT_ROUNDS = 10;
-const DEFAULT_PLAN = {
-  1: [],
-  2: [],
-  3: [],
-  4: [],
-  5: [],
-  6: [],
-  7: [],
-  8: [],
-  9: [],
-  10: [],
-  11: [],
-  12: [],
-  13: [],
-  14: [],
-  15: [],
-  16: [],
-  17: [],
-  18: [],
-  19: [],
-  20: [],
-  21: [],
-  22: [],
-  23: [],
-  24: [],
-  25: [],
-  26: [],
-  27: [],
-  28: []
-};
 
 const staffAuthController = {
   register: async function(req, res, next) {
     try {
-      const email = req.body.staffInfo.email;
-      const password = req.body.staffInfo.password;
-      const staffname = req.body.staffInfo.staffname;
-      //validator.validate(staffInfo);  // implement control flow here
-      // return if already logged in
+      const email = req.sanitize(req.body.staffInfo.email);
+      const pass = req.sanitize(req.body.staffInfo.pass);
+      const staffname = req.sanitize(req.body.staffInfo.staffname);
+      validRegisterRequest({email, pass, staffname});
+
+      // to do: return if already logged in
+
       const staff = new Staff(pool);
-      const emailExists = await user.getUserByEmail(email);
+
+      const emailExists = await staff.getStaffByEmail(email);
       if (emailExists === []) {
         res.send('email already in use... lost your password?');
         next();
       }
+
       const staffExists = await staff.getStaffByName(staffname);
       if (staffExists !== []) {
         res.send('staffname already taken');
         next();
       }
-      const encryptedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-      await staff.createStaff({email, password: encryptedPassword, staffname, avatar: '', plan: DEFAULT_PLAN});
-      res.send('be yay');
+
+      const encryptedPassword = await bcrypt.hash(pass, SALT_ROUNDS);
+      const staffToCreate = validStaffEntity({email, pass: encryptedPassword, staffname});
+      await staff.createStaff(staffToCreate);
+
+      res.send('staff account created');
       next();
     } catch(err) {
       next(err);
@@ -65,23 +44,28 @@ const staffAuthController = {
   },
   login: async function(req, res, next) {
     try {
-      const email = req.body.staffInfo.email;
-      const password = req.body.staffInfo.password;
-      //validator.validate(staffInfo);  // implement control flow here
+      const email = req.sanitize(req.body.staffInfo.email);
+      const pass = req.sanitize(req.body.staffInfo.pass);
+      validLoginRequest({email, pass});
+
       const staff = new Staff(pool);
+
       const staffExists = await staff.getStaffByEmail(email);
+      //if (staffExists[0].email === email)
       if (staffExists) {
-        const isCorrectPassword = await bcrypt.compare(password, staffExists[0].pass);
+        const isCorrectPassword = await bcrypt.compare(pass, staffExists[0].pass);
         if (isCorrectPassword) {
           const staffId = staffExists[0].staff_id;
           const staffname = staffExists[0].staffname;
           const avatar = staffExists[0].avatar;
           req.session.staffId = staffId;
           return res.json({staffname, avatar});
+          //next(); ?  // if/else in here?
         }
+        //return res.send('incorrect email or password');
       }
-      //res.redirect('/401');
-      res.end();
+
+      res.end();  // ?  //return res.send('incorrect email or password');
       next();
     } catch(err) {
       next(err);
