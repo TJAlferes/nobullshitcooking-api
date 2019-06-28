@@ -28,4 +28,10 @@ router.post(
   catchExceptions(userAuthController.register)
 );
 
+router.post(
+  '/verify',
+  /*validation, */
+  catchExceptions(userAuthController.verify)
+);
+
 module.exports = router;

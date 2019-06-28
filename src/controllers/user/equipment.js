@@ -1,12 +1,12 @@
 const pool = require('../../data-access/dbPoolConnection');
-const User = require('../../data-access/User');
-const validator = require('../../lib/validations/equipment');
+const User = require('../../data-access/user/User');
+//const validator = require('../../lib/validations/equipment');
 
 const userEquipmentController = {
   createUserEquipment: async function(req, res, next) {
     try {
       const equipmentInfo = req.body.equipmentInfo;  // sanitize and validate
-      validator.validate(equipmentInfo);  // implement control flow here
+      //validator.validate(equipmentInfo);  // implement control flow here
       const user = new User(pool);
       const [ row ] = await user.createUserEquipment(equipmentInfo);
       res.send(row);
@@ -18,7 +18,7 @@ const userEquipmentController = {
   updateUserEquipment: async function(req, res, next) {
     try {
       const equipmentInfo = req.body.equipmentInfo;  // sanitize and validate
-      validator.validate(equipmentInfo);  // implement control flow here
+      //validator.validate(equipmentInfo);  // implement control flow here
       const user = new User(pool);
       const [ row ] = await user.updateUserEquipment(equipmentInfo);
       res.send(row);

@@ -1,18 +1,19 @@
 const { struct } = require('superstruct');
-const validEquipmentEntity = require('./equipment');
-const validIngredientEntity = require('./ingredient');
-const validRecipeEntity = require('./recipe');
+const validEquipmentEntity = require('./equipmentEntity');
+const validIngredientEntity = require('./ingredientEntity');
+const validRecipeEntity = require('./recipeEntity');
 
 const validUserEntity = struct(
   {
     email: 'string',
     pass: 'string',
     username: 'string',
+    code: 'string',
     avatar: 'string?',
     plan: 'object',
-    equipment: `${[validEquipmentEntity]}?`,
-    ingredients: `${[validIngredientEntity]}?`,
-    recipes: `${[validRecipeEntity]}?`,
+    equipment: [validEquipmentEntity],
+    ingredients: [validIngredientEntity],
+    recipes: [validRecipeEntity],
   },
   {
     avatar: 'nobsc-user-default-avatar',

@@ -17,6 +17,7 @@ const helmet = require('helmet');
 const expressSanitizer = require('express-sanitizer');  // Use something else? This is popular, yet is based on abandonware...
 //const csurf = require('csurf');  // no longer needed?
 //const hpp = require('hpp');
+const sgMail = require('@sendgrid/mail');  // DELETE ME!!!  DELETE ME!!!  DELETE ME!!!
 
 const {
   equipmentRoutes,
@@ -129,6 +130,23 @@ app.use(compression());
 
 app.get('/', (req, res) => {
   try {
+
+
+
+    // DELETE ME!!!  DELETE ME!!!  DELETE ME!!!
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    const msg = {
+      to: 'test@example.com',
+      from: 'test@example.com',
+      subject: 'Sending with Twilio SendGrid is Fun',
+      text: 'and easy to do anywhere, even with Node.js',
+      html: '<strong>and easy to do anywhere, even with Node.js</strong>',
+    };
+    sgMail.send(msg);
+    // DELETE ME!!!  DELETE ME!!!  DELETE ME!!!
+
+
+
     res.send("No Bullshit Cooking Backend API");
   } catch(err) {
     console.log(err);

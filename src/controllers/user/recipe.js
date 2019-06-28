@@ -1,6 +1,6 @@
 const pool = require('../../data-access/dbPoolConnection');
-const Recipe = require('../../data-access/Recipe');
-const validator = require('../../lib/validations/recipe');
+const Recipe = require('../../data-access/Recipe');  // WARNING: CHANGE: user/User, NOT Recipe
+//const validator = require('../../lib/validations/recipe');
 
 // NOTE: controllers should look like this (no try catch) if catchExceptions is working correctly (... huh?)
 
@@ -61,14 +61,14 @@ const userRecipeController = {
   },
   createRecipe: async function(req, res, next) {
     const recipeInfo = req.body.recipeInfo;  // sanitize and validate
-    validator.validate(recipeInfo);  // implement control flow here
+    //validator.validate(recipeInfo);  // implement control flow here
     const recipe = new Recipe(pool);
     const [ row ] = await recipe.createRecipe(recipeInfo);
     res.send(row);
   },
   updateRecipe: async function(req, res, next) {
     const recipeInfo = req.body.recipeInfo;  // sanitize and validate
-    validator.validate(recipeInfo);  // implement control flow here
+    //validator.validate(recipeInfo);  // implement control flow here
     const recipe = new Recipe(pool);
     const [ row ] = await recipe.updateRecipe(recipeInfo);
     res.send(row);
