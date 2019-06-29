@@ -111,9 +111,9 @@ const userAuthController = {
           const userId = userExists[0].user_id;
           const username = userExists[0].username;
           const avatar = userExists[0].avatar;
-          req.session.userId = userId;
-          return res.json({username, avatar});
-          //next(); ?  // if/else in here?
+          req.session.userInfo.userId = userId;
+          res.json({username, avatar});
+          next();
         }
         //return res.send('incorrect email or password');
       }

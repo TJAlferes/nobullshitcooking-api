@@ -1,83 +1,122 @@
 const pool = require('../../data-access/dbPoolConnection');
-const Recipe = require('../../data-access/Recipe');  // WARNING: CHANGE: user/User, NOT Recipe
-//const validator = require('../../lib/validations/recipe');
+const User = require('../../data-access/user/User');
+const validRecipeEntity = require('../../lib/validations/user/recipeEntity');
 
-// NOTE: controllers should look like this (no try catch) if catchExceptions is working correctly (... huh?)
-
+// TO DO: Remove all try/catch in controllers if catchExceptions middleware is working?
 // TO DO: make only load recipes submitted by this user
 
 const userRecipeController = {
-  viewRecipe: async function(req, res, next) {  // split into three methods?
-    // sanitize, validate
-    const types = (req.body.types) ? req.body.types : [];
-    const starting = (req.body.start) ? req.body.start : 0;
-    const display = 25;
-    const recipe = new Recipe(pool);
-
-    // query all recipes of checked recipe types (multiple filters checked on frontend UI)
-    if (types.length > 1) {
-      let typeIds = [];
-      for (i = 0; i < types.length; i++) {
-        typeIds.push(types[i]);
-      };
-      const placeholders = '?, '.repeat(types.length - 1) + '?';
-      const [ rows ] = await recipe.viewRecipesOfTypes(starting, display, placeholders, typeIds);
-      const [ rowCount ] = await recipe.countRecipesOfTypes(placeholders, typeIds);
-      // pagination (up to 25 recipes per page) (why repeat 3 times?)
-      let total = rowCount[0].total;
-      let pages = (total > display) ? Math.ceil(total / display) : 1;
-      let resObj = {rows, pages, starting};
-      res.send(resObj);
-    }
-
-    // query all recipes of checked recipe type (one filter checked on frontend UI)
-    if (types.length == 1) {
-      let typeId = `${types}`;  // convert array element to string for SQL query
-      const [ rows ] = await recipe.viewRecipesOfType(starting, display, typeId);
-      const [ rowCount ] = await recipe.countRecipesOfType(typeId);
-      // pagination (up to 25 recipes per page) (why repeat 3 times?)
-      let total = rowCount[0].total;
-      let pages = (total > display) ? Math.ceil(total / display) : 1;
-      let resObj = {rows, pages, starting};
-      res.send(resObj);
-    }
-
-    // query all recipes (no filtration on frontend UI)
-    if (types.length == 0) {
-      const [ rows ] = await recipe.viewAllRecipes(starting, display);
-      const [ rowCount ] = await recipe.countAllRecipes();
-      // pagination (up to 25 recipes per page) (why repeat 3 times?)
-      let total = rowCount[0].total;
-      let pages = (total > display) ? Math.ceil(total / display) : 1;
-      let resObj = {rows, pages, starting};
-      res.send(resObj);
+  viewRecipe: async function(req, res, next) {
+    try {
+      const userId = req.session.userInfo.userId;
+      const user = new User(pool);
+      const [ rows ] = await user.viewUserRecipe(userId);
+      res.send(rows);
+      next();
+    } catch(err) {
+      next(err);
     }
   },
   viewRecipeDetail: async function(req, res, next) {
-    const recipeId = req.params.id;  // sanitize and validate
-    const recipe = new Recipe(pool);
-    const [ row ] = await recipe.viewRecipeById(recipeId);
+    const recipeId = req.sanitize(req.params.recipeId);
+    const userId = req.session.userInfo.userId;
+    const user = new User(pool);
+    const [ row ] = await user.viewUserRecipeDetail(recipeId, userId);
     res.send(row);
   },
   createRecipe: async function(req, res, next) {
-    const recipeInfo = req.body.recipeInfo;  // sanitize and validate
-    //validator.validate(recipeInfo);  // implement control flow here
-    const recipe = new Recipe(pool);
-    const [ row ] = await recipe.createRecipe(recipeInfo);
-    res.send(row);
+    try {
+      const recipeTypeId = req.sanitize(req.body.recipeInfo.recipeTypeId);
+      const cuisineId = req.sanitize(req.body.recipeInfo.cuisineId);
+      const title = req.sanitize(req.body.recipeInfo.title);
+      const description = req.sanitize(req.body.recipeInfo.description);
+      const directions = req.sanitize(req.body.recipeInfo.directions);
+      const requiredEquipment = req.sanitize(req.body.recipeInfo.requiredEquipment);
+      const requiredIngredients = req.sanitize(req.body.recipeInfo.requiredIngredients);
+      const requiredSubrecipes = req.sanitize(req.body.recipeInfo.requiredSubrecipes);
+      const recipeImage = req.sanitize(req.body.recipeInfo.recipeImage);
+      const equipmentImage = req.sanitize(req.body.recipeInfo.equipmentImage);
+      const ingredientsImage = req.sanitize(req.body.recipeInfo.ingredientsImage);
+      const cookingImage = req.sanitize(req.body.recipeInfo.cookingImage);
+
+      const userId = req.session.userInfo.userId;
+
+      const user = new User(pool);
+
+      const recipeToCreate = validRecipeEntity({
+        recipeTypeId,
+        cuisineId,
+        title,
+        description,
+        directions,
+        requiredEquipment,
+        requiredIngredients,
+        requiredSubrecipes,
+        recipeImage,
+        equipmentImage,
+        ingredientsImage,
+        cookingImage
+      });
+      const [ row ] = await user.createUserRecipe(recipeToCreate, userId);
+
+      res.send(row);
+      next();
+    } catch(err) {
+      next(err);
+    }
   },
   updateRecipe: async function(req, res, next) {
-    const recipeInfo = req.body.recipeInfo;  // sanitize and validate
-    //validator.validate(recipeInfo);  // implement control flow here
-    const recipe = new Recipe(pool);
-    const [ row ] = await recipe.updateRecipe(recipeInfo);
-    res.send(row);
+    try {
+      const recipeTypeId = req.sanitize(req.body.recipeInfo.recipeTypeId);
+      const cuisineId = req.sanitize(req.body.recipeInfo.cuisineId);
+      const title = req.sanitize(req.body.recipeInfo.title);
+      const description = req.sanitize(req.body.recipeInfo.description);
+      const directions = req.sanitize(req.body.recipeInfo.directions);
+      const requiredEquipment = req.sanitize(req.body.recipeInfo.requiredEquipment);
+      const requiredIngredients = req.sanitize(req.body.recipeInfo.requiredIngredients);
+      const requiredSubrecipes = req.sanitize(req.body.recipeInfo.requiredSubrecipes);
+      const recipeImage = req.sanitize(req.body.recipeInfo.recipeImage);
+      const equipmentImage = req.sanitize(req.body.recipeInfo.equipmentImage);
+      const ingredientsImage = req.sanitize(req.body.recipeInfo.ingredientsImage);
+      const cookingImage = req.sanitize(req.body.recipeInfo.cookingImage);
+
+      const userId = req.session.userInfo.userId;
+
+      const user = new User(pool);
+
+      const recipeToUpdate = validRecipeEntity({
+        recipeTypeId,
+        cuisineId,
+        title,
+        description,
+        directions,
+        requiredEquipment,
+        requiredIngredients,
+        requiredSubrecipes,
+        recipeImage,
+        equipmentImage,
+        ingredientsImage,
+        cookingImage
+      });
+      const [ row ] = await user.updateUserRecipe(recipeToUpdate, userId);
+
+      res.send(row);
+      next();
+    } catch(err) {
+      next(err);
+    }
   },
   deleteRecipe: async function(req, res, next) {
-    const recipeId = req.body.recipeId;  // sanitize and validate
-    const recipe = new Recipe(pool);
-    const [ row ] = await recipe.deleteRecipe(recipeId);
-    res.send(row);
+    try {
+      const recipeId = req.sanitize(req.body.recipeId);  // sanitize and validate?
+      const userId = req.session.userInfo.userId;
+      const user = new User(pool);
+      const [ row ] = await user.deleteUserRecipe(recipeId, userId);
+      res.send(row);
+      next();
+    } catch(err) {
+      next(err);
+    }
   }
 };
 
