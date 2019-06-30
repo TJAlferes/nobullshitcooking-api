@@ -1,7 +1,9 @@
 const uuidv4 = require('uuid/v4');
 
 const pool = require('../../data-access/dbPoolConnection');
+const xdevpool = require('../../data-access/xdevPoolConnection');
 const User = require('../../data-access/user/User');
+const UserEquipment = require('../../data-access/user/UserEquipment');
 const validEquipmentEntity = require('../../utils/validations/user/equipmentEntity');
 
 const userEquipmentController = {
