@@ -121,8 +121,12 @@ class User {
     return deletedUser;
   }
 
+
+
   /*
+
   the user's plan
+
   */
 
   async viewPlan(userId) {
@@ -149,8 +153,12 @@ class User {
     return updatedPlan;
   }
 
+
+
   /*
+
   user created equipment
+
   */
 
   /*
@@ -189,32 +197,47 @@ class User {
     return userEquipment;
   }
 
-  async createUserEquipment(userInfo) {
+  async createUserEquipment(equipmentToCreate, equipmentId, userId) {
     const {
-      userId,
-      equipmentId,
       equipmentTypeId,
       equipmentName,
       equipmentImage,
       equipmentDescription
-    } = userInfo;
+    } = equipmentToCreate;
     const sql = `
-      JSON_INSERT
+      UPDATE nobsc_users
+      SET equipment = JSON_INSERT(
+        equipment,
+        '$.user_equipment_id', ?,
+        '$.user_equipment_type_id', ?,
+        '$.user_equipment_name', ?,
+        '$.user_equipment_image', ?,
+        '$.user_equipment_description', ?
+      )
+      WHERE user_id = ?
+      LIMIT 1
     `;
-
+    const [ createdUserEquipment ] = await this.pool.execute(sql, [
+      equipmentId,
+      equipmentTypeId,
+      equipmentName,
+      equipmentImage,
+      equipmentDescription,
+      userId
+    ]);
+    return createdUserEquipment;
   }
 
-  async updateUserEquipment(userInfo) {
+  async updateUserEquipment(equipmentToUpdate, equipmentId, userId) {
     const {
-      userId,
-      equipmentId,
       equipmentTypeId,
       equipmentName,
       equipmentImage,
       equipmentDescription
-    } = userInfo;
-    const sql = `
-      UPDATE equipment
+    } = equipmentToUpdate;
+
+    /*const sql = `
+      UPDATE nobsc_users
       SET equipment = JSON_REPLACE(
         equipment,
         '$.user_equipment_type_id', ?,
@@ -222,20 +245,69 @@ class User {
         '$.user_equipment_image', ?,
         '$.user_equipment_description', ?
       )
-      WHERE user_id = ? AND equipment->'$.user_equipment_id' = ?
-    `;
+      WHERE equipment->'$.user_equipment_id' = ? AND user_id = ?
+      LIMIT 1
+    `;*/
     // JSON_INSERT -- if not exist, add
     // JSON_REPLACE -- if exist, replace
     // JSON_SET -- if not exist, add, else, replace
 
+    const sql = `
+      UPDATE nobsc_users
+      SET equipment = JSON_REPLACE(
+        equipment,
+
+        '$.user_equipment_type_id', ?,
+        '$.user_equipment_name', ?,
+        '$.user_equipment_image', ?,
+        '$.user_equipment_description', ?
+      )
+      WHERE equipment->'$.user_equipment_id' = ? AND user_id = ?
+      LIMIT 1
+    `;
+
+    const [ updatedUserEquipment ] = await this.pool.execute(sql, [
+      equipmentTypeId,
+      equipmentName,
+      equipmentImage,
+      equipmentDescription,
+      equipmentId,
+      userId
+    ]);
+    return updatedUserEquipment;
   }
 
-  async deleteUserEquipment(userInfo) {
-    const { userId, equipmentId } = userInfo;
+  // this seems overcomplicated... see if there is a simpler way...
+  async deleteUserEquipment(equipmentId, userId) {
+    const sql = `
+      UPDATE nobsc_users
+      SET equipment = JSON_REMOVE(
+        equipment,
+        REPLACE(
+          JSON_SEARCH(
+            equipment,
+            'one',
+            ?,
+            NULL,
+            '$**.user_equipment_id'
+          ),
+          '"',
+          ''
+        )
+      )
+      WHERE user_id = ?
+      LIMIT 1
+    `;
+    const [ deletedUserEquipment ] = await this.pool.execute(sql, [equipmentId, userId]);
+    return deletedUserEquipment;
   }
+
+
 
   /*
+
   user created ingredients
+
   */
   
   async viewUserIngredient() {
@@ -258,8 +330,12 @@ class User {
 
   }
 
+
+
   /*
+
   user created recipes
+
   */
   
   async viewUserRecipe() {

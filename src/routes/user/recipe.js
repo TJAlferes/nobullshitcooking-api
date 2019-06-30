@@ -14,32 +14,32 @@ router.post(
   '/create',
   userIsAuth,
   /*isValid,*/
-  catchExceptions(userRecipeController.createRecipe)
+  catchExceptions(userRecipeController.createUserRecipe)
 );
 
 router.put(
   '/update/:recipeId',
   userIsAuth,
   /*isValid,*/
-  catchExceptions(userRecipeController.updateRecipe)
+  catchExceptions(userRecipeController.updateUserRecipe)
 );
 
 router.delete(
   '/delete/:recipeId',
   userIsAuth,
-  catchExceptions(userRecipeController.deleteRecipe)
+  catchExceptions(userRecipeController.deleteUserRecipe)
 );
 
 router.post(
   '/',
   userIsAuth,
-  catchExceptions(userRecipeController.viewRecipe)
+  catchExceptions(userRecipeController.viewUserRecipe)
 );
 
 router.get(
   '/:recipeId',
   userIsAuth,
-  catchExceptions(userRecipeController.viewRecipeDetail)
+  catchExceptions(userRecipeController.viewUserRecipeDetail)
 );
 
 module.exports = router;

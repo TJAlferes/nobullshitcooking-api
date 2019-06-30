@@ -17,6 +17,7 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
     "@babel/polyfill": "^7.4.4",
     "@elastic/elasticsearch": "^7.1.0",
+    "@mysql/xdevapi": "^8.0.16",
     "@sendgrid/mail": "^6.4.0",
     "aws-sdk": "^2.485.0",
     "bcrypt": "^3.0.6",

@@ -1,3 +1,5 @@
+const uuidv4 = require('uuid/v4');
+
 const pool = require('../../data-access/dbPoolConnection');
 const User = require('../../data-access/user/User');
 const validRecipeEntity = require('../../lib/validations/user/recipeEntity');
@@ -6,7 +8,7 @@ const validRecipeEntity = require('../../lib/validations/user/recipeEntity');
 // TO DO: make only load recipes submitted by this user
 
 const userRecipeController = {
-  viewRecipe: async function(req, res, next) {
+  viewUserRecipe: async function(req, res, next) {
     try {
       const userId = req.session.userInfo.userId;
       const user = new User(pool);
@@ -17,14 +19,14 @@ const userRecipeController = {
       next(err);
     }
   },
-  viewRecipeDetail: async function(req, res, next) {
+  viewUserRecipeDetail: async function(req, res, next) {
     const recipeId = req.sanitize(req.params.recipeId);
     const userId = req.session.userInfo.userId;
     const user = new User(pool);
     const [ row ] = await user.viewUserRecipeDetail(recipeId, userId);
     res.send(row);
   },
-  createRecipe: async function(req, res, next) {
+  createUserRecipe: async function(req, res, next) {
     try {
       const recipeTypeId = req.sanitize(req.body.recipeInfo.recipeTypeId);
       const cuisineId = req.sanitize(req.body.recipeInfo.cuisineId);
@@ -38,6 +40,8 @@ const userRecipeController = {
       const equipmentImage = req.sanitize(req.body.recipeInfo.equipmentImage);
       const ingredientsImage = req.sanitize(req.body.recipeInfo.ingredientsImage);
       const cookingImage = req.sanitize(req.body.recipeInfo.cookingImage);
+
+      const recipeId = uuidv4();
 
       const userId = req.session.userInfo.userId;
 
@@ -57,7 +61,7 @@ const userRecipeController = {
         ingredientsImage,
         cookingImage
       });
-      const [ row ] = await user.createUserRecipe(recipeToCreate, userId);
+      const [ row ] = await user.createUserRecipe(recipeToCreate, recipeId, userId);
 
       res.send(row);
       next();
@@ -65,7 +69,7 @@ const userRecipeController = {
       next(err);
     }
   },
-  updateRecipe: async function(req, res, next) {
+  updateUserRecipe: async function(req, res, next) {
     try {
       const recipeTypeId = req.sanitize(req.body.recipeInfo.recipeTypeId);
       const cuisineId = req.sanitize(req.body.recipeInfo.cuisineId);
@@ -79,6 +83,8 @@ const userRecipeController = {
       const equipmentImage = req.sanitize(req.body.recipeInfo.equipmentImage);
       const ingredientsImage = req.sanitize(req.body.recipeInfo.ingredientsImage);
       const cookingImage = req.sanitize(req.body.recipeInfo.cookingImage);
+
+      const recipeId = req.sanitize(req.body.recipeInfo.recipeId);
 
       const userId = req.session.userInfo.userId;
 
@@ -98,7 +104,7 @@ const userRecipeController = {
         ingredientsImage,
         cookingImage
       });
-      const [ row ] = await user.updateUserRecipe(recipeToUpdate, userId);
+      const [ row ] = await user.updateUserRecipe(recipeToUpdate, recipeId, userId);
 
       res.send(row);
       next();
@@ -106,7 +112,7 @@ const userRecipeController = {
       next(err);
     }
   },
-  deleteRecipe: async function(req, res, next) {
+  deleteUserRecipe: async function(req, res, next) {
     try {
       const recipeId = req.sanitize(req.body.recipeId);  // sanitize and validate?
       const userId = req.session.userInfo.userId;
