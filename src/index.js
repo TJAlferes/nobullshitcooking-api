@@ -1,22 +1,33 @@
 'use strict';
 
 //require('babel-polyfill');  // pollutes globals?
+
 require('dotenv').config();
+
 const express = require('express');
 const expressRateLimit = require('express-rate-limit');
 const expressPinoLogger = require('express-pino-logger');
-//const { buildSchema } = require('graphql');
-//const expressGraphQL = require('express-graphql');
+const expressSanitizer = require('express-sanitizer');  // Use something else? This is popular, yet is based on abandonware...
+const cors = require('cors');
+const helmet = require('helmet');
+//const hpp = require('hpp');
+//const csurf = require('csurf');  // no longer needed?
+const compression = require('compression');
+
 const session = require("express-session");
 const sessionFileStore = require('session-file-store');
 //const redis = require('redis');
 //const connectRedis = require('connect-redis');  // Not using yet, simply storing sessions with `session-file-store` for now
-const compression = require('compression');
-const cors = require('cors');
-const helmet = require('helmet');
-const expressSanitizer = require('express-sanitizer');  // Use something else? This is popular, yet is based on abandonware...
-//const csurf = require('csurf');  // no longer needed?
-//const hpp = require('hpp');
+
+const http = require('http');
+const socketIO = require('socket.io');
+const sharedSession = require('express-socket.io-session');
+const adapter = require('socket.io-redis');
+const emitter = require('socket.io-emitter');
+
+//const { buildSchema } = require('graphql');
+//const expressGraphQL = require('express-graphql');
+
 const sgMail = require('@sendgrid/mail');  // DELETE ME!!!  DELETE ME!!!  DELETE ME!!!
 
 const {
@@ -50,8 +61,8 @@ const sessionOptions = {
   store: new FileStore,
   name: 'connect.sid',
   secret: 'very secret',
-  resave: false,
-  saveUninitialized: false,
+  resave: true,  // false before socket.io
+  saveUninitialized: true,  // false before socket.io
   cookie: {}
 };
 /*const sessionOptions = {
@@ -82,7 +93,15 @@ if (app.get('env') === 'production') {
 // limit each IP to 100 requests per minute
 const rateLimiterOptions = {windowMs: 1 * 60 * 1000, max: 100};
 
-
+const server = http.Server(app);
+const io = socketIO(server);
+const pubClient = redis(process.env.REDIS_PORT, process.env.REDIS_HOST, {
+  auth_pass: process.env.REDIS_PASSWORD
+});
+const subClient = redis(process.env.REDIS_PORT, process.env.REDIS_HOST, {
+  return_buffers: true,
+  auth_pass: process.env.REDIS_PASSWORD
+});
 
 /*##############################################################################
 2. middleware
@@ -122,7 +141,9 @@ app.use(helmet());
 //app.use(csurf());  // must be called after cookies/sessions
 app.use(compression());
 
-
+io.set('transports', ['websocket']);
+io.adapter(adapter({pubClient, subClient}));
+io.of('/messenger').use(sharedSession(session, {autoSave: true}));
 
 /*##############################################################################
 3. routes
@@ -188,4 +209,4 @@ app.use((error, req, res, next) => {
 
 const PORT = process.env.PORT || 3003;
 
-app.listen(PORT, () => console.log('Listening on port ' + PORT));
+server.listen(80);  //app.listen(PORT, () => console.log('Listening on port ' + PORT));
