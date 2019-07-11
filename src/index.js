@@ -15,15 +15,15 @@ const helmet = require('helmet');
 const compression = require('compression');
 
 const session = require("express-session");
-const sessionFileStore = require('session-file-store');
-//const redis = require('redis');
-//const connectRedis = require('connect-redis');  // Not using yet, simply storing sessions with `session-file-store` for now
+//const sessionFileStore = require('session-file-store');
+const ioredis = require('ioredis');
+const connectRedis = require('connect-redis');
 
 const http = require('http');
 const socketIO = require('socket.io');
 const sharedSession = require('express-socket.io-session');
 const adapter = require('socket.io-redis');
-const emitter = require('socket.io-emitter');
+//const emitter = require('socket.io-emitter');  // needed?
 
 //const { buildSchema } = require('graphql');
 //const expressGraphQL = require('express-graphql');
@@ -52,20 +52,20 @@ const {
 
 const app = express();
 
-const FileStore = sessionFileStore(session);
+//const FileStore = sessionFileStore(session);
 //const RedisStore = connectRedis(session);  // Not using yet, simply storing session in filesystem for now
 //const RedisClient = redis.createClient({host: 'redis-dev'}); 
 //const RedisClient = redis.createClient(process.env.REDIS_URI);
 
-const sessionOptions = {
+/*const sessionOptions = {
   store: new FileStore,
   name: 'connect.sid',
   secret: 'very secret',
   resave: true,  // false before socket.io
   saveUninitialized: true,  // false before socket.io
   cookie: {}
-};
-/*const sessionOptions = {
+};*/
+const sessionOptions = {
   store: new RedisStore({
     port: process.env.REDIS_PORT || "6379",
     host: process.env.REDIS_HOST || "localhost"
@@ -80,7 +80,7 @@ const sessionOptions = {
     httpOnly: true,
     secure: true
   }
-};*/
+};
 
 const corsOptions = {origin: ['http://localhost:8080'], credentials: true};
 
@@ -102,6 +102,79 @@ const subClient = redis(process.env.REDIS_PORT, process.env.REDIS_HOST, {
   return_buffers: true,
   auth_pass: process.env.REDIS_PASSWORD
 });
+
+// SCALABLE PUB SUB? SEE YOUTUBE VID
+// CLIENTS SEE REDLOCK IOREDIS
+
+//var client = require('./index').client;
+//var models = require('./models');
+
+function addUser(user, name, type) {
+  client.multi()
+  .hset('user:' + user, 'name', name)
+  .hset('user:' + user, 'type', type)
+  .zadd('users', Date.now(), user)
+  .exec();
+};
+
+function addRoom(room) {
+  if (room !== '') client.zadd('rooms', Date.now(), room);
+};
+
+function getRooms(cb){
+  client.zrevrangebyscore('rooms', '+inf', '-inf', function(err, data) {
+    return cb(data);
+  });
+};
+
+function addChat(chat) {
+  client.multi()
+  .zadd('rooms:' + chat.room + ':chats', Date.now(), JSON.stringify(chat))
+  .zadd('users', (new Date).getTime(), chat.user.id)
+  .zadd('rooms', (new Date).getTime(), chat.room)
+  .exec();
+};
+
+function getChat(room, cb){
+  client.zrange('rooms:' + room + ':chats', 0, -1, function(err, chats) {
+    cb(chats);
+  });
+};
+
+function addUserToRoom(user, room) {
+  client.multi()
+  .zadd('rooms:' + room, Date.now(), user)
+  .zadd('users', Date.now(), user)
+  .zadd('rooms', Date.now(), room)
+  .set('user:' + user + ':room', room)
+  .exec();
+}
+
+function removeUserFromRoom(user, room) {
+  client.multi()
+  .zrem('rooms:' + room, user)
+  .del('user:' + user + ':room')
+  .exec();
+};
+
+// HEAVILY EDIT
+function getUsersinRoom(room){
+  return Promise(function(resolve, reject) {
+    client.zrange('rooms:' + room, 0, -1, function(err, data) {
+      var users = [];
+      var loopsleft = data.length;
+      data.forEach(function(u){
+        client.hgetall('user:' + u, function(err, userHash){
+          users.push(models.User(u, userHash.name, userHash.type));
+          loopsleft--;
+          if (loopsleft === 0) resolve(users);
+        });
+      });
+    });
+  });
+};
+
+
 
 /*##############################################################################
 2. middleware
@@ -141,9 +214,81 @@ app.use(helmet());
 //app.use(csurf());  // must be called after cookies/sessions
 app.use(compression());
 
+
+
 io.set('transports', ['websocket']);
+
 io.adapter(adapter({pubClient, subClient}));
-io.of('/messenger').use(sharedSession(session, {autoSave: true}));
+
+//io.of('/messenger').use(sharedSession(session, {autoSave: true}));
+io.use(sharedSession(session, {autoSave: true}));
+
+
+io.nsps.forEach(function(nsp) {
+  nsp.on('connect', socket => {
+    if (!socket.auth) delete nsp.connected[socket.id];
+  });
+});
+
+io.on('connection', socket => {
+
+  socket.auth = false;
+
+  socket.on('authenticate', async function(socket, data) {
+    try {
+      const user = await verifyUser(data.token);  // send token to client, client sends token back here?
+      //const user = {id: socket.handshake.session.userInfo.;
+      const canConnect = await ioredis.setAsync(`users:${user.id}`, socket.id, 'NX', 'EX', 30);
+      if (!canConnect) {
+        return socket.emit('unauthorized', {message: 'ALREADY_LOGGED_IN'}, function() {
+          if (socket.user) await ioredis.delAsync(`users:${socket.user.id}`);
+        });
+      }
+
+      socket.user = user;
+      socket.auth = true;
+
+      io.nsps.forEach(function(nsp) {
+        if (nsp.sockets.find(el => el.id === socket.id)) {
+          nsp.connected[socket.id] = socket;
+        }
+      });
+
+      socket.emit('authenticated', true);
+
+      return async (socket) => {
+        socket.conn.on('packet', async (packet) => {
+          if (socket.auth && packet.type === 'ping') {
+            await ioredis.setAsync(`users:${socket.user.id}`, socket.id, 'XX', 'EX', 30);
+          }
+        });
+      };
+    } catch (err) {
+      if (err) {
+        socket.emit('unauthorized', {message: err.message}, function() {
+          if (socket.user) await ioredis.delAsync(`users:${socket.user.id}`);
+        });
+      } else {
+        socket.emit('unauthorized', {message: 'Authentication failure'}, function() {
+          if (socket.user) await ioredis.delAsync(`users:${socket.user.id}`);
+        });
+      }
+    }
+  });
+
+  socket.on('disconnect', function(socket) {
+    if (socket.user) await ioredis.delAsync(`users:${socket.user.id}`);
+  });
+
+  setTimeout(() => {
+    if (!socket.auth) {
+      if (socket.user) await ioredis.delAsync(`users:${socket.user.id}`);
+    }
+  }, 1000);
+
+});
+
+
 
 /*##############################################################################
 3. routes
