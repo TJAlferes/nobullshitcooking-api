@@ -1,6 +1,5 @@
 const { Router } = require('express');
 
-const pool = require('../data-access/dbPoolConnection');
 const catchExceptions = require('../lib/utils/catchExceptions');
 const favoriteRecipeController = require('../controllers/favoriteRecipe');
 

@@ -2,8 +2,8 @@ class User {
   constructor(pool) {
     this.pool = pool;
 
-    this.getUserByEmail = this.getUserByEmail.bind(this);  // get-- are for auth only, use view-- for public purposes
-    this.getUserByName = this.getUserByName.bind(this);  // get-- are for auth only, use view-- for public purposes
+    this.getUserByEmail = this.getUserByEmail.bind(this);
+    this.getUserByName = this.getUserByName.bind(this);
 
     this.viewAllUsers = this.viewAllUsers.bind(this);
     this.viewUserById = this.viewUserById.bind(this);

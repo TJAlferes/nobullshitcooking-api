@@ -40,6 +40,7 @@ const {
   cuisineRoutes,
   measurementRoutes,
   favoriteRecipeRoutes,
+  friendshipRoutes,
   staffRoutes,
   userRoutes
 } = require('./routes');
@@ -81,6 +82,8 @@ const sessionOptions = {
     secure: true
   }
 };
+
+const RedisStore = connectRedis(session);
 
 const corsOptions = {origin: ['http://localhost:8080'], credentials: true};
 
@@ -200,7 +203,7 @@ app.use(expressRateLimit(rateLimiterOptions));
     }
   })
 );*/
-app.use(session(sessionOptions));
+app.use(session(sessionOptions));  // sharedSession?
 app.use(cors(corsOptions));  // before session?
 //app.use(compression());  // elasticbeanstalk already does?
 //app.use(helmet());  // get working
@@ -327,6 +330,7 @@ app.use('/recipe-type', recipeTypeRoutes);
 app.use('/cuisine', cuisineRoutes);
 app.use('/measurement', measurementRoutes);
 app.use('/favorite-recipe', favoriteRecipeRoutes);
+app.use('/friendship', friendshipRoutes);
 app.use('/staff', staffRoutes);
 app.use('/user', userRoutes);
 //app.use('/graphql', expressGraphQL({schema, rootValue, graphiql: true}));
