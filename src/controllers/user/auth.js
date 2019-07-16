@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const uuidv4 = require('uuid/v4');
 const sgMail = require('@sendgrid/mail');
@@ -100,12 +101,9 @@ const userAuthController = {
       const email = req.sanitize(req.body.userInfo.email);
       const pass = req.sanitize(req.body.userInfo.pass);
       validLoginRequest({email, pass});
-
       const user = new User(pool);
-
       const userExists = await user.getUserByEmail(email);
-      //if (userExists[0].email === email)
-      if (userExists) {
+      if (userExists && crypto.timingSafeEqual(userExists[0].email, email)) {
         const isCorrectPassword = await bcrypt.compare(pass, userExists[0].pass);
         if (isCorrectPassword) {
           const userId = userExists[0].user_id;
@@ -115,10 +113,8 @@ const userAuthController = {
           res.json({username, avatar});
           next();
         }
-        //return res.send('incorrect email or password');
       }
-
-      res.end();  // ?  //return res.send('incorrect email or password');
+      res.send('incorrect email or password');
       next();
     } catch(err) {
       next(err);
@@ -129,7 +125,8 @@ const userAuthController = {
       await req.session.destroy(err => {
         if (err) return next(err);
         res.clearCookie('connect.sid');
-        res.end();  //res.json({});  ??? res.redirect('/home')?
+        //res.end();
+        res.send('Signed out.');
       });
       next();
     } catch(err) {

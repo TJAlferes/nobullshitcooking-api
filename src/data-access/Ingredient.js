@@ -89,7 +89,7 @@ class Ingredient {
       FROM nobsc_ingredient_types t
       LEFT JOIN nobsc_ingredients i ON i.ingredient_type_id = t.ingredient_type_id
       WHERE ingredient_id = ?
-    `;
+    `;  // CHANGE TO INNER JOIN, look at all others too
     const [ ingredient ] = await this.pool.execute(sql, [ingredientId]);
     return ingredient;
   }
