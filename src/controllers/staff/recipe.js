@@ -34,8 +34,15 @@ const staffRecipeController = {
         ingredientsImage,
         cookingImage
       });
-      const [ row ] = await recipe.createRecipe(recipeToCreate);
-
+      const recipeEquipmentPlaceholders = '(?, ?, ?),'.repeat(requiredEquipment.length).slice(0, -1);
+      const recipeIngredientsPlaceholders = '(?, ?, ?, ?),'.repeat(requiredIngredients.length).slice(0, -1);
+      const recipeSubrecipesPlaceholders = '(?, ?, ?, ?),'.repeat(requiredSubrecipes.length).slice(0, -1);
+      const [ row ] = await recipe.createRecipe(
+        recipeToCreate,
+        recipeEquipmentPlaceholders,
+        recipeIngredientsPlaceholders,
+        recipeSubrecipesPlaceholders
+      );
       res.send(row);
       next();
     } catch(err) {

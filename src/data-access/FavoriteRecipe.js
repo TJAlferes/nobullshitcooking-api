@@ -31,12 +31,12 @@ class FavoriteRecipe {
       SELECT 
         f.recipe_id AS recipe_id,
         r.title AS title,
-        r.tiny_image AS tiny_image
+        r.recipe_image AS recipe_image
       FROM nobsc_favorite_recipes f
-      LEFT JOIN nobsc_recipes r ON f.recipe_id = r.recipe_id
+      INNER JOIN nobsc_recipes r ON f.recipe_id = r.recipe_id
       WHERE user_id = ?
       ORDER BY title
-    `;  // make a react router link to this recipe page
+    `;  // make a react router link to this recipe page, use tiny image folder from s3
     const [ favorites ] = this.pool.execute(sql, [userId]);
     console.log(favorites);
     return favorites;

@@ -28,8 +28,6 @@ const adapter = require('socket.io-redis');
 //const { buildSchema } = require('graphql');
 //const expressGraphQL = require('express-graphql');
 
-const sgMail = require('@sendgrid/mail');  // DELETE ME!!!  DELETE ME!!!  DELETE ME!!!
-
 const {
   equipmentRoutes,
   equipmentTypeRoutes,
@@ -94,7 +92,7 @@ if (app.get('env') === 'production') {
 }
 
 // limit each IP to 100 requests per minute
-const rateLimiterOptions = {windowMs: 1 * 60 * 1000, max: 100};
+const rateLimiterOptions = {windowMs: 1 * 60 * 1000, max: 100};  // affect socket?
 
 const server = http.Server(app);
 const io = socketIO(server);
@@ -299,23 +297,6 @@ io.on('connection', socket => {
 
 app.get('/', (req, res) => {
   try {
-
-
-
-    // DELETE ME!!!  DELETE ME!!!  DELETE ME!!!
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-    const msg = {
-      to: 'test@example.com',
-      from: 'test@example.com',
-      subject: 'Sending with Twilio SendGrid is Fun',
-      text: 'and easy to do anywhere, even with Node.js',
-      html: '<strong>and easy to do anywhere, even with Node.js</strong>',
-    };
-    sgMail.send(msg);
-    // DELETE ME!!!  DELETE ME!!!  DELETE ME!!!
-
-
-
     res.send("No Bullshit Cooking Backend API");
   } catch(err) {
     console.log(err);

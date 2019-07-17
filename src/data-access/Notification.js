@@ -28,7 +28,14 @@ class Notification {
   }
 
   async createNotification(notificationInfo) {
-
+    const { senderId, receiverId, note, read } = notificationInfo;
+    const sql = `
+      INSERT INTO nobsc_notifications
+      (sender_id, receiver_id, note, read)
+      VALUES
+      (?, ?, ?, ?)
+    `;
+    const [ notification ] = await this.pool.execute(sql [senderId, receiverId, note, read]);
   }
 
   async markNotificationAsRead(notificationId, userId) {

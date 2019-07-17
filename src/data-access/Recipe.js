@@ -235,7 +235,7 @@ class Recipe {
   }
 
   async viewRecipeById(recipeId) {
-    const sql = `
+    /*const sql = `
       SELECT
         r.recipe_id AS recipe_id,
         r.recipe_type_id AS recipe_type_id,
@@ -256,6 +256,51 @@ class Recipe {
       LEFT JOIN nobsc_recipe_types t ON r.recipe_type_id = t.recipe_type_id
       LEFT JOIN nobsc_cuisines c ON r.cuisine_id = c.cuisine_id
       WHERE recipe_id = ?
+    `;*/
+    const sql = `
+      SELECT
+        r.recipe_id,
+        rt.recipe_type_name,
+        c.cuisine_name,
+        u.username AS author,
+        u.username AS owner,
+        r.title,
+        r.description,
+        r.directions,
+
+        re.amount,
+        e.equipment_name,
+
+        ri.amount,
+        m.measurement_name AS ingredient_unit,
+        e.ingredient_name,
+
+        rs.amount,
+        m.measurement_name AS subrecipe_unit,
+        r.title AS subtitle,
+
+        r.recipe_image,
+        r.equipment_image,
+        r.ingredients_image,
+        r.cooking_image
+      FROM nobsc_recipes r
+      INNER JOIN nobsc_recipe_types rt ON rt.recipe_type_id = r.recipe_type_id
+      INNER JOIN nobsc_cuisines c ON c.cuisine_id = r.cuisine_id
+      INNER JOIN nobsc_users u ON u.user_id = r.author_id
+      INNER JOIN nobsc_user u ON u.user_id = r.owner_id
+
+      INNER JOIN nobsc_recipe_equipment re ON re.recipe_id = r.recipe_id
+      INNER JOIN nobsc_recipe_equipment re ON re.equipment_id = e.equipment_id
+
+      INNER JOIN nobsc_recipe_ingredients ri ON ri.recipe_id = r.recipe_id
+      INNER JOIN nobsc_recipe_ingredients ri ON ri.measurement_id = m.measurement_id
+      INNER JOIN nobsc_recipe_ingredients ri ON ri.ingredient_id = i.ingredient_id
+
+      INNER JOIN nobsc_recipe_subrecipes rs ON rs.recipe_id = r.recipe_id
+      INNER JOIN nobsc_recipe_subrecipes rs ON rs.measurement_id = m.measurement_id
+      INNER JOIN nobsc_recipe_subrecipes rs ON rs.subrecipe_id = r.recipe_id
+
+      WHERE r.recipe_id = ? AND r.owner_id = 1
     `;
     const [ recipe ] = await this.pool.execute(sql, [recipeId]);
     return recipe;
@@ -286,52 +331,101 @@ class Recipe {
   create, update, and delete methods
   */
 
-  async createRecipe(recipeInfo) {
+  async createRecipe(
+    recipeInfo,
+    recipeEquipmentPlaceholders,
+    recipeIngredientsPlaceholders,
+    recipeSubrecipesPlaceholders
+  ) {
     const {
       recipeTypeId,
       cuisineId,
       title,
       description,
       directions,
-      requiredEquipment,
-      requiredIngredients,
-      requiredSubrecipes,
+      recipeEquipmentPlaceholders,
+      recipeIngredientsPlaceholders,
+      recipeSubrecipesPlaceholders,
+      recipeEquipment,
+      recipeIngredients,
+      recipeSubrecipes,
       recipeImage,
       equipmentImage,
       ingredientsImage,
       cookingImage
     } = recipeInfo;
-    const sql = `
+
+    const sql1 = `
       INSERT INTO nobsc_recipes (
         recipe_type_id,
         cuisine_id,
+        author_id,
+        owner_id,
         title,
         description,
         directions,
-        required_equipment,
-        required_ingredients,
-        required_subrecipes,
         recipe_image,
         equipment_image,
         ingredients_image,
         cooking_image
+      ) VALUES (
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
-    const [ createdRecipe ] = await this.pool.execute(sql, [
+    const [ createdRecipe ] = await this.pool.execute(sql1, [
       recipeTypeId,
       cuisineId,
       title,
       description,
       directions,
-      requiredEquipment,
-      requiredIngredients,
-      requiredSubrecipes,
       recipeImage,
       equipmentImage,
       ingredientsImage,
       cookingImage
     ]);
+    const generatedId = createdRecipe.insertId;  // add awaits?
+    console.log('generatedId: ', generatedId);
+
+    const sql2 = `
+      INSERT INTO nobsc_recipe_equipment (recipe_id, equipment_id, amount)
+      VALUES ${recipeEquipmentPlaceholders} 
+    `;
+    let recipeEquipmentParams = [];
+    recipeEquipment.map(rE => {
+      recipeEquipmentParams.push(generatedId);
+      recipeEquipmentParams.push(rE.equipmentId);
+      recipeEquipmentParams.push(rE.amount);
+    });
+    console.log(recipeEquipmentParams);
+    const [ createdRecipeEquipment ] = await this.pool.execute(sql2, recipeEquipmentParams);
+
+    const sql3 = `
+      INSERT INTO nobsc_recipe_ingredients (recipe_id, ingredient_id, amount, measurement_id)
+      VALUES ${recipeIngredientsPlaceholders}
+    `;
+    let recipeIngredientsParams = [];
+    recipeIngredients.map(rI => {
+      recipeIngredientsParams.push(generatedId);
+      recipeIngredientsParams.push(rI.ingredientId);
+      recipeIngredientsParams.push(rI.amount);
+      recipeIngredientsParams.push(rI.measurementId);
+    });
+    const [ createdRecipeIngredients ] = await this.pool.execute(sql3, recipeIngredientsParams);
+
+    const sql4 = `
+      INSERT INTO nobsc_recipe_subrecipes (recipe_id, subrecipe_id, amount, measurement_id)
+      VALUES ${recipeIngredientsPlaceholders}
+    `;
+    let recipeSubrecipesParams = [];
+    recipeSubrecipes.map(rS => {
+      recipeSubrecipesParams.push(generatedId);
+      recipeSubrecipesParams.push(rS.recipeId);
+      recipeSubrecipesParams.push(rS.amount);
+      recipeSubrecipesParams.push(rS.measurementId);
+    });
+    console.log(recipeSubrecipesParams);
+    const [ createdRecipeSubrecipes ] = await this.pool.execute(sql4, recipeSubrecipesParams);
+
     return createdRecipe;
   }
   
