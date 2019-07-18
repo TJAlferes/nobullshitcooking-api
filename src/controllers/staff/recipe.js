@@ -5,7 +5,10 @@ const Recipe = require('../../data-access/Recipe');
 const RecipeEquipment = require('../../data-access/RecipeEquipment');
 const RecipeIngredients = require('../../data-access/RecipeIngredients');
 const RecipeSubrecipes = require('../../data-access/RecipeSubrecipes');
-const validRecipeEntity = require('../../lib/validations/staff/recipeEntity');
+const validRecipeEntity = require('../../lib/validations/staff/recipeEntity');  // move out of staff also
+const validRecipeEquipmentEntity = require('../../lib/validations/recipeEquipmentEntity');
+const validRecipeIngredientsEntity = require('../../lib/validations/staff/recipeIngredientsEntity');
+const validRecipeSubrecipesEntity = require('../../lib/validations/staff/recipeSubrecipesEntity');
 
 const staffRecipeController = {
   createRecipe: async function(req, res, next) {
@@ -24,31 +27,63 @@ const staffRecipeController = {
       const cookingImage = req.sanitize(req.body.recipeInfo.cookingImage);
 
       const recipe = new Recipe(pool);
-
       const recipeToCreate = validRecipeEntity({
         recipeTypeId,
         cuisineId,
+        authorId,
+        ownerId,
         title,
         description,
         directions,
-        requiredEquipment,
-        requiredIngredients,
-        requiredSubrecipes,
         recipeImage,
         equipmentImage,
         ingredientsImage,
         cookingImage
       });
-      const recipeEquipmentPlaceholders = '(?, ?, ?),'.repeat(requiredEquipment.length).slice(0, -1);
-      const recipeIngredientsPlaceholders = '(?, ?, ?, ?),'.repeat(requiredIngredients.length).slice(0, -1);
-      const recipeSubrecipesPlaceholders = '(?, ?, ?, ?),'.repeat(requiredSubrecipes.length).slice(0, -1);
-      const [ row ] = await recipe.createRecipe(
-        recipeToCreate,
-        recipeEquipmentPlaceholders,
-        recipeIngredientsPlaceholders,
-        recipeSubrecipesPlaceholders
-      );
-      res.send(row);
+      const [ createdRecipe ] = await recipe.createRecipe(recipeToCreate);
+
+      const generatedId = createdRecipe.insertId;
+
+      let resObj = {createRecipe};
+
+      if (requiredEquipment.length > 0) {
+        const recipeEquipment = new RecipeEquipment(pool);
+        const recipeEquipmentToCreate = recipeEquipment.map(rE => validRecipeEquipmentEntity({
+          equipmentId: rE.equipmentId,
+          amount: rE.amount
+        }));
+        const recipeEquipmentPlaceholders = '(?, ?, ?),'.repeat(requiredEquipment.length).slice(0, -1);
+        const [ createdRecipeEquipment ] = await recipeEquipment.createRecipeEquipment(
+          recipeEquipmentToCreate,
+          recipeEquipmentPlaceholders,
+          generatedId
+        );
+        resObj.createdRecipeEquipment = createdRecipeEquipment;
+      }
+
+      if (requiredIngredients.length > 0) {
+        const recipeIngredients = new RecipeIngredients(pool);
+        const recipeIngredientsPlaceholders = '(?, ?, ?, ?),'.repeat(requiredIngredients.length).slice(0, -1);
+        const [ createdRecipeIngredients ] = await recipeIngredients.createRecipeIngredients(
+          requiredIngredients,
+          recipeIngredientsPlaceholders,
+          generatedId
+        );
+        resObj.createdRecipeIngredients = createdRecipeIngredients;
+      }
+
+      if (requiredSubrecipes.length > 0) {
+        const recipeSubrecipes = new RecipeSubrecipes(pool);
+        const recipeSubrecipesPlaceholders = '(?, ?, ?, ?),'.repeat(requiredSubrecipes.length).slice(0, -1);
+        const [ createdRecipeSubrecipes ] = await recipeSubrecipes.createRecipeSubrecipes(
+          requiredSubrecipes,
+          recipeSubrecipesPlaceholders,
+          generatedId
+        );
+        resObj.createdRecipeSubrecipes = createdRecipeSubrecipes;
+      }
+
+      res.send(resObj);
       next();
     } catch(err) {
       next(err);

@@ -309,28 +309,21 @@ class Recipe {
   create, update, and delete methods
   */
 
-  async createRecipe(
-    recipeInfo,
-    recipeEquipmentPlaceholders,
-    recipeIngredientsPlaceholders,
-    recipeSubrecipesPlaceholders
-  ) {
+  async createRecipe(recipeInfo) {
     const {
       recipeTypeId,
       cuisineId,
+      authorId,
+      ownerId,
       title,
       description,
       directions,
-      recipeEquipment,
-      recipeIngredients,
-      recipeSubrecipes,
       recipeImage,
       equipmentImage,
       ingredientsImage,
       cookingImage
     } = recipeInfo;
-
-    const sql1 = `
+    const sql = `
       INSERT INTO nobsc_recipes (
         recipe_type_id,
         cuisine_id,
@@ -347,9 +340,11 @@ class Recipe {
         ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
       )
     `;
-    const [ createdRecipe ] = await this.pool.execute(sql1, [
+    const [ createdRecipe ] = await this.pool.execute(sql, [
       recipeTypeId,
       cuisineId,
+      authorId,
+      ownerId,
       title,
       description,
       directions,
@@ -358,45 +353,7 @@ class Recipe {
       ingredientsImage,
       cookingImage
     ]);
-    const generatedId = createdRecipe.insertId;  // await
-    console.log('generatedId: ', generatedId);
-
-    const sql2 = `
-      INSERT INTO nobsc_recipe_equipment (recipe_id, equipment_id, amount)
-      VALUES ${recipeEquipmentPlaceholders} 
-    `;
-    let recipeEquipmentParams = [];
-    recipeEquipment.map(rE => {
-      recipeEquipmentParams.push(generatedId, rE.equipmentId, rE.amount);
-    });
-    const [ createdRecipeEquipment ] = await this.pool.execute(sql2, recipeEquipmentParams);
-
-    const sql3 = `
-      INSERT INTO nobsc_recipe_ingredients (recipe_id, ingredient_id, amount, measurement_id)
-      VALUES ${recipeIngredientsPlaceholders}
-    `;
-    let recipeIngredientsParams = [];
-    recipeIngredients.map(rI => {
-      recipeIngredientsParams.push(generatedId, rI.ingredientId, rI.amount, rI.measurementId);
-    });
-    const [ createdRecipeIngredients ] = await this.pool.execute(sql3, recipeIngredientsParams);
-
-    const sql4 = `
-      INSERT INTO nobsc_recipe_subrecipes (recipe_id, subrecipe_id, amount, measurement_id)
-      VALUES ${recipeSubrecipesPlaceholders}
-    `;
-    let recipeSubrecipesParams = [];
-    recipeSubrecipes.map(rS => {
-      recipeSubrecipesParams.push(generatedId, rS.recipeId, rS.amount, rS.measurementId);
-    });
-    const [ createdRecipeSubrecipes ] = await this.pool.execute(sql4, recipeSubrecipesParams);
-
-    return {
-      createdRecipe,
-      createdRecipeEquipment,
-      createdRecipeIngredients,
-      createdRecipeSubrecipes
-    };
+    return createdRecipe;
   }
   
   /*
