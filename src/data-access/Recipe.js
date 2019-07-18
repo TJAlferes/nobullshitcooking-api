@@ -235,28 +235,6 @@ class Recipe {
   }
 
   async viewRecipeById(recipeId) {
-    /*const sql = `
-      SELECT
-        r.recipe_id AS recipe_id,
-        r.recipe_type_id AS recipe_type_id,
-        r.cuisine_id AS cuisine_id,
-        r.title AS title,
-        r.description AS description,
-        r.directions AS directions,
-        r.required_equipment as required_equipment,
-        r.required_ingredients AS required_ingredients,
-        r.required_subrecipes AS required_subrecipes,
-        r.recipe_image AS recipe_image,
-        r.equipment_image as equipment_image,
-        r.ingredients_image as ingredients_image,
-        r.cooking_image as cooking_image,
-        t.recipe_type_name AS recipe_type_name,
-        c.cuisine_name AS cuisine_name
-      FROM nobsc_recipes r
-      LEFT JOIN nobsc_recipe_types t ON r.recipe_type_id = t.recipe_type_id
-      LEFT JOIN nobsc_cuisines c ON r.cuisine_id = c.cuisine_id
-      WHERE recipe_id = ?
-    `;*/
     const sql = `
       SELECT
         r.recipe_id,
@@ -343,9 +321,6 @@ class Recipe {
       title,
       description,
       directions,
-      recipeEquipmentPlaceholders,
-      recipeIngredientsPlaceholders,
-      recipeSubrecipesPlaceholders,
       recipeEquipment,
       recipeIngredients,
       recipeSubrecipes,
@@ -383,7 +358,7 @@ class Recipe {
       ingredientsImage,
       cookingImage
     ]);
-    const generatedId = createdRecipe.insertId;  // add awaits?
+    const generatedId = createdRecipe.insertId;  // await
     console.log('generatedId: ', generatedId);
 
     const sql2 = `
@@ -392,11 +367,8 @@ class Recipe {
     `;
     let recipeEquipmentParams = [];
     recipeEquipment.map(rE => {
-      recipeEquipmentParams.push(generatedId);
-      recipeEquipmentParams.push(rE.equipmentId);
-      recipeEquipmentParams.push(rE.amount);
+      recipeEquipmentParams.push(generatedId, rE.equipmentId, rE.amount);
     });
-    console.log(recipeEquipmentParams);
     const [ createdRecipeEquipment ] = await this.pool.execute(sql2, recipeEquipmentParams);
 
     const sql3 = `
@@ -405,30 +377,43 @@ class Recipe {
     `;
     let recipeIngredientsParams = [];
     recipeIngredients.map(rI => {
-      recipeIngredientsParams.push(generatedId);
-      recipeIngredientsParams.push(rI.ingredientId);
-      recipeIngredientsParams.push(rI.amount);
-      recipeIngredientsParams.push(rI.measurementId);
+      recipeIngredientsParams.push(generatedId, rI.ingredientId, rI.amount, rI.measurementId);
     });
     const [ createdRecipeIngredients ] = await this.pool.execute(sql3, recipeIngredientsParams);
 
     const sql4 = `
       INSERT INTO nobsc_recipe_subrecipes (recipe_id, subrecipe_id, amount, measurement_id)
-      VALUES ${recipeIngredientsPlaceholders}
+      VALUES ${recipeSubrecipesPlaceholders}
     `;
     let recipeSubrecipesParams = [];
     recipeSubrecipes.map(rS => {
-      recipeSubrecipesParams.push(generatedId);
-      recipeSubrecipesParams.push(rS.recipeId);
-      recipeSubrecipesParams.push(rS.amount);
-      recipeSubrecipesParams.push(rS.measurementId);
+      recipeSubrecipesParams.push(generatedId, rS.recipeId, rS.amount, rS.measurementId);
     });
-    console.log(recipeSubrecipesParams);
     const [ createdRecipeSubrecipes ] = await this.pool.execute(sql4, recipeSubrecipesParams);
 
-    return createdRecipe;
+    return {
+      createdRecipe,
+      createdRecipeEquipment,
+      createdRecipeIngredients,
+      createdRecipeSubrecipes
+    };
   }
   
+  /*
+  you have to make a diffing algorithm for the update
+  if anything old is no longer included, you must delete it
+  this for the
+  nobsc_recipe_equipment
+  nobsc_recipe_ingredients
+  nobsc_recipe_subrecipes
+
+  1. receive the new as func args
+  2. SELECT the old from MySQL
+  3. compare the two:
+    if
+  
+  tables
+  */
   async updateRecipe(recipeInfo) {
     const {
       recipeTypeId,

@@ -1,5 +1,10 @@
+const fp = require('lodash/fp')
+
 const pool = require('../../data-access/dbPoolConnection');
 const Recipe = require('../../data-access/Recipe');
+const RecipeEquipment = require('../../data-access/RecipeEquipment');
+const RecipeIngredients = require('../../data-access/RecipeIngredients');
+const RecipeSubrecipes = require('../../data-access/RecipeSubrecipes');
 const validRecipeEntity = require('../../lib/validations/staff/recipeEntity');
 
 const staffRecipeController = {
@@ -80,6 +85,26 @@ const staffRecipeController = {
         ingredientsImage,
         cookingImage
       });
+
+      //const [ oldRecipeId ] = await recipe.getRecipeIdByTitle(title);
+
+      //fp.isEqual()
+
+      /*if (not equal) {
+        const recipeEquipment = new RecipeEquipment(pool);
+        //
+      }*/
+
+      /*if (not equal) {
+        const recipeIngredients = new RecipeIngredients(pool);
+        //
+      }*/
+
+      /*if (not equal) {
+        const recipeSubrecipes = new RecipeSubrecipes(pool);
+        //
+      }*/
+
       const [ row ] = await recipe.updateRecipe(recipeToUpdate);
 
       res.send(row);
