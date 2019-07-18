@@ -2,6 +2,7 @@ class RecipeEquipment {
   constructor(pool) {
     this.pool = pool;
     this.viewRecipeEquipmentByRecipeId = this.viewRecipeEquipmentByRecipeId.bind(this);
+    this.viewRecipeEquipmentForEditFormByRecipeId = this.viewRecipeEquipmentForEditFormByRecipeId.bind(this);
     this.createRecipeEquipment = this.createRecipeEquipment.bind(this);
     this.updateRecipeEquipment = this.updateRecipeEquipment.bind(this);
     this.deleteRecipeEquipment = this.deleteRecipeEquipment.bind(this);
@@ -9,17 +10,27 @@ class RecipeEquipment {
 
   async viewRecipeEquipmentByRecipeId(recipeId) {
     const sql = `
-      SELECT re.amount e.equipment_name
+      SELECT re.amount, e.equipment_name
       FROM nobsc_recipe_equipment re
       INNER JOIN nobsc_equipment e ON e.equipment_id = re.equipment_id
-      INNER JOIN nobsc_equipment_types et ON e.equipment_type_id = et.equipment_type_id
       WHERE re.recipe_id = ?
-      ORDER BY equipment_type_id
+      ORDER BY e.equipment_type_id
     `;
     const [ recipeEquipment ] = await this.pool.execute(sql, [recipeId]);
+    return recipeEquipment;
   }
 
-  async createRecipeEquipment(recipeEquipment) {
+  async viewRecipeEquipmentForEditFormByRecipeId(recipeId) {
+    const sql = `
+      SELECT amount, equipment_id
+      FROM nobsc_recipe_equipment
+      WHERE recipe_id = ?
+    `;
+    const [ recipeEquipment ] = await this.pool.execute(sql, [recipeId]);
+    return recipeEquipment;
+  }
+
+  async createRecipeEquipment(recipeEquipment, recipeEquipmentPlaceholders, generatedId) {
     const sql = `
       INSERT INTO nobsc_recipe_equipment (recipe_id, equipment_id, amount)
       VALUES ${recipeEquipmentPlaceholders} 
@@ -28,7 +39,7 @@ class RecipeEquipment {
     recipeEquipment.map(rE => {
       recipeEquipmentParams.push(generatedId, rE.equipmentId, rE.amount);
     });
-    const [ createdRecipeEquipment ] = await this.pool.execute(sql2, recipeEquipmentParams);
+    const [ createdRecipeEquipment ] = await this.pool.execute(sql, recipeEquipmentParams);
   }
 
   async updateRecipeEquipment() {
