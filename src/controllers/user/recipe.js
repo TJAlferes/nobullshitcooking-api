@@ -1,29 +1,36 @@
-const uuidv4 = require('uuid/v4');
+//const uuidv4 = require('uuid/v4');
 
 const pool = require('../../data-access/dbPoolConnection');
-const User = require('../../data-access/user/User');
-const validRecipeEntity = require('../../lib/validations/user/recipeEntity');
+//const User = require('../../data-access/user/User');
+const Recipe = require('../../data-access/Recipe');
+const RecipeEquipment = require('../../data-access/RecipeEquipment');
+const RecipeIngredients = require('../../data-access/RecipeIngredients');
+const RecipeSubrecipes = require('../../data-access/RecipeSubrecipes');
+const validRecipeEntity = require('../../lib/validations/recipeEntity');
+const validRecipeEquipmentEntity = require('../../lib/validations/recipeEquipmentEntity');
+const validRecipeIngredientsEntity = require('../../lib/validations/recipeIngredientsEntity');
+const validRecipeSubrecipesEntity = require('../../lib/validations/recipeSubrecipesEntity');
 
 // TO DO: Remove all try/catch in controllers if catchExceptions middleware is working?
 // TO DO: make only load recipes submitted by this user
 
 const userRecipeController = {
-  viewUserRecipe: async function(req, res, next) {
+  viewUserRecipes: async function(req, res, next) {
     try {
       const userId = req.session.userInfo.userId;
       const user = new User(pool);
-      const [ rows ] = await user.viewUserRecipe(userId);
+      const [ rows ] = await user.viewUserRecipes(userId);
       res.send(rows);
       next();
     } catch(err) {
       next(err);
     }
   },
-  viewUserRecipeDetail: async function(req, res, next) {
+  viewUserRecipe: async function(req, res, next) {
     const recipeId = req.sanitize(req.params.recipeId);
     const userId = req.session.userInfo.userId;
     const user = new User(pool);
-    const [ row ] = await user.viewUserRecipeDetail(recipeId, userId);
+    const [ row ] = await user.viewUserRecipe(recipeId, userId);
     res.send(row);
   },
   createUserRecipe: async function(req, res, next) {

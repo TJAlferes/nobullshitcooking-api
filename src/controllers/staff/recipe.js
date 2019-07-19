@@ -5,10 +5,10 @@ const Recipe = require('../../data-access/Recipe');
 const RecipeEquipment = require('../../data-access/RecipeEquipment');
 const RecipeIngredients = require('../../data-access/RecipeIngredients');
 const RecipeSubrecipes = require('../../data-access/RecipeSubrecipes');
-const validRecipeEntity = require('../../lib/validations/staff/recipeEntity');  // move out of staff also
+const validRecipeEntity = require('../../lib/validations/recipeEntity');
 const validRecipeEquipmentEntity = require('../../lib/validations/recipeEquipmentEntity');
-const validRecipeIngredientsEntity = require('../../lib/validations/staff/recipeIngredientsEntity');
-const validRecipeSubrecipesEntity = require('../../lib/validations/staff/recipeSubrecipesEntity');
+const validRecipeIngredientsEntity = require('../../lib/validations/recipeIngredientsEntity');
+const validRecipeSubrecipesEntity = require('../../lib/validations/recipeSubrecipesEntity');
 
 const staffRecipeController = {
   createRecipe: async function(req, res, next) {
@@ -26,7 +26,6 @@ const staffRecipeController = {
       const ingredientsImage = req.sanitize(req.body.recipeInfo.ingredientsImage);
       const cookingImage = req.sanitize(req.body.recipeInfo.cookingImage);
 
-      const recipe = new Recipe(pool);
       const recipeToCreate = validRecipeEntity({
         recipeTypeId,
         cuisineId,
@@ -40,6 +39,7 @@ const staffRecipeController = {
         ingredientsImage,
         cookingImage
       });
+      const recipe = new Recipe(pool);
       const [ createdRecipe ] = await recipe.createRecipe(recipeToCreate);
 
       const generatedId = createdRecipe.insertId;
@@ -47,12 +47,14 @@ const staffRecipeController = {
       let resObj = {createRecipe};
 
       if (requiredEquipment.length > 0) {
-        const recipeEquipment = new RecipeEquipment(pool);
-        const recipeEquipmentToCreate = recipeEquipment.map(rE => validRecipeEquipmentEntity({
-          equipmentId: rE.equipmentId,
-          amount: rE.amount
-        }));
+        const recipeEquipmentToCreate = requiredEquipment.map(rE =>
+          validRecipeEquipmentEntity({
+            equipmentId: rE.equipmentId,
+            amount: rE.amount
+          })
+        );
         const recipeEquipmentPlaceholders = '(?, ?, ?),'.repeat(requiredEquipment.length).slice(0, -1);
+        const recipeEquipment = new RecipeEquipment(pool);
         const [ createdRecipeEquipment ] = await recipeEquipment.createRecipeEquipment(
           recipeEquipmentToCreate,
           recipeEquipmentPlaceholders,
@@ -62,10 +64,17 @@ const staffRecipeController = {
       }
 
       if (requiredIngredients.length > 0) {
-        const recipeIngredients = new RecipeIngredients(pool);
+        const recipeIngredientsToCreate = requiredIngredients.map(rI =>
+          validRecipeIngredientsEntity({
+            ingredientId: rI.ingredientId,
+            amount: rI.amount,
+            measurementId: rI.measurementId
+          })
+        );
         const recipeIngredientsPlaceholders = '(?, ?, ?, ?),'.repeat(requiredIngredients.length).slice(0, -1);
+        const recipeIngredients = new RecipeIngredients(pool);
         const [ createdRecipeIngredients ] = await recipeIngredients.createRecipeIngredients(
-          requiredIngredients,
+          recipeIngredientsToCreate,
           recipeIngredientsPlaceholders,
           generatedId
         );
@@ -73,10 +82,17 @@ const staffRecipeController = {
       }
 
       if (requiredSubrecipes.length > 0) {
-        const recipeSubrecipes = new RecipeSubrecipes(pool);
+        const recipeSubrecipesToCreate = requiredSubrecipes.map(rS =>
+          validRecipeSubrecipesEntity({
+            subrecipeId: rS.subrecipeId,
+            amount: rS.amount,
+            measurementId: rS.measurementId
+          })
+        );
         const recipeSubrecipesPlaceholders = '(?, ?, ?, ?),'.repeat(requiredSubrecipes.length).slice(0, -1);
+        const recipeSubrecipes = new RecipeSubrecipes(pool);
         const [ createdRecipeSubrecipes ] = await recipeSubrecipes.createRecipeSubrecipes(
-          requiredSubrecipes,
+          recipeSubrecipesToCreate,
           recipeSubrecipesPlaceholders,
           generatedId
         );
