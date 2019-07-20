@@ -36,6 +36,7 @@ const {
   recipeRoutes,
   recipeTypeRoutes,
   cuisineRoutes,
+  methodRoutes,
   measurementRoutes,
   favoriteRecipeRoutes,
   friendshipRoutes,
@@ -309,6 +310,7 @@ app.use('/ingredient-type', ingredientTypeRoutes);
 app.use('/recipe', recipeRoutes);
 app.use('/recipe-type', recipeTypeRoutes);
 app.use('/cuisine', cuisineRoutes);
+app.use('/method', methodRoutes);
 app.use('/measurement', measurementRoutes);
 app.use('/favorite-recipe', favoriteRecipeRoutes);
 app.use('/friendship', friendshipRoutes);

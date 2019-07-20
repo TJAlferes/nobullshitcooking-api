@@ -18,6 +18,7 @@ class RecipeSubrecipes {
       ORDER BY r.recipe_type_id
     `;
     const [ recipeSubrecipes ] = await this.pool.execute(sql, [recipeId]);
+    return recipeSubrecipes;
   }
 
   async viewRecipeSubrecipesForEditFormByRecipeId(recipeId) {
@@ -40,7 +41,12 @@ class RecipeSubrecipes {
       recipeSubrecipesParams.push(generatedId, rS.recipeId, rS.amount, rS.measurementId);
     });
     const [ createdRecipeSubrecipes ] = await this.pool.execute(sql, recipeSubrecipesParams);
+    return createdRecipeSubrecipes;
   }
+
+  async updateRecipeSubrecipes() {}
+
+  async deleteRecipeSubrecipes() {}
 }
 
 module.exports = RecipeSubrecipes;

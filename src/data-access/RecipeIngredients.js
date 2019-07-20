@@ -41,9 +41,12 @@ class RecipeIngredients {
       recipeIngredientsParams.push(generatedId, rI.ingredientId, rI.amount, rI.measurementId);
     });
     const [ createdRecipeIngredients ] = await this.pool.execute(sql, recipeIngredientsParams);
+    return createdRecipeIngredients;
   }
 
+  async updateRecipeIngredients() {}
 
+  async deleteRecipeIngredients() {}
 }
 
 module.exports = RecipeIngredients;

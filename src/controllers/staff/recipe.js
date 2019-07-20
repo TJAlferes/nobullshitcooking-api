@@ -1,11 +1,13 @@
-const fp = require('lodash/fp')
+//const fp = require('lodash/fp')
 
 const pool = require('../../data-access/dbPoolConnection');
 const Recipe = require('../../data-access/Recipe');
+const RecipeMethods = require('../../data-access/RecipeMethods');
 const RecipeEquipment = require('../../data-access/RecipeEquipment');
 const RecipeIngredients = require('../../data-access/RecipeIngredients');
 const RecipeSubrecipes = require('../../data-access/RecipeSubrecipes');
 const validRecipeEntity = require('../../lib/validations/recipeEntity');
+const validRecipeMethodsEntity = require('../../lib/validations/recipeMethodsEntity');
 const validRecipeEquipmentEntity = require('../../lib/validations/recipeEquipmentEntity');
 const validRecipeIngredientsEntity = require('../../lib/validations/recipeIngredientsEntity');
 const validRecipeSubrecipesEntity = require('../../lib/validations/recipeSubrecipesEntity');
@@ -18,6 +20,7 @@ const staffRecipeController = {
       const title = req.sanitize(req.body.recipeInfo.title);
       const description = req.sanitize(req.body.recipeInfo.description);
       const directions = req.sanitize(req.body.recipeInfo.directions);
+      const requiredMethods = req.sanitize(req.body.recipeInfo.requiredMethods);
       const requiredEquipment = req.sanitize(req.body.recipeInfo.requiredEquipment);
       const requiredIngredients = req.sanitize(req.body.recipeInfo.requiredIngredients);
       const requiredSubrecipes = req.sanitize(req.body.recipeInfo.requiredSubrecipes);
@@ -25,6 +28,9 @@ const staffRecipeController = {
       const equipmentImage = req.sanitize(req.body.recipeInfo.equipmentImage);
       const ingredientsImage = req.sanitize(req.body.recipeInfo.ingredientsImage);
       const cookingImage = req.sanitize(req.body.recipeInfo.cookingImage);
+
+      const authorId = 1; //req.session.userInfo.userId || 1;
+      const ownerId = 1; //req.session.userInfo.userId || 1;
 
       const recipeToCreate = validRecipeEntity({
         recipeTypeId,
@@ -46,6 +52,21 @@ const staffRecipeController = {
 
       let resObj = {createRecipe};
 
+      const recipeMethodsToCreate = requiredMethods.map(rM =>
+        validRecipeMethodsEntity({methodId: rM.methodId})
+      );
+      const recipeMethodsPlaceholders = '(?, ?),'
+      .repeat(requiredMethods.length)
+      .slice(0, -1);
+      const recipeMethods = new RecipeMethods(pool);
+      const [ createdRecipeMethods ] = await recipeMethods
+      .createRecipeMethods(
+        recipeMethodsToCreate,
+        recipeMethodsPlaceholders,
+        generatedId
+      );
+      resObj.createdRecipeMethods = createdRecipeMethods;
+
       if (requiredEquipment.length > 0) {
         const recipeEquipmentToCreate = requiredEquipment.map(rE =>
           validRecipeEquipmentEntity({
@@ -53,9 +74,12 @@ const staffRecipeController = {
             amount: rE.amount
           })
         );
-        const recipeEquipmentPlaceholders = '(?, ?, ?),'.repeat(requiredEquipment.length).slice(0, -1);
+        const recipeEquipmentPlaceholders = '(?, ?, ?),'
+        .repeat(requiredEquipment.length)
+        .slice(0, -1);
         const recipeEquipment = new RecipeEquipment(pool);
-        const [ createdRecipeEquipment ] = await recipeEquipment.createRecipeEquipment(
+        const [ createdRecipeEquipment ] = await recipeEquipment
+        .createRecipeEquipment(
           recipeEquipmentToCreate,
           recipeEquipmentPlaceholders,
           generatedId
@@ -71,9 +95,12 @@ const staffRecipeController = {
             measurementId: rI.measurementId
           })
         );
-        const recipeIngredientsPlaceholders = '(?, ?, ?, ?),'.repeat(requiredIngredients.length).slice(0, -1);
+        const recipeIngredientsPlaceholders = '(?, ?, ?, ?),'
+        .repeat(requiredIngredients.length)
+        .slice(0, -1);
         const recipeIngredients = new RecipeIngredients(pool);
-        const [ createdRecipeIngredients ] = await recipeIngredients.createRecipeIngredients(
+        const [ createdRecipeIngredients ] = await recipeIngredients
+        .createRecipeIngredients(
           recipeIngredientsToCreate,
           recipeIngredientsPlaceholders,
           generatedId
@@ -89,9 +116,12 @@ const staffRecipeController = {
             measurementId: rS.measurementId
           })
         );
-        const recipeSubrecipesPlaceholders = '(?, ?, ?, ?),'.repeat(requiredSubrecipes.length).slice(0, -1);
+        const recipeSubrecipesPlaceholders = '(?, ?, ?, ?),'
+        .repeat(requiredSubrecipes.length)
+        .slice(0, -1);
         const recipeSubrecipes = new RecipeSubrecipes(pool);
-        const [ createdRecipeSubrecipes ] = await recipeSubrecipes.createRecipeSubrecipes(
+        const [ createdRecipeSubrecipes ] = await recipeSubrecipes
+        .createRecipeSubrecipes(
           recipeSubrecipesToCreate,
           recipeSubrecipesPlaceholders,
           generatedId
@@ -125,12 +155,11 @@ const staffRecipeController = {
       const recipeToUpdate = validRecipeEntity({
         recipeTypeId,
         cuisineId,
+        authorId,
+        ownerId,
         title,
         description,
         directions,
-        requiredEquipment,
-        requiredIngredients,
-        requiredSubrecipes,
         recipeImage,
         equipmentImage,
         ingredientsImage,

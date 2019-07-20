@@ -10,9 +10,9 @@ class Notification {
 
   async viewNotificationForUser(notificationId, userId) {
     const sql = `
-      SELECT sender_id, note
+      SELECT sender_id, type, created_on, note
       FROM nobsc_notifications
-      WHERE notification_id = ? and receiver_id = ?
+      WHERE notification_id = ? AND receiver_id = ? AND read = 0
     `;
     const [ notification ] = await this.pool.execute(sql, [notificationId, userId]);
     return notification;
@@ -20,9 +20,9 @@ class Notification {
 
   async viewAllNotificationsForUser(userId) {
     const sql = `
-      SELECT sender_id, note
+      SELECT sender_id, type, created_on
       FROM nobsc_notifications
-      WHERE read = 0 AND receiver_id = ?
+      WHERE read = 0 AND receiver_id = ? AND read = 0
     `;
     const [ notifications ] = await this.pool.execute(sql, [userId])
   }
@@ -31,11 +31,11 @@ class Notification {
     const { senderId, receiverId, note, read } = notificationInfo;
     const sql = `
       INSERT INTO nobsc_notifications
-      (sender_id, receiver_id, note, read)
+      (sender_id, receiver_id, read, type, note, created_on)
       VALUES
       (?, ?, ?, ?)
     `;
-    const [ notification ] = await this.pool.execute(sql [senderId, receiverId, note, read]);
+    const [ notification ] = await this.pool.execute(sql, [senderId, receiverId, note, read]);
   }
 
   async markNotificationAsRead(notificationId, userId) {
@@ -44,15 +44,27 @@ class Notification {
       SET read = 1
       WHERE notification_id = ? and receiver_id = ?
     `;
+    const [ notification ] = await this.pool.execute(sql, [notificationId, userId]);
+    return notification;
   }
 
-  // make a weekly(?) job
-  /*async deleteOldNotifications() {
+  /*async deleteWeekOldReadNotifications() {
     // something like
     const sql = `
       DELETE
       FROM nobsc_notifications
-      WHERE DATEDIFF(CURDATE(), nobsc_notifications.created_on) > 30
+      WHERE read = 1 AND DATEDIFF(CURDATE(), nobsc_notifications.created_on) > 7
+    `;
+    // etc.
+  }
+  */
+
+  /*async deleteMonthOldUnreadNotifications() {
+    // something like
+    const sql = `
+      DELETE
+      FROM nobsc_notifications
+      WHERE read = 0 AND DATEDIFF(CURDATE(), nobsc_notifications.created_on) > 30
     `;
     // etc.
   }

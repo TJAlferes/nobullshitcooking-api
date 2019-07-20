@@ -40,6 +40,7 @@ class RecipeEquipment {
       recipeEquipmentParams.push(generatedId, rE.equipmentId, rE.amount);
     });
     const [ createdRecipeEquipment ] = await this.pool.execute(sql, recipeEquipmentParams);
+    return createdRecipeEquipment;
   }
 
   async updateRecipeEquipment() {

@@ -1,3 +1,6 @@
+/*
+// we're not using this yet (if ever)
+
 'use strict';
 
 const mysqlx = require('@mysql/xdevapi');
@@ -33,3 +36,4 @@ const xdevpool = process.env.NODE_ENV === 'production'
 });
 
 module.exports = xdevpool;
+*/
