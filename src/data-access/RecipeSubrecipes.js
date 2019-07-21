@@ -36,11 +36,7 @@ class RecipeSubrecipes {
       INSERT INTO nobsc_recipe_subrecipes (recipe_id, subrecipe_id, amount, measurement_id)
       VALUES ${recipeSubrecipesPlaceholders}
     `;
-    let recipeSubrecipesParams = [];
-    recipeSubrecipes.map(rS => {
-      recipeSubrecipesParams.push(generatedId, rS.recipeId, rS.amount, rS.measurementId);
-    });
-    const [ createdRecipeSubrecipes ] = await this.pool.execute(sql, recipeSubrecipesParams);
+    const [ createdRecipeSubrecipes ] = await this.pool.execute(sql, recipeSubrecipes);
     return createdRecipeSubrecipes;
   }
 

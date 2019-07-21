@@ -53,7 +53,10 @@ const staffRecipeController = {
       let resObj = {createRecipe};
 
       const recipeMethodsToCreate = requiredMethods.map(rM =>
-        validRecipeMethodsEntity({methodId: rM.methodId})
+        validRecipeMethodsEntity({
+          recipeId: generatedId,
+          methodId: rM.methodId
+        })
       );
       const recipeMethodsPlaceholders = '(?, ?),'
       .repeat(requiredMethods.length)
@@ -70,6 +73,7 @@ const staffRecipeController = {
       if (requiredEquipment.length > 0) {
         const recipeEquipmentToCreate = requiredEquipment.map(rE =>
           validRecipeEquipmentEntity({
+            recipeId: generatedId,
             equipmentId: rE.equipmentId,
             amount: rE.amount
           })
@@ -90,6 +94,7 @@ const staffRecipeController = {
       if (requiredIngredients.length > 0) {
         const recipeIngredientsToCreate = requiredIngredients.map(rI =>
           validRecipeIngredientsEntity({
+            recipeId: generatedId,
             ingredientId: rI.ingredientId,
             amount: rI.amount,
             measurementId: rI.measurementId
@@ -111,6 +116,7 @@ const staffRecipeController = {
       if (requiredSubrecipes.length > 0) {
         const recipeSubrecipesToCreate = requiredSubrecipes.map(rS =>
           validRecipeSubrecipesEntity({
+            recipeId: generatedId,
             subrecipeId: rS.subrecipeId,
             amount: rS.amount,
             measurementId: rS.measurementId

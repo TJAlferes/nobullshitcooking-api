@@ -36,11 +36,7 @@ class RecipeIngredients {
       INSERT INTO nobsc_recipe_ingredients (recipe_id, ingredient_id, amount, measurement_id)
       VALUES ${recipeIngredientsPlaceholders}
     `;
-    let recipeIngredientsParams = [];
-    recipeIngredients.map(rI => {
-      recipeIngredientsParams.push(generatedId, rI.ingredientId, rI.amount, rI.measurementId);
-    });
-    const [ createdRecipeIngredients ] = await this.pool.execute(sql, recipeIngredientsParams);
+    const [ createdRecipeIngredients ] = await this.pool.execute(sql, recipeIngredients);
     return createdRecipeIngredients;
   }
 

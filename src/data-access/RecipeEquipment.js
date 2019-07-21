@@ -30,36 +30,59 @@ class RecipeEquipment {
     return recipeEquipment;
   }
 
-  async createRecipeEquipment(recipeEquipment, recipeEquipmentPlaceholders, generatedId) {
+  async createRecipeEquipment(recipeEquipment, recipeEquipmentPlaceholders) {
     const sql = `
       INSERT INTO nobsc_recipe_equipment (recipe_id, equipment_id, amount)
       VALUES ${recipeEquipmentPlaceholders} 
     `;
-    let recipeEquipmentParams = [];
-    recipeEquipment.map(rE => {
-      recipeEquipmentParams.push(generatedId, rE.equipmentId, rE.amount);
-    });
-    const [ createdRecipeEquipment ] = await this.pool.execute(sql, recipeEquipmentParams);
+    const [ createdRecipeEquipment ] = await this.pool.execute(sql, recipeEquipment);
     return createdRecipeEquipment;
   }
 
-  async updateRecipeEquipment() {
-    const sql = `
-      UPDATE nobsc_recipe_equipment
-      SET equipment_id = ? amount = ?
+  async updateRecipeEquipment(recipeEquipment, recipeEquipmentPlaceholders, recipeId) {
+    /*const connection = await this.pool.getConnection();
+    try {
+      await connection.query('START TRANSACTION');
+      await query(
+        'INSERT INTO `tbl_activity_log` (dt, tm,userid,username,activity) VALUES(?,?,?,?,?)',
+        ['2019-02-21', '10:22:01', 'S', 'Pradip', 'RAhul3']
+      );
+      await dbCon.query(
+        'INSERT INTO `tbl_activity_log` (dt, tm,userid,username,activity) VALUES(?,?,?,?,?)',
+        ['2019-02-21', '10:22:01', 'S', 'Pradip','this is test and the valid out put is this and then']
+      );
+      await connection.release();
+    } catch(e) {
+      await connection.query('ROLLBACK');
+      await connection.release();
+    }*/
+    const sql1 = `
+      DELETE
+      FROM nobsc_recipe_equipment
       WHERE recipe_id = ?
-      LIMIT 1;
     `;
-
+    const sql2 = `
+      INSERT INTO nobsc_recipe_equipment (recipe_id, equipment_id, amount)
+      VALUES ${recipeEquipmentPlaceholders} 
+    `;
+    try {
+      await this.pool.execute('START TRANSACTION');
+      await this.pool.execute(sql1, [recipeId]);
+      await this.pool.execute(sql2, [recipeEquipment]);
+      await this.pool.execute('COMMIT');
+    } catch (err) {
+      await this.pool.query
+    }
   }
 
-  async deleteRecipeEquipment() {
+  async deleteRecipeEquipment(recipeId) {
     const sql = `
       DELETE
       FROM nobsc_recipe_equipment
-      where recipe_id = ? AND equipment
+      WHERE recipe_id = ?
     `;
-
+    const [ deletedRecipeEquipment ] = await this.pool.execute(sql, [recipeId]);
+    return deletedRecipeEquipment;
   }
 }
 
