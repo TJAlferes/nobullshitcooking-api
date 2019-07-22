@@ -1,5 +1,3 @@
-//const fp = require('lodash/fp')
-
 const pool = require('../../data-access/dbPoolConnection');
 const Recipe = require('../../data-access/Recipe');
 const RecipeMethods = require('../../data-access/RecipeMethods');

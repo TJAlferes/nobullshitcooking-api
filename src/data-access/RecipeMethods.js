@@ -30,7 +30,7 @@ class RecipeMethods {
     return recipeMethods;
   }
 
-  async createRecipeMethods(recipeMethods, recipeMethodsPlaceholders, generatedId) {
+  async createRecipeMethods(recipeMethods, recipeMethodsPlaceholders) {
     const sql = `
       INSERT INTO nobsc_recipe_methods (recipe_id, method_id)
       VALUES ${recipeMethodsPlaceholders} 
@@ -39,23 +39,39 @@ class RecipeMethods {
     return createdRecipeMethods;
   }
 
-  async updateRecipeMethods() {
-    const sql = `
-      UPDATE nobsc_recipe_methods
-      SET method_id = ?
+  async updateRecipeMethods(recipeMethods, recipeMethodsPlaceholders, recipeId) {
+    const sql1 = `
+      DELETE
+      FROM nobsc_recipe_methods
       WHERE recipe_id = ?
-      LIMIT 1;
     `;
-
+    const sql2 = `
+      INSERT INTO nobsc_recipe_methods (recipe_id, method_id)
+      VALUES ${recipeMethodsPlaceholders} 
+    `;
+    const connection = await this.pool.getConnection();
+    await connection.beginTransaction();
+    try {
+      await connection.query(sql1, [recipeId]);
+      const [ updatedRecipeMethods ] = await connection.query(sql2, [recipeMethods]);
+      await connection.commit();
+      return updatedRecipeMethods;
+    } catch (err) {
+      await connection.rollback();
+      throw err;
+    } finally {
+      connection.release();
+    }
   }
 
-  async deleteRecipeMethods() {
+  async deleteRecipeMethods(recipeId) {
     const sql = `
       DELETE
-      FROM nobsc_recipe_equipment
-      where recipe_id = ? AND equipment
+      FROM nobsc_recipe_methods
+      WHERE recipe_id = ?
     `;
-
+    const [ deletedRecipeMethods ] = await this.pool.execute(sql, [recipeId]);
+    return deletedRecipeMethods;
   }
 }
 

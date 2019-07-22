@@ -3,8 +3,8 @@ class Staff {
     this.pool = pool;
     this.viewAllStaff = this.viewAllStaff.bind(this);
     this.viewStaffById = this.viewStaffById.bind(this);
-    this.getStaffByEmail = this.getStaffByEmail.bind(this);  // get-- are for auth only, use view-- for public purposes
-    this.getStaffByName = this.getStaffByName.bind(this);  // get-- are for auth only, use view-- for public purposes
+    this.getStaffByEmail = this.getStaffByEmail.bind(this);
+    this.getStaffByName = this.getStaffByName.bind(this);
     this.createStaff = this.createStaff.bind(this);
     this.updateStaff = this.updateStaff.bind(this);
     this.deleteStaff = this.deleteStaff.bind(this);

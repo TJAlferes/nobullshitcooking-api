@@ -40,22 +40,6 @@ class RecipeEquipment {
   }
 
   async updateRecipeEquipment(recipeEquipment, recipeEquipmentPlaceholders, recipeId) {
-    /*const connection = await this.pool.getConnection();
-    try {
-      await connection.query('START TRANSACTION');
-      await query(
-        'INSERT INTO `tbl_activity_log` (dt, tm,userid,username,activity) VALUES(?,?,?,?,?)',
-        ['2019-02-21', '10:22:01', 'S', 'Pradip', 'RAhul3']
-      );
-      await dbCon.query(
-        'INSERT INTO `tbl_activity_log` (dt, tm,userid,username,activity) VALUES(?,?,?,?,?)',
-        ['2019-02-21', '10:22:01', 'S', 'Pradip','this is test and the valid out put is this and then']
-      );
-      await connection.release();
-    } catch(e) {
-      await connection.query('ROLLBACK');
-      await connection.release();
-    }*/
     const sql1 = `
       DELETE
       FROM nobsc_recipe_equipment
@@ -65,13 +49,18 @@ class RecipeEquipment {
       INSERT INTO nobsc_recipe_equipment (recipe_id, equipment_id, amount)
       VALUES ${recipeEquipmentPlaceholders} 
     `;
+    const connection = await this.pool.getConnection();
+    await connection.beginTransaction();
     try {
-      await this.pool.execute('START TRANSACTION');
-      await this.pool.execute(sql1, [recipeId]);
-      await this.pool.execute(sql2, [recipeEquipment]);
-      await this.pool.execute('COMMIT');
+      await connection.query(sql1, [recipeId]);
+      const [ updatedRecipeEquipment ] = await connection.query(sql2, [recipeEquipment]);
+      await connection.commit();
+      return updatedRecipeEquipment;
     } catch (err) {
-      await this.pool.query
+      await connection.rollback();
+      throw err;
+    } finally {
+      connection.release();
     }
   }
 

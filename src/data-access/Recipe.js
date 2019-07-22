@@ -356,31 +356,15 @@ class Recipe {
     return createdRecipe;
   }
   
-  /*
-  you have to make a diffing algorithm for the update
-  if anything old is no longer included, you must delete it
-  this for the
-  nobsc_recipe_equipment
-  nobsc_recipe_ingredients
-  nobsc_recipe_subrecipes
-
-  1. receive the new as func args
-  2. SELECT the old from MySQL
-  3. compare the two:
-    if
-  
-  tables
-  */
   async updateRecipe(recipeInfo) {
     const {
       recipeTypeId,
       cuisineId,
+      authorId,
+      ownerId,
       title,
       description,
       directions,
-      requiredEquipment,
-      requiredIngredients,
-      requiredSubrecipes,
       recipeImage,
       equipmentImage,
       ingredientsImage,
@@ -392,12 +376,11 @@ class Recipe {
       SET
         recipe_type_id = ?,
         cuisine_id = ?,
+        author_id = ?,
+        owner_id = ?,
         title = ?,
         description = ?,
         directions = ?,
-        required_equipment = ?,
-        required_ingredients = ?,
-        required_subrecipes = ?,
         recipe_image = ?,
         equipment_image = ?,
         ingredients_image = ?,
@@ -408,12 +391,11 @@ class Recipe {
     const [ updatedRecipe ] = await this.pool.execute(sql, [
       recipeTypeId,
       cuisineId,
+      authorId,
+      ownerId,
       title,
       description,
       directions,
-      requiredEquipment,
-      requiredIngredients,
-      requiredSubrecipes,
       recipeImage,
       equipmentImage,
       ingredientsImage,
@@ -423,14 +405,18 @@ class Recipe {
     return updatedRecipe;
   }
   
-  async deleteRecipe(recipeId) {
+  async deleteRecipe(recipeId, authorId, ownerId) {
     const sql = `
       DELETE
       FROM nobsc_recipes
-      WHERE recipe_id = ?
+      WHERE recipe_id = ? AND author_id = ? AND owner_id = ?
       LIMIT 1
     `;
-    const [ deletedRecipe ] = await this.pool.execute(sql, [recipeId]);
+    const [ deletedRecipe ] = await this.pool.execute(sql, [
+      recipeId,
+      authorId,
+      ownerId
+    ]);
     return deletedRecipe;
   }
 }

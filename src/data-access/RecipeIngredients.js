@@ -31,7 +31,7 @@ class RecipeIngredients {
     return recipeIngredients;
   }
 
-  async createRecipeIngredients(recipeIngredients, recipeIngredientsPlaceholders, generatedId) {
+  async createRecipeIngredients(recipeIngredients, recipeIngredientsPlaceholders) {
     const sql = `
       INSERT INTO nobsc_recipe_ingredients (recipe_id, ingredient_id, amount, measurement_id)
       VALUES ${recipeIngredientsPlaceholders}
@@ -40,9 +40,40 @@ class RecipeIngredients {
     return createdRecipeIngredients;
   }
 
-  async updateRecipeIngredients() {}
+  async updateRecipeIngredients(recipeIngredients, recipeIngredientsPlaceholders, recipeId) {
+    const sql1 = `
+      DELETE
+      FROM nobsc_recipe_ingredients
+      WHERE recipe_id = ?
+    `;
+    const sql2 = `
+      INSERT INTO nobsc_recipe_ingredients (recipe_id, ingredient_id, amount, measurement_id)
+      VALUES ${recipeIngredientsPlaceholders} 
+    `;
+    const connection = await this.pool.getConnection();
+    await connection.beginTransaction();
+    try {
+      await connection.query(sql1, [recipeId]);
+      const [ updatedRecipeIngredients ] = await connection.query(sql2, [recipeIngredients]);
+      await connection.commit();
+      return updatedRecipeIngredients;
+    } catch (err) {
+      await connection.rollback();
+      throw err;
+    } finally {
+      connection.release();
+    }
+  }
 
-  async deleteRecipeIngredients() {}
+  async deleteRecipeIngredients(recipeId) {
+    const sql = `
+      DELETE
+      FROM nobsc_recipe_ingredients
+      WHERE recipe_id = ?
+    `;
+    const [ deletedRecipeIngredients ] = await this.pool.execute(sql, [recipeId]);
+    return deletedRecipeIngredients;
+  }
 }
 
 module.exports = RecipeIngredients;
