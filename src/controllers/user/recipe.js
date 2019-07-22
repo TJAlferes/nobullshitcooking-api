@@ -1,7 +1,4 @@
-//const uuidv4 = require('uuid/v4');
-
 const pool = require('../../data-access/dbPoolConnection');
-//const User = require('../../data-access/user/User');
 const Recipe = require('../../data-access/Recipe');
 const RecipeEquipment = require('../../data-access/RecipeEquipment');
 const RecipeIngredients = require('../../data-access/RecipeIngredients');
@@ -11,26 +8,54 @@ const validRecipeEquipmentEntity = require('../../lib/validations/recipeEquipmen
 const validRecipeIngredientsEntity = require('../../lib/validations/recipeIngredientsEntity');
 const validRecipeSubrecipesEntity = require('../../lib/validations/recipeSubrecipesEntity');
 
-// TO DO: make only load recipes submitted by this user
-
 const userRecipeController = {
-  viewUserRecipes: async function(req, res, next) {
+  viewAllMyPrivateUserRecipes: async function(req, res, next) {
     try {
-      const userId = req.session.userInfo.userId;
-      const user = new User(pool);
-      const [ rows ] = await user.viewUserRecipes(userId);
+      const ownerId = req.session.userInfo.userId;
+      const recipe = new Recipe(pool);
+      const rows = await recipe.viewAllMyPrivateUserRecipes(ownerId);
       res.send(rows);
       next();
     } catch(err) {
       next(err);
     }
   },
-  viewUserRecipe: async function(req, res, next) {
-    const recipeId = req.sanitize(req.params.recipeId);
-    const userId = req.session.userInfo.userId;
-    const user = new User(pool);
-    const [ row ] = await user.viewUserRecipe(recipeId, userId);
-    res.send(row);
+  viewAllMyPublicUserRecipes: async function(req, res, next) {
+    try {
+      const authorId = req.session.userInfo.userId;
+      const ownerId = 1;
+      const recipe = new Recipe(pool);
+      const rows = await recipe.viewAllMyPublicUserRecipes(authorId, ownerId);
+      res.send(rows);
+      next();
+    } catch(err) {
+      next(err);
+    }
+  },
+  viewMyPrivateUserRecipe: async function(req, res, next) {
+    try {
+      const recipeId = req.sanitize(req.body.recipeId);
+      const ownerId = req.session.userInfo.userId;
+      const recipe = new Recipe(pool);
+      const [ row ] = await recipe.viewMyPrivateUserRecipe(recipeId, ownerId);
+      res.send(row);
+    next();
+    } catch(err) {
+      next(err);
+    }
+  },
+  viewMyPublicUserRecipe: async function(req, res, next) {
+    try {
+      const recipeId = req.sanitize(req.body.recipeId);
+      const authorId = req.session.userInfo.userId;
+      const ownerId = 1;
+      const recipe = new Recipe(pool);
+      const [ row ] = await recipe.viewMyPublicUserRecipe(recipeId, authorId, ownerId);
+      res.send(row);
+    next();
+    } catch(err) {
+      next(err);
+    }
   },
   createUserRecipe: async function(req, res, next) {
     try {
