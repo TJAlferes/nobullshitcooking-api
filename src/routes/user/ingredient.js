@@ -13,33 +13,31 @@ const router = Router();
 router.post(
   '/create',
   userIsAuth,
-  /*isValid,*/
-  catchExceptions(userIngredientController.createUserIngredient)
+  catchExceptions(userIngredientController.createIngredient)
 );
 
 router.put(
   '/update/:ingredientId',
   userIsAuth,
-  /*isValid,*/
-  catchExceptions(userIngredientController.updateUserIngredient)
+  catchExceptions(userIngredientController.updateIngredient)
 );
 
 router.delete(
-  '/delete/:ingredientId',
+  '/delete/private/:ingredientId',
   userIsAuth,
-  catchExceptions(userIngredientController.deleteUserIngredient)
+  catchExceptions(userIngredientController.deleteMyPrivateUserIngredient)
 );
 
 router.post(
-  '/',
+  '/private',
   userIsAuth,
-  catchExceptions(userIngredientController.viewUserIngredient)
+  catchExceptions(userIngredientController.viewAllMyPrivateUserIngredients)
 );
 
 router.get(
-  '/:ingredientId',
+  '/private/:ingredientId',
   userIsAuth,
-  catchExceptions(userIngredientController.viewUserIngredientDetail)
+  catchExceptions(userIngredientController.viewMyPrivateUserIngredient)
 );
 
 module.exports = router;
