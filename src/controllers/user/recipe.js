@@ -1,9 +1,11 @@
 const pool = require('../../data-access/dbPoolConnection');
 const Recipe = require('../../data-access/Recipe');
+const RecipeMethods = require('../../data-access/RecipeMethods');
 const RecipeEquipment = require('../../data-access/RecipeEquipment');
 const RecipeIngredients = require('../../data-access/RecipeIngredients');
 const RecipeSubrecipes = require('../../data-access/RecipeSubrecipes');
 const validRecipeEntity = require('../../lib/validations/recipeEntity');
+const validRecipeMethodsEntity = require('../../lib/validations/recipeMethodsEntity');
 const validRecipeEquipmentEntity = require('../../lib/validations/recipeEquipmentEntity');
 const validRecipeIngredientsEntity = require('../../lib/validations/recipeIngredientsEntity');
 const validRecipeSubrecipesEntity = require('../../lib/validations/recipeSubrecipesEntity');
@@ -39,7 +41,7 @@ const userRecipeController = {
       const recipe = new Recipe(pool);
       const [ row ] = await recipe.viewMyPrivateUserRecipe(recipeId, ownerId);
       res.send(row);
-    next();
+      next();
     } catch(err) {
       next(err);
     }
@@ -52,12 +54,12 @@ const userRecipeController = {
       const recipe = new Recipe(pool);
       const [ row ] = await recipe.viewMyPublicUserRecipe(recipeId, authorId, ownerId);
       res.send(row);
-    next();
+      next();
     } catch(err) {
       next(err);
     }
   },
-  createUserRecipe: async function(req, res, next) {
+  createRecipe: async function(req, res, next) {
     try {
       const recipeTypeId = req.sanitize(req.body.recipeInfo.recipeTypeId);
       const cuisineId = req.sanitize(req.body.recipeInfo.cuisineId);
@@ -229,12 +231,34 @@ const userRecipeController = {
       next(err);
     }
   },
-  deleteUserRecipe: async function(req, res, next) {
+  deleteMyPrivateUserRecipe: async function(req, res, next) {  // for any parent PrivateUserRecipes / PrivateUserPlans, set NotFound placeholder
     try {
-      const recipeId = req.sanitize(req.body.recipeId);  // sanitize and validate?
-      const userId = req.session.userInfo.userId;
-      const user = new User(pool);
-      const [ row ] = await user.deleteUserRecipe(recipeId, userId);
+      const recipeId = req.sanitize(req.body.recipeId);
+      const authorId = req.session.userInfo.userId;
+      const ownerId = req.session.userInfo.userId;
+      const recipeMethods = new RecipeMethods(pool);
+      const recipeEquipment = new RecipeEquipment(pool);
+      const recipeIngredients = new RecipeIngredients(pool);
+      const recipeSubrecipes = new RecipeSubrecipes(pool);
+      const recipe = new Recipe(pool);
+      await recipeMethods.deleteRecipeMethods(recipeId);
+      await recipeEquipment.deleteRecipeEquipment(recipeId);
+      await recipeIngredients.deleteRecipeIngredients(recipeId);
+      await recipeSubrecipes.deleteRecipeSubrecipes(recipeId);
+      const [ row ] = await recipe.deleteMyPrivateUserRecipe(recipeId, authorId, ownerId);
+      res.send(row);
+      next();
+    } catch(err) {
+      next(err);
+    }
+  },
+  disownMyPublicUserRecipe: async function(req, res, next) {
+    try {
+      const newAuthorId = 2;
+      const recipeId = req.sanitize(req.body.recipeId);
+      const authorId = req.session.userInfo.userId;
+      const recipe = new Recipe(pool);
+      const [ row ] = await recipe.disownMyPublicUserRecipe(newAuthorId, recipeId, authorId);
       res.send(row);
       next();
     } catch(err) {

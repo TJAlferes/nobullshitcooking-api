@@ -33,6 +33,8 @@ class Recipe {
     this.createRecipe = this.createRecipe.bind(this);
     this.updateRecipe = this.updateRecipe.bind(this);
     this.deleteRecipe = this.deleteRecipe.bind(this);
+    this.deleteMyPrivateUserRecipe = this.deleteMyPrivateUserRecipe.bind(this);
+    this.disownMyPublicUserRecipe = this.disownMyPublicUserRecipe.bind(this);
   }
   
   /*
@@ -43,6 +45,7 @@ class Recipe {
     const sql = `
       SELECT COUNT(*) AS total
       FROM nobsc_recipes
+      WHERE owner_id = 1
     `;
     const [ allRecipesCount ] = await this.pool.execute(sql);
     return allRecipesCount;
@@ -52,7 +55,7 @@ class Recipe {
     const sql = `
       SELECT COUNT(*) AS total
       FROM nobsc_recipes
-      WHERE recipe_type_id = ?
+      WHERE recipe_type_id = ? AND owner_id = 1
     `;
     const [ allRecipesOfTypeCount ] = await this.pool.execute(sql, [typeId]);
     return allRecipesOfTypeCount;
@@ -62,7 +65,7 @@ class Recipe {
     const sql = `
       SELECT COUNT(*) AS total
       FROM nobsc_recipes
-      WHERE recipe_type_id IN (${placeholders})
+      WHERE recipe_type_id IN (${placeholders}) AND owner_id = 1
     `;
     const [ allRecipesOfTypesCount ] = await this.pool.execute(sql, typeIds);
     return allRecipesOfTypesCount;
@@ -72,7 +75,7 @@ class Recipe {
     const sql = `
       SELECT COUNT(*) AS total
       FROM nobsc_recipes
-      WHERE cuisine_id = ?
+      WHERE cuisine_id = ? AND owner_id = 1
     `;
     const [ allRecipesOfCuisineCount ] = await this.pool.execute(sql, [cuisineId]);
     return allRecipesOfCuisineCount;
@@ -82,7 +85,7 @@ class Recipe {
     const sql = `
       SELECT COUNT(*) AS total
       FROM nobsc_recipes
-      WHERE cuisine_id IN (${placeholders})
+      WHERE cuisine_id IN (${placeholders}) AND owner_id = 1
     `;
     const [ allRecipesOfCuisinesCount ] = await this.pool.execute(sql, cuisineIds);
     return allRecipesOfCuisinesCount;
@@ -92,7 +95,10 @@ class Recipe {
     const sql=`
       SELECT COUNT(*) AS total
       FROM nobsc_recipes
-      WHERE cuisine_id IN (${cuisinePlaceholders}) AND recipe_type_id IN (${typePlaceholders})
+      WHERE
+        cuisine_id IN (${cuisinePlaceholders})
+        AND recipe_type_id IN (${typePlaceholders})
+        AND owner_id = 1
     `;
     const [ allRecipesOfCuisinesAndTypesCount ] = await this.pool.execute(sql, ids);
     return allRecipesOfCuisinesAndTypesCount;
@@ -102,7 +108,7 @@ class Recipe {
     const sql=`
       SELECT COUNT(*) AS total
       FROM nobsc_recipes
-      WHERE cuisine_id IN (${cuisinePlaceholders})
+      WHERE cuisine_id IN (${cuisinePlaceholders}) AND owner_id = 1
     `;
     const [ allRecipesOfCuisinesAndTypeCount ] = await this.pool.execute(sql, ids);
     return allRecipesOfCuisinesAndTypeCount;
@@ -112,7 +118,10 @@ class Recipe {
     const sql=`
       SELECT COUNT(*) AS total
       FROM nobsc_recipes
-      WHERE cuisine_id = ? AND recipe_type_id IN (${typePlaceholders})
+      WHERE
+        cuisine_id = ?
+        AND recipe_type_id IN (${typePlaceholders})
+        AND owner_id = 1
     `;
     const [ allRecipesOfCuisineAndTypesCount ] = await this.pool.execute(sql, ids);
     return allRecipesOfCuisineAndTypesCount;
@@ -122,7 +131,7 @@ class Recipe {
     const sql=`
       SELECT COUNT(*) AS total
       FROM nobsc_recipes
-      WHERE cuisine_id = ? AND recipe_type_id = ?
+      WHERE cuisine_id = ? AND recipe_type_id = ? AND owner_id = 1
     `;
     const [ allRecipesOfCuisineAndTypeCount ] = await this.pool.execute(sql, ids);
     return allRecipesOfCuisineAndTypeCount;
@@ -136,6 +145,7 @@ class Recipe {
     const sql = `
       SELECT recipe_id, title, recipe_image
       FROM nobsc_recipes
+      WHERE owner_id = 1
       ORDER BY title ASC
       LIMIT ?, ?
     `;
@@ -147,7 +157,7 @@ class Recipe {
     const sql = `
       SELECT recipe_id, title, recipe_image
       FROM nobsc_recipes
-      WHERE recipe_type_id = ?
+      WHERE recipe_type_id = ? AND owner_id = 1
       ORDER BY title ASC
       LIMIT ${starting}, ${display}
     `;  // TO DO: change to ? for security
@@ -159,7 +169,7 @@ class Recipe {
     const sql = `
       SELECT recipe_id, title, recipe_image
       FROM nobsc_recipes
-      WHERE recipe_type_id IN (${placeholders})
+      WHERE recipe_type_id IN (${placeholders}) AND owner_id = 1
       ORDER BY title ASC
       LIMIT ${starting}, ${display}
     `;  // TO DO: change to ? for security
@@ -171,7 +181,7 @@ class Recipe {
     const sql = `
       SELECT recipe_id, title, recipe_image
       FROM nobsc_recipes
-      WHERE cuisine_id = ?
+      WHERE cuisine_id = ? AND owner_id = 1
       ORDER BY title ASC
       LIMIT ${starting}, ${display}
     `;  // TO DO: change to ? for security
@@ -183,7 +193,7 @@ class Recipe {
     const sql = `
       SELECT recipe_id, title, recipe_image
       FROM nobsc_recipes
-      WHERE cuisine_id IN (${placeholders})
+      WHERE cuisine_id IN (${placeholders}) AND owner_id = 1
       ORDER BY title ASC
       LIMIT ${starting}, ${display}
     `;  // TO DO: change to ? for security
@@ -195,7 +205,10 @@ class Recipe {
     const sql = `
       SELECT recipe_id, title, recipe_image
       FROM nobsc_recipes
-      WHERE cuisine_id IN (${cuisinePlaceholders}) AND recipe_type_id IN (${typePlaceholders})
+      WHERE
+        cuisine_id IN (${cuisinePlaceholders})
+        AND recipe_type_id IN (${typePlaceholders})
+        AND owner_id = 1
       ORDER BY title ASC
       LIMIT ${starting}, ${display}
     `;
@@ -207,7 +220,10 @@ class Recipe {
     const sql = `
       SELECT recipe_id, title, recipe_image
       FROM nobsc_recipes
-      WHERE cuisine_id IN (${cuisinePlaceholders}) AND recipe_type_id = ?
+      WHERE
+        cuisine_id IN (${cuisinePlaceholders})
+        AND recipe_type_id = ?
+        AND owner_id = 1
       ORDER BY title ASC
       LIMIT ${starting}, ${display}
     `;
@@ -219,7 +235,10 @@ class Recipe {
     const sql = `
       SELECT recipe_id, title, recipe_image
       FROM nobsc_recipes
-      WHERE cuisine_id = ? AND recipe_type_id IN (${typePlaceholders})
+      WHERE
+        cuisine_id = ?
+        AND recipe_type_id IN (${typePlaceholders})
+        AND owner_id = 1
       ORDER BY title ASC
       LIMIT ${starting}, ${display}
     `;
@@ -231,7 +250,7 @@ class Recipe {
     const sql = `
       SELECT recipe_id, title, recipe_image
       FROM nobsc_recipes
-      WHERE cuisine_id = ? AND recipe_type_id = ?
+      WHERE cuisine_id = ? AND recipe_type_id = ? AND owner_id = 1
       ORDER BY title ASC
       LIMIT ${starting}, ${display}
     `;
@@ -306,9 +325,10 @@ class Recipe {
   }
 
   /*
-  users
-  */
 
+  users
+
+  */
 
   async viewAllMyPrivateUserRecipes(ownerId) {
     const sql = `
@@ -430,7 +450,9 @@ class Recipe {
   }
 
   /*
+
   create, update, and delete methods
+
   */
 
   async createRecipe(recipeInfo) {
@@ -542,6 +564,36 @@ class Recipe {
       ownerId
     ]);
     return deletedRecipe;
+  }
+
+  async deleteMyPrivateUserRecipe(recipeId, authorId, ownerId) {
+    const sql = `
+      DELETE
+      FROM nobsc_recipes
+      WHERE recipe_id = ? AND author_id = ? AND owner_id = ?
+      LIMIT 1
+    `;
+    const [ deletedPrivateUserRecipe ] = await this.pool.execute(sql, [
+      recipeId,
+      authorId,
+      ownerId
+    ]);
+    return deletedPrivateUserRecipe;
+  }
+
+  async disownMyPublicUserRecipe(newAuthorId, recipeId, authorId) {
+    const sql = `
+      UPDATE nobsc_recipes
+      SET author_id = ?
+      WHERE recipe_id = ? AND author_id = ?
+      LIMIT 1
+    `;
+    const [ disownedPublicUserRecipe ] = await this.pool.execute(sql, [
+      newAuthorId,
+      recipeId,
+      authorId
+    ]);
+    return disownedPublicUserRecipe;
   }
 }
 

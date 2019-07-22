@@ -9,15 +9,21 @@ class Equipment {
     this.viewEquipmentOfTypes = this.viewEquipmentOfTypes.bind(this);
     this.viewEquipmentById = this.viewEquipmentById.bind(this);
     this.viewEquipmentForSubmitEditForm = viewEquipmentForSubmitEditForm.bind(this);
+
+    this.viewAllMyPrivateUserEquipment = this.viewAllMyPrivateUserEquipment.bind(this);
+    this.viewMyPrivateUserEquipment = this.viewMyPrivateUserEquipment.bind(this);
+
     this.createEquipment = this.createEquipment.bind(this);
     this.updateEquipment = this.updateEquipment.bind(this);
     this.deleteEquipment = this.deleteEquipment.bind(this);
+    this.deleteMyPrivateUserEquipment = this.deleteMyPrivateUserEquipment.bind(this);
   }
   
   async countAllEquipment() {
     const sql = `
       SELECT COUNT(*) AS total
       FROM nobsc_equipment
+      WHERE owner_id = 1
     `;
     const [ allEquipmentCount ] = await this.pool.execute(sql);
     return allEquipmentCount;
@@ -27,7 +33,7 @@ class Equipment {
     const sql = `
       SELECT COUNT(*) AS total
       FROM nobsc_equipment
-      WHERE equipment_type_id = ?
+      WHERE equipment_type_id = ? AND owner_id = 1
     `;
     const [ allEquipmentOfTypeCount ] = await this.pool.execute(sql, [typeId]);
     return allEquipmentOfTypeCount;
@@ -37,7 +43,7 @@ class Equipment {
     const sql = `
       SELECT COUNT(*) AS total
       FROM nobsc_equipment
-      WHERE equipment_type_id IN (${placeholders})
+      WHERE equipment_type_id IN (${placeholders}) AND owner_id = 1
     `;
     const [ allEquipmentOfTypesCount ] = await this.pool.execute(sql, typeIds);
     return allEquipmentOfTypesCount;
@@ -47,6 +53,7 @@ class Equipment {
     const sql = `
       SELECT equipment_id, equipment_name, equipment_type_id, equipment_image
       FROM nobsc_equipment
+      WHERE owner_id = 1
       ORDER BY equipment_name ASC
       LIMIT ?, ?
     `;
@@ -58,7 +65,7 @@ class Equipment {
     const sql = `
       SELECT equipment_id, equipment_name, equipment_type_id, equipment_image
       FROM nobsc_equipment
-      WHERE equipment_type_id = ?
+      WHERE equipment_type_id = ? AND owner_id = 1
       ORDER BY equipment_name ASC
       LIMIT ${starting}, ${display}
     `;  // TO DO: change to ? for security
@@ -70,7 +77,7 @@ class Equipment {
     const sql = `
       SELECT equipment_id, equipment_name, equipment_type_id, equipment_image
       FROM nobsc_equipment
-      WHERE equipment_type_id IN (${placeholders})
+      WHERE equipment_type_id IN (${placeholders}) AND owner_id = 1
       ORDER BY equipment_name ASC
       LIMIT ${starting}, ${display}
     `;  // TO DO: change to ? for security
@@ -88,8 +95,8 @@ class Equipment {
         t.equipment_type_name AS equipment_type_name
       FROM nobsc_equipment_types t
       LEFT JOIN nobsc_equipment e ON e.equipment_type_id = t.equipment_type_id
-      WHERE equipment_id = ?
-    `;  // ... Is this right?
+      WHERE equipment_id = ? AND owner_id = 1
+    `;  // ... Is this right? LEFT TO INNER?
     const [ equipment ] = await this.pool.execute(sql, [equipmentId]);
     return equipment;
   }
@@ -104,15 +111,60 @@ class Equipment {
     return allEquipment;
   }
 
-  async createEquipment(equipmentInfo) {
-    const { id, name, typeId, image } = equipmentInfo;
+  async viewAllMyPrivateUserEquipment(ownerId) {
     const sql = `
-      INSERT INTO nobsc_equipment
-      (equipment_id, equipment_name, equipment_type_id, equipment_image)
-      VALUES
-      (?, ?, ?, ?)
+      SELECT equipment_id, equipment_name, equipment_image
+      FROM nobsc_equipment
+      WHERE owner_id = ?
+      ORDER BY equipment_name ASC
     `;
-    const [ createdEquipment ] = await this.pool.execute(sql, [id, name, typeId, image]);
+    const [ allMyPrivateUserEquipment ] = await this.pool.execute(sql, [ownerId]);
+    return allMyPrivateUserEquipment;
+  }
+
+  async viewMyPrivateUserEquipment(equipmentId, ownerId) {
+    const sql = `
+      SELECT
+        e.equipment_id AS equipment_id,
+        e.equipment_name AS equipment_name,
+        e.equipment_type_id AS equipment_type,
+        e.equipment_image AS equipment_image,
+        t.equipment_type_name AS equipment_type_name
+      FROM nobsc_equipment e
+      INNER JOIN nobsc_equipment_types t ON t.equipment_type_id = e.equipment_type_id
+      WHERE equipment_id = ? AND owner_id = ?
+    `;
+    const [ myPrivateUserEquipment ] = await this.pool.execute(sql, [equipmentId, ownerId]);
+    return myPrivateUserEquipment;
+  }
+
+  async createEquipment(equipmentInfo) {
+    const {
+      equipmentTypeId,
+      authorId,
+      ownerId,
+      equipmentName,
+      equipmentDescription,
+      equipmentImage
+    } = equipmentInfo;
+    const sql = `
+      INSERT INTO nobsc_equipment (
+        equipment_type_id,
+        author_id,
+        owner_id,
+        equipment_name,
+        equipment_description,
+        equipment_image
+      ) VALUES (?, ?, ?, ?, ?, ?)
+    `;
+    const [ createdEquipment ] = await this.pool.execute(sql, [
+      equipmentTypeId,
+      authorId,
+      ownerId,
+      equipmentName,
+      equipmentDescription,
+      equipmentImage
+    ]);
     return createdEquipment;
   }
 
@@ -137,6 +189,21 @@ class Equipment {
     `;
     const [ deletedEquipment ] = await this.pool.execute(sql, [equipmentId]);
     return deletedEquipment;
+  }
+
+  async deleteMyPrivateUserEquipment(equipmentId, authorId, ownerId) {
+    const sql = `
+      DELETE
+      FROM nobsc_equipment
+      WHERE equipment_id = ? AND author_id = ? AND owner_id = ?
+      LIMIT 1
+    `;
+    const [ deletedPrivateUserEquipment ] = await this.pool.execute(sql, [
+      equipmentId,
+      authorId,
+      ownerId
+    ]);
+    return deletedPrivateUserEquipment;
   }
 }
 

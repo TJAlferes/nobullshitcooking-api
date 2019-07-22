@@ -13,33 +13,49 @@ const router = Router();
 router.post(
   '/create',
   userIsAuth,
-  /*isValid,*/
-  catchExceptions(userRecipeController.createUserRecipe)
+  catchExceptions(userRecipeController.createRecipe)
 );
 
 router.put(
   '/update/:recipeId',
   userIsAuth,
-  /*isValid,*/
-  catchExceptions(userRecipeController.updateUserRecipe)
+  catchExceptions(userRecipeController.updateRecipe)
 );
 
 router.delete(
-  '/delete/:recipeId',
+  '/delete/private/:recipeId',
   userIsAuth,
-  catchExceptions(userRecipeController.deleteUserRecipe)
+  catchExceptions(userRecipeController.deleteMyPrivateUserRecipe)
+);
+
+router.delete(
+  '/delete/public/:recipeId',
+  userIsAuth,
+  catchExceptions(userRecipeController.disownMyPublicUserRecipe)
 );
 
 router.post(
-  '/',
+  '/private',
   userIsAuth,
-  catchExceptions(userRecipeController.viewUserRecipe)
+  catchExceptions(userRecipeController.viewAllMyPrivateUserRecipes)
 );
 
-router.get(
-  '/:recipeId',
+router.post(
+  '/public',
   userIsAuth,
-  catchExceptions(userRecipeController.viewUserRecipeDetail)
+  catchExceptions(userRecipeController.viewAllMyPublicUserRecipes)
+);
+
+router.post(
+  '/private/:recipeId',
+  userIsAuth,
+  catchExceptions(userRecipeController.viewMyPrivateUserRecipe)
+);
+
+router.post(
+  '/public/:recipeId',
+  userIsAuth,
+  catchExceptions(userRecipeController.viewMyPublicUserRecipe)
 );
 
 module.exports = router;

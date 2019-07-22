@@ -9,9 +9,14 @@ class Ingredient {
     this.viewIngredientsOfTypes = this.viewIngredientsOfTypes.bind(this);
     this.viewIngredientById = this.viewIngredientById.bind(this);
     this.viewIngredientsForSubmitEditForm = viewIngredientsForSubmitEditForm.bind(this);
+
+    this.viewAllMyPrivateUserIngredients = this.viewAllMyPrivateUserIngredients.bind(this);
+    this.viewMyPrivateUserIngredient = this.viewMyPrivateUserIngredient.bind(this);
+
     this.createIngredient = this.createIngredient.bind(this);
     this.updateIngredient = this.updateIngredient.bind(this);
     this.deleteIngredient = this.deleteIngredient.bind(this);
+    this.deleteMyPrivateUserIngredient = this.deleteMyPrivateUserIngredient.bind(this);
   }
 
   async countAllIngredients() {
@@ -104,6 +109,33 @@ class Ingredient {
     return allIngredients;
   }
 
+  async viewAllMyPrivateUserIngredients(ownerId) {
+    const sql = `
+      SELECT ingredient_id, ingredient_name, ingredient_image
+      FROM nobsc_ingredients
+      WHERE owner_id = ?
+      ORDER BY ingredient_name ASC
+    `;
+    const [ allMyPrivateUserIngredients ] = await this.pool.execute(sql, [ownerId]);
+    return allMyPrivateUserIngredients;
+  }
+
+  async viewMyPrivateUserIngredient(ingredientId, ownerId) {
+    const sql = `
+      SELECT
+        i.ingredient_id AS ingredient_id,
+        i.ingredient_name AS ingredient_name,
+        i.ingredient_type_id AS ingredient_type,
+        i.ingredient_image AS ingredient_image,
+        t.ingredient_type_name AS ingredient_type_name
+      FROM nobsc_ingredients i
+      INNER JOIN nobsc_ingredient_types t ON t.ingredient_type_id = i.ingredient_type_id
+      WHERE ingredient_id = ? AND owner_id = ?
+    `;
+    const [ myPrivateUserIngredient ] = await this.pool.execute(sql, [ingredientId, ownerId]);
+    return myPrivateUserIngredient;
+  }
+
   async createIngredient(ingredientInfo) {
     const { id, name, typeId, image } = ingredientInfo;
     const sql = `
@@ -131,12 +163,27 @@ class Ingredient {
   async deleteIngredient(ingredientId) {
     const sql = `
       DELETE
-      FROM nobsc_ingredient
+      FROM nobsc_ingredients
       WHERE ingredient_id = ?
       LIMIT 1
     `;
     const [ edIngredient ] = await this.pool.execute(sql, [ingredientId]);
     return deletedIngredient;
+  }
+
+  async deleteMyPrivateUserIngredient(ingredientId, authorId, ownerId) {
+    const sql = `
+      DELETE
+      FROM nobsc_ingredients
+      WHERE ingredient_id = ? AND author_id = ? AND owner_id = ?
+      LIMIT 1
+    `;
+    const [ deletedPrivateUserIngredient ] = await this.pool.execute(sql, [
+      ingredientId,
+      authorId,
+      ownerId
+    ]);
+    return deletedPrivateUserIngredient;
   }
 }
 

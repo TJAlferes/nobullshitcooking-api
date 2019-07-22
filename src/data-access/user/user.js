@@ -357,18 +357,6 @@ class User {
   async viewUserRecipesForSubmitEditForm() {
 
   }
-
-  async createUserRecipe() {
-
-  }
-
-  async updateUserRecipe() {
-
-  }
-
-  async deleteUserRecipe() {
-
-  }
 }
 
 module.exports = User;
