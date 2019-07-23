@@ -2,30 +2,30 @@ const { Router } = require('express');
 
 const userIsAuth = require('../../lib/utils/userIsAuth');
 const catchExceptions = require('../../lib/utils/catchExceptions');
-const userFavoriteRecipeController = require('../../controllers/user/favoriteRecipe');
+const userSavedRecipeController = require('../../controllers/user/savedRecipe');
 
 const router = Router();
 
 // /v1/... ?
 
-// for /user/favorite-recipe/...
+// for /user/saved-recipe/...
 
 router.post(
   '/',
   userIsAuth,
-  catchExceptions(userFavoriteRecipeController.viewFavoriteRecipes)
+  catchExceptions(userSavedRecipeController.viewSavedRecipes)
 );
 
 router.post(
   '/create',
   userIsAuth,
-  catchExceptions(userFavoriteRecipeController.createFavoriteRecipe)
+  catchExceptions(userSavedRecipeController.createSavedRecipe)
 );
 
 router.delete(
   '/delete',
   userIsAuth,
-  catchExceptions(userFavoriteRecipeController.deleteFavoriteRecipe)
+  catchExceptions(userSavedRecipeController.deleteSavedRecipe)
 );
 
 module.exports = router;

@@ -2,35 +2,35 @@ const pool = require('../../data-access/dbPoolConnection');
 const SavedRecipe = require('../../data-access/SavedRecipe');
 
 const userSavedRecipeController = {
-  viewSavedByUser: async function(req, res, next) {
+  viewSavedRecipes: async function(req, res, next) {
     try {
-      const userId = req.body.userId;
+      const userId = req.sanitize(req.body.userId);
       const savedRecipe = new SavedRecipe(pool);
-      const rows = await savedRecipe.viewSavedByUser(userId);
+      const rows = await savedRecipe.viewSavedRecipes(userId);
       res.send(rows);
       next();
     } catch(err) {
       next(err);
     }
   },
-  createSavedByUser: async function(req, res, next) {
+  createSavedRecipe: async function(req, res, next) {
     try {
-      const userId = req.body.userId;
-      const recipeId = req.body.recipeId;
+      const userId = req.session.userInfo.userId;
+      const recipeId = req.sanitize(req.body.recipeId);
       const savedRecipe = new SavedRecipe(pool);
-      const [ row ] = await savedRecipe.createSavedByUser(userId, recipeId);
+      const [ row ] = await savedRecipe.createSavedRecipe(userId, recipeId);
       res.send(row);
       next();
     } catch(err) {
       next(err);
     }
   },
-  deleteSavedByUser: async function(req, res, next) {
+  deleteSavedRecipe: async function(req, res, next) {
     try {
-      const userId = req.body.userId;
-      const recipeId = req.body.recipeId;
+      const userId = req.session.userInfo.userId;
+      const recipeId = req.sanitize(req.body.recipeId);
       const savedRecipe = new SavedRecipe(pool);
-      const [ row ] = await savedRecipe.deleteSavedByUser(userId, recipeId);
+      const [ row ] = await savedRecipe.deleteSavedRecipe(userId, recipeId);
       res.send(row);
       next();
     } catch(err) {

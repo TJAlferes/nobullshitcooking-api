@@ -2,9 +2,9 @@ class FavoriteRecipe {
   constructor(pool) {
     this.pool = pool;
     this.viewMostFavorited = this.viewMostFavorited.bind(this);
-    this.viewFavoritedByUser = this.viewFavoritedByUser.bind(this);
-    this.createFavoritedByUser = this.createFavoritedByUser.bind(this);
-    this.deleteFavoritedByUser = this.deleteFavoritedByUser.bind(this);
+    this.viewFavoritedRecipes = this.viewFavoritedRecipes.bind(this);
+    this.createFavoriteRecipe = this.createFavoriteRecipe.bind(this);
+    this.deleteFavoriteRecipe = this.deleteFavoriteRecipe.bind(this);
   }
 
   async viewMostFavorited(limit) {
@@ -22,11 +22,10 @@ class FavoriteRecipe {
       LIMIT ?
     `;
     const [ mostFavorited ] = this.pool.execute(sql, [limit]);
-    console.log(mostFavorited);
     return mostFavorited;
   }
 
-  async viewFavoritedByUser(userId) {
+  async viewFavoriteRecipes(userId) {
     const sql = `
       SELECT 
         f.recipe_id AS recipe_id,
@@ -34,32 +33,31 @@ class FavoriteRecipe {
         r.recipe_image AS recipe_image
       FROM nobsc_favorite_recipes f
       INNER JOIN nobsc_recipes r ON f.recipe_id = r.recipe_id
-      WHERE user_id = ?
+      WHERE user_id = ? AND 
       ORDER BY title
-    `;  // make a react router link to this recipe page, use tiny image folder from s3
-    const [ favorites ] = this.pool.execute(sql, [userId]);
-    console.log(favorites);
-    return favorites;
+    `;
+    const [ favoriteRecipes ] = this.pool.execute(sql, [userId]);
+    return favoriteRecipes;
   }
 
-  async createFavoritedByUser(userId, recipeId) {
+  async createFavoriteRecipe(userId, recipeId) {
     const sql = `
       INSERT INTO nobsc_favorite_recipes (user_id, recipe_id)
       VALUES (?, ?)
     `;
-    const [ favorited ] = this.pool.execute(sql, [userId, recipeId]);
-    return favorited;
+    const [ favoritedRecipe ] = this.pool.execute(sql, [userId, recipeId]);
+    return favoritedRecipe;
   }
 
-  async deleteFavoritedByUser(userId, recipeId) {
+  async deleteFavoriteRecipe(userId, recipeId) {
     const sql = `
       DELETE
       FROM nobsc_favorite_recipes
       WHERE user_id = ? AND recipe_id = ?
       LIMIT 1
     `;
-    const [ unfavorited ] = this.pool.execute(sql, [userId, recipeId]);
-    return unfavorited;
+    const [ unfavoritedRecipe ] = this.pool.execute(sql, [userId, recipeId]);
+    return unfavoritedRecipe;
   }
 }
 
