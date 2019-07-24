@@ -11,6 +11,7 @@ const favoriteRecipeRoutes = require('./favoriteRecipe');
 const friendshipRoutes = require('./friendship');
 const staffRoutes = require('./staff/index');
 const userRoutes = require('./user/index');
+const signS3Images1 = require('./signS3Images1');
 
 module.exports = {
   equipmentRoutes,
@@ -25,5 +26,6 @@ module.exports = {
   favoriteRecipeRoutes,
   friendshipRoutes,
   staffRoutes,
-  userRoutes
+  userRoutes,
+  signS3Images1
 };

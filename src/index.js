@@ -42,7 +42,8 @@ const {
   savedRecipeRoutes,
   friendshipRoutes,
   staffRoutes,
-  userRoutes
+  userRoutes,
+  signS3Images1
 } = require('./routes');
 
 
@@ -98,10 +99,10 @@ const rateLimiterOptions = {windowMs: 1 * 60 * 1000, max: 100};  // affect socke
 
 const server = http.Server(app);
 const io = socketIO(server);
-const pubClient = redis(process.env.REDIS_PORT, process.env.REDIS_HOST, {
+const pubClient = ioredis(process.env.REDIS_PORT, process.env.REDIS_HOST, {
   auth_pass: process.env.REDIS_PASSWORD
 });
-const subClient = redis(process.env.REDIS_PORT, process.env.REDIS_HOST, {
+const subClient = ioredis(process.env.REDIS_PORT, process.env.REDIS_HOST, {
   return_buffers: true,
   auth_pass: process.env.REDIS_PASSWORD
 });
@@ -185,6 +186,7 @@ app.use('/saved-recipe', savedRecipeRoutes)
 app.use('/friendship', friendshipRoutes);
 app.use('/staff', staffRoutes);
 app.use('/user', userRoutes);
+app.use('/sign-s3-images-1', signS3Images1);
 //app.use('/graphql', expressGraphQL({schema, rootValue, graphiql: true}));
 
 

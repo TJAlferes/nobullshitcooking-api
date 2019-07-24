@@ -12,9 +12,18 @@ const AWS_S3_BUCKET_IMAGES_1 = process.env.AWS_S3_BUCKET_IMAGES_1;
 
 module.exports = async function(req, res, next) {
   try {
-    const fileName = `${uuidv4()}${req.body.fileName}`;  // do in React instead?  date instead of uuid?
-    const fileType = req.body.fileType;
+    const fileName = `
+      ${req.session.userInfo.name}
+      /private/recipes/
+      ${req.sanitize(req.body.imageDir)}
+      ${req.sanitize(req.body.fileName)}
+      -
+      ${uuidv4()}
+    `;
+    const fileType = req.sanitize(req.body.fileType);
+
     const s3 = new AWS.S3();
+
     const getSignedUrlPromise = (operation, params) => {
       return new Promise((resolve, reject) => {
         s3.getSignedUrl(operation, params, (err, data) => {
@@ -22,19 +31,19 @@ module.exports = async function(req, res, next) {
         });
       });
     };
+
     const signature = await getSignedUrlPromise('putObject', {
       Bucket: AWS_S3_BUCKET_IMAGES_1,
       Key: fileName,
       Expires: 50,
       ContentType: fileType,
-      ACL: 'public-read'
+      ACL: 'public-read'  // ?
     });
+
     res.json({
       success: true,
-      data: {
-        signedRequest: signature,
-        url: `https://${AWS_S3_BUCKET_IMAGES_1}.s3.amazonaws.com/${fileName}`
-      }
+      signedRequest: signature,
+      url: `https://${AWS_S3_BUCKET_IMAGES_1}.s3.amazonaws.com/${fileName}`
     });
     next();
   } catch(err) {
