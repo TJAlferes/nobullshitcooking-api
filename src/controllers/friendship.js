@@ -26,7 +26,8 @@ const friendshipController = {
       const friendName = req.sanitize(req.body.friendName);  // also validate with superstruct for string?
       const user = new User(pool);
       const [ friendExists ] = user.getUserByName(friendName);
-      if (friendExists) const friendId = friendExists[0].user_id;
+      let friendId;
+      if (friendExists) friendId = friendExists[0].user_id;
       const userId = req.session.userInfo.userId;
       const friendship = new Friendship(pool);
       const [ row ] = await friendship.createFriendship(userId, friendId);
@@ -42,7 +43,8 @@ const friendshipController = {
       const friendName = req.sanitize(req.body.friendName);  // also validate with superstruct for string?
       const user = new User(pool);
       const [ friendExists ] = user.getUserByName(friendName);
-      if (friendExists) const friendId = friendExists[0].user_id;
+      let friendId;
+      if (friendExists) friendId = friendExists[0].user_id;
       const userId = req.session.userInfo.userId;
       const friendship = new Friendship(pool);
       const [ row ] = await friendship.acceptFriendship(userId, friendId);
@@ -58,7 +60,8 @@ const friendshipController = {
       const friendName = req.sanitize(req.body.friendName);  // also validate with superstruct for string?
       const user = new User(pool);
       const [ friendExists ] = user.getUserByName(friendName);
-      if (friendExists) const friendId = friendExists[0].user_id;
+      let friendId;
+      if (friendExists) friendId = friendExists[0].user_id;
       const userId = req.session.userInfo.userId;
       const friendship = new Friendship(pool);
       const [ row ] = await friendship.deleteFriendship(userId, friendId);

@@ -5,10 +5,12 @@ const validStaffEntity = struct(
     email: 'string',
     pass: 'string',
     staffname: 'string',
-    avatar: 'string?'
+    avatar: 'string?',
+    role: 'string?'
   },
   {
-    avatar: 'nobsc-staff-default-avatar'
+    avatar: 'nobsc-staff-default',
+    role: 'staff'
   }
 );
 
