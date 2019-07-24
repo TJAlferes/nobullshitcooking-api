@@ -4,11 +4,11 @@ const validPlanEntity = struct(
   {
     authorId: 'string',
     ownerId: 'string',
-    plan_name: 'string',
-    plan_data: 'object'
+    planName: 'string',
+    planData: 'object'
   },
   {
-    plan_data: {
+    planData: {
       1: [],
       2: [],
       3: [],

@@ -64,12 +64,13 @@ class Friendship {
     return blockedUsers;
   }
 
-  async createFriendship(userId, friendId) {
+  async createFriendship(friendshipToCreate) {
+    const { userId, friendId, status } = friendshipToCreate;
     const sql = `
       INSERT INTO nobsc_friendships (user_id, friend_id, status)
-      VALUES (?, ?, "pending")
+      VALUES (?, ?, ?)
     `;
-    const [ pendingFriendship ] = await this.pool.execute(sql, [userId, friendId]);
+    const [ pendingFriendship ] = await this.pool.execute(sql, [userId, friendId, status]);
     await this.pool.execute(sql, [friendId, userId]);
     return pendingFriendship;
   }

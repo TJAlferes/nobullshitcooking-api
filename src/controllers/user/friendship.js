@@ -1,6 +1,7 @@
 const pool = require('../../lib/connections/mysqlPoolConnection');
 const User = require('../../mysql-access/User');
 const Friendship = require('../../mysql-access/Friendship');
+const validFriendshipEntity = require('../../lib/validations/friendship/friendshipEntity');
 
 // WARNING: DO NOT RETURN user_id TO FRONT END !!!!!
 
@@ -30,8 +31,10 @@ const userFriendshipController = {
       if (friendExists) friendId = friendExists[0].user_id;
       else return res.send('User not found.');
       const userId = req.session.userInfo.userId;
+      const status = "pending";
+      const friendshipToCreate = validFriendshipEntity({userId, friendId, status});
       const friendship = new Friendship(pool);
-      await friendship.createFriendship(userId, friendId);
+      await friendship.createFriendship(friendshipToCreate);
       res.send('Friendship request sent.');
       next();
     } catch(err) {
@@ -83,7 +86,7 @@ const userFriendshipController = {
       const userId = req.session.userInfo.userId;
       const friendship = new Friendship(pool);
       await friendship.deleteFriendship(userId, friendId);
-      res.send('Not friends. Maybe later.');
+      res.send('No longer friends. Maybe again later.');
       next();
     } catch(err) {
       next(err);
@@ -91,7 +94,16 @@ const userFriendshipController = {
   },
   blockUser: async function(req, res, next) {
     try {
-
+      const friendName = req.sanitize(req.body.friendName);
+      const user = new User(pool);
+      const [ friendExists ] = await user.getUserIdByUsername(friendName);
+      let friendId;
+      if (friendExists) friendId = friendExists[0].user_id;
+      else return res.send('User not found.');
+      const userId = req.session.userInfo.userId;
+      const friendship = new Friendship(pool);
+      await friendship.blockUser(userId, friendId);
+      res.send('User blocked.');
       next();
     } catch(err) {
       next(err);
@@ -99,7 +111,16 @@ const userFriendshipController = {
   },
   unblockUser: async function(req, res, next) {
     try {
-
+      const friendName = req.sanitize(req.body.friendName);
+      const user = new User(pool);
+      const [ friendExists ] = await user.getUserIdByUsername(friendName);
+      let friendId;
+      if (friendExists) friendId = friendExists[0].user_id;
+      else return res.send('User not found.');
+      const userId = req.session.userInfo.userId;
+      const friendship = new Friendship(pool);
+      await friendship.unblockUser(userId, friendId);
+      res.send('User unblocked.');
       next();
     } catch(err) {
       next(err);

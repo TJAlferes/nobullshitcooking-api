@@ -4,6 +4,7 @@ class User {
 
     this.getUserByEmail = this.getUserByEmail.bind(this);
     this.getUserByName = this.getUserByName.bind(this);
+    this.getUserIdByUsername = this.getUserIdByUsername.bind(this);
 
     this.viewAllUsers = this.viewAllUsers.bind(this);
     this.viewUserById = this.viewUserById.bind(this);
@@ -56,6 +57,16 @@ class User {
     const [ userByName ] = await this.pool.execute(sql, [username]);
     if (!userByName) throw new Error("getUserByName failed");
     return userByName;
+  }
+
+  async getUserIdByUsername(username) {
+    const sql = `
+      SELECT user_id
+      FROM nobsc_users
+      WHERE username = ?
+    `;
+    const [ userId ] = await this.pool.execute(sql, [username]);
+    return userId;
   }
 
   async viewAllUsers(starting, display) {
