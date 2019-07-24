@@ -1,8 +1,8 @@
 const { struct } = require('superstruct');
 
-const validRecipeMethodsEntity = struct({
+const validRecipeMethodEntity = struct({
   recipeId: 'number',
   methodId: 'number',
 });
 
-module.exports = validRecipeMethodsEntity;
+module.exports = validRecipeMethodEntity;

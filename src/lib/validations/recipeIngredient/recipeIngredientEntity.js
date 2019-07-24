@@ -1,10 +1,10 @@
 const { struct } = require('superstruct');
 
-const validRecipeIngredientsEntity = struct({
+const validRecipeIngredientEntity = struct({
   recipeId: 'number',
   ingredientId: 'number',
   amount: 'number',
   measurementId: 'number'
 });
 
-module.exports = validRecipeIngredientsEntity;
+module.exports = validRecipeIngredientEntity;

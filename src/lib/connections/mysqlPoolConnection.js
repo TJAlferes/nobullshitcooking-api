@@ -1,4 +1,3 @@
-// move this file to utils?
 const mysql = require('mysql2/promise');
 
 const pool = process.env.NODE_ENV === 'production'
