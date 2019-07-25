@@ -9,13 +9,14 @@ class Ingredient {
     this.viewIngredientsOfTypes = this.viewIngredientsOfTypes.bind(this);
     this.viewIngredientById = this.viewIngredientById.bind(this);
     this.viewIngredientsForSubmitEditForm = viewIngredientsForSubmitEditForm.bind(this);
-
-    this.viewAllMyPrivateUserIngredients = this.viewAllMyPrivateUserIngredients.bind(this);
-    this.viewMyPrivateUserIngredient = this.viewMyPrivateUserIngredient.bind(this);
-
     this.createIngredient = this.createIngredient.bind(this);
     this.updateIngredient = this.updateIngredient.bind(this);
     this.deleteIngredient = this.deleteIngredient.bind(this);
+
+    this.viewAllMyPrivateUserIngredients = this.viewAllMyPrivateUserIngredients.bind(this);
+    this.viewMyPrivateUserIngredient = this.viewMyPrivateUserIngredient.bind(this);
+    this.createMyPrivateUserIngredient = this.createMyPrivateUserIngredient.bind(this);
+    this.updateMyPrivateUserIngredient = this.updateMyPrivateUserIngredient.bind(this);
     this.deleteMyPrivateUserIngredient = this.deleteMyPrivateUserIngredient.bind(this);
   }
 
@@ -109,33 +110,6 @@ class Ingredient {
     return allIngredients;
   }
 
-  async viewAllMyPrivateUserIngredients(ownerId) {
-    const sql = `
-      SELECT ingredient_id, ingredient_name, ingredient_image
-      FROM nobsc_ingredients
-      WHERE owner_id = ?
-      ORDER BY ingredient_name ASC
-    `;
-    const [ allMyPrivateUserIngredients ] = await this.pool.execute(sql, [ownerId]);
-    return allMyPrivateUserIngredients;
-  }
-
-  async viewMyPrivateUserIngredient(ingredientId, ownerId) {
-    const sql = `
-      SELECT
-        i.ingredient_id AS ingredient_id,
-        i.ingredient_name AS ingredient_name,
-        i.ingredient_type_id AS ingredient_type,
-        i.ingredient_image AS ingredient_image,
-        t.ingredient_type_name AS ingredient_type_name
-      FROM nobsc_ingredients i
-      INNER JOIN nobsc_ingredient_types t ON t.ingredient_type_id = i.ingredient_type_id
-      WHERE ingredient_id = ? AND owner_id = ?
-    `;
-    const [ myPrivateUserIngredient ] = await this.pool.execute(sql, [ingredientId, ownerId]);
-    return myPrivateUserIngredient;
-  }
-
   async createIngredient(ingredientInfo) {
     const { id, name, typeId, image } = ingredientInfo;
     const sql = `
@@ -171,18 +145,103 @@ class Ingredient {
     return deletedIngredient;
   }
 
-  async deleteMyPrivateUserIngredient(ingredientId, authorId, ownerId) {
+
+
+  async viewAllMyPrivateUserIngredients(ownerId) {
+    const sql = `
+      SELECT ingredient_id, ingredient_name, ingredient_image
+      FROM nobsc_ingredients
+      WHERE owner_id = ?
+      ORDER BY ingredient_name ASC
+    `;
+    const [ allMyPrivateUserIngredients ] = await this.pool.execute(sql, [ownerId]);
+    return allMyPrivateUserIngredients;
+  }
+
+  async viewMyPrivateUserIngredient(ownerId, ingredientId) {
+    const sql = `
+      SELECT
+        i.ingredient_id AS ingredient_id,
+        t.ingredient_type_name AS ingredient_type_name
+        i.ingredient_name AS ingredient_name,
+        i.ingredient_description AS ingredient_description,
+        i.ingredient_image AS ingredient_image
+      FROM nobsc_ingredients i
+      INNER JOIN nobsc_ingredient_types t ON i.ingredient_type_id = t.ingredient_type_id
+      WHERE owner_id = ? AND ingredient_id = ?
+    `;
+    const [ myPrivateUserIngredient ] = await this.pool.execute(sql, [ownerId, ingredientId]);
+    return myPrivateUserIngredient;
+  }
+
+  async createMyPrivateUserIngredient(ingredientToCreate) {
+    const {
+      ingredientTypeId,
+      authorId,
+      ownerId,
+      ingredientName,
+      ingredientDescription,
+      ingredientImage
+    } = ingredientToCreate;
+    const sql = `
+      INSERT INTO nobsc_ingredients
+      (ingredient_type_id, author_id, owner_id, ingredient_name, ingredient_description, ingredient_image)
+      VALUES
+      (?, ?, ?, ?, ?, ?)
+    `;
+    const [ createdPrivateUserIngredient ] = await this.pool.execute(sql, [
+      ingredientTypeId,
+      authorId,
+      ownerId,
+      ingredientName,
+      ingredientDescription,
+      ingredientImage
+    ]);
+    return createdPrivateUserIngredient;
+  }
+
+  async updateMyPrivateUserIngredient(ingredientToUpdateWith, ingredientId) {
+    const {
+      ingredientTypeId,
+      authorId,
+      ownerId,
+      ingredientName,
+      ingredientDescription,
+      ingredientImage
+    } = ingredientToUpdateWith;
+    const sql = `
+      UPDATE nobsc_ingredients
+      SET
+        ingredient_type_id = ?,
+        author_id = ?,
+        owner_id = ?,
+        ingredient_name = ?,
+        ingredient_description = ?,
+        ingredient_image = ?
+      WHERE owner_id = ? AND ingredient_id = ?
+      LIMIT 1
+    `;
+    const [ updatedPrivateUserIngredient ] = await this.pool.execute(sql, [
+      ingredientTypeId,
+      authorId,
+      ownerId,
+      ingredientName,
+      ingredientDescription,
+      ingredientImage,
+      ownerId,
+      ingredientId
+    ]);
+    return updatedPrivateUserIngredient;
+  }
+
+  async deleteMyPrivateUserIngredient(ownerId, ingredientId) {
     const sql = `
       DELETE
       FROM nobsc_ingredients
-      WHERE ingredient_id = ? AND author_id = ? AND owner_id = ?
+      WHERE owner_id = ? AND ingredient_id = ?
       LIMIT 1
     `;
-    const [ deletedPrivateUserIngredient ] = await this.pool.execute(sql, [
-      ingredientId,
-      authorId,
-      ownerId
-    ]);
+    const [ deletedPrivateUserIngredient ] = await this.pool.execute(sql, [ownerId, ingredientId]);
     return deletedPrivateUserIngredient;
   }
 }

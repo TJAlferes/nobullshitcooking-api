@@ -194,17 +194,18 @@ class Equipment {
 
 
 
-  async viewAllMyPrivateUserEquipment(userId) {
+  async viewAllMyPrivateUserEquipment(ownerId) {
     const sql = `
       SELECT equipment_id, equipment_name, equipment_image
       FROM nobsc_equipment
       WHERE owner_id = ?
+      ORDER BY equipment_name ASC
     `;
-    const [ allMyPrivateUserEquipment ] = await this.pool.execute(sql, [userId]);
+    const [ allMyPrivateUserEquipment ] = await this.pool.execute(sql, [ownerId]);
     return allMyPrivateUserEquipment;
   }
 
-  async viewMyPrivateUserEquipment(userId, equipmentId) {
+  async viewMyPrivateUserEquipment(ownerId, equipmentId) {
     const sql = `
       SELECT
         e.equipment_id AS equipment_id,
@@ -214,40 +215,80 @@ class Equipment {
         e.equipment_image AS equipment_image
       FROM nobsc_equipment e
       INNER JOIN nobsc_equipment_types t ON e.equipment_type_id = t.equipment_type_id
-      WHERE e.owner_id = ? AND e.equipment_id = ?
+      WHERE owner_id = ? AND equipment_id = ?
     `;
-    const [ myPrivateUserEquipment ] = await this.pool.execute(sql, [userId, equipmentId]);
+    const [ myPrivateUserEquipment ] = await this.pool.execute(sql, [ownerId, equipmentId]);
     return myPrivateUserEquipment;
   }
 
-  async createMyPrivateUserEquipment() {
+  async createMyPrivateUserEquipment(equipmentToCreate) {
+    const {
+      equipmentTypeId,
+      authorId,
+      ownerId,
+      equipmentName,
+      equipmentDescription,
+      equipmentImage
+    } = equipmentToCreate;
     const sql = `
-    
+      INSERT INTO nobsc_equipment
+      (equipment_type_id, author_id, owner_id, equipment_name, equipment_description, equipment_image)
+      VALUES
+      (?, ?, ?, ?, ?, ?)
     `;
-    const [  ] = await this.pool.execute(sql, []);
-    return ;
+    const [ createdPrivateUserEquipment ] = await this.pool.execute(sql, [
+      equipmentTypeId,
+      authorId,
+      ownerId,
+      equipmentName,
+      equipmentDescription,
+      equipmentImage
+    ]);
+    return createdPrivateUserEquipment;
   }
 
-  async updateMyPrivateUserEquipment() {
+  async updateMyPrivateUserEquipment(equipmentToUpdateWith, equipmentId) {
+    const {
+      equipmentTypeId,
+      authorId,
+      ownerId,
+      equipmentName,
+      equipmentDescription,
+      equipmentImage
+    } = equipmentToUpdateWith;
     const sql = `
-    
+      UPDATE nobsc_equipment
+      SET
+        equipment_type_id = ?,
+        author_id = ?,
+        owner_id = ?,
+        equipment_name = ?,
+        equipment_description = ?,
+        equipment_image = ?
+      WHERE owner_id = ? AND equipment_id = ?
+      LIMIT 1
     `;
-    const [  ] = await this.pool.execute(sql, []);
-    return ;
+    const [ updatedPrivateUserEquipment ] = await this.pool.execute(sql, [
+      equipmentTypeId,
+      authorId,
+      ownerId,
+      equipmentName,
+      equipmentDescription,
+      equipmentImage,
+      ownerId,
+      equipmentId
+    ]);
+    return updatedPrivateUserEquipment;
   }
 
-  async deleteMyPrivateUserEquipment(equipmentId, authorId, ownerId) {
+  async deleteMyPrivateUserEquipment(ownerId, equipmentId) {
     const sql = `
       DELETE
       FROM nobsc_equipment
-      WHERE equipment_id = ? AND author_id = ? AND owner_id = ?
+      WHERE owner_id = ? AND equipment_id = ?
       LIMIT 1
     `;
-    const [ deletedPrivateUserEquipment ] = await this.pool.execute(sql, [
-      equipmentId,
-      authorId,
-      ownerId
-    ]);
+    const [ deletedPrivateUserEquipment ] = await this.pool.execute(sql, [ownerId, equipmentId]);
     return deletedPrivateUserEquipment;
   }
 }

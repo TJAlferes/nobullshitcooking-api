@@ -19,7 +19,7 @@ const userEquipmentController = {
       const equipmentId = req.sanitize(req.body.equipmentId);
       const ownerId = req.session.userInfo.userId;
       const equipment = new Equipment(pool);
-      const [ row ] = await equipment.viewMyPrivateUserEquipment(equipmentId, ownerId);
+      const [ row ] = await equipment.viewMyPrivateUserEquipment(ownerId, equipmentId);
       res.send(row);
       next();
     } catch(err) {
@@ -32,8 +32,10 @@ const userEquipmentController = {
       const equipmentName = req.sanitize(req.body.equipmentInfo.equipmentName);
       const equipmentDescription = req.sanitize(req.body.equipmentInfo.equipmentDescription);
       const equipmentImage = req.sanitize(req.body.equipmentInfo.equipmentImage);
+
       const authorId = req.session.userInfo.userId;
       const ownerId = req.session.userInfo.userId;
+
       const equipmentToCreate = validEquipmentEntity({
         equipmentTypeId,
         authorId,
@@ -58,17 +60,19 @@ const userEquipmentController = {
       const equipmentDescription = req.sanitize(req.body.equipmentInfo.equipmentDescription);
       const equipmentImage = req.sanitize(req.body.equipmentInfo.equipmentImage);
 
-      const userId = req.session.userInfo.userId;
+      const authorId = req.session.userInfo.userId;
+      const ownerId = req.session.userInfo.userId;
 
-      const equipmentToUpdate = validEquipmentEntity({
+      const equipmentToUpdateWith = validEquipmentEntity({
         equipmentTypeId,
+        authorId,
+        ownerId,
         equipmentName,
         equipmentDescription,
         equipmentImage
       });
       const equipment = new Equipment(pool);
-      const [ row ] = await equipment.updateMyPrivateUserEquipment(equipmentToUpdate, equipmentId, userId);
-
+      const [ row ] = await equipment.updateMyPrivateUserEquipment(equipmentToUpdateWith, equipmentId);
       res.send(row);
       next();
     } catch(err) {
@@ -78,10 +82,9 @@ const userEquipmentController = {
   deleteMyPrivateUserEquipment: async function(req, res, next) {  // for any parent PrivateUserRecipes, set NotFound placeholder
     try {
       const equipmentId = req.sanitize(req.body.equipmentId);
-      const authorId = req.session.userInfo.userId;
       const ownerId = req.session.userInfo.userId;
       const equipment = new Equipment(pool);
-      const [ row ] = await equipment.deleteMyPrivateUserEquipment(equipmentId, authorId, ownerId);
+      const [ row ] = await equipment.deleteMyPrivateUserEquipment(ownerId, equipmentId);
       res.send(row);
       next();
     } catch(err) {
