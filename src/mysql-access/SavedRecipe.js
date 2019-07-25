@@ -1,19 +1,19 @@
 class SavedRecipe {
   constructor(pool) {
     this.pool = pool;
-    this.viewSavedRecipes = this.viewSavedRecipes.bind(this);
-    this.createSavedRecipe = this.createSavedRecipe.bind(this);
-    this.deleteSavedRecipe = this.deleteSavedRecipe.bind(this);
+    this.viewMySavedRecipes = this.viewMySavedRecipes.bind(this);
+    this.createMySavedRecipe = this.createMySavedRecipe.bind(this);
+    this.deleteMySavedRecipe = this.deleteMySavedRecipe.bind(this);
   }
 
-  async viewSavedRecipes(userId) {
+  async viewMySavedRecipes(userId) {
     const sql = `
       SELECT 
         s.recipe_id AS recipe_id,
         r.title AS title,
         r.recipe_image AS recipe_image
       FROM nobsc_saved_recipes s
-      INNER JOIN nobsc_recipes r ON s.recipe_id = r.recipe_id
+      INNER JOIN nobsc_recipes r ON r.recipe_id = s.recipe_id
       WHERE user_id = ?
       ORDER BY title
     `;
@@ -21,7 +21,7 @@ class SavedRecipe {
     return savedRecipes;
   }
 
-  async createSavedRecipe(userId, recipeId) {
+  async createMySavedRecipe(userId, recipeId) {
     const sql = `
       INSERT INTO nobsc_saved_recipes (user_id, recipe_id)
       VALUES (?, ?)
@@ -30,7 +30,7 @@ class SavedRecipe {
     return savedRecipe;
   }
 
-  async deleteSavedRecipe(userId, recipeId) {
+  async deleteMySavedRecipe(userId, recipeId) {
     const sql = `
       DELETE
       FROM nobsc_saved_recipes

@@ -1,19 +1,20 @@
 class FavoriteRecipe {
   constructor(pool) {
     this.pool = pool;
-    this.viewMostFavorited = this.viewMostFavorited.bind(this);
-    this.viewFavoritedRecipes = this.viewFavoritedRecipes.bind(this);
-    this.createFavoriteRecipe = this.createFavoriteRecipe.bind(this);
-    this.deleteFavoriteRecipe = this.deleteFavoriteRecipe.bind(this);
+    //this.viewMostFavorited = this.viewMostFavorited.bind(this);
+
+    this.viewMyFavoriteRecipes = this.viewMyFavoriteRecipes.bind(this);
+    this.createMyFavoriteRecipe = this.createMyFavoriteRecipe.bind(this);
+    this.deleteMyFavoriteRecipe = this.deleteMyFavoriteRecipe.bind(this);
   }
 
-  async viewMostFavorited(limit) {
-    /*const sql = `
-      SELECT recipe_id
-      FROM nobsc_favorite_recipes
-      ORDER BY COUNT(user_id) DESC
-      LIMIT ?
-    `;*/
+  /*async viewMostFavorited(limit) {
+    //const sql = `
+    //  SELECT recipe_id
+    //  FROM nobsc_favorite_recipes
+    //  ORDER BY COUNT(user_id) DESC
+    //  LIMIT ?
+    //`;
     const sql = `
       SELECT recipe_id, COUNT(recipe_id) AS tally
       FROM nobsc_favorite_recipes
@@ -23,24 +24,24 @@ class FavoriteRecipe {
     `;
     const [ mostFavorited ] = this.pool.execute(sql, [limit]);
     return mostFavorited;
-  }
+  }*/
 
-  async viewFavoriteRecipes(userId) {
+  async viewMyFavoriteRecipes(userId) {
     const sql = `
       SELECT 
         f.recipe_id AS recipe_id,
         r.title AS title,
         r.recipe_image AS recipe_image
       FROM nobsc_favorite_recipes f
-      INNER JOIN nobsc_recipes r ON f.recipe_id = r.recipe_id
-      WHERE user_id = ? AND 
+      INNER JOIN nobsc_recipes r ON r.recipe_id = f.recipe_id
+      WHERE user_id = ?
       ORDER BY title
     `;
     const [ favoriteRecipes ] = this.pool.execute(sql, [userId]);
     return favoriteRecipes;
   }
 
-  async createFavoriteRecipe(userId, recipeId) {
+  async createMyFavoriteRecipe(userId, recipeId) {
     const sql = `
       INSERT INTO nobsc_favorite_recipes (user_id, recipe_id)
       VALUES (?, ?)
@@ -49,7 +50,7 @@ class FavoriteRecipe {
     return favoritedRecipe;
   }
 
-  async deleteFavoriteRecipe(userId, recipeId) {
+  async deleteMyFavoriteRecipe(userId, recipeId) {
     const sql = `
       DELETE
       FROM nobsc_favorite_recipes

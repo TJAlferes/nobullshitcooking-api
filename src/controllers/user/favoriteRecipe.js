@@ -1,37 +1,37 @@
-const pool = require('../../data-access/dbPoolConnection');
-const FavoriteRecipe = require('../../data-access/FavoriteRecipe');
+const pool = require('../../lib/connections/mysqlPoolConnection');
+const FavoriteRecipe = require('../../mysql-access/FavoriteRecipe');
 
 const userFavoriteRecipeController = {
-  viewFavoriteRecipes: async function(req, res, next) {
+  viewMyFavoriteRecipes: async function(req, res, next) {
     try {
-      const userId = req.sanitize(req.body.userId);
+      const userId = req.session.userInfo.userId;
       const favoriteRecipe = new FavoriteRecipe(pool);
-      const rows = await favoriteRecipe.viewFavoriteRecipes(userId);
+      const rows = await favoriteRecipe.viewMyFavoriteRecipes(userId);
       res.send(rows);
       next();
     } catch(err) {
       next(err);
     }
   },
-  createFavoriteRecipe: async function(req, res, next) {
+  createMyFavoriteRecipe: async function(req, res, next) {
     try {
       const userId = req.session.userInfo.userId;
       const recipeId = req.sanitize(req.body.recipeId);
       const favoriteRecipe = new FavoriteRecipe(pool);
-      const [ row ] = await favoriteRecipe.createFavoriteRecipe(userId, recipeId);
-      res.send(row);
+      await favoriteRecipe.createMyFavoriteRecipe(userId, recipeId);
+      res.send('Favorited.');
       next();
     } catch(err) {
       next(err);
     }
   },
-  deleteFavoriteRecipe: async function(req, res, next) {
+  deleteMyFavoriteRecipe: async function(req, res, next) {
     try {
       const userId = req.session.userInfo.userId;
       const recipeId = req.sanitize(req.body.recipeId);
       const favoriteRecipe = new FavoriteRecipe(pool);
-      const [ row ] = await favoriteRecipe.deleteFavoriteRecipe(userId, recipeId);
-      res.send(row);
+      await favoriteRecipe.deleteMyFavoriteRecipe(userId, recipeId);
+      res.send('Unfavorited.');
       next();
     } catch(err) {
       next(err);
