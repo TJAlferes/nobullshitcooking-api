@@ -5,9 +5,9 @@ const validPlanEntity = require('../../lib/validations/plan/planEntity');
 const userPlanController = {
   viewAllMyPrivatePlans: async function(req, res, next) {
     try {
-      const userId = req.session.userInfo.userId;
+      const ownerId = req.session.userInfo.userId;
       const plan = new Plan(pool);
-      const myPlans = await plan.viewAllMyPrivatePlans(userId);
+      const myPlans = await plan.viewAllMyPrivatePlans(ownerId);
       res.send(myPlans);
       next();
     } catch(err) {
@@ -16,10 +16,10 @@ const userPlanController = {
   },
   viewMyPrivatePlan: async function(req, res, next) {
     try {
-      const planName = req.sanitize(req.body.planName);
-      const userId = req.session.userInfo.userId;
+      const planId = req.sanitize(req.body.planId);
+      const ownerId = req.session.userInfo.userId;
       const plan = new Plan(pool);
-      const [ myPlan ] = await plan.viewMyPrivatePlan(userId, planName);
+      const [ myPlan ] = await plan.viewMyPrivatePlan(ownerId, planId);
       res.send(myPlan);
       next();
     } catch(err) {
@@ -30,13 +30,11 @@ const userPlanController = {
     try {
       const planName = req.sanitize(req.body.planInfo.planName);
       const planData = req.sanitize(req.body.planInfo.planData);
-      const userId = req.session.userInfo.userId;
-      const planToCreate = validPlanEntity({
-        authorId: userId,
-        ownerId: userId,
-        planName,
-        planData
-      });
+
+      const authorId = req.session.userInfo.userId;
+      const ownerId = req.session.userInfo.userId;
+
+      const planToCreate = validPlanEntity({authorId, ownerId, planName, planData});
       const plan = new Plan(pool);
       await plan.createMyPrivatePlan(planToCreate);
       res.send('Plan created.');
@@ -47,16 +45,14 @@ const userPlanController = {
   },
   updateMyPrivatePlan: async function(req, res, next) {
     try {
-      const planId = req.sanitize(req.body.planInfo.oldPlanName);
+      const planId = req.sanitize(req.body.planInfo.planId);
       const planName = req.sanitize(req.body.planInfo.planName);
       const planData = req.sanitize(req.body.planInfo.planData);
-      const userId = req.session.userInfo.userId;
-      const planToUpdateWith = validPlanEntity({
-        authorId: userId,
-        ownerId: userId,
-        planName,
-        planData
-      });
+
+      const authorId = req.session.userInfo.userId;
+      const ownerId = req.session.userInfo.userId;
+
+      const planToUpdateWith = validPlanEntity({authorId, ownerId, planName, planData});
       const plan = new Plan(pool);
       await plan.updateMyPrivatePlan(planToUpdateWith, planId);
       res.send('Plan updated.');
@@ -67,10 +63,10 @@ const userPlanController = {
   },
   deleteMyPrivatePlan: async function(req, res, next) {
     try {
-      const planName = req.sanitize(req.body.planInfo.planName);
-      const userId = req.session.userInfo.userId;
+      const planId = req.sanitize(req.body.planId);
+      const ownerId = req.session.userInfo.userId;
       const plan = new Plan(pool);
-      await plan.deleteMyPrivatePlan(userId, planName);
+      await plan.deleteMyPrivatePlan(ownerId, planId);
       res.send('Plan deleted.');
       next();
     } catch(err) {

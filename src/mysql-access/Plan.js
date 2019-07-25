@@ -8,23 +8,23 @@ class Plan {
     this.deleteMyPrivatePlan = this.deleteMyPrivatePlan.bind(this);
   }
 
-  async viewAllMyPrivatePlans(userId) {
+  async viewAllMyPrivatePlans(ownerId) {
     const sql = `
-      SELECT plan_name
+      SELECT plan_id, plan_name
       FROM nobsc_plans
-      WHERE author_id = ? AND owner_id = ?
+      WHERE owner_id = ?
     `;
-    const [ plans ] = await this.pool.execute(sql, [userId, userId]);
+    const [ plans ] = await this.pool.execute(sql, [ownerId]);
     return plans;
   }
 
-  async viewMyPrivatePlan(userId, planName) {
+  async viewMyPrivatePlan(ownerId, planId) {
     const sql = `
-      SELECT plan_name, plan_data
+      SELECT plan_id, plan_name, plan_data
       FROM nobsc_plans
-      WHERE author_id = ? AND owner_id = ? AND plan_name = ?
+      WHERE owner_id = ? AND plan_id = ?
     `;
-    const [ plan ] = await this.pool.execute(sql, [userId, userId, planName]);
+    const [ plan ] = await this.pool.execute(sql, [ownerId, planId]);
     return plan;
   }
 
@@ -48,7 +48,7 @@ class Plan {
     const sql = `
       UPDATE nobsc_plans
       SET author_id = ?, owner_id = ?, plan_name = ?, plan_data = ?
-      WHERE plan_id = ?
+      WHERE owner_id = ? AND plan_id = ?
       LIMIT 1
     `;
     const [ updatedPlan ] = await this.pool.execute(sql, [
@@ -56,19 +56,20 @@ class Plan {
       ownerId,
       planName,
       planData,
+      ownerId,
       planId
     ]);
     return updatedPlan;
   }
 
-  async deleteMyPrivatePlan(userId, planName) {
+  async deleteMyPrivatePlan(ownerId, planId) {
     const sql = `
       DELETE
       FROM nobsc_plans
-      WHERE author_id = ? AND owner_id = ? AND plan_name = ?
+      WHERE owner_id = ? AND plan_id = ?
       LIMIT 1
     `;
-    const [ deletedPlan ] = await this.pool.execute(sql, [userId, userId, planName]);
+    const [ deletedPlan ] = await this.pool.execute(sql, [ownerId, planId]);
     return deletedPlan;
   }
 }
