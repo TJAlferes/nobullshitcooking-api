@@ -1,14 +1,16 @@
-const pool = require('../../data-access/dbPoolConnection');
-const Recipe = require('../../data-access/Recipe');
-const RecipeMethods = require('../../data-access/RecipeMethods');
-const RecipeEquipment = require('../../data-access/RecipeEquipment');
-const RecipeIngredients = require('../../data-access/RecipeIngredients');
-const RecipeSubrecipes = require('../../data-access/RecipeSubrecipes');
-const validRecipeEntity = require('../../lib/validations/recipeEntity');
-const validRecipeMethodsEntity = require('../../lib/validations/recipeMethodsEntity');
-const validRecipeEquipmentEntity = require('../../lib/validations/recipeEquipmentEntity');
-const validRecipeIngredientsEntity = require('../../lib/validations/recipeIngredientsEntity');
-const validRecipeSubrecipesEntity = require('../../lib/validations/recipeSubrecipesEntity');
+const pool = require('../../lib/connections/mysqlPoolConnection');
+
+const Recipe = require('../../mysql-access/Recipe');
+const RecipeMethods = require('../../mysql-access/RecipeMethods');
+const RecipeEquipment = require('../../mysql-access/RecipeEquipment');
+const RecipeIngredients = require('../../mysql-access/RecipeIngredients');
+const RecipeSubrecipes = require('../../mysql-access/RecipeSubrecipes');
+
+const validRecipeEntity = require('../../lib/validations/recipe/recipeEntity');
+const validRecipeMethodsEntity = require('../../lib/validations/recipeMethod/recipeMethodEntity');
+const validRecipeEquipmentEntity = require('../../lib/validations/recipeEquipment/recipeEquipmentEntity');
+const validRecipeIngredientsEntity = require('../../lib/validations/recipeIngredient/recipeIngredientEntity');
+const validRecipeSubrecipesEntity = require('../../lib/validations/recipeSubrecipe/recipeSubrecipeEntity');
 
 const staffRecipeController = {
   createRecipe: async function(req, res, next) {
@@ -27,8 +29,8 @@ const staffRecipeController = {
       const ingredientsImage = req.sanitize(req.body.recipeInfo.ingredientsImage);
       const cookingImage = req.sanitize(req.body.recipeInfo.cookingImage);
 
-      const authorId = 1; //req.session.userInfo.userId || 1;
-      const ownerId = 1; //req.session.userInfo.userId || 1;
+      const authorId = 1;
+      const ownerId = 1;
 
       const recipeToCreate = validRecipeEntity({
         recipeTypeId,
@@ -141,11 +143,13 @@ const staffRecipeController = {
   },
   updateRecipe: async function(req, res, next) {
     try {
+      const recipeId = req.sanitize(req.body.recipeInfo.recipeId);
       const recipeTypeId = req.sanitize(req.body.recipeInfo.recipeTypeId);
       const cuisineId = req.sanitize(req.body.recipeInfo.cuisineId);
       const title = req.sanitize(req.body.recipeInfo.title);
       const description = req.sanitize(req.body.recipeInfo.description);
       const directions = req.sanitize(req.body.recipeInfo.directions);
+      const requiredMethods = req.sanitize(req.body.recipeInfo.requiredMethods);
       const requiredEquipment = req.sanitize(req.body.recipeInfo.requiredEquipment);
       const requiredIngredients = req.sanitize(req.body.recipeInfo.requiredIngredients);
       const requiredSubrecipes = req.sanitize(req.body.recipeInfo.requiredSubrecipes);
@@ -154,9 +158,10 @@ const staffRecipeController = {
       const ingredientsImage = req.sanitize(req.body.recipeInfo.ingredientsImage);
       const cookingImage = req.sanitize(req.body.recipeInfo.cookingImage);
 
-      const recipe = new Recipe(pool);
+      const authorId = 1;
+      const ownerId = 1;
 
-      const recipeToUpdate = validRecipeEntity({
+      const recipeToUpdateWith = validRecipeEntity({
         recipeTypeId,
         cuisineId,
         authorId,
@@ -169,29 +174,16 @@ const staffRecipeController = {
         ingredientsImage,
         cookingImage
       });
+      const recipe = new Recipe(pool);
+      await recipe.updateRecipe(recipeToUpdateWith, recipeId);
 
-      //const [ oldRecipeId ] = await recipe.getRecipeIdByTitle(title);
-
-      //fp.isEqual()
-
-      /*if (not equal) {
-        const recipeEquipment = new RecipeEquipment(pool);
-        //
-      }*/
-
-      /*if (not equal) {
-        const recipeIngredients = new RecipeIngredients(pool);
-        //
-      }*/
-
-      /*if (not equal) {
-        const recipeSubrecipes = new RecipeSubrecipes(pool);
-        //
-      }*/
-
-      const [ row ] = await recipe.updateRecipe(recipeToUpdate);
-
-      res.send(row);
+      // transaction(s):
+      // delete all records from RecipeMethod, insert
+      // delete all records from RecipeEquipment, insert
+      // delete all records from RecipeIngredient, insert
+      // delete all records from RecipeSubrecipe, insert
+      
+      res.send('Recipe updated.');
       next();
     } catch(err) {
       next(err);
@@ -199,7 +191,16 @@ const staffRecipeController = {
   },
   deleteRecipe: async function(req, res, next) {
     try {
-      const recipeId = req.body.recipeId;  // sanitize and validate?
+      const recipeId = req.sanitize(req.body.recipeId);
+      // FIRST
+      // transaction(s):
+      // delete all records from Plan ... you don't need to delete from plan... if you can simply return null from misses..? ********************
+      // delete all records from FavoriteRecipe
+      // delete all records from SavedRecipe
+      // delete all records from RecipeMethod
+      // delete all records from RecipeEquipment
+      // delete all records from RecipeIngredient
+      // delete all records from RecipeSubrecipe
       const recipe = new Recipe(pool);
       const [ row ] = await recipe.deleteRecipe(recipeId);
       res.send(row);

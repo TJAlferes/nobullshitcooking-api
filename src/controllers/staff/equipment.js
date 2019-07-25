@@ -1,6 +1,6 @@
-const pool = require('../../data-access/dbPoolConnection');
-const Equipment = require('../../data-access/Equipment');
-const validEquipmentEntity = require('../../lib/validations/staff/equipmentEntity');
+const pool = require('../../lib/connections/mysqlPoolConnection');
+const Equipment = require('../../mysql-access/Equipment');
+const validEquipmentEntity = require('../../lib/validations/equipment/equipmentEntity');
 
 const staffEquipmentController = {
   createEquipment: async function(req, res, next) {
@@ -10,16 +10,19 @@ const staffEquipmentController = {
       const equipmentDescription = req.sanitize(req.body.equipmentInfo.equipmentDescription);
       const equipmentImage = req.sanitize(req.body.equipmentInfo.equipmentImage);
 
-      const equipment = new Equipment(pool);
+      const authorId = 1;
+      const ownerId = 1;
 
       const equipmentToCreate = validEquipmentEntity({
         equipmentTypeId,
+        authorId,
+        ownerId,
         equipmentName,
         equipmentDescription,
         equipmentImage
       });
+      const equipment = new Equipment(pool);
       const [ row ] = await equipment.createEquipment(equipmentToCreate);
-
       res.send(row);
       next();
     } catch(err) {
@@ -28,21 +31,25 @@ const staffEquipmentController = {
   },
   updateEquipment: async function(req, res, next) {
     try {
+      const equipmentId = req.sanitize(req.body.equipmentInfo.equipmentId);
       const equipmentTypeId = req.sanitize(req.body.equipmentInfo.equipmentTypeId);
       const equipmentName = req.sanitize(req.body.equipmentInfo.equipmentName);
       const equipmentDescription = req.sanitize(req.body.equipmentInfo.equipmentDescription);
       const equipmentImage = req.sanitize(req.body.equipmentInfo.equipmentImage);
 
-      const equipment = new Equipment(pool);
+      const authorId = 1;
+      const ownerId = 1;
 
-      const equipmentToUpdate = validEquipmentEntity({
+      const equipmentToUpdateWith = validEquipmentEntity({
         equipmentTypeId,
+        authorId,
+        ownerId,
         equipmentName,
         equipmentDescription,
         equipmentImage
       });
-      const [ row ] = await equipment.updateEquipment(equipmentToUpdate);
-
+      const equipment = new Equipment(pool);
+      const [ row ] = await equipment.updateEquipment(equipmentToUpdateWith, equipmentId);
       res.send(row);
       next();
     } catch(err) {
@@ -51,7 +58,7 @@ const staffEquipmentController = {
   },
   deleteEquipment: async function(req, res, next) {
     try {
-      const equipmentId = req.body.equipmentId;  // sanitize and validate?
+      const equipmentId = req.sanitize(req.body.equipmentId);
       const equipment = new Equipment(pool);
       const [ row ] = await equipment.deleteEquipment(equipmentId);
       res.send(row);

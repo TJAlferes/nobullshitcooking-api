@@ -188,13 +188,15 @@ const userRecipeController = {
       next(err);
     }
   },
-  updateUserRecipe: async function(req, res, next) {
+  updateMyPrivateUserRecipe: async function(req, res, next) {
     try {
+      const recipeId = req.sanitize(req.body.recipeInfo.recipeId);
       const recipeTypeId = req.sanitize(req.body.recipeInfo.recipeTypeId);
       const cuisineId = req.sanitize(req.body.recipeInfo.cuisineId);
       const title = req.sanitize(req.body.recipeInfo.title);
       const description = req.sanitize(req.body.recipeInfo.description);
       const directions = req.sanitize(req.body.recipeInfo.directions);
+      const requiredMethods = req.sanitize(req.body.recipeInfo.requiredMethods);
       const requiredEquipment = req.sanitize(req.body.recipeInfo.requiredEquipment);
       const requiredIngredients = req.sanitize(req.body.recipeInfo.requiredIngredients);
       const requiredSubrecipes = req.sanitize(req.body.recipeInfo.requiredSubrecipes);
@@ -203,29 +205,32 @@ const userRecipeController = {
       const ingredientsImage = req.sanitize(req.body.recipeInfo.ingredientsImage);
       const cookingImage = req.sanitize(req.body.recipeInfo.cookingImage);
 
-      const recipeId = req.sanitize(req.body.recipeInfo.recipeId);
+      const authorId = req.session.userInfo.userId;
+      const ownerId = req.session.userInfo.userId;  // we don't allow them to switch from private to public
 
-      const userId = req.session.userInfo.userId;
-
-      const user = new User(pool);
-
-      const recipeToUpdate = validRecipeEntity({
+      const recipeToUpdateWith = validRecipeEntity({
         recipeTypeId,
         cuisineId,
+        authorId,
+        ownerId,
         title,
         description,
         directions,
-        requiredEquipment,
-        requiredIngredients,
-        requiredSubrecipes,
         recipeImage,
         equipmentImage,
         ingredientsImage,
         cookingImage
       });
-      const [ row ] = await user.updateUserRecipe(recipeToUpdate, recipeId, userId);
+      const recipe = new Recipe(pool);
+      await recipe.updateMyPrivateUserRecipe(recipeToUpdateWith, recipeId, userId);
 
-      res.send(row);
+      // transaction(s):
+      // delete all records from RecipeMethod, insert
+      // delete all records from RecipeEquipment, insert
+      // delete all records from RecipeIngredient, insert
+      // delete all records from RecipeSubrecipe, insert
+
+      res.send('Recipe updated.');
       next();
     } catch(err) {
       next(err);
@@ -236,17 +241,21 @@ const userRecipeController = {
       const recipeId = req.sanitize(req.body.recipeId);
       const authorId = req.session.userInfo.userId;
       const ownerId = req.session.userInfo.userId;
+
+      const plan = new plan(pool);
       const recipeMethods = new RecipeMethods(pool);
       const recipeEquipment = new RecipeEquipment(pool);
       const recipeIngredients = new RecipeIngredients(pool);
       const recipeSubrecipes = new RecipeSubrecipes(pool);
       const recipe = new Recipe(pool);
+
+      //await plan.delete ... you don't need to delete from plan... if you can simply return null from misses..? ********************
       await recipeMethods.deleteRecipeMethods(recipeId);
       await recipeEquipment.deleteRecipeEquipment(recipeId);
       await recipeIngredients.deleteRecipeIngredients(recipeId);
       await recipeSubrecipes.deleteRecipeSubrecipes(recipeId);
-      const [ row ] = await recipe.deleteMyPrivateUserRecipe(recipeId, authorId, ownerId);
-      res.send(row);
+      await recipe.deleteMyPrivateUserRecipe(recipeId, authorId, ownerId);
+      res.send('Recipe deleted.');
       next();
     } catch(err) {
       next(err);
