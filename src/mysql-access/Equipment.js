@@ -9,13 +9,14 @@ class Equipment {
     this.viewEquipmentOfTypes = this.viewEquipmentOfTypes.bind(this);
     this.viewEquipmentById = this.viewEquipmentById.bind(this);
     this.viewEquipmentForSubmitEditForm = viewEquipmentForSubmitEditForm.bind(this);
-
-    this.viewAllMyPrivateUserEquipment = this.viewAllMyPrivateUserEquipment.bind(this);
-    this.viewMyPrivateUserEquipment = this.viewMyPrivateUserEquipment.bind(this);
-
     this.createEquipment = this.createEquipment.bind(this);
     this.updateEquipment = this.updateEquipment.bind(this);
     this.deleteEquipment = this.deleteEquipment.bind(this);
+
+    this.viewAllMyPrivateUserEquipment = this.viewAllMyPrivateUserEquipment.bind(this);
+    this.viewMyPrivateUserEquipment = this.viewMyPrivateUserEquipment.bind(this);
+    this.createMyPrivateUserEquipment = this.createMyPrivateUserEquipment.bind(this);
+    this.updateMyPrivateUserEquipment = this.updateMyPrivateUserEquipment.bind(this);
     this.deleteMyPrivateUserEquipment = this.deleteMyPrivateUserEquipment.bind(this);
   }
   
@@ -189,6 +190,50 @@ class Equipment {
     `;
     const [ deletedEquipment ] = await this.pool.execute(sql, [equipmentId]);
     return deletedEquipment;
+  }
+
+
+
+  async viewAllMyPrivateUserEquipment(userId) {
+    const sql = `
+      SELECT equipment_id, equipment_name, equipment_image
+      FROM nobsc_equipment
+      WHERE owner_id = ?
+    `;
+    const [ allMyPrivateUserEquipment ] = await this.pool.execute(sql, [userId]);
+    return allMyPrivateUserEquipment;
+  }
+
+  async viewMyPrivateUserEquipment(userId, equipmentId) {
+    const sql = `
+      SELECT
+        e.equipment_id AS equipment_id,
+        t.equipment_type_name AS equipment_type_name
+        e.equipment_name AS equipment_name,
+        e.equipment_description AS equipment_description
+        e.equipment_image AS equipment_image
+      FROM nobsc_equipment e
+      INNER JOIN nobsc_equipment_types t ON e.equipment_type_id = t.equipment_type_id
+      WHERE e.owner_id = ? AND e.equipment_id = ?
+    `;
+    const [ myPrivateUserEquipment ] = await this.pool.execute(sql, [userId, equipmentId]);
+    return myPrivateUserEquipment;
+  }
+
+  async createMyPrivateUserEquipment() {
+    const sql = `
+    
+    `;
+    const [  ] = await this.pool.execute(sql, []);
+    return ;
+  }
+
+  async updateMyPrivateUserEquipment() {
+    const sql = `
+    
+    `;
+    const [  ] = await this.pool.execute(sql, []);
+    return ;
   }
 
   async deleteMyPrivateUserEquipment(equipmentId, authorId, ownerId) {

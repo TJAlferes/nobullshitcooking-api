@@ -1,7 +1,6 @@
-const pool = require('../../data-access/dbPoolConnection');
-//const User = require('../../data-access/user/User');
-const Equipment = require('../../data-access/Equipment');
-const validEquipmentEntity = require('../../utils/validations/equipmentEntity');
+const pool = require('../../lib/connections/mysqlPoolConnection');
+const Equipment = require('../../mysql-access/Equipment');
+const validEquipmentEntity = require('../../utils/validations/equipment/equipmentEntity');
 
 const userEquipmentController = {
   viewAllMyPrivateUserEquipment: async function(req, res, next) {
@@ -27,7 +26,7 @@ const userEquipmentController = {
       next(err);
     }
   },
-  createEquipment: async function(req, res, next) {
+  createMyPrivateUserEquipment: async function(req, res, next) {
     try {
       const equipmentTypeId = req.sanitize(req.body.equipmentInfo.equipmentTypeId);
       const equipmentName = req.sanitize(req.body.equipmentInfo.equipmentName);
@@ -44,25 +43,22 @@ const userEquipmentController = {
         equipmentImage
       });
       const equipment = new Equipment(pool);
-      const [ row ] = await equipment.createEquipment(equipmentToCreate);
+      const [ row ] = await equipment.createMyPrivateUserEquipment(equipmentToCreate);
       res.send(row);
       next();
     } catch(err) {
       next(err);
     }
   },
-  updateEquipment: async function(req, res, next) {
+  updateMyPrivateUserEquipment: async function(req, res, next) {
     try {
+      const equipmentId = req.sanitize(req.body.equipmentInfo.equipmentId);
       const equipmentTypeId = req.sanitize(req.body.equipmentInfo.equipmentTypeId);
       const equipmentName = req.sanitize(req.body.equipmentInfo.equipmentName);
       const equipmentDescription = req.sanitize(req.body.equipmentInfo.equipmentDescription);
       const equipmentImage = req.sanitize(req.body.equipmentInfo.equipmentImage);
 
-      const equipmentId = req.sanitize(req.body.equipmentInfo.equipmentId);
-
       const userId = req.session.userInfo.userId;
-
-      const user = new User(pool);
 
       const equipmentToUpdate = validEquipmentEntity({
         equipmentTypeId,
@@ -70,7 +66,8 @@ const userEquipmentController = {
         equipmentDescription,
         equipmentImage
       });
-      const [ row ] = await user.updateUserEquipment(equipmentToUpdate, equipmentId, userId);
+      const equipment = new Equipment(pool);
+      const [ row ] = await equipment.updateMyPrivateUserEquipment(equipmentToUpdate, equipmentId, userId);
 
       res.send(row);
       next();
@@ -87,39 +84,6 @@ const userEquipmentController = {
       const [ row ] = await equipment.deleteMyPrivateUserEquipment(equipmentId, authorId, ownerId);
       res.send(row);
       next();
-    } catch(err) {
-      next(err);
-    }
-  },
-  viewUserEquipment: async function(req, res, next) {
-    try {
-      const userId = req.session.userInfo.userId;
-      const user = new User(pool);
-      const rows = await user.viewUserEquipment(userId);
-      res.send(rows);
-      next();
-    } catch(err) {
-      next(err);
-    }
-  },
-  viewUserEquipmentDetail: async function(req, res, next) {
-    try {
-      const equipmentId = req.sanitize(req.params.equipmentId);
-      const userId = req.session.userInfo.userId;
-      const user = new User(pool);
-      const [ rows ] = await user.viewUserEquipmentById(equipmentId, userId);
-      res.send(rows);
-      next();
-    } catch(err) {
-      next(err);
-    }
-  },
-  viewUserEquipmentForSubmitEditForm: async function(req, res, next) {
-    try {
-      const userId = req.session.userInfo.userId;
-      const user = new User(pool);
-      const rows = await user.viewUserEquipmentForSubmitEditForm(userId);
-      res.send(rows);
     } catch(err) {
       next(err);
     }

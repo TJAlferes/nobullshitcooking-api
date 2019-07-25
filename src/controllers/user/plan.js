@@ -7,8 +7,8 @@ const userPlanController = {
     try {
       const userId = req.session.userInfo.userId;
       const plan = new Plan(pool);
-      const plans  = await plan.viewAllMyPrivatePlans(userId);
-      res.send(plans);
+      const myPlans = await plan.viewAllMyPrivatePlans(userId);
+      res.send(myPlans);
       next();
     } catch(err) {
       next(err);
@@ -19,8 +19,8 @@ const userPlanController = {
       const planName = req.sanitize(req.body.planName);
       const userId = req.session.userInfo.userId;
       const plan = new Plan(pool);
-      const [ plan ] = await plan.viewMyPrivatePlan(userId, planName);
-      res.send(plan);
+      const [ myPlan ] = await plan.viewMyPrivatePlan(userId, planName);
+      res.send(myPlan);
       next();
     } catch(err) {
       next(err);
@@ -47,18 +47,18 @@ const userPlanController = {
   },
   updateMyPrivatePlan: async function(req, res, next) {
     try {
-      const oldPlanName = req.sanitize(req.body.planInfo.oldPlanName)
-      const updatedPlanName = req.sanitize(req.body.planInfo.updatedPlanName);
-      const updatedPlanData = req.sanitize(req.body.planInfo.updatedPlanData);
+      const planId = req.sanitize(req.body.planInfo.oldPlanName);
+      const planName = req.sanitize(req.body.planInfo.planName);
+      const planData = req.sanitize(req.body.planInfo.planData);
       const userId = req.session.userInfo.userId;
-      validPlanEntity({
+      const planToUpdateWith = validPlanEntity({
         authorId: userId,
         ownerId: userId,
-        planName: updatedPlanName,
-        planData: updatedPlanData
+        planName,
+        planData
       });
       const plan = new Plan(pool);
-      await plan.updateMyPrivatePlan(updatedPlanName, updatedPlanData, userId, oldPlanName);
+      await plan.updateMyPrivatePlan(planToUpdateWith, planId);
       res.send('Plan updated.');
       next();
     } catch(err) {

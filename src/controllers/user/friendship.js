@@ -28,8 +28,12 @@ const userFriendshipController = {
       const user = new User(pool);
       const [ friendExists ] = await user.getUserIdByUsername(friendName);
       let friendId;
-      if (friendExists) friendId = friendExists[0].user_id;
-      else return res.send('User not found.');
+      if (friendExists) {
+        friendId = friendExists[0].user_id;
+      } else {
+        res.send('User not found.');
+        return next();
+      }
       const userId = req.session.userInfo.userId;
       const status = "pending";
       const friendshipToCreate = validFriendshipEntity({userId, friendId, status});
@@ -47,8 +51,12 @@ const userFriendshipController = {
       const user = new User(pool);
       const [ friendExists ] = await user.getUserIdByUsername(friendName);
       let friendId;
-      if (friendExists) friendId = friendExists[0].user_id;
-      else return res.send('User not found.');
+      if (friendExists) {
+        friendId = friendExists[0].user_id;
+      } else {
+        res.send('User not found.');
+        return next();
+      }
       const userId = req.session.userInfo.userId;
       const friendship = new Friendship(pool);
       await friendship.acceptFriendship(userId, friendId);
@@ -64,8 +72,12 @@ const userFriendshipController = {
       const user = new User(pool);
       const [ friendExists ] = await user.getUserIdByUsername(friendName);
       let friendId;
-      if (friendExists) friendId = friendExists[0].user_id;
-      else return res.send('User not found.');
+      if (friendExists) {
+        friendId = friendExists[0].user_id;
+      } else {
+        res.send('User not found.');
+        return next();
+      }
       const userId = req.session.userInfo.userId;
       const friendship = new Friendship(pool);
       await friendship.rejectFriendship(userId, friendId);
@@ -81,8 +93,12 @@ const userFriendshipController = {
       const user = new User(pool);
       const [ friendExists ] = await user.getUserIdByUsername(friendName);
       let friendId;
-      if (friendExists) friendId = friendExists[0].user_id;
-      else return res.send('User not found.');
+      if (friendExists) {
+        friendId = friendExists[0].user_id;
+      } else {
+        res.send('User not found.');
+        return next();
+      }
       const userId = req.session.userInfo.userId;
       const friendship = new Friendship(pool);
       await friendship.deleteFriendship(userId, friendId);
@@ -98,8 +114,12 @@ const userFriendshipController = {
       const user = new User(pool);
       const [ friendExists ] = await user.getUserIdByUsername(friendName);
       let friendId;
-      if (friendExists) friendId = friendExists[0].user_id;
-      else return res.send('User not found.');
+      if (friendExists) {
+        friendId = friendExists[0].user_id;
+      } else {
+        res.send('User not found.');
+        return next();
+      }
       const userId = req.session.userInfo.userId;
       const friendship = new Friendship(pool);
       await friendship.blockUser(userId, friendId);
@@ -115,8 +135,12 @@ const userFriendshipController = {
       const user = new User(pool);
       const [ friendExists ] = await user.getUserIdByUsername(friendName);
       let friendId;
-      if (friendExists) friendId = friendExists[0].user_id;
-      else return res.send('User not found.');
+      if (friendExists) {
+        friendId = friendExists[0].user_id;
+      } else {
+        res.send('User not found.');
+        return next();
+      }
       const userId = req.session.userInfo.userId;
       const friendship = new Friendship(pool);
       await friendship.unblockUser(userId, friendId);
