@@ -53,18 +53,30 @@ const {
 ##############################################################################*/
 
 const app = express();
+const server = http.Server(app);
+const io = socketIO(server);
+const RedisStore = connectRedis(session);  // sharedSession? **********!!!
 
 const rateLimiterOptions = {windowMs: 1 * 60 * 1000, max: 100};  // limit each IP to 100 requests per minute  // affect socket?
 
-//const RedisClient = redis.createClient({host: 'redis-dev'}); 
-//const RedisClient = redis.createClient(process.env.REDIS_URI);
 const ioredis = new Redis();
 
+const redisClusterOptions = [
+  {host: process.env.REDIS_HOST, port: 6380, password: process.env.REDIS_PASSWORD},
+  {host: process.env.REDIS_HOST, port: 6381, password: process.env.REDIS_PASSWORD}
+];
+const elasticacheWithTLS = {
+  dnsLookup: (address, callback) => callback(null, address),
+  redisOptions: {
+    tls: {}
+  }
+};
 const sessionOptions = {
   store: new RedisStore({
     client: ioredis,
     port: process.env.REDIS_PORT || "6379",
-    host: process.env.REDIS_HOST || "localhost"
+    host: process.env.REDIS_HOST || "localhost",
+    pass: process.env.REDIS_PASSWORD
   }),
   name: "connect.sid",  //"session",
   secret: process.env.SESSION_SECRET || "secret",
@@ -77,10 +89,10 @@ const sessionOptions = {
     secure: true
   }
 };
-
-const RedisStore = connectRedis(session);
-
-const corsOptions = {origin: ['http://localhost:8080'], credentials: true};
+const corsOptions = {
+  origin: ['http://localhost:8080'],
+  credentials: true
+};
 
 if (app.get('env') === 'production') {
   app.set('trust proxy', 1);  // trust first proxy
@@ -88,16 +100,8 @@ if (app.get('env') === 'production') {
   corsOptions.origin = ['https://nobullshitcooking.net'];
 }
 
-const server = http.Server(app);
-const io = socketIO(server);
-const pubClient = ioredis(process.env.REDIS_PORT, process.env.REDIS_HOST, {
-  auth_pass: process.env.REDIS_PASSWORD
-});
-const subClient = ioredis(process.env.REDIS_PORT, process.env.REDIS_HOST, {
-  return_buffers: true,
-  auth_pass: process.env.REDIS_PASSWORD
-});
-
+const pubClient = new Redis.Cluster(redisClusterOptions, elasticacheWithTLS);
+const subClient = new Redis.Cluster(redisClusterOptions, elasticacheWithTLS);
 // SCALABLE PUB SUB? SEE YOUTUBE VID
 // CLIENTS SEE REDLOCK IOREDIS
 
@@ -109,7 +113,7 @@ const subClient = ioredis(process.env.REDIS_PORT, process.env.REDIS_HOST, {
 
 app.use(expressPinoLogger());
 app.use(expressRateLimit(rateLimiterOptions));
-app.use(session(sessionOptions));  // sharedSession?
+app.use(session(sessionOptions));  // sharedSession? **********!!!
 app.use(cors(corsOptions));  // before session?
 //app.use(compression());  // elasticbeanstalk already does?
 //app.use(helmet());  // get working
