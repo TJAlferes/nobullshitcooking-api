@@ -1,10 +1,27 @@
 class SavedRecipe {
   constructor(pool) {
     this.pool = pool;
+
+    this.deleteAllSavesOfRecipe = this.deleteAllSavesOfRecipe.bind(this);
+
     this.viewMySavedRecipes = this.viewMySavedRecipes.bind(this);
     this.createMySavedRecipe = this.createMySavedRecipe.bind(this);
     this.deleteMySavedRecipe = this.deleteMySavedRecipe.bind(this);
   }
+
+  async deleteAllSavesOfRecipe(recipeId) {
+    const sql = `
+      DELETE
+      FROM nobsc_saved_recipes
+      WHERE recipe_id = ?
+    `;
+    const [ unsavedRecipes ] = await this.pool.execute(sql, [recipeId]);
+    return unsavedRecipes;
+  }
+
+
+
+
 
   async viewMySavedRecipes(userId) {
     const sql = `
@@ -17,7 +34,7 @@ class SavedRecipe {
       WHERE user_id = ?
       ORDER BY title
     `;
-    const [ savedRecipes ] = this.pool.execute(sql, [userId]);
+    const [ savedRecipes ] = await this.pool.execute(sql, [userId]);
     return savedRecipes;
   }
 
@@ -26,7 +43,7 @@ class SavedRecipe {
       INSERT INTO nobsc_saved_recipes (user_id, recipe_id)
       VALUES (?, ?)
     `;
-    const [ savedRecipe ] = this.pool.execute(sql, [userId, recipeId]);
+    const [ savedRecipe ] = await this.pool.execute(sql, [userId, recipeId]);
     return savedRecipe;
   }
 
@@ -37,7 +54,7 @@ class SavedRecipe {
       WHERE user_id = ? AND recipe_id = ?
       LIMIT 1
     `;
-    const [ unsavedRecipe ] = this.pool.execute(sql, [userId, recipeId]);
+    const [ unsavedRecipe ] = await this.pool.execute(sql, [userId, recipeId]);
     return unsavedRecipe;
   }
 }

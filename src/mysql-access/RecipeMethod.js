@@ -1,4 +1,4 @@
-class RecipeMethods {
+class RecipeMethod {
   constructor(pool) {
     this.pool = pool;
     this.viewRecipeMethodsByRecipeId = this.viewRecipeMethodsByRecipeId.bind(this);
@@ -75,4 +75,4 @@ class RecipeMethods {
   }
 }
 
-module.exports = RecipeMethods;
+module.exports = RecipeMethod;

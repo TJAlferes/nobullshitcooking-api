@@ -25,22 +25,18 @@ class Recipe {
     this.viewRecipeTitlesByIds = this.viewRecipeTitlesByIds.bind(this);
     this.viewRecipesForSubmitEditForm = viewRecipesForSubmitEditForm.bind(this);
 
+    this.createRecipe = this.createRecipe.bind(this);
+    this.updateRecipe = this.updateRecipe.bind(this);
+    this.deleteRecipe = this.deleteRecipe.bind(this);
+
     this.viewAllMyPrivateUserRecipes = this.viewAllMyPrivateUserRecipes.bind(this);
     this.viewAllMyPublicUserRecipes = this.viewAllMyPublicUserRecipes.bind(this);
     this.viewMyPrivateUserRecipe = this.viewMyPrivateUserRecipe.bind(this);
     this.viewMyPublicUserRecipe = this.viewMyPublicUserRecipe.bind(this);
-
-    this.createRecipe = this.createRecipe.bind(this);
-    this.updateRecipe = this.updateRecipe.bind(this);
-    this.deleteRecipe = this.deleteRecipe.bind(this);
     this.deleteMyPrivateUserRecipe = this.deleteMyPrivateUserRecipe.bind(this);
     this.disownMyPublicUserRecipe = this.disownMyPublicUserRecipe.bind(this);
   }
   
-  /*
-  counting methods
-  */
-
   async countAllRecipes() {
     const sql = `
       SELECT COUNT(*) AS total
@@ -136,10 +132,6 @@ class Recipe {
     const [ allRecipesOfCuisineAndTypeCount ] = await this.pool.execute(sql, ids);
     return allRecipesOfCuisineAndTypeCount;
   }
-
-  /*
-  viewing methods
-  */
 
   async viewAllRecipes(starting, display) {
     const sql = `
@@ -304,7 +296,7 @@ class Recipe {
   }
 
   // YOU CAN REMOVE THIS
-  async viewRecipeTitlesByIds(placeholders, recipeIds) {
+  /*async viewRecipeTitlesByIds(placeholders, recipeIds) {
     const sql = `
       SELECT recipe_id, title
       FROM nobsc_recipes
@@ -312,7 +304,7 @@ class Recipe {
     `;
     const [ recipeTitles ] = await this.pool.execute(sql, recipeIds);
     return recipeTitles;
-  }
+  }*/
 
   async viewRecipesForSubmitEditForm() {
     const sql = `
@@ -324,11 +316,117 @@ class Recipe {
     return allRecipes;
   }
 
-  /*
+  async createRecipe(recipeToCreate) {
+    const {
+      recipeTypeId,
+      cuisineId,
+      authorId,
+      ownerId,
+      title,
+      description,
+      directions,
+      recipeImage,
+      equipmentImage,
+      ingredientsImage,
+      cookingImage
+    } = recipeToCreate;
+    const sql = `
+      INSERT INTO nobsc_recipes (
+        recipe_type_id,
+        cuisine_id,
+        author_id,
+        owner_id,
+        title,
+        description,
+        directions,
+        recipe_image,
+        equipment_image,
+        ingredients_image,
+        cooking_image
+      ) VALUES (
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+      )
+    `;
+    const [ createdRecipe ] = await this.pool.execute(sql, [
+      recipeTypeId,
+      cuisineId,
+      authorId,
+      ownerId,
+      title,
+      description,
+      directions,
+      recipeImage,
+      equipmentImage,
+      ingredientsImage,
+      cookingImage
+    ]);
+    return createdRecipe;
+  }
+  
+  async updateRecipe(recipeToUpdateWith, recipeId) {
+    const {
+      recipeTypeId,
+      cuisineId,
+      authorId,
+      ownerId,
+      title,
+      description,
+      directions,
+      recipeImage,
+      equipmentImage,
+      ingredientsImage,
+      cookingImage,
+    } = recipeToUpdateWith;
+    const sql = `
+      UPDATE nobsc_recipes
+      SET
+        recipe_type_id = ?,
+        cuisine_id = ?,
+        author_id = ?,
+        owner_id = ?,
+        title = ?,
+        description = ?,
+        directions = ?,
+        recipe_image = ?,
+        equipment_image = ?,
+        ingredients_image = ?,
+        cooking_image = ?
+      WHERE recipe_id = ?
+      LIMIT 1
+    `;
+    const [ updatedRecipe ] = await this.pool.execute(sql, [
+      recipeTypeId,
+      cuisineId,
+      authorId,
+      ownerId,
+      title,
+      description,
+      directions,
+      recipeImage,
+      equipmentImage,
+      ingredientsImage,
+      cookingImage,
+      recipeId
+    ]);
+    return updatedRecipe;
+  }
+  
+  async deleteRecipe(recipeId) {
+    const sql = `
+      DELETE
+      FROM nobsc_recipes
+      WHERE recipe_id = ?
+      LIMIT 1
+    `;
+    const [ deletedRecipe ] = await this.pool.execute(sql, [recipeId]);
+    return deletedRecipe;
+  }
 
-  users
 
-  */
+
+
+
+
 
   async viewAllMyPrivateUserRecipes(ownerId) {
     const sql = `
@@ -449,60 +547,7 @@ class Recipe {
     return myPublicUserRecipe;
   }
 
-  /*
-
-  create, update, and delete methods
-
-  */
-
-  async createRecipe(recipeInfo) {
-    const {
-      recipeTypeId,
-      cuisineId,
-      authorId,
-      ownerId,
-      title,
-      description,
-      directions,
-      recipeImage,
-      equipmentImage,
-      ingredientsImage,
-      cookingImage
-    } = recipeInfo;
-    const sql = `
-      INSERT INTO nobsc_recipes (
-        recipe_type_id,
-        cuisine_id,
-        author_id,
-        owner_id,
-        title,
-        description,
-        directions,
-        recipe_image,
-        equipment_image,
-        ingredients_image,
-        cooking_image
-      ) VALUES (
-        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
-      )
-    `;
-    const [ createdRecipe ] = await this.pool.execute(sql, [
-      recipeTypeId,
-      cuisineId,
-      authorId,
-      ownerId,
-      title,
-      description,
-      directions,
-      recipeImage,
-      equipmentImage,
-      ingredientsImage,
-      cookingImage
-    ]);
-    return createdRecipe;
-  }
-  
-  async updateRecipe(recipeInfo) {
+  async updateMyPrivateUserRecipe(recipeToUpdateWith, recipeId) {
     const {
       recipeTypeId,
       cuisineId,
@@ -515,8 +560,7 @@ class Recipe {
       equipmentImage,
       ingredientsImage,
       cookingImage,
-      recipeId
-    } = recipeInfo;  // way to make id not public?
+    } = recipeToUpdateWith;
     const sql = `
       UPDATE nobsc_recipes
       SET
@@ -531,7 +575,7 @@ class Recipe {
         equipment_image = ?,
         ingredients_image = ?,
         cooking_image = ?
-      WHERE recipe_id = ?
+      WHERE recipe_id = ? AND owner_id = ?
       LIMIT 1
     `;
     const [ updatedRecipe ] = await this.pool.execute(sql, [
@@ -546,24 +590,10 @@ class Recipe {
       equipmentImage,
       ingredientsImage,
       cookingImage,
-      recipeId
-    ]);
-    return updatedRecipe;
-  }
-  
-  async deleteRecipe(recipeId, authorId, ownerId) {
-    const sql = `
-      DELETE
-      FROM nobsc_recipes
-      WHERE recipe_id = ? AND author_id = ? AND owner_id = ?
-      LIMIT 1
-    `;
-    const [ deletedRecipe ] = await this.pool.execute(sql, [
       recipeId,
-      authorId,
       ownerId
     ]);
-    return deletedRecipe;
+    return updatedRecipe;
   }
 
   async deleteMyPrivateUserRecipe(recipeId, authorId, ownerId) {

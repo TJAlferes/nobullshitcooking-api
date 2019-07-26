@@ -1,10 +1,12 @@
 const pool = require('../../lib/connections/mysqlPoolConnection');
 
 const Recipe = require('../../mysql-access/Recipe');
-const RecipeMethods = require('../../mysql-access/RecipeMethods');
+const RecipeMethod = require('../../mysql-access/RecipeMethod');
 const RecipeEquipment = require('../../mysql-access/RecipeEquipment');
-const RecipeIngredients = require('../../mysql-access/RecipeIngredients');
-const RecipeSubrecipes = require('../../mysql-access/RecipeSubrecipes');
+const RecipeIngredient = require('../../mysql-access/RecipeIngredient');
+const RecipeSubrecipe = require('../../mysql-access/RecipeSubrecipe');
+const FavoriteRecipe = require('../../mysql-access/FavoriteRecipe');
+const SavedRecipe = require('../../mysql-access/SavedRecipe');
 
 const validRecipeEntity = require('../../lib/validations/recipe/recipeEntity');
 const validRecipeMethodsEntity = require('../../lib/validations/recipeMethod/recipeMethodEntity');
@@ -61,8 +63,8 @@ const staffRecipeController = {
       const recipeMethodsPlaceholders = '(?, ?),'
       .repeat(requiredMethods.length)
       .slice(0, -1);
-      const recipeMethods = new RecipeMethods(pool);
-      const [ createdRecipeMethods ] = await recipeMethods
+      const recipeMethod = new RecipeMethod(pool);
+      const [ createdRecipeMethods ] = await recipeMethod
       .createRecipeMethods(
         recipeMethodsToCreate,
         recipeMethodsPlaceholders,
@@ -103,8 +105,8 @@ const staffRecipeController = {
         const recipeIngredientsPlaceholders = '(?, ?, ?, ?),'
         .repeat(requiredIngredients.length)
         .slice(0, -1);
-        const recipeIngredients = new RecipeIngredients(pool);
-        const [ createdRecipeIngredients ] = await recipeIngredients
+        const recipeIngredient = new RecipeIngredient(pool);
+        const [ createdRecipeIngredients ] = await recipeIngredient
         .createRecipeIngredients(
           recipeIngredientsToCreate,
           recipeIngredientsPlaceholders,
@@ -125,8 +127,8 @@ const staffRecipeController = {
         const recipeSubrecipesPlaceholders = '(?, ?, ?, ?),'
         .repeat(requiredSubrecipes.length)
         .slice(0, -1);
-        const recipeSubrecipes = new RecipeSubrecipes(pool);
-        const [ createdRecipeSubrecipes ] = await recipeSubrecipes
+        const recipeSubrecipe = new RecipeSubrecipe(pool);
+        const [ createdRecipeSubrecipes ] = await recipeSubrecipe
         .createRecipeSubrecipes(
           recipeSubrecipesToCreate,
           recipeSubrecipesPlaceholders,
@@ -177,12 +179,71 @@ const staffRecipeController = {
       const recipe = new Recipe(pool);
       await recipe.updateRecipe(recipeToUpdateWith, recipeId);
 
-      // transaction(s):
-      // delete all records from RecipeMethod, insert
-      // delete all records from RecipeEquipment, insert
-      // delete all records from RecipeIngredient, insert
-      // delete all records from RecipeSubrecipe, insert
-      
+      const recipeMethodsToUpdateWith = requiredMethods.map(rM =>
+        validRecipeMethodsEntity({
+          recipeId: generatedId,
+          methodId: rM.methodId
+        })
+      );
+      const recipeMethodsPlaceholders = '(?, ?),'
+      .repeat(requiredMethods.length)
+      .slice(0, -1);
+      const recipeMethod = new RecipeMethod(pool);
+      await recipeMethod.updateRecipeMethods(recipeMethodsToUpdateWith, recipeMethodsPlaceholders, recipeId);
+
+      const recipeEquipmentToUpdateWith = requiredEquipment.map(rE =>
+        validRecipeEquipmentEntity({
+          recipeId: generatedId,
+          equipmentId: rE.equipmentId,
+          amount: rE.amount
+        })
+      );
+      const recipeEquipmentPlaceholders = '(?, ?, ?),'
+      .repeat(requiredEquipment.length)
+      .slice(0, -1);
+      const recipeEquipment = new RecipeEquipment(pool);
+      await recipeEquipment.updateRecipeEquipment(
+        recipeEquipmentToUpdateWith,
+        recipeEquipmentPlaceholders,
+        recipeId
+      );
+
+      const recipeIngredientsToUpdateWith = requiredIngredients.map(rI =>
+        validRecipeIngredientsEntity({
+          recipeId: generatedId,
+          ingredientId: rI.ingredientId,
+          amount: rI.amount,
+          measurementId: rI.measurementId
+        })
+      );
+      const recipeIngredientsPlaceholders = '(?, ?, ?, ?),'
+      .repeat(requiredIngredients.length)
+      .slice(0, -1);
+      const recipeIngredient = new RecipeIngredient(pool);
+      await recipeIngredient.updateRecipeIngredients(
+        recipeIngredientsToUpdateWith,
+        recipeIngredientsPlaceholders,
+        recipeId
+      );
+
+      const recipeSubrecipesToUpdateWith = requiredSubrecipes.map(rS =>
+        validRecipeSubrecipesEntity({
+          recipeId: generatedId,
+          subrecipeId: rS.subrecipeId,
+          amount: rS.amount,
+          measurementId: rS.measurementId
+        })
+      );
+      const recipeSubrecipesPlaceholders = '(?, ?, ?, ?),'
+      .repeat(requiredSubrecipes.length)
+      .slice(0, -1);
+      const recipeSubrecipe = new RecipeSubrecipe(pool);
+      await recipeSubrecipe.updateRecipeSubrecipes(
+        recipeSubrecipesToUpdateWith,
+        recipeSubrecipesPlaceholders,
+        recipeId
+      );
+
       res.send('Recipe updated.');
       next();
     } catch(err) {
@@ -192,18 +253,26 @@ const staffRecipeController = {
   deleteRecipe: async function(req, res, next) {
     try {
       const recipeId = req.sanitize(req.body.recipeId);
-      // FIRST
-      // transaction(s):
+
+      // transaction(s)?:
       // delete all records from Plan ... you don't need to delete from plan... if you can simply return null from misses..? ********************
-      // delete all records from FavoriteRecipe
-      // delete all records from SavedRecipe
-      // delete all records from RecipeMethod
-      // delete all records from RecipeEquipment
-      // delete all records from RecipeIngredient
-      // delete all records from RecipeSubrecipe
+      const favoriteRecipe = new FavoriteRecipe(pool);
+      const savedRecipe = new SavedRecipe(pool);
+      const recipeMethod = new RecipeMethod(pool);
+      const recipeEquipment = new RecipeEquipment(pool);
+      const recipeIngredient = new RecipeIngredient(pool);
+      const recipeSubrecipe = new RecipeSubrecipe(pool);
       const recipe = new Recipe(pool);
-      const [ row ] = await recipe.deleteRecipe(recipeId);
-      res.send(row);
+
+      await favoriteRecipe.deleteAllFavoritesOfRecipe(recipeId);
+      await savedRecipe.deleteAllSavesOfRecipe(recipeId);
+      await recipeMethod.deleteRecipeMethods(recipeId);
+      await recipeEquipment.deleteRecipeEquipment(recipeId);
+      await recipeIngredient.deleteRecipeIngredients(recipeId);
+      await recipeSubrecipe.deleteRecipeSubrecipes(recipeId);
+      await recipe.deleteRecipe(recipeId);
+
+      res.send('Recipe deleted.');
       next();
     } catch(err) {
       next(err);

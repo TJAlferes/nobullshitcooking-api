@@ -1,4 +1,4 @@
-class RecipeSubrecipes {
+class RecipeSubrecipe {
   constructor(pool) {
     this.pool = pool;
     this.viewRecipeSubrecipesByRecipeId = this.viewRecipeSubrecipesByRecipeId.bind(this);
@@ -76,4 +76,4 @@ class RecipeSubrecipes {
   }
 }
 
-module.exports = RecipeSubrecipes;
+module.exports = RecipeSubrecipe;

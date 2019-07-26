@@ -1,7 +1,9 @@
 class FavoriteRecipe {
   constructor(pool) {
     this.pool = pool;
+    
     //this.viewMostFavorited = this.viewMostFavorited.bind(this);
+    this.deleteAllFavoritesOfRecipe = this.deleteAllFavoritesOfRecipe.bind(this);
 
     this.viewMyFavoriteRecipes = this.viewMyFavoriteRecipes.bind(this);
     this.createMyFavoriteRecipe = this.createMyFavoriteRecipe.bind(this);
@@ -26,6 +28,20 @@ class FavoriteRecipe {
     return mostFavorited;
   }*/
 
+  async deleteAllFavoritesOfRecipe(recipeId) {
+    const sql = `
+      DELETE
+      FROM nobsc_favorite_recipes
+      WHERE recipe_id = ?
+    `;
+    const [ unfavoritedRecipes ] = await this.pool.execute(sql, [recipeId]);
+    return unfavoritedRecipes;
+  }
+
+
+
+
+
   async viewMyFavoriteRecipes(userId) {
     const sql = `
       SELECT 
@@ -37,7 +53,7 @@ class FavoriteRecipe {
       WHERE user_id = ?
       ORDER BY title
     `;
-    const [ favoriteRecipes ] = this.pool.execute(sql, [userId]);
+    const [ favoriteRecipes ] = await this.pool.execute(sql, [userId]);
     return favoriteRecipes;
   }
 
@@ -46,7 +62,7 @@ class FavoriteRecipe {
       INSERT INTO nobsc_favorite_recipes (user_id, recipe_id)
       VALUES (?, ?)
     `;
-    const [ favoritedRecipe ] = this.pool.execute(sql, [userId, recipeId]);
+    const [ favoritedRecipe ] = await this.pool.execute(sql, [userId, recipeId]);
     return favoritedRecipe;
   }
 
@@ -57,7 +73,7 @@ class FavoriteRecipe {
       WHERE user_id = ? AND recipe_id = ?
       LIMIT 1
     `;
-    const [ unfavoritedRecipe ] = this.pool.execute(sql, [userId, recipeId]);
+    const [ unfavoritedRecipe ] = await this.pool.execute(sql, [userId, recipeId]);
     return unfavoritedRecipe;
   }
 }
