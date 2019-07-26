@@ -11,33 +11,33 @@ const router = Router();
 // for /user/ingredient/...
 
 router.post(
-  '/create',
-  userIsAuth,
-  catchExceptions(userIngredientController.createIngredient)
-);
-
-router.put(
-  '/update/:ingredientId',
-  userIsAuth,
-  catchExceptions(userIngredientController.updateIngredient)
-);
-
-router.delete(
-  '/delete/private/:ingredientId',
-  userIsAuth,
-  catchExceptions(userIngredientController.deleteMyPrivateUserIngredient)
-);
-
-router.post(
-  '/private',
+  '/all',
   userIsAuth,
   catchExceptions(userIngredientController.viewAllMyPrivateUserIngredients)
 );
 
-router.get(
-  '/private/:ingredientId',
+router.post(
+  '/one',
   userIsAuth,
   catchExceptions(userIngredientController.viewMyPrivateUserIngredient)
+);
+
+router.post(
+  '/create',
+  userIsAuth,
+  catchExceptions(userIngredientController.createMyPrivateUserIngredient)
+);
+
+router.put(
+  '/update',
+  userIsAuth,
+  catchExceptions(userIngredientController.updateMyPrivateUserIngredient)
+);
+
+router.delete(
+  '/delete',
+  userIsAuth,
+  catchExceptions(userIngredientController.deleteMyPrivateUserIngredient)
 );
 
 module.exports = router;

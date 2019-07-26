@@ -13,19 +13,19 @@ const router = Router();
 router.post(
   '/',
   userIsAuth,
-  catchExceptions(userSavedRecipeController.viewSavedRecipes)
+  catchExceptions(userSavedRecipeController.viewMySavedRecipes)
 );
 
 router.post(
   '/create',
   userIsAuth,
-  catchExceptions(userSavedRecipeController.createSavedRecipe)
+  catchExceptions(userSavedRecipeController.createMySavedRecipe)
 );
 
 router.delete(
   '/delete',
   userIsAuth,
-  catchExceptions(userSavedRecipeController.deleteSavedRecipe)
+  catchExceptions(userSavedRecipeController.deleteMySavedRecipe)
 );
 
 module.exports = router;

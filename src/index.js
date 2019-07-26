@@ -16,7 +16,7 @@ const compression = require('compression');
 
 const session = require("express-session");
 //const sessionFileStore = require('session-file-store');
-const ioredis = require('ioredis');
+const Redis = require('ioredis');
 const connectRedis = require('connect-redis');
 
 const http = require('http');
@@ -54,28 +54,22 @@ const {
 
 const app = express();
 
-//const FileStore = sessionFileStore(session);
-//const RedisStore = connectRedis(session);  // Not using yet, simply storing session in filesystem for now
+const rateLimiterOptions = {windowMs: 1 * 60 * 1000, max: 100};  // limit each IP to 100 requests per minute  // affect socket?
+
 //const RedisClient = redis.createClient({host: 'redis-dev'}); 
 //const RedisClient = redis.createClient(process.env.REDIS_URI);
+const ioredis = new Redis();
 
-/*const sessionOptions = {
-  store: new FileStore,
-  name: 'connect.sid',
-  secret: 'very secret',
-  resave: true,  // false before socket.io
-  saveUninitialized: true,  // false before socket.io
-  cookie: {}
-};*/
 const sessionOptions = {
   store: new RedisStore({
+    client: ioredis,
     port: process.env.REDIS_PORT || "6379",
     host: process.env.REDIS_HOST || "localhost"
   }),
+  name: "connect.sid",  //"session",
   secret: process.env.SESSION_SECRET || "secret",
-  name: "session",
-  resave: false,
-  saveUninitialized: false,
+  resave: true,  //false,
+  saveUninitialized: true,  //false,
   cookie: {
     sameSite: true,
     maxAge: 86400000,
@@ -93,9 +87,6 @@ if (app.get('env') === 'production') {
   sessionOptions.cookie.secure = true;  // serve secure cookies
   corsOptions.origin = ['https://nobullshitcooking.net'];
 }
-
-// limit each IP to 100 requests per minute
-const rateLimiterOptions = {windowMs: 1 * 60 * 1000, max: 100};  // affect socket?
 
 const server = http.Server(app);
 const io = socketIO(server);
@@ -118,24 +109,6 @@ const subClient = ioredis(process.env.REDIS_PORT, process.env.REDIS_HOST, {
 
 app.use(expressPinoLogger());
 app.use(expressRateLimit(rateLimiterOptions));
-/*app.use(
-  session({
-    store: new RedisStore({
-      port: process.env.REDIS_PORT || "6379",
-      host: process.env.REDIS_HOST || "localhost"
-    }),
-    secret: process.env.SESSION_SECRET || "secret",
-    name: "session",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      sameSite: true,
-      maxAge: 86400000,
-      httpOnly: true,
-      secure: true
-    }
-  })
-);*/
 app.use(session(sessionOptions));  // sharedSession?
 app.use(cors(corsOptions));  // before session?
 //app.use(compression());  // elasticbeanstalk already does?
@@ -146,8 +119,7 @@ app.use(express.json());
 app.use(expressSanitizer());  // must be called after express.json()
 app.use(helmet());
 //app.use(cors());
-// https://github.com/pillarjs/understanding-csrf
-//app.use(csurf());  // must be called after cookies/sessions
+//app.use(csurf());  // must be called after cookies/sessions  // https://github.com/pillarjs/understanding-csrf
 app.use(compression());
 
 
@@ -199,8 +171,39 @@ process.on('unhandledRejection', (reason, promise) => {
   console.log('Unhandled Rejection at:', reason.stack || reason);
 });
 
+// catch 404 and forward to error handler
+/*app.use(function(req, res, next) {
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
+});
+
+// error handlers
+
+// development error handler
+// will print stacktrace
+if (app.get('env') === 'development') {
+  app.use(function(err, req, res, next) {
+      res.status(err.status || 500);
+      res.render('error', {
+          message: err.message,
+          error: err
+      });
+  });
+}
+
+// production error handler
+// no stacktraces leaked to user
+app.use(function(err, req, res, next) {
+  res.status(err.status || 500);
+  res.render('error', {
+      message: err.message,
+      error: {}
+  });
+});*/
+
 app.use((error, req, res, next) => {
-  req.log.error(error)
+  //req.log.error(error);
   res.status(error.status || 500).json({error: {message: error.message}});
 });
 
@@ -212,4 +215,4 @@ app.use((error, req, res, next) => {
 
 const PORT = process.env.PORT || 3003;
 
-server.listen(80);  //app.listen(PORT, () => console.log('Listening on port ' + PORT));
+server.listen(PORT, () => console.log('Listening on port ' + PORT));

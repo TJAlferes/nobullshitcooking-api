@@ -11,33 +11,33 @@ const router = Router();
 // for /user/equipment/...
 
 router.post(
-  '/create',
-  userIsAuth,
-  catchExceptions(userEquipmentController.createEquipment)
-);
-
-router.put(
-  '/update/:equipmentId',
-  userIsAuth,
-  catchExceptions(userEquipmentController.updateEquipment)
-);
-
-router.delete(
-  '/delete/private/:equipmentId',
-  userIsAuth,
-  catchExceptions(userEquipmentController.deleteMyPrivateUserEquipment)
-);
-
-router.post(
-  '/private',
+  '/all',
   userIsAuth,
   catchExceptions(userEquipmentController.viewAllMyPrivateUserEquipment)
 );
 
-router.get(
-  '/private/:equipmentId',
+router.post(
+  '/one',
   userIsAuth,
   catchExceptions(userEquipmentController.viewMyPrivateUserEquipment)
+);
+
+router.post(
+  '/create',
+  userIsAuth,
+  catchExceptions(userEquipmentController.createMyPrivateUserEquipment)
+);
+
+router.put(
+  '/update',
+  userIsAuth,
+  catchExceptions(userEquipmentController.updateMyPrivateUserEquipment)
+);
+
+router.delete(
+  '/delete',
+  userIsAuth,
+  catchExceptions(userEquipmentController.deleteMyPrivateUserEquipment)
 );
 
 module.exports = router;

@@ -11,15 +11,33 @@ const router = Router();
 // for /user/plan/...
 
 router.post(
-  '/plan/view',
+  '/all',
   userIsAuth,
-  catchExceptions(userPlanController.viewPlan)
+  catchExceptions(userPlanController.viewAllMyPrivatePlans)
+);
+
+router.post(
+  '/one',
+  userIsAuth,
+  catchExceptions(userPlanController.viewMyPrivatePlan)
+);
+
+router.post(
+  '/create',
+  userIsAuth,
+  catchExceptions(userPlanController.createMyPrivatePlan)
 );
 
 router.put(
-  '/plan/update',
+  '/update',
   userIsAuth,
-  catchExceptions(userPlanController.updatePlan)
+  catchExceptions(userPlanController.updateMyPrivatePlan)
+);
+
+router.put(
+  '/delete',
+  userIsAuth,
+  catchExceptions(userPlanController.deleteMyPrivatePlan)
 );
 
 module.exports = router;

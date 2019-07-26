@@ -13,19 +13,19 @@ const router = Router();
 router.post(
   '/',
   userIsAuth,
-  catchExceptions(userFavoriteRecipeController.viewFavoriteRecipes)
+  catchExceptions(userFavoriteRecipeController.viewMyFavoriteRecipes)
 );
 
 router.post(
   '/create',
   userIsAuth,
-  catchExceptions(userFavoriteRecipeController.createFavoriteRecipe)
+  catchExceptions(userFavoriteRecipeController.createMyFavoriteRecipe)
 );
 
 router.delete(
   '/delete',
   userIsAuth,
-  catchExceptions(userFavoriteRecipeController.deleteFavoriteRecipe)
+  catchExceptions(userFavoriteRecipeController.deleteMyFavoriteRecipe)
 );
 
 module.exports = router;
