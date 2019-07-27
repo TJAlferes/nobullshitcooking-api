@@ -15,7 +15,6 @@ const helmet = require('helmet');
 const compression = require('compression');
 
 const session = require("express-session");
-//const sessionFileStore = require('session-file-store');
 const Redis = require('ioredis');
 const connectRedis = require('connect-redis');
 
@@ -23,7 +22,6 @@ const http = require('http');
 const socketIO = require('socket.io');
 const sharedSession = require('express-socket.io-session');
 const adapter = require('socket.io-redis');
-//const emitter = require('socket.io-emitter');  // needed?
 
 //const { buildSchema } = require('graphql');
 //const expressGraphQL = require('express-graphql');
@@ -52,58 +50,47 @@ const {
 1. setup
 ##############################################################################*/
 
+
+// app
 const app = express();
+const rateLimiterOptions = {windowMs: 1 * 60 * 1000, max: 100};  // limit each IP to 100 requests per minute  // affect socket?
+const corsOptions = {origin: ['http://localhost:8080'], credentials: true};
+
+
+// chat
 const server = http.Server(app);
 const io = socketIO(server);
-const RedisStore = connectRedis(session);  // sharedSession? **********!!!
-
-const rateLimiterOptions = {windowMs: 1 * 60 * 1000, max: 100};  // limit each IP to 100 requests per minute  // affect socket?
-
-const ioredis = new Redis();
-
 const redisClusterOptions = [
   {host: process.env.REDIS_HOST, port: 6380, password: process.env.REDIS_PASSWORD},
   {host: process.env.REDIS_HOST, port: 6381, password: process.env.REDIS_PASSWORD}
 ];
 const elasticacheWithTLS = {
   dnsLookup: (address, callback) => callback(null, address),
-  redisOptions: {
-    tls: {}
-  }
+  redisOptions: {tls: {}}
 };
+const pubClient = new Redis.Cluster(redisClusterOptions, elasticacheWithTLS);
+const subClient = new Redis.Cluster(redisClusterOptions, elasticacheWithTLS);
+
+
+// session
+const sessClient = new Redis({host: process.env.REDIS_HOST, port: 6379});
+const RedisStore = connectRedis(session);  // sharedSession? **********!!!
 const sessionOptions = {
-  store: new RedisStore({
-    client: ioredis,
-    port: process.env.REDIS_PORT || "6379",
-    host: process.env.REDIS_HOST || "localhost",
-    pass: process.env.REDIS_PASSWORD
-  }),
+  store: new RedisStore({client: sessClient, pass: process.env.REDIS_PASSWORD}),
   name: "connect.sid",  //"session",
   secret: process.env.SESSION_SECRET || "secret",
   resave: true,  //false,
   saveUninitialized: true,  //false,
-  cookie: {
-    sameSite: true,
-    maxAge: 86400000,
-    httpOnly: true,
-    secure: true
-  }
-};
-const corsOptions = {
-  origin: ['http://localhost:8080'],
-  credentials: true
+  cookie: {sameSite: true, maxAge: 86400000, httpOnly: true, secure: true}
 };
 
+
+// prod
 if (app.get('env') === 'production') {
   app.set('trust proxy', 1);  // trust first proxy
   sessionOptions.cookie.secure = true;  // serve secure cookies
   corsOptions.origin = ['https://nobullshitcooking.net'];
 }
-
-const pubClient = new Redis.Cluster(redisClusterOptions, elasticacheWithTLS);
-const subClient = new Redis.Cluster(redisClusterOptions, elasticacheWithTLS);
-// SCALABLE PUB SUB? SEE YOUTUBE VID
-// CLIENTS SEE REDLOCK IOREDIS
 
 
 
@@ -118,7 +105,6 @@ app.use(cors(corsOptions));  // before session?
 //app.use(compression());  // elasticbeanstalk already does?
 //app.use(helmet());  // get working
 //app.use(hpp());
-//app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.json());
 app.use(expressSanitizer());  // must be called after express.json()
 app.use(helmet());
@@ -126,12 +112,8 @@ app.use(helmet());
 //app.use(csurf());  // must be called after cookies/sessions  // https://github.com/pillarjs/understanding-csrf
 app.use(compression());
 
-
-
 io.set('transports', ['websocket']);
-
 io.adapter(adapter({pubClient, subClient}));
-
 //io.of('/messenger').use(sharedSession(session, {autoSave: true}));
 io.use(sharedSession(session, {autoSave: true}));
 
@@ -174,37 +156,6 @@ app.use('/sign-s3-images-1', signS3Images1);
 process.on('unhandledRejection', (reason, promise) => {
   console.log('Unhandled Rejection at:', reason.stack || reason);
 });
-
-// catch 404 and forward to error handler
-/*app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
-
-// error handlers
-
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
-      res.status(err.status || 500);
-      res.render('error', {
-          message: err.message,
-          error: err
-      });
-  });
-}
-
-// production error handler
-// no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  res.render('error', {
-      message: err.message,
-      error: {}
-  });
-});*/
 
 app.use((error, req, res, next) => {
   //req.log.error(error);
