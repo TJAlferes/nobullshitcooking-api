@@ -14,14 +14,15 @@ const helmet = require('helmet');
 //const csurf = require('csurf');  // no longer needed?
 const compression = require('compression');
 
-const session = require("express-session");
-const Redis = require('ioredis');
+const expressSession = require("express-session");
 const connectRedis = require('connect-redis');
 
 const http = require('http');
 const socketIO = require('socket.io');
 const redisAdapter = require('socket.io-redis');
-const sharedSession = require('express-socket.io-session');
+//const sharedSession = require('express-socket.io-session');
+const cookie = require('cookie');
+const cookieParser = require('cookie-parser');
 
 //const { buildSchema } = require('graphql');
 //const expressGraphQL = require('express-graphql');
@@ -44,6 +45,7 @@ const {
   signS3Images1
 } = require('./routes');
 const socketConnection = require('./chat');
+const MessengerUser = require('./redis-access/MessengerUser');  // move
 const client = require('./lib/connections/redisConnection');
 
 
@@ -52,6 +54,7 @@ const client = require('./lib/connections/redisConnection');
 1. setup
 ##############################################################################*/
 
+// Note to self: Move a lot of this to a separate init module? Export app so you can do integration testing easily?
 
 // app
 const app = express();
@@ -59,7 +62,7 @@ const rateLimiterOptions = {windowMs: 1 * 60 * 1000, max: 100};  // limit each I
 const corsOptions = {origin: ['http://localhost:8080'], credentials: true};
 
 
-// chat
+// chat    // move
 const server = http.Server(app);
 const io = socketIO(server);
 /*
@@ -81,18 +84,7 @@ const elasticacheWithTLS = {
 const pubClient = new Redis.Cluster(redisClusterOptions, elasticacheWithTLS);
 const subClient = new Redis.Cluster(redisClusterOptions, elasticacheWithTLS);
 */
-
-
-// session
-const RedisStore = connectRedis(session);  // sharedSession? **********!!!
-/*const redisSession = new RedisStore({
-  client: new Redis({
-    host: process.env.REDIS_HOST,
-    port: 6379
-  }),
-  pass: process.env.REDIS_PASSWORD
-});*/
-/*function socketAuth(socket, next) {
+const socketAuth = (socket, next) => {
   const parsedCookie = cookie.parse(socket.request.headers.cookie);
   const sid = cookieParser.signedCookie(parsedCookie['connect.sid'], process.env.SESSION_SECRET);
   if (parsedCookie['connect.sid'] === sid) return next(new Error('Not authenticated.'));
@@ -100,8 +92,8 @@ const RedisStore = connectRedis(session);  // sharedSession? **********!!!
     if (session.isAuthenticated) {
       socket.request.user = session.passport.user;
       socket.request.sid = sid;
-      const messengerChat = new MessengerChat(client);
-      messengerChat.addUser(
+      const messengerUser = new MessengerUser(client);
+      messengerUser.addUser(
         session.passport.user.id,
         session.passport.user.displayName,
         session.passport.user.provider
@@ -111,15 +103,17 @@ const RedisStore = connectRedis(session);  // sharedSession? **********!!!
       return next(new Error('Not authenticated.'));
     }
   });
-}*/
+};
+
+
+// session
+const RedisStore = connectRedis(session);
+const redisSession = new RedisStore({
+  client,
+  pass: process.env.REDIS_PASSWORD
+});
 const sessionOptions = {
-  store: new RedisStore({
-    client: new Redis({
-      host: process.env.REDIS_HOST,
-      port: 6379
-    }),
-    pass: process.env.REDIS_PASSWORD
-  }),
+  store: redisSession,
   name: "connect.sid",  //"session",
   secret: process.env.SESSION_SECRET || "secret",
   resave: true,  //false,
@@ -131,6 +125,7 @@ const sessionOptions = {
     secure: true
   }
 };
+const session = expressSession(sessionOptions);
 
 
 // prod
@@ -148,7 +143,7 @@ if (app.get('env') === 'production') {
 
 app.use(expressPinoLogger());
 app.use(expressRateLimit(rateLimiterOptions));
-app.use(session(sessionOptions));  // sharedSession? **********!!!  // do you have to preset one?
+app.use(session);  // sharedSession? **********!!!  // do you have to preset one?  // now preset
 app.use(cors(corsOptions));  // before session?
 //app.use(helmet());  // get working
 //app.use(hpp());
@@ -161,13 +156,13 @@ app.use(compression());  // elasticbeanstalk already does?
 
 io.set('transports', ['websocket']);  // ...eh?
 io.adapter(redisAdapter(client));
-io.use(sharedSession(session, {autoSave: true}));    // do you have to preset one?
-//io.use(socketAuth);
-io.nsps.forEach(function(nsp) {
+//io.use(sharedSession(session, {autoSave: true}));    // do you have to preset one?  // now preset  // back to expressSession?
+io.use(socketAuth);
+/*io.nsps.forEach(function(nsp) {
   nsp.on('connect', socket => {
     if (!socket.auth) delete nsp.connected[socket.id];
   });
-});
+});*/
 io.on('connect', socketConnection);  // connection ?
 
 

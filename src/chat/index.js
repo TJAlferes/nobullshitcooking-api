@@ -43,9 +43,9 @@ function removeAllRooms(socket, cb) {
 
 
 const socketConnection = function(socket) {
-  socket.auth = false;
+  //socket.auth = false;
 
-  socket.on('authenticate', async function(socket, data) {
+  /*socket.on('authenticate', async function(socket, data) {
     try {
       const user = await verifyUser(data.token);  // send token to client, client sends token back here?
       //const user = {id: socket.handshake.session.userInfo.;
@@ -85,7 +85,7 @@ const socketConnection = function(socket) {
         });
       }
     }
-  });
+  });*/
 
 
 
@@ -165,7 +165,7 @@ const socketConnection = function(socket) {
   socket.on('disconnect', function() {
     removeAllRooms(socket, function() {});  // noop?
   });
-  socket.on('disconnect', function(socket) {
+  /*socket.on('disconnect', function(socket) {
     if (socket.user) await ioredis.delAsync(`users:${socket.user.id}`);
   });
 
@@ -175,7 +175,7 @@ const socketConnection = function(socket) {
     if (!socket.auth) {
       if (socket.user) await ioredis.delAsync(`users:${socket.user.id}`);
     }
-  }, 1000);
+  }, 1000);*/
 };
 
 module.exports = socketConnection;
