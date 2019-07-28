@@ -20,8 +20,8 @@ const connectRedis = require('connect-redis');
 
 const http = require('http');
 const socketIO = require('socket.io');
+const redisAdapter = require('socket.io-redis');
 const sharedSession = require('express-socket.io-session');
-const adapter = require('socket.io-redis');
 
 //const { buildSchema } = require('graphql');
 //const expressGraphQL = require('express-graphql');
@@ -43,6 +43,7 @@ const {
   userRoutes,
   signS3Images1
 } = require('./routes');
+const socketConnection = require('./chat');
 
 
 
@@ -60,6 +61,14 @@ const corsOptions = {origin: ['http://localhost:8080'], credentials: true};
 // chat
 const server = http.Server(app);
 const io = socketIO(server);
+/*
+Note to self:
+Do NOT use Cluster for PubSub, instead, see on youtube:
+Redis Labs | Scaling Redis PubSub with Shahar Mor
+/watch?v=6G22a5Iooqk
+Though what if you need distributed locking (like redlock)?
+Research this question later on.
+
 const redisClusterOptions = [
   {host: process.env.REDIS_HOST, port: 6380, password: process.env.REDIS_PASSWORD},
   {host: process.env.REDIS_HOST, port: 6381, password: process.env.REDIS_PASSWORD}
@@ -70,18 +79,29 @@ const elasticacheWithTLS = {
 };
 const pubClient = new Redis.Cluster(redisClusterOptions, elasticacheWithTLS);
 const subClient = new Redis.Cluster(redisClusterOptions, elasticacheWithTLS);
+*/
 
 
 // session
-const sessClient = new Redis({host: process.env.REDIS_HOST, port: 6379});
 const RedisStore = connectRedis(session);  // sharedSession? **********!!!
 const sessionOptions = {
-  store: new RedisStore({client: sessClient, pass: process.env.REDIS_PASSWORD}),
+  store: new RedisStore({
+    client: new Redis({
+      host: process.env.REDIS_HOST,
+      port: 6379
+    }),
+    pass: process.env.REDIS_PASSWORD
+  }),
   name: "connect.sid",  //"session",
   secret: process.env.SESSION_SECRET || "secret",
   resave: true,  //false,
   saveUninitialized: true,  //false,
-  cookie: {sameSite: true, maxAge: 86400000, httpOnly: true, secure: true}
+  cookie: {
+    sameSite: true,
+    maxAge: 86400000,
+    httpOnly: true,
+    secure: true
+  }
 };
 
 
@@ -91,7 +111,7 @@ if (app.get('env') === 'production') {
   sessionOptions.cookie.secure = true;  // serve secure cookies
   corsOptions.origin = ['https://nobullshitcooking.net'];
 }
-
+//enforce https? or elasticbeanstalk already does?
 
 
 /*##############################################################################
@@ -102,7 +122,6 @@ app.use(expressPinoLogger());
 app.use(expressRateLimit(rateLimiterOptions));
 app.use(session(sessionOptions));  // sharedSession? **********!!!
 app.use(cors(corsOptions));  // before session?
-//app.use(compression());  // elasticbeanstalk already does?
 //app.use(helmet());  // get working
 //app.use(hpp());
 app.use(express.json());
@@ -110,12 +129,13 @@ app.use(expressSanitizer());  // must be called after express.json()
 app.use(helmet());
 //app.use(cors());
 //app.use(csurf());  // must be called after cookies/sessions  // https://github.com/pillarjs/understanding-csrf
-app.use(compression());
+app.use(compression());  // elasticbeanstalk already does?
 
 io.set('transports', ['websocket']);
-io.adapter(adapter({pubClient, subClient}));
+io.adapter(redisAdapter({host: process.env.REDIS_HOST, port: 6380}));
 //io.of('/messenger').use(sharedSession(session, {autoSave: true}));
 io.use(sharedSession(session, {autoSave: true}));
+// auth here? io.use(socketAuth);
 
 
 
@@ -146,6 +166,8 @@ app.use('/staff', staffRoutes);
 app.use('/user', userRoutes);
 app.use('/sign-s3-images-1', signS3Images1);
 //app.use('/graphql', expressGraphQL({schema, rootValue, graphiql: true}));
+
+io.on('connection', socketConnection);
 
 
 
