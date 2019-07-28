@@ -148,7 +148,7 @@ if (app.get('env') === 'production') {
 
 app.use(expressPinoLogger());
 app.use(expressRateLimit(rateLimiterOptions));
-app.use(session(sessionOptions));  // sharedSession? **********!!!
+app.use(session(sessionOptions));  // sharedSession? **********!!!  // do you have to preset one?
 app.use(cors(corsOptions));  // before session?
 //app.use(helmet());  // get working
 //app.use(hpp());
@@ -159,16 +159,16 @@ app.use(helmet());
 //app.use(csurf());  // must be called after cookies/sessions  // https://github.com/pillarjs/understanding-csrf
 app.use(compression());  // elasticbeanstalk already does?
 
-io.set('transports', ['websocket']);
+io.set('transports', ['websocket']);  // ...eh?
 io.adapter(redisAdapter(client));
-io.use(sharedSession(session, {autoSave: true}));
+io.use(sharedSession(session, {autoSave: true}));    // do you have to preset one?
 //io.use(socketAuth);
 io.nsps.forEach(function(nsp) {
   nsp.on('connect', socket => {
     if (!socket.auth) delete nsp.connected[socket.id];
   });
 });
-io.on('connection', socketConnection);
+io.on('connect', socketConnection);  // connection ?
 
 
 
