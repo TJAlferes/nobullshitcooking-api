@@ -93,11 +93,7 @@ const socketAuth = (socket, next) => {
       socket.request.user = session.passport.user;
       socket.request.sid = sid;
       const messengerUser = new MessengerUser(client);
-      messengerUser.addUser(
-        session.passport.user.id,
-        session.passport.user.displayName,
-        session.passport.user.provider
-      );
+      messengerUser.addUser(session.userInfo.userId, session.userInfo.username);
       return next();
     } else {
       return next(new Error('Not authenticated.'));

@@ -86,6 +86,7 @@ const userAuthController = {
           const username = userExists[0].username;
           const avatar = userExists[0].avatar;
           req.session.userInfo.userId = userId;
+          req.session.userInfo.username = username;
           res.json({username, avatar});
           return next();
         }
