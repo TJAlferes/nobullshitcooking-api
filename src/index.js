@@ -44,6 +44,7 @@ const {
   signS3Images1
 } = require('./routes');
 const socketConnection = require('./chat');
+const client = require('./lib/connections/redisConnection');
 
 
 
@@ -84,6 +85,33 @@ const subClient = new Redis.Cluster(redisClusterOptions, elasticacheWithTLS);
 
 // session
 const RedisStore = connectRedis(session);  // sharedSession? **********!!!
+/*const redisSession = new RedisStore({
+  client: new Redis({
+    host: process.env.REDIS_HOST,
+    port: 6379
+  }),
+  pass: process.env.REDIS_PASSWORD
+});*/
+/*function socketAuth(socket, next) {
+  const parsedCookie = cookie.parse(socket.request.headers.cookie);
+  const sid = cookieParser.signedCookie(parsedCookie['connect.sid'], process.env.SESSION_SECRET);
+  if (parsedCookie['connect.sid'] === sid) return next(new Error('Not authenticated.'));
+  redisSession.get(sid, function(err, session) {
+    if (session.isAuthenticated) {
+      socket.request.user = session.passport.user;
+      socket.request.sid = sid;
+      const messengerChat = new MessengerChat(client);
+      messengerChat.addUser(
+        session.passport.user.id,
+        session.passport.user.displayName,
+        session.passport.user.provider
+      );
+      return next();
+    } else {
+      return next(new Error('Not authenticated.'));
+    }
+  });
+}*/
 const sessionOptions = {
   store: new RedisStore({
     client: new Redis({
@@ -132,10 +160,15 @@ app.use(helmet());
 app.use(compression());  // elasticbeanstalk already does?
 
 io.set('transports', ['websocket']);
-io.adapter(redisAdapter({host: process.env.REDIS_HOST, port: 6380}));
-//io.of('/messenger').use(sharedSession(session, {autoSave: true}));
+io.adapter(redisAdapter(client));
 io.use(sharedSession(session, {autoSave: true}));
-// auth here? io.use(socketAuth);
+//io.use(socketAuth);
+io.nsps.forEach(function(nsp) {
+  nsp.on('connect', socket => {
+    if (!socket.auth) delete nsp.connected[socket.id];
+  });
+});
+io.on('connection', socketConnection);
 
 
 
@@ -166,8 +199,6 @@ app.use('/staff', staffRoutes);
 app.use('/user', userRoutes);
 app.use('/sign-s3-images-1', signS3Images1);
 //app.use('/graphql', expressGraphQL({schema, rootValue, graphiql: true}));
-
-io.on('connection', socketConnection);
 
 
 

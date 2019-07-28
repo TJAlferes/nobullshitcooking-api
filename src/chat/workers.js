@@ -1,4 +1,6 @@
-//const client = require();
+'use strict';
+
+const client = require('../lib/connections/redisConnection');
 
 const DELTA = 60 * 60 * 1000 * 3;
 const INTERVAL = 60 * 60 * 1000 * 2;
