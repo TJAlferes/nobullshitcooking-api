@@ -5,3 +5,5 @@ const catchExceptions = func =>
     .catch(next);
 
 module.exports = catchExceptions;
+
+// alternatively, https://www.npmjs.com/package/express-async-errors

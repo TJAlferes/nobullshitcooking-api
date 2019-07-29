@@ -10,22 +10,13 @@ class MessengerRoom {
   }
 
   getRooms(cb){
-    this.client.zrevrangebyscore(
-      'rooms',
-      '+inf',
-      '-inf',
-      function(err, data) {
-        return cb(data);
-      }
-    );
+    this.client.zrevrangebyscore('rooms', '+inf', '-inf', function(err, data) {
+      return cb(data);
+    });
   };
   
   addRoom(room) {
-    if (room !== '') this.client.zadd(
-      'rooms',
-      Date.now(),
-      room
-    );
+    if (room !== '') this.client.zadd('rooms', Date.now(), room);
   };
 
 
@@ -45,40 +36,35 @@ class MessengerRoom {
       });
     });
   };*/
-
+  
   async getUsersInRoom(room) {
+    const User = (id, name) => ({id, user: name});  // change
     let users = [];
-    await this.client.zrange(
-      'rooms:' + room,
-      0,
-      -1,
-      function(err, data) {
-        data.forEach(function(u) {
-          await this.client.hgetall(
-            'user:' + u,
-            function(err, userHash){
-              users.push(models.User(u, userHash.name, userHash.type));
-            }
-          );
+    await this.client.zrange(`rooms:${room}`, 0, -1, function(err, data) {
+      data.forEach(function(u) {
+        this.client.hgetall(`user:${u}`, function(err, userHash){
+          users.push(User(u, userHash.name));
         });
-      }
-    );
+      });
+    });
     return users;
   }
   
   addUserToRoom(user, room) {
-    this.client.multi()
-    .zadd('rooms:' + room, Date.now(), user)
+    this.client
+    .multi()
+    .zadd(`rooms:${room}`, Date.now(), user)
     .zadd('users', Date.now(), user)
     .zadd('rooms', Date.now(), room)
-    .set('user:' + user + ':room', room)
+    .set(`user:${user}:room`, room)
     .exec();
   }
   
   removeUserFromRoom(user, room) {
-    this.client.multi()
-    .zrem('rooms:' + room, user)
-    .del('user:' + user + ':room')
+    this.client
+    .multi()
+    .zrem(`rooms:${room}`, user)
+    .del(`user:${user}:room`)
     .exec();
   };
 }

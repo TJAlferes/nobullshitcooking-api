@@ -54,7 +54,7 @@ const client = require('./lib/connections/redisConnection');
 1. setup
 ##############################################################################*/
 
-// Note to self: Move a lot of this to a separate init module? Export app so you can do integration testing easily?
+// Note to self: Move a lot of this to a separate init module? Export app so you can do integration testing easily
 
 // app
 const app = express();
@@ -89,8 +89,8 @@ const socketAuth = (socket, next) => {
   const sid = cookieParser.signedCookie(parsedCookie['connect.sid'], process.env.SESSION_SECRET);
   if (parsedCookie['connect.sid'] === sid) return next(new Error('Not authenticated.'));
   redisSession.get(sid, function(err, session) {
-    if (session.isAuthenticated) {
-      socket.request.user = session.passport.user;
+    if (session.isAuthenticated) {  // CHANGE
+      socket.request.user = session.passport.user;  // CHANGE (socket.request.userInfo = session.userInfo ?)
       socket.request.sid = sid;
       const messengerUser = new MessengerUser(client);
       messengerUser.addUser(session.userInfo.userId, session.userInfo.username);
@@ -167,9 +167,12 @@ io.on('connect', socketConnection);  // connection ?
 3. routes
 ##############################################################################*/
 
+redisSession['hits'] = 0;  // delete
 app.get('/', (req, res) => {
   try {
-    res.send("No Bullshit Cooking Backend API");
+    redisSession['hits']++;
+    const num = redisSession['hits'];
+    res.send(`No Bullshit Cooking Backend API. I have been loaded ${num} times.`);
   } catch(err) {
     console.log(err);
   }

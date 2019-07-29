@@ -1,8 +1,8 @@
-version: "3.6"
+version: "2.4"
+
 services:
   # MySQL
   mysql-dev:
-    container_name: mysql-dev
     image: mysql
     volumes:
       - dbdata:/var/lib/mysql
@@ -12,17 +12,17 @@ services:
       MYSQL_DATABASE: nobsc
     ports:
       - "3306:3306"
+
   # Redis
   redis-dev:
-    container_name: redis-dev
     image: redis
     volumes:
       - cachedata:/data
     ports:
       - "6379:6379"
+
   # NOBSC API
   nobsc-api:
-    container_name: nobsc-api
     build:
       dockerfile: Dockerfile.dev
       context: ./
@@ -32,11 +32,12 @@ services:
       - mysql-dev
       - redis-dev
     volumes:
-      - /usr/app/node_modules
-      - .:/usr/app
+      - .:/node/app
+      - /node/app/node_modules
     env_file: .env
     ports:
       - "3003:3003"
+
 volumes:
   dbdata:
     driver: local

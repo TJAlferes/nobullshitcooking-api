@@ -1,6 +1,9 @@
 .env
 node_modules/
-npm-debug.log
+logs
+*.log
+npm-debug.log*
+.npm
 build/
 dist/
 sessions/

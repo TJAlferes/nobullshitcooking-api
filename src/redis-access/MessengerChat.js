@@ -6,14 +6,15 @@ class MessengerChat {
   }
 
   getChat(room, cb){
-    this.client.zrange('rooms:' + room + ':chats', 0, -1, function(err, chats) {
+    this.client.zrange(`rooms:${room}:chats`, 0, -1, function(err, chats) {
       cb(chats);
     });
   };
   
   addChat(chat) {
-    this.client.multi()
-    .zadd('rooms:' + chat.room + ':chats', Date.now(), JSON.stringify(chat))
+    this.client
+    .multi()
+    .zadd(`rooms:'${chat.room}:chats`, Date.now(), JSON.stringify(chat))
     .zadd('users', (new Date).getTime(), chat.user.id)
     .zadd('rooms', (new Date).getTime(), chat.room)
     .exec();

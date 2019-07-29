@@ -1,9 +1,11 @@
-const checkCSRF = require('./checkCSRF');
+const StatusError = require('./StatusError');
 
 module.exports = function(req, res, next) {
-  console.log('staffIsAuth reached');
-  if (req.session.staffId) return checkCSRF(req, res, next);  // return next();
-  console.log('lower reach');
-  res.clearCookie('connect.sid');  // sufficient???
-  res.redirect('/401');  // set this up?
+  if (req.session.staffInfo.hasOwnProperty(staffId)) return next();
+  /*req.session.destroy(err => {
+    if (err) reject(err);
+    res.clearCookie('connect.sid')
+  });*/
+  //res.clearCookie('connect.sid');
+  return next(new StatusError("Unauthorized", 401));
 };

@@ -21,8 +21,8 @@ const Room = name => ({id: name, name});
 
 
 function removeFromRoom(socket, room) {
-  const user = socket.request.user.id;  // change
-  const name = socket.request.user.displayname;  // change
+  const user = socket.request.userInfo.userId;  // change?
+  const name = socket.request.userInfo.username;  // change?
   socket.leave(room);
   const messengerRoom = new MessengerRoom(client);
   messengerRoom.removeUserFromRoom(user, room);
@@ -90,8 +90,8 @@ const socketConnection = function(socket) {
 
 
   socket.on('GetMe', function() {
-    const user = socket.request.user.id;  // change
-    const name = socket.request.user.displayname;  // change
+    const user = socket.request.userInfo.userId;  // change?
+    const name = socket.request.userInfo.username;  // change?
     socket.emit('GetMe', User(user, name));
   });
 
@@ -121,8 +121,8 @@ const socketConnection = function(socket) {
   });  // change to 'GetChats' ?
 
   socket.on('AddChat', function(chat) {
-    const user = socket.request.user.id;  // change
-    const name = socket.request.user.displayname;  // change
+    const user = socket.request.userInfo.userId;  // change?
+    const name = socket.request.userInfo.username;  // change?
     const newChat = Chat(chat.message, chat.room, User(user, name));
     const messengerChat = new MessengerChat(client);
     messengerChat.addChat(newChat);
@@ -149,8 +149,8 @@ const socketConnection = function(socket) {
     const room = r.name;
     removeAllRooms(socket, function() {
       if (room !== '') {
-        const user = socket.request.user.id;  // change
-        const name = socket.request.user.displayname;  // change
+        const user = socket.request.userInfo.userId;  // change?
+        const name = socket.request.userInfo.username;  // change?
         const messengerRoom = new MessengerRoom(client);
         socket.join(room);
         messengerRoom.addRoom(room);

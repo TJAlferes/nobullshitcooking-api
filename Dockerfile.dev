@@ -1,14 +1,11 @@
-FROM node:carbon
+FROM node:10.16.0
 
-# Directory
-WORKDIR /usr/app
+ENV NODE_ENV=production
 
-# Install dependencies
+WORKDIR /node
 COPY ./package*.json ./
-RUN npm install
+RUN npm install && npm cache clean --force
 
-# Bundle
+WORKDIR /node/app
 COPY . .
-
-# Default command
-CMD ["npm", "run", "dev"]
+CMD ["node", "./bin/www"]
