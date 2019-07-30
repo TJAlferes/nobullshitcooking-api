@@ -3,6 +3,10 @@ const webpackNodeExternals = require('webpack-node-externals');
 
 module.exports = {
   mode: 'development',
+  devServer: {
+    host: '0.0.0.0',
+    public: '0.0.0.0:8080'
+  },
   target: 'node',
   externals: [webpackNodeExternals()],
   entry: './src/index.js',

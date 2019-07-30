@@ -1,13 +1,16 @@
-version: "2.4"
+version: "2.2"
 
 services:
 
   mysql-dev:
     image: mysql:8
-    volumes:
-      - dbdata:/var/lib/mysql
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1
+    #volumes:
+    #  - dbdata:/var/lib/mysql
     restart: always
     environment:
+      #- MYSQL_ALLOW_EMPTY_PASSWORD=true
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: nobsc
     ports:
@@ -15,8 +18,10 @@ services:
 
   redis-dev:
     image: redis:5
-    volumes:
-      - cachedata:/data
+    healthcheck:
+      test: redis-cli ping
+    #volumes:
+    #  - cachedata:/data
     ports:
       - "6379:6379"
 
@@ -24,11 +29,13 @@ services:
     build:
       dockerfile: Dockerfile.dev
       context: ./
-    restart: always
+    #restart: always
     #working_dir: ./
     depends_on:
-      - mysql-dev
-      - redis-dev
+      mysql-dev:
+        condition: service_healthy
+      redis-dev:
+        condition: service_healthy
     volumes:
       - .:/node/app
       - /node/app/node_modules
@@ -37,8 +44,5 @@ services:
       - "3003:3003"
 
 volumes:
-
-  dbdata:
-    driver: local
-  cachedata:
-    driver: local
+  mysql-dev:
+  redis-dev:
