@@ -1,6 +1,6 @@
 FROM node:10.16.0
 
-ENV NODE_ENV=production
+# ENV NODE_ENV=production
 
 WORKDIR /node
 COPY ./package*.json ./
@@ -8,4 +8,5 @@ RUN npm install && npm cache clean --force
 
 WORKDIR /node/app
 COPY . .
-CMD ["node", "./bin/www"]
+# CMD ["node", "./bin/www"]
+CMD npm run dev

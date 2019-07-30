@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev": "webpack-dev-server --config webpack.dev.js --mode development --open --hot --host 0.0.0.0",
     "prod-start": "node build/bundle.js",
     "start": "nodemon --ignore 'sessions/' --exec node src/index.js",
     "build": "webpack --config webpack.prod.js",
@@ -19,7 +20,7 @@
     "@elastic/elasticsearch": "^7.2.0",
     "@mysql/xdevapi": "^8.0.17",
     "@sendgrid/mail": "^6.4.0",
-    "aws-sdk": "^2.501.0",
+    "aws-sdk": "^2.502.0",
     "bcrypt": "^3.0.6",
     "body-parser": "^1.19.0",
     "compression": "^1.7.4",
@@ -61,6 +62,7 @@
     "rimraf": "^2.6.3",
     "webpack": "^4.38.0",
     "webpack-cli": "^3.3.6",
+    "webpack-dev-server": "^3.7.2",
     "webpack-node-externals": "^1.7.2"
   }
 }
