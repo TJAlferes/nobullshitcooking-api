@@ -6,12 +6,12 @@ services:
     image: mysql:8
     healthcheck:
       test: mysqladmin ping -h 127.0.0.1
-    #volumes:
-    #  - dbdata:/var/lib/mysql
+    volumes:
+      - mysql-dev:/var/lib/mysql
     restart: always
     environment:
-      #- MYSQL_ALLOW_EMPTY_PASSWORD=true
-      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+      #MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: nobsc
     ports:
       - "3306:3306"
@@ -20,8 +20,8 @@ services:
     image: redis:5
     healthcheck:
       test: redis-cli ping
-    #volumes:
-    #  - cachedata:/data
+    volumes:
+      - redis-dev:/data
     ports:
       - "6379:6379"
 
@@ -30,16 +30,20 @@ services:
       dockerfile: Dockerfile.dev
       context: ./
     #restart: always
-    #working_dir: ./
+    #command: /node/node_modules/.bin/webpack-dev-server --config webpack.dev.js --mode development --open --hot --host 0.0.0.0
+    working_dir: /node/app
+    command: bash -c "ls"
     depends_on:
       mysql-dev:
         condition: service_healthy
       redis-dev:
         condition: service_healthy
     volumes:
-      - .:/node/app
       - /node/app/node_modules
+      - .:/node/app
     env_file: .env
+    environment:
+      NODE_ENV: "development"
     ports:
       - "3003:3003"
 
