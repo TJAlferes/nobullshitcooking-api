@@ -1,7 +1,9 @@
 const bcrypt = require('bcrypt');
 
-const pool = require('../../data-access/dbPoolConnection');
-const Staff = require('../../data-access/staff/Staff');
+const pool = require('../../lib/connections/mysqlPoolConnection');
+
+const Staff = require('../../mysql-access/Staff');
+
 const validLoginRequest = require('../../lib/validations/staff/loginRequest');
 const validRegisterRequest = require('../../lib/validations/staff/registerRequest');
 const validStaffEntity = require('../../lib/validations/staff/staffEntity');

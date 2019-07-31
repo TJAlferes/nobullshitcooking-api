@@ -1,14 +1,16 @@
-const pool = require('../../data-access/dbPoolConnection');
-const Recipe = require('../../data-access/Recipe');
-const RecipeMethods = require('../../data-access/RecipeMethods');
-const RecipeEquipment = require('../../data-access/RecipeEquipment');
-const RecipeIngredients = require('../../data-access/RecipeIngredients');
-const RecipeSubrecipes = require('../../data-access/RecipeSubrecipes');
-const validRecipeEntity = require('../../lib/validations/recipeEntity');
-const validRecipeMethodsEntity = require('../../lib/validations/recipeMethodsEntity');
-const validRecipeEquipmentEntity = require('../../lib/validations/recipeEquipmentEntity');
-const validRecipeIngredientsEntity = require('../../lib/validations/recipeIngredientsEntity');
-const validRecipeSubrecipesEntity = require('../../lib/validations/recipeSubrecipesEntity');
+const pool = require('../../lib/connections/mysqlPoolConnection');
+
+const Recipe = require('../../mysql-access/Recipe');
+const RecipeMethods = require('../../mysql-access/RecipeMethod');
+const RecipeEquipment = require('../../mysql-access/RecipeEquipment');
+const RecipeIngredients = require('../../mysql-access/RecipeIngredient');
+const RecipeSubrecipes = require('../../mysql-access/RecipeSubrecipe');
+
+const validRecipeEntity = require('../../lib/validations/recipe/recipeEntity');
+const validRecipeMethodsEntity = require('../../lib/validations/recipeMethod/recipeMethodEntity');
+const validRecipeEquipmentEntity = require('../../lib/validations/recipeEquipment/recipeEquipmentEntity');
+const validRecipeIngredientsEntity = require('../../lib/validations/recipeIngredient/recipeIngredientEntity');
+const validRecipeSubrecipesEntity = require('../../lib/validations/recipeSubrecipe/recipeSubrecipeEntity');
 
 const userRecipeController = {
   viewAllMyPrivateUserRecipes: async function(req, res, next) {

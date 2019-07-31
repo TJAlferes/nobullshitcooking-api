@@ -5,7 +5,7 @@ npm-debug.log
 generate*
 README.md
 postcss.*.js
-webpack.*.js
+
 Dockerfile
 Dockerfile.dev
 docker-compose.yml

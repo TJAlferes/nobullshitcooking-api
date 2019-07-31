@@ -4,7 +4,9 @@ const bcrypt = require('bcrypt');
 //const sgMail = require('@sendgrid/mail');
 
 const pool = require('../../lib/connections/mysqlPoolConnection');
+
 const User = require('../../mysql-access/User');
+
 const validLoginRequest = require('../../lib/validations/user/loginRequest');
 const validRegisterRequest = require('../../lib/validations/user/registerRequest');
 //const validVerifyRequest = require('../../lib/validations/user/verifyRequest');

@@ -1,7 +1,7 @@
-const pool = require('../data-access/dbPoolConnection');  // move?
-const Equipment = require('../data-access/Equipment');
-const validEquipmentsRequest = require('../lib/validations/EquipmentsRequest');
-const validEquipmentRequest = require('../lib/validations/EquipmentRequest');
+const pool = require('../lib/connections/mysqlPoolConnection');
+const Equipment = require('../mysql-access/Equipment');
+const validEquipmentsRequest = require('../lib/validations/equipment/equipmentsRequest');
+const validEquipmentRequest = require('../lib/validations/equipment/equipmentRequest');
 
 const equipmentController = {
   viewEquipment: async function(req, res, next) {

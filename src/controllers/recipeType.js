@@ -1,6 +1,6 @@
-const pool = require('../data-access/dbPoolConnection');  // move?
-const RecipeType = require('../data-access/RecipeType');
-const validRecipeTypeRequest = require('../lib/validations/recipeTypeRequest');
+const pool = require('../lib/connections/mysqlPoolConnection');
+const RecipeType = require('../mysql-access/RecipeType');
+const validRecipeTypeRequest = require('../lib/validations/recipeType/recipeTypeRequest');
 
 const recipeTypeController = {
   viewAllRecipeTypes: async function(req, res, next) {

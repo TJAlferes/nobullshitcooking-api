@@ -1,7 +1,8 @@
 'use strict';
 
 //require('babel-polyfill');  // pollutes globals?
-
+require('core-js/stable');
+require('regenerator-runtime/runtime');
 require('dotenv').config();
 
 const express = require('express');

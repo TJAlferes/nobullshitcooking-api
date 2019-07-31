@@ -1,8 +1,8 @@
-const pool = require('../data-access/dbPoolConnection');  // move?
-const Recipe = require('../data-access/Recipe');
-const validRecipesRequest = require('../lib/validations/recipesRequest');
-const validRecipeRequest = require('../lib/validations/recipeRequest');
-const validRecipeTitlesRequest = require('../lib/validations/recipeTitlesRequest');
+const pool = require('../lib/connections/mysqlPoolConnection');
+const Recipe = require('../mysql-access/Recipe');
+const validRecipesRequest = require('../lib/validations/recipe/recipesRequest');
+const validRecipeRequest = require('../lib/validations/recipe/recipeRequest');
+const validRecipeTitlesRequest = require('../lib/validations/recipe/recipeTitlesRequest');
 
 const recipeController = {
   viewRecipe: async function(req, res, next) {

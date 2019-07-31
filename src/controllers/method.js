@@ -1,6 +1,6 @@
-const pool = require('../data-access/dbPoolConnection');  // move?
-const Method = require('../data-access/Method');
-const validMethodRequest = require('../lib/validations/methodRequest');
+const pool = require('../lib/connections/mysqlPoolConnection');
+const Method = require('../mysql-access/Method');
+const validMethodRequest = require('../lib/validations/method/methodRequest');
 
 const methodController = {
   viewAllMethods: async function(req, res, next) {

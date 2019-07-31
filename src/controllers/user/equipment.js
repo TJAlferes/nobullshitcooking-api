@@ -1,6 +1,6 @@
 const pool = require('../../lib/connections/mysqlPoolConnection');
 const Equipment = require('../../mysql-access/Equipment');
-const validEquipmentEntity = require('../../utils/validations/equipment/equipmentEntity');
+const validEquipmentEntity = require('../../lib/validations/equipment/equipmentEntity');
 
 const userEquipmentController = {
   viewAllMyPrivateUserEquipment: async function(req, res, next) {

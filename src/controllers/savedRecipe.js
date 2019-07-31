@@ -1,5 +1,5 @@
-const pool = require('../data-access/dbPoolConnection');
-const SavedRecipe = require('../data-access/SavedRecipe');
+const pool = require('../lib/connections/mysqlPoolConnection');
+const SavedRecipe = require('../mysql-access/SavedRecipe');
 
 const savedRecipeController = {
   viewMostSaved: async function(req, res, next) {

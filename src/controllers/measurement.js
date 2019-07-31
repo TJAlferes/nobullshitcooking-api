@@ -1,6 +1,6 @@
-const pool = require('../data-access/dbPoolConnection');  // move?
-const Measurement = require('../data-access/Measurement');
-const validMeasurementRequest = require('../lib/validations/measurementRequest');
+const pool = require('../lib/connections/mysqlPoolConnection');
+const Measurement = require('../mysql-access/Measurement');
+const validMeasurementRequest = require('../lib/validations/measurement/measurementRequest');
 
 const measurementController = {
   viewAllMeasurements: async function(req, res, next) {

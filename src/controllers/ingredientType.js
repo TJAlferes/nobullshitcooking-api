@@ -1,6 +1,6 @@
-const pool = require('../data-access/dbPoolConnection');  // move?
-const IngredientType = require('../data-access/IngredientType');
-const validIngredientTypeRequest = require('../lib/validations/ingredientTypeRequest');
+const pool = require('../lib/connections/mysqlPoolConnection');
+const IngredientType = require('../mysql-access/IngredientType');
+const validIngredientTypeRequest = require('../lib/validations/ingredientType/ingredientTypeRequest');
 
 const ingredientTypeController = {
   viewAllIngredientTypes: async function(req, res, next) {

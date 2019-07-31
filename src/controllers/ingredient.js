@@ -1,7 +1,7 @@
-const pool = require('../data-access/dbPoolConnection');  // move?
-const Ingredient = require('../data-access/Ingredient');
-const validIngredientsRequest = require('../lib/validations/ingredientsRequest');
-const validIngredientRequest = require('../lib/validations/ingredientRequest');
+const pool = require('../lib/connections/mysqlPoolConnection');
+const Ingredient = require('../mysql-access/Ingredient');
+const validIngredientsRequest = require('../lib/validations/ingredient/ingredientsRequest');
+const validIngredientRequest = require('../lib/validations/ingredient/ingredientRequest');
 
 const ingredientController = {
   viewIngredient: async function(req, res, next) {  // split into three methods?

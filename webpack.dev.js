@@ -26,7 +26,6 @@ module.exports = {
   },
   watchOptions: {
     aggregateTimeout: 300,
-    poll: 1000,
-    port: 3003
+    poll: 1000
   }
 };

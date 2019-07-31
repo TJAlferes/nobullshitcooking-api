@@ -1,6 +1,6 @@
-const pool = require('../data-access/dbPoolConnection');  // move?
-const Cuisine = require('../data-access/Cuisine');
-const validCuisineRequest = require('../lib/validations/cuisineRequest');
+const pool = require('../lib/connections/mysqlPoolConnection');
+const Cuisine = require('../mysql-access/Cuisine');
+const validCuisineRequest = require('../lib/validations/cuisine/cuisineRequest');
 
 const cuisineController = {
   viewAllCuisines: async function(req, res, next) {

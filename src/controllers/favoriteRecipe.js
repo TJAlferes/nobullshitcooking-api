@@ -1,5 +1,5 @@
-const pool = require('../data-access/dbPoolConnection');
-const FavoriteRecipe = require('../data-access/FavoriteRecipe');
+const pool = require('../lib/connections/mysqlPoolConnection');
+const FavoriteRecipe = require('../mysql-access/FavoriteRecipe');
 
 const favoriteRecipeController = {
   viewMostFavorited: async function(req, res, next) {

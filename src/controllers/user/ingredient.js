@@ -1,6 +1,6 @@
 const pool = require('../../lib/connections/mysqlPoolConnection');
 const Ingredient = require('../../mysql-access/Ingredient');
-const validIngredientEntity = require('../../utils/validations/ingredient/ingredientEntity');
+const validIngredientEntity = require('../../lib/validations/ingredient/ingredientEntity');
 
 const userIngredientController = {
   viewAllMyPrivateUserIngredients: async function(req, res, next) {
