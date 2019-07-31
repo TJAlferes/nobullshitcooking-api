@@ -1,15 +1,22 @@
+#1
+
+FROM mysql:8.0.17
+
+#WORKDIR /node/app
+ADD /dbdata/tables/ /docker-entrypoint-initdb.d/dbdata/tables
+ADD /dbdata/seed/ /docker-entrypoint-initdb.d/dbdata/seed
+ADD /dbdata/deploy_schemas.sql /docker-entrypoint-initdb.d/dbdata
+
+
+#2
+
 FROM node:10.16.0
 
 WORKDIR /node
-
 #ENV PATH node/app/node_modules/.bin:$PATH
-
 COPY package*.json ./
-
 RUN npm install && npm cache clean --force
 
 WORKDIR /node/app
-
 COPY . .
-
 CMD /node/node_modules/.bin/webpack-dev-server --config webpack.dev.js --mode development --open --hot --host 0.0.0.0

@@ -11,6 +11,15 @@ const pool = process.env.NODE_ENV === 'production'
   queueLimit: process.env.DB_QUEUE_LIMIT
 })
 : mysql.createPool({
+  host: process.env.MYSQL_HOST,
+  user: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD,
+  database: process.env.MYSQL_DATABASE,
+  waitForConnections: process.env.DB_WAIT_FOR_CONNECTIONS,
+  connectionLimit: process.env.DB_CONNECTION_LIMIT,
+  queueLimit: process.env.DB_QUEUE_LIMIT
+});
+/*: mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -18,6 +27,6 @@ const pool = process.env.NODE_ENV === 'production'
   waitForConnections: process.env.DB_WAIT_FOR_CONNECTIONS,
   connectionLimit: process.env.DB_CONNECTION_LIMIT,
   queueLimit: process.env.DB_QUEUE_LIMIT
-});
+});*/
 
 module.exports = pool;
