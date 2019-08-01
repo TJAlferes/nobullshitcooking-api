@@ -16,4 +16,4 @@ CREATE TABLE `nobsc_recipes` (
   FOREIGN KEY (`cuisine_id`) REFERENCES `nobsc_cuisines` (`cuisine_id`),
   FOREIGN KEY (`author_id`) REFERENCES `nobsc_users` (`user_id`),
   FOREIGN KEY (`owner_id`) REFERENCES `nobsc_users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -6,4 +6,4 @@ CREATE TABLE `nobsc_users` (
   `avatar` varchar(255) NOT NULL DEFAULT 'nobsc-user-default',
   `confirmation_code` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

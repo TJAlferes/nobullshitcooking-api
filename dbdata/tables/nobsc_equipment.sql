@@ -10,4 +10,4 @@ CREATE TABLE `nobsc_equipment` (
   FOREIGN KEY (`equipment_type_id`) REFERENCES `nobsc_equipment_types` (`equipment_type_id`),
   FOREIGN KEY (`author_id`) REFERENCES `nobsc_users` (`user_id`),
   FOREIGN KEY (`owner_id`) REFERENCES `nobsc_users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -6,4 +6,4 @@ CREATE TABLE `nobsc_staff` (
   `avatar` varchar(255) NOT NULL DEFAULT 'nobsc-staff-default',
   `role` varchar(20) NOT NULL DEFAULT 'staff',
   PRIMARY KEY (`staff_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
