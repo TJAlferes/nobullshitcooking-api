@@ -1,9 +1,8 @@
+const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 
 const pool = require('../../lib/connections/mysqlPoolConnection');
-
 const Staff = require('../../mysql-access/Staff');
-
 const validLoginRequest = require('../../lib/validations/staff/loginRequest');
 const validRegisterRequest = require('../../lib/validations/staff/registerRequest');
 const validStaffEntity = require('../../lib/validations/staff/staffEntity');
@@ -25,20 +24,20 @@ const staffAuthController = {
       const emailExists = await staff.getStaffByEmail(email);
       if (emailExists === []) {
         res.send('email already in use... lost your password?');
-        next();
+        return next();
       }
 
       const staffExists = await staff.getStaffByName(staffname);
       if (staffExists !== []) {
         res.send('staffname already taken');
-        next();
+        return next();
       }
 
       const encryptedPassword = await bcrypt.hash(pass, SALT_ROUNDS);
       const staffToCreate = validStaffEntity({email, pass: encryptedPassword, staffname});
       await staff.createStaff(staffToCreate);
 
-      res.send('staff account created');
+      res.send('Staff account created');
       next();
     } catch(err) {
       next(err);
@@ -49,9 +48,7 @@ const staffAuthController = {
       const email = req.sanitize(req.body.staffInfo.email);
       const pass = req.sanitize(req.body.staffInfo.pass);
       validLoginRequest({email, pass});
-
       const staff = new Staff(pool);
-
       const staffExists = await staff.getStaffByEmail(email);
       //if (staffExists[0].email === email)
       if (staffExists) {
@@ -61,13 +58,11 @@ const staffAuthController = {
           const staffname = staffExists[0].staffname;
           const avatar = staffExists[0].avatar;
           req.session.staffId = staffId;
-          return res.json({staffname, avatar});
-          //next(); ?  // if/else in here?
+          res.json({staffname, avatar});
+          return next();
         }
-        //return res.send('incorrect email or password');
       }
-
-      res.end();  // ?  //return res.send('incorrect email or password');
+      res.send('Incorrect email or password.');
       next();
     } catch(err) {
       next(err);

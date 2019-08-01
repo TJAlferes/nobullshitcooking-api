@@ -4,9 +4,7 @@ const bcrypt = require('bcrypt');
 //const sgMail = require('@sendgrid/mail');
 
 const pool = require('../../lib/connections/mysqlPoolConnection');
-
 const User = require('../../mysql-access/User');
-
 const validLoginRequest = require('../../lib/validations/user/loginRequest');
 const validRegisterRequest = require('../../lib/validations/user/registerRequest');
 //const validVerifyRequest = require('../../lib/validations/user/verifyRequest');
@@ -21,6 +19,8 @@ const userAuthController = {
       const pass = req.sanitize(req.body.userInfo.pass);
       const username = req.sanitize(req.body.userInfo.username);
       validRegisterRequest({email, pass, username});
+
+      // to do: return if already logged in
       
       const user = new User(pool);
 
