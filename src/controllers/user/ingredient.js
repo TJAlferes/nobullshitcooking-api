@@ -1,4 +1,5 @@
 const pool = require('../../lib/connections/mysqlPoolConnection');
+const RecipeIngredient = require('../../mysql-access/RecipeIngredient');
 const Ingredient = require('../../mysql-access/Ingredient');
 const validIngredientEntity = require('../../lib/validations/ingredient/ingredientEntity');
 
@@ -79,11 +80,13 @@ const userIngredientController = {
       next(err);
     }
   },
-  deleteMyPrivateUserIngredient: async function(req, res, next) {  // for any parent PrivateUserRecipes, set NotFound placeholder
+  deleteMyPrivateUserIngredient: async function(req, res, next) {
     try {
       const ingredientId = req.sanitize(req.body.ingredientId);
       const ownerId = req.session.userInfo.userId;
+      const recipeIngredient = new RecipeIngredient(pool);
       const ingredient = new Ingredient(pool);
+      await recipeIngredient.deleteRecipeIngredientsByIngredientId(ingredientId);
       const [ row ] = await ingredient.deleteMyPrivateUserIngredient(ownerId, ingredientId);
       res.send(row);
       next();

@@ -26,6 +26,7 @@ class Recipe {
     this.viewRecipesForSubmitEditForm = viewRecipesForSubmitEditForm.bind(this);
 
     this.createRecipe = this.createRecipe.bind(this);
+
     this.updateRecipe = this.updateRecipe.bind(this);
     this.deleteRecipe = this.deleteRecipe.bind(this);
 
@@ -33,10 +34,14 @@ class Recipe {
     this.viewAllMyPublicUserRecipes = this.viewAllMyPublicUserRecipes.bind(this);
     this.viewMyPrivateUserRecipe = this.viewMyPrivateUserRecipe.bind(this);
     this.viewMyPublicUserRecipe = this.viewMyPublicUserRecipe.bind(this);
+    this.updateMyPrivateUserRecipe = this.updateMyPrivateUserRecipe.bind(this);
+    this.updateMyPublicUserRecipe = this.updateMyPublicUserRecipe.bind(this);
     this.deleteMyPrivateUserRecipe = this.deleteMyPrivateUserRecipe.bind(this);
     this.disownMyPublicUserRecipe = this.disownMyPublicUserRecipe.bind(this);
   }
   
+  //--------------------------------------------------------------------------
+
   async countAllRecipes() {
     const sql = `
       SELECT COUNT(*) AS total
@@ -132,6 +137,8 @@ class Recipe {
     const [ allRecipesOfCuisineAndTypeCount ] = await this.pool.execute(sql, ids);
     return allRecipesOfCuisineAndTypeCount;
   }
+
+  //--------------------------------------------------------------------------
 
   async viewAllRecipes(starting, display) {
     const sql = `
@@ -316,6 +323,8 @@ class Recipe {
     return allRecipes;
   }
 
+  //--------------------------------------------------------------------------
+
   async createRecipe(recipeToCreate) {
     const {
       recipeTypeId,
@@ -362,6 +371,8 @@ class Recipe {
     ]);
     return createdRecipe;
   }
+
+  //--------------------------------------------------------------------------
   
   async updateRecipe(recipeToUpdateWith, recipeId) {
     const {
@@ -422,11 +433,7 @@ class Recipe {
     return deletedRecipe;
   }
 
-
-
-
-
-
+  //--------------------------------------------------------------------------
 
   async viewAllMyPrivateUserRecipes(ownerId) {
     const sql = `
@@ -548,6 +555,55 @@ class Recipe {
   }
 
   async updateMyPrivateUserRecipe(recipeToUpdateWith, recipeId) {
+    const {
+      recipeTypeId,
+      cuisineId,
+      authorId,
+      ownerId,
+      title,
+      description,
+      directions,
+      recipeImage,
+      equipmentImage,
+      ingredientsImage,
+      cookingImage,
+    } = recipeToUpdateWith;
+    const sql = `
+      UPDATE nobsc_recipes
+      SET
+        recipe_type_id = ?,
+        cuisine_id = ?,
+        author_id = ?,
+        owner_id = ?,
+        title = ?,
+        description = ?,
+        directions = ?,
+        recipe_image = ?,
+        equipment_image = ?,
+        ingredients_image = ?,
+        cooking_image = ?
+      WHERE recipe_id = ? AND owner_id = ?
+      LIMIT 1
+    `;
+    const [ updatedRecipe ] = await this.pool.execute(sql, [
+      recipeTypeId,
+      cuisineId,
+      authorId,
+      ownerId,
+      title,
+      description,
+      directions,
+      recipeImage,
+      equipmentImage,
+      ingredientsImage,
+      cookingImage,
+      recipeId,
+      ownerId
+    ]);
+    return updatedRecipe;
+  }
+
+  async updateMyPublicUserRecipe(recipeToUpdateWith, recipeId) {
     const {
       recipeTypeId,
       cuisineId,

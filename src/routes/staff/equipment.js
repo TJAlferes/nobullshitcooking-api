@@ -13,19 +13,17 @@ const router = Router();
 router.post(
   '/create',
   staffIsAuth,
-  /*isValid,*/
   catchExceptions(staffEquipmentController.createEquipment)
 );
 
 router.put(
-  '/update/:equipmentId',
+  '/update',
   staffIsAuth,
-  /*isValid,*/
   catchExceptions(staffEquipmentController.updateEquipment)
 );
 
 router.delete(
-  '/delete/:equipmentId',
+  '/delete',
   staffIsAuth,
   catchExceptions(staffEquipmentController.deleteEquipment)
 );

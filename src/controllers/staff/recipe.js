@@ -255,7 +255,6 @@ const staffRecipeController = {
       const recipeId = req.sanitize(req.body.recipeId);
 
       // transaction(s)?:
-      // delete all records from Plan ... you don't need to delete from plan... if you can simply return null from misses..? ********************
       const favoriteRecipe = new FavoriteRecipe(pool);
       const savedRecipe = new SavedRecipe(pool);
       const recipeMethod = new RecipeMethod(pool);

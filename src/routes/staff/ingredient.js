@@ -13,19 +13,17 @@ const router = Router();
 router.post(
   '/create',
   staffIsAuth,
-  /*isValid,*/
   catchExceptions(staffIngredientController.createIngredient)
 );
 
 router.put(
-  '/update/:ingredientId',
+  '/update',
   staffIsAuth,
-  /*isValid,*/
   catchExceptions(staffIngredientController.updateIngredient)
 );
 
 router.delete(
-  '/delete/:ingredientId',
+  '/delete',
   staffIsAuth,
   catchExceptions(staffIngredientController.deleteIngredient)
 );

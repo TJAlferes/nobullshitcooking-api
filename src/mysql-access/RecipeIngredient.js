@@ -6,6 +6,7 @@ class RecipeIngredient {
     this.createRecipeIngredients = this.createRecipeIngredients.bind(this);
     this.updateRecipeIngredients = this.updateRecipeIngredients.bind(this);
     this.deleteRecipeIngredients = this.deleteRecipeIngredients.bind(this);
+    this.deleteRecipeIngredientsByIngredientId = this.deleteRecipeIngredientsByIngredientId.bind(this);
   }
 
   async viewRecipeIngredientsByRecipeId(recipeId) {
@@ -72,6 +73,16 @@ class RecipeIngredient {
       WHERE recipe_id = ?
     `;
     const [ deletedRecipeIngredients ] = await this.pool.execute(sql, [recipeId]);
+    return deletedRecipeIngredients;
+  }
+
+  async deleteRecipeIngredientsByIngredientId(ingredientId) {
+    const sql = `
+      DELETE
+      FROM nobsc_recipe_ingredients
+      WHERE ingredient_id = ?
+    `;
+    const [ deletedRecipeIngredients ] = await this.pool.execute(sql, [ingredientId]);
     return deletedRecipeIngredients;
   }
 }

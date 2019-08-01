@@ -2,6 +2,7 @@ class Equipment {
   constructor(pool) {
     this.pool = pool;
 
+    // public NOBSC equipment
     this.countAllEquipment = this.countAllEquipment.bind(this);
     this.countEquipmentOfType = this.countEquipmentOfType.bind(this);
     this.countEquipmentOfTypes = this.countEquipmentOfTypes.bind(this);
@@ -15,6 +16,7 @@ class Equipment {
     this.updateEquipment = this.updateEquipment.bind(this);
     this.deleteEquipment = this.deleteEquipment.bind(this);
 
+    // private user equipment
     this.viewAllMyPrivateUserEquipment = this.viewAllMyPrivateUserEquipment.bind(this);
     this.viewMyPrivateUserEquipment = this.viewMyPrivateUserEquipment.bind(this);
     this.createMyPrivateUserEquipment = this.createMyPrivateUserEquipment.bind(this);
@@ -22,6 +24,14 @@ class Equipment {
     this.deleteMyPrivateUserEquipment = this.deleteMyPrivateUserEquipment.bind(this);
   }
   
+
+
+  /*
+  
+  public NOBSC equipment
+
+  */
+
   async countAllEquipment() {
     const sql = `
       SELECT COUNT(*) AS total
@@ -169,10 +179,12 @@ class Equipment {
 
 
 
-  //-------------------- private user equipment --------------------
+  /*
 
+  private user equipment
 
-
+  */
+ 
   async viewAllMyPrivateUserEquipment(ownerId) {
     const sql = `
       SELECT equipment_id, equipment_name, equipment_image

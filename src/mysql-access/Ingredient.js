@@ -2,6 +2,7 @@ class Ingredient {
   constructor(pool) {
     this.pool = pool;
 
+    // public NOBSC ingredients
     this.countAllIngredients = this.countAllIngredients.bind(this);
     this.countIngredientsOfType = this.countIngredientsOfType.bind(this);
     this.countIngredientsOfTypes = this.countIngredientsOfTypes.bind(this);
@@ -15,12 +16,21 @@ class Ingredient {
     this.updateIngredient = this.updateIngredient.bind(this);
     this.deleteIngredient = this.deleteIngredient.bind(this);
 
+    // private user ingredients
     this.viewAllMyPrivateUserIngredients = this.viewAllMyPrivateUserIngredients.bind(this);
     this.viewMyPrivateUserIngredient = this.viewMyPrivateUserIngredient.bind(this);
     this.createMyPrivateUserIngredient = this.createMyPrivateUserIngredient.bind(this);
     this.updateMyPrivateUserIngredient = this.updateMyPrivateUserIngredient.bind(this);
     this.deleteMyPrivateUserIngredient = this.deleteMyPrivateUserIngredient.bind(this);
   }
+
+
+  
+  /*
+  
+  public NOBSC ingredients
+
+  */
 
   async countAllIngredients() {
     const sql = `
@@ -162,11 +172,17 @@ class Ingredient {
       WHERE ingredient_id = ?
       LIMIT 1
     `;
-    const [ edIngredient ] = await this.pool.execute(sql, [ingredientId]);
+    const [ deletedIngredient ] = await this.pool.execute(sql, [ingredientId]);
     return deletedIngredient;
   }
 
-  //-------------------- private user ingredients --------------------
+
+
+  /*
+
+  private user ingredients
+
+  */
 
   async viewAllMyPrivateUserIngredients(ownerId) {
     const sql = `

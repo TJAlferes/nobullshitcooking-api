@@ -1,4 +1,5 @@
 const pool = require('../../lib/connections/mysqlPoolConnection');
+const RecipeEquipment = require('../../mysql-access/RecipeEquipment');
 const Equipment = require('../../mysql-access/Equipment');
 const validEquipmentEntity = require('../../lib/validations/equipment/equipmentEntity');
 
@@ -79,11 +80,13 @@ const userEquipmentController = {
       next(err);
     }
   },
-  deleteMyPrivateUserEquipment: async function(req, res, next) {  // for any parent PrivateUserRecipes, set NotFound placeholder
+  deleteMyPrivateUserEquipment: async function(req, res, next) {
     try {
       const equipmentId = req.sanitize(req.body.equipmentId);
       const ownerId = req.session.userInfo.userId;
+      const recipeEquipment = new RecipeEquipment(pool);
       const equipment = new Equipment(pool);
+      await recipeEquipment.deleteRecipeEquipmentByEquipmentId(equipmentId);
       const [ row ] = await equipment.deleteMyPrivateUserEquipment(ownerId, equipmentId);
       res.send(row);
       next();

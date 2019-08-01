@@ -208,7 +208,7 @@ const userRecipeController = {
       const cookingImage = req.sanitize(req.body.recipeInfo.cookingImage);
 
       const authorId = req.session.userInfo.userId;
-      const ownerId = req.session.userInfo.userId;  // we don't allow them to switch from private to public
+      const ownerId = req.session.userInfo.userId;
 
       const recipeToUpdateWith = validRecipeEntity({
         recipeTypeId,
@@ -297,7 +297,114 @@ const userRecipeController = {
       next(err);
     }
   },
-  deleteMyPrivateUserRecipe: async function(req, res, next) {  // for any parent PrivateUserRecipes / PrivateUserPlans, set NotFound placeholder
+  updateMyPublicUserRecipe: async function(req, res, next) {
+    try {
+      const recipeId = req.sanitize(req.body.recipeInfo.recipeId);
+      const recipeTypeId = req.sanitize(req.body.recipeInfo.recipeTypeId);
+      const cuisineId = req.sanitize(req.body.recipeInfo.cuisineId);
+      const title = req.sanitize(req.body.recipeInfo.title);
+      const description = req.sanitize(req.body.recipeInfo.description);
+      const directions = req.sanitize(req.body.recipeInfo.directions);
+      const requiredMethods = req.sanitize(req.body.recipeInfo.requiredMethods);
+      const requiredEquipment = req.sanitize(req.body.recipeInfo.requiredEquipment);
+      const requiredIngredients = req.sanitize(req.body.recipeInfo.requiredIngredients);
+      const requiredSubrecipes = req.sanitize(req.body.recipeInfo.requiredSubrecipes);
+      const recipeImage = req.sanitize(req.body.recipeInfo.recipeImage);
+      const equipmentImage = req.sanitize(req.body.recipeInfo.equipmentImage);
+      const ingredientsImage = req.sanitize(req.body.recipeInfo.ingredientsImage);
+      const cookingImage = req.sanitize(req.body.recipeInfo.cookingImage);
+
+      const authorId = req.session.userInfo.userId;
+      const ownerId = 1;
+
+      const recipeToUpdateWith = validRecipeEntity({
+        recipeTypeId,
+        cuisineId,
+        authorId,
+        ownerId,
+        title,
+        description,
+        directions,
+        recipeImage,
+        equipmentImage,
+        ingredientsImage,
+        cookingImage
+      });
+      const recipe = new Recipe(pool);
+      await recipe.updateMyPublicUserRecipe(recipeToUpdateWith, recipeId);
+
+      const recipeMethodsToUpdateWith = requiredMethods.map(rM =>
+        validRecipeMethodsEntity({
+          recipeId: generatedId,
+          methodId: rM.methodId
+        })
+      );
+      const recipeMethodsPlaceholders = '(?, ?),'
+      .repeat(requiredMethods.length)
+      .slice(0, -1);
+      const recipeMethod = new RecipeMethod(pool);
+      await recipeMethod.updateRecipeMethods(recipeMethodsToUpdateWith, recipeMethodsPlaceholders, recipeId);
+
+      const recipeEquipmentToUpdateWith = requiredEquipment.map(rE =>
+        validRecipeEquipmentEntity({
+          recipeId: generatedId,
+          equipmentId: rE.equipmentId,
+          amount: rE.amount
+        })
+      );
+      const recipeEquipmentPlaceholders = '(?, ?, ?),'
+      .repeat(requiredEquipment.length)
+      .slice(0, -1);
+      const recipeEquipment = new RecipeEquipment(pool);
+      await recipeEquipment.updateRecipeEquipment(
+        recipeEquipmentToUpdateWith,
+        recipeEquipmentPlaceholders,
+        recipeId
+      );
+
+      const recipeIngredientsToUpdateWith = requiredIngredients.map(rI =>
+        validRecipeIngredientsEntity({
+          recipeId: generatedId,
+          ingredientId: rI.ingredientId,
+          amount: rI.amount,
+          measurementId: rI.measurementId
+        })
+      );
+      const recipeIngredientsPlaceholders = '(?, ?, ?, ?),'
+      .repeat(requiredIngredients.length)
+      .slice(0, -1);
+      const recipeIngredient = new RecipeIngredient(pool);
+      await recipeIngredient.updateRecipeIngredients(
+        recipeIngredientsToUpdateWith,
+        recipeIngredientsPlaceholders,
+        recipeId
+      );
+
+      const recipeSubrecipesToUpdateWith = requiredSubrecipes.map(rS =>
+        validRecipeSubrecipesEntity({
+          recipeId: generatedId,
+          subrecipeId: rS.subrecipeId,
+          amount: rS.amount,
+          measurementId: rS.measurementId
+        })
+      );
+      const recipeSubrecipesPlaceholders = '(?, ?, ?, ?),'
+      .repeat(requiredSubrecipes.length)
+      .slice(0, -1);
+      const recipeSubrecipe = new RecipeSubrecipe(pool);
+      await recipeSubrecipe.updateRecipeSubrecipes(
+        recipeSubrecipesToUpdateWith,
+        recipeSubrecipesPlaceholders,
+        recipeId
+      );
+
+      res.send('Recipe updated.');
+      next();
+    } catch(err) {
+      next(err);
+    }
+  },
+  deleteMyPrivateUserRecipe: async function(req, res, next) {
     try {
       const recipeId = req.sanitize(req.body.recipeId);
       const authorId = req.session.userInfo.userId;
@@ -310,7 +417,6 @@ const userRecipeController = {
       const recipeSubrecipes = new RecipeSubrecipes(pool);
       const recipe = new Recipe(pool);
 
-      //await plan.delete ... you don't need to delete from plan... if you can simply return null from misses..? ********************
       await recipeMethods.deleteRecipeMethods(recipeId);
       await recipeEquipment.deleteRecipeEquipment(recipeId);
       await recipeIngredients.deleteRecipeIngredients(recipeId);

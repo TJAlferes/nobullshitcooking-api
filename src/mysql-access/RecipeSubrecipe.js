@@ -66,12 +66,18 @@ class RecipeSubrecipe {
   }
 
   async deleteRecipeSubrecipes(recipeId) {
-    const sql = `
+    const sql1 = `
       DELETE
       FROM nobsc_recipe_subrecipes
       WHERE recipe_id = ?
     `;
-    const [ deletedRecipeSubrecipes ] = await this.pool.execute(sql, [recipeId]);
+    const sql2 = `
+      DELETE
+      FROM nobsc_recipe_subrecipes
+      WHERE subrecipe_id = ?
+    `;
+    const [ deletedRecipeSubrecipes ] = await this.pool.execute(sql1, [recipeId]);
+    await this.pool.execute(sql2, [recipeId]);
     return deletedRecipeSubrecipes;
   }
 }

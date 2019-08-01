@@ -16,23 +16,35 @@ router.post(
   catchExceptions(userRecipeController.createRecipe)
 );
 
+
+
 router.put(
-  '/update/:recipeId',
+  '/update/private',
   userIsAuth,
-  catchExceptions(userRecipeController.updateRecipe)
+  catchExceptions(userRecipeController.updateMyPrivateUserRecipe)
 );
 
+router.put(
+  '/update/public',
+  userIsAuth,
+  catchExceptions(userRecipeController.updateMyPublicUserRecipe)
+);
+
+
+
 router.delete(
-  '/delete/private/:recipeId',
+  '/delete/private',
   userIsAuth,
   catchExceptions(userRecipeController.deleteMyPrivateUserRecipe)
 );
 
 router.delete(
-  '/delete/public/:recipeId',
+  '/delete/public',
   userIsAuth,
   catchExceptions(userRecipeController.disownMyPublicUserRecipe)
 );
+
+
 
 router.post(
   '/private',
