@@ -9,7 +9,7 @@ module.exports = {
     port: 3003
   },
   target: 'node',
-  externals: [webpackNodeExternals()],
+  externals: [webpackNodeExternals({whitelist: ['redis-parser', 'engine.io']})],
   entry: './src/index.js',
   output: {
     filename: 'bundle.js',

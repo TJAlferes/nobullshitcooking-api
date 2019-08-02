@@ -41,6 +41,7 @@
     "googleapis": "^38.0.0",
     "graphql": "^14.4.2",
     "helmet": "^3.20.0",
+    "hiredis": "^0.5.0",
     "hpp": "^0.2.2",
     "http-aws-es": "^6.0.0",
     "ioredis": "^4.14.0",
@@ -53,7 +54,8 @@
     "socket.io-redis": "^5.2.0",
     "stripe": "^6.36.0",
     "superstruct": "^0.6.1",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "uws": "10.148.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
@@ -64,7 +66,7 @@
     "babel-loader": "^8.0.6",
     "nodemon": "^1.19.1",
     "rimraf": "^2.6.3",
-    "webpack": "^4.38.0",
+    "webpack": "^4.39.1",
     "webpack-cli": "^3.3.6",
     "webpack-dev-server": "^3.7.2",
     "webpack-node-externals": "^1.7.2"

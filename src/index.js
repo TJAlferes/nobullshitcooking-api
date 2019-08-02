@@ -39,8 +39,6 @@ const {
   methodRoutes,
   measurementRoutes,
   favoriteRecipeRoutes,
-  savedRecipeRoutes,
-  friendshipRoutes,
   staffRoutes,
   userRoutes,
   signS3Images1
@@ -104,7 +102,7 @@ const socketAuth = (socket, next) => {
 
 
 // session
-const RedisStore = connectRedis(session);
+const RedisStore = connectRedis(expressSession);  // connectRedis(session)
 const redisSession = new RedisStore({
   client,
   pass: process.env.REDIS_PASSWORD
@@ -123,6 +121,7 @@ const sessionOptions = {
   }
 };
 const session = expressSession(sessionOptions);
+
 
 
 // prod
@@ -188,8 +187,6 @@ app.use('/cuisine', cuisineRoutes);
 app.use('/method', methodRoutes);
 app.use('/measurement', measurementRoutes);
 app.use('/favorite-recipe', favoriteRecipeRoutes);
-app.use('/saved-recipe', savedRecipeRoutes)
-app.use('/friendship', friendshipRoutes);
 app.use('/staff', staffRoutes);
 app.use('/user', userRoutes);
 app.use('/sign-s3-images-1', signS3Images1);
