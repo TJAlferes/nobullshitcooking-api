@@ -1,6 +1,5 @@
 const { Router } = require('express');
 
-const pool = require('../data-access/dbPoolConnection');
 const catchExceptions = require('../lib/utils/catchExceptions');
 const equipmentController = require('../controllers/equipment');
 
@@ -9,6 +8,9 @@ const router = Router();
 // /v1/... ?
 
 // for /equipment/...
+
+/*
+move
 
 router.get(
   '/submit-edit-form',
@@ -27,6 +29,7 @@ router.get(
     }
   })
 );
+*/
 
 router.post(
   '/',

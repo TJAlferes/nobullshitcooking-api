@@ -5,7 +5,7 @@ FROM mysql:8.0.17
 #WORKDIR /node/app
 ADD /dbdata/tables/ /docker-entrypoint-initdb.d/dbdata/tables
 ADD /dbdata/seed/ /docker-entrypoint-initdb.d/dbdata/seed
-ADD /dbdata/deploy_schemas.sql /docker-entrypoint-initdb.d/dbdata
+ADD /dbdata/deploy_schema.sql /docker-entrypoint-initdb.d/dbdata
 
 
 #2

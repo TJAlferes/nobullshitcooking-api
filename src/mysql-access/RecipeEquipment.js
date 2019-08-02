@@ -75,7 +75,7 @@ class RecipeEquipment {
     return deletedRecipeEquipment;
   }
 
-  deleteRecipeEquipmentByEquipmentId(equipmentId) {
+  async deleteRecipeEquipmentByEquipmentId(equipmentId) {
     const sql = `
       DELETE
       FROM nobsc_recipe_equipment

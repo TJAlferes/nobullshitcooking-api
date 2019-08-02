@@ -8,7 +8,6 @@ const cuisineRoutes = require('./cuisine');
 const methodRoutes = require('./method');
 const measurementRoutes = require('./measurement');
 const favoriteRecipeRoutes = require('./favoriteRecipe');
-const friendshipRoutes = require('./friendship');
 const staffRoutes = require('./staff/index');
 const userRoutes = require('./user/index');
 const signS3Images1 = require('./signS3Images1');
@@ -24,7 +23,6 @@ module.exports = {
   methodRoutes,
   measurementRoutes,
   favoriteRecipeRoutes,
-  friendshipRoutes,
   staffRoutes,
   userRoutes,
   signS3Images1

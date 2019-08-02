@@ -47,25 +47,25 @@ router.delete(
 
 
 router.post(
-  '/private',
+  '/private/all',
   userIsAuth,
   catchExceptions(userRecipeController.viewAllMyPrivateUserRecipes)
 );
 
 router.post(
-  '/public',
+  '/public/all',
   userIsAuth,
   catchExceptions(userRecipeController.viewAllMyPublicUserRecipes)
 );
 
 router.post(
-  '/private/:recipeId',
+  '/private/one',
   userIsAuth,
   catchExceptions(userRecipeController.viewMyPrivateUserRecipe)
 );
 
 router.post(
-  '/public/:recipeId',
+  '/public/one',
   userIsAuth,
   catchExceptions(userRecipeController.viewMyPublicUserRecipe)
 );

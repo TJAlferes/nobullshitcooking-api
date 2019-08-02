@@ -1,7 +1,7 @@
 class Recipe {
   constructor(pool) {
     this.pool = pool;
-
+    
     this.countAllRecipes = this.countAllRecipes.bind(this);
     this.countRecipesOfType = this.countRecipesOfType.bind(this);
     this.countRecipesOfTypes = this.countRecipesOfTypes.bind(this);
