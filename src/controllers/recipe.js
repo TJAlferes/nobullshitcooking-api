@@ -5,7 +5,7 @@ const validRecipeRequest = require('../lib/validations/recipe/recipeRequest');
 const validRecipeTitlesRequest = require('../lib/validations/recipe/recipeTitlesRequest');
 
 const recipeController = {
-  viewRecipe: async function(req, res, next) {
+  viewRecipe: async function(req, res, next) {  // rename?
     try {
       const types = (req.body.types) ? req.sanitize(req.body.types) : [];
       const cuisines = (req.body.cuisines) ? req.sanitize(req.body.cuisines) : [];
@@ -149,9 +149,9 @@ const recipeController = {
       next(err);
     }
   },
-  viewRecipeDetail: async function(req, res, next) {
+  viewRecipeDetail: async function(req, res, next) {  // rename to viewRecipe?
     try {
-      const recipeId = req.sanitize(req.params.recipeId);
+      const recipeId = req.sanitize(req.params.recipeId);  // use body instead of params?
       validRecipeRequest({recipeId});
       const recipe = new Recipe(pool);
       const [ row ] = await recipe.viewRecipeById(recipeId);
@@ -173,7 +173,7 @@ const recipeController = {
       next(err);
     }
   },
-  viewRecipesForSubmitEditForm: async function(req, res, next) {
+  viewRecipesForSubmitEditForm: async function(req, res, next) {  // needed?
     try {
       const recipe = new Recipe(pool);
       const rows = await recipe.viewRecipesForSubmitEditForm();
