@@ -167,6 +167,13 @@ io.adapter(redisAdapter({pubClient: client, subClient: client}));
 
 io.on('connect', socketConnection);  // connection ?
 
+console.log('========== server ========== ');
+console.log(server);
+console.log('============================== ');
+console.log('========== io ========== ');
+console.log(io);
+console.log('============================== ');
+
 
 
 /*##############################################################################
@@ -174,6 +181,10 @@ io.on('connect', socketConnection);  // connection ?
 ##############################################################################*/
 
 redisSession['hits'] = 0;  // delete
+const hits = redisSession['hits'];
+console.log('========== hits ========== ');
+console.log('hits!!!!!!!!!!!!!!: ', hits);
+console.log('============================== ');
 app.get('/', (req, res) => {
   try {
     redisSession['hits']++;

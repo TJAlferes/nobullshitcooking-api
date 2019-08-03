@@ -29,8 +29,8 @@ const pool = process.env.NODE_ENV === 'production'
   queueLimit: process.env.DB_QUEUE_LIMIT
 });*/
 
-console.log('========== mysql2/promise createPool ========== ')
+console.log('========== mysql2/promise createPool ========== ');
 console.log('pool', pool);
-console.log('============================== ')
+console.log('============================== ');
 
 module.exports = pool;

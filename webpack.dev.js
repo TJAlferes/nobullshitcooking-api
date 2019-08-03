@@ -6,7 +6,10 @@ module.exports = {
   devServer: {
     host: '0.0.0.0',
     public: '0.0.0.0:3003',
-    port: 3003
+    port: 3003,
+    stats: {
+      warnings: false
+    }
   },
   target: 'node',
   externals: [webpackNodeExternals({whitelist: ['redis-parser', 'engine.io']})],

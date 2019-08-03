@@ -11,6 +11,8 @@ ADD /dbdata/deploy_schema.sql /docker-entrypoint-initdb.d/dbdata
 
 FROM node:10.16.0
 
+EXPOSE 3003
+
 WORKDIR /node
 #ENV PATH node/app/node_modules/.bin:$PATH
 COPY package*.json ./
@@ -20,4 +22,5 @@ WORKDIR /node/app
 COPY . .
 #CMD /node/node_modules/.bin/webpack-dev-server --config webpack.dev.js --mode development --open --hot --host 0.0.0.0 --port 3003
 #CMD node --inspect=0.0.0.0:9229 src/index.js
-CMD /node/node_modules/.bin/nodemon src/index.js
+CMD node src/index.js
+#CMD /node/node_modules/.bin/nodemon src/index.js
