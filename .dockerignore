@@ -1,5 +1,6 @@
 .env
 .git
+.gitignore
 node_modules/
 npm-debug.log
 generate*
@@ -9,4 +10,6 @@ postcss.*.js
 Dockerfile
 Dockerfile.dev
 docker-compose.yml
+.dockerignore
 /**/__tests__/
+.vscode

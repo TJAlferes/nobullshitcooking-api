@@ -9,7 +9,12 @@ const client = process.env.NODE_ENV === 'production'
 })
 : new Redis({
   host: 'redis-dev',
-  port: 6379
+  port: 6379,
 });
+
+console.log('========== ioredis new Redis ========== ')
+console.log('client', client);
+client.on('ready', () => console.log('ready!!!!!!!!!!!'));
+console.log('============================== ')
 
 module.exports = client;

@@ -1,7 +1,7 @@
 'use strict';
 
 //require('babel-polyfill');  // pollutes globals?
-require('core-js/stable');
+//require('core-js/stable');  // 'core-js'
 require('regenerator-runtime/runtime');
 require('dotenv').config();
 
@@ -64,6 +64,7 @@ const corsOptions = {origin: ['http://localhost:8080'], credentials: true};
 // chat    // move
 const server = http.Server(app);
 const io = socketIO(server);
+
 /*
 Note to self:
 Do NOT use Cluster for PubSub, instead, see on youtube:
@@ -83,13 +84,14 @@ const elasticacheWithTLS = {
 const pubClient = new Redis.Cluster(redisClusterOptions, elasticacheWithTLS);
 const subClient = new Redis.Cluster(redisClusterOptions, elasticacheWithTLS);
 */
+
 const socketAuth = (socket, next) => {
   const parsedCookie = cookie.parse(socket.request.headers.cookie);
   const sid = cookieParser.signedCookie(parsedCookie['connect.sid'], process.env.SESSION_SECRET);
   if (parsedCookie['connect.sid'] === sid) return next(new Error('Not authenticated.'));
   redisSession.get(sid, function(err, session) {
-    if (session.isAuthenticated) {  // CHANGE
-      socket.request.user = session.passport.user;  // CHANGE (socket.request.userInfo = session.userInfo ?)
+    if (session.userInfo.hasOwnProperty(userId)) {  // CHANGE (not sufficient?)
+      socket.request.user = session.userInfo;  // CHANGE (socket.request.userInfo = session.userInfo ?)
       socket.request.sid = sid;
       const messengerUser = new MessengerUser(client);
       messengerUser.addUser(session.userInfo.userId, session.userInfo.username);
@@ -104,8 +106,8 @@ const socketAuth = (socket, next) => {
 // session
 const RedisStore = connectRedis(expressSession);  // connectRedis(session)
 const redisSession = new RedisStore({
-  client,
-  pass: process.env.REDIS_PASSWORD
+  client: client
+  //pass: process.env.REDIS_PASSWORD
 });
 const sessionOptions = {
   store: redisSession,
@@ -133,6 +135,7 @@ if (app.get('env') === 'production') {
 //enforce https? or elasticbeanstalk already does?
 
 
+
 /*##############################################################################
 2. middleware
 ##############################################################################*/
@@ -150,15 +153,18 @@ app.use(helmet());
 //app.use(csurf());  // must be called after cookies/sessions  // https://github.com/pillarjs/understanding-csrf
 app.use(compression());  // elasticbeanstalk already does?
 
-io.set('transports', ['websocket']);  // ...eh?
-io.adapter(redisAdapter(client));
+//io.set('transports', ['websocket']);  // ...eh?
+io.adapter(redisAdapter({pubClient: client, subClient: client}));
 //io.use(sharedSession(session, {autoSave: true}));    // do you have to preset one?  // now preset  // back to expressSession?
-io.use(socketAuth);
+
+//io.use(socketAuth);
+
 /*io.nsps.forEach(function(nsp) {
   nsp.on('connect', socket => {
     if (!socket.auth) delete nsp.connected[socket.id];
   });
 });*/
+
 io.on('connect', socketConnection);  // connection ?
 
 
@@ -215,4 +221,6 @@ app.use((error, req, res, next) => {
 
 const PORT = process.env.PORT || 3003;
 
-server.listen(PORT, () => console.log('Listening on port ' + PORT));
+server.listen(PORT, '0.0.0.0', () => console.log('Listening on port ' + PORT));
+//server.listen(PORT, () => console.log('Listening on port ' + PORT));
+//app.listen(PORT, () => console.log('Listening on port ' + PORT));

@@ -11,19 +11,21 @@ services:
     restart: always
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "true"
-      #MYSQL_ROOT_PASSWORD: password
+      MYSQL_USER: root
       MYSQL_DATABASE: nobsc
     ports:
       - "3306:3306"
 
   redis-dev:
-    image: redis:5
+    image: redis:5.0.5
     healthcheck:
       test: redis-cli ping
     volumes:
       - redis-dev:/data
     ports:
       - "6379:6379"
+    #command: redis-server --bind 0.0.0.0 --port 6379
+    #command: redis-server status
 
   nobsc-api:
     build:
@@ -38,7 +40,7 @@ services:
       redis-dev:
         condition: service_healthy
     volumes:
-      #- ./:/node/app
+      #- ./:/node/app  can't find, why???
       - /node/app/node_modules
     env_file: .env
     environment:
@@ -46,6 +48,7 @@ services:
       PORT: 3003
     ports:
       - "3003:3003"
+      - "9229:9229"
 
 volumes:
   mysql-dev:

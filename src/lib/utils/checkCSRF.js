@@ -1,4 +1,4 @@
-module.exports = function(req, res, next) {
+/*module.exports = function(req, res, next) {
   let csrfToken = req.get('X-CSRF-Token');
   if (!csrfToken) {
     return res.status(401).json({
@@ -16,4 +16,4 @@ module.exports = function(req, res, next) {
     });
   }
   next();
-};
+};*/

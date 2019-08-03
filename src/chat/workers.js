@@ -23,22 +23,32 @@ function cleanUpRooms() {
 
 function cleanUpChats() {
   client.zrange('rooms', 0, -1, function(err, rooms) {
-    rooms.forEach(function(room) {
-      client.zremrangebyscore(`rooms:${room}:chats`, '-inf', ((new Date).getTime() - DELTA));
+    client.zrangebyscore('rooms', '-inf', ((new Date).getTime() - DELTA), function(err, rooms) {
+      if (err !== null) {
+        console.log(err);
+      } else {
+        rooms.forEach(function(room) {
+          client.zremrangebyscore(`rooms:${room}:chats`, '-inf', ((new Date).getTime() - DELTA));
+        });
+      }
     });
   });
 }
 
 function cleanUpUsers() {
   client.zrangebyscore('users', '-inf', ((new Date).getTime() - DELTA), function(err, users) {
-    users.forEach(function(room) {
-      client
-      .multi()
-      .zrem('users', user)
-      .del(`user:${user}`)
-      .del(`user:${user}:room`)
-      .exec();
-    });
+    if (err !== null) {
+      console.log(err);
+    } else {
+      users.forEach(function(room) {
+        client
+        .multi()
+        .zrem('users', user)
+        .del(`user:${user}`)
+        .del(`user:${user}:room`)
+        .exec();
+      });
+    }
   });
 }
 

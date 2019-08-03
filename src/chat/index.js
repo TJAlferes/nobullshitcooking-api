@@ -87,7 +87,7 @@ const socketConnection = function(socket) {
     }
   });*/
 
-
+  console.log('inside socketConnection');
 
   socket.on('GetMe', function() {
     const user = socket.request.userInfo.userId;  // change?
