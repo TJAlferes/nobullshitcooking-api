@@ -149,9 +149,9 @@ const recipeController = {
       next(err);
     }
   },
-  viewRecipeDetail: async function(req, res, next) {  // rename to viewRecipe?
+  viewRecipeDetail: async function(req, res, next) {
     try {
-      const recipeId = req.sanitize(req.params.recipeId);  // use body instead of params?
+      const recipeId = Number(req.sanitize(req.params.recipeId));
       validRecipeRequest({recipeId});
       const recipe = new Recipe(pool);
       const [ row ] = await recipe.viewRecipeById(recipeId);

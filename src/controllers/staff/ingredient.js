@@ -5,7 +5,7 @@ const validIngredientEntity = require('../../lib/validations/ingredient/ingredie
 const staffIngredientController = {
   createIngredient: async function(req, res, next) {
     try {
-      const ingredientTypeId = req.sanitize(req.body.ingredientInfo.ingredientTypeId);
+      const ingredientTypeId = Number(req.sanitize(req.body.ingredientInfo.ingredientTypeId));
       const ingredientName = req.sanitize(req.body.ingredientInfo.ingredientName);
       const ingredientDescription = req.sanitize(req.body.ingredientInfo.ingredientDescription);
       const ingredientImage = req.sanitize(req.body.ingredientInfo.ingredientImage);
@@ -32,7 +32,7 @@ const staffIngredientController = {
   updateIngredient: async function(req, res, next) {
     try {
       const ingredientId = req.sanitize(req.body.ingredientInfo.ingredientId);
-      const ingredientTypeId = req.sanitize(req.body.ingredientInfo.ingredientTypeId);
+      const ingredientTypeId = Number(req.sanitize(req.body.ingredientInfo.ingredientTypeId));
       const ingredientName = req.sanitize(req.body.ingredientInfo.ingredientName);
       const ingredientDescription = req.sanitize(req.body.ingredientInfo.ingredientDescription);
       const ingredientImage = req.sanitize(req.body.ingredientInfo.ingredientImage);

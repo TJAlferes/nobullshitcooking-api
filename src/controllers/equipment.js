@@ -7,7 +7,7 @@ const equipmentController = {
   viewEquipment: async function(req, res, next) {
     try {
       const types = (req.body.types) ? req.sanitize(req.body.types) : [];
-      const starting = (req.body.start) ? req.sanitize(req.body.start) : 0;
+      const starting = (req.body.start) ? Number(req.sanitize(req.body.start)) : 0;
       const display = 25;  // to do: allow user on FE to change this
       validEquipmentsRequest({types, starting, display});
 
@@ -46,7 +46,7 @@ const equipmentController = {
   },
   viewEquipmentDetail: async function(req, res, next) {
     try {
-      const equipmentId = req.sanitize(req.params.equipmentId);
+      const equipmentId = Number(req.sanitize(req.params.equipmentId));
       validEquipmentRequest({equipmentId});
       const equipment = new Equipment(pool);
       const [ rows ] = await equipment.viewEquipmentById(equipmentId);

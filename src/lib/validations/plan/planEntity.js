@@ -2,8 +2,8 @@ const { struct } = require('superstruct');
 
 const validPlanEntity = struct(
   {
-    authorId: 'string',
-    ownerId: 'string',
+    authorId: 'number',
+    ownerId: 'number',
     planName: 'string',
     planData: 'object'
   },

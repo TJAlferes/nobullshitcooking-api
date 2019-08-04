@@ -15,7 +15,7 @@ const equipmentTypeController = {
   },
   viewEquipmentTypeById: async function(req, res, next) {
     try {
-      const equipmentTypeId = req.sanitize(req.params.equipmentTypeId);
+      const equipmentTypeId = Number(req.sanitize(req.params.equipmentTypeId));
       validEquipmentTypeRequest({equipmentTypeId});
       //if (equipmentTypeId < 1 || equipmentTypeId > 5) throw new Error('invalid equipment type');
       const equipmentType = new EquipmentType(pool);

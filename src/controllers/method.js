@@ -15,7 +15,7 @@ const methodController = {
   },
   viewMethodById: async function(req, res, next) {
     try {
-      const methodId = req.sanitize(req.params.methodId);
+      const methodId = Number(req.sanitize(req.params.methodId));
       validMethodRequest({methodId});
       const method = new Method(pool);
       const [ row ] = await method.viewMethodById(methodId);

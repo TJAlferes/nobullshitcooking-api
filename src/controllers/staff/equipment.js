@@ -5,7 +5,7 @@ const validEquipmentEntity = require('../../lib/validations/equipment/equipmentE
 const staffEquipmentController = {
   createEquipment: async function(req, res, next) {
     try {
-      const equipmentTypeId = req.sanitize(req.body.equipmentInfo.equipmentTypeId);
+      const equipmentTypeId = Number(req.sanitize(req.body.equipmentInfo.equipmentTypeId));
       const equipmentName = req.sanitize(req.body.equipmentInfo.equipmentName);
       const equipmentDescription = req.sanitize(req.body.equipmentInfo.equipmentDescription);
       const equipmentImage = req.sanitize(req.body.equipmentInfo.equipmentImage);
@@ -32,7 +32,7 @@ const staffEquipmentController = {
   updateEquipment: async function(req, res, next) {
     try {
       const equipmentId = req.sanitize(req.body.equipmentInfo.equipmentId);
-      const equipmentTypeId = req.sanitize(req.body.equipmentInfo.equipmentTypeId);
+      const equipmentTypeId = Number(req.sanitize(req.body.equipmentInfo.equipmentTypeId));
       const equipmentName = req.sanitize(req.body.equipmentInfo.equipmentName);
       const equipmentDescription = req.sanitize(req.body.equipmentInfo.equipmentDescription);
       const equipmentImage = req.sanitize(req.body.equipmentInfo.equipmentImage);

@@ -15,7 +15,7 @@ const cuisineController = {
   },
   viewCuisineById: async function(req, res, next) {
     try {
-      const cuisineId = req.sanitize(req.params.cuisineId);
+      const cuisineId = Number(req.sanitize(req.params.cuisineId));
       validCuisineRequest({cuisineId}); //if (cuisineId < 1 || cuisineId > 12) throw new Error('invalid cuisine');
       const cuisine = new Cuisine(pool);
       const [ row ] = await cuisine.viewCuisineById(cuisineId);

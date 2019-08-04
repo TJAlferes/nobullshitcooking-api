@@ -18,5 +18,6 @@ client.on('ready', () => console.log('ready!!!!!!!!!!!'));
 client.on('error', () => console.log('error!!!!!!!!!!!'));
 client.on('close', () => console.log('close!!!!!!!!!!!'));
 console.log('============================== ');
+// set up proper retry logic
 
 module.exports = client;

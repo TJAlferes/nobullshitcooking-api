@@ -1,7 +1,7 @@
 const { struct } = require('superstruct');
 
 const validCuisineRequest = struct({
-  cuisineId: 'string',  // 'number'
+  cuisineId: 'number',
   cuisineName: 'string?'
 });
 

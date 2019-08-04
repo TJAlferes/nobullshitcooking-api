@@ -32,5 +32,6 @@ const pool = process.env.NODE_ENV === 'production'
 console.log('========== mysql2/promise createPool ========== ');
 console.log('pool', pool);
 console.log('============================== ');
+// set up proper retry logic
 
 module.exports = pool;

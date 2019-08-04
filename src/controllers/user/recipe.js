@@ -63,8 +63,8 @@ const userRecipeController = {
   },
   createRecipe: async function(req, res, next) {
     try {
-      const recipeTypeId = req.sanitize(req.body.recipeInfo.recipeTypeId);
-      const cuisineId = req.sanitize(req.body.recipeInfo.cuisineId);
+      const recipeTypeId = Number(req.sanitize(req.body.recipeInfo.recipeTypeId));
+      const cuisineId = Number(req.sanitize(req.body.recipeInfo.cuisineId));
       const title = req.sanitize(req.body.recipeInfo.title);
       const description = req.sanitize(req.body.recipeInfo.description);
       const directions = req.sanitize(req.body.recipeInfo.directions);
@@ -193,8 +193,8 @@ const userRecipeController = {
   updateMyPrivateUserRecipe: async function(req, res, next) {
     try {
       const recipeId = req.sanitize(req.body.recipeInfo.recipeId);
-      const recipeTypeId = req.sanitize(req.body.recipeInfo.recipeTypeId);
-      const cuisineId = req.sanitize(req.body.recipeInfo.cuisineId);
+      const recipeTypeId = Number(req.sanitize(req.body.recipeInfo.recipeTypeId));
+      const cuisineId = Number(req.sanitize(req.body.recipeInfo.cuisineId));
       const title = req.sanitize(req.body.recipeInfo.title);
       const description = req.sanitize(req.body.recipeInfo.description);
       const directions = req.sanitize(req.body.recipeInfo.directions);
@@ -300,8 +300,8 @@ const userRecipeController = {
   updateMyPublicUserRecipe: async function(req, res, next) {
     try {
       const recipeId = req.sanitize(req.body.recipeInfo.recipeId);
-      const recipeTypeId = req.sanitize(req.body.recipeInfo.recipeTypeId);
-      const cuisineId = req.sanitize(req.body.recipeInfo.cuisineId);
+      const recipeTypeId = Number(req.sanitize(req.body.recipeInfo.recipeTypeId));
+      const cuisineId = Number(req.sanitize(req.body.recipeInfo.cuisineId));
       const title = req.sanitize(req.body.recipeInfo.title);
       const description = req.sanitize(req.body.recipeInfo.description);
       const directions = req.sanitize(req.body.recipeInfo.directions);

@@ -24,16 +24,12 @@ services:
       - redis-dev:/data
     ports:
       - "6379:6379"
-    #command: redis-server --bind 0.0.0.0 --port 6379
-    #command: redis-server status
 
   nobsc-api:
     build:
       context: ./
       dockerfile: Dockerfile.dev
     #restart: always
-    #command: /node/node_modules/.bin/webpack-dev-server --config webpack.dev.js --mode development --open --hot --host 0.0.0.0
-    #working_dir: ./
     depends_on:
       mysql-dev:
         condition: service_healthy

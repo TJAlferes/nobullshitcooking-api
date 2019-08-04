@@ -1,5 +1,6 @@
 const pool = require('../../lib/connections/mysqlPoolConnection');
 const FavoriteRecipe = require('../../mysql-access/FavoriteRecipe');
+const validFavoriteRecipeEntity = require('../../lib/validations/favoriteRecipe/favoriteRecipeEntity');
 
 const userFavoriteRecipeController = {
   viewMyFavoriteRecipes: async function(req, res, next) {
@@ -16,7 +17,8 @@ const userFavoriteRecipeController = {
   createMyFavoriteRecipe: async function(req, res, next) {
     try {
       const userId = req.session.userInfo.userId;
-      const recipeId = req.sanitize(req.body.recipeId);
+      const recipeId = Number(req.sanitize(req.body.recipeId));
+      validFavoriteRecipeEntity({userId, recipeId});
       const favoriteRecipe = new FavoriteRecipe(pool);
       await favoriteRecipe.createMyFavoriteRecipe(userId, recipeId);
       res.send('Favorited.');
@@ -28,7 +30,8 @@ const userFavoriteRecipeController = {
   deleteMyFavoriteRecipe: async function(req, res, next) {
     try {
       const userId = req.session.userInfo.userId;
-      const recipeId = req.sanitize(req.body.recipeId);
+      const recipeId = Number(req.sanitize(req.body.recipeId));
+      validFavoriteRecipeEntity({userId, recipeId});
       const favoriteRecipe = new FavoriteRecipe(pool);
       await favoriteRecipe.deleteMyFavoriteRecipe(userId, recipeId);
       res.send('Unfavorited.');

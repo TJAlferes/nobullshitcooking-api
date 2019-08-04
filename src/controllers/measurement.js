@@ -15,7 +15,7 @@ const measurementController = {
   },
   viewMeasurementById: async function(req, res, next) {
     try {
-      const measurementId = req.sanitize(req.params.measurementId);
+      const measurementId = Number(req.sanitize(req.params.measurementId));
       validMeasurementRequest({measurementId});
       //if (measurementId < 1 || measurementId > 12) throw new Error('invalid measurement');
       const measurement = new Measurement(pool);
