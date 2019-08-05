@@ -7,7 +7,7 @@ require('dotenv').config();
 
 const express = require('express');
 const expressRateLimit = require('express-rate-limit');
-const expressPinoLogger = require('express-pino-logger');
+//const expressPinoLogger = require('express-pino-logger');
 const expressSanitizer = require('express-sanitizer');  // Use something else? This is popular, yet is based on abandonware...
 const cors = require('cors');
 const helmet = require('helmet');
@@ -123,7 +123,6 @@ const sessionOptions = {
   }
 };
 const session = expressSession(sessionOptions);
-
 
 
 // prod

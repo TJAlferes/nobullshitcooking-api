@@ -88,9 +88,9 @@ const userAuthController = {
           const userId = userExists[0].user_id;
           const username = userExists[0].username;
           const avatar = userExists[0].avatar;
+          req.session.userInfo = {};
           req.session.userInfo.userId = userId;
           req.session.userInfo.username = username;
-          console.log('$$$$$$$$$$$$$here$$$$$$$$$');
           res.json({username, avatar});
           return next();
         }

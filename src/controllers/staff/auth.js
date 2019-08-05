@@ -57,7 +57,9 @@ const staffAuthController = {
           const staffId = staffExists[0].staff_id;
           const staffname = staffExists[0].staffname;
           const avatar = staffExists[0].avatar;
-          req.session.staffId = staffId;
+          req.session.staffInfo = {};
+          req.session.staffInfo.staffId = staffId;
+          req.session.staffInfo.staffname = staffname;
           res.json({staffname, avatar});
           return next();
         }
