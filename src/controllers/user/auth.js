@@ -16,7 +16,7 @@ const userAuthController = {
   register: async function(req, res, next) {
     try {
       const email = req.sanitize(req.body.userInfo.email);
-      const pass = req.sanitize(req.body.userInfo.pass);
+      const pass = req.sanitize(req.body.userInfo.password);
       const username = req.sanitize(req.body.userInfo.username);
       validRegisterRequest({email, pass, username});
 
@@ -50,7 +50,7 @@ const userAuthController = {
   /*verify: async function(req, res, next) {
     try {
       const email = req.sanitize(req.body.userInfo.email);
-      const pass = req.sanitize(req.body.userInfo.pass);
+      const pass = req.sanitize(req.body.userInfo.password);
       const confirmationCode = req.sanitize(req.body.userInfo.confirmationCode);
       validVerifyRequest({email, pass, confirmationCode});
 
@@ -77,11 +77,12 @@ const userAuthController = {
   login: async function(req, res, next) {
     try {
       const email = req.sanitize(req.body.userInfo.email);
-      const pass = req.sanitize(req.body.userInfo.pass);
+      const pass = req.sanitize(req.body.userInfo.password);
       validLoginRequest({email, pass});
       const user = new User(pool);
       const userExists = await user.getUserByEmail(email);
-      if (userExists && crypto.timingSafeEqual(userExists[0].email, email)) {
+      //if (userExists && crypto.timingSafeEqual(userExists[0].email, email)) {
+      if (userExists && userExists[0].email == email) {
         const isCorrectPassword = await bcrypt.compare(pass, userExists[0].pass);
         if (isCorrectPassword) {
           const userId = userExists[0].user_id;
@@ -89,6 +90,7 @@ const userAuthController = {
           const avatar = userExists[0].avatar;
           req.session.userInfo.userId = userId;
           req.session.userInfo.username = username;
+          console.log('$$$$$$$$$$$$$here$$$$$$$$$');
           res.json({username, avatar});
           return next();
         }

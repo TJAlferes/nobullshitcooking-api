@@ -4,13 +4,19 @@ services:
 
   mysql-dev:
     image: mysql:8.0.17
+    volumes:
+      #- ./dbdata:/docker-entrypoint-initdb.d
+      - mysql-dev:/var/lib/mysql
+    #image: mysql:5.7.27
+    command: mysqld --default-authentication-plugin=mysql_native_password
+    #command: --disable-partition-engine-check
     healthcheck:
       test: mysqladmin ping -h 127.0.0.1
-    volumes:
-      - mysql-dev:/var/lib/mysql
     restart: always
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+      #MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_PASSWORD: pass
       MYSQL_USER: root
       MYSQL_DATABASE: nobsc
     ports:

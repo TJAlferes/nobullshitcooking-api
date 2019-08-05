@@ -13,7 +13,7 @@ const staffAuthController = {
   register: async function(req, res, next) {
     try {
       const email = req.sanitize(req.body.staffInfo.email);
-      const pass = req.sanitize(req.body.staffInfo.pass);
+      const pass = req.sanitize(req.body.staffInfo.password);
       const staffname = req.sanitize(req.body.staffInfo.staffname);
       validRegisterRequest({email, pass, staffname});
 
@@ -46,7 +46,7 @@ const staffAuthController = {
   login: async function(req, res, next) {
     try {
       const email = req.sanitize(req.body.staffInfo.email);
-      const pass = req.sanitize(req.body.staffInfo.pass);
+      const pass = req.sanitize(req.body.staffInfo.password);
       validLoginRequest({email, pass});
       const staff = new Staff(pool);
       const staffExists = await staff.getStaffByEmail(email);

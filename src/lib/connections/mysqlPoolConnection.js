@@ -17,7 +17,8 @@ const pool = process.env.NODE_ENV === 'production'
   database: process.env.MYSQL_DATABASE,
   waitForConnections: process.env.DB_WAIT_FOR_CONNECTIONS,
   connectionLimit: process.env.DB_CONNECTION_LIMIT,
-  queueLimit: process.env.DB_QUEUE_LIMIT
+  queueLimit: process.env.DB_QUEUE_LIMIT,
+  insecureAuth: true
 });
 /*: mysql.createPool({
   host: process.env.DB_HOST,

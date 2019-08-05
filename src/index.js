@@ -140,7 +140,7 @@ if (app.get('env') === 'production') {
 2. middleware
 ##############################################################################*/
 
-app.use(expressPinoLogger());
+//app.use(expressPinoLogger());
 app.use(expressRateLimit(rateLimiterOptions));
 app.use(session);  // sharedSession? **********!!!  // do you have to preset one?  // now preset
 app.use(cors(corsOptions));  // before session?
@@ -157,7 +157,7 @@ app.use(compression());  // elasticbeanstalk already does?
 io.adapter(redisAdapter({pubClient: client, subClient: client}));
 //io.use(sharedSession(session, {autoSave: true}));    // do you have to preset one?  // now preset  // back to expressSession?
 
-//io.use(socketAuth);
+io.use(socketAuth);
 
 /*io.nsps.forEach(function(nsp) {
   nsp.on('connect', socket => {
@@ -219,10 +219,10 @@ process.on('unhandledRejection', (reason, promise) => {
   console.log('Unhandled Rejection at:', reason.stack || reason);
 });
 
-app.use((error, req, res, next) => {
+/*app.use((error, req, res, next) => {
   //req.log.error(error);
-  res.status(error.status || 500).json({error: {message: error.message}});
-});
+  res.json({error: {message: error.message, status: error.status || 500}});
+});*/
 
 
 
