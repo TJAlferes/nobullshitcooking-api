@@ -1,2 +1,0 @@
-CREATE DATABASE nobsc;
-USE nobsc;

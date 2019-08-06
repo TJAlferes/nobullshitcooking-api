@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+//const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 //const uuidv4 = require('uuid/v4');
 //const sgMail = require('@sendgrid/mail');
@@ -26,13 +26,13 @@ const userAuthController = {
 
       const emailExists = await user.getUserByEmail(email);
       if (emailExists !== []) {
-        res.send('Email already in use.');
+        res.send({message: 'Email already in use.'});
         return next();
       }
 
       const userExists = await user.getUserByName(username);
       if (userExists !== []) {
-        res.send('Username already taken.');
+        res.send({message: 'Username already taken.'});
         return next();
       }
 
@@ -41,7 +41,7 @@ const userAuthController = {
       const userToCreate = validUserEntity({email, pass: encryptedPassword, username});
       await user.createUser(userToCreate);
 
-      res.send('User account created.');
+      res.send({message: 'User account created.'});
       next();
     } catch(err) {
       next(err);
@@ -91,11 +91,11 @@ const userAuthController = {
           req.session.userInfo = {};
           req.session.userInfo.userId = userId;
           req.session.userInfo.username = username;
-          res.json({username, avatar});
+          res.json({message: 'Signed in.', username, avatar});
           return next();
         }
       }
-      res.send('Incorrect email or password.');
+      res.send({message: 'Incorrect email or password.'});
       next();
     } catch(err) {
       next(err);
@@ -106,7 +106,7 @@ const userAuthController = {
       await req.session.destroy(err => {
         if (err) return next(err);
         res.clearCookie('connect.sid');
-        res.send('Signed out.');
+        res.send({message: 'Signed out.'});
       });
       next();
     } catch(err) {

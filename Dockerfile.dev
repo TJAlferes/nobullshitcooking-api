@@ -1,8 +1,9 @@
 #1
 
-#FROM mysql:8.0.17
+FROM mysql:8.0.17
 
 #ADD ./dbdata/ /docker-entrypoint-initdb.d/
+COPY ./dbdata/test.sql /dbdata/test.sql
 
 #2
 

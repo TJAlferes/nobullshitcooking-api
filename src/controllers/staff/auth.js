@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+//const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 
 const pool = require('../../lib/connections/mysqlPoolConnection');
@@ -23,13 +23,13 @@ const staffAuthController = {
 
       const emailExists = await staff.getStaffByEmail(email);
       if (emailExists === []) {
-        res.send('email already in use... lost your password?');
+        res.send({message: 'Email already in use.'});
         return next();
       }
 
       const staffExists = await staff.getStaffByName(staffname);
       if (staffExists !== []) {
-        res.send('staffname already taken');
+        res.send({message: 'Staffname already taken.'});
         return next();
       }
 
@@ -37,7 +37,7 @@ const staffAuthController = {
       const staffToCreate = validStaffEntity({email, pass: encryptedPassword, staffname});
       await staff.createStaff(staffToCreate);
 
-      res.send('Staff account created');
+      res.send({message: 'Staff account created.'});
       next();
     } catch(err) {
       next(err);
@@ -50,8 +50,7 @@ const staffAuthController = {
       validLoginRequest({email, pass});
       const staff = new Staff(pool);
       const staffExists = await staff.getStaffByEmail(email);
-      //if (staffExists[0].email === email)
-      if (staffExists) {
+      if (staffExists && staffExists[0].email == email) {
         const isCorrectPassword = await bcrypt.compare(pass, staffExists[0].pass);
         if (isCorrectPassword) {
           const staffId = staffExists[0].staff_id;
@@ -60,11 +59,11 @@ const staffAuthController = {
           req.session.staffInfo = {};
           req.session.staffInfo.staffId = staffId;
           req.session.staffInfo.staffname = staffname;
-          res.json({staffname, avatar});
+          res.json({message: 'Signed in.', staffname, avatar});
           return next();
         }
       }
-      res.send('Incorrect email or password.');
+      res.send({message: 'Incorrect email or password.'});
       next();
     } catch(err) {
       next(err);
@@ -75,7 +74,7 @@ const staffAuthController = {
       await req.session.destroy(err => {
         if (err) return next(err);
         res.clearCookie('connect.sid');
-        res.end();  //res.json({});  ??? res.redirect('/home')?
+        res.send({message: 'Signed out.'});
       });
       next();
     } catch(err) {
