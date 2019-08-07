@@ -32,7 +32,7 @@ services:
 
   nobsc-api:
     build:
-      context: ./
+      context: .
       dockerfile: Dockerfile.dev
     #restart: always
     depends_on:
@@ -41,7 +41,7 @@ services:
       redis-dev:
         condition: service_healthy
     volumes:
-      #- ./:/node/app  can't find, why???
+      - .:/node/app
       - /node/app/node_modules
     env_file: .env
     environment:

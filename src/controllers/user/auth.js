@@ -24,15 +24,16 @@ const userAuthController = {
       
       const user = new User(pool);
 
-      const emailExists = await user.getUserByEmail(email);
-      if (emailExists !== []) {
-        res.send({message: 'Email already in use.'});
-        return next();
-      }
-
       const userExists = await user.getUserByName(username);
       if (userExists !== []) {
         res.send({message: 'Username already taken.'});
+        return next();
+      }
+
+      const emailExists = await user.getUserByEmail(email);
+      console.log(emailExists);
+      if (emailExists !== []) {
+        res.send({message: 'Email already in use.'});
         return next();
       }
 
