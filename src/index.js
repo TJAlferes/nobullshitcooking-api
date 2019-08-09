@@ -45,7 +45,7 @@ const {
 } = require('./routes');
 const socketConnection = require('./chat');
 const MessengerUser = require('./redis-access/MessengerUser');  // move
-const client = require('./lib/connections/redisConnection');
+const { pubClient, subClient, sessClient } = require('./lib/connections/redisConnection');
 
 
 
@@ -106,7 +106,7 @@ const socketAuth = (socket, next) => {
 // session
 const RedisStore = connectRedis(expressSession);  // connectRedis(session)
 const redisSession = new RedisStore({
-  client: client
+  client: sessClient
   //pass: process.env.REDIS_PASSWORD
 });
 const sessionOptions = {
@@ -153,7 +153,7 @@ app.use(helmet());
 app.use(compression());  // elasticbeanstalk already does?
 
 //io.set('transports', ['websocket']);  // ...eh?
-io.adapter(redisAdapter({pubClient: client, subClient: client}));
+io.adapter(redisAdapter({pubClient, subClient}));
 //io.use(sharedSession(session, {autoSave: true}));    // do you have to preset one?  // now preset  // back to expressSession?
 
 io.use(socketAuth);
@@ -166,12 +166,12 @@ io.use(socketAuth);
 
 io.on('connect', socketConnection);  // connection ?
 
-console.log('========== server ========== ');
-console.log(server);
-console.log('============================== ');
-console.log('========== io ========== ');
-console.log(io);
-console.log('============================== ');
+//console.log('========== server ========== ');
+//console.log(server);
+//console.log('============================== ');
+//console.log('========== io ========== ');
+//console.log(io);
+//console.log('============================== ');
 
 
 
@@ -181,9 +181,6 @@ console.log('============================== ');
 
 redisSession['hits'] = 0;  // delete
 const hits = redisSession['hits'];
-console.log('========== hits ========== ');
-console.log('hits!!!!!!!!!!!!!!: ', hits);
-console.log('============================== ');
 app.get('/', (req, res) => {
   try {
     redisSession['hits']++;
@@ -231,6 +228,9 @@ process.on('unhandledRejection', (reason, promise) => {
 
 const PORT = process.env.PORT || 3003;
 
-server.listen(PORT, '0.0.0.0', () => console.log('Listening on port ' + PORT));
-//server.listen(PORT, () => console.log('Listening on port ' + PORT));
+if (app.get('env') === 'production') {
+  server.listen(PORT, () => console.log('Listening on port ' + PORT));
+} else {
+  server.listen(PORT, '0.0.0.0', () => console.log('Listening on port ' + PORT));
+}
 //app.listen(PORT, () => console.log('Listening on port ' + PORT));

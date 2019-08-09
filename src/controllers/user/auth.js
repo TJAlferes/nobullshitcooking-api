@@ -102,17 +102,15 @@ const userAuthController = {
       next(err);
     }
   },
-  logout: async function(req, res, next) {
-    try {
-      await req.session.destroy(err => {
-        if (err) return next(err);
-        res.clearCookie('connect.sid');
-        res.send({message: 'Signed out.'});
-      });
-      next();
-    } catch(err) {
-      next(err);
-    }
+  logout: async function(req, res) {
+    await req.session.destroy();
+    res.end();
+    /*await req.session.destroy(err => {
+      if (err) return next(err);
+      //res.clearCookie('connect.sid');
+      res.send({message: 'Signed out.'});
+    });
+    next();*/
   }
 };
 

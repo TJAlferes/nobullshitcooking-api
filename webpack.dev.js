@@ -3,6 +3,13 @@ const webpackNodeExternals = require('webpack-node-externals');
 
 module.exports = {
   mode: 'development',
+  target: 'node',
+  externals: [webpackNodeExternals({whitelist: ['redis-parser', 'engine.io']})],
+  entry: './src/index.js',
+  output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist')
+  },
   devServer: {
     host: '0.0.0.0',
     public: '0.0.0.0:3003',
@@ -11,12 +18,9 @@ module.exports = {
       warnings: false
     }
   },
-  target: 'node',
-  externals: [webpackNodeExternals({whitelist: ['redis-parser', 'engine.io']})],
-  entry: './src/index.js',
-  output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist')
+  watchOptions: {
+    aggregateTimeout: 300,
+    poll: 1000
   },
   module: {
     rules: [
@@ -26,9 +30,5 @@ module.exports = {
         exclude: /node_modules/
       }
     ]
-  },
-  watchOptions: {
-    aggregateTimeout: 300,
-    poll: 1000
   }
 };

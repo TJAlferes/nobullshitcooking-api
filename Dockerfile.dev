@@ -11,14 +11,14 @@ FROM node:10.16.0
 
 EXPOSE 3003
 
-WORKDIR /node
-#ENV PATH node/app/node_modules/.bin:$PATH
+WORKDIR /api
 COPY package*.json ./
 RUN npm install && npm cache clean --force
+#COPY . .
 
-WORKDIR /node/app
-COPY . .
+WORKDIR /api/src
+COPY ./src .
 #CMD /node/node_modules/.bin/webpack-dev-server --config webpack.dev.js --mode development --open --hot --host 0.0.0.0 --port 3003
 #CMD /node/node_modules/.bin/nodemon src/index.js
 #CMD node --inspect=0.0.0.0:9229 src/index.js
-CMD node src/index.js
+CMD node index.js

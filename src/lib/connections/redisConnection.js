@@ -2,22 +2,56 @@
 
 const Redis = require('ioredis');
 
-const client = process.env.NODE_ENV === 'production'
+const pubClient = process.env.NODE_ENV === 'production'
 ? new Redis({
   host: process.env.REDIS_HOST,
-  port: 6380
+  port: 6379
 })
 : new Redis({
   host: 'redis-dev',
   port: 6379,
 });
 
-console.log('========== ioredis new Redis ========== ');
-console.log('client', client);
-client.on('ready', () => console.log('ready!!!!!!!!!!!'));
-client.on('error', () => console.log('error!!!!!!!!!!!'));
-client.on('close', () => console.log('close!!!!!!!!!!!'));
-console.log('============================== ');
+const subClient = process.env.NODE_ENV === 'production'
+? new Redis({
+  host: process.env.REDIS_HOST,
+  port: 6379
+})
+: new Redis({
+  host: 'redis-dev',
+  port: 6379,
+});
+
+const sessClient = process.env.NODE_ENV === 'production'
+? new Redis({
+  host: process.env.REDIS_HOST,
+  port: 6379
+})
+: new Redis({
+  host: 'redis-dev',
+  port: 6379,
+});
+
+//console.log('========== ioredis new Redis ========== ');
+//console.log('client', pubClient);
+pubClient.on('ready', () => console.log('pub ready!!!!!!!!!!!'));
+pubClient.on('error', () => console.log('pub error!!!!!!!!!!!'));
+pubClient.on('close', () => console.log('pub close!!!!!!!!!!!'));
+//console.log('============================== ');
+
+//console.log('========== ioredis new Redis ========== ');
+//console.log('client', subClient);
+subClient.on('ready', () => console.log('sub ready!!!!!!!!!!!'));
+subClient.on('error', () => console.log('sub error!!!!!!!!!!!'));
+subClient.on('close', () => console.log('sub close!!!!!!!!!!!'));
+//console.log('============================== ');
+
+//console.log('========== ioredis new Redis ========== ');
+//console.log('client', sessClient);
+sessClient.on('ready', () => console.log('sess ready!!!!!!!!!!!'));
+sessClient.on('error', () => console.log('sess error!!!!!!!!!!!'));
+sessClient.on('close', () => console.log('sess close!!!!!!!!!!!'));
+//console.log('============================== ');
 // set up proper retry logic
 
-module.exports = client;
+module.exports = {pubClient, subClient, sessClient};
