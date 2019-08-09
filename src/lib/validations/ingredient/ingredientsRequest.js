@@ -1,7 +1,7 @@
 const { struct } = require('superstruct');
 
 const validIngredientsRequest = struct({
-  types: ['number?'],
+  types: ['string?|number?'],
   starting: 'number',
   display: 'number'
 });

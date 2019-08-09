@@ -6,7 +6,7 @@ const validIngredientRequest = require('../lib/validations/ingredient/ingredient
 const ingredientController = {
   viewIngredient: async function(req, res, next) {  // split into three methods?
     try {
-      const types = (req.body.types) ? req.sanitize(req.body.types) : [];
+      const types = (req.body.types) ? req.body.types : [];
       const starting = (req.body.start) ? Number(req.sanitize(req.body.start)) : 0;
       const display = 25;  // to do: allow user on FE to change this
       validIngredientsRequest({types, starting, display});

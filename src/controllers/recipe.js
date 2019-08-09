@@ -5,10 +5,10 @@ const validRecipeRequest = require('../lib/validations/recipe/recipeRequest');
 const validRecipeTitlesRequest = require('../lib/validations/recipe/recipeTitlesRequest');
 
 const recipeController = {
-  viewRecipe: async function(req, res, next) {  // rename?
+  viewRecipe: async function(req, res, next) {
     try {
-      const types = (req.body.types) ? req.sanitize(req.body.types) : [];
-      const cuisines = (req.body.cuisines) ? req.sanitize(req.body.cuisines) : [];
+      const types = (req.body.types) ? req.body.types : [];
+      const cuisines = (req.body.cuisines) ? req.body.cuisines : [];
       const starting = (req.body.start) ? req.sanitize(req.body.start) : 0;
       const display = 25;  // to do: allow user on FE to change this
       validRecipesRequest({types, cuisines, starting, display});
@@ -163,7 +163,7 @@ const recipeController = {
   },
   viewRecipeTitlesByIds: async function(req, res, next) {
     try {
-      const recipeIds = (req.body.recipeIds) ? req.sanitize(req.body.recipeIds) : [];
+      const recipeIds = (req.body.recipeIds) ? req.body.recipeIds : [];
       validRecipeTitlesRequest({recipeIds});
       const placeholders = '?, '.repeat(recipeIds.length - 1) + '?';
       const recipe = new Recipe(pool);
