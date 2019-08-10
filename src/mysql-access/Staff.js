@@ -17,7 +17,6 @@ class Staff {
       WHERE email = ?
     `;
     const [ staffByEmail ] = await this.pool.execute(sql, [email]);
-    if (!staffByEmail) throw new Error("getStaffByEmail failed");
     return staffByEmail;
   }
 
@@ -28,7 +27,6 @@ class Staff {
       WHERE staffname = ?
     `;
     const [ staffByName ] = await this.pool.execute(sql, [staffname]);
-    if (!staffByName) throw new Error("getStaffByName failed");
     return staffByName;
   }
 

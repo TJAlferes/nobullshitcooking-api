@@ -104,17 +104,14 @@ const socketAuth = (socket, next) => {
 
 
 // session
-const RedisStore = connectRedis(expressSession);  // connectRedis(session)
-const redisSession = new RedisStore({
-  client: sessClient
-  //pass: process.env.REDIS_PASSWORD
-});
+const RedisStore = connectRedis(expressSession);
+const redisSession = new RedisStore({client: sessClient});
 const sessionOptions = {
   store: redisSession,
   name: "connect.sid",  //"session",
   secret: process.env.SESSION_SECRET || "secret",
-  resave: true,  //false,
-  saveUninitialized: true,  //false,
+  resave: true,
+  saveUninitialized: true,
   cookie: {
     sameSite: true,
     maxAge: 86400000,
@@ -165,13 +162,6 @@ io.use(socketAuth);
 });*/
 
 io.on('connect', socketConnection);  // connection ?
-
-//console.log('========== server ========== ');
-//console.log(server);
-//console.log('============================== ');
-//console.log('========== io ========== ');
-//console.log(io);
-//console.log('============================== ');
 
 
 
