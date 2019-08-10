@@ -81,6 +81,13 @@ const userAuthController = {
 
     validLoginRequest({email, pass});
 
+    // Problem: This would invalidate some older/alternative email types. Remove?
+    if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
+      return res.send({message: 'Invalid email.'});
+    }
+    if (pass.length < 6) return res.send({message: 'Invalid password.'});
+    if (pass.length > 54) return res.send({message: 'Invalid password.'});
+
     const user = new User(pool);
 
     const userExists = await user.getUserByEmail(email);

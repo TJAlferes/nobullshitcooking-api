@@ -7,7 +7,7 @@ class Plan {
     this.updateMyPrivatePlan = this.updateMyPrivatePlan.bind(this);
     this.deleteMyPrivatePlan = this.deleteMyPrivatePlan.bind(this);
   }
-
+  
   async viewAllMyPrivatePlans(ownerId) {
     const sql = `
       SELECT plan_id, plan_name
