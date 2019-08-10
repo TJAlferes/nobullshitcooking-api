@@ -21,7 +21,6 @@ const equipmentController = {
         let total = rowCount[0].total;
         let pages = (total > display) ? Math.ceil(total / display) : 1;
         res.send({rows, pages, starting});
-        return next();
       }
 
       if (types.length == 1) {
@@ -32,7 +31,6 @@ const equipmentController = {
         let total = rowCount[0].total;
         let pages = (total > display) ? Math.ceil(total / display) : 1;
         res.send({rows, pages, starting});
-        return next();
       }
 
       if (types.length == 0) {
@@ -42,7 +40,6 @@ const equipmentController = {
         let total = rowCount[0].total;
         let pages = (total > display) ? Math.ceil(total / display) : 1;
         res.send({rows, pages, starting});
-        return next();
       }
 
       next();

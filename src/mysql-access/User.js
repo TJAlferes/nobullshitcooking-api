@@ -18,7 +18,7 @@ class User {
       WHERE email = ?
     `;
     const [ userByEmail ] = await this.pool.execute(sql, [email]);
-    if (!userByEmail) throw new Error("getUserByEmail failed");
+    //if (!userByEmail) throw new Error("getUserByEmail failed");
     return userByEmail;
   }
 
@@ -29,7 +29,7 @@ class User {
       WHERE username = ?
     `;
     const [ userByName ] = await this.pool.execute(sql, [username]);
-    if (!userByName) throw new Error("getUserByName failed");
+    //if (!userByName) throw new Error("getUserByName failed");
     return userByName;
   }
 
