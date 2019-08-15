@@ -9,30 +9,19 @@ const router = Router();
 
 // for /recipe/...
 
-/*
-move
-
-router.get(
-  '/submit-edit-form',
-  catchExceptions(async function(req, res, next) {
-    try {
-      const sql = `
-        SELECT recipe_id, recipe_type_id, cuisine_id, title
-        FROM nobsc_recipes
-        ORDER BY title ASC
-      `;
-      const [ rows ] = await pool.execute(sql);
-      res.send(rows);
-    } catch(err) {
-      next(err);
-    }
-  })
-);
-*/
-
 router.post(
   '/',
   catchExceptions(recipeController.viewRecipe)
+);
+
+router.get(
+  '/official/all',
+  catchExceptions(recipeController.viewAllOfficialRecipes)
+);
+
+router.get(
+  '/public/all',
+  catchExceptions(recipeController.viewAllPublicRecipes)
 );
 
 router.get(

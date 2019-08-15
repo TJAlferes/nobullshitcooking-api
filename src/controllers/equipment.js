@@ -6,6 +6,7 @@ const validEquipmentRequest = require('../lib/validations/equipment/equipmentReq
 const equipmentController = {
   viewEquipment: async function(req, res, next) {
     try {
+      console.log('equipmentController.viewEquipment called');
       const types = (req.body.types) ? req.body.types : [];
       const starting = (req.body.start) ? Number(req.sanitize(req.body.start)) : 0;
       const display = 25;  // to do: allow user on FE to change this
@@ -46,6 +47,11 @@ const equipmentController = {
     } catch(err) {
       next(err);
     }
+  },
+  viewAllOfficialEquipment: async function (res, res) {
+    const equipment = new Equipment(pool);
+    const rows = equipment.viewAllOfficialEquipment();
+    res.send(rows);
   },
   viewEquipmentDetail: async function(req, res, next) {
     try {

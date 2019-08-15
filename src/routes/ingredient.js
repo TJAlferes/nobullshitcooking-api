@@ -9,31 +9,14 @@ const router = Router();
 
 // for /ingredient/...
 
-/*
-move
-
-router.get(
-  '/submit-edit-form',
-  catchExceptions(async function(req, res, next) {
-    try {
-      const sql = `
-        SELECT ingredient_id, ingredient_type_id, ingredient_name
-        FROM nobsc_ingredients
-        ORDER BY ingredient_name ASC
-      `;
-      const [ rows ] = await pool.execute(sql);
-      console.log('rows in ingredient controller: ', rows);
-      res.send(rows);
-    } catch(err) {
-      next(err);
-    }
-  })
-);
-*/
-
 router.post(
   '/',
   catchExceptions(ingredientController.viewIngredient)
+);
+
+router.get(
+  '/official/all',
+  catchExceptions(ingredientController.viewAllOfficialIngredients)
 );
 
 router.get(

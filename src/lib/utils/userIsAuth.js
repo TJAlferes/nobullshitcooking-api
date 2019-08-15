@@ -1,7 +1,7 @@
 const StatusError = require('./StatusError');
 
 module.exports = function(req, res, next) {
-  if (req.session.userInfo.hasOwnProperty(userId)) return next();
+  if (req.session.hasOwnProperty(userInfo)) return next();  // insufficient!
   /*req.session.destroy(err => {
     if (err) reject(err);
     res.clearCookie('connect.sid')

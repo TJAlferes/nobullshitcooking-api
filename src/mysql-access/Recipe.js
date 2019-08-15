@@ -21,9 +21,13 @@ class Recipe {
     this.viewRecipesOfCuisinesAndType = this.viewRecipesOfCuisinesAndType.bind(this);
     this.viewRecipesOfCuisineAndTypes = this.viewRecipesOfCuisineAndTypes.bind(this);
     this.viewRecipesOfCuisineAndType = this.viewRecipesOfCuisineAndType.bind(this);
+
+    this.viewAllOfficialRecipes = this.viewAllOfficialRecipes.bind(this);
+    this.viewAllPublicRecipes = this.viewAllPublicRecipes.bind(this);
+
     this.viewRecipeById = this.viewRecipeById.bind(this);
-    this.viewRecipeTitlesByIds = this.viewRecipeTitlesByIds.bind(this);
-    this.viewRecipesForSubmitEditForm = viewRecipesForSubmitEditForm.bind(this);
+    //this.viewRecipeTitlesByIds = this.viewRecipeTitlesByIds.bind(this);
+    this.viewRecipesForSubmitEditForm = this.viewRecipesForSubmitEditForm.bind(this);
 
     this.createRecipe = this.createRecipe.bind(this);
 
@@ -255,6 +259,26 @@ class Recipe {
     `;
     const [ allRecipes ] = await this.pool.execute(sql, ids);
     return allRecipes;
+  }
+
+  async viewAllOfficialRecipes() {
+    const sql = `
+      SELECT recipe_id, recipe_type_id, cuisine_id, title, recipe_image
+      FROM nobsc_recipes
+      WHERE author_id = 1 AND owner_id = 1
+    `;
+    const [ allOfficialRecipes ] = await this.pool.execute(sql);
+    return allOfficialRecipes;
+  }
+
+  async viewAllPublicRecipes() {  // WILL GET BIG!
+    const sql = `
+      SELECT recipe_id, recipe_type_id, cuisine_id, title, recipe_image
+      FROM nobsc_recipes
+      WHERE author_id != 1 AND owner_id = 1
+    `;
+    const [ allPublicRecipes ] = await this.pool.execute(sql);
+    return allPublicRecipes;
   }
 
   async viewRecipeById(recipeId) {

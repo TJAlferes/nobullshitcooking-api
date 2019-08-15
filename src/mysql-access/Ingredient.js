@@ -10,6 +10,9 @@ class Ingredient {
     this.viewAllIngredients = this.viewAllIngredients.bind(this);
     this.viewIngredientsOfType = this.viewIngredientsOfType.bind(this);
     this.viewIngredientsOfTypes = this.viewIngredientsOfTypes.bind(this);
+
+    this.viewAllOfficialIngredients = this.viewAllOfficialIngredients.bind(this);
+
     this.viewIngredientById = this.viewIngredientById.bind(this);
 
     this.createIngredient = this.createIngredient.bind(this);
@@ -94,6 +97,16 @@ class Ingredient {
     `;  // TO DO: change to ? for security 
     const [ allIngredientsOfTypes ] = await this.pool.execute(sql, typeIds);
     return allIngredientsOfTypes;
+  }
+
+  async viewAllOfficialIngredients() {
+    const sql = `
+      SELECT ingredient_id, ingredient_type_id, ingredient_name, ingredient_image
+      FROM nobsc_ingredients
+      WHERE owner_id = 1
+    `;
+    const [ allOfficialIngredients ] = await this.pool.execute(sql);
+    return allOfficialIngredients;
   }
 
   async viewIngredientById(ingredientId) {

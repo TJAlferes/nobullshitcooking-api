@@ -10,6 +10,9 @@ class Equipment {
     this.viewAllEquipment = this.viewAllEquipment.bind(this);
     this.viewEquipmentOfType = this.viewEquipmentOfType.bind(this);
     this.viewEquipmentOfTypes = this.viewEquipmentOfTypes.bind(this);
+
+    this.viewAllOfficialEquipment = this.viewAllOfficialEquipment.bind(this);
+
     this.viewEquipmentById = this.viewEquipmentById.bind(this);
 
     this.createEquipment = this.createEquipment.bind(this);
@@ -96,6 +99,16 @@ class Equipment {
     `;  // TO DO: change to ? for security
     const [ allEqupimentOfTypes ] = await this.pool.execute(sql, typeIds);
     return allEqupimentOfTypes;
+  }
+
+  async viewAllOfficialEquipment() {
+    const sql = `
+      SELECT equipment_id, equipment_type_id, equipment_name, equipment_image
+      FROM nobsc_equipment
+      WHERE owner_id = 1
+    `;
+    const [ allOfficialEquipment ] = await this.pool.execute(sql);
+    return allOfficialEquipment;
   }
 
   async viewEquipmentById(equipmentId) {

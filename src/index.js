@@ -57,7 +57,7 @@ const { pubClient, subClient, sessClient } = require('./lib/connections/redisCon
 
 // app
 const app = express();
-const rateLimiterOptions = {windowMs: 1 * 60 * 1000, max: 100};  // limit each IP to 100 requests per minute  // affect socket?
+const rateLimiterOptions = {windowMs: 1 * 60 * 1000, max: 1000};  // limit each IP to 1000 requests per minute  // affect socket?
 const corsOptions = {origin: ['http://localhost:8080'], credentials: true};
 
 
@@ -90,7 +90,7 @@ const socketAuth = (socket, next) => {
   const sid = cookieParser.signedCookie(parsedCookie['connect.sid'], process.env.SESSION_SECRET);
   if (parsedCookie['connect.sid'] === sid) return next(new Error('Not authenticated.'));
   redisSession.get(sid, function(err, session) {
-    if (session.userInfo.hasOwnProperty(userId)) {  // CHANGE (not sufficient?)
+    if (session.hasOwnProperty(userInfo)) {  // CHANGE (not sufficient!)
       socket.request.user = session.userInfo;  // CHANGE (socket.request.userInfo = session.userInfo ?)
       socket.request.sid = sid;
       const messengerUser = new MessengerUser(client);
@@ -145,7 +145,6 @@ app.use(cors(corsOptions));  // before session?
 app.use(express.json());
 app.use(expressSanitizer());  // must be called after express.json()
 app.use(helmet());
-//app.use(cors());
 //app.use(csurf());  // must be called after cookies/sessions  // https://github.com/pillarjs/understanding-csrf
 app.use(compression());  // elasticbeanstalk already does?
 

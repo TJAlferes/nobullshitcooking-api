@@ -9,31 +9,14 @@ const router = Router();
 
 // for /equipment/...
 
-/*
-move
-
-router.get(
-  '/submit-edit-form',
-  catchExceptions(async function(req, res, next) {
-    try {
-      const sql = `
-        SELECT equipment_id, equipment_type_id, equipment_name
-        FROM nobsc_equipment
-        ORDER BY equipment_name ASC
-      `;
-      const [ rows ] = await pool.execute(sql);
-      console.log('rows in equipment controller: ', rows);
-      res.send(rows);
-    } catch(err) {
-      next(err);
-    }
-  })
-);
-*/
-
 router.post(
   '/',
   catchExceptions(equipmentController.viewEquipment)
+);
+
+router.get(
+  '/official/all',
+  catchExceptions(equipmentController.viewAllOfficialEquipment)
 );
 
 router.get(
