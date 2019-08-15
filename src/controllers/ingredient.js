@@ -6,7 +6,6 @@ const validIngredientRequest = require('../lib/validations/ingredient/ingredient
 const ingredientController = {
   viewIngredient: async function(req, res, next) {  // split into three methods?
     try {
-      console.log('ingredientController.viewIngredient called');
       const types = (req.body.types) ? req.body.types : [];
       const starting = (req.body.start) ? Number(req.sanitize(req.body.start)) : 0;
       const display = 25;  // to do: allow user on FE to change this
@@ -47,7 +46,7 @@ const ingredientController = {
   },
   viewAllOfficialIngredients: async function (res, res) {
     const ingredient = new Ingredient(pool);
-    const rows = ingredient.viewAllOfficialIngredients();
+    const rows = await ingredient.viewAllOfficialIngredients();
     res.send(rows);
   },
   viewIngredientDetail: async function(req, res, next) {

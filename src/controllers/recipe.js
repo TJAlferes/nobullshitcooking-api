@@ -7,7 +7,6 @@ const validRecipeTitlesRequest = require('../lib/validations/recipe/recipeTitles
 const recipeController = {
   viewRecipe: async function(req, res, next) {
     try {
-      console.log('recipeController.viewRecipe called');
       const types = (req.body.types) ? req.body.types : [];
       const cuisines = (req.body.cuisines) ? req.body.cuisines : [];
       const starting = (req.body.start) ? req.sanitize(req.body.start) : 0;
@@ -151,13 +150,11 @@ const recipeController = {
     }
   },
   viewAllOfficialRecipes: async function(req, res) {
-    console.log('recipeController.viewAllOfficialRecipes called');
     const recipe = new Recipe(pool);
     const rows = await recipe.viewAllOfficialRecipes();
     res.send(rows);
   },
   viewAllPublicRecipes: async function(req, res) {
-    console.log('recipeController.viewAllPublicRecipes called');
     const recipe = new Recipe(pool);
     const rows = await recipe.viewAllPublicRecipes();
     res.send(rows);
