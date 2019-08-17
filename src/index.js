@@ -90,7 +90,7 @@ const socketAuth = (socket, next) => {
   const sid = cookieParser.signedCookie(parsedCookie['connect.sid'], process.env.SESSION_SECRET);
   if (parsedCookie['connect.sid'] === sid) return next(new Error('Not authenticated.'));
   redisSession.get(sid, function(err, session) {
-    if (session.hasOwnProperty(userInfo)) {  // CHANGE (not sufficient!)
+    if (session.userInfo.userId) {  // CHANGE (not sufficient!)
       socket.request.user = session.userInfo;  // CHANGE (socket.request.userInfo = session.userInfo ?)
       socket.request.sid = sid;
       const messengerUser = new MessengerUser(client);
@@ -113,10 +113,10 @@ const sessionOptions = {
   resave: true,
   saveUninitialized: true,
   cookie: {
-    sameSite: true,
+    sameSite: false,
     maxAge: 86400000,
-    httpOnly: true,
-    secure: true
+    httpOnly: false,
+    secure: false
   }
 };
 const session = expressSession(sessionOptions);
@@ -126,6 +126,8 @@ const session = expressSession(sessionOptions);
 if (app.get('env') === 'production') {
   app.set('trust proxy', 1);  // trust first proxy
   sessionOptions.cookie.secure = true;  // serve secure cookies
+  sessionOptions.cookie.sameSite = true;
+  sessionOptions.cookie.httpOnly = true;
   corsOptions.origin = ['https://nobullshitcooking.net'];
 }
 //enforce https? or elasticbeanstalk already does?
@@ -137,12 +139,21 @@ if (app.get('env') === 'production') {
 ##############################################################################*/
 
 //app.use(expressPinoLogger());
-app.use(expressRateLimit(rateLimiterOptions));
+app.use(express.json());
+//app.use(cookieParser(process.env.SESSION_SECRET || "secret"));
 app.use(session);  // sharedSession? **********!!!  // do you have to preset one?  // now preset
+app.use(expressRateLimit(rateLimiterOptions));
+//app.use(session);  // sharedSession? **********!!!  // do you have to preset one?  // now preset
 app.use(cors(corsOptions));  // before session?
+/*app.options("/*", function(req, res, next){
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+  res.send(200);
+});*/
 //app.use(helmet());  // get working
 //app.use(hpp());
-app.use(express.json());
+//app.use(express.json());
 app.use(expressSanitizer());  // must be called after express.json()
 app.use(helmet());
 //app.use(csurf());  // must be called after cookies/sessions  // https://github.com/pillarjs/understanding-csrf
@@ -168,13 +179,9 @@ io.on('connect', socketConnection);  // connection ?
 3. routes
 ##############################################################################*/
 
-redisSession['hits'] = 0;  // delete
-const hits = redisSession['hits'];
 app.get('/', (req, res) => {
   try {
-    redisSession['hits']++;
-    const num = redisSession['hits'];
-    res.send(`No Bullshit Cooking Backend API. I have been loaded ${num} times.`);
+    res.send(`No Bullshit Cooking Backend API.`);
   } catch(err) {
     console.log(err);
   }
