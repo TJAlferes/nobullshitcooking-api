@@ -99,8 +99,6 @@ const userRecipeController = {
 
       const generatedId = createdRecipe.insertId;
 
-      let resObj = {createRecipe};
-
       const recipeMethodsToCreate = requiredMethods.map(rM =>
         validRecipeMethodsEntity({
           recipeId: generatedId,
@@ -111,13 +109,11 @@ const userRecipeController = {
       .repeat(requiredMethods.length)
       .slice(0, -1);
       const recipeMethods = new RecipeMethods(pool);
-      const [ createdRecipeMethods ] = await recipeMethods
-      .createRecipeMethods(
+      await recipeMethods.createRecipeMethods(
         recipeMethodsToCreate,
         recipeMethodsPlaceholders,
         generatedId
       );
-      resObj.createdRecipeMethods = createdRecipeMethods;
 
       if (requiredEquipment.length > 0) {
         const recipeEquipmentToCreate = requiredEquipment.map(rE =>
@@ -131,13 +127,11 @@ const userRecipeController = {
         .repeat(requiredEquipment.length)
         .slice(0, -1);
         const recipeEquipment = new RecipeEquipment(pool);
-        const [ createdRecipeEquipment ] = await recipeEquipment
-        .createRecipeEquipment(
+        await recipeEquipment.createRecipeEquipment(
           recipeEquipmentToCreate,
           recipeEquipmentPlaceholders,
           generatedId
         );
-        resObj.createdRecipeEquipment = createdRecipeEquipment;
       }
 
       if (requiredIngredients.length > 0) {
@@ -153,13 +147,11 @@ const userRecipeController = {
         .repeat(requiredIngredients.length)
         .slice(0, -1);
         const recipeIngredients = new RecipeIngredients(pool);
-        const [ createdRecipeIngredients ] = await recipeIngredients
-        .createRecipeIngredients(
+        await recipeIngredients.createRecipeIngredients(
           recipeIngredientsToCreate,
           recipeIngredientsPlaceholders,
           generatedId
         );
-        resObj.createdRecipeIngredients = createdRecipeIngredients;
       }
 
       if (requiredSubrecipes.length > 0) {
@@ -175,16 +167,14 @@ const userRecipeController = {
         .repeat(requiredSubrecipes.length)
         .slice(0, -1);
         const recipeSubrecipes = new RecipeSubrecipes(pool);
-        const [ createdRecipeSubrecipes ] = await recipeSubrecipes
-        .createRecipeSubrecipes(
+        await recipeSubrecipes.createRecipeSubrecipes(
           recipeSubrecipesToCreate,
           recipeSubrecipesPlaceholders,
           generatedId
         );
-        resObj.createdRecipeSubrecipes = createdRecipeSubrecipes;
       }
 
-      res.send(resObj);
+      res.send({message: 'Recipe created.'});
       next();
     } catch(err) {
       next(err);
@@ -291,7 +281,7 @@ const userRecipeController = {
         recipeId
       );
 
-      res.send('Recipe updated.');
+      res.send({message: 'Recipe updated.'});
       next();
     } catch(err) {
       next(err);
@@ -398,7 +388,7 @@ const userRecipeController = {
         recipeId
       );
 
-      res.send('Recipe updated.');
+      res.send({message: 'Recipe updated.'});
       next();
     } catch(err) {
       next(err);
@@ -423,7 +413,7 @@ const userRecipeController = {
       await recipeSubrecipes.deleteRecipeSubrecipes(recipeId);
       await recipe.deleteMyPrivateUserRecipe(recipeId, authorId, ownerId);
 
-      res.send('Recipe deleted.');
+      res.send({message: 'Recipe deleted.'});
       next();
     } catch(err) {
       next(err);
@@ -435,8 +425,8 @@ const userRecipeController = {
       const recipeId = req.sanitize(req.body.recipeId);
       const authorId = req.session.userInfo.userId;
       const recipe = new Recipe(pool);
-      const [ row ] = await recipe.disownMyPublicUserRecipe(newAuthorId, recipeId, authorId);
-      res.send(row);
+      await recipe.disownMyPublicUserRecipe(newAuthorId, recipeId, authorId);
+      res.send({message: 'Recipe disowned.'});
       next();
     } catch(err) {
       next(err);

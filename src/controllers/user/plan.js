@@ -37,7 +37,7 @@ const userPlanController = {
       const planToCreate = validPlanEntity({authorId, ownerId, planName, planData});
       const plan = new Plan(pool);
       await plan.createMyPrivatePlan(planToCreate);
-      res.send('Plan created.');
+      res.send({message: 'Plan created.'});
       next();
     } catch(err) {
       next(err);
@@ -55,7 +55,7 @@ const userPlanController = {
       const planToUpdateWith = validPlanEntity({authorId, ownerId, planName, planData});
       const plan = new Plan(pool);
       await plan.updateMyPrivatePlan(planToUpdateWith, planId);
-      res.send('Plan updated.');
+      res.send({message: 'Plan updated.'});
       next();
     } catch(err) {
       next(err);
@@ -67,7 +67,7 @@ const userPlanController = {
       const ownerId = req.session.userInfo.userId;
       const plan = new Plan(pool);
       await plan.deleteMyPrivatePlan(ownerId, planId);
-      res.send('Plan deleted.');
+      res.send({message: 'Plan deleted.'});
       next();
     } catch(err) {
       next(err);

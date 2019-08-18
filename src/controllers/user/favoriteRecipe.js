@@ -21,7 +21,7 @@ const userFavoriteRecipeController = {
       validFavoriteRecipeEntity({userId, recipeId});
       const favoriteRecipe = new FavoriteRecipe(pool);
       await favoriteRecipe.createMyFavoriteRecipe(userId, recipeId);
-      res.send('Favorited.');
+      res.send({message: 'Favorited.'});
       next();
     } catch(err) {
       next(err);
@@ -34,7 +34,7 @@ const userFavoriteRecipeController = {
       validFavoriteRecipeEntity({userId, recipeId});
       const favoriteRecipe = new FavoriteRecipe(pool);
       await favoriteRecipe.deleteMyFavoriteRecipe(userId, recipeId);
-      res.send('Unfavorited.');
+      res.send({message: 'Unfavorited.'});
       next();
     } catch(err) {
       next(err);

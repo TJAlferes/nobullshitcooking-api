@@ -46,8 +46,8 @@ const userIngredientController = {
         ingredientImage
       });
       const ingredient = new Ingredient(pool);
-      const [ row ] = await ingredient.createMyPrivateUserIngredient(ingredientToCreate);
-      res.send(row);
+      await ingredient.createMyPrivateUserIngredient(ingredientToCreate);
+      res.send({message: 'Ingredient created'});
       next();
     } catch(err) {
       next(err);
@@ -73,8 +73,8 @@ const userIngredientController = {
         ingredientImage
       });
       const ingredient = new Ingredient(pool);
-      const [ row ] = await ingredient.updateMyPrivateUserIngredient(ingredientToUpdateWith, ingredientId);
-      res.send(row);
+      await ingredient.updateMyPrivateUserIngredient(ingredientToUpdateWith, ingredientId);
+      res.send({message: 'Ingredient updated'});
       next();
     } catch(err) {
       next(err);
@@ -87,8 +87,8 @@ const userIngredientController = {
       const recipeIngredient = new RecipeIngredient(pool);
       const ingredient = new Ingredient(pool);
       await recipeIngredient.deleteRecipeIngredientsByIngredientId(ingredientId);
-      const [ row ] = await ingredient.deleteMyPrivateUserIngredient(ownerId, ingredientId);
-      res.send(row);
+      await ingredient.deleteMyPrivateUserIngredient(ownerId, ingredientId);
+      res.send({message: 'Ingredient deleted'});
       next();
     } catch(err) {
       next(err);

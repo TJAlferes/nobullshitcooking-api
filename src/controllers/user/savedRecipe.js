@@ -21,7 +21,7 @@ const userSavedRecipeController = {
       validSavedRecipeEntity({userId, recipeId});
       const savedRecipe = new SavedRecipe(pool);
       await savedRecipe.createMySavedRecipe(userId, recipeId);
-      res.send('Saved.');
+      res.send({message: 'Saved.'});
       next();
     } catch(err) {
       next(err);
@@ -34,7 +34,7 @@ const userSavedRecipeController = {
       validSavedRecipeEntity({userId, recipeId});
       const savedRecipe = new SavedRecipe(pool);
       await savedRecipe.deleteMySavedRecipe(userId, recipeId);
-      res.send('Unsaved.');
+      res.send({message: 'Unsaved.'});
       next();
     } catch(err) {
       next(err);

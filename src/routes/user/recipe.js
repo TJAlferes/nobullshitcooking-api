@@ -39,7 +39,7 @@ router.delete(
 );
 
 router.delete(
-  '/delete/public',
+  '/disown/public',
   userIsAuth,
   catchExceptions(userRecipeController.disownMyPublicUserRecipe)
 );

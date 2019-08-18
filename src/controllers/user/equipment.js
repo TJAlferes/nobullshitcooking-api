@@ -46,8 +46,8 @@ const userEquipmentController = {
         equipmentImage
       });
       const equipment = new Equipment(pool);
-      const [ row ] = await equipment.createMyPrivateUserEquipment(equipmentToCreate);
-      res.send(row);
+      await equipment.createMyPrivateUserEquipment(equipmentToCreate);
+      res.send({message: 'Equipment created.'});
       next();
     } catch(err) {
       next(err);
@@ -73,8 +73,8 @@ const userEquipmentController = {
         equipmentImage
       });
       const equipment = new Equipment(pool);
-      const [ row ] = await equipment.updateMyPrivateUserEquipment(equipmentToUpdateWith, equipmentId);
-      res.send(row);
+      await equipment.updateMyPrivateUserEquipment(equipmentToUpdateWith, equipmentId);
+      res.send({message: 'Equipment updated.'});
       next();
     } catch(err) {
       next(err);
@@ -87,8 +87,8 @@ const userEquipmentController = {
       const recipeEquipment = new RecipeEquipment(pool);
       const equipment = new Equipment(pool);
       await recipeEquipment.deleteRecipeEquipmentByEquipmentId(equipmentId);
-      const [ row ] = await equipment.deleteMyPrivateUserEquipment(ownerId, equipmentId);
-      res.send(row);
+      await equipment.deleteMyPrivateUserEquipment(ownerId, equipmentId);
+      res.send({message: 'Equipment deleted.'});
       next();
     } catch(err) {
       next(err);

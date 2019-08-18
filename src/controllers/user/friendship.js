@@ -3,19 +3,18 @@ const User = require('../../mysql-access/User');
 const Friendship = require('../../mysql-access/Friendship');
 const validFriendshipEntity = require('../../lib/validations/friendship/friendshipEntity');
 
-// WARNING: DO NOT RETURN user_id TO FRONT END !!!!!
+// WARNING: DO NOT RETURN user_id TO FRONT END !!!!! (why not?)
 
 const userFriendshipController = {
-  viewAllMyFriendships: async function(req, res, next) {
+  viewAllMyFriendships: async function(req, res, next) {  // JUST DO TYPE FILTERING ON FRONT END
     try {
-      const type = (req.body.type) ? req.sanitize(req.body.type) : "none";
+      //const type = (req.body.type) ? req.sanitize(req.body.type) : "none";
       const userId = req.session.userInfo.userId;
       const friendship = new Friendship(pool);
-      let rows;
-      if (type === "none") rows = await friendship.viewAllMyFriendships(userId);
-      if (type === "accepted") rows = await friendship.viewAllMyAcceptedFriendships(userId);
-      if (type === "pending") rows = await friendship.viewAllMyPendingFriendships(userId);
-      if (type === "blocked") rows = await friendship.viewAllMyBlockedUsers(userId);
+      const rows = await friendship.viewAllMyFriendships(userId);
+      //if (type === "accepted") rows = await friendship.viewAllMyAcceptedFriendships(userId);
+      //if (type === "pending") rows = await friendship.viewAllMyPendingFriendships(userId);
+      //if (type === "blocked") rows = await friendship.viewAllMyBlockedUsers(userId);
       res.send(rows);
       next();
     } catch(err) {
@@ -31,7 +30,7 @@ const userFriendshipController = {
       if (friendExists) {
         friendId = friendExists[0].user_id;
       } else {
-        res.send('User not found.');
+        res.send({message: 'User not found.'});
         return next();
       }
       const userId = req.session.userInfo.userId;
@@ -39,7 +38,7 @@ const userFriendshipController = {
       const friendshipToCreate = validFriendshipEntity({userId, friendId, status});
       const friendship = new Friendship(pool);
       await friendship.createFriendship(friendshipToCreate);
-      res.send('Friendship request sent.');
+      res.send({message: 'Friendship request sent.'});
       next();
     } catch(err) {
       next(err);
@@ -54,13 +53,13 @@ const userFriendshipController = {
       if (friendExists) {
         friendId = friendExists[0].user_id;
       } else {
-        res.send('User not found.');
+        res.send({message: 'User not found.'});
         return next();
       }
       const userId = req.session.userInfo.userId;
       const friendship = new Friendship(pool);
       await friendship.acceptFriendship(userId, friendId);
-      res.send('Friendship request accepted.');
+      res.send({message: 'Friendship request accepted.'});
       next();
     } catch(err) {
       next(err);
@@ -75,13 +74,13 @@ const userFriendshipController = {
       if (friendExists) {
         friendId = friendExists[0].user_id;
       } else {
-        res.send('User not found.');
+        res.send({message: 'User not found.'});
         return next();
       }
       const userId = req.session.userInfo.userId;
       const friendship = new Friendship(pool);
       await friendship.rejectFriendship(userId, friendId);
-      res.send('Friendship request rejected.');
+      res.send({message: 'Friendship request rejected.'});
       next();
     } catch(err) {
       next(err);
@@ -96,13 +95,13 @@ const userFriendshipController = {
       if (friendExists) {
         friendId = friendExists[0].user_id;
       } else {
-        res.send('User not found.');
+        res.send({message: 'User not found.'});
         return next();
       }
       const userId = req.session.userInfo.userId;
       const friendship = new Friendship(pool);
       await friendship.deleteFriendship(userId, friendId);
-      res.send('No longer friends. Maybe again later.');
+      res.send({message: 'No longer friends. Maybe again later.'});
       next();
     } catch(err) {
       next(err);
@@ -117,13 +116,13 @@ const userFriendshipController = {
       if (friendExists) {
         friendId = friendExists[0].user_id;
       } else {
-        res.send('User not found.');
+        res.send({message: 'User not found.'});
         return next();
       }
       const userId = req.session.userInfo.userId;
       const friendship = new Friendship(pool);
       await friendship.blockUser(userId, friendId);
-      res.send('User blocked.');
+      res.send({message: 'User blocked.'});
       next();
     } catch(err) {
       next(err);
@@ -138,13 +137,13 @@ const userFriendshipController = {
       if (friendExists) {
         friendId = friendExists[0].user_id;
       } else {
-        res.send('User not found.');
+        res.send({message: 'User not found.'});
         return next();
       }
       const userId = req.session.userInfo.userId;
       const friendship = new Friendship(pool);
       await friendship.unblockUser(userId, friendId);
-      res.send('User unblocked.');
+      res.send({message: 'User unblocked.'});
       next();
     } catch(err) {
       next(err);
