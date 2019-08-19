@@ -27,12 +27,12 @@ class Friendship {
   async viewAllMyFriendships(userId) {
     const sql = `
       SELECT
-        u.user_id AS user_id
+        u.user_id AS user_id,
         u.username AS username,
         u.avatar AS avatar,
         f.status AS status
       FROM nobsc_users u
-      INNER JOIN nobsc_friends f ON u.user_id = f.friend_id
+      INNER JOIN nobsc_friendships f ON u.user_id = f.friend_id
       WHERE f.user_id = ?
     `;
     const [ friendships ] = await this.pool.execute(sql, [userId]);
@@ -76,7 +76,7 @@ class Friendship {
       VALUES (?, ?, ?)
     `;
     const [ pendingFriendship ] = await this.pool.execute(sql, [userId, friendId, status]);
-    await this.pool.execute(sql, [friendId, userId]);
+    await this.pool.execute(sql, [friendId, userId, status]);
     return pendingFriendship;
   }
 

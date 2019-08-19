@@ -21,36 +21,30 @@ const userFriendshipController = {
       next(err);
     }
   },
-  createFriendship: async function(req, res, next) {
-    try {
-      const friendName = req.sanitize(req.body.friendName);
-      const user = new User(pool);
-      const [ friendExists ] = await user.getUserIdByUsername(friendName);
-      let friendId;
-      if (friendExists) {
-        friendId = friendExists[0].user_id;
-      } else {
-        res.send({message: 'User not found.'});
-        return next();
-      }
-      const userId = req.session.userInfo.userId;
-      const status = "pending";
-      const friendshipToCreate = validFriendshipEntity({userId, friendId, status});
-      const friendship = new Friendship(pool);
-      await friendship.createFriendship(friendshipToCreate);
-      res.send({message: 'Friendship request sent.'});
-      next();
-    } catch(err) {
-      next(err);
+  createFriendship: async function(req, res) {
+    const friendName = req.sanitize(req.body.friendName);
+    const user = new User(pool);
+    const friendExists = await user.getUserIdByUsername(friendName);
+    let friendId;
+    if (friendExists.length) {
+      friendId = friendExists[0].user_id;
+    } else {
+      return res.send({message: 'User not found.'});
     }
+    const userId = req.session.userInfo.userId;
+    const status = "pending";
+    const friendshipToCreate = validFriendshipEntity({userId, friendId, status});
+    const friendship = new Friendship(pool);
+    await friendship.createFriendship(friendshipToCreate);
+    res.send({message: 'Friendship request sent.'});
   },
   acceptFriendship: async function(req, res, next) {
     try {
       const friendName = req.sanitize(req.body.friendName);
       const user = new User(pool);
-      const [ friendExists ] = await user.getUserIdByUsername(friendName);
+      const friendExists = await user.getUserIdByUsername(friendName);
       let friendId;
-      if (friendExists) {
+      if (friendExists.length) {
         friendId = friendExists[0].user_id;
       } else {
         res.send({message: 'User not found.'});
@@ -69,9 +63,9 @@ const userFriendshipController = {
     try {
       const friendName = req.sanitize(req.body.friendName);
       const user = new User(pool);
-      const [ friendExists ] = await user.getUserIdByUsername(friendName);
+      const friendExists = await user.getUserIdByUsername(friendName);
       let friendId;
-      if (friendExists) {
+      if (friendExists.length) {
         friendId = friendExists[0].user_id;
       } else {
         res.send({message: 'User not found.'});
@@ -90,9 +84,9 @@ const userFriendshipController = {
     try {
       const friendName = req.sanitize(req.body.friendName);
       const user = new User(pool);
-      const [ friendExists ] = await user.getUserIdByUsername(friendName);
+      const friendExists = await user.getUserIdByUsername(friendName);
       let friendId;
-      if (friendExists) {
+      if (friendExists.length) {
         friendId = friendExists[0].user_id;
       } else {
         res.send({message: 'User not found.'});
@@ -111,9 +105,9 @@ const userFriendshipController = {
     try {
       const friendName = req.sanitize(req.body.friendName);
       const user = new User(pool);
-      const [ friendExists ] = await user.getUserIdByUsername(friendName);
+      const friendExists = await user.getUserIdByUsername(friendName);
       let friendId;
-      if (friendExists) {
+      if (friendExists.length) {
         friendId = friendExists[0].user_id;
       } else {
         res.send({message: 'User not found.'});
@@ -132,9 +126,9 @@ const userFriendshipController = {
     try {
       const friendName = req.sanitize(req.body.friendName);
       const user = new User(pool);
-      const [ friendExists ] = await user.getUserIdByUsername(friendName);
+      const friendExists = await user.getUserIdByUsername(friendName);
       let friendId;
-      if (friendExists) {
+      if (friendExists.length) {
         friendId = friendExists[0].user_id;
       } else {
         res.send({message: 'User not found.'});
