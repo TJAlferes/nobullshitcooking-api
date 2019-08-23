@@ -116,7 +116,7 @@ const userAuthController = {
   },
 
   setAvatar: async function(req, res) {
-    const avatar = req.sanitize(req.body.avatarUrl);
+    const avatar = req.sanitize(req.body.avatar);
     const userId = req.session.userInfo.userId;
     const user = new User(pool);
     await user.setAvatar(avatar, userId);

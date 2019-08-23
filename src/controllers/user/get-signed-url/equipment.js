@@ -1,5 +1,5 @@
 require('dotenv').config();
-//const uuidv4 = require('uuid/v4');  // do in React instead?
+const uuidv4 = require('uuid/v4');  // do in React instead?
 const AWS = require('aws-sdk');
 
 const AWS_NOBSC_USER_EQUIPMENT_S3_BUCKET = process.env.AWS_NOBSC_USER_EQUIPMENT_S3_BUCKET;
