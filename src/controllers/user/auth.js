@@ -113,6 +113,14 @@ const userAuthController = {
   logout: async function(req, res) {
     await req.session.destroy();
     res.end();
+  },
+
+  setAvatar: async function(req, res) {
+    const avatar = req.sanitize(req.body.avatarUrl);
+    const userId = req.session.userInfo.userId;
+    const user = new User(pool);
+    await user.setAvatar(avatar, userId);
+    res.send({message: 'Avatar set.'});
   }
 };
 

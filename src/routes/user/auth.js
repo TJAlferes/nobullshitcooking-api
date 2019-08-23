@@ -1,6 +1,6 @@
 const { Router } = require('express');
 
-//const userIsAuth = require('../../lib/utils/userIsAuth');
+const userIsAuth = require('../../lib/utils/userIsAuth');
 const catchExceptions = require('../../lib/utils/catchExceptions');
 const userAuthController = require('../../controllers/user/auth');
 
@@ -30,5 +30,11 @@ router.post(
   '/verify',
   catchExceptions(userAuthController.verify)
 );*/
+
+router.post(
+  '/set-avatar',
+  userIsAuth,
+  catchExceptions(userAuthController.setAvatar)
+);
 
 module.exports = router;

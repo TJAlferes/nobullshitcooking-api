@@ -7,6 +7,7 @@ class User {
     this.viewAllUsers = this.viewAllUsers.bind(this);
     this.viewUserById = this.viewUserById.bind(this);
     this.createUser = this.createUser.bind(this);
+    this.setAvatar = this.setAvatar.bind(this);
     //this.updateUser = this.updateUser.bind(this);
     //this.deleteUser = this.deleteUser.bind(this);
   }
@@ -75,6 +76,17 @@ class User {
     const [ createdUser ] = await this.pool.execute(sql, [email, pass, username]);
     if (!createdUser) throw new Error("createUser failed");
     return createdUser;
+  }
+
+  async setAvatar(avatar, userId) {
+    const sql = `
+      UPDATE nobsc_users
+      SET avatar = ?
+      WHERE user_id = ?
+      LIMIT 1
+    `;
+    const [ updatedUser ] = await this.pool.execute(sql, [avatar, userId]);
+    return updatedUser;
   }
 
   /*async updateUser(userToUpdateWith, userId) {
