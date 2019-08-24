@@ -8,7 +8,7 @@ const validUserEntity = struct(
     avatar: 'string?',
   },
   {
-    avatar: 'nobsc-user-default',
+    avatar: 'nobsc-user-default.png',
   }
 );
 

@@ -1,6 +1,7 @@
 const { Router } = require('express');
 
 const userAuthRouter = require('./auth');
+const userProfileRouter = require('./profile');
 const userGetSignedUrlAvatarRouter = require('./get-signed-url/avatar');
 const userGetSignedUrlEquipmentRouter = require('./get-signed-url/equipment');
 const userGetSignedUrlIngredientRouter = require('./get-signed-url/ingredient');
@@ -19,6 +20,7 @@ const userRecipeRouter = require('./recipe');
 const router = Router();
 
 router.use('/auth', userAuthRouter);
+router.use('/profile', userProfileRouter);
 router.use('/get-signed-url/avatar', userGetSignedUrlAvatarRouter);
 router.use('/get-signed-url/equipment', userGetSignedUrlEquipmentRouter);
 router.use('/get-signed-url/ingredient', userGetSignedUrlIngredientRouter);

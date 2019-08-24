@@ -50,7 +50,7 @@ class FavoriteRecipe {
         r.recipe_image AS recipe_image
       FROM nobsc_favorite_recipes f
       INNER JOIN nobsc_recipes r ON r.recipe_id = f.recipe_id
-      WHERE user_id = ?
+      WHERE f.user_id = ?
       ORDER BY title
     `;
     const [ favoriteRecipes ] = await this.pool.execute(sql, [userId]);

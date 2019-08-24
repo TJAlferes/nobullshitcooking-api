@@ -10,7 +10,7 @@ const validIngredientEntity = struct(
     ingredientImage: 'string'
   },
   {
-    ingredientImage: 'nobsc-ingredient-default'
+    ingredientImage: 'nobsc-ingredient-default.png'
   }
 );
 

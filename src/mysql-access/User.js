@@ -36,7 +36,7 @@ class User {
 
   async getUserIdByUsername(username) {
     const sql = `
-      SELECT user_id
+      SELECT user_id, avatar
       FROM nobsc_users
       WHERE username = ?
     `;

@@ -11,9 +11,9 @@ const AWS = require('aws-sdk');
 const AWS_NOBSC_USER_AVATARS_S3_BUCKET = process.env.AWS_NOBSC_USER_AVATARS_S3_BUCKET;
 
 module.exports = async function(req, res) {
-  //const fileName = `${req.session.userInfo.username}-${uuidv4()}`;
   const fileName = `${req.session.userInfo.username}`;
   const fileType = req.sanitize(req.body.fileType);
+  console.log('avatar.type ', fileType);
 
   //const s3 = new AWS.S3();
   const s3 = new AWS.S3({
@@ -32,14 +32,30 @@ module.exports = async function(req, res) {
   const signature = await getSignedUrlPromise('putObject', {
     Bucket: AWS_NOBSC_USER_AVATARS_S3_BUCKET,
     Key: fileName,
-    Expires: 50,
     ContentType: fileType,
-    ACL: 'public-read'  // ?
+    Expires: 50,
+    //ACL: 'public-read'  // ?
   });
+  /*const signature = await s3.getSignedUrl(
+    'putObject',
+    {
+      Bucket: AWS_NOBSC_USER_AVATARS_S3_BUCKET,
+      Key: fileName,
+      ContentType: fileType,
+      Expires: 50
+    },
+    (err, url) => res.send({
+      success: true,
+      signedRequest: signature,
+      url: `https://${AWS_NOBSC_USER_AVATARS_S3_BUCKET}.s3.amazonaws.com/${fileName}`
+    })
+  );*/
+
+  console.log('signature ', signature);
 
   res.json({
     success: true,
     signedRequest: signature,
-    url: `https://${AWS_NOBSC_USER_AVATARS_S3_BUCKET}.s3.amazonaws.com/${fileName}`
+    url: `https://${AWS_NOBSC_USER_AVATARS_S3_BUCKET}.s3.amazonaws.com/${fileName}${fileType}`
   });
 };
