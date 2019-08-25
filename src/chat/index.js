@@ -1,6 +1,6 @@
 'use strict';
 
-const client = require('../lib/connections/redisConnection');
+const { pubClient, subClient } = require('../lib/connections/redisConnection');
 const MessengerChat = require('../redis-access/MessengerChat');
 const MessengerRoom = require('../redis-access/MessengerRoom');
 
@@ -24,7 +24,7 @@ function removeFromRoom(socket, room) {
   const user = socket.request.userInfo.userId;  // change?
   const name = socket.request.userInfo.username;  // change?
   socket.leave(room);
-  const messengerRoom = new MessengerRoom(client);
+  const messengerRoom = new MessengerRoom(pubClient);
   messengerRoom.removeUserFromRoom(user, room);
   socket.broadcast.to(room).emit('RemoveUser', User(user, name))
 }
@@ -87,8 +87,6 @@ const socketConnection = function(socket) {
     }
   });*/
 
-  console.log('inside socketConnection');
-
   socket.on('GetMe', function() {
     const user = socket.request.userInfo.userId;  // change?
     const name = socket.request.userInfo.username;  // change?
@@ -96,7 +94,7 @@ const socketConnection = function(socket) {
   });
 
   socket.on('GetUser', async function(room) {
-    const messengerRoom = new MessengerRoom(client);
+    const messengerRoom = new MessengerRoom(subClient);
     const users = await messengerRoom.getUsersInRoom(room.room);
     socket.emit('GetUser', users);
   });  // change to 'GetUsers' ?
@@ -104,7 +102,7 @@ const socketConnection = function(socket) {
 
 
   socket.on('GetChat', function(data) {
-    const messengerChat = new MessengerChat(client);
+    const messengerChat = new MessengerChat(subClient);
     messengerChat.getChat(data.room, function(chats) {
       let retArr = [];
       let len = chats.length;
@@ -124,7 +122,7 @@ const socketConnection = function(socket) {
     const user = socket.request.userInfo.userId;  // change?
     const name = socket.request.userInfo.username;  // change?
     const newChat = Chat(chat.message, chat.room, User(user, name));
-    const messengerChat = new MessengerChat(client);
+    const messengerChat = new MessengerChat(pubClient);
     messengerChat.addChat(newChat);
     socket.broadcast.to(chat.room).emit('AddChat', newChat);
     socket.emit('AddChat', newChat);
@@ -133,7 +131,7 @@ const socketConnection = function(socket) {
 
 
   socket.on('GetRoom', function() {
-    const messengerRoom = new MessengerRoom(client);
+    const messengerRoom = new MessengerRoom(subClient);
     messengerRoom.getRooms(function(rooms) {
       let retArr = [];
       let len = rooms.length;
@@ -151,7 +149,7 @@ const socketConnection = function(socket) {
       if (room !== '') {
         const user = socket.request.userInfo.userId;  // change?
         const name = socket.request.userInfo.username;  // change?
-        const messengerRoom = new MessengerRoom(client);
+        const messengerRoom = new MessengerRoom(pubClient);
         socket.join(room);
         messengerRoom.addRoom(room);
         socket.broadcast.to(room).emit('AddUser', User(user, name));

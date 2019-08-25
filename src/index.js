@@ -93,7 +93,7 @@ const socketAuth = (socket, next) => {
     if (session.userInfo.userId) {  // CHANGE (not sufficient!)
       socket.request.user = session.userInfo;  // CHANGE (socket.request.userInfo = session.userInfo ?)
       socket.request.sid = sid;
-      const messengerUser = new MessengerUser(client);
+      const messengerUser = new MessengerUser(pubClient);
       messengerUser.addUser(session.userInfo.userId, session.userInfo.username);
       return next();
     } else {
