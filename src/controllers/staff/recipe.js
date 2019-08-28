@@ -22,10 +22,10 @@ const staffRecipeController = {
       const title = req.sanitize(req.body.recipeInfo.title);
       const description = req.sanitize(req.body.recipeInfo.description);
       const directions = req.sanitize(req.body.recipeInfo.directions);
-      const requiredMethods = req.sanitize(req.body.recipeInfo.requiredMethods);
-      const requiredEquipment = req.sanitize(req.body.recipeInfo.requiredEquipment);
-      const requiredIngredients = req.sanitize(req.body.recipeInfo.requiredIngredients);
-      const requiredSubrecipes = req.sanitize(req.body.recipeInfo.requiredSubrecipes);
+      const requiredMethods = req.body.recipeInfo.requiredMethods;
+      const requiredEquipment = req.body.recipeInfo.requiredEquipment;
+      const requiredIngredients = req.body.recipeInfo.requiredIngredients;
+      const requiredSubrecipes = req.body.recipeInfo.requiredSubrecipes;
       const recipeImage = req.sanitize(req.body.recipeInfo.recipeImage);
       const equipmentImage = req.sanitize(req.body.recipeInfo.recipeEquipmentImage);
       const ingredientsImage = req.sanitize(req.body.recipeInfo.recipeIngredientsImage);
@@ -147,10 +147,10 @@ const staffRecipeController = {
       const title = req.sanitize(req.body.recipeInfo.title);
       const description = req.sanitize(req.body.recipeInfo.description);
       const directions = req.sanitize(req.body.recipeInfo.directions);
-      const requiredMethods = req.sanitize(req.body.recipeInfo.requiredMethods);
-      const requiredEquipment = req.sanitize(req.body.recipeInfo.requiredEquipment);
-      const requiredIngredients = req.sanitize(req.body.recipeInfo.requiredIngredients);
-      const requiredSubrecipes = req.sanitize(req.body.recipeInfo.requiredSubrecipes);
+      const requiredMethods = req.body.recipeInfo.requiredMethods;
+      const requiredEquipment = req.body.recipeInfo.requiredEquipment;
+      const requiredIngredients = req.body.recipeInfo.requiredIngredients;
+      const requiredSubrecipes = req.body.recipeInfo.requiredSubrecipes;
       const recipeImage = req.sanitize(req.body.recipeInfo.recipeImage);
       const equipmentImage = req.sanitize(req.body.recipeInfo.recipeEquipmentImage);
       const ingredientsImage = req.sanitize(req.body.recipeInfo.recipeIngredientsImage);
@@ -175,6 +175,7 @@ const staffRecipeController = {
       const recipe = new Recipe(pool);
       await recipe.updateRecipe(recipeToUpdateWith, recipeId);
 
+      /*
       const recipeMethodsToUpdateWith = requiredMethods.map(rM =>
         validRecipeMethodsEntity({
           recipeId: generatedId,
@@ -233,6 +234,108 @@ const staffRecipeController = {
       const recipeSubrecipesPlaceholders = '(?, ?, ?, ?),'
       .repeat(requiredSubrecipes.length)
       .slice(0, -1);
+      const recipeSubrecipe = new RecipeSubrecipe(pool);
+      await recipeSubrecipe.updateRecipeSubrecipes(
+        recipeSubrecipesToUpdateWith,
+        recipeSubrecipesPlaceholders,
+        recipeId
+      );
+      */
+
+      let recipeMethodsToUpdateWith = "none";
+      if (requiredMethods !== "none") {
+        if (requiredMethods.map(rM => 
+          validRecipeMethodsEntity({
+            recipeId: generatedId,
+            methodId: rM.methodId
+          })
+        )) {
+          recipeMethodsToUpdateWith = [];
+          requiredMethods.map(rM => {
+            recipeMethodsToUpdateWith.push(generatedId, rM.methodId)
+          });
+        }
+      }
+      const recipeMethodsPlaceholders = (requiredMethods !== "none")
+      ? '(?, ?),'.repeat(requiredMethods.length).slice(0, -1)
+      : "none";
+      const recipeMethod = new RecipeMethod(pool);
+      await recipeMethod.updateRecipeMethods(
+        recipeMethodsToUpdateWith,
+        recipeMethodsPlaceholders,
+        recipeId
+      );
+
+      let recipeEquipmentToUpdateWith = "none";
+      if (requiredEquipment !== "none") {
+        if (requiredEquipment.map(rE =>
+          validRecipeEquipmentEntity({
+            recipeId: generatedId,
+            equipmentId: rE.equipment,
+            amount: rE.amount
+          })
+        )) {
+          recipeEquipmentToUpdateWith = [];
+          requiredEquipment.map(rE => {
+            recipeEquipmentToUpdateWith.push(generatedId, rE.equipment, rE.amount)
+          });
+        }
+      }
+      const recipeEquipmentPlaceholders = (requiredEquipment !== "none")
+      ? '(?, ?, ?),'.repeat(requiredEquipment.length).slice(0, -1)
+      : "none";
+      const recipeEquipment = new RecipeEquipment(pool);
+      await recipeEquipment.updateRecipeEquipment(
+        recipeEquipmentToUpdateWith,
+        recipeEquipmentPlaceholders,
+        recipeId
+      );
+
+      let recipeIngredientsToUpdateWith = "none";
+      if (requiredIngredients !== "none") {
+        if (requiredIngredients.map(rI =>
+          validRecipeIngredientsEntity({
+            recipeId: generatedId,
+            ingredientId: rI.ingredient,
+            amount: rI.amount,
+            measurementId: rI.unit
+          })
+        )) {
+          recipeIngredientsToUpdateWith = [];
+          requiredIngredients.map(rI => {
+            recipeIngredientsToUpdateWith.push(generatedId, rI.ingredient, rI.amount, rI.unit);
+          });
+        }
+      }
+      const recipeIngredientsPlaceholders = (requiredIngredients !== "none")
+      ? '(?, ?, ?, ?),'.repeat(requiredIngredients.length).slice(0, -1)
+      : "none";
+      const recipeIngredient = new RecipeIngredient(pool);
+      await recipeIngredient.updateRecipeIngredients(
+        recipeIngredientsToUpdateWith,
+        recipeIngredientsPlaceholders,
+        recipeId
+      );
+
+      let recipeSubrecipesToUpdateWith = "none";
+      if (requiredSubrecipes !== "none") {
+        if (requiredSubrecipes.map(rS =>
+          validRecipeSubrecipesEntity({
+            recipeId: generatedId,
+            subrecipeId: rS.subrecipe,
+            amount: rS.amount,
+            measurementId: rS.unit
+          })
+        )) {
+          recipeSubrecipesToUpdateWith = [];
+          requiredSubrecipes.map(rS => {
+            recipeSubrecipesToUpdateWith.push(generatedId, rS.subrecipe, rS.amount, rS.unit);
+          });
+        }
+      }
+      const recipeSubrecipesPlaceholders = (requiredSubrecipes !== "none")
+      ? '(?, ?, ?, ?),'.repeat(requiredSubrecipes.length).slice(0, -1)
+      : "none";
       const recipeSubrecipe = new RecipeSubrecipe(pool);
       await recipeSubrecipe.updateRecipeSubrecipes(
         recipeSubrecipesToUpdateWith,

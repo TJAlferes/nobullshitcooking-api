@@ -46,17 +46,19 @@ class RecipeEquipment {
       FROM nobsc_recipe_equipment
       WHERE recipe_id = ?
     `;
-    const sql2 = `
+    const sql2 = (recipeEquipment !== "none")
+    ? `
       INSERT INTO nobsc_recipe_equipment (recipe_id, equipment_id, amount)
       VALUES ${recipeEquipmentPlaceholders} 
-    `;
+    `
+    : "none";
     const connection = await this.pool.getConnection();
     await connection.beginTransaction();
     try {
       await connection.query(sql1, [recipeId]);
-      const [ updatedRecipeEquipment ] = await connection.query(sql2, [recipeEquipment]);
+      if (sql2 !== "none") const [ updatedRecipeEquipment ] = await connection.query(sql2, [recipeEquipment]);
       await connection.commit();
-      return updatedRecipeEquipment;
+      if (sql2 !== "none") return updatedRecipeEquipment;
     } catch (err) {
       await connection.rollback();
       throw err;
