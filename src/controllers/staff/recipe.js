@@ -67,8 +67,7 @@ const staffRecipeController = {
       const [ createdRecipeMethods ] = await recipeMethod
       .createRecipeMethods(
         recipeMethodsToCreate,
-        recipeMethodsPlaceholders,
-        generatedId
+        recipeMethodsPlaceholders
       );
       resObj.createdRecipeMethods = createdRecipeMethods;
 
@@ -87,8 +86,7 @@ const staffRecipeController = {
         const [ createdRecipeEquipment ] = await recipeEquipment
         .createRecipeEquipment(
           recipeEquipmentToCreate,
-          recipeEquipmentPlaceholders,
-          generatedId
+          recipeEquipmentPlaceholders
         );
         resObj.createdRecipeEquipment = createdRecipeEquipment;
       }
@@ -109,8 +107,7 @@ const staffRecipeController = {
         const [ createdRecipeIngredients ] = await recipeIngredient
         .createRecipeIngredients(
           recipeIngredientsToCreate,
-          recipeIngredientsPlaceholders,
-          generatedId
+          recipeIngredientsPlaceholders
         );
         resObj.createdRecipeIngredients = createdRecipeIngredients;
       }
@@ -131,8 +128,7 @@ const staffRecipeController = {
         const [ createdRecipeSubrecipes ] = await recipeSubrecipe
         .createRecipeSubrecipes(
           recipeSubrecipesToCreate,
-          recipeSubrecipesPlaceholders,
-          generatedId
+          recipeSubrecipesPlaceholders
         );
         resObj.createdRecipeSubrecipes = createdRecipeSubrecipes;
       }
