@@ -1,11 +1,13 @@
 require('dotenv').config();
-const uuidv4 = require('uuid/v4');  // do in React instead?
+const uuidv4 = require('uuid/v4');
 const AWS = require('aws-sdk');
 
 const AWS_NOBSC_USER_RECIPE_COOKING_S3_BUCKET = process.env.AWS_NOBSC_USER_RECIPE_COOKING_S3_BUCKET;
 
 module.exports = async function(req, res) {
-  const fileName = `${uuidv4()}-${uuidv4()}`;
+  const fileNameFullSize = `${req.session.userInfo.username}-${uuidv4()}`;
+  const fileNameThumbSize = `${fileNameFullSize}-thumb`;
+  const fileNameTinySize = `${fileNameFullSize}-tiny`;
   const fileType = req.sanitize(req.body.fileType);
 
   const s3 = new AWS.S3({
@@ -21,17 +23,32 @@ module.exports = async function(req, res) {
     });
   };
 
-  const signature = await getSignedUrlPromise('putObject', {
+  const signatureFullSize = await getSignedUrlPromise('putObject', {
     Bucket: AWS_NOBSC_USER_RECIPE_COOKING_S3_BUCKET,
-    Key: fileName,
-    Expires: 50,
+    Key: fileNameFullSize,
     ContentType: fileType,
-    ACL: 'public-read'  // ?
+    Expires: 50
+  });
+
+  const signatureThumbSize = await getSignedUrlPromise('putObject', {
+    Bucket: AWS_NOBSC_USER_RECIPE_COOKING_S3_BUCKET,
+    Key: fileNameThumbSize,
+    ContentType: fileType,
+    Expires: 50
+  });
+
+  const signatureTinySize = await getSignedUrlPromise('putObject', {
+    Bucket: AWS_NOBSC_USER_RECIPE_COOKING_S3_BUCKET,
+    Key: fileNameTinySize,
+    ContentType: fileType,
+    Expires: 50
   });
 
   res.json({
     success: true,
-    signedRequest: signature,
-    url: `https://${AWS_NOBSC_USER_RECIPE_COOKING_S3_BUCKET}.s3.amazonaws.com/${fileName}`
+    signedRequestFullSize: signatureFullSize,
+    signedRequestThumbSize: signatureThumbSize,
+    signedRequestTinySize: signatureTinySize,
+    urlFullSize: fileNameFullSize
   });
 };

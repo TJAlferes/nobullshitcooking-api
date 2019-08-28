@@ -68,19 +68,19 @@ const userRecipeController = {
       const title = req.sanitize(req.body.recipeInfo.title);
       const description = req.sanitize(req.body.recipeInfo.description);
       const directions = req.sanitize(req.body.recipeInfo.directions);
-      const requiredMethods = req.sanitize(req.body.recipeInfo.requiredMethods);
-      const requiredEquipment = req.sanitize(req.body.recipeInfo.requiredEquipment);
-      const requiredIngredients = req.sanitize(req.body.recipeInfo.requiredIngredients);
-      const requiredSubrecipes = req.sanitize(req.body.recipeInfo.requiredSubrecipes);
+      const requiredMethods = req.body.recipeInfo.requiredMethods;
+      const requiredEquipment = req.body.recipeInfo.requiredEquipment;
+      const requiredIngredients = req.body.recipeInfo.requiredIngredients;
+      const requiredSubrecipes = req.body.recipeInfo.requiredSubrecipes;
       const recipeImage = req.sanitize(req.body.recipeInfo.recipeImage);
-      const equipmentImage = req.sanitize(req.body.recipeInfo.equipmentImage);
-      const ingredientsImage = req.sanitize(req.body.recipeInfo.ingredientsImage);
-      const cookingImage = req.sanitize(req.body.recipeInfo.cookingImage);
+      const equipmentImage = req.sanitize(req.body.recipeInfo.recipeEquipmentImage);
+      const ingredientsImage = req.sanitize(req.body.recipeInfo.recipeIngredientsImage);
+      const cookingImage = req.sanitize(req.body.recipeInfo.recipeCookingImage);
 
       const authorId = req.session.userInfo.userId;
       const ownership = req.sanitize(req.body.recipeInfo.ownership);
       const ownerId = (ownership === "private") ? req.session.userInfo.userId : 1;
-
+      
       const recipeToCreate = validRecipeEntity({
         recipeTypeId,
         cuisineId,
@@ -95,11 +95,11 @@ const userRecipeController = {
         cookingImage
       });
       const recipe = new Recipe(pool);
-      const [ createdRecipe ] = await recipe.createRecipe(recipeToCreate);
+      const createdRecipe = await recipe.createRecipe(recipeToCreate);
 
       const generatedId = createdRecipe.insertId;
 
-      const recipeMethodsToCreate = requiredMethods.map(rM =>
+      const recipeMethodsToCreate = requiredMethods.map(rM => 
         validRecipeMethodsEntity({
           recipeId: generatedId,
           methodId: rM.methodId
@@ -119,7 +119,7 @@ const userRecipeController = {
         const recipeEquipmentToCreate = requiredEquipment.map(rE =>
           validRecipeEquipmentEntity({
             recipeId: generatedId,
-            equipmentId: rE.equipmentId,
+            equipmentId: rE.equipment,
             amount: rE.amount
           })
         );
@@ -138,9 +138,9 @@ const userRecipeController = {
         const recipeIngredientsToCreate = requiredIngredients.map(rI =>
           validRecipeIngredientsEntity({
             recipeId: generatedId,
-            ingredientId: rI.ingredientId,
+            ingredientId: rI.ingredient,
             amount: rI.amount,
-            measurementId: rI.measurementId
+            measurementId: rI.unit
           })
         );
         const recipeIngredientsPlaceholders = '(?, ?, ?, ?),'
@@ -158,9 +158,9 @@ const userRecipeController = {
         const recipeSubrecipesToCreate = requiredSubrecipes.map(rS =>
           validRecipeSubrecipesEntity({
             recipeId: generatedId,
-            subrecipeId: rS.subrecipeId,
+            subrecipeId: rS.subrecipe,
             amount: rS.amount,
-            measurementId: rS.measurementId
+            measurementId: rS.unit
           })
         );
         const recipeSubrecipesPlaceholders = '(?, ?, ?, ?),'
@@ -193,9 +193,9 @@ const userRecipeController = {
       const requiredIngredients = req.sanitize(req.body.recipeInfo.requiredIngredients);
       const requiredSubrecipes = req.sanitize(req.body.recipeInfo.requiredSubrecipes);
       const recipeImage = req.sanitize(req.body.recipeInfo.recipeImage);
-      const equipmentImage = req.sanitize(req.body.recipeInfo.equipmentImage);
-      const ingredientsImage = req.sanitize(req.body.recipeInfo.ingredientsImage);
-      const cookingImage = req.sanitize(req.body.recipeInfo.cookingImage);
+      const equipmentImage = req.sanitize(req.body.recipeInfo.recipeEquipmentImage);
+      const ingredientsImage = req.sanitize(req.body.recipeInfo.recipeIngredientsImage);
+      const cookingImage = req.sanitize(req.body.recipeInfo.recipeCookingImage);
 
       const authorId = req.session.userInfo.userId;
       const ownerId = req.session.userInfo.userId;
@@ -231,7 +231,7 @@ const userRecipeController = {
       const recipeEquipmentToUpdateWith = requiredEquipment.map(rE =>
         validRecipeEquipmentEntity({
           recipeId: generatedId,
-          equipmentId: rE.equipmentId,
+          equipmentId: rE.equipment,
           amount: rE.amount
         })
       );
@@ -248,9 +248,9 @@ const userRecipeController = {
       const recipeIngredientsToUpdateWith = requiredIngredients.map(rI =>
         validRecipeIngredientsEntity({
           recipeId: generatedId,
-          ingredientId: rI.ingredientId,
+          ingredientId: rI.ingredient,
           amount: rI.amount,
-          measurementId: rI.measurementId
+          measurementId: rI.unit
         })
       );
       const recipeIngredientsPlaceholders = '(?, ?, ?, ?),'
@@ -266,9 +266,9 @@ const userRecipeController = {
       const recipeSubrecipesToUpdateWith = requiredSubrecipes.map(rS =>
         validRecipeSubrecipesEntity({
           recipeId: generatedId,
-          subrecipeId: rS.subrecipeId,
+          subrecipeId: rS.subrecipe,
           amount: rS.amount,
-          measurementId: rS.measurementId
+          measurementId: rS.unit
         })
       );
       const recipeSubrecipesPlaceholders = '(?, ?, ?, ?),'
@@ -300,9 +300,9 @@ const userRecipeController = {
       const requiredIngredients = req.sanitize(req.body.recipeInfo.requiredIngredients);
       const requiredSubrecipes = req.sanitize(req.body.recipeInfo.requiredSubrecipes);
       const recipeImage = req.sanitize(req.body.recipeInfo.recipeImage);
-      const equipmentImage = req.sanitize(req.body.recipeInfo.equipmentImage);
-      const ingredientsImage = req.sanitize(req.body.recipeInfo.ingredientsImage);
-      const cookingImage = req.sanitize(req.body.recipeInfo.cookingImage);
+      const equipmentImage = req.sanitize(req.body.recipeInfo.recipeEquipmentImage);
+      const ingredientsImage = req.sanitize(req.body.recipeInfo.recipeIngredientsImage);
+      const cookingImage = req.sanitize(req.body.recipeInfo.recipeCookingImage);
 
       const authorId = req.session.userInfo.userId;
       const ownerId = 1;
@@ -338,7 +338,7 @@ const userRecipeController = {
       const recipeEquipmentToUpdateWith = requiredEquipment.map(rE =>
         validRecipeEquipmentEntity({
           recipeId: generatedId,
-          equipmentId: rE.equipmentId,
+          equipmentId: rE.equipment,
           amount: rE.amount
         })
       );
@@ -355,9 +355,9 @@ const userRecipeController = {
       const recipeIngredientsToUpdateWith = requiredIngredients.map(rI =>
         validRecipeIngredientsEntity({
           recipeId: generatedId,
-          ingredientId: rI.ingredientId,
+          ingredientId: rI.ingredient,
           amount: rI.amount,
-          measurementId: rI.measurementId
+          measurementId: rI.unit
         })
       );
       const recipeIngredientsPlaceholders = '(?, ?, ?, ?),'
@@ -373,9 +373,9 @@ const userRecipeController = {
       const recipeSubrecipesToUpdateWith = requiredSubrecipes.map(rS =>
         validRecipeSubrecipesEntity({
           recipeId: generatedId,
-          subrecipeId: rS.subrecipeId,
+          subrecipeId: rS.subrecipe,
           amount: rS.amount,
-          measurementId: rS.measurementId
+          measurementId: rS.unit
         })
       );
       const recipeSubrecipesPlaceholders = '(?, ?, ?, ?),'

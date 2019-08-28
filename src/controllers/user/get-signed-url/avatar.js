@@ -5,7 +5,7 @@ const AWS_NOBSC_USER_AVATARS_S3_BUCKET = process.env.AWS_NOBSC_USER_AVATARS_S3_B
 
 module.exports = async function(req, res) {
   const fileNameFullSize = `${req.session.userInfo.username}`;
-  const fileNameTinySize = `tiny-${req.session.userInfo.username}`;
+  const fileNameTinySize = `${fileNameFullSize}-tiny`;
   const fileType = req.sanitize(req.body.fileType);
 
   const s3 = new AWS.S3({
@@ -38,8 +38,7 @@ module.exports = async function(req, res) {
   res.json({
     success: true,
     signedRequestFullSize: signatureFullSize,
-    urlFullSize: `https://${AWS_NOBSC_USER_AVATARS_S3_BUCKET}.s3.amazonaws.com/${fileNameFullSize}`,
     signedRequestTinySize: signatureTinySize,
-    urlTinySize: `https://${AWS_NOBSC_USER_AVATARS_S3_BUCKET}.s3.amazonaws.com/${fileNameTinySize}`
+    urlFullSize: fileNameFullSize
   });
 };

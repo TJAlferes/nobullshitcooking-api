@@ -27,9 +27,9 @@ const staffRecipeController = {
       const requiredIngredients = req.sanitize(req.body.recipeInfo.requiredIngredients);
       const requiredSubrecipes = req.sanitize(req.body.recipeInfo.requiredSubrecipes);
       const recipeImage = req.sanitize(req.body.recipeInfo.recipeImage);
-      const equipmentImage = req.sanitize(req.body.recipeInfo.equipmentImage);
-      const ingredientsImage = req.sanitize(req.body.recipeInfo.ingredientsImage);
-      const cookingImage = req.sanitize(req.body.recipeInfo.cookingImage);
+      const equipmentImage = req.sanitize(req.body.recipeInfo.recipeEquipmentImage);
+      const ingredientsImage = req.sanitize(req.body.recipeInfo.recipeIngredientsImage);
+      const cookingImage = req.sanitize(req.body.recipeInfo.recipeCookingImage);
 
       const authorId = 1;
       const ownerId = 1;
@@ -76,7 +76,7 @@ const staffRecipeController = {
         const recipeEquipmentToCreate = requiredEquipment.map(rE =>
           validRecipeEquipmentEntity({
             recipeId: generatedId,
-            equipmentId: rE.equipmentId,
+            equipmentId: rE.equipment,
             amount: rE.amount
           })
         );
@@ -97,9 +97,9 @@ const staffRecipeController = {
         const recipeIngredientsToCreate = requiredIngredients.map(rI =>
           validRecipeIngredientsEntity({
             recipeId: generatedId,
-            ingredientId: rI.ingredientId,
+            ingredientId: rI.ingredient,
             amount: rI.amount,
-            measurementId: rI.measurementId
+            measurementId: rI.unit
           })
         );
         const recipeIngredientsPlaceholders = '(?, ?, ?, ?),'
@@ -119,9 +119,9 @@ const staffRecipeController = {
         const recipeSubrecipesToCreate = requiredSubrecipes.map(rS =>
           validRecipeSubrecipesEntity({
             recipeId: generatedId,
-            subrecipeId: rS.subrecipeId,
+            subrecipeId: rS.subrecipe,
             amount: rS.amount,
-            measurementId: rS.measurementId
+            measurementId: rS.unit
           })
         );
         const recipeSubrecipesPlaceholders = '(?, ?, ?, ?),'
@@ -156,9 +156,9 @@ const staffRecipeController = {
       const requiredIngredients = req.sanitize(req.body.recipeInfo.requiredIngredients);
       const requiredSubrecipes = req.sanitize(req.body.recipeInfo.requiredSubrecipes);
       const recipeImage = req.sanitize(req.body.recipeInfo.recipeImage);
-      const equipmentImage = req.sanitize(req.body.recipeInfo.equipmentImage);
-      const ingredientsImage = req.sanitize(req.body.recipeInfo.ingredientsImage);
-      const cookingImage = req.sanitize(req.body.recipeInfo.cookingImage);
+      const equipmentImage = req.sanitize(req.body.recipeInfo.recipeEquipmentImage);
+      const ingredientsImage = req.sanitize(req.body.recipeInfo.recipeIngredientsImage);
+      const cookingImage = req.sanitize(req.body.recipeInfo.recipeCookingImage);
 
       const authorId = 1;
       const ownerId = 1;
@@ -194,7 +194,7 @@ const staffRecipeController = {
       const recipeEquipmentToUpdateWith = requiredEquipment.map(rE =>
         validRecipeEquipmentEntity({
           recipeId: generatedId,
-          equipmentId: rE.equipmentId,
+          equipmentId: rE.equipment,
           amount: rE.amount
         })
       );
@@ -211,9 +211,9 @@ const staffRecipeController = {
       const recipeIngredientsToUpdateWith = requiredIngredients.map(rI =>
         validRecipeIngredientsEntity({
           recipeId: generatedId,
-          ingredientId: rI.ingredientId,
+          ingredientId: rI.ingredient,
           amount: rI.amount,
-          measurementId: rI.measurementId
+          measurementId: rI.unit
         })
       );
       const recipeIngredientsPlaceholders = '(?, ?, ?, ?),'
@@ -229,9 +229,9 @@ const staffRecipeController = {
       const recipeSubrecipesToUpdateWith = requiredSubrecipes.map(rS =>
         validRecipeSubrecipesEntity({
           recipeId: generatedId,
-          subrecipeId: rS.subrecipeId,
+          subrecipeId: rS.subrecipe,
           amount: rS.amount,
-          measurementId: rS.measurementId
+          measurementId: rS.unit
         })
       );
       const recipeSubrecipesPlaceholders = '(?, ?, ?, ?),'
