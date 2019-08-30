@@ -52,88 +52,102 @@ const staffRecipeController = {
 
       const generatedId = createdRecipe.insertId;
 
-      let resObj = {createRecipe};
+      if (requiredMethods !== "none" && requiredMethods.length > 0) {
+        if (requiredMethods.map(rM => 
+          validRecipeMethodsEntity({
+            recipeId: generatedId,
+            methodId: rM.methodId
+          })
+        )) {
+          let recipeMethodsToCreate = [];
+          requiredMethods.map(rM => {
+            recipeMethodsToCreate.push(generatedId, rM.methodId)
+          });
+          const recipeMethodsPlaceholders = '(?, ?),'
+          .repeat(requiredMethods.length)
+          .slice(0, -1);
+          const recipeMethods = new RecipeMethods(pool);
+          await recipeMethods.createRecipeMethods(
+            recipeMethodsToCreate,
+            recipeMethodsPlaceholders
+          );
+        }
+      }
 
-      const recipeMethodsToCreate = requiredMethods.map(rM =>
-        validRecipeMethodsEntity({
-          recipeId: generatedId,
-          methodId: rM.methodId
-        })
-      );
-      const recipeMethodsPlaceholders = '(?, ?),'
-      .repeat(requiredMethods.length)
-      .slice(0, -1);
-      const recipeMethod = new RecipeMethod(pool);
-      const [ createdRecipeMethods ] = await recipeMethod
-      .createRecipeMethods(
-        recipeMethodsToCreate,
-        recipeMethodsPlaceholders
-      );
-      resObj.createdRecipeMethods = createdRecipeMethods;
-
-      if (requiredEquipment.length > 0) {
-        const recipeEquipmentToCreate = requiredEquipment.map(rE =>
+      if (requiredEquipment !== "none" && requiredEquipment.length > 0) {
+        if (requiredEquipment.map(rE =>
           validRecipeEquipmentEntity({
             recipeId: generatedId,
             equipmentId: rE.equipment,
             amount: rE.amount
           })
-        );
-        const recipeEquipmentPlaceholders = '(?, ?, ?),'
-        .repeat(requiredEquipment.length)
-        .slice(0, -1);
-        const recipeEquipment = new RecipeEquipment(pool);
-        const [ createdRecipeEquipment ] = await recipeEquipment
-        .createRecipeEquipment(
-          recipeEquipmentToCreate,
-          recipeEquipmentPlaceholders
-        );
-        resObj.createdRecipeEquipment = createdRecipeEquipment;
+        )) {
+          let recipeEquipmentToCreate = [];
+          requiredEquipment.map(rE => {
+            recipeEquipmentToCreate.push(generatedId, rE.equipment, rE.amount);
+          });
+          const recipeEquipmentPlaceholders = '(?, ?, ?),'
+          .repeat(requiredEquipment.length)
+          .slice(0, -1);
+          console.log(recipeEquipmentToCreate);
+          console.log(recipeEquipmentPlaceholders);
+          const recipeEquipment = new RecipeEquipment(pool);
+          await recipeEquipment.createRecipeEquipment(
+            recipeEquipmentToCreate,
+            recipeEquipmentPlaceholders
+          );
+        }
       }
 
-      if (requiredIngredients.length > 0) {
-        const recipeIngredientsToCreate = requiredIngredients.map(rI =>
+      if (requiredIngredients !== "none" && requiredIngredients.length > 0) {
+        if (requiredIngredients.map(rI =>
           validRecipeIngredientsEntity({
             recipeId: generatedId,
             ingredientId: rI.ingredient,
             amount: rI.amount,
             measurementId: rI.unit
           })
-        );
-        const recipeIngredientsPlaceholders = '(?, ?, ?, ?),'
-        .repeat(requiredIngredients.length)
-        .slice(0, -1);
-        const recipeIngredient = new RecipeIngredient(pool);
-        const [ createdRecipeIngredients ] = await recipeIngredient
-        .createRecipeIngredients(
-          recipeIngredientsToCreate,
-          recipeIngredientsPlaceholders
-        );
-        resObj.createdRecipeIngredients = createdRecipeIngredients;
+        )) {
+          let recipeIngredientsToCreate = [];
+          requiredIngredients.map(rI => {
+            recipeIngredientsToCreate.push(generatedId, rI.ingredient, rI.amount, rI.unit);
+          });
+          const recipeIngredientsPlaceholders = '(?, ?, ?, ?),'
+          .repeat(requiredIngredients.length)
+          .slice(0, -1);
+          const recipeIngredients = new RecipeIngredients(pool);
+          await recipeIngredients.createRecipeIngredients(
+            recipeIngredientsToCreate,
+            recipeIngredientsPlaceholders
+          );
+        }
       }
 
-      if (requiredSubrecipes.length > 0) {
-        const recipeSubrecipesToCreate = requiredSubrecipes.map(rS =>
+      if (requiredSubrecipes !== "none" && requiredSubrecipes.length > 0) {
+        if (requiredSubrecipes.map(rS =>
           validRecipeSubrecipesEntity({
             recipeId: generatedId,
             subrecipeId: rS.subrecipe,
             amount: rS.amount,
             measurementId: rS.unit
           })
-        );
-        const recipeSubrecipesPlaceholders = '(?, ?, ?, ?),'
-        .repeat(requiredSubrecipes.length)
-        .slice(0, -1);
-        const recipeSubrecipe = new RecipeSubrecipe(pool);
-        const [ createdRecipeSubrecipes ] = await recipeSubrecipe
-        .createRecipeSubrecipes(
-          recipeSubrecipesToCreate,
-          recipeSubrecipesPlaceholders
-        );
-        resObj.createdRecipeSubrecipes = createdRecipeSubrecipes;
+        )) {
+          let recipeSubrecipesToCreate = [];
+          requiredSubrecipes.map(rS => {
+            recipeSubrecipesToCreate.push(generatedId, rS.subrecipe, rS.amount, rS.unit);
+          })
+          const recipeSubrecipesPlaceholders = '(?, ?, ?, ?),'
+          .repeat(requiredSubrecipes.length)
+          .slice(0, -1);
+          const recipeSubrecipes = new RecipeSubrecipes(pool);
+          await recipeSubrecipes.createRecipeSubrecipes(
+            recipeSubrecipesToCreate,
+            recipeSubrecipesPlaceholders
+          );
+        }
       }
 
-      res.send(resObj);
+      res.send({message: 'Recipe created.'});
       next();
     } catch(err) {
       next(err);
@@ -174,73 +188,6 @@ const staffRecipeController = {
       });
       const recipe = new Recipe(pool);
       await recipe.updateRecipe(recipeToUpdateWith, recipeId);
-
-      /*
-      const recipeMethodsToUpdateWith = requiredMethods.map(rM =>
-        validRecipeMethodsEntity({
-          recipeId: generatedId,
-          methodId: rM.methodId
-        })
-      );
-      const recipeMethodsPlaceholders = '(?, ?),'
-      .repeat(requiredMethods.length)
-      .slice(0, -1);
-      const recipeMethod = new RecipeMethod(pool);
-      await recipeMethod.updateRecipeMethods(recipeMethodsToUpdateWith, recipeMethodsPlaceholders, recipeId);
-
-      const recipeEquipmentToUpdateWith = requiredEquipment.map(rE =>
-        validRecipeEquipmentEntity({
-          recipeId: generatedId,
-          equipmentId: rE.equipment,
-          amount: rE.amount
-        })
-      );
-      const recipeEquipmentPlaceholders = '(?, ?, ?),'
-      .repeat(requiredEquipment.length)
-      .slice(0, -1);
-      const recipeEquipment = new RecipeEquipment(pool);
-      await recipeEquipment.updateRecipeEquipment(
-        recipeEquipmentToUpdateWith,
-        recipeEquipmentPlaceholders,
-        recipeId
-      );
-
-      const recipeIngredientsToUpdateWith = requiredIngredients.map(rI =>
-        validRecipeIngredientsEntity({
-          recipeId: generatedId,
-          ingredientId: rI.ingredient,
-          amount: rI.amount,
-          measurementId: rI.unit
-        })
-      );
-      const recipeIngredientsPlaceholders = '(?, ?, ?, ?),'
-      .repeat(requiredIngredients.length)
-      .slice(0, -1);
-      const recipeIngredient = new RecipeIngredient(pool);
-      await recipeIngredient.updateRecipeIngredients(
-        recipeIngredientsToUpdateWith,
-        recipeIngredientsPlaceholders,
-        recipeId
-      );
-
-      const recipeSubrecipesToUpdateWith = requiredSubrecipes.map(rS =>
-        validRecipeSubrecipesEntity({
-          recipeId: generatedId,
-          subrecipeId: rS.subrecipe,
-          amount: rS.amount,
-          measurementId: rS.unit
-        })
-      );
-      const recipeSubrecipesPlaceholders = '(?, ?, ?, ?),'
-      .repeat(requiredSubrecipes.length)
-      .slice(0, -1);
-      const recipeSubrecipe = new RecipeSubrecipe(pool);
-      await recipeSubrecipe.updateRecipeSubrecipes(
-        recipeSubrecipesToUpdateWith,
-        recipeSubrecipesPlaceholders,
-        recipeId
-      );
-      */
 
       let recipeMethodsToUpdateWith = "none";
       if (requiredMethods !== "none") {
@@ -368,6 +315,7 @@ const staffRecipeController = {
       await recipeEquipment.deleteRecipeEquipment(recipeId);
       await recipeIngredient.deleteRecipeIngredients(recipeId);
       await recipeSubrecipe.deleteRecipeSubrecipes(recipeId);
+      await recipeSubrecipes.deleteRecipeSubrecipesBySubrecipeId(recipeId);  // is that right?
       await recipe.deleteRecipe(recipeId);
 
       res.send('Recipe deleted.');

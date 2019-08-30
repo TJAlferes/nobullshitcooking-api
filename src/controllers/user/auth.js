@@ -92,18 +92,20 @@ const userAuthController = {
 
     const userExists = await user.getUserByEmail(email);
     //if (userExists && crypto.timingSafeEqual(userExists[0].email, email)) {
-    if (userExists && userExists[0].email == email) {
-      const isCorrectPassword = await bcrypt.compare(pass, userExists[0].pass);
-      if (isCorrectPassword) {
-        const userId = userExists[0].user_id;
-        const username = userExists[0].username;
-        const avatar = userExists[0].avatar;
+    if (userExists) {
+      if (userExists[0].email == email) {
+        const isCorrectPassword = await bcrypt.compare(pass, userExists[0].pass);
+        if (isCorrectPassword) {
+          const userId = userExists[0].user_id;
+          const username = userExists[0].username;
+          const avatar = userExists[0].avatar;
 
-        req.session.userInfo = {};
-        req.session.userInfo.userId = userId;
-        req.session.userInfo.username = username;
+          req.session.userInfo = {};
+          req.session.userInfo.userId = userId;
+          req.session.userInfo.username = username;
 
-        return res.json({message: 'Signed in.', username, avatar});
+          return res.json({message: 'Signed in.', username, avatar});
+        }
       }
     }
     

@@ -6,6 +6,7 @@ class RecipeSubrecipe {
     this.createRecipeSubrecipes = this.createRecipeSubrecipes.bind(this);
     this.updateRecipeSubrecipes = this.updateRecipeSubrecipes.bind(this);
     this.deleteRecipeSubrecipes = this.deleteRecipeSubrecipes.bind(this);
+    this.deleteRecipeSubrecipesBySubrecipeId = this.deleteRecipeSubrecipesBySubrecipeId.bind(this);
   }
 
   async viewRecipeSubrecipesByRecipeId(recipeId) {
@@ -56,9 +57,13 @@ class RecipeSubrecipe {
     await connection.beginTransaction();
     try {
       await connection.query(sql1, [recipeId]);
-      if (sql2 !== "none") const [ updatedRecipeSubrecipes ] = await connection.query(sql2, [recipeSubrecipes]);
-      await connection.commit();
-      if (sql2 !== "none") return updatedRecipeSubrecipes;
+      if (sql2 !== "none") {
+        const [ updatedRecipeSubrecipes ] = await connection.query(sql2, [recipeSubrecipes]);
+        await connection.commit();
+        return updatedRecipeSubrecipes;
+      } else {
+        await connection.commit();
+      }
     } catch (err) {
       await connection.rollback();
       throw err;
@@ -68,18 +73,28 @@ class RecipeSubrecipe {
   }
 
   async deleteRecipeSubrecipes(recipeId) {
-    const sql1 = `
+    const sql = `
       DELETE
       FROM nobsc_recipe_subrecipes
       WHERE recipe_id = ?
     `;
-    const sql2 = `
+    /*const sql2 = `
+      DELETE
+      FROM nobsc_recipe_subrecipes
+      WHERE subrecipe_id = ?
+    `;*/
+    const [ deletedRecipeSubrecipes ] = await this.pool.execute(sql, [recipeId]);
+    //await this.pool.execute(sql2, [recipeId]);
+    return deletedRecipeSubrecipes;
+  }
+
+  async deleteRecipeSubrecipesBySubrecipeId(subrecipeId) {
+    const sql = `
       DELETE
       FROM nobsc_recipe_subrecipes
       WHERE subrecipe_id = ?
     `;
-    const [ deletedRecipeSubrecipes ] = await this.pool.execute(sql1, [recipeId]);
-    await this.pool.execute(sql2, [recipeId]);
+    const [ deletedRecipeSubrecipes ] = await this.pool.execute(sql, [subrecipeId]);
     return deletedRecipeSubrecipes;
   }
 }

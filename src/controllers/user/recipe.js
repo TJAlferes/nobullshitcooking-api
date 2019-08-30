@@ -379,73 +379,6 @@ const userRecipeController = {
       const recipe = new Recipe(pool);
       await recipe.updateMyPublicUserRecipe(recipeToUpdateWith, recipeId);
 
-      /*
-      const recipeMethodsToUpdateWith = requiredMethods.map(rM =>
-        validRecipeMethodsEntity({
-          recipeId: generatedId,
-          methodId: rM.methodId
-        })
-      );
-      const recipeMethodsPlaceholders = '(?, ?),'
-      .repeat(requiredMethods.length)
-      .slice(0, -1);
-      const recipeMethod = new RecipeMethod(pool);
-      await recipeMethod.updateRecipeMethods(recipeMethodsToUpdateWith, recipeMethodsPlaceholders, recipeId);
-
-      const recipeEquipmentToUpdateWith = requiredEquipment.map(rE =>
-        validRecipeEquipmentEntity({
-          recipeId: generatedId,
-          equipmentId: rE.equipment,
-          amount: rE.amount
-        })
-      );
-      const recipeEquipmentPlaceholders = '(?, ?, ?),'
-      .repeat(requiredEquipment.length)
-      .slice(0, -1);
-      const recipeEquipment = new RecipeEquipment(pool);
-      await recipeEquipment.updateRecipeEquipment(
-        recipeEquipmentToUpdateWith,
-        recipeEquipmentPlaceholders,
-        recipeId
-      );
-
-      const recipeIngredientsToUpdateWith = requiredIngredients.map(rI =>
-        validRecipeIngredientsEntity({
-          recipeId: generatedId,
-          ingredientId: rI.ingredient,
-          amount: rI.amount,
-          measurementId: rI.unit
-        })
-      );
-      const recipeIngredientsPlaceholders = '(?, ?, ?, ?),'
-      .repeat(requiredIngredients.length)
-      .slice(0, -1);
-      const recipeIngredient = new RecipeIngredient(pool);
-      await recipeIngredient.updateRecipeIngredients(
-        recipeIngredientsToUpdateWith,
-        recipeIngredientsPlaceholders,
-        recipeId
-      );
-
-      const recipeSubrecipesToUpdateWith = requiredSubrecipes.map(rS =>
-        validRecipeSubrecipesEntity({
-          recipeId: generatedId,
-          subrecipeId: rS.subrecipe,
-          amount: rS.amount,
-          measurementId: rS.unit
-        })
-      );
-      const recipeSubrecipesPlaceholders = '(?, ?, ?, ?),'
-      .repeat(requiredSubrecipes.length)
-      .slice(0, -1);
-      const recipeSubrecipe = new RecipeSubrecipe(pool);
-      await recipeSubrecipe.updateRecipeSubrecipes(
-        recipeSubrecipesToUpdateWith,
-        recipeSubrecipesPlaceholders,
-        recipeId
-      );
-      */
-
       let recipeMethodsToUpdateWith = "none";
       if (requiredMethods !== "none") {
         if (requiredMethods.map(rM => 
@@ -559,7 +492,7 @@ const userRecipeController = {
       const authorId = req.session.userInfo.userId;
       const ownerId = req.session.userInfo.userId;
 
-      const plan = new plan(pool);
+      //const plan = new Plan(pool);
       const recipeMethods = new RecipeMethods(pool);
       const recipeEquipment = new RecipeEquipment(pool);
       const recipeIngredients = new RecipeIngredients(pool);
@@ -570,6 +503,7 @@ const userRecipeController = {
       await recipeEquipment.deleteRecipeEquipment(recipeId);
       await recipeIngredients.deleteRecipeIngredients(recipeId);
       await recipeSubrecipes.deleteRecipeSubrecipes(recipeId);
+      await recipeSubrecipes.deleteRecipeSubrecipesBySubrecipeId(recipeId);  // is that right?
       await recipe.deleteMyPrivateUserRecipe(recipeId, authorId, ownerId);
 
       res.send({message: 'Recipe deleted.'});

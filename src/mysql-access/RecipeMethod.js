@@ -55,9 +55,13 @@ class RecipeMethod {
     await connection.beginTransaction();
     try {
       await connection.query(sql1, [recipeId]);
-      if (sql2 !== "none") const [ updatedRecipeMethods ] = await connection.query(sql2, [recipeMethods]);
-      await connection.commit();
-      if (sql2 !== "none") return updatedRecipeMethods;
+      if (sql2 !== "none") {
+        const [ updatedRecipeMethods ] = await connection.query(sql2, [recipeMethods]);
+        await connection.commit();
+        return updatedRecipeMethods;
+      } else {
+        await connection.commit();
+      }
     } catch (err) {
       await connection.rollback();
       throw err;
