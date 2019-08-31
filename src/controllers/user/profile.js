@@ -13,7 +13,7 @@ const userProfileController = {
     const avatar = userExists[0].avatar;
     
     const recipe = new Recipe(pool);
-    const publicRecipes = await recipe.viewAllMyPublicUserRecipes(id, id);
+    const publicRecipes = await recipe.viewAllMyPublicUserRecipes(id, 1);
 
     const favoriteRecipe = new FavoriteRecipe(pool);
     const favoriteRecipes = favoriteRecipe.viewMyFavoriteRecipes(id);
