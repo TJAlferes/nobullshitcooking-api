@@ -20,21 +20,19 @@ const Room = name => ({id: name, name});
 
 
 
-function removeFromRoom(socket, room) {  // await?
-  const user = socket.request.userInfo.userId;  // change?
-  const name = socket.request.userInfo.username;  // change?
-  socket.leave(room);
-  const messengerRoom = new MessengerRoom(pubClient);
-  messengerRoom.removeUserFromRoom(user, room);  // await?
-  socket.broadcast.to(room).emit('RemoveUser', User(user, name))
-}
-
-function removeAllRooms(socket, cb) {  // await?
+async function removeAllRooms(socket, cb) {
   const current = socket.rooms;
   const len = Object.keys(current).length;
   let i = 0;
-  for (let r in current) {  // await?
-    if (current[r] !== socket.id) removeFromRoom(socket, current[r]);
+  for (let r in current) {  // ?????????????????????? *********************
+    if (current[r] !== socket.id) {
+      const user = socket.request.userInfo.userId;
+      const name = socket.request.userInfo.username;
+      socket.leave(current[r]);
+      const messengerRoom = new MessengerRoom(pubClient);
+      await messengerRoom.removeUserFromRoom(user, current[r]);  // WILL THIS WORK IN LOOP?
+      socket.broadcast.to(current[r]).emit('RemoveUser', User(user, name));  // change?
+    }
     i++;
     if (i === len) cb();
   }
@@ -43,96 +41,53 @@ function removeAllRooms(socket, cb) {  // await?
 
 
 const socketConnection = function(socket) {
-  //socket.auth = false;
-
-  /*socket.on('authenticate', async function(socket, data) {
-    try {
-      const user = await verifyUser(data.token);  // send token to client, client sends token back here?
-      //const user = {id: socket.handshake.session.userInfo.;
-      const canConnect = await ioredis.setAsync(`users:${user.id}`, socket.id, 'NX', 'EX', 30);
-      if (!canConnect) {
-        return socket.emit('unauthorized', {message: 'ALREADY_LOGGED_IN'}, function() {
-          if (socket.user) await ioredis.delAsync(`users:${socket.user.id}`);
-        });
-      }
-
-      socket.user = user;
-      socket.auth = true;
-
-      io.nsps.forEach(function(nsp) {
-        if (nsp.sockets.find(el => el.id === socket.id)) {
-          nsp.connected[socket.id] = socket;
-        }
-      });
-
-      socket.emit('authenticated', true);
-
-      return async (socket) => {
-        socket.conn.on('packet', async (packet) => {
-          if (socket.auth && packet.type === 'ping') {
-            await ioredis.setAsync(`users:${socket.user.id}`, socket.id, 'XX', 'EX', 30);
-          }
-        });
-      };
-    } catch (err) {
-      if (err) {
-        socket.emit('unauthorized', {message: err.message}, function() {
-          if (socket.user) await ioredis.delAsync(`users:${socket.user.id}`);
-        });
-      } else {
-        socket.emit('unauthorized', {message: 'Authentication failure'}, function() {
-          if (socket.user) await ioredis.delAsync(`users:${socket.user.id}`);
-        });
-      }
-    }
-  });*/
-
   socket.on('GetMe', function() {
-    const user = socket.request.userInfo.userId;  // change?
-    const name = socket.request.userInfo.username;  // change?
+    const user = socket.request.userInfo.userId;
+    const name = socket.request.userInfo.username;
     socket.emit('GetMe', User(user, name));
   });
 
   socket.on('GetUser', async function(room) {
     const messengerRoom = new MessengerRoom(subClient);
-    const users = await messengerRoom.getUsersInRoom(room.room);
+    const users = await messengerRoom.getUsersInRoom(room.room);  // O.o
     socket.emit('GetUser', users);
   });  // change to 'GetUsers' ?
 
 
 
-  socket.on('GetChat', function(data) {
+  socket.on('GetChat', async function(data) {
     const messengerChat = new MessengerChat(subClient);
-    messengerChat.getChat(data.room, function(chats) {  // await?
+    await messengerChat.getChat(data.room, function(chats) {
       let retArr = [];
       let len = chats.length;
       chats.forEach(function(c) {
         try {
           retArr.push(JSON.parse(c));
         } catch (err) {
-          console.log(err.message);
+          console.error(err.message);
         }
         len--;
         if (len === 0) socket.emit('GetChat', retArr);
       });
     });
+    // emit out here?
   });  // change to 'GetChats' ?
 
-  socket.on('AddChat', function(chat) {
-    const user = socket.request.userInfo.userId;  // change?
-    const name = socket.request.userInfo.username;  // change?
-    const newChat = Chat(chat.message, chat.room, User(user, name));
+  socket.on('AddChat', async function(data) {
+    const user = socket.request.userInfo.userId;
+    const name = socket.request.userInfo.username;
+    const chat = Chat(data.message, data.room, User(user, name));
     const messengerChat = new MessengerChat(pubClient);
-    messengerChat.addChat(newChat);  // await?
-    socket.broadcast.to(chat.room).emit('AddChat', newChat);
-    socket.emit('AddChat', newChat);
+    await messengerChat.addChat(chat);
+    socket.broadcast.to(data.room).emit('AddChat', chat);
+    socket.emit('AddChat', chat);
   });
 
 
 
-  socket.on('GetRoom', function() {
+  socket.on('GetRoom', async function() {
     const messengerRoom = new MessengerRoom(subClient);
-    messengerRoom.getRooms(function(rooms) {
+    await messengerRoom.getRooms(function(rooms) {
       let retArr = [];
       let len = rooms.length;
       rooms.forEach(function(r) {
@@ -143,37 +98,27 @@ const socketConnection = function(socket) {
     });
   });  // change to 'GetRooms' ?
 
-  socket.on('AddRoom', function(r) {
+  socket.on('AddRoom', async function(r) {
     const room = r.name;
-    removeAllRooms(socket, function() {
+    await removeAllRooms(socket, function() {
       if (room !== '') {
-        const user = socket.request.userInfo.userId;  // change?
-        const name = socket.request.userInfo.username;  // change?
+        const user = socket.request.userInfo.userId;
+        const name = socket.request.userInfo.username;
         const messengerRoom = new MessengerRoom(pubClient);
         socket.join(room);
-        messengerRoom.addRoom(room);  // await?
-        socket.broadcast.to(room).emit('AddUser', User(user, name));
-        messengerRoom.addUserToRoom(user, room);
+        await messengerRoom.addRoom(room);  // WILL THIS WORK IN LOOP?
+        //socket.broadcast.to(room).emit('AddUser', User(user, name));
+        socket.to(room).emit('AddUser', User(user, name));
+        await messengerRoom.addUserToRoom(user, room);  // WILL THIS WORK IN LOOP?
       }
     });
   });
 
 
 
-  socket.on('disconnect', function() {
-    removeAllRooms(socket, function() {});  // noop?
+  socket.on('disconnect', async function() {
+    await removeAllRooms(socket, function() {});
   });
-  /*socket.on('disconnect', function(socket) {
-    if (socket.user) await ioredis.delAsync(`users:${socket.user.id}`);
-  });
-
-
-
-  setTimeout(() => {
-    if (!socket.auth) {
-      if (socket.user) await ioredis.delAsync(`users:${socket.user.id}`);
-    }
-  }, 1000);*/
 };
 
 module.exports = socketConnection;

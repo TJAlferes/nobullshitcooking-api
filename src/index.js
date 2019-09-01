@@ -93,7 +93,7 @@ const socketAuth = (socket, next) => {
 
   redisSession.get(sid, function(err, session) {
     if (session.userInfo.userId) {  // CHANGE?
-      socket.request.user = session.userInfo;  // CHANGE? (socket.request.userInfo = session.userInfo ?)
+      socket.request.userInfo = session.userInfo;  // CHANGE? (socket.request.userInfo = session.userInfo ?)
       socket.request.sid = sid;
       const messengerUser = new MessengerUser(pubClient);
       messengerUser.addUser(session.userInfo.userId, session.userInfo.username);

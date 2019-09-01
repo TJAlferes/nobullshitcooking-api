@@ -11,7 +11,7 @@ class MessengerRoom {
 
   async getRooms(cb){
     try {
-      this.client.zrevrangebyscore('rooms', '+inf', '-inf', function(err, data) {
+      await this.client.zrevrangebyscore('rooms', '+inf', '-inf', function(err, data) {
         return cb(data);
       });
     } catch (err) {
@@ -21,7 +21,9 @@ class MessengerRoom {
   
   async addRoom(room) {
     try {
-      if (room !== '') await this.client.zadd('rooms', Date.now(), room);
+      if (room !== '') {
+        await this.client.zadd('rooms', Date.now(), room);
+      }
     } catch (err) {
       console.error(err);
     }

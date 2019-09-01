@@ -19,7 +19,7 @@ class MessengerChat {
     try {
       await this.client
       .multi()
-      .zadd(`rooms:'${chat.room}:chats`, Date.now(), JSON.stringify(chat))
+      .zadd(`rooms:${chat.room}:chats`, Date.now(), JSON.stringify(chat))
       .zadd('users', (new Date).getTime(), chat.user.id)
       .zadd('rooms', (new Date).getTime(), chat.room)
       .exec();
