@@ -4,12 +4,17 @@ class MessengerUser {
     this.addUser = this.addUser.bind(this);
   }
 
-  addUser(user, name) {
-    this.client
-    .multi()
-    .hset(`user:${user}`, 'name', name)
-    .zadd('users', Date.now(), user)
-    .exec();
+  async addUser(user, name) {
+    try {
+      await this.client
+      .multi()
+      .hset(`user:${user}`, 'name', name)
+      .zadd('users', Date.now(), user)
+      .exec();
+    } catch (err) {
+      console.log(err);
+      console.error(err);
+    }
   }
 }
 

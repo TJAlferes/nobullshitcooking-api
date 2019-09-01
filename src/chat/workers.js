@@ -1,6 +1,6 @@
 'use strict';
 
-const client = require('../lib/connections/redisConnection');
+const { pubClient, subClient } = require('../lib/connections/redisConnection');
 
 const DELTA = 60 * 60 * 1000 * 3;
 const INTERVAL = 60 * 60 * 1000 * 2;
@@ -52,10 +52,11 @@ function cleanUpUsers() {
   });
 }
 
-function cleanUp() {
+function cleanUp() {  // async awaits?
   cleanUpRooms();
   cleanUpChats();
   cleanUpUsers();
+  console.log('Clean Up Isle Messenger');
 }
 
 setInterval(cleanUp, INTERVAL);

@@ -5,19 +5,27 @@ class MessengerChat {
     this.addChat = this.addChat.bind(this);
   }
 
-  getChat(room, cb){
-    this.client.zrange(`rooms:${room}:chats`, 0, -1, function(err, chats) {
-      cb(chats);
-    });
+  async getChat(room, cb){
+    try {
+      await this.client.zrange(`rooms:${room}:chats`, 0, -1, function(err, chats) {
+        cb(chats);
+      });
+    } catch (err) {
+      console.error(err);
+    }
   };
   
-  addChat(chat) {
-    this.client
-    .multi()
-    .zadd(`rooms:'${chat.room}:chats`, Date.now(), JSON.stringify(chat))
-    .zadd('users', (new Date).getTime(), chat.user.id)
-    .zadd('rooms', (new Date).getTime(), chat.room)
-    .exec();
+  async addChat(chat) {
+    try {
+      await this.client
+      .multi()
+      .zadd(`rooms:'${chat.room}:chats`, Date.now(), JSON.stringify(chat))
+      .zadd('users', (new Date).getTime(), chat.user.id)
+      .zadd('rooms', (new Date).getTime(), chat.room)
+      .exec();
+    } catch (err) {
+      console.error(err);
+    }
   };
 }
 

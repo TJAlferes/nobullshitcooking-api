@@ -9,14 +9,22 @@ class MessengerRoom {
     this.removeUserFromRoom = this.removeUserFromRoom.bind(this);
   }
 
-  getRooms(cb){
-    this.client.zrevrangebyscore('rooms', '+inf', '-inf', function(err, data) {
-      return cb(data);
-    });
+  async getRooms(cb){
+    try {
+      this.client.zrevrangebyscore('rooms', '+inf', '-inf', function(err, data) {
+        return cb(data);
+      });
+    } catch (err) {
+      console.error(err);
+    }
   };
   
-  addRoom(room) {
-    if (room !== '') this.client.zadd('rooms', Date.now(), room);
+  async addRoom(room) {
+    try {
+      if (room !== '') await this.client.zadd('rooms', Date.now(), room);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
 
@@ -38,34 +46,46 @@ class MessengerRoom {
   };*/
   
   async getUsersInRoom(room) {
-    const User = (id, name) => ({id, user: name});  // change
-    let users = [];
-    await this.client.zrange(`rooms:${room}`, 0, -1, function(err, data) {
-      data.forEach(function(u) {
-        this.client.hgetall(`user:${u}`, function(err, userHash){
-          users.push(User(u, userHash.name));
+    try {
+      const User = (id, name) => ({id, user: name});  // change
+      let users = [];
+      await this.client.zrange(`rooms:${room}`, 0, -1, function(err, data) {
+        data.forEach(function(u) {
+          this.client.hgetall(`user:${u}`, function(err, userHash) {
+            users.push(User(u, userHash.name));
+          });
         });
       });
-    });
-    return users;
+      return users;
+    } catch (err) {
+      console.error(err);
+    }
   }
   
-  addUserToRoom(user, room) {
-    this.client
-    .multi()
-    .zadd(`rooms:${room}`, Date.now(), user)
-    .zadd('users', Date.now(), user)
-    .zadd('rooms', Date.now(), room)
-    .set(`user:${user}:room`, room)
-    .exec();
+  async addUserToRoom(user, room) {
+    try {
+      await this.client
+      .multi()
+      .zadd(`rooms:${room}`, Date.now(), user)
+      .zadd('users', Date.now(), user)
+      .zadd('rooms', Date.now(), room)
+      .set(`user:${user}:room`, room)
+      .exec();
+    } catch (err) {
+      console.error(err);
+    }
   }
   
-  removeUserFromRoom(user, room) {
-    this.client
-    .multi()
-    .zrem(`rooms:${room}`, user)
-    .del(`user:${user}:room`)
-    .exec();
+  async removeUserFromRoom(user, room) {
+    try {
+      await this.client
+      .multi()
+      .zrem(`rooms:${room}`, user)
+      .del(`user:${user}:room`)
+      .exec();
+    } catch (err) {
+      console.error(err);
+    }
   };
 }
 

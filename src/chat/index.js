@@ -20,20 +20,20 @@ const Room = name => ({id: name, name});
 
 
 
-function removeFromRoom(socket, room) {
+function removeFromRoom(socket, room) {  // await?
   const user = socket.request.userInfo.userId;  // change?
   const name = socket.request.userInfo.username;  // change?
   socket.leave(room);
   const messengerRoom = new MessengerRoom(pubClient);
-  messengerRoom.removeUserFromRoom(user, room);
+  messengerRoom.removeUserFromRoom(user, room);  // await?
   socket.broadcast.to(room).emit('RemoveUser', User(user, name))
 }
 
-function removeAllRooms(socket, cb) {
+function removeAllRooms(socket, cb) {  // await?
   const current = socket.rooms;
   const len = Object.keys(current).length;
   let i = 0;
-  for (let r in current) {
+  for (let r in current) {  // await?
     if (current[r] !== socket.id) removeFromRoom(socket, current[r]);
     i++;
     if (i === len) cb();
@@ -103,7 +103,7 @@ const socketConnection = function(socket) {
 
   socket.on('GetChat', function(data) {
     const messengerChat = new MessengerChat(subClient);
-    messengerChat.getChat(data.room, function(chats) {
+    messengerChat.getChat(data.room, function(chats) {  // await?
       let retArr = [];
       let len = chats.length;
       chats.forEach(function(c) {
@@ -123,7 +123,7 @@ const socketConnection = function(socket) {
     const name = socket.request.userInfo.username;  // change?
     const newChat = Chat(chat.message, chat.room, User(user, name));
     const messengerChat = new MessengerChat(pubClient);
-    messengerChat.addChat(newChat);
+    messengerChat.addChat(newChat);  // await?
     socket.broadcast.to(chat.room).emit('AddChat', newChat);
     socket.emit('AddChat', newChat);
   });
@@ -151,7 +151,7 @@ const socketConnection = function(socket) {
         const name = socket.request.userInfo.username;  // change?
         const messengerRoom = new MessengerRoom(pubClient);
         socket.join(room);
-        messengerRoom.addRoom(room);
+        messengerRoom.addRoom(room);  // await?
         socket.broadcast.to(room).emit('AddUser', User(user, name));
         messengerRoom.addUserToRoom(user, room);
       }

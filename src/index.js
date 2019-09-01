@@ -88,10 +88,12 @@ const subClient = new Redis.Cluster(redisClusterOptions, elasticacheWithTLS);
 const socketAuth = (socket, next) => {
   const parsedCookie = cookie.parse(socket.request.headers.cookie);
   const sid = cookieParser.signedCookie(parsedCookie['connect.sid'], process.env.SESSION_SECRET);
+
   if (parsedCookie['connect.sid'] === sid) return next(new Error('Not authenticated.'));
+
   redisSession.get(sid, function(err, session) {
-    if (session.userInfo.userId) {  // CHANGE (not sufficient!)
-      socket.request.user = session.userInfo;  // CHANGE (socket.request.userInfo = session.userInfo ?)
+    if (session.userInfo.userId) {  // CHANGE?
+      socket.request.user = session.userInfo;  // CHANGE? (socket.request.userInfo = session.userInfo ?)
       socket.request.sid = sid;
       const messengerUser = new MessengerUser(pubClient);
       messengerUser.addUser(session.userInfo.userId, session.userInfo.username);
