@@ -1,6 +1,7 @@
 class MessengerRoom {
-  constructor(client) {
-    this.client = client;
+  constructor(pubClient, subClient) {
+    this.pubClient = pubClient;
+    this.subClient = subClient;
     this.getRooms = this.getRooms.bind(this);
     this.addRoom = this.addRoom.bind(this);
 
@@ -11,7 +12,8 @@ class MessengerRoom {
 
   async getRooms(cb){
     try {
-      await this.client.zrevrangebyscore('rooms', '+inf', '-inf', function(err, data) {
+      // pubClient instead?
+      await this.subClient.zrevrangebyscore('rooms', '+inf', '-inf', function(err, data) {
         return cb(data);
       });
     } catch (err) {
@@ -22,7 +24,7 @@ class MessengerRoom {
   async addRoom(room) {
     try {
       if (room !== '') {
-        await this.client.zadd('rooms', Date.now(), room);
+        await this.pubClient.zadd('rooms', Date.now(), room);
       }
     } catch (err) {
       console.error(err);
@@ -49,15 +51,20 @@ class MessengerRoom {
   
   async getUsersInRoom(room) {
     try {
-      const User = (id, name) => ({id, user: name});  // change
+      const User = (id, name) => ({id, user: name});  // change (just need the username, not the userId!)
       let users = [];
-      await this.client.zrange(`rooms:${room}`, 0, -1, function(err, data) {
-        data.forEach(function(u) {
-          this.client.hgetall(`user:${u}`, function(err, userHash) {
-            users.push(User(u, userHash.name));
-          });
-        });
-      });
+      const data = await this.pubClient.zrange(`rooms:${room}`, 0, -1);
+      const pubClient = this.pubClient;
+      for (let u of data){
+        const userHash = await pubClient.hgetall(`user:${u}`);
+        users.push(User(u, userHash.name));
+      }
+      /*await data.map(async function(u) {  // was forEach
+        const userHash = await pubClient.hgetall(`user:${u}`);
+        console.log('userHash: ', userHash);
+        users.push(User(u, userHash.name));
+        console.log('users: ', users);
+      });*/
       return users;
     } catch (err) {
       console.error(err);
@@ -66,7 +73,7 @@ class MessengerRoom {
   
   async addUserToRoom(user, room) {
     try {
-      await this.client
+      await this.pubClient
       .multi()
       .zadd(`rooms:${room}`, Date.now(), user)
       .zadd('users', Date.now(), user)
@@ -80,7 +87,7 @@ class MessengerRoom {
   
   async removeUserFromRoom(user, room) {
     try {
-      await this.client
+      await this.pubClient
       .multi()
       .zrem(`rooms:${room}`, user)
       .del(`user:${user}:room`)

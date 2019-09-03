@@ -62,7 +62,7 @@ async function cleanUp() {
   await cleanUpRooms();
   await cleanUpChats();
   await cleanUpUsers();
-  console.log('Clean Up Isle Messenger');
+  console.log('Clean Up Isle NOBSC Messenger');
 }
 
 setInterval(cleanUp, INTERVAL);

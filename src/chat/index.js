@@ -20,23 +20,23 @@ const Room = name => ({id: name, name});
 
 
 
-async function removeAllRooms(socket, cb) {
+/*async function removeAllRooms(socket, cb) {
   const current = socket.rooms;
   const len = Object.keys(current).length;
   let i = 0;
-  for (let r in current) {  // ?????????????????????? *********************
+  for (let r in current) {
     if (current[r] !== socket.id) {
       const user = socket.request.userInfo.userId;
       const name = socket.request.userInfo.username;
       socket.leave(current[r]);
-      const messengerRoom = new MessengerRoom(pubClient);
-      await messengerRoom.removeUserFromRoom(user, current[r]);  // WILL THIS WORK IN LOOP?
+      let messengerRoom = new MessengerRoom(pubClient);
+      messengerRoom.removeUserFromRoom(user, current[r]);
       socket.broadcast.to(current[r]).emit('RemoveUser', User(user, name));  // change?
     }
     i++;
     if (i === len) cb();
   }
-}
+}*/
 
 
 
@@ -48,8 +48,8 @@ const socketConnection = function(socket) {
   });
 
   socket.on('GetUser', async function(room) {
-    const messengerRoom = new MessengerRoom(subClient);
-    const users = await messengerRoom.getUsersInRoom(room.room);  // O.o
+    const messengerRoom = new MessengerRoom(pubClient, subClient);
+    const users = await messengerRoom.getUsersInRoom(room);
     socket.emit('GetUser', users);
   });  // change to 'GetUsers' ?
 
@@ -86,7 +86,7 @@ const socketConnection = function(socket) {
 
 
   socket.on('GetRoom', async function() {
-    const messengerRoom = new MessengerRoom(subClient);
+    const messengerRoom = new MessengerRoom(pubClient, subClient);
     await messengerRoom.getRooms(function(rooms) {
       let retArr = [];
       let len = rooms.length;
@@ -94,30 +94,81 @@ const socketConnection = function(socket) {
         retArr.push(Room(r));
         len--;
         if (len === 0) socket.emit('GetRoom', retArr);
+        console.log('GET A ROOM!', retArr);
       });
     });
   });  // change to 'GetRooms' ?
 
-  socket.on('AddRoom', async function(r) {
-    const room = r.name;
-    await removeAllRooms(socket, function() {
-      if (room !== '') {
+  /*socket.on('AddRoom', async function(roomToAdd) {
+    const messengerRoom = new MessengerRoom(pubClient, subClient);
+    const currentRooms = socket.rooms;
+    const len = Object.keys(currentRooms).length;
+    let i = 0;
+    for (let room in currentRooms) {
+      if (currentRooms[room] !== socket.id) {
         const user = socket.request.userInfo.userId;
         const name = socket.request.userInfo.username;
-        const messengerRoom = new MessengerRoom(pubClient);
-        socket.join(room);
-        await messengerRoom.addRoom(room);  // WILL THIS WORK IN LOOP?
-        //socket.broadcast.to(room).emit('AddUser', User(user, name));
-        socket.to(room).emit('AddUser', User(user, name));
-        await messengerRoom.addUserToRoom(user, room);  // WILL THIS WORK IN LOOP?
+        socket.leave(currentRooms[room]);
+        messengerRoom.removeUserFromRoom(user, currentRooms[room]);
+        socket.broadcast.to(currentRooms[room]).emit('RemoveUser', User(user, name));  // change?
       }
-    });
+      i++;
+      if (i === len) {
+        if (roomToAdd !== '') {
+          const user = socket.request.userInfo.userId;
+          const name = socket.request.userInfo.username;
+          socket.join(roomToAdd);
+          await messengerRoom.addRoom(roomToAdd);
+          //socket.broadcast.to(room).emit('AddUser', User(user, name));
+          socket.to(roomToAdd).emit('AddUser', User(user, name));
+          //socket.emit('AddUser', User(user, name));  // REMOVE!!!!!!!! JUST FOR TESING!!!!!!!!
+          await messengerRoom.addUserToRoom(user, roomToAdd);
+          const users = await messengerRoom.getUsersInRoom(roomToAdd);
+          socket.emit('GetUser', users);  // .to(roomToAdd) ?
+        }
+      }
+    }
+  });*/
+  socket.on('AddRoom', async function(roomToAdd) {
+    const currentRooms = socket.rooms;
+    const messengerRoom = new MessengerRoom(pubClient, subClient);
+    for (let room in currentRooms) {  // filter instead?
+      if (currentRooms[room] !== socket.id) {
+        const user = socket.request.userInfo.userId;
+        const name = socket.request.userInfo.username;
+        socket.leave(currentRooms[room]);
+        messengerRoom.removeUserFromRoom(user, currentRooms[room]);
+        socket.broadcast.to(currentRooms[room]).emit('RemoveUser', User(user, name));  // change?
+      }
+    }
+    if (roomToAdd !== '') {  // how about null and undefined?
+      const user = socket.request.userInfo.userId;
+      const name = socket.request.userInfo.username;
+      socket.join(roomToAdd);
+      await messengerRoom.addRoom(roomToAdd);
+      //socket.broadcast.to(room).emit('AddUser', User(user, name));
+      socket.to(roomToAdd).emit('AddUser', User(user, name));
+      //socket.emit('AddUser', User(user, name));  // REMOVE!!!!!!!! JUST FOR TESING!!!!!!!!
+      await messengerRoom.addUserToRoom(user, roomToAdd);
+      const users = await messengerRoom.getUsersInRoom(roomToAdd);
+      socket.emit('GetUser', users);  // .to(roomToAdd) ?
+    }
   });
 
 
 
   socket.on('disconnect', async function() {
-    await removeAllRooms(socket, function() {});
+    const currentRooms = socket.rooms;
+    for (let room in currentRooms) {
+      if (currentRooms[room] !== socket.id) {
+        const user = socket.request.userInfo.userId;
+        const name = socket.request.userInfo.username;
+        socket.leave(currentRooms[room]);
+        let messengerRoom = new MessengerRoom(pubClient, subClient);
+        messengerRoom.removeUserFromRoom(user, currentRooms[room]);
+        socket.broadcast.to(currentRooms[room]).emit('RemoveUser', User(user, name));  // change?
+      }
+    }
   });
 };
 
