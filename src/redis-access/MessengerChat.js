@@ -5,11 +5,9 @@ class MessengerChat {
     this.addChat = this.addChat.bind(this);
   }
 
-  async getChat(room, cb){
+  async getChat(room) {
     try {
-      await this.client.zrange(`rooms:${room}:chats`, 0, -1, function(err, chats) {
-        cb(chats);
-      });
+      await this.client.zrange(`rooms:${room}:chats`, 0, -1);  // pubClient instead?
     } catch (err) {
       console.error(err);
     }

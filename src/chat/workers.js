@@ -1,23 +1,19 @@
 'use strict';
 
-const { pubClient, subClient } = require('../lib/connections/redisConnection');
+//const { pubClient, subClient } = require('../lib/connections/redisConnection');
+const { workerClient } = require('../lib/connections/redisConnection');
 
 const DELTA = 60 * 60 * 1000 * 3;
 const INTERVAL = 60 * 60 * 1000 * 2;
 
-
-
-// TEST IF YOU CAN INTERWEAVE CLIENTS LIKE THIS
-
-
-
 async function cleanUpRooms() {
-  await subClient.zrangebyscore('rooms', '-inf', ((new Date).getTime() - DELTA), function(err, rooms) {
+  console.log('cleaning rooms');
+  await workerClient.zrangebyscore('rooms', '-inf', ((new Date).getTime() - DELTA), function(err, rooms) {
     if (err !== null) {
       console.log(err);
     } else {
       rooms.forEach(function(room) {
-        pubClient
+        workerClient
         .multi()
         .zrem('rooms', room)
         .del(`rooms:${room}:chats`)
@@ -28,13 +24,14 @@ async function cleanUpRooms() {
 }
 
 async function cleanUpChats() {
-  await subClient.zrange('rooms', 0, -1, function(err, rooms) {
-    subClient.zrangebyscore('rooms', '-inf', ((new Date).getTime() - DELTA), function(err, rooms) {
+  console.log('cleaning chats');
+  await workerClient.zrange('rooms', 0, -1, function(err, rooms) {
+    workerClient.zrangebyscore('rooms', '-inf', ((new Date).getTime() - DELTA), function(err, rooms) {
       if (err !== null) {
         console.log(err);
       } else {
         rooms.forEach(function(room) {
-          pubClient.zremrangebyscore(`rooms:${room}:chats`, '-inf', ((new Date).getTime() - DELTA));
+          workerClient.zremrangebyscore(`rooms:${room}:chats`, '-inf', ((new Date).getTime() - DELTA));
         });
       }
     });
@@ -42,12 +39,13 @@ async function cleanUpChats() {
 }
 
 async function cleanUpUsers() {
-  await subClient.zrangebyscore('users', '-inf', ((new Date).getTime() - DELTA), function(err, users) {
+  console.log('cleaning users');
+  await workerClient.zrangebyscore('users', '-inf', ((new Date).getTime() - DELTA), function(err, users) {
     if (err !== null) {
       console.log(err);
     } else {
       users.forEach(function(room) {
-        pubClient
+        workerClient
         .multi()
         .zrem('users', user)
         .del(`user:${user}`)
@@ -58,12 +56,14 @@ async function cleanUpUsers() {
   });
 }
 
-async function cleanUp() {
+const cleanUp = async function() {
   await cleanUpRooms();
   await cleanUpChats();
   await cleanUpUsers();
   console.log('Clean Up Isle NOBSC Messenger');
 }
 
-setInterval(cleanUp, INTERVAL);
-cleanUp();
+/*setInterval(cleanUp, INTERVAL);
+cleanUp();*/
+
+module.exports = cleanUp;

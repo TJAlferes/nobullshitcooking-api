@@ -44,6 +44,7 @@ const {
   signS3Images1
 } = require('./routes');
 const socketConnection = require('./chat');
+const cleanUp = require('./chat/workers');
 const MessengerUser = require('./redis-access/MessengerUser');  // move
 const { pubClient, subClient, sessClient } = require('./lib/connections/redisConnection');
 
@@ -173,9 +174,11 @@ io.use(socketAuth);
   });
 });*/
 
-io.on('connect', socketConnection);  // connection ?
+io.on('connection', socketConnection);
 
-
+const INTERVAL = 60 * 60 * 1000 * 2;
+setInterval(cleanUp, INTERVAL);
+cleanUp();
 
 /*##############################################################################
 3. routes

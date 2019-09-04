@@ -12,10 +12,7 @@ class MessengerRoom {
 
   async getRooms(cb){
     try {
-      // pubClient instead?
-      await this.subClient.zrevrangebyscore('rooms', '+inf', '-inf', function(err, data) {
-        return cb(data);
-      });
+      await this.subClient.zrevrangebyscore('rooms', '+inf', '-inf');  // pubClient instead?
     } catch (err) {
       console.error(err);
     }
@@ -33,22 +30,6 @@ class MessengerRoom {
 
 
 
-  /*getUsersinRoom(room){
-    return Promise(function(resolve, reject) {
-      this.client.zrange('rooms:' + room, 0, -1, function(err, data) {
-        var users = [];
-        var loopsleft = data.length;
-        data.forEach(function(u){
-          this.client.hgetall('user:' + u, function(err, userHash){
-            users.push(models.User(u, userHash.name, userHash.type));
-            loopsleft--;
-            if (loopsleft === 0) resolve(users);
-          });
-        });
-      });
-    });
-  };*/
-  
   async getUsersInRoom(room) {
     try {
       const User = (id, name) => ({id, user: name});  // change (just need the username, not the userId!)
@@ -59,12 +40,6 @@ class MessengerRoom {
         const userHash = await pubClient.hgetall(`user:${u}`);
         users.push(User(u, userHash.name));
       }
-      /*await data.map(async function(u) {  // was forEach
-        const userHash = await pubClient.hgetall(`user:${u}`);
-        console.log('userHash: ', userHash);
-        users.push(User(u, userHash.name));
-        console.log('users: ', users);
-      });*/
       return users;
     } catch (err) {
       console.error(err);

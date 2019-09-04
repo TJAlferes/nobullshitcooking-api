@@ -32,6 +32,16 @@ const sessClient = process.env.NODE_ENV === 'production'
   port: 6379,
 });
 
+const workerClient = process.env.NODE_ENV === 'production'
+? new Redis({
+  host: process.env.REDIS_HOST,
+  port: 6379
+})
+: new Redis({
+  host: 'redis-dev',
+  port: 6379,
+});
+
 //console.log('========== ioredis new Redis ========== ');
 //console.log('client', pubClient);
 pubClient.on('ready', () => console.log('pub ready!!!!!!!!!!!'));
@@ -54,4 +64,11 @@ sessClient.on('close', () => console.log('sess close!!!!!!!!!!!'));
 //console.log('============================== ');
 // set up proper retry logic
 
-module.exports = {pubClient, subClient, sessClient};
+//console.log('========== ioredis new Redis ========== ');
+//console.log('client', sessClient);
+workerClient.on('ready', () => console.log('worker ready!!!!!!!!!!!'));
+workerClient.on('error', () => console.log('worker error!!!!!!!!!!!'));
+workerClient.on('close', () => console.log('worker close!!!!!!!!!!!'));
+//console.log('============================== ');
+
+module.exports = {pubClient, subClient, sessClient, workerClient};

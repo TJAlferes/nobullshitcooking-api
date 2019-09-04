@@ -12,7 +12,6 @@ class MessengerUser {
       .zadd('users', Date.now(), user)
       .exec();
     } catch (err) {
-      console.log(err);
       console.error(err);
     }
   }
