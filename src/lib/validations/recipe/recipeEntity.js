@@ -15,10 +15,10 @@ const validRecipeEntity = struct(
     cookingImage: 'string'
   },
   {
-    recipeImage: 'nobsc-recipe-default.png',
-    equipmentImage: 'nobsc-recipe-equipment-default.png',
-    ingredientsImage: 'nobsc-recipe-ingredients-default.png',
-    cookingImage: 'nobsc-recipe-cooking-default.png'
+    recipeImage: 'nobsc-recipe-default',
+    equipmentImage: 'nobsc-recipe-equipment-default',
+    ingredientsImage: 'nobsc-recipe-ingredients-default',
+    cookingImage: 'nobsc-recipe-cooking-default'
   }
 );
 

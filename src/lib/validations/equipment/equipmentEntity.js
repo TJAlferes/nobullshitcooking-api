@@ -10,7 +10,7 @@ const validEquipmentEntity = struct(
     equipmentImage: 'string'
   },
   {
-    equipmentImage: 'nobsc-equipment-default.png'
+    equipmentImage: 'nobsc-equipment-default'
   }
 );
 

@@ -9,7 +9,7 @@ const validStaffEntity = struct(
     role: 'string?'
   },
   {
-    avatar: 'nobsc-staff-default.png',
+    avatar: 'nobsc-staff-default',
     role: 'staff'
   }
 );

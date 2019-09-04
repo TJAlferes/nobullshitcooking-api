@@ -21,7 +21,6 @@ const connectRedis = require('connect-redis');
 const http = require('http');
 const socketIO = require('socket.io');
 const redisAdapter = require('socket.io-redis');
-//const sharedSession = require('express-socket.io-session');
 const cookie = require('cookie');
 const cookieParser = require('cookie-parser');
 
@@ -93,7 +92,7 @@ const socketAuth = (socket, next) => {
   if (parsedCookie['connect.sid'] === sid) return next(new Error('Not authenticated.'));
 
   redisSession.get(sid, function(err, session) {
-    if (session.userInfo.userId) {  // SUFFICIENT?
+    if (session.userInfo.userId) {
       socket.request.userInfo = session.userInfo;
       socket.request.sid = sid;
       const messengerUser = new MessengerUser(pubClient);
@@ -133,7 +132,7 @@ if (app.get('env') === 'production') {
   sessionOptions.cookie.httpOnly = true;
   corsOptions.origin = ['https://nobullshitcooking.net'];
 }
-//enforce https? or elasticbeanstalk already does?
+// enforce https? or elasticbeanstalk already does?
 
 
 
@@ -143,39 +142,20 @@ if (app.get('env') === 'production') {
 
 //app.use(expressPinoLogger());
 app.use(express.json());
-//app.use(cookieParser(process.env.SESSION_SECRET || "secret"));
-app.use(session);  // sharedSession? **********!!!  // do you have to preset one?  // now preset
+app.use(session);
 app.use(expressRateLimit(rateLimiterOptions));
-//app.use(session);  // sharedSession? **********!!!  // do you have to preset one?  // now preset
-app.use(cors(corsOptions));  // before session?
-/*app.options("/*", function(req, res, next){
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
-  res.send(200);
-});*/
+//app.use(session);
+app.use(cors(corsOptions));
 //app.use(helmet());  // get working
 //app.use(hpp());
-//app.use(express.json());
 app.use(expressSanitizer());  // must be called after express.json()
 app.use(helmet());
 //app.use(csurf());  // must be called after cookies/sessions  // https://github.com/pillarjs/understanding-csrf
 app.use(compression());  // elasticbeanstalk already does?
 
-//io.set('transports', ['websocket']);  // ...eh?
 io.adapter(redisAdapter({pubClient, subClient}));
-//io.use(sharedSession(session, {autoSave: true}));    // do you have to preset one?  // now preset  // back to expressSession?
-
 io.use(socketAuth);
-
-/*io.nsps.forEach(function(nsp) {
-  nsp.on('connect', socket => {
-    if (!socket.auth) delete nsp.connected[socket.id];
-  });
-});*/
-
 io.on('connection', socketConnection);
-
 const INTERVAL = 60 * 60 * 1000 * 2;
 setInterval(cleanUp, INTERVAL);
 cleanUp();

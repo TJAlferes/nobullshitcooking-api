@@ -1,10 +1,8 @@
 'use strict';
 
-//const { pubClient, subClient } = require('../lib/connections/redisConnection');
 const { workerClient } = require('../lib/connections/redisConnection');
 
 const DELTA = 60 * 60 * 1000 * 3;
-const INTERVAL = 60 * 60 * 1000 * 2;
 
 async function cleanUpRooms() {
   console.log('cleaning rooms');
@@ -44,7 +42,7 @@ async function cleanUpUsers() {
     if (err !== null) {
       console.log(err);
     } else {
-      users.forEach(function(room) {
+      users.forEach(function(user) {
         workerClient
         .multi()
         .zrem('users', user)
@@ -62,8 +60,5 @@ const cleanUp = async function() {
   await cleanUpUsers();
   console.log('Clean Up Isle NOBSC Messenger');
 }
-
-/*setInterval(cleanUp, INTERVAL);
-cleanUp();*/
 
 module.exports = cleanUp;
