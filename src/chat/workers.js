@@ -2,10 +2,9 @@
 
 const { workerClient } = require('../lib/connections/redisConnection');
 
-const DELTA = 60 * 60 * 1000 * 3;
+const DELTA = 30 * 60 * 1000 * 1;  // 30 minutes
 
 async function cleanUpRooms() {
-  console.log('cleaning rooms');
   await workerClient.zrangebyscore('rooms', '-inf', ((new Date).getTime() - DELTA), function(err, rooms) {
     if (err !== null) {
       console.log(err);
@@ -16,13 +15,22 @@ async function cleanUpRooms() {
         .zrem('rooms', room)
         .del(`rooms:${room}:chats`)
         .exec();
+
+        workerClient.zrangebyscore('users', '-inf', ((new Date).getTime() - DELTA), function(err, users) {
+          if (err !== null) {
+            console.log(err);
+          } else {
+            users.forEach(function(user) {
+              workerClient.zrem(`rooms:${room}`, user);
+            });
+          }
+        });
       });
     }
   });
 }
 
 async function cleanUpChats() {
-  console.log('cleaning chats');
   await workerClient.zrange('rooms', 0, -1, function(err, rooms) {
     workerClient.zrangebyscore('rooms', '-inf', ((new Date).getTime() - DELTA), function(err, rooms) {
       if (err !== null) {
@@ -37,7 +45,6 @@ async function cleanUpChats() {
 }
 
 async function cleanUpUsers() {
-  console.log('cleaning users');
   await workerClient.zrangebyscore('users', '-inf', ((new Date).getTime() - DELTA), function(err, users) {
     if (err !== null) {
       console.log(err);
@@ -55,10 +62,10 @@ async function cleanUpUsers() {
 }
 
 const cleanUp = async function() {
+  console.log('Clean Up Isle NOBSC Messenger');
   await cleanUpRooms();
   await cleanUpChats();
   await cleanUpUsers();
-  console.log('Clean Up Isle NOBSC Messenger');
 }
 
 module.exports = cleanUp;

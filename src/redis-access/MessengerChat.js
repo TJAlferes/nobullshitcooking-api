@@ -18,8 +18,8 @@ class MessengerChat {
       await this.client
       .multi()
       .zadd(`rooms:${chat.room}:chats`, Date.now(), JSON.stringify(chat))
-      .zadd('users', (new Date).getTime(), chat.user.id)
-      .zadd('rooms', (new Date).getTime(), chat.room)
+      .zadd('users', (new Date).getTime(), JSON.stringify(chat.user.id))
+      .zadd('rooms', (new Date).getTime(), JSON.stringify(chat.room))
       .exec();
     } catch (err) {
       console.error(err);
@@ -27,4 +27,4 @@ class MessengerChat {
   };
 }
 
-module.exports = MessengerChat;
+module.exports = MessengerChat; 

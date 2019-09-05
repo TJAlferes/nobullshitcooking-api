@@ -156,7 +156,7 @@ app.use(compression());  // elasticbeanstalk already does?
 io.adapter(redisAdapter({pubClient, subClient}));
 io.use(socketAuth);
 io.on('connection', socketConnection);
-const INTERVAL = 60 * 60 * 1000 * 2;
+const INTERVAL = 60 * 60 * 1000 * 1;  // 1 hour
 setInterval(cleanUp, INTERVAL);
 cleanUp();
 

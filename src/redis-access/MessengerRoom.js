@@ -2,7 +2,7 @@ class MessengerRoom {
   constructor(pubClient, subClient) {
     this.pubClient = pubClient;
     this.subClient = subClient;
-    this.getRooms = this.getRooms.bind(this);
+    //this.getRooms = this.getRooms.bind(this);
     this.addRoom = this.addRoom.bind(this);
 
     this.getUsersInRoom = this.getUsersInRoom.bind(this);
@@ -10,13 +10,13 @@ class MessengerRoom {
     this.removeUserFromRoom = this.removeUserFromRoom.bind(this);
   }
 
-  async getRooms(cb){
+  /*async getRooms(){
     try {
       await this.subClient.zrevrangebyscore('rooms', '+inf', '-inf');  // pubClient instead?
     } catch (err) {
       console.error(err);
     }
-  };
+  };*/
   
   async addRoom(room) {
     try {
@@ -50,10 +50,10 @@ class MessengerRoom {
     try {
       await this.pubClient
       .multi()
-      .zadd(`rooms:${room}`, Date.now(), user)
-      .zadd('users', Date.now(), user)
-      .zadd('rooms', Date.now(), room)
-      .set(`user:${user}:room`, room)
+      .zadd(`rooms:${room}`, Date.now(), user)  // add to sorted set, the users in the room
+      //.zadd('users', Date.now(), user)  // why?
+      //.zadd('rooms', Date.now(), room)  // why?
+      .set(`user:${user}:room`, room)  // set string, the room the user is in
       .exec();
     } catch (err) {
       console.error(err);
