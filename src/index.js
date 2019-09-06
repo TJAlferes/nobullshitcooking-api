@@ -39,8 +39,7 @@ const {
   measurementRoutes,
   favoriteRecipeRoutes,
   staffRoutes,
-  userRoutes,
-  signS3Images1
+  userRoutes
 } = require('./routes');
 const socketConnection = require('./chat');
 const cleanUp = require('./chat/workers');
@@ -53,11 +52,11 @@ const { pubClient, subClient, sessClient } = require('./lib/connections/redisCon
 1. setup
 ##############################################################################*/
 
-// Note to self: Move a lot of this to a separate init module? Export app so you can do integration testing easily
+// Note to self: Move a lot of this to a separate init module; export app so you can do integration testing easily.
 
 // app
 const app = express();
-const rateLimiterOptions = {windowMs: 1 * 60 * 1000, max: 1000};  // limit each IP to 1000 requests per minute  // affect socket?
+const rateLimiterOptions = {windowMs: 1 * 60 * 1000, max: 1000};  // limit each IP to 1000 requests per minute
 const corsOptions = {origin: ['http://localhost:8080'], credentials: true};
 
 
@@ -97,6 +96,18 @@ const socketAuth = (socket, next) => {
       socket.request.sid = sid;
       const messengerUser = new MessengerUser(pubClient);
       messengerUser.addUser(session.userInfo.userId, session.userInfo.username);
+      // TO DO
+      //
+      // notify friends
+      //
+      // (let them toggle whether to notify friends when connected/disconnected to messenger)
+      // select their accepted friendship(s) in MySQL
+      // if any, select users in redis with that id
+      // emit a "username has come online / gone offline" event to privately/directly to those sockets
+      //
+      // whisper friend
+      //
+      // ...
       return next();
     } else {
       return next(new Error('Not authenticated.'));
@@ -110,7 +121,7 @@ const RedisStore = connectRedis(expressSession);
 const redisSession = new RedisStore({client: sessClient});
 const sessionOptions = {
   store: redisSession,
-  name: "connect.sid",  //"session",
+  name: "connect.sid",
   secret: process.env.SESSION_SECRET || "secret",
   resave: true,
   saveUninitialized: true,
@@ -131,8 +142,7 @@ if (app.get('env') === 'production') {
   sessionOptions.cookie.sameSite = true;
   sessionOptions.cookie.httpOnly = true;
   corsOptions.origin = ['https://nobullshitcooking.net'];
-}
-// enforce https? or elasticbeanstalk already does?
+}  // enforce https? or elasticbeanstalk already does?
 
 
 
@@ -160,6 +170,8 @@ const INTERVAL = 60 * 60 * 1000 * 1;  // 1 hour
 setInterval(cleanUp, INTERVAL);
 cleanUp();
 
+
+
 /*##############################################################################
 3. routes
 ##############################################################################*/
@@ -183,7 +195,6 @@ app.use('/measurement', measurementRoutes);
 app.use('/favorite-recipe', favoriteRecipeRoutes);
 app.use('/staff', staffRoutes);
 app.use('/user', userRoutes);
-app.use('/sign-s3-images-1', signS3Images1);
 //app.use('/graphql', expressGraphQL({schema, rootValue, graphiql: true}));
 
 
