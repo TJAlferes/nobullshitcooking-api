@@ -10,7 +10,6 @@ const measurementRoutes = require('./measurement');
 const favoriteRecipeRoutes = require('./favoriteRecipe');
 const staffRoutes = require('./staff/index');
 const userRoutes = require('./user/index');
-const signS3Images1 = require('./signS3Images1');
 
 module.exports = {
   equipmentRoutes,
@@ -24,6 +23,5 @@ module.exports = {
   measurementRoutes,
   favoriteRecipeRoutes,
   staffRoutes,
-  userRoutes,
-  signS3Images1
+  userRoutes
 };

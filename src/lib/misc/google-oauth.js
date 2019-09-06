@@ -1,14 +1,13 @@
+/*
+// we're not using this yet (if ever)
+
 'use strict';
 
 const { google } = require('googleapis');
 
 
 
-/*
-
-setup
-
-*/
+// setup
 
 google.options({auth: createConnection});  // needed?
 
@@ -25,11 +24,7 @@ const defaultScopes = [
 
 
 
-/*
-
-helpers
-
-*/
+// helpers
 
 function createConnection() {
   return new google.auth.OAuth2(
@@ -53,12 +48,8 @@ function getGooglePlusApi(auth) {
 
 
 
-/*
-
-Step 1:
-Create a Google URL and send to the client to log in the user
-
-*/
+// Step 1:
+// Create a Google URL and send to the client to log in the user
 
 function createGoogleUrl() {
   const auth = createConnection();
@@ -68,13 +59,9 @@ function createGoogleUrl() {
 
 
 
-/*
-
-Step 2:
-Take the "code" parameter which Google gives us once when the user logs in,
-then get the user's email and id
-
-*/
+// Step 2:
+// Take the "code" parameter which Google gives us once when the user logs in,
+// then get the user's email and id
 
 function getGoogleAccountFromCode(code) {
   const data = await auth.getToken(code);
@@ -95,3 +82,4 @@ function getGoogleAccountFromCode(code) {
   
   return {tokens: tokens, id: userGoogleId, email: userGoogleEmail};
 }
+*/
