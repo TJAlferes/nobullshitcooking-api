@@ -95,7 +95,7 @@ const socketAuth = (socket, next) => {
       socket.request.userInfo = session.userInfo;
       socket.request.sid = sid;
       const messengerUser = new MessengerUser(pubClient);
-      messengerUser.addUser(session.userInfo.userId, session.userInfo.username);
+      messengerUser.addUser(session.userInfo.userId, session.userInfo.username, sid);
       // TO DO
       //
       // notify friends
@@ -115,6 +115,16 @@ const socketAuth = (socket, next) => {
   });
 };
 
+const redisMaintenance = async () => {
+  let activeSessions = [];
+  redisSession.all(function(err, sessionObjects) {
+    sessionObjects.forEach(function(sessionObject) {
+      activeSessions.push(sessionObject.id)
+    });
+  });
+  await cleanUp(activeSessions);
+};
+
 
 // session
 const RedisStore = connectRedis(expressSession);
@@ -130,7 +140,8 @@ const sessionOptions = {
     maxAge: 86400000,
     httpOnly: false,
     secure: false
-  }
+  },
+  unset: "destroy"
 };
 const session = expressSession(sessionOptions);
 
@@ -166,9 +177,10 @@ app.use(compression());  // elasticbeanstalk already does?
 io.adapter(redisAdapter({pubClient, subClient}));
 io.use(socketAuth);
 io.on('connection', socketConnection);
-const INTERVAL = 60 * 60 * 1000 * 1;  // 1 hour
-setInterval(cleanUp, INTERVAL);
-cleanUp();
+//const INTERVAL = 60 * 60 * 1000 * 1;  // 1 hour
+const INTERVAL = 1 * 60 * 1000 * 1;  // 2 minutes
+setInterval(redisMaintenance, INTERVAL);  // next()?
+//redisMaintenance();  // next()?
 
 
 
