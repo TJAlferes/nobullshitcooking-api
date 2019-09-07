@@ -115,16 +115,6 @@ const socketAuth = (socket, next) => {
   });
 };
 
-const redisMaintenance = async () => {
-  let activeSessions = [];
-  redisSession.all(function(err, sessionObjects) {
-    sessionObjects.forEach(function(sessionObject) {
-      activeSessions.push(sessionObject.id)
-    });
-  });
-  await cleanUp(activeSessions);
-};
-
 
 // session
 const RedisStore = connectRedis(expressSession);
@@ -177,10 +167,9 @@ app.use(compression());  // elasticbeanstalk already does?
 io.adapter(redisAdapter({pubClient, subClient}));
 io.use(socketAuth);
 io.on('connection', socketConnection);
-//const INTERVAL = 60 * 60 * 1000 * 1;  // 1 hour
-const INTERVAL = 1 * 60 * 1000 * 1;  // 2 minutes
-setInterval(redisMaintenance, INTERVAL);  // next()?
-//redisMaintenance();  // next()?
+const INTERVAL = 60 * 60 * 1000 * 3;  // 3 hours
+setInterval(cleanUp, INTERVAL);  // next()?
+cleanUp();  // next()?
 
 
 

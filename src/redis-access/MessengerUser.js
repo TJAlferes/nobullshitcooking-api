@@ -2,6 +2,7 @@ class MessengerUser {
   constructor(client) {
     this.client = client;
     this.addUser = this.addUser.bind(this);
+    this.removeUser = this.removeUser.bind(this);
   }
 
   async addUser(user, name, sid) {
@@ -12,6 +13,17 @@ class MessengerUser {
       .hset(`user:${user}`, 'sid', sid)
       .zadd('users', Date.now(), user)
       .exec();
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async removeUser(user) {
+    try {
+      multi()
+      .zrem('users', user)
+      .del(`user:${user}`)
+      .exec()
     } catch (err) {
       console.error(err);
     }

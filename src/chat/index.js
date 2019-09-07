@@ -3,6 +3,7 @@
 const { pubClient, subClient } = require('../lib/connections/redisConnection');
 const MessengerChat = require('../redis-access/MessengerChat');
 const MessengerRoom = require('../redis-access/MessengerRoom');
+const MessengerUser = require('../redis-access/MessengerUser');
 
 const User = (id, name) => ({id, user: name});
 
@@ -66,6 +67,7 @@ const socketConnection = function(socket) {
     const user = socket.request.userInfo.userId;
     const name = socket.request.userInfo.username;
     const messengerRoom = new MessengerRoom(pubClient, subClient);
+    const messengerUser = new MessengerUser(pubClient);
 
     for (let room in clonedSocket.rooms) {
       if (room !== clonedSocket.id) {
@@ -73,6 +75,8 @@ const socketConnection = function(socket) {
         messengerRoom.removeUserFromRoom(user, room);
       }
     }
+
+    await messengerUser.removeUser(user);
   });
 };
 

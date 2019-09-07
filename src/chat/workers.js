@@ -2,8 +2,7 @@
 
 const { workerClient } = require('../lib/connections/redisConnection');
 
-//const DELTA = 30 * 60 * 1000 * 1;  // 30 minutes
-const DELTA = 30 * 1000; // 30 seconds
+const DELTA = 60 * 60 * 1000 * 2;  // 2 hours
 
 async function cleanUpRooms() {
   await workerClient.zrangebyscore(
@@ -69,38 +68,10 @@ async function cleanUpChats() {
   );
 }
 
-async function cleanUpUsers(activeSessions) {
-  const users = await workerClient.zrangebyscore(
-    'users',
-    '-inf',
-    ((new Date).getTime() - DELTA)
-  );
-
-  for (let user of users) {
-    const doesExist = await workerClient.hexists(`user:${user}`, 'sid');
-    if (doesExist === 1) {
-      const userSID = await workerClient.hget(`user:${user}`, 'sid');
-      console.log('userSID: ', userSID);
-      if (!activeSessions.includes(userSID)) {
-        console.log('deleting ', userSID);
-        await workerClient
-        .multi()
-        .zrem('users', user)
-        .del(`user:${user}`)
-        .del(`user:${user}:room`)
-        .exec();
-      } else {
-        console.log('NOT deleting ', userSID);
-      }
-    }
-  }
-}
-
-const cleanUp = async function(activeSessions) {
+const cleanUp = async function() {
   console.log('Clean Up Isle NOBSC Messenger');
   await cleanUpRooms();
   await cleanUpChats();
-  await cleanUpUsers(activeSessions);
 }
 
 module.exports = cleanUp;
