@@ -20,7 +20,8 @@ class MessengerUser {
 
   async removeUser(user) {
     try {
-      multi()
+      await this.client
+      .multi()
       .zrem('users', user)
       .del(`user:${user}`)
       .exec()
