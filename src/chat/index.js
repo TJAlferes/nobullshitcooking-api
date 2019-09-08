@@ -64,10 +64,10 @@ const socketConnection = function(socket) {
         socket.broadcast.to(room).emit('AddWhisper', whisper);
         socket.emit('AddWhisper', whisper);
       } else {
-        //emit to self: "User not found."
+        socket.emit('FailedWhisper', 'User not found.');
       }
     } else {
-      //emit to self: "User not found."
+      socket.emit('FailedWhisper', 'User not found.');
     }
   });
 
