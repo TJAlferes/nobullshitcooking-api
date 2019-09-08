@@ -4,7 +4,7 @@ class Friendship {
     this.viewAllMyFriendships = this.viewAllMyFriendships.bind(this);
     //this.viewAllMyAcceptedFriendships = this.viewAllMyAcceptedFriendships.bind(this);
     //this.viewAllMyPendingFriendships = this.viewAllMyPendingFriendships.bind(this);
-    //this.viewAllMyBlockedUsers = this.viewAllMyBlockedUsers.bind(this);
+    this.viewAllMyBlockedUsers = this.viewAllMyBlockedUsers.bind(this);
     this.createFriendship = this.createFriendship.bind(this);
     this.acceptFriendship = this.acceptFriendship.bind(this);
     this.rejectFriendship = this.rejectFriendship.bind(this);
@@ -57,7 +57,7 @@ class Friendship {
     `;
     const [ pendingFriendships ] = await this.pool.execute(sql, [userId]);
     return pendingFriendships;
-  }
+  }*/
 
   async viewAllMyBlockedUsers(userId) {
     const sql = `
@@ -67,7 +67,7 @@ class Friendship {
     `;
     const [ blockedUsers ] = await this.pool.execute(sql, [userId]);
     return blockedUsers;
-  }*/
+  }
 
   async createFriendship(friendshipToCreate) {
     const { userId, friendId, status } = friendshipToCreate;

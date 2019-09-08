@@ -2,6 +2,7 @@
 
 const pool = require('../lib/connections/mysqlPoolConnection');
 const User = require('../mysql-access/User');
+const Friendship = require('../mysql-access/Friendship');
 
 const { pubClient, subClient } = require('../lib/connections/redisConnection');
 const MessengerChat = require('../redis-access/MessengerChat');
@@ -52,17 +53,25 @@ const socketConnection = function(socket) {
 
     const userExists = await NOBSCUser.getUserIdByUsername(nameToWhisper);
     if (userExists.length) {
-      const messengerUser = new MessengerUser(subClient);
+      const friendship = new Friendship(pool);
 
-      const userIsConnected = await messengerUser.getUserSocketId(userExists[0].user_id)
-      if (userIsConnected) {
-        const room = userIsConnected;
-        const whisper = Whisper(whisperToAdd, room, User(user, name));
-        const messengerChat = new MessengerChat(pubClient);
+      const blockedUsers = await friendship.viewAllMyBlockedUsers(userExists[0].user_id);
+      const blockedByUser = blockedUsers.find(usr => usr.user_id === user);
+      if (!blockedByUser) {
+        const messengerUser = new MessengerUser(subClient);
 
-        await messengerChat.addChat(whisper);
-        socket.broadcast.to(room).emit('AddWhisper', whisper);
-        socket.emit('AddWhisper', whisper);
+        const userIsConnected = await messengerUser.getUserSocketId(userExists[0].user_id)
+        if (userIsConnected) {
+          const room = userIsConnected;
+          const whisper = Whisper(whisperToAdd, room, User(user, name));
+          const messengerChat = new MessengerChat(pubClient);
+
+          await messengerChat.addChat(whisper);
+          socket.broadcast.to(room).emit('AddWhisper', whisper);
+          socket.emit('AddWhisper', whisper);
+        } else {
+          socket.emit('FailedWhisper', 'User not found.');
+        }
       } else {
         socket.emit('FailedWhisper', 'User not found.');
       }
