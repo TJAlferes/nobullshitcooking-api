@@ -87,6 +87,7 @@ const subClient = new Redis.Cluster(redisClusterOptions, elasticacheWithTLS);
 const socketAuth = (socket, next) => {
   const parsedCookie = cookie.parse(socket.request.headers.cookie);
   const sid = cookieParser.signedCookie(parsedCookie['connect.sid'], process.env.SESSION_SECRET);
+  const socketid = socket.id;
 
   if (parsedCookie['connect.sid'] === sid) return next(new Error('Not authenticated.'));
 
@@ -95,19 +96,19 @@ const socketAuth = (socket, next) => {
       socket.request.userInfo = session.userInfo;
       socket.request.sid = sid;
       const messengerUser = new MessengerUser(pubClient);
-      messengerUser.addUser(session.userInfo.userId, session.userInfo.username, sid);
+      messengerUser.addUser(session.userInfo.userId, session.userInfo.username, sid, socketid);
       // TO DO
       //
-      // notify friends
+      // notify friends (maybe not?)
       //
       // (let them toggle whether to notify friends when connected/disconnected to messenger)
-      // select their accepted friendship(s) in MySQL
-      // if any, select users in redis with that id
+      // select their accepted friendship(s) in MySQL (DO NOT call the DB each time!) (add friendIds to user hash in redis)
+      // if any, select users in redis with that id (for each friendId, )
       // emit a "username has come online / gone offline" event to privately/directly to those sockets
       //
       // whisper friend
       //
-      // ...
+      // 
       return next();
     } else {
       return next(new Error('Not authenticated.'));
@@ -170,6 +171,10 @@ io.on('connection', socketConnection);
 const INTERVAL = 60 * 60 * 1000 * 3;  // 3 hours
 setInterval(cleanUp, INTERVAL);  // next()?
 cleanUp();  // next()?
+
+setInterval(() => io.of('/').adapter.clients((err, clients) => {
+  console.log(clients); // an array containing all connected socket ids
+}), (60 * 1000));
 
 
 
