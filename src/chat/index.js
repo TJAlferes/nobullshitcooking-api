@@ -50,28 +50,20 @@ const socketConnection = function(socket) {
     const user = socket.request.userInfo.userId;
     const name = socket.request.userInfo.username;
     const nobscUser = new NOBSCUser(pool);
-
     const userExists = await nobscUser.getUserIdByUsername(nameToWhisper);
-    console.log('userExists: ', userExists);
+
     if (userExists.length) {
       const nobscFriendship = new NOBSCFriendship(pool);
-
       const blockedUsers = await nobscFriendship.viewAllMyBlockedUsers(userExists[0].user_id);
       const blockedByUser = blockedUsers.find(friend => friend.friend_id === user);
-      console.log('blockedUsers', blockedUsers)
+
       if (!blockedByUser) {
         const messengerUser = new MessengerUser(pubClient);
-
         const userIsConnected = await messengerUser.getUserSocketId(userExists[0].user_id)
-        console.log('userIsConnected: ', userIsConnected);
+
         if (userIsConnected) {
           const room = userIsConnected;
-          console.log('room: ', room);
           const whisper = Whisper(whisperToAdd, nameToWhisper, User(user, name));
-          console.log('whisper: ', whisper);
-          const messengerChat = new MessengerChat(pubClient);
-
-          await messengerChat.addChat(whisper);
           socket.broadcast.to(room).emit('AddWhisper', whisper);
           socket.emit('AddWhisper', whisper);
         } else {
