@@ -160,9 +160,9 @@ const INTERVAL = 60 * 60 * 1000 * 3;  // 3 hours
 setInterval(cleanUp, INTERVAL);  // next()?
 cleanUp();  // next()?
 
-setInterval(() => io.of('/').adapter.clients((err, clients) => {
+/*setInterval(() => io.of('/').adapter.clients((err, clients) => {
   console.log(clients); // an array containing all connected socket ids
-}), (60 * 1000));
+}), (60 * 1000));*/
 
 
 

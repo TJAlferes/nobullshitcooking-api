@@ -42,7 +42,7 @@ class Friendship {
   /*async viewAllMyAcceptedFriendships(userId) {
     const sql = `
       SELECT friend_id
-      FROM nobsc_friends
+      FROM nobsc_friendships
       WHERE user_id = ? AND status = "accepted"
     `;
     const [ acceptedFriendships ] = await this.pool.execute(sql, [userId]);
@@ -52,7 +52,7 @@ class Friendship {
   async viewAllMyPendingFriendships(userId) {
     const sql = `
       SELECT friend_id
-      FROM nobsc_friends
+      FROM nobsc_friendships
       WHERE user_id = ? AND status = "pending"
     `;
     const [ pendingFriendships ] = await this.pool.execute(sql, [userId]);
@@ -62,7 +62,7 @@ class Friendship {
   async viewAllMyBlockedUsers(userId) {
     const sql = `
       SELECT friend_id
-      FROM nobsc_friends
+      FROM nobsc_friendships
       WHERE user_id = ? AND status = "blocked"
     `;
     const [ blockedUsers ] = await this.pool.execute(sql, [userId]);

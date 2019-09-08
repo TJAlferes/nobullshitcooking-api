@@ -1,8 +1,8 @@
 'use strict';
 
 const pool = require('../lib/connections/mysqlPoolConnection');
-const User = require('../mysql-access/User');
-const Friendship = require('../mysql-access/Friendship');
+const NOBSCUser = require('../mysql-access/User');
+const NOBSCFriendship = require('../mysql-access/Friendship');
 
 const { pubClient, subClient } = require('../lib/connections/redisConnection');
 const MessengerChat = require('../redis-access/MessengerChat');
@@ -19,11 +19,11 @@ const Chat = (messageToAdd, room, user) => ({
   user
 });
 
-const Whisper = (whisperToAdd, room, user) => ({
+const Whisper = (whisperToAdd, nameToWhisper, user) => ({
   id: user.id + (new Date).getTime().toString(),
   ts: (new Date).getTime(),
-  message: whisperToAdd,
-  room,
+  whisper: whisperToAdd,
+  to: nameToWhisper,
   user
 });
 
@@ -49,21 +49,26 @@ const socketConnection = function(socket) {
   socket.on('AddWhisper', async function(whisperToAdd, nameToWhisper) {
     const user = socket.request.userInfo.userId;
     const name = socket.request.userInfo.username;
-    const NOBSCUser = new User(pool);
+    const nobscUser = new NOBSCUser(pool);
 
-    const userExists = await NOBSCUser.getUserIdByUsername(nameToWhisper);
+    const userExists = await nobscUser.getUserIdByUsername(nameToWhisper);
+    console.log('userExists: ', userExists);
     if (userExists.length) {
-      const friendship = new Friendship(pool);
+      const nobscFriendship = new NOBSCFriendship(pool);
 
-      const blockedUsers = await friendship.viewAllMyBlockedUsers(userExists[0].user_id);
+      const blockedUsers = await nobscFriendship.viewAllMyBlockedUsers(userExists[0].user_id);
       const blockedByUser = blockedUsers.find(friend => friend.friend_id === user);
+      console.log('blockedUsers', blockedUsers)
       if (!blockedByUser) {
-        const messengerUser = new MessengerUser(subClient);
+        const messengerUser = new MessengerUser(pubClient);
 
         const userIsConnected = await messengerUser.getUserSocketId(userExists[0].user_id)
+        console.log('userIsConnected: ', userIsConnected);
         if (userIsConnected) {
           const room = userIsConnected;
-          const whisper = Whisper(whisperToAdd, room, User(user, name));
+          console.log('room: ', room);
+          const whisper = Whisper(whisperToAdd, nameToWhisper, User(user, name));
+          console.log('whisper: ', whisper);
           const messengerChat = new MessengerChat(pubClient);
 
           await messengerChat.addChat(whisper);
