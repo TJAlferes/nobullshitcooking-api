@@ -56,7 +56,7 @@ const socketConnection = function(socket) {
       const friendship = new Friendship(pool);
 
       const blockedUsers = await friendship.viewAllMyBlockedUsers(userExists[0].user_id);
-      const blockedByUser = blockedUsers.find(usr => usr.user_id === user);
+      const blockedByUser = blockedUsers.find(friend => friend.friend_id === user);
       if (!blockedByUser) {
         const messengerUser = new MessengerUser(subClient);
 

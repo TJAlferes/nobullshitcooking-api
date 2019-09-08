@@ -97,18 +97,6 @@ const socketAuth = (socket, next) => {
       socket.request.sid = sid;
       const messengerUser = new MessengerUser(pubClient);
       messengerUser.addUser(session.userInfo.userId, session.userInfo.username, sid, socketid);
-      // TO DO
-      //
-      // notify friends (maybe not?)
-      //
-      // (let them toggle whether to notify friends when connected/disconnected to messenger)
-      // select their accepted friendship(s) in MySQL (DO NOT call the DB each time!) (add friendIds to user hash in redis)
-      // if any, select users in redis with that id (for each friendId, )
-      // emit a "username has come online / gone offline" event to privately/directly to those sockets
-      //
-      // whisper friend
-      //
-      // 
       return next();
     } else {
       return next(new Error('Not authenticated.'));
