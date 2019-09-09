@@ -55,7 +55,7 @@ const socketConnection = async function(socket) {
         for (acceptedFriend of acceptedFriends) {
           const userIsConnected = await messengerUser.getUserSocketId(acceptedFriend.user_id);
           if (userIsConnected) {
-            socket.broadcast.to(userIsConnected).emit('ShowOnline', name);
+            socket.broadcast.to(userIsConnected).emit('ShowOnline', User(user, name));
             friendsOnline.push(User(acceptedFriend.user_id, acceptedFriend.username));
           }
         }
@@ -64,7 +64,7 @@ const socketConnection = async function(socket) {
         let friendOnline = [];
         const userIsConnected = await messengerUser.getUserSocketId(acceptedFriends[0].user_id);
         if (userIsConnected) {
-          socket.broadcast.to(userIsConnected).emit('ShowOnline', name);
+          socket.broadcast.to(userIsConnected).emit('ShowOnline', User(user, name));
           friendOnline.push(User(acceptedFriends[0].user_id, acceptedFriends[0].username));
           socket.emit('GetOnline', friendOnline);
         }
@@ -161,11 +161,11 @@ const socketConnection = async function(socket) {
       if (acceptedFriends.length > 1) {
         for (acceptedFriend of acceptedFriends) {
           const userIsConnected = await messengerUser.getUserSocketId(acceptedFriend.user_id);
-          if (userIsConnected) socket.broadcast.to(userIsConnected).emit('ShowOffline', name);
+          if (userIsConnected) socket.broadcast.to(userIsConnected).emit('ShowOffline', User(user, name));
         }
       } else {
         const userIsConnected = await messengerUser.getUserSocketId(acceptedFriends[0].user_id);
-        if (userIsConnected) socket.broadcast.to(userIsConnected).emit('ShowOffline', name);
+        if (userIsConnected) socket.broadcast.to(userIsConnected).emit('ShowOffline', User(user, name));
       }
     }
 
