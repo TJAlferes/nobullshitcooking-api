@@ -27,19 +27,49 @@ const Whisper = (whisperToAdd, nameToWhisper, user) => ({
   user
 });
 
-const socketConnection = function(socket) {
+const socketConnection = async function(socket) {
+  const user = socket.request.userInfo.userId;
+  const name = socket.request.userInfo.username;
+  const nobscUser = new NOBSCUser(pool);
+  const nobscFriendship = new NOBSCFriendship(pool);
+  const messengerUser = new MessengerUser(pubClient);
+  const messengerRoom = new MessengerRoom(pubClient, subClient);
+  const messengerChat = new MessengerChat(pubClient);
+
+  socket.on('GetOnline', async function() {
+    const acceptedFriends = await nobscFriendship.viewAllMyAcceptedFriendships(user);
+  
+    if (acceptedFriends.length) {
+      if (acceptedFriends.length > 1) {
+        let friendsOnline = [];
+        for (acceptedFriend of acceptedFriends) {
+          const userIsConnected = await messengerUser.getUserSocketId(acceptedFriend.user_id);
+          if (userIsConnected) {
+            socket.broadcast.to(userIsConnected).emit('ShowOnline', name);
+            friendsOnline.push(acceptedFriend);
+          }
+        }
+        if (friendsOnline.length) socket.emit('GetOnline', friendsOnline);
+      } else {
+        const userIsConnected = await messengerUser.getUserSocketId(acceptedFriends[0].user_id);
+        if (userIsConnected) {
+          socket.broadcast.to(userIsConnected).emit('ShowOnline', name);
+          socket.emit('GetOnline', acceptedFriends[0]);
+        }
+      }
+    }
+  });
+
   socket.on('GetUser', async function(room) {
-    const messengerRoom = new MessengerRoom(pubClient, subClient);
+    //const messengerRoom = new MessengerRoom(pubClient, subClient);
     const users = await messengerRoom.getUsersInRoom(room);
     socket.emit('GetUser', users);
   });
 
   socket.on('AddChat', async function(messageToAdd) {
-    const user = socket.request.userInfo.userId;
-    const name = socket.request.userInfo.username;
     const room = Object.keys(socket.rooms).filter(r => r !== socket.id);
     const chat = Chat(messageToAdd, room, User(user, name));
-    const messengerChat = new MessengerChat(pubClient);
+    //const messengerChat = new MessengerChat(pubClient);
 
     await messengerChat.addChat(chat);
     socket.broadcast.to(room).emit('AddChat', chat);
@@ -47,19 +77,16 @@ const socketConnection = function(socket) {
   });
 
   socket.on('AddWhisper', async function(whisperToAdd, nameToWhisper) {
-    const user = socket.request.userInfo.userId;
-    const name = socket.request.userInfo.username;
-    const nobscUser = new NOBSCUser(pool);
+    //const nobscUser = new NOBSCUser(pool);
     const userExists = await nobscUser.getUserIdByUsername(nameToWhisper);
 
     if (userExists.length) {
-      const nobscFriendship = new NOBSCFriendship(pool);
       const blockedUsers = await nobscFriendship.viewAllMyBlockedUsers(userExists[0].user_id);
       const blockedByUser = blockedUsers.find(friend => friend.friend_id === user);
 
       if (!blockedByUser) {
-        const messengerUser = new MessengerUser(pubClient);
-        const userIsConnected = await messengerUser.getUserSocketId(userExists[0].user_id)
+        //const messengerUser = new MessengerUser(pubClient);
+        const userIsConnected = await messengerUser.getUserSocketId(userExists[0].user_id);
 
         if (userIsConnected) {
           const room = userIsConnected;
@@ -79,9 +106,7 @@ const socketConnection = function(socket) {
 
   socket.on('AddRoom', async function(roomToAdd) {
     const currentRooms = socket.rooms;
-    const user = socket.request.userInfo.userId;
-    const name = socket.request.userInfo.username;
-    const messengerRoom = new MessengerRoom(pubClient, subClient);
+    //const messengerRoom = new MessengerRoom(pubClient, subClient);
 
     for (let room in currentRooms) {
       if (currentRooms[room] !== socket.id) {
@@ -92,8 +117,6 @@ const socketConnection = function(socket) {
     }
 
     if (roomToAdd !== '') {
-      const user = socket.request.userInfo.userId;
-      const name = socket.request.userInfo.username;
       socket.join(roomToAdd);
 
       await messengerRoom.addRoom(roomToAdd);
@@ -107,15 +130,27 @@ const socketConnection = function(socket) {
 
   socket.on('disconnecting', async function() {
     const clonedSocket = {...socket};
-    const user = socket.request.userInfo.userId;
-    const name = socket.request.userInfo.username;
-    const messengerRoom = new MessengerRoom(pubClient, subClient);
-    const messengerUser = new MessengerUser(pubClient);
+    //const messengerRoom = new MessengerRoom(pubClient, subClient);
+    //const messengerUser = new MessengerUser(pubClient);
 
     for (let room in clonedSocket.rooms) {
       if (room !== clonedSocket.id) {
         socket.broadcast.to(room).emit('RemoveUser', User(user, name));
         messengerRoom.removeUserFromRoom(user, room);
+      }
+    }
+
+    const acceptedFriends = await nobscFriendship.viewAllMyAcceptedFriendships(user);
+
+    if (acceptedFriends.length) {
+      if (acceptedFriends.length > 1) {
+        for (acceptedFriend of acceptedFriends) {
+          const userIsConnected = await messengerUser.getUserSocketId(acceptedFriend.user_id);
+          if (userIsConnected) socket.broadcast.to(userIsConnected).emit('ShowOffline', name);
+        }
+      } else {
+        const userIsConnected = await messengerUser.getUserSocketId(acceptedFriends[0].user_id);
+        if (userIsConnected) socket.broadcast.to(userIsConnected).emit('ShowOffline', name);
       }
     }
 

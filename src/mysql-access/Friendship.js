@@ -2,7 +2,7 @@ class Friendship {
   constructor(pool) {
     this.pool = pool;
     this.viewAllMyFriendships = this.viewAllMyFriendships.bind(this);
-    //this.viewAllMyAcceptedFriendships = this.viewAllMyAcceptedFriendships.bind(this);
+    this.viewAllMyAcceptedFriendships = this.viewAllMyAcceptedFriendships.bind(this);
     //this.viewAllMyPendingFriendships = this.viewAllMyPendingFriendships.bind(this);
     this.viewAllMyBlockedUsers = this.viewAllMyBlockedUsers.bind(this);
     this.createFriendship = this.createFriendship.bind(this);
@@ -39,17 +39,22 @@ class Friendship {
     return friendships;
   }
 
-  /*async viewAllMyAcceptedFriendships(userId) {
+  async viewAllMyAcceptedFriendships(userId) {
     const sql = `
-      SELECT friend_id
-      FROM nobsc_friendships
-      WHERE user_id = ? AND status = "accepted"
+      SELECT
+        u.user_id AS user_id,
+        u.username AS username,
+        u.avatar AS avatar,
+        f.status AS status
+      FROM nobsc_users u
+      INNER JOIN nobsc_friendships f ON u.user_id = f.friend_id
+      WHERE f.user_id = ? AND status = "accepted"
     `;
     const [ acceptedFriendships ] = await this.pool.execute(sql, [userId]);
     return acceptedFriendships;
   }
 
-  async viewAllMyPendingFriendships(userId) {
+  /*async viewAllMyPendingFriendships(userId) {
     const sql = `
       SELECT friend_id
       FROM nobsc_friendships
