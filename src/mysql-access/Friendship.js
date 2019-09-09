@@ -135,7 +135,7 @@ class Friendship {
     await this.pool.execute(sql1, [userId, friendId]);
     await this.pool.execute(sql1, [friendId, userId]);
     const [ blockedUser ] = await this.pool.execute(sql2, [userId, friendId]);
-    await this.pool.execute(sq2, [friendId, userId]);
+    await this.pool.execute(sql2, [friendId, userId]);
     return blockedUser;
   }
 
