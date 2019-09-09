@@ -65,7 +65,7 @@ const socketConnection = async function(socket) {
         const userIsConnected = await messengerUser.getUserSocketId(acceptedFriends[0].user_id);
         if (userIsConnected) {
           socket.broadcast.to(userIsConnected).emit('ShowOnline', name);
-          friendOnline.push(User(acceptedFriends[0].user_id, acceptedFriend[0].username));
+          friendOnline.push(User(acceptedFriends[0].user_id, acceptedFriends[0].username));
           socket.emit('GetOnline', friendOnline);
         }
       }
