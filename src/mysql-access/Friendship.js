@@ -1,6 +1,8 @@
 class Friendship {
   constructor(pool) {
     this.pool = pool;
+    this.getFriendshipByFriendId = this.getFriendshipByFriendId.bind(this);
+    this.checkIfBlockedBy = this.checkIfBlockedBy.bind(this);
     this.viewAllMyFriendships = this.viewAllMyFriendships.bind(this);
     this.viewAllMyAcceptedFriendships = this.viewAllMyAcceptedFriendships.bind(this);
     //this.viewAllMyPendingFriendships = this.viewAllMyPendingFriendships.bind(this);
@@ -16,13 +18,35 @@ class Friendship {
   /*
     each relationship is represented
     by two records in the table,
-    one for each side (each user)
+    one for each side (each user),
+    (except for block/unblock, which must be one-sided)
 
     as you will see below,
     double (reversed params) execution is needed in
     any INSERT, UPDATE, and DELETE queries
-    in order to affect both sides of the relationship
+    in order to affect both sides of the relationship,
+    (except for block/unblock, which must be one-sided)
   */
+
+  async getFriendshipByFriendId(friendId) {
+    const sql = `
+      SELECT friend_id
+      FROM nobsc_friendships
+      WHERE friend_id = ?
+    `;
+    const [ friendship ] = await this.pool.execute(sql, [friendId]);
+    return friendship;
+  }
+
+  async checkIfBlockedBy(friendId) {
+    const sql = `
+      SELECT user_id
+      FROM nobsc_friendships
+      WHERE user_id = ? AND status = "blocked"
+    `;
+    const [ blockedBy ] = await this.pool.execute(sql, [friendId]);
+    return blockedBy;
+  }
 
   async viewAllMyFriendships(userId) {
     const sql = `
@@ -89,9 +113,9 @@ class Friendship {
     const sql = `
       UPDATE nobsc_friendships
       SET status = "accepted"
-      WHERE user_id = ? AND friend_id = ?
+      WHERE user_id = ? AND friend_id = ? AND status = "pending"
       LIMIT 1
-    `;
+    `;  // the `AND status = "pending"` is essential
     const [ acceptedFriendship ] = await this.pool.execute(sql, [userId, friendId]);
     await this.pool.execute(sql, [friendId, userId]);
     return acceptedFriendship;
@@ -101,9 +125,9 @@ class Friendship {
     const sql = `
       DELETE
       FROM nobsc_friendships
-      WHERE user_id = ? AND friend_id = ?
+      WHERE user_id = ? AND friend_id = ? AND status != "blocked"
       LIMIT 1
-    `;
+    `;  // the `AND status != "blocked"` is essential
     const [ rejectedFriendship ] = await this.pool.execute(sql, [userId, friendId]);
     await this.pool.execute(sql, [friendId, userId]);
     return rejectedFriendship;
@@ -113,9 +137,9 @@ class Friendship {
     const sql = `
       DELETE
       FROM nobsc_friendships
-      WHERE user_id = ? AND friend_id = ?
+      WHERE user_id = ? AND friend_id = ? AND status != "blocked"
       LIMIT 1
-    `;
+    `;  // the `AND status != "blocked"` is essential
     const [ deletedFriendship ] = await this.pool.execute(sql, [userId, friendId]);
     await this.pool.execute(sql, [friendId, userId]);
     return deletedFriendship;
@@ -133,9 +157,9 @@ class Friendship {
       VALUES (?, ?, "blocked")
     `;
     await this.pool.execute(sql1, [userId, friendId]);
-    await this.pool.execute(sql1, [friendId, userId]);
+    //await this.pool.execute(sql1, [friendId, userId]);  // do not do
     const [ blockedUser ] = await this.pool.execute(sql2, [userId, friendId]);
-    await this.pool.execute(sql2, [friendId, userId]);
+    //await this.pool.execute(sql2, [friendId, userId]);  // do not do
     return blockedUser;
   }
 
@@ -147,7 +171,7 @@ class Friendship {
       LIMIT 1
     `;
     const [ unblockedUser ] = await this.pool.execute(sql, [userId, friendId]);
-    await this.pool.execute(sql, [friendId, userId]);
+    //await this.pool.execute(sql, [friendId, userId]);  // do not do
     return unblockedUser;
   }
 }

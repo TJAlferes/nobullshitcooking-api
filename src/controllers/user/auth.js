@@ -103,6 +103,7 @@ const userAuthController = {
           req.session.userInfo = {};
           req.session.userInfo.userId = userId;
           req.session.userInfo.username = username;
+          req.session.userInfo.avatar = avatar;
 
           return res.json({message: 'Signed in.', username, avatar});
         }

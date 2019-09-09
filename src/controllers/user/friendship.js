@@ -35,6 +35,17 @@ const userFriendshipController = {
     const status = "pending";
     const friendshipToCreate = validFriendshipEntity({userId, friendId, status});
     const friendship = new Friendship(pool);
+
+    const blockedBy = await friendship.checkIfBlockedBy(friendId);
+    if (blockedBy.length) return res.send({message: 'User not found.'});
+
+    const friendshipExists = await friendship.getFriendshipByFriendId(friendId);
+    if (friendshipExists.length) {
+      if (friendshipExists[0].status = "pending") return res.send({message: 'Friendship request already sent.'});
+      if (friendshipExists[0].status = "accepted") return res.send({message: 'Already friends.'});
+      if (friendshipExists[0].status = "blocked") return res.send({message: 'User blocked. First unblock.'});
+    }
+
     await friendship.createFriendship(friendshipToCreate);
     res.send({message: 'Friendship request sent.'});
   },

@@ -15,11 +15,12 @@ class MessengerUser {
     }
   }
 
-  async addUser(user, name, sid, socketid) {
+  async addUser(user, name, avatar, sid, socketid) {
     try {
       await this.client
       .multi()
       .hset(`user:${user}`, 'name', name)
+      .hset(`user:${user}`, 'avatar', avatar)
       .hset(`user:${user}`, 'sid', sid)
       .hset(`user:${user}`, 'socketid', socketid)
       .zadd('users', Date.now(), user)

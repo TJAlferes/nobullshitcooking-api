@@ -9,7 +9,7 @@ const MessengerChat = require('../redis-access/MessengerChat');
 const MessengerRoom = require('../redis-access/MessengerRoom');
 const MessengerUser = require('../redis-access/MessengerUser');
 
-const User = (id, name) => ({id, user: name});
+const User = (id, name, avatar) => ({id, user: name, avatar});
 
 const Chat = (messageToAdd, room, user) => ({
   id: user.id + (new Date).getTime().toString(),
@@ -32,6 +32,7 @@ const Whisper = (whisperToAdd, nameToWhisper, user) => ({
 const socketConnection = async function(socket) {
   const user = socket.request.userInfo.userId;
   const name = socket.request.userInfo.username;
+  const avatar = socket.request.userInfo.avatar;
   const nobscUser = new NOBSCUser(pool);
   const nobscFriendship = new NOBSCFriendship(pool);
   const messengerUser = new MessengerUser(pubClient);
@@ -42,7 +43,7 @@ const socketConnection = async function(socket) {
 
   /*
   the one thing left to do here is
-  no longer appear online for blocked users and deleted friends,
+  no longer appear online for blocked users and deleted friends during that same session,
   the former we should definitely implement,
   the latter we may need really need
   */
@@ -55,8 +56,8 @@ const socketConnection = async function(socket) {
         for (acceptedFriend of acceptedFriends) {
           const userIsConnected = await messengerUser.getUserSocketId(acceptedFriend.user_id);
           if (userIsConnected) {
-            socket.broadcast.to(userIsConnected).emit('ShowOnline', User(user, name));
-            friendsOnline.push(User(acceptedFriend.user_id, acceptedFriend.username));
+            socket.broadcast.to(userIsConnected).emit('ShowOnline', User(user, name, avatar));
+            friendsOnline.push(User(acceptedFriend.user_id, acceptedFriend.username, acceptedFriend.avatar));
           }
         }
         if (friendsOnline.length) socket.emit('GetOnline', friendsOnline);
@@ -64,8 +65,8 @@ const socketConnection = async function(socket) {
         let friendOnline = [];
         const userIsConnected = await messengerUser.getUserSocketId(acceptedFriends[0].user_id);
         if (userIsConnected) {
-          socket.broadcast.to(userIsConnected).emit('ShowOnline', User(user, name));
-          friendOnline.push(User(acceptedFriends[0].user_id, acceptedFriends[0].username));
+          socket.broadcast.to(userIsConnected).emit('ShowOnline', User(user, name, avatar));
+          friendOnline.push(User(acceptedFriends[0].user_id, acceptedFriends[0].username, acceptedFriends[0].avatar));
           socket.emit('GetOnline', friendOnline);
         }
       }
@@ -83,7 +84,7 @@ const socketConnection = async function(socket) {
 
   socket.on('AddChat', async function(messageToAdd) {
     const room = Object.keys(socket.rooms).filter(r => r !== socket.id);
-    const chat = Chat(messageToAdd, room, User(user, name));
+    const chat = Chat(messageToAdd, room, User(user, name, avatar));
 
     await messengerChat.addChat(chat);
     socket.broadcast.to(room).emit('AddChat', chat);
@@ -104,7 +105,7 @@ const socketConnection = async function(socket) {
 
         if (userIsConnected) {
           const room = userIsConnected;
-          const whisper = Whisper(whisperToAdd, nameToWhisper, User(user, name));
+          const whisper = Whisper(whisperToAdd, nameToWhisper, User(user, name, avatar));
           socket.broadcast.to(room).emit('AddWhisper', whisper);
           socket.emit('AddWhisper', whisper);
         } else {
@@ -127,7 +128,7 @@ const socketConnection = async function(socket) {
       if (currentRooms[room] !== socket.id) {
         socket.leave(currentRooms[room]);
         messengerRoom.removeUserFromRoom(user, currentRooms[room]);
-        socket.broadcast.to(currentRooms[room]).emit('RemoveUser', User(user, name));
+        socket.broadcast.to(currentRooms[room]).emit('RemoveUser', User(user, name, avatar));
       }
     }
 
@@ -136,7 +137,7 @@ const socketConnection = async function(socket) {
 
       await messengerRoom.addRoom(roomToAdd);
       await messengerRoom.addUserToRoom(user, roomToAdd);
-      socket.broadcast.to(roomToAdd).emit('AddUser', User(user, name));
+      socket.broadcast.to(roomToAdd).emit('AddUser', User(user, name, avatar));
 
       const users = await messengerRoom.getUsersInRoom(roomToAdd);
       socket.emit('GetUser', users, roomToAdd);
@@ -150,7 +151,7 @@ const socketConnection = async function(socket) {
 
     for (let room in clonedSocket.rooms) {
       if (room !== clonedSocket.id) {
-        socket.broadcast.to(room).emit('RemoveUser', User(user, name));
+        socket.broadcast.to(room).emit('RemoveUser', User(user, name, avatar));
         messengerRoom.removeUserFromRoom(user, room);
       }
     }
@@ -161,11 +162,11 @@ const socketConnection = async function(socket) {
       if (acceptedFriends.length > 1) {
         for (acceptedFriend of acceptedFriends) {
           const userIsConnected = await messengerUser.getUserSocketId(acceptedFriend.user_id);
-          if (userIsConnected) socket.broadcast.to(userIsConnected).emit('ShowOffline', User(user, name));
+          if (userIsConnected) socket.broadcast.to(userIsConnected).emit('ShowOffline', User(user, name, avatar));
         }
       } else {
         const userIsConnected = await messengerUser.getUserSocketId(acceptedFriends[0].user_id);
-        if (userIsConnected) socket.broadcast.to(userIsConnected).emit('ShowOffline', User(user, name));
+        if (userIsConnected) socket.broadcast.to(userIsConnected).emit('ShowOffline', User(user, name, avatar));
       }
     }
 

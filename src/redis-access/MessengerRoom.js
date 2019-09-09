@@ -20,13 +20,13 @@ class MessengerRoom {
 
   async getUsersInRoom(room) {
     try {
-      const User = (id, name) => ({id, user: name});
+      const User = (id, name, avatar) => ({id, user: name, avatar});
       let users = [];
       const data = await this.pubClient.zrange(`rooms:${room}`, 0, -1);
       const pubClient = this.pubClient;
       for (let u of data){
         const userHash = await pubClient.hgetall(`user:${u}`);
-        users.push(User(u, userHash.name));
+        users.push(User(u, userHash.name, userHash.avatar));
       }
       return users;
     } catch (err) {

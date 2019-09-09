@@ -96,7 +96,7 @@ const socketAuth = (socket, next) => {
       socket.request.userInfo = session.userInfo;
       socket.request.sid = sid;
       const messengerUser = new MessengerUser(pubClient);
-      messengerUser.addUser(session.userInfo.userId, session.userInfo.username, sid, socketid);
+      messengerUser.addUser(session.userInfo.userId, session.userInfo.username, session.userInfo.avatar, sid, socketid);
       return next();
     } else {
       return next(new Error('Not authenticated.'));
