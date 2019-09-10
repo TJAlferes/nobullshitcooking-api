@@ -57,7 +57,7 @@ class Friendship {
         f.status AS status
       FROM nobsc_users u
       INNER JOIN nobsc_friendships f ON u.user_id = f.friend_id
-      WHERE f.user_id = ?
+      WHERE f.user_id = ? AND f.status IN ("accepted", "pending-received", "blocked")
     `;
     const [ friendships ] = await this.pool.execute(sql, [userId]);
     return friendships;
@@ -72,7 +72,7 @@ class Friendship {
         f.status AS status
       FROM nobsc_users u
       INNER JOIN nobsc_friendships f ON u.user_id = f.friend_id
-      WHERE f.user_id = ? AND status = "accepted"
+      WHERE f.user_id = ? AND f.status = "accepted"
     `;
     const [ acceptedFriendships ] = await this.pool.execute(sql, [userId]);
     return acceptedFriendships;
@@ -87,7 +87,7 @@ class Friendship {
         f.status AS status
       FROM nobsc_users u
       INNER JOIN nobsc_friendships f ON u.user_id = f.friend_id
-      WHERE f.user_id = ? AND status = "pending-received"
+      WHERE f.user_id = ? AND f.status = "pending-received"
     `;
     const [ pendingFriendships ] = await this.pool.execute(sql, [userId]);
     return pendingFriendships;
@@ -102,7 +102,7 @@ class Friendship {
         f.status AS status
       FROM nobsc_users u
       INNER JOIN nobsc_friendships f ON u.user_id = f.friend_id
-      WHERE f.user_id = ? AND status = "blocked"
+      WHERE f.user_id = ? AND f.status = "blocked"
     `;
     const [ blockedUsers ] = await this.pool.execute(sql, [userId]);
     return blockedUsers;

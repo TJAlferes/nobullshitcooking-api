@@ -8,13 +8,7 @@ const userFriendshipController = {
     try {
       const userId = req.session.userInfo.userId;
       const friendship = new Friendship(pool);
-      let rows = [];
-      const myAccepted = await friendship.viewAllMyAcceptedFriendships(userId);
-      const myPendingReceived = await friendship.viewAllMyPendingFriendships(userId);
-      const myBlocked = await friendship.viewAllMyBlockedUsers(userId);
-      rows.push(myAccepted);
-      rows.push(myPendingReceived);
-      rows.push(myBlocked);
+      const rows = await friendship.viewAllMyFriendships(userId);
       res.send(rows);
       next();
     } catch(err) {
@@ -38,7 +32,7 @@ const userFriendshipController = {
     const friendship = new Friendship(pool);
 
     const blockedBy = await friendship.checkIfBlockedBy(userId, friendId);
-    if (blockedBy.length) return res.send({message: '(BLOCKED) User not found.'});
+    if (blockedBy.length) return res.send({message: 'User not found.'});
 
     const friendshipExists = await friendship.getFriendshipByFriendId(userId, friendId);
     if (friendshipExists.length) {
