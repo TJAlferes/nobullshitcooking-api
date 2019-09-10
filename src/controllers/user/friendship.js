@@ -3,18 +3,18 @@ const User = require('../../mysql-access/User');
 const Friendship = require('../../mysql-access/Friendship');
 const validFriendshipEntity = require('../../lib/validations/friendship/friendshipEntity');
 
-// WARNING: DO NOT RETURN user_id TO FRONT END !!!!! (why not?)
-
 const userFriendshipController = {
-  viewAllMyFriendships: async function(req, res, next) {  // JUST DO TYPE FILTERING ON FRONT END
+  viewAllMyFriendships: async function(req, res, next) {
     try {
-      //const type = (req.body.type) ? req.sanitize(req.body.type) : "none";
       const userId = req.session.userInfo.userId;
       const friendship = new Friendship(pool);
-      const rows = await friendship.viewAllMyFriendships(userId);
-      //if (type === "accepted") rows = await friendship.viewAllMyAcceptedFriendships(userId);
-      //if (type === "pending") rows = await friendship.viewAllMyPendingFriendships(userId);
-      //if (type === "blocked") rows = await friendship.viewAllMyBlockedUsers(userId);
+      let rows = [];
+      const myAccepted = await friendship.viewAllMyAcceptedFriendships(userId);
+      const myPendingReceived = await friendship.viewAllMyPendingFriendships(userId);
+      const myBlocked = await friendship.viewAllMyBlockedUsers(userId);
+      rows.push(myAccepted);
+      rows.push(myPendingReceived);
+      rows.push(myBlocked);
       res.send(rows);
       next();
     } catch(err) {
@@ -32,18 +32,20 @@ const userFriendshipController = {
       return res.send({message: 'User not found.'});
     }
     const userId = req.session.userInfo.userId;
-    const status = "pending";
-    const friendshipToCreate = validFriendshipEntity({userId, friendId, status});
+    const status1 = "pending-sent";
+    const status2 = "pending-received";
+    const friendshipToCreate = validFriendshipEntity({userId, friendId, status1, status2});
     const friendship = new Friendship(pool);
 
-    const blockedBy = await friendship.checkIfBlockedBy(friendId);
-    if (blockedBy.length) return res.send({message: 'User not found.'});
+    const blockedBy = await friendship.checkIfBlockedBy(userId, friendId);
+    if (blockedBy.length) return res.send({message: '(BLOCKED) User not found.'});
 
-    const friendshipExists = await friendship.getFriendshipByFriendId(friendId);
+    const friendshipExists = await friendship.getFriendshipByFriendId(userId, friendId);
     if (friendshipExists.length) {
-      if (friendshipExists[0].status = "pending") return res.send({message: 'Friendship request already sent.'});
-      if (friendshipExists[0].status = "accepted") return res.send({message: 'Already friends.'});
-      if (friendshipExists[0].status = "blocked") return res.send({message: 'User blocked. First unblock.'});
+      if (friendshipExists[0].status === "pending-sent") return res.send({message: 'Already sent.'});
+      if (friendshipExists[0].status === "pending-received") return res.send({message: 'Already received.'});
+      if (friendshipExists[0].status === "accepted") return res.send({message: 'Already friends.'});
+      if (friendshipExists[0].status === "blocked") return res.send({message: 'User blocked. First unblock.'});
     }
 
     await friendship.createFriendship(friendshipToCreate);

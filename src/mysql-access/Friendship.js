@@ -28,23 +28,23 @@ class Friendship {
     (except for block/unblock, which must be one-sided)
   */
 
-  async getFriendshipByFriendId(friendId) {
+  async getFriendshipByFriendId(userId, friendId) {
     const sql = `
-      SELECT friend_id
+      SELECT user_id, friend_id, status
       FROM nobsc_friendships
-      WHERE friend_id = ?
+      WHERE user_id = ? AND friend_id = ?
     `;
-    const [ friendship ] = await this.pool.execute(sql, [friendId]);
+    const [ friendship ] = await this.pool.execute(sql, [userId, friendId]);
     return friendship;
   }
 
-  async checkIfBlockedBy(friendId) {
+  async checkIfBlockedBy(userId, friendId) {
     const sql = `
-      SELECT user_id
+      SELECT user_id, friend_id
       FROM nobsc_friendships
-      WHERE user_id = ? AND status = "blocked"
+      WHERE user_id = ? AND friend_id = ? AND status = "blocked"
     `;
-    const [ blockedBy ] = await this.pool.execute(sql, [friendId]);
+    const [ blockedBy ] = await this.pool.execute(sql, [friendId, userId]);
     return blockedBy;
   }
 
@@ -78,46 +78,62 @@ class Friendship {
     return acceptedFriendships;
   }
 
-  /*async viewAllMyPendingFriendships(userId) {
+  async viewAllMyPendingFriendships(userId) {
     const sql = `
-      SELECT friend_id
-      FROM nobsc_friendships
-      WHERE user_id = ? AND status = "pending"
+      SELECT
+        u.user_id AS user_id,
+        u.username AS username,
+        u.avatar AS avatar,
+        f.status AS status
+      FROM nobsc_users u
+      INNER JOIN nobsc_friendships f ON u.user_id = f.friend_id
+      WHERE f.user_id = ? AND status = "pending-received"
     `;
     const [ pendingFriendships ] = await this.pool.execute(sql, [userId]);
     return pendingFriendships;
-  }*/
+  }
 
   async viewAllMyBlockedUsers(userId) {
     const sql = `
-      SELECT friend_id
-      FROM nobsc_friendships
-      WHERE user_id = ? AND status = "blocked"
+      SELECT
+        u.user_id AS user_id,
+        u.username AS username,
+        u.avatar AS avatar,
+        f.status AS status
+      FROM nobsc_users u
+      INNER JOIN nobsc_friendships f ON u.user_id = f.friend_id
+      WHERE f.user_id = ? AND status = "blocked"
     `;
     const [ blockedUsers ] = await this.pool.execute(sql, [userId]);
     return blockedUsers;
   }
 
   async createFriendship(friendshipToCreate) {
-    const { userId, friendId, status } = friendshipToCreate;
+    const { userId, friendId, status1, status2 } = friendshipToCreate;
     const sql = `
       INSERT INTO nobsc_friendships (user_id, friend_id, status)
       VALUES (?, ?, ?)
     `;
-    const [ pendingFriendship ] = await this.pool.execute(sql, [userId, friendId, status]);
-    await this.pool.execute(sql, [friendId, userId, status]);
+    const [ pendingFriendship ] = await this.pool.execute(sql, [userId, friendId, status1]);
+    await this.pool.execute(sql, [friendId, userId, status2]);
     return pendingFriendship;
   }
 
   async acceptFriendship(userId, friendId) {
-    const sql = `
+    const sql1 = `
       UPDATE nobsc_friendships
       SET status = "accepted"
-      WHERE user_id = ? AND friend_id = ? AND status = "pending"
+      WHERE user_id = ? AND friend_id = ? AND status = "pending-received"
       LIMIT 1
-    `;  // the `AND status = "pending"` is essential
-    const [ acceptedFriendship ] = await this.pool.execute(sql, [userId, friendId]);
-    await this.pool.execute(sql, [friendId, userId]);
+    `;
+    const sql2 = `
+      UPDATE nobsc_friendships
+      SET status = "accepted"
+      WHERE user_id = ? AND friend_id = ? AND status = "pending-sent"
+      LIMIT 1
+    `;
+    const [ acceptedFriendship ] = await this.pool.execute(sql1, [userId, friendId]);
+    await this.pool.execute(sql2, [friendId, userId,]);
     return acceptedFriendship;
   }
 
@@ -127,7 +143,7 @@ class Friendship {
       FROM nobsc_friendships
       WHERE user_id = ? AND friend_id = ? AND status != "blocked"
       LIMIT 1
-    `;  // the `AND status != "blocked"` is essential
+    `;
     const [ rejectedFriendship ] = await this.pool.execute(sql, [userId, friendId]);
     await this.pool.execute(sql, [friendId, userId]);
     return rejectedFriendship;
@@ -139,7 +155,7 @@ class Friendship {
       FROM nobsc_friendships
       WHERE user_id = ? AND friend_id = ? AND status != "blocked"
       LIMIT 1
-    `;  // the `AND status != "blocked"` is essential
+    `;
     const [ deletedFriendship ] = await this.pool.execute(sql, [userId, friendId]);
     await this.pool.execute(sql, [friendId, userId]);
     return deletedFriendship;
@@ -157,9 +173,8 @@ class Friendship {
       VALUES (?, ?, "blocked")
     `;
     await this.pool.execute(sql1, [userId, friendId]);
-    //await this.pool.execute(sql1, [friendId, userId]);  // do not do
+    await this.pool.execute(sql1, [friendId, userId]);
     const [ blockedUser ] = await this.pool.execute(sql2, [userId, friendId]);
-    //await this.pool.execute(sql2, [friendId, userId]);  // do not do
     return blockedUser;
   }
 
@@ -171,7 +186,6 @@ class Friendship {
       LIMIT 1
     `;
     const [ unblockedUser ] = await this.pool.execute(sql, [userId, friendId]);
-    //await this.pool.execute(sql, [friendId, userId]);  // do not do
     return unblockedUser;
   }
 }

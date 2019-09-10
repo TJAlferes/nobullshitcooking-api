@@ -98,7 +98,7 @@ const socketConnection = async function(socket) {
 
     if (userExists.length) {
       const blockedUsers = await nobscFriendship.viewAllMyBlockedUsers(userExists[0].user_id);
-      const blockedByUser = blockedUsers.find(friend => friend.friend_id === user);
+      const blockedByUser = blockedUsers.find(friend => friend.user_id === user);
 
       if (!blockedByUser) {
         const userIsConnected = await messengerUser.getUserSocketId(userExists[0].user_id);
