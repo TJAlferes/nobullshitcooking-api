@@ -1,4 +1,4 @@
-const SimpleQueryStringBody = function(userId, query) {
+const SimpleQueryStringBody = function(query) {
   return {
     query: {
       bool: {
@@ -6,13 +6,6 @@ const SimpleQueryStringBody = function(userId, query) {
           {
             simple_query_string: {
               query
-            }
-          }
-        ],
-        filter: [
-          {
-            term: {
-              userId
             }
           }
         ]

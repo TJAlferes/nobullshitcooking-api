@@ -1,10 +1,12 @@
 const pool = require('../../lib/connections/mysqlPoolConnection');
+//const esClient = require('../../lib/connections/elasticSearchClient');
 
 const Recipe = require('../../mysql-access/Recipe');
 const RecipeMethods = require('../../mysql-access/RecipeMethod');
 const RecipeEquipment = require('../../mysql-access/RecipeEquipment');
 const RecipeIngredients = require('../../mysql-access/RecipeIngredient');
 const RecipeSubrecipes = require('../../mysql-access/RecipeSubrecipe');
+//const RecipeSearch = require('../../elasticsearch-access/RecipeSearch');
 
 const validRecipeEntity = require('../../lib/validations/recipe/recipeEntity');
 const validRecipeMethodsEntity = require('../../lib/validations/recipeMethod/recipeMethodEntity');
@@ -194,6 +196,15 @@ const userRecipeController = {
         }
       }
 
+      /*if (ownership === "public") {
+        const recipeInfoFull = await recipe.viewRecipeById(generatedId);
+        const recipeInfoCut = {
+          // get working in MySQL first, think out searchbar AND searchpage
+        };
+        const recipeSearch = new RecipeSearch(esClient);
+        await recipeSearch.saveRecipe(recipeInfoCut);
+      }*/
+      
       res.send({message: 'Recipe created.'});
       next();
     } catch(err) {

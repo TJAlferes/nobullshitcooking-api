@@ -92,7 +92,7 @@ const userAuthController = {
 
     const userExists = await user.getUserByEmail(email);
     //if (userExists && crypto.timingSafeEqual(userExists[0].email, email)) {
-    if (userExists) {
+    if (userExists.length) {
       if (userExists[0].email == email) {
         const isCorrectPassword = await bcrypt.compare(pass, userExists[0].pass);
         if (isCorrectPassword) {

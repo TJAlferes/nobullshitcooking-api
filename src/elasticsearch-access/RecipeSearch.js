@@ -1,5 +1,8 @@
 const SimpleQueryStringBody = require('./SimpleQueryStringBody');
 
+// set up initial settings and analyzers including n-gram
+// remember you need two modules on front end: searchbar and searchpage
+
 class RecipeSearch {
   constructor(client) {
     this.client = client;
@@ -9,16 +12,14 @@ class RecipeSearch {
     this.deleteRecipe = this.deleteRecipe.bind(this);
   }
 
-  async countFoundRecipes(userId, query) {
-    const res = await this.client.count({
-      body: SimpleQueryStringBody(userId, query)
-    });
+  async countFoundRecipes(query) {
+    const res = await this.client.count({body: SimpleQueryStringBody(query)});
     return res.count;
   }
 
-  async findRecipes(userId, query, starting, limit) {
+  async findRecipes(query, starting, limit) {
     const { body } = await this.client.search({
-      body: SimpleQueryStringBody(userId, query),
+      body: SimpleQueryStringBody(query),
       sort: 'title:asc',
       from: starting,
       size: limit
@@ -26,29 +27,49 @@ class RecipeSearch {
     return body.hits.hits;
   }
 
-  saveRecipe(recipe) {
-    const { recipeId, recipeTypeId, cuisineId, title, description } = recipe;
-    return this.client.create({
+  async saveRecipe(recipeInfo) {
+    const {
+      recipeId,
+      authorName,
+      recipeTypeName,
+      cuisineName,
+      title,
+      description,
+      recipeImage,
+      methodNames,
+      equipmentNames,
+      ingredientNames,
+      subrecipeNames
+    } = recipeInfo;
+    const savedRecipe = await this.client.index({
       index: 'recipes',
       id: recipeId,
       type: 'recipe',
       body: {
         recipeId,
-        recipeTypeId,
-        cuisineId,
+        authorName,
+        recipeTypeName,
+        cuisineName,
         title,
-        description
+        description,
+        recipeImage,
+        methodNames,
+        equipmentNames,
+        ingredientNames,
+        subrecipeNames
       }
     });
+    return savedRecipe;
   }
 
-  deleteRecipe(recipeId) {
-    return this.client.delete({
+  async deleteRecipe(recipeId) {
+    const deletedRecipe = await this.client.delete({
       ignore: [404],
       index: 'recipes',
       id: recipeId,
       type: 'recipe'
     });
+    return deletedRecipe;
   }
 }
 
