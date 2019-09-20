@@ -223,7 +223,7 @@ VALUES
 (6, "Egg"),
 (7, "Dairy"),
 (8, "Oil"),
-(9, "Starch"),
+(9, "Grain"),
 (10, "Bean"),
 (11, "Vegetable"),
 (12, "Fruit"),
@@ -615,7 +615,7 @@ VALUES
 (7, 1, 1, "Cream", "Tasty.", "nobsc-cream"),
 
 (8, 1, 1, "Coconut", "Tasty.", "nobsc-coconut"),
-(9, 1, 1, "Potatoes", "Tasty.", "nobsc-potatoes"),
+(11, 1, 1, "Potatoes", "Tasty.", "nobsc-potatoes"),
 (17, 1, 1, "Balsamic Vinegar", "Tasty.", "nobsc-balsamic-vinegar"),
 (18, 1, 1, "Tobasco Sauce", "Tasty.", "nobsc-tobasco-sauce"),
 (7, 1, 1, "Butter", "Tasty.", "nobsc-butter");
@@ -683,3 +683,19 @@ VALUES
 (3, 1, 1, "Sturdy Spatula", "It works.", "nobsc-sturdy-spatula"),
 (3, 1, 1, "Fish Spatula", "It works.", "nobsc-fish-spatula"),
 (3, 1, 1, "Ladle", "It works.", "nobsc-ladle");
+
+INSERT INTO nobsc_recipes
+(recipe_type_id, cuisine_id, author_id, owner_id, title, description, directions, recipe_image, equipment_image, ingredients_image, cooking_image)
+VALUES
+(1, 1, 1, 1, "Violent Vodka", "Careful...", "Shake, pour, and lose your ability to think.", "nobsc-recipe-default", "nobsc-recipe-equipment-default", "nobsc-recipe-ingredients-default", "nobsc-recipe-cooking-default"),
+(2, 2, 1, 1, "Soft Buttery Pretzle", "Melting goodness...", "Set oven to 400 F. Mix dough...", "nobsc-recipe-default", "nobsc-recipe-equipment-default", "nobsc-recipe-ingredients-default", "nobsc-recipe-cooking-default"),
+(3, 3, 1, 1, "Grilled Chicken and Seasoned Rice", "Yum", "Marinate chicken in a...", "nobsc-recipe-default", "nobsc-recipe-equipment-default", "nobsc-recipe-ingredients-default", "nobsc-recipe-cooking-default"),
+(4, 4, 1, 1, "Mixed Root Vegetables", "Satisfying", "Chop vegetables into about 2 inch by 2 inch pieces...", "nobsc-recipe-default", "nobsc-recipe-equipment-default", "nobsc-recipe-ingredients-default", "nobsc-recipe-cooking-default"),
+(5, 5, 1, 1, "Coffee Vanilla Icecream Cake", "Special", "Set oven to 275 F. Mix dough...", "nobsc-recipe-default", "nobsc-recipe-equipment-default", "nobsc-recipe-ingredients-default", "nobsc-recipe-cooking-default"),
+(6, 6, 1, 1, "Fish Carrot and Potato Soup", "Nice.", "Heat stock...", "nobsc-recipe-default", "nobsc-recipe-equipment-default", "nobsc-recipe-ingredients-default", "nobsc-recipe-cooking-default"),
+(7, 7, 1, 1, "Possibly Greek Salad", "Who Knows", "Mix olive oil and red wine vinegar in bowl...", "nobsc-recipe-default", "nobsc-recipe-equipment-default", "nobsc-recipe-ingredients-default", "nobsc-recipe-cooking-default"),
+(8, 8, 1, 1, "Irish Guinness Beef Stew", "Calming", "Sear well just one side of the beef pieces...", "nobsc-recipe-default", "nobsc-recipe-equipment-default", "nobsc-recipe-ingredients-default", "nobsc-recipe-cooking-default"),
+(9, 9, 1, 1, "Northern Chinese Seafood Casserole", "Excellent", "Heat stock...", "nobsc-recipe-default", "nobsc-recipe-equipment-default", "nobsc-recipe-ingredients-default", "nobsc-recipe-cooking-default"),
+(10, 10, 1, 1, "Sweet Coconut Lime Sauce", "Interesting", "Mix...", "nobsc-recipe-default", "nobsc-recipe-equipment-default", "nobsc-recipe-ingredients-default", "nobsc-recipe-cooking-default"),
+(11, 11, 1, 1, "Carrot Ginger Dressing", "Tasty", "Blend carrots and...", "nobsc-recipe-default", "nobsc-recipe-equipment-default", "nobsc-recipe-ingredients-default", "nobsc-recipe-cooking-default"),
+(12, 12, 1, 1, "Some Kind Of Chutney", "Not Bad", "Mix...", "nobsc-recipe-default", "nobsc-recipe-equipment-default", "nobsc-recipe-ingredients-default", "nobsc-recipe-cooking-default");
