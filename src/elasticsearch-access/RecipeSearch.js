@@ -63,12 +63,16 @@ class RecipeSearch {
   }
 
   async deleteRecipe(recipeId) {
-    const deletedRecipe = await this.client.delete({
-      ignore: [404],
-      index: 'recipes',
-      id: recipeId,
-      type: 'recipe'
-    });
+    const deletedRecipe = await this.client.delete(
+      {
+        index: 'recipes',
+        id: recipeId,
+        type: 'recipe'
+      },
+      {
+        ignore: [404]
+      }
+    );
     return deletedRecipe;
   }
 }
