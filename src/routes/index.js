@@ -10,6 +10,7 @@ const measurementRoutes = require('./measurement');
 const favoriteRecipeRoutes = require('./favoriteRecipe');
 const staffRoutes = require('./staff/index');
 const userRoutes = require('./user/index');
+const searchRoutes = require('./search');
 
 module.exports = {
   equipmentRoutes,
@@ -23,5 +24,6 @@ module.exports = {
   measurementRoutes,
   favoriteRecipeRoutes,
   staffRoutes,
-  userRoutes
+  userRoutes,
+  searchRoutes
 };

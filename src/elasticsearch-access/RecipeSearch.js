@@ -17,9 +17,9 @@ class RecipeSearch {
     return res.count;
   }
 
-  async findRecipes(query, starting, limit) {
+  async findRecipes(q, starting, limit) {  // deep pagination can kill performance, set upper bounds
     const { body } = await this.client.search({
-      body: SimpleQueryStringBody(query),
+      body: SimpleQueryStringBody(q),
       sort: 'title:asc',
       from: starting,
       size: limit

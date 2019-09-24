@@ -39,12 +39,14 @@ const {
   measurementRoutes,
   favoriteRecipeRoutes,
   staffRoutes,
-  userRoutes
+  userRoutes,
+  searchRoutes
 } = require('./routes');
 const socketConnection = require('./chat');
 const cleanUp = require('./chat/workers');
 const MessengerUser = require('./redis-access/MessengerUser');  // move
 const { pubClient, subClient, sessClient } = require('./lib/connections/redisConnection');
+const { esClient } = require('./lib/connections/elasticsearchClient');
 
 
 
@@ -151,7 +153,7 @@ app.use(cors(corsOptions));
 app.use(expressSanitizer());  // must be called after express.json()
 app.use(helmet());
 //app.use(csurf());  // must be called after cookies/sessions  // https://github.com/pillarjs/understanding-csrf
-app.use(compression());  // elasticbeanstalk already does?
+app.use(compression());  // elasticbeanstalk/nginx already does?
 
 io.adapter(redisAdapter({pubClient, subClient}));
 io.use(socketAuth);
@@ -159,10 +161,50 @@ io.on('connection', socketConnection);
 const INTERVAL = 60 * 60 * 1000 * 3;  // 3 hours
 setInterval(cleanUp, INTERVAL);  // next()?
 cleanUp();  // next()?
-
 /*setInterval(() => io.of('/').adapter.clients((err, clients) => {
   console.log(clients); // an array containing all connected socket ids
 }), (60 * 1000));*/
+
+esClient.indices.create({
+  index: "recipes",
+  body: {
+    settings: {
+      analysis: {
+        analyzer: {
+          autocomplete: {tokenizer: "autocomplete", filter: ["lowercase"]},
+          autocomplete_search: {tokenizer: "lowercase"}
+        },
+        tokenizer: {
+          autocomplete: {type: "edge_ngram", min_gram: 2, max_gram: 10}
+        }
+      }
+    },
+    mappings: {
+      properties: {
+        title: {type: "text", analyzer: "autocomplete", search_analyzer: "autocomplete_search"}
+      }
+    }
+  }
+});
+esClient.index({
+  index: 'recipes',
+  id: recipeId,
+  type: 'recipe',
+  body: {
+    recipeId,
+    authorName,
+    recipeTypeName,
+    cuisineName,
+    title,
+    description,
+    recipeImage,
+    methodNames,
+    equipmentNames,
+    ingredientNames,
+    subrecipeNames
+  }
+});
+
 
 
 
@@ -189,6 +231,7 @@ app.use('/measurement', measurementRoutes);
 app.use('/favorite-recipe', favoriteRecipeRoutes);
 app.use('/staff', staffRoutes);
 app.use('/user', userRoutes);
+app.use('/search', searchRoutes);
 //app.use('/graphql', expressGraphQL({schema, rootValue, graphiql: true}));
 
 

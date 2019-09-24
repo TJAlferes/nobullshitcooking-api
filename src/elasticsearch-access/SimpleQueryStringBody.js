@@ -1,11 +1,11 @@
-const SimpleQueryStringBody = function(query) {
+const SimpleQueryStringBody = function(q) {
   return {
     query: {
       bool: {
         must: [
           {
             simple_query_string: {
-              query
+              query: q
             }
           }
         ]
