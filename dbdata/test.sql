@@ -285,7 +285,19 @@ VALUES
 (9, "Chinese"),
 (10, "Indian"),
 (11, "Japanese"),
-(12, "Iranian");
+(12, "Iranian"),
+(13, "Spanish"),
+(14, "Thai"),
+(15, "Vietnamese"),
+(16, "Korean"),
+(17, "Swedish"),
+(18, "Norwegian"),
+(19, "Polish"),
+(20, "Hungarian"),
+(21, "Brazilian"),
+(22, "Argentinian"),
+(23, "Nigerian"),
+(24, "Other");
 
 INSERT INTO nobsc_measurements
 (measurement_id, measurement_name)
@@ -685,17 +697,65 @@ VALUES
 (3, 1, 1, "Ladle", "It works.", "nobsc-ladle");
 
 INSERT INTO nobsc_recipes
-(recipe_type_id, cuisine_id, author_id, owner_id, title, description, directions, recipe_image, equipment_image, ingredients_image, cooking_image)
+(recipe_type_id, cuisine_id, author_id, owner_id, title, description, directions)
 VALUES
-(1, 1, 1, 1, "Violent Vodka", "Careful...", "Shake, pour, and lose your ability to think.", "nobsc-recipe-default", "nobsc-recipe-equipment-default", "nobsc-recipe-ingredients-default", "nobsc-recipe-cooking-default"),
-(2, 2, 1, 1, "Soft Buttery Pretzle", "Melting goodness...", "Set oven to 400 F. Mix dough...", "nobsc-recipe-default", "nobsc-recipe-equipment-default", "nobsc-recipe-ingredients-default", "nobsc-recipe-cooking-default"),
-(3, 3, 1, 1, "Grilled Chicken and Seasoned Rice", "Yum", "Marinate chicken in a...", "nobsc-recipe-default", "nobsc-recipe-equipment-default", "nobsc-recipe-ingredients-default", "nobsc-recipe-cooking-default"),
-(4, 4, 1, 1, "Mixed Root Vegetables", "Satisfying", "Chop vegetables into about 2 inch by 2 inch pieces...", "nobsc-recipe-default", "nobsc-recipe-equipment-default", "nobsc-recipe-ingredients-default", "nobsc-recipe-cooking-default"),
-(5, 5, 1, 1, "Coffee Vanilla Icecream Cake", "Special", "Set oven to 275 F. Mix dough...", "nobsc-recipe-default", "nobsc-recipe-equipment-default", "nobsc-recipe-ingredients-default", "nobsc-recipe-cooking-default"),
-(6, 6, 1, 1, "Fish Carrot and Potato Soup", "Nice.", "Heat stock...", "nobsc-recipe-default", "nobsc-recipe-equipment-default", "nobsc-recipe-ingredients-default", "nobsc-recipe-cooking-default"),
-(7, 7, 1, 1, "Possibly Greek Salad", "Who Knows", "Mix olive oil and red wine vinegar in bowl...", "nobsc-recipe-default", "nobsc-recipe-equipment-default", "nobsc-recipe-ingredients-default", "nobsc-recipe-cooking-default"),
-(8, 8, 1, 1, "Irish Guinness Beef Stew", "Calming", "Sear well just one side of the beef pieces...", "nobsc-recipe-default", "nobsc-recipe-equipment-default", "nobsc-recipe-ingredients-default", "nobsc-recipe-cooking-default"),
-(9, 9, 1, 1, "Northern Chinese Seafood Casserole", "Excellent", "Heat stock...", "nobsc-recipe-default", "nobsc-recipe-equipment-default", "nobsc-recipe-ingredients-default", "nobsc-recipe-cooking-default"),
-(10, 10, 1, 1, "Sweet Coconut Lime Sauce", "Interesting", "Mix...", "nobsc-recipe-default", "nobsc-recipe-equipment-default", "nobsc-recipe-ingredients-default", "nobsc-recipe-cooking-default"),
-(11, 11, 1, 1, "Carrot Ginger Dressing", "Tasty", "Blend carrots and...", "nobsc-recipe-default", "nobsc-recipe-equipment-default", "nobsc-recipe-ingredients-default", "nobsc-recipe-cooking-default"),
-(12, 12, 1, 1, "Some Kind Of Chutney", "Not Bad", "Mix...", "nobsc-recipe-default", "nobsc-recipe-equipment-default", "nobsc-recipe-ingredients-default", "nobsc-recipe-cooking-default");
+(1, 1, 1, 1, "Borscht", "Excellent", "Sweet, sour, savory..."),
+(2, 2, 1, 1, "Soft Buttery Pretzle", "Melting goodness...", "Set oven to 400 F. Mix dough..."),
+(3, 3, 1, 1, "Grilled Chicken and Seasoned Rice", "Yum", "Marinate chicken in a..."),
+(4, 4, 1, 1, "Mixed Root Vegetables", "Satisfying", "Chop vegetables into about 2 inch by 2 inch pieces..."),
+(5, 5, 1, 1, "Coffee Vanilla Icecream Cake", "Special", "Set oven to 275 F. Mix dough..."),
+(6, 6, 1, 1, "Fish Carrot and Potato Soup", "Nice.", "Heat stock..."),
+(7, 7, 1, 1, "Possibly Greek Salad", "Who Knows", "Mix olive oil and red wine vinegar in bowl..."),
+(8, 8, 1, 1, "Irish Guinness Beef Stew", "Calming", "Sear well just one side of the beef pieces..."),
+(9, 9, 1, 1, "Northern Chinese Seafood Casserole", "Excellent", "Heat stock..."),
+(10, 10, 1, 1, "Sweet Coconut Lime Sauce", "Interesting", "Mix..."),
+(11, 11, 1, 1, "Carrot Ginger Dressing", "Tasty", "Blend carrots and..."),
+(12, 12, 1, 1, "Some Kind Of Chutney", "Not Bad", "Mix...");
+
+INSERT INTO nobsc_recipe_ingredients
+(recipe_id, ingredient_id, amount, measurement_id)
+VALUES
+(1, 116, 4, 1),
+(2, 209, 2, 2),
+(3, 153, 1, 3),
+(4, 159, 1, 4),
+(5, 165, 7, 5),
+(6, 176, 1, 6),
+(7, 142, 3, 7),
+(8, 230, 1, 8),
+(9, 202, 9, 9),
+(10, 100, 20, 10),
+(11, 122, 10, 1),
+(12, 138, 13, 2);
+
+INSERT INTO nobsc_recipe_equipment
+(recipe_id, equipment_id, amount)
+VALUES
+(1, 1, 1),
+(2, 1, 1),
+(3, 1, 1),
+(4, 1, 1),
+(5, 1, 1),
+(6, 1, 1),
+(7, 1, 1),
+(8, 1, 1),
+(9, 1, 1),
+(10, 1, 1),
+(11, 1, 1),
+(12, 1, 1);
+
+INSERT INTO nobsc_recipe_methods
+(recipe_id, method_id)
+VALUES
+(1, 6),
+(2, 9),
+(3, 13),
+(4, 15),
+(5, 16),
+(6, 7),
+(7, 4),
+(8, 3),
+(9, 2),
+(10, 1),
+(11, 12),
+(12, 13);

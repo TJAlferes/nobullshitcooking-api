@@ -9,6 +9,7 @@ const searchController = {
     //const limit;
     const recipeSearch = new RecipeSearch(esClient);
     const found = await recipeSearch.findRecipes(q, starting, limit);
+    console.log(found);
     return res.json({found});
   }
 };

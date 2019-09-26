@@ -46,7 +46,7 @@ const socketConnection = require('./chat');
 const cleanUp = require('./chat/workers');
 const MessengerUser = require('./redis-access/MessengerUser');  // move
 const { pubClient, subClient, sessClient } = require('./lib/connections/redisConnection');
-const { esClient } = require('./lib/connections/elasticsearchClient');
+const bulkUp = require('./search');
 
 
 
@@ -155,6 +155,7 @@ app.use(helmet());
 //app.use(csurf());  // must be called after cookies/sessions  // https://github.com/pillarjs/understanding-csrf
 app.use(compression());  // elasticbeanstalk/nginx already does?
 
+// move these
 io.adapter(redisAdapter({pubClient, subClient}));
 io.use(socketAuth);
 io.on('connection', socketConnection);
@@ -165,46 +166,13 @@ cleanUp();  // next()?
   console.log(clients); // an array containing all connected socket ids
 }), (60 * 1000));*/
 
-esClient.indices.create({
-  index: "recipes",
-  body: {
-    settings: {
-      analysis: {
-        analyzer: {
-          autocomplete: {tokenizer: "autocomplete", filter: ["lowercase"]},
-          autocomplete_search: {tokenizer: "lowercase"}
-        },
-        tokenizer: {
-          autocomplete: {type: "edge_ngram", min_gram: 2, max_gram: 10}
-        }
-      }
-    },
-    mappings: {
-      properties: {
-        title: {type: "text", analyzer: "autocomplete", search_analyzer: "autocomplete_search"}
-      }
-    }
-  }
-});
-esClient.index({
-  index: 'recipes',
-  id: recipeId,
-  type: 'recipe',
-  body: {
-    recipeId,
-    authorName,
-    recipeTypeName,
-    cuisineName,
-    title,
-    description,
-    recipeImage,
-    methodNames,
-    equipmentNames,
-    ingredientNames,
-    subrecipeNames
-  }
-});
-
+// move this
+try {
+  console.log('trying');
+  bulkUp();  // next()?
+} catch(err) {
+  console.log(err);
+}
 
 
 

@@ -25,6 +25,6 @@ const esClient = async function() {
   return makeClient;
 }
 
-console.log(errors);
+//console.log(errors);
 
 module.exports = esClient;
