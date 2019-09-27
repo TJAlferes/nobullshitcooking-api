@@ -22,7 +22,7 @@ class RecipeSearch {
       body: {
         query: {
           match: {
-            title: {query: q, analyzer: "standard"}
+            title: {query: q, operator: "and"}
           }
         }
       },

@@ -167,14 +167,14 @@ cleanUp();  // next()?
 }), (60 * 1000));*/
 
 // move this, and create startup conditional
-/*try {
+try {
   setTimeout(() => {
     console.log('trying');
     bulkUp();  // next()?
-  }, 90000);
+  }, 80000);
 } catch(err) {
   console.log(err);
-}*/
+}
 
 
 
