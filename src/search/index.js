@@ -5,10 +5,14 @@ const Recipe = require('../mysql-access/Recipe');
 const bulkUp = async function() {
   const recipe = new Recipe(pool);
 
-  const toBulk = await recipe.getAllPublicRecipesForElasticSearchBulkInsert();
-
-  console.log('========== toBulk ==========');
-  console.log(toBulk);
+  try {
+    const toBulk = await recipe.getAllPublicRecipesForElasticSearchBulkInsert();
+    console.log('========== toBulkSucceeded ==========');
+    console.log('toBulk: ', toBulk);
+  } catch(err) {
+    console.log('========== toBulkFailed ==========');
+    console.log(err);
+  }
 
   /*let toBulkFormatted = [];
   toBulk.map(recipe => {
