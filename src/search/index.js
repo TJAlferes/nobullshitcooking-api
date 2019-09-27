@@ -2,43 +2,9 @@ const { esClient } = require('../lib/connections/elasticsearchClient');
 const { pool } = require('../lib/connections/mysqlPoolConnection');
 const Recipe = require('../mysql-access/Recipe');
 
-const bulkUp = async function() {
+const bulkUp = async function() {  // generator instead?
   const recipe = new Recipe(pool);
-
-  try {
-    const toBulk = await recipe.getAllPublicRecipesForElasticSearchBulkInsert();
-    console.log('========== toBulkSucceeded ==========');
-    console.log('toBulk: ', toBulk);
-  } catch(err) {
-    console.log('========== toBulkFailed ==========');
-    console.log(err);
-  }
-
-  /*let toBulkFormatted = [];
-  toBulk.map(recipe => {
-    toBulkFormatted.push(
-      {
-        index: {
-          _index: 'recipes',
-          _id: recipe.recipeId,
-          //_type: 'recipe'
-        }
-      },
-      {
-        recipeId: recipe.recipeId,
-        authorName: recipe.authorName,
-        recipeTypeName: recipe.recipeTypeName,
-        cuisineName: recipe.cuisineName,
-        title: recipe.title,
-        description: recipe.description,
-        recipeImage: recipe.recipeImage,
-        methodNames: recipe.methodNames,
-        equipmentNames: recipe.equipmentNames,
-        ingredientNames: recipe.ingredientNames,
-        subrecipeNames: recipe.subrecipeNames
-      }
-    );
-  });
+  const toBulk = await recipe.getAllPublicRecipesForElasticSearchBulkInsert();
 
   await esClient.indices.create({
     index: "recipes",
@@ -72,9 +38,9 @@ const bulkUp = async function() {
   await esClient.bulk({
     index: "recipes",
     refresh: "true",
-    body: toBulkFormatted,
+    body: toBulk,
     type: "recipe"
-  });*/
+  });
 };
 
 /*{

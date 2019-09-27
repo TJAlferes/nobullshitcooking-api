@@ -3,7 +3,7 @@
 const { Client, errors } = require('@elastic/elasticsearch');
 const { createAWSConnection, awsCredsifyAll, awsGetCredentials } = require('@acuris/aws-es-connection');
 
-const esClient = async function() {
+const esClient = (async function() {
   let makeClient;
 
   if (process.env.NODE_ENV === 'production') {
@@ -17,13 +17,12 @@ const esClient = async function() {
     );
   } else {
     makeClient = new Client({
-      host: 'elasticsearch-dev',
-      port: 9200
+      node: 'http://localhost:9200'
     });
   }
 
   return makeClient;
-}
+})();
 
 //console.log(errors);
 

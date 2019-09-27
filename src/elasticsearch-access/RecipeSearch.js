@@ -4,8 +4,8 @@ const SimpleQueryStringBody = require('./SimpleQueryStringBody');
 // remember you need two modules on front end: searchbar and searchpage
 
 class RecipeSearch {
-  constructor(client) {
-    this.client = client;
+  constructor(esClient) {
+    this.client = esClient;
     this.countFoundRecipes = this.countFoundRecipes.bind(this);
     this.findRecipes = this.findRecipes.bind(this);
     this.saveRecipe = this.saveRecipe.bind(this);

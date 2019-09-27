@@ -50,40 +50,6 @@ class Recipe {
 
   async getAllPublicRecipesForElasticSearchBulkInsert() {
     try {
-      /*const sql = `
-        SELECT
-          r.recipe_id AS recipeId,
-          u.username AS authorName,
-          rt.recipe_type_name AS recipeTypeName,
-          c.cuisine_name AS cuisineName,
-          r.title AS title,
-          r.description AS recipeDescription,
-          r.directions AS directions,
-          r.recipe_image AS recipeImage,
-          m.method_name AS methodNames,
-          e.equipment_name AS equipmentNames,
-          i.ingredient_name AS ingredientNames,
-          sr.title AS subrecipeTitles
-        FROM nobsc_recipes r
-
-        INNER JOIN nobsc_users u ON u.user_id = r.author_id
-        INNER JOIN nobsc_recipe_types rt ON rt.recipe_type_id = r.recipe_type_id
-        INNER JOIN nobsc_cuisines c ON c.cuisine_id = r.cuisine_id
-
-        INNER JOIN nobsc_recipe_methods rm ON rm.recipe_id = r.recipe_id
-        INNER JOIN nobsc_methods m ON m.method_id = rm.method_id
-
-        INNER JOIN nobsc_recipe_equipment re ON re.recipe_id = r.recipe_id
-        INNER JOIN nobsc_equipment e ON e.equipment_id = re.equipment_id
-
-        INNER JOIN nobsc_recipe_ingredients ri ON ri.recipe_id = r.recipe_id
-        INNER JOIN nobsc_ingredients i ON i.ingredient_id = ri.ingredient_id
-
-        INNER JOIN nobsc_recipe_subrecipes rs ON rs.recipe_id = r.recipe_id  // subrecipe_id???
-        INNER JOIN nobsc_recipes sr ON sr.recipe_id = rs.recipe_id  // subrecipe_id???
-
-        WHERE r.owner_id = ?
-      `;*/
       const ownerId = 1;
       const sql1 = `
         SELECT
@@ -101,11 +67,6 @@ class Recipe {
         INNER JOIN nobsc_cuisines c ON c.cuisine_id = r.cuisine_id
         WHERE r.owner_id = ?
       `;
-      /*const sql1 = `
-        SELECT recipe_id, title
-        FROM nobsc_recipes
-        WHERE owner_id = 1
-      `;*/
       const sql2 = `
         SELECT m.method_name AS methodName
         FROM nobsc_methods m
@@ -130,32 +91,54 @@ class Recipe {
         INNER JOIN nobsc_recipe_subrecipes rs ON rs.subrecipe_id = r.recipe_id
         WHERE rs.recipe_id = ?
       `;
+      // why the usual this.pool.execute() method isn't working... who knows...
+      // possibly the way it hooks into events? we're outside of normal routes flow here
+      // see source code and/or ask
       const [ recipesForBulkInsert ] = await this.pool.promise().query(sql1, [ownerId]);
+
       // given relational database, maybe there is a better way, maybe there isn't
       // perhaps some sort of denormalization?
-      // another array to push to?
       const poolRef = this.pool;
       let final = [];
-      console.log('final before map: ', final);
-      recipesForBulkInsert.forEach(function(recipe, i) {
-        (async function() {
-          async function shitty() {
-            const { recipeId } = recipe;
-            const usedMethods = [];
-            // remember to account for one or multiple
-            const [ methodNames ] = await poolRef.promise().query(sql2, [recipeId]);
-            methodNames.forEach(met => usedMethods.push(met.methodName));
-            return usedMethods;
-          };
-          const someshit = await shitty();
-          final.push({...recipe, ...{usedMethods: someshit}});
 
-          console.log(i, final);
-          console.log("-----------------------------------");
-        })();
-      });
-      //Promise.all([p1]).then(() => console.log('final after map: ', final));
-      //console.log('final after map: ', final);
+      for (let recipe of recipesForBulkInsert) {  // allows the sequence of awaits we want
+        const { recipeId } = recipe;
+        let usedMethods = [];
+        let usedEquipment = [];
+        let usedIngredients = [];
+        let usedSubrecipes = [];
+
+        // remember to account for one or multiple
+        const [ methodNames ] = await poolRef.promise().query(sql2, [recipeId]);
+        const equipmentNames = await poolRef.promise().query(sql3, [recipeId]);
+        const [ ingredientNames ] = await poolRef.promise().query(sql4, [recipeId]);
+        const subrecipeTitles = await poolRef.promise().query(sql5, [recipeId]);
+
+        methodNames.forEach(met => usedMethods.push(met.methodName));
+        equipmentNames.forEach(equ => usedEquipment.push(equ.equipmentName));
+        ingredientNames.forEach(ing => usedIngredients.push(ing.ingredientName));
+        subrecipeTitles.forEach(sub => usedSubrecipes.push(sub.subrecipeTitle));
+
+        final.push(
+          {
+            index: {
+              _index: 'recipes',
+              _id: recipeId,
+              //_type: 'recipe'
+            }
+          },
+          {
+            ...recipe,
+            ...{
+              methodNames: usedMethods,
+              equipmentNames: usedEquipment,
+              ingredientNames: usedIngredients,
+              subrecipeNames: usedSubrecipes
+            }
+          }
+        );
+      }
+
       return final;
     } catch (err) {
       console.log(err);

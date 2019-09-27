@@ -166,13 +166,13 @@ cleanUp();  // next()?
   console.log(clients); // an array containing all connected socket ids
 }), (60 * 1000));*/
 
-// move this
-try {
+// move this, and create startup conditional
+/*try {
   console.log('trying');
   bulkUp();  // next()?
 } catch(err) {
   console.log(err);
-}
+}*/
 
 
 
