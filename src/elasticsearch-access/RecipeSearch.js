@@ -1,4 +1,4 @@
-const SimpleQueryStringBody = require('./SimpleQueryStringBody');
+//const SimpleQueryStringBody = require('./SimpleQueryStringBody');
 
 // set up initial settings and analyzers including n-gram
 // remember you need two modules on front end: searchbar and searchpage
@@ -19,11 +19,18 @@ class RecipeSearch {
 
   async findRecipes(q, starting, limit) {  // deep pagination can kill performance, set upper bounds
     const { body } = await this.client.search({
-      body: SimpleQueryStringBody(q),
+      body: {
+        query: {
+          match: {
+            title: {query: q, analyzer: standard}
+          }
+        }
+      },
       sort: 'title:asc',
       from: starting,
       size: limit
     });
+    console.log('body: ', body);
     return body.hits.hits;
   }
 

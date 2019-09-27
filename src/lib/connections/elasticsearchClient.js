@@ -1,9 +1,9 @@
 'use strict';
 
 const { Client, errors } = require('@elastic/elasticsearch');
-const { createAWSConnection, awsCredsifyAll, awsGetCredentials } = require('@acuris/aws-es-connection');
+//const { createAWSConnection, awsCredsifyAll, awsGetCredentials } = require('@acuris/aws-es-connection');
 
-const esClient = (async function() {
+/*const esClient = (async function() {
   let makeClient;
 
   if (process.env.NODE_ENV === 'production') {
@@ -21,9 +21,23 @@ const esClient = (async function() {
     });
   }
 
-  return makeClient;
-})();
+  return makeClient;  // () ?
+})();*/
+
+/*const esClient = (process.env.NODE_ENV === 'production')
+? (
+
+)
+: (
+  new Client({
+    node: 'http://localhost:9200'
+  });
+);*/
 
 //console.log(errors);
 
-module.exports = esClient;
+const esClient = new Client({
+  node: process.env.ES_DEV_NODE
+});
+
+module.exports = esClient;  // () ?

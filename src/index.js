@@ -168,8 +168,10 @@ cleanUp();  // next()?
 
 // move this, and create startup conditional
 /*try {
-  console.log('trying');
-  bulkUp();  // next()?
+  setTimeout(() => {
+    console.log('trying');
+    bulkUp();  // next()?
+  }, 90000);
 } catch(err) {
   console.log(err);
 }*/

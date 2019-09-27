@@ -94,11 +94,12 @@ class Recipe {
       // why the usual this.pool.execute() method isn't working... who knows...
       // possibly the way it hooks into events? we're outside of normal routes flow here
       // see source code and/or ask
-      const [ recipesForBulkInsert ] = await this.pool.promise().query(sql1, [ownerId]);
+      // .promise().query()
+      const [ recipesForBulkInsert ] = await this.pool.execute(sql1, [ownerId]);
 
       // given relational database, maybe there is a better way, maybe there isn't
       // perhaps some sort of denormalization?
-      const poolRef = this.pool;
+      //const poolRef = this.pool;
       let final = [];
 
       for (let recipe of recipesForBulkInsert) {  // allows the sequence of awaits we want
@@ -109,10 +110,10 @@ class Recipe {
         let usedSubrecipes = [];
 
         // remember to account for one or multiple
-        const [ methodNames ] = await poolRef.promise().query(sql2, [recipeId]);
-        const equipmentNames = await poolRef.promise().query(sql3, [recipeId]);
-        const [ ingredientNames ] = await poolRef.promise().query(sql4, [recipeId]);
-        const subrecipeTitles = await poolRef.promise().query(sql5, [recipeId]);
+        const [ methodNames ] = await this.pool.execute(sql2, [recipeId]);
+        const [ equipmentNames ] = await this.pool.execute(sql3, [recipeId]);
+        const [ ingredientNames ] = await this.pool.execute(sql4, [recipeId]);
+        const [ subrecipeTitles ] = await this.pool.execute(sql5, [recipeId]);
 
         methodNames.forEach(met => usedMethods.push(met.methodName));
         equipmentNames.forEach(equ => usedEquipment.push(equ.equipmentName));
@@ -139,6 +140,7 @@ class Recipe {
         );
       }
 
+      //console.log(final);
       return final;
     } catch (err) {
       console.log(err);

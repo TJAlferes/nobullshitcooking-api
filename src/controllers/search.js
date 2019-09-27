@@ -4,7 +4,7 @@ const RecipeSearch = require('../elasticsearch-access/RecipeSearch');
 
 const searchController = {
   searchPublicRecipes: async function(req, res) {
-    const q = "Coffee";
+    const q = "Coff";
     const starting = 1;
     const limit = 12;
     const recipeSearch = new RecipeSearch(esClient);
