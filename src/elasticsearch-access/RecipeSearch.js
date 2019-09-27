@@ -22,11 +22,11 @@ class RecipeSearch {
       body: {
         query: {
           match: {
-            title: {query: q, analyzer: standard}
+            title: {query: q, analyzer: "standard"}
           }
         }
       },
-      sort: 'title:asc',
+      //sort: 'title:asc',  // no no
       from: starting,
       size: limit
     });
