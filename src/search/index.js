@@ -3,7 +3,7 @@ const pool = require('../lib/connections/mysqlPoolConnection');
 const Recipe = require('../mysql-access/Recipe');
 
 const bulkUp = async function() {  // generator instead? timeout first?
-  
+  /*
   const recipe = new Recipe(pool);
   const toBulk = await recipe.getAllPublicRecipesForElasticSearchBulkInsert();
 
@@ -27,9 +27,9 @@ const bulkUp = async function() {  // generator instead? timeout first?
             analyzer: {
               autocomplete: {
                 tokenizer: "autocomplete",
-                //filter: ["lowercase"]
+                filter: ["lowercase"]
               },
-              //autocomplete_search: {tokenizer: "lowercase"}
+              autocomplete_search: {tokenizer: "lowercase"}
             },
             tokenizer: {
               autocomplete: {type: "edge_ngram", min_gram: 2, max_gram: 10}
@@ -42,7 +42,7 @@ const bulkUp = async function() {  // generator instead? timeout first?
             authorName: {type: 'keyword'},
             recipeTypeName: {type: 'keyword'},
             cuisineName: {type: 'keyword'},
-            title: {type: 'text', analyzer: 'autocomplete', search_analyzer: 'standard'},  // autocomplete_search? or remove lowercase tokenizer?
+            title: {type: 'text', analyzer: 'autocomplete', search_analyzer: 'autocomplete_search'},  // standard? or remove lowercase tokenizer?
             description: {type: 'text'},
             directions: {type: 'text'},
             //recipeImage: {type: 'keyword'},
@@ -86,7 +86,20 @@ const bulkUp = async function() {  // generator instead? timeout first?
   } catch (err) {
     console.log(err);
   }
-  
+  */
+
+ try {
+    const testAnalyze = await esClient.indices.analyze({
+      index: "recipes",
+      body: {
+        analyzer: "autocomplete",
+        text: "Grilled Chicken and Seasoned Rice"
+      }
+    });
+    console.log('testAnalyze: ', testAnalyze);
+  } catch (err) {
+    console.log(err);
+  }
 
   let tryNumber = 0;
   const repeatTries = setInterval(async function() {
@@ -124,9 +137,9 @@ const bulkUp = async function() {  // generator instead? timeout first?
         index: "recipes",
         body: {
           query: {
-            match: {
+            match: {  // match phrase?
               //title: {query: "Coffee Vani", operator: "and"}
-              title: {query: "Chicke"}
+              title: {query: "Vanilla Ice", operator: "and"}
             }
           }
         }
