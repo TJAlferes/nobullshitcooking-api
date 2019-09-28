@@ -32,7 +32,7 @@ const bulkUp = async function() {  // generator instead? timeout first?
               autocomplete_search: {tokenizer: "lowercase"}
             },
             tokenizer: {
-              autocomplete: {type: "edge_ngram", min_gram: 2, max_gram: 10}
+              autocomplete: {type: "edge_ngram", min_gram: 2, max_gram: 10, token_chars: ["letter"]}
             }
           }
         },
@@ -86,20 +86,20 @@ const bulkUp = async function() {  // generator instead? timeout first?
   } catch (err) {
     console.log(err);
   }
-  */
-
- try {
-    const testAnalyze = await esClient.indices.analyze({
+  
+  try {
+    const { body } = await esClient.indices.analyze({
       index: "recipes",
       body: {
         analyzer: "autocomplete",
         text: "Grilled Chicken and Seasoned Rice"
       }
     });
-    console.log('testAnalyze: ', testAnalyze);
+    console.log('testAnalyze: ', body.tokens);
   } catch (err) {
     console.log(err);
   }
+  */
 
   let tryNumber = 0;
   const repeatTries = setInterval(async function() {
