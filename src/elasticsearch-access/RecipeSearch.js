@@ -16,13 +16,7 @@ class RecipeSearch {
   async findRecipes(query, starting, limit) {  // deep pagination can kill performance, set upper bounds
     const { body } = await this.client.search({
       index: "recipes",
-      body: {
-        query: {
-          match: {
-            title: {query, operator: "and"}
-          }
-        }
-      },
+      body: {query},
       from: starting,
       size: limit
     });

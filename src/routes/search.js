@@ -14,7 +14,7 @@ router.post(
   catchExceptions(searchController.autocompletePublicRecipes)
 );
 
-router.get(
+router.post(
   '/find/recipes',
   catchExceptions(searchController.findPublicRecipes)
 );
