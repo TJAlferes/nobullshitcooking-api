@@ -24,20 +24,31 @@ const { Client, errors } = require('@elastic/elasticsearch');
   return makeClient;  // () ?
 })();*/
 
-/*const esClient = (process.env.NODE_ENV === 'production')
+/*const makeESClient = process.env.NODE_ENV === 'production'
 ? (
-
+  async function() {
+    let makeClient;
+    const awsCredentials = await awsGetCredentials();
+    const AWSConnection = createAWSConnection(awsCredentials);
+    makeClient = awsCredsifyAll(
+      new Client({
+        Connection: AWSConnection,
+        node: 'https://YOUR-DOMAIN-NAME.us-east-1.es.amazonaws.com'
+      })
+    );
+    return makeClient;  // () ?
+  }
 )
 : (
   new Client({
-    node: 'http://localhost:9200'
-  });
+    node: process.env.ES_DEV_NODE
+  })
 );*/
-
-//console.log(errors);
 
 const esClient = new Client({
   node: process.env.ES_DEV_NODE
 });
+
+//console.log(errors);
 
 module.exports = esClient;  // () ?

@@ -10,10 +10,9 @@ const searchController = {
     return res.json({found});
   },
   findPublicRecipes: async function(req, res) {
-    req.body && console.log(req.body.searchTerm);
-    //const query = req.sanitize(req.params.query);  // validate
-    //const starting = Number(req.sanitize(req.params.starting));  // validate
-    //const limit = Number(req.sanitize(req.params.limit));  // validate
+    const query = req.sanitize(req.body.searchTerm);  // validate
+    const starting = Number(req.sanitize(req.body.starting));  // validate
+    const limit = Number(req.sanitize(req.body.limit));  // validate
     const recipeSearch = new RecipeSearch(esClient);
     const found = await recipeSearch.findRecipes(query, starting, limit);
     return res.json({found});

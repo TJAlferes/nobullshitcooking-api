@@ -34,7 +34,7 @@ class RecipeSearch {
       index: "recipes",
       body: {
         highlight: {
-          fragment_size: 200,
+          fragment_size: 200,  // less?
           number_of_fragments: 1,
           fields: {title: {}}
         },
@@ -86,7 +86,7 @@ class RecipeSearch {
         subrecipeNames
       }
     });
-    await this.client.indices.refresh({index: 'recipes'});  // ?
+    await this.client.indices.refresh({index: 'recipes'});
     return savedRecipe;
   }
 
@@ -101,7 +101,7 @@ class RecipeSearch {
         ignore: [404]
       }
     );
-    await this.client.indices.refresh({index: 'recipes'});  // ?
+    await this.client.indices.refresh({index: 'recipes'});
     return deletedRecipe;
   }
 }

@@ -46,7 +46,7 @@ const socketConnection = require('./chat');
 const cleanUp = require('./chat/workers');
 const MessengerUser = require('./redis-access/MessengerUser');  // move
 const { pubClient, subClient, sessClient } = require('./lib/connections/redisConnection');
-const bulkUp = require('./search');
+//const bulkUp = require('./search');
 
 
 
@@ -116,12 +116,14 @@ const sessionOptions = {
   secret: process.env.SESSION_SECRET || "secret",
   resave: true,
   saveUninitialized: true,
+  /*
+  cookie: {},
   cookie: {
     sameSite: false,
     maxAge: 86400000,
     httpOnly: false,
     secure: false
-  },
+  },*/
   unset: "destroy"
 };
 const session = expressSession(sessionOptions);
@@ -130,9 +132,9 @@ const session = expressSession(sessionOptions);
 // prod
 if (app.get('env') === 'production') {
   app.set('trust proxy', 1);  // trust first proxy
-  sessionOptions.cookie.secure = true;  // serve secure cookies
+  /*sessionOptions.cookie.secure = true;
   sessionOptions.cookie.sameSite = true;
-  sessionOptions.cookie.httpOnly = true;
+  sessionOptions.cookie.httpOnly = true;*/
   corsOptions.origin = ['https://nobullshitcooking.net'];
 }  // enforce https? or elasticbeanstalk already does?
 
@@ -167,14 +169,14 @@ cleanUp();  // next()?
 }), (60 * 1000));*/
 
 // move this, and create startup conditional
-try {
+/*try {
   setTimeout(() => {
     console.log('trying');
     bulkUp();  // next()?
   }, 80000);
 } catch(err) {
   console.log(err);
-}
+}*/
 
 
 
