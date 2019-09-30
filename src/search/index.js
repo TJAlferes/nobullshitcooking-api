@@ -1,13 +1,12 @@
+
 const esClient = require('../lib/connections/elasticsearchClient');
 const pool = require('../lib/connections/mysqlPoolConnection');
 const Recipe = require('../mysql-access/Recipe');
 
-const bulkUp = async function() {  // generator instead? timeout first?
+const bulkUp = async function() {
   /*
   const recipe = new Recipe(pool);
   const toBulk = await recipe.getAllPublicRecipesForElasticSearchBulkInsert();
-
-
 
   try {
     const wasDeleted = await esClient.indices.delete({index: "recipes"});
@@ -15,8 +14,6 @@ const bulkUp = async function() {  // generator instead? timeout first?
   } catch (err) {
     console.log(err);
   }
-
-
 
   try {
     const wasCreated = await esClient.indices.create({
@@ -42,14 +39,13 @@ const bulkUp = async function() {  // generator instead? timeout first?
             authorName: {type: 'keyword'},
             recipeTypeName: {type: 'keyword'},
             cuisineName: {type: 'keyword'},
-            title: {type: 'text', analyzer: 'autocomplete', search_analyzer: 'autocomplete_search'},  // standard? or remove lowercase tokenizer?
+            title: {type: 'text', analyzer: 'autocomplete', search_analyzer: 'autocomplete_search'},
             description: {type: 'text'},
             directions: {type: 'text'},
-            //recipeImage: {type: 'keyword'},
-            //methodNames: {type: 'keyword'},
-            //equipmentNames: {type: 'keyword'},
-            //ingredientNames: {type: 'keyword'},
-            //subrecipeNames: {type: 'keyword'}
+            //methodNames: {type: 'keyword'},  // finish
+            //equipmentNames: {type: 'keyword'},  // finish
+            //ingredientNames: {type: 'keyword'},  // finish
+            //subrecipeNames: {type: 'keyword'}  // finish
           }
         }
       }
@@ -107,68 +103,23 @@ const bulkUp = async function() {  // generator instead? timeout first?
     tryNumber = tryNumber + 1;
     console.log('=========== tryNumber: ', tryNumber);
     try {
-      /*const { body } = await esClient.search({
-        index: "recipes",
-        //analyzer: string,
-        //default_operator: 'AND' | 'OR',
-        //from: number,
-        //q: string,
-        //scroll: string,
-        //search_type: 'query_then_fetch' | 'dfs_query_then_fetch',
-        //size: number,
-        //suggest_field: string,
-        //suggest_mode: 'missing' | 'popular' | 'always',
-        //suggest_size: number,
-        //suggest_text: string,
-        //track_scores: boolean,
-        //track_total_hits: boolean,
-        //allow_partial_search_results: boolean,
-        //request_cache: boolean,
-        //rest_total_hits_as_int: boolean,
-        body: {
-          query: {
-            match_all: {}
-          }
-        }
-      });
-      console.log('wasGood body: ', body.hits.hits);*/
-
       const { body } = await esClient.search({
         index: "recipes",
         body: {
           query: {
-            match: {  // match phrase?
-              //title: {query: "Coffee Vani", operator: "and"}
-              title: {query: "Vanilla Ice", operator: "and"}
+            match: {
+              title: {query: "Grill", operator: "and"}
             }
-          }
+          },
+          from: 0,
+          size: 5
         }
       });
-      console.log('wasGood2 body: ', body.hits.hits);
+      console.log('body.hits.hits: ', body.hits.hits);
     } catch (err) {
       console.log(err);
     }
-
   }, 10000);
 };
-
-/*{
-  index: 'recipes',
-  id: recipeId,
-  type: 'recipe',
-  body: {
-    recipeId,
-    authorName,
-    recipeTypeName,
-    cuisineName,
-    title,
-    description,
-    recipeImage,
-    methodNames,
-    equipmentNames,
-    ingredientNames,
-    subrecipeNames
-  }
-}*/
 
 module.exports = bulkUp;

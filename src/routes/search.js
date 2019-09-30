@@ -10,13 +10,13 @@ const router = Router();
 // for /search/...
 
 router.post(
-  '/recipes',
-  catchExceptions(searchController.searchPublicRecipes)
+  '/autocomplete/recipes',
+  catchExceptions(searchController.autocompletePublicRecipes)
 );
 
 router.get(
-  '/recipes',
-  catchExceptions(searchController.searchPublicRecipes)
+  '/find/recipes',
+  catchExceptions(searchController.findPublicRecipes)
 );
 
 module.exports = router;

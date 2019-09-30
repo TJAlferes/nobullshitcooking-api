@@ -1,37 +1,55 @@
-//const SimpleQueryStringBody = require('./SimpleQueryStringBody');
-
-// set up initial settings and analyzers including n-gram
-// remember you need two modules on front end: searchbar and searchpage
-
 class RecipeSearch {
   constructor(esClient) {
     this.client = esClient;
     this.countFoundRecipes = this.countFoundRecipes.bind(this);
     this.findRecipes = this.findRecipes.bind(this);
+    this.autoRecipes = this.autoRecipes.bind(this);
     this.saveRecipe = this.saveRecipe.bind(this);
     this.deleteRecipe = this.deleteRecipe.bind(this);
   }
 
-  async countFoundRecipes(query) {
-    const res = await this.client.count({body: SimpleQueryStringBody(query)});
+  async countFoundRecipes(query) {  // not even needed? body.hits.total.value?
+    const res = await this.client.count({body: SimpleQueryStringBody(query)});  // change/finish
     return res.count;
   }
 
-  async findRecipes(q, starting, limit) {  // deep pagination can kill performance, set upper bounds
+  async findRecipes(query, starting, limit) {  // deep pagination can kill performance, set upper bounds
     const { body } = await this.client.search({
+      index: "recipes",
       body: {
         query: {
           match: {
-            title: {query: q, operator: "and"}
+            title: {query, operator: "and"}
           }
         }
       },
-      //sort: 'title:asc',  // no no
       from: starting,
       size: limit
     });
-    console.log('body: ', body);
-    return body.hits.hits;
+    return body;
+  }
+
+  async autoRecipes(query) {
+    const { body } = await this.client.search({
+      index: "recipes",
+      body: {
+        highlight: {
+          fragment_size: 200,
+          number_of_fragments: 1,
+          fields: {title: {}}
+        },
+        //_source: ["title"],
+        //aggs: {},
+        query: {
+          match: {
+            title: {query, operator: "and"}
+          }
+        }
+      },
+      from: 0,
+      size: 5
+    });
+    return body;
   }
 
   async saveRecipe(recipeInfo) {
@@ -52,7 +70,7 @@ class RecipeSearch {
     const savedRecipe = await this.client.index({
       index: 'recipes',
       id: recipeId,
-      type: 'recipe',
+      //type: 'recipe',
       body: {
         recipeId,
         authorName,
@@ -68,6 +86,7 @@ class RecipeSearch {
         subrecipeNames
       }
     });
+    await this.client.indices.refresh({index: 'recipes'});  // ?
     return savedRecipe;
   }
 
@@ -76,12 +95,13 @@ class RecipeSearch {
       {
         index: 'recipes',
         id: recipeId,
-        type: 'recipe'
+        //type: 'recipe'
       },
       {
         ignore: [404]
       }
     );
+    await this.client.indices.refresh({index: 'recipes'});  // ?
     return deletedRecipe;
   }
 }
