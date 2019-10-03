@@ -20,7 +20,6 @@ const searchController = {
     const limit = 20;
     const recipeSearch = new RecipeSearch(esClient);
     const found = await recipeSearch.findRecipes(query, starting, limit);
-    console.log('found: ', found);
     return res.json({found});
   }
 };
