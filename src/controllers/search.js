@@ -1,25 +1,18 @@
 const esClient = require('../lib/connections/elasticsearchClient');
 const RecipeSearch = require('../elasticsearch-access/RecipeSearch');
-//const validation(s)
 
 const searchController = {
   autocompletePublicRecipes: async function(req, res) {
-    const query = req.sanitize(req.body.searchTerm);  // validate
+    const searchTerm = req.sanitize(req.body.searchTerm);  // TO DO: prefilters
     const recipeSearch = new RecipeSearch(esClient);
-    const found = await recipeSearch.autoRecipes(query);
+    const found = await recipeSearch.autoRecipes(searchTerm);
     return res.json({found});
   },
   findPublicRecipes: async function(req, res) {
-    const query = req.body.searchTerm
-    ? {match: {title: {query: req.sanitize(req.body.searchTerm), operator: "and"}}}
-    : {match_all: {}};
-    // validate
-    //const starting = Number(req.sanitize(req.body.starting));  // validate
-    //const limit = Number(req.sanitize(req.body.limit));  // validate
-    const starting = 0;
-    const limit = 20;
+    const body = req.body.body;
+    console.log(body);
     const recipeSearch = new RecipeSearch(esClient);
-    const found = await recipeSearch.findRecipes(query, starting, limit);
+    const found = await recipeSearch.findRecipes(body);
     return res.json({found});
   }
 };

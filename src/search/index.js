@@ -1,10 +1,10 @@
-
+/*
 const esClient = require('../lib/connections/elasticsearchClient');
 const pool = require('../lib/connections/mysqlPoolConnection');
 const Recipe = require('../mysql-access/Recipe');
 
 const bulkUp = async function() {
-  /*
+  
   const recipe = new Recipe(pool);
   const toBulk = await recipe.getAllPublicRecipesForElasticSearchBulkInsert();
 
@@ -42,10 +42,10 @@ const bulkUp = async function() {
             title: {type: 'text', analyzer: 'autocomplete', search_analyzer: 'autocomplete_search'},
             description: {type: 'text'},
             directions: {type: 'text'},
-            //methodNames: {type: 'keyword'},  // finish
-            //equipmentNames: {type: 'keyword'},  // finish
-            //ingredientNames: {type: 'keyword'},  // finish
-            //subrecipeNames: {type: 'keyword'}  // finish
+            methodNames: {type: 'keyword'},
+            equipmentNames: {type: 'keyword'},
+            ingredientNames: {type: 'keyword'},
+            subrecipeNames: {type: 'keyword'}
           }
         }
       }
@@ -95,7 +95,7 @@ const bulkUp = async function() {
   } catch (err) {
     console.log(err);
   }
-  */
+  
 
   let tryNumber = 0;
   const repeatTries = setInterval(async function() {
@@ -123,3 +123,4 @@ const bulkUp = async function() {
 };
 
 module.exports = bulkUp;
+*/

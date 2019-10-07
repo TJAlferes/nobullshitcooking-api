@@ -13,17 +13,16 @@ class RecipeSearch {
     return res.count;
   }
 
-  async findRecipes(query, starting, limit) {  // deep pagination can kill performance, set upper bounds
+  async findRecipes(searchBody) {  // deep pagination can kill performance, set upper bounds 
     const { body } = await this.client.search({
       index: "recipes",
-      body: {query},
-      from: starting,
-      size: limit
+      body: searchBody
     });
+    console.log(body.hits.hits);
     return body;
   }
 
-  async autoRecipes(query) {
+  async autoRecipes(searchTerm) {
     const { body } = await this.client.search({
       index: "recipes",
       body: {
@@ -35,8 +34,15 @@ class RecipeSearch {
         //_source: ["title"],
         //aggs: {},
         query: {
-          match: {
-            title: {query, operator: "and"}
+          bool: {
+            must: [
+              {
+                match: {
+                  title: {query: searchTerm, operator: "and"}
+                }
+              }
+            ],
+            //...(filter && {filter})
           }
         }
       },
