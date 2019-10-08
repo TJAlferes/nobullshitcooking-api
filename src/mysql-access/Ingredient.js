@@ -2,6 +2,8 @@ class Ingredient {
   constructor(pool) {
     this.pool = pool;
 
+    this.getAllPublicIngredientsForElasticSearchBulkInsert = this.getAllPublicIngredientsForElasticSearchBulkInsert.bind(this);
+
     // public NOBSC ingredients
     this.countAllIngredients = this.countAllIngredients.bind(this);
     this.countIngredientsOfType = this.countIngredientsOfType.bind(this);
@@ -27,7 +29,37 @@ class Ingredient {
     this.deleteMyPrivateUserIngredient = this.deleteMyPrivateUserIngredient.bind(this);
   }
 
+  //--------------------------------------------------------------------------
 
+  async getAllPublicIngredientsForElasticSearchBulkInsert() {
+    try {
+      const ownerId = 1;
+      const sql1 = `
+        SELECT
+          i.ingredient_id AS ingredientId,
+          it.ingredient_type_name AS ingredientTypeName,
+          i.ingredient_name AS ingredientName,
+          i.ingredient_image AS ingredientImage
+        FROM nobsc_ingredients i
+        INNER JOIN nobsc_ingredient_types it ON it.ingredient_type_id = i.ingredient_type_id
+        WHERE i.owner_id = ?
+      `;
+      const [ ingredientsForBulkInsert ] = await this.pool.execute(sql1, [ownerId]);
+      let final = [];
+      for (let ingredient of ingredientsForBulkInsert) {  // allows the sequence of awaits we want
+        const { ingredientId } = ingredient;
+        final.push(
+          {index: {_index: 'ingredients', _id: ingredientId}},
+          ingredient
+        );
+      }
+      return final;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  //--------------------------------------------------------------------------
   
   /*
   

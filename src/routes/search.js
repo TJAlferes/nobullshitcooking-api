@@ -10,6 +10,18 @@ const router = Router();
 // for /search/...
 
 router.post(
+  '/autocomplete/all',
+  catchExceptions(searchController.autocompletePublicAll)
+);
+
+router.post(
+  '/find/all',
+  catchExceptions(searchController.findPublicAll)
+);
+
+
+
+router.post(
   '/autocomplete/recipes',
   catchExceptions(searchController.autocompletePublicRecipes)
 );
@@ -17,6 +29,18 @@ router.post(
 router.post(
   '/find/recipes',
   catchExceptions(searchController.findPublicRecipes)
+);
+
+
+
+router.post(
+  '/autocomplete/ingredients',
+  catchExceptions(searchController.autocompletePublicIngredients)
+);
+
+router.post(
+  '/find/ingredients',
+  catchExceptions(searchController.findPublicIngredients)
 );
 
 module.exports = router;
