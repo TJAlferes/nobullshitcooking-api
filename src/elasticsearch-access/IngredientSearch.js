@@ -28,7 +28,7 @@ class IngredientSearch {
         highlight: {
           fragment_size: 200,  // less?
           number_of_fragments: 1,
-          fields: {title: {}}
+          fields: {ingredientName: {}}
         },
         query: {
           bool: {
