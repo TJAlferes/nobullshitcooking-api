@@ -10,7 +10,6 @@ const searchController = {
   },
   findPublicRecipes: async function(req, res) {
     const body = req.body.body;
-    console.log(body);
     const recipeSearch = new RecipeSearch(esClient);
     const found = await recipeSearch.findRecipes(body);
     return res.json({found});

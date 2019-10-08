@@ -18,7 +18,7 @@ class RecipeSearch {
       index: "recipes",
       body: searchBody
     });
-    console.log(body.hits.hits);
+    console.log(body);
     return body;
   }
 
