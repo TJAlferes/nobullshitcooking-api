@@ -164,8 +164,8 @@ const recipeController = {
       const recipeId = Number(req.sanitize(req.params.recipeId));
       validRecipeRequest({recipeId});
       const recipe = new Recipe(pool);
-      const [ row ] = await recipe.viewRecipeById(recipeId);
-      res.send(row);
+      const recipeDetail = await recipe.viewRecipeById(recipeId);
+      res.send(recipeDetail);
       next();
     } catch(err) {
       next(err);

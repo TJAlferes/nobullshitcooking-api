@@ -63,6 +63,22 @@ const userRecipeController = {
       next(err);
     }
   },
+  getInfoToEditMyPrivateUserRecipe: async function(req, res) {
+    const recipeId = req.sanitize(req.body.recipeId);
+    const authorId = req.session.userInfo.userId;
+    const ownerId = req.session.userInfo.userId;
+    const recipe = new Recipe(pool);
+    const [ row ] = await recipe.getInfoToEditMyUserRecipe(recipeId, authorId, ownerId);
+    res.send(row);
+  },
+  getInfoToEditMyPublicUserRecipe: async function(req, res) {
+    const recipeId = req.sanitize(req.body.recipeId);
+    const authorId = req.session.userInfo.userId;
+    const ownerId = 1;
+    const recipe = new Recipe(pool);
+    const [ row ] = await recipe.getInfoToEditMyUserRecipe(recipeId, authorId, ownerId);
+    res.send(row);
+  },
   createRecipe: async function(req, res, next) {
     try {
       const recipeTypeId = Number(req.sanitize(req.body.recipeInfo.recipeTypeId));

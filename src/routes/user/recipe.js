@@ -70,4 +70,16 @@ router.post(
   catchExceptions(userRecipeController.viewMyPublicUserRecipe)
 );
 
+router.post(
+  '/edit/private',
+  userIsAuth,
+  catchExceptions(userRecipeController.getInfoToEditMyPrivateUserRecipe)
+);
+
+router.post(
+  '/edit/public',
+  userIsAuth,
+  catchExceptions(userRecipeController.getInfoToEditMyPublicUserRecipe)
+);
+
 module.exports = router;
