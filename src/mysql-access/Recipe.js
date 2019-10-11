@@ -402,9 +402,9 @@ class Recipe {
           r.description AS description,
           r.directions AS directions,
           r.recipe_image AS recipeImage,
-          r.recipe_equipment_image AS recipeEquipmentImage,
-          r.recipe_ingredients_image AS recipeIngredientsImage,
-          r.recipe_cooking_image AS recipeCookingImage,
+          r.equipment_image AS recipeEquipmentImage,
+          r.ingredients_image AS recipeIngredientsImage,
+          r.cooking_image AS recipeCookingImage,
         FROM nobsc_recipes r
         INNER JOIN nobsc_users u ON u.user_id = r.author_id
         INNER JOIN nobsc_recipe_types rt ON rt.recipe_type_id = r.recipe_type_id
@@ -735,15 +735,15 @@ class Recipe {
   async getInfoToEditMyUserRecipe(recipeId, authorId, ownerId) {
     const sql1 = `
       SELECT
-        rt.recipe_type_id AS recipeTypeId,
-        c.cuisine_id AS cuisineId,
+        r.recipe_type_id AS recipeTypeId,
+        r.cuisine_id AS cuisineId,
         r.title AS title,
         r.description AS description,
         r.directions AS directions,
         r.recipe_image AS recipeImage,
-        r.recipe_equipment_image AS recipeEquipmentImage,
-        r.recipe_ingredients_image AS recipeIngredientsImage,
-        r.recipe_cooking_image AS recipeCookingImage
+        r.equipment_image AS recipeEquipmentImage,
+        r.ingredients_image AS recipeIngredientsImage,
+        r.cooking_image AS recipeCookingImage
       FROM nobsc_recipes r
       WHERE r.recipe_id = ? AND r.author_id = ? AND r.owner_id = ?
     `;
@@ -803,7 +803,7 @@ class Recipe {
       }
     };
     
-    //console.log(final);
+    console.log(final);
     return final;
   }
 
