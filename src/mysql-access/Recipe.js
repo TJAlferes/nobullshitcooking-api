@@ -43,8 +43,8 @@ class Recipe {
 
     this.getInfoToEditMyUserRecipe = this.getInfoToEditMyUserRecipe.bind(this);
 
-    this.updateMyPrivateUserRecipe = this.updateMyPrivateUserRecipe.bind(this);
-    this.updateMyPublicUserRecipe = this.updateMyPublicUserRecipe.bind(this);
+    this.updateMyUserRecipe = this.updateMyUserRecipe.bind(this);
+
     this.deleteMyPrivateUserRecipe = this.deleteMyPrivateUserRecipe.bind(this);
     this.disownMyPublicUserRecipe = this.disownMyPublicUserRecipe.bind(this);
   }
@@ -737,6 +737,7 @@ class Recipe {
       SELECT
         r.recipe_type_id AS recipeTypeId,
         r.cuisine_id AS cuisineId,
+        r.owner_id AS ownerId,
         r.title AS title,
         r.description AS description,
         r.directions AS directions,
@@ -749,8 +750,9 @@ class Recipe {
     `;
     
     const sql2 = `
-      SELECT rm.method_id AS methodId
-      WHERE rm.recipe_id = ?
+      SELECT method_id AS methodId
+      FROM nobsc_recipe_methods
+      WHERE recipe_id = ?
     `;
     
     const sql3 = `
@@ -794,22 +796,19 @@ class Recipe {
     const [ requiredSubrecipes ] = await this.pool.execute(sql5, [recipeId]);
     
     let final = {
-      recipe,
-      ...{
-        requiredMethods,
-        requiredEquipment,
-        requiredIngredients,
-        requiredSubrecipes
-      }
+      recipe: recipe[0],
+      requiredMethods,
+      requiredEquipment,
+      requiredIngredients,
+      requiredSubrecipes
     };
     
-    console.log(final);
     return final;
   }
 
 
 
-  async updateMyPrivateUserRecipe(recipeToUpdateWith, recipeId) {
+  async updateMyUserRecipe(recipeToUpdateWith, recipeId) {
     const {
       recipeTypeId,
       cuisineId,
@@ -828,8 +827,6 @@ class Recipe {
       SET
         recipe_type_id = ?,
         cuisine_id = ?,
-        author_id = ?,
-        owner_id = ?,
         title = ?,
         description = ?,
         directions = ?,
@@ -837,14 +834,12 @@ class Recipe {
         equipment_image = ?,
         ingredients_image = ?,
         cooking_image = ?
-      WHERE recipe_id = ? AND owner_id = ?
+      WHERE recipe_id = ? AND author_id = ? AND owner_id = ?
       LIMIT 1
     `;
     const [ updatedRecipe ] = await this.pool.execute(sql, [
       recipeTypeId,
       cuisineId,
-      authorId,
-      ownerId,
       title,
       description,
       directions,
@@ -853,55 +848,7 @@ class Recipe {
       ingredientsImage,
       cookingImage,
       recipeId,
-      ownerId
-    ]);
-    return updatedRecipe;
-  }
-
-  async updateMyPublicUserRecipe(recipeToUpdateWith, recipeId) {
-    const {
-      recipeTypeId,
-      cuisineId,
       authorId,
-      ownerId,
-      title,
-      description,
-      directions,
-      recipeImage,
-      equipmentImage,
-      ingredientsImage,
-      cookingImage,
-    } = recipeToUpdateWith;
-    const sql = `
-      UPDATE nobsc_recipes
-      SET
-        recipe_type_id = ?,
-        cuisine_id = ?,
-        author_id = ?,
-        owner_id = ?,
-        title = ?,
-        description = ?,
-        directions = ?,
-        recipe_image = ?,
-        equipment_image = ?,
-        ingredients_image = ?,
-        cooking_image = ?
-      WHERE recipe_id = ? AND owner_id = ?
-      LIMIT 1
-    `;
-    const [ updatedRecipe ] = await this.pool.execute(sql, [
-      recipeTypeId,
-      cuisineId,
-      authorId,
-      ownerId,
-      title,
-      description,
-      directions,
-      recipeImage,
-      equipmentImage,
-      ingredientsImage,
-      cookingImage,
-      recipeId,
       ownerId
     ]);
     return updatedRecipe;

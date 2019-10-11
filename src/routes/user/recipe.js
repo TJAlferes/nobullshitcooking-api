@@ -19,15 +19,9 @@ router.post(
 
 
 router.put(
-  '/update/private',
+  '/update',
   userIsAuth,
-  catchExceptions(userRecipeController.updateMyPrivateUserRecipe)
-);
-
-router.put(
-  '/update/public',
-  userIsAuth,
-  catchExceptions(userRecipeController.updateMyPublicUserRecipe)
+  catchExceptions(userRecipeController.updateMyUserRecipe)
 );
 
 
