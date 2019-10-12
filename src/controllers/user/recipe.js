@@ -1,6 +1,6 @@
 const pool = require('../../lib/connections/mysqlPoolConnection');
-const esClient = require('../../lib/connections/elasticSearchClient');
-
+const esClient = require('../../lib/connections/elasticsearchClient');
+ 
 const Recipe = require('../../mysql-access/Recipe');
 const RecipeMethods = require('../../mysql-access/RecipeMethod');
 const RecipeEquipment = require('../../mysql-access/RecipeEquipment');

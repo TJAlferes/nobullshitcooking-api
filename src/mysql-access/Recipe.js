@@ -62,7 +62,7 @@ class Recipe {
           rt.recipe_type_name AS recipeTypeName,
           c.cuisine_name AS cuisineName,
           r.title AS title,
-          r.description AS recipeDescription,
+          r.description AS description,
           r.directions AS directions,
           r.recipe_image AS recipeImage
         FROM nobsc_recipes r
@@ -212,7 +212,7 @@ class Recipe {
       equipmentNames.forEach(equ => usedEquipment.push(equ.equipmentName));
       ingredientNames.forEach(ing => usedIngredients.push(ing.ingredientName));
       subrecipeTitles.forEach(sub => usedSubrecipes.push(sub.subrecipeTitle));
-      
+
       const final = {
         ...recipeForInsert,
         ...{
