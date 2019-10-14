@@ -29,10 +29,4 @@ router.get(
   catchExceptions(recipeController.viewRecipeDetail)
 );
 
-// YOU CAN REMOVE THIS NOW
-router.post(
-  '/titles',
-  catchExceptions(recipeController.viewRecipeTitlesByIds)
-);
-
 module.exports = router;

@@ -29,8 +29,6 @@ class Recipe {
     this.viewAllPublicRecipes = this.viewAllPublicRecipes.bind(this);
 
     this.viewRecipeById = this.viewRecipeById.bind(this);
-    //this.viewRecipeTitlesByIds = this.viewRecipeTitlesByIds.bind(this);
-    this.viewRecipesForSubmitEditForm = this.viewRecipesForSubmitEditForm.bind(this);
 
     this.createRecipe = this.createRecipe.bind(this);
 
@@ -548,27 +546,6 @@ class Recipe {
     } catch (err) {
       console.log(err);
     }
-  }
-
-  // YOU CAN REMOVE THIS
-  /*async viewRecipeTitlesByIds(placeholders, recipeIds) {
-    const sql = `
-      SELECT recipe_id, title
-      FROM nobsc_recipes
-      WHERE recipe_id IN (${placeholders})
-    `;
-    const [ recipeTitles ] = await this.pool.execute(sql, recipeIds);
-    return recipeTitles;
-  }*/
-
-  async viewRecipesForSubmitEditForm() {
-    const sql = `
-      SELECT recipe_id, recipe_type_id, cuisine_id, title
-      FROM nobsc_recipes
-      ORDER BY title ASC
-    `;
-    const [ allRecipes ] = await this.pool.execute(sql);
-    return allRecipes;
   }
 
   //--------------------------------------------------------------------------

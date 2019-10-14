@@ -45,7 +45,11 @@ const {
 const socketConnection = require('./chat');
 const cleanUp = require('./chat/workers');
 const MessengerUser = require('./redis-access/MessengerUser');  // move
-const { pubClient, subClient, sessClient } = require('./lib/connections/redisConnection');
+const {
+  pubClient,
+  subClient,
+  sessClient
+} = require('./lib/connections/redisConnection');
 //const bulkUp = require('./search');
 
 
@@ -58,7 +62,7 @@ const { pubClient, subClient, sessClient } = require('./lib/connections/redisCon
 
 // app
 const app = express();
-const rateLimiterOptions = {windowMs: 1 * 60 * 1000, max: 1000};  // limit each IP to 1000 requests per minute
+const rateLimiterOptions = {windowMs: 1 * 60 * 1000, max: 1000};  // limit each IP to 1000 requests per minute (100?)
 const corsOptions = {origin: ['http://localhost:8080'], credentials: true};
 
 
@@ -88,17 +92,28 @@ const subClient = new Redis.Cluster(redisClusterOptions, elasticacheWithTLS);
 
 const socketAuth = (socket, next) => {
   const parsedCookie = cookie.parse(socket.request.headers.cookie);
-  const sid = cookieParser.signedCookie(parsedCookie['connect.sid'], process.env.SESSION_SECRET);
+  const sid = cookieParser.signedCookie(
+    parsedCookie['connect.sid'],
+    process.env.SESSION_SECRET
+  );
   const socketid = socket.id;
 
-  if (parsedCookie['connect.sid'] === sid) return next(new Error('Not authenticated.'));
+  if (parsedCookie['connect.sid'] === sid) {
+    return next(new Error('Not authenticated.'));
+  }
 
   redisSession.get(sid, function(err, session) {
     if (session.userInfo.userId) {
       socket.request.userInfo = session.userInfo;
       socket.request.sid = sid;
       const messengerUser = new MessengerUser(pubClient);
-      messengerUser.addUser(session.userInfo.userId, session.userInfo.username, session.userInfo.avatar, sid, socketid);
+      messengerUser.addUser(
+        session.userInfo.userId,
+        session.userInfo.username,
+        session.userInfo.avatar,
+        sid,
+        socketid
+      );
       return next();
     } else {
       return next(new Error('Not authenticated.'));

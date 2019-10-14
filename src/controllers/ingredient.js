@@ -60,15 +60,6 @@ const ingredientController = {
     } catch(err) {
       next(err);
     }
-  },
-  viewIngredientsForSubmitEditForm: async function(req, res, next) {
-    try {
-      const ingredient = new Ingredient(pool);
-      const rows = await ingredient.viewIngredientsForSubmitEditForm();
-      res.send(rows);
-    } catch(err) {
-      next(err);
-    }
   }
 };
 

@@ -11,7 +11,7 @@ const searchController = {
     return res.json({found});
   },
   findPublicAll: async function(req, res) {
-    const body = req.body.body;  // TO DO: on front end, buildRequest, body (searchBody) needs to be changed depending on prefilter
+    const body = req.body.body;
     const allSearch = new AllSearch(esClient);
     const found = await allSearch.findAll(body);
     return res.json({found});
@@ -24,7 +24,7 @@ const searchController = {
     return res.json({found});
   },
   findPublicRecipes: async function(req, res) {
-    const body = req.body.body;  // TO DO: on front end, buildRequest, body (searchBody) needs to be changed depending on prefilter
+    const body = req.body.body;
     const recipeSearch = new RecipeSearch(esClient);
     const found = await recipeSearch.findRecipes(body);
     return res.json({found});
@@ -37,7 +37,7 @@ const searchController = {
     return res.json({found});
   },
   findPublicIngredients: async function(req, res) {
-    const body = req.body.body;  // TO DO: on front end, buildRequest, body (searchBody) needs to be changed depending on prefilter
+    const body = req.body.body;
     const ingredientSearch = new IngredientSearch(esClient);
     const found = await ingredientSearch.findIngredients(body);
     return res.json({found});

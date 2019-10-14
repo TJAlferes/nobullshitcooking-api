@@ -170,27 +170,6 @@ const recipeController = {
     } catch(err) {
       next(err);
     }
-  },
-  viewRecipeTitlesByIds: async function(req, res, next) {
-    try {
-      const recipeIds = (req.body.recipeIds) ? req.body.recipeIds : [];
-      validRecipeTitlesRequest({recipeIds});
-      const placeholders = '?, '.repeat(recipeIds.length - 1) + '?';
-      const recipe = new Recipe(pool);
-      const rows = await recipe.viewRecipeTitlesByIds(placeholders, recipeIds);
-      res.send(rows);
-    } catch(err) {
-      next(err);
-    }
-  },
-  viewRecipesForSubmitEditForm: async function(req, res, next) {  // needed?
-    try {
-      const recipe = new Recipe(pool);
-      const rows = await recipe.viewRecipesForSubmitEditForm();
-      res.send(rows);
-    } catch(err) {
-      next(err);
-    }
   }
 };
 
