@@ -2,7 +2,6 @@ class RecipeIngredient {
   constructor(pool) {
     this.pool = pool;
     this.viewRecipeIngredientsByRecipeId = this.viewRecipeIngredientsByRecipeId.bind(this);
-    this.viewRecipeIngredientsForEditFormByRecipeId = this.viewRecipeIngredientsForEditFormByRecipeId.bind(this);
     this.createRecipeIngredients = this.createRecipeIngredients.bind(this);
     this.updateRecipeIngredients = this.updateRecipeIngredients.bind(this);
     this.deleteRecipeIngredients = this.deleteRecipeIngredients.bind(this);
@@ -17,16 +16,6 @@ class RecipeIngredient {
       INNER JOIN nobsc_ingredients i ON i.ingredient_id = ri.ingredient_id
       WHERE ri.recipe_id = ?
       ORDER BY i.ingredient_type_id
-    `;
-    const [ recipeIngredients ] = await this.pool.execute(sql, [recipeId]);
-    return recipeIngredients;
-  }
-
-  async viewRecipeIngredientsForEditFormByRecipeId(recipeId) {
-    const sql = `
-      SELECT amount, measurement_id, ingredient_id
-      FROM nobsc_recipe_ingredients
-      WHERE recipe_id = ?
     `;
     const [ recipeIngredients ] = await this.pool.execute(sql, [recipeId]);
     return recipeIngredients;

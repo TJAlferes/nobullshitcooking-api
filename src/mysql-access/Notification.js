@@ -24,7 +24,8 @@ class Notification {
       FROM nobsc_notifications
       WHERE read = 0 AND receiver_id = ? AND read = 0
     `;
-    const [ notifications ] = await this.pool.execute(sql, [userId])
+    const [ notifications ] = await this.pool.execute(sql, [userId]);
+    return notifications;
   }
 
   async createNotification(notificationInfo) {
@@ -36,6 +37,7 @@ class Notification {
       (?, ?, ?, ?)
     `;
     const [ notification ] = await this.pool.execute(sql, [senderId, receiverId, note, read]);
+    return notification;
   }
 
   async markNotificationAsRead(notificationId, userId) {

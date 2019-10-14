@@ -2,7 +2,6 @@ class RecipeMethod {
   constructor(pool) {
     this.pool = pool;
     this.viewRecipeMethodsByRecipeId = this.viewRecipeMethodsByRecipeId.bind(this);
-    this.viewRecipeMethodsForEditFormByRecipeId = this.viewRecipeMethodsForEditFormByRecipeId.bind(this);
     this.createRecipeMethods = this.createRecipeMethods.bind(this);
     this.updateRecipeMethods = this.updateRecipeMethods.bind(this);
     this.deleteRecipeMethods = this.deleteRecipeMethods.bind(this);
@@ -15,16 +14,6 @@ class RecipeMethod {
       INNER JOIN nobsc_methods m ON m.method_id = rm.method_id
       WHERE rm.recipe_id = ?
       ORDER BY m.method_id
-    `;
-    const [ recipeMethods ] = await this.pool.execute(sql, [recipeId]);
-    return recipeMethods;
-  }
-
-  async viewRecipeMethodsForEditFormByRecipeId(recipeId) {
-    const sql = `
-      SELECT method_id
-      FROM nobsc_recipe_methods
-      WHERE recipe_id = ?
     `;
     const [ recipeMethods ] = await this.pool.execute(sql, [recipeId]);
     return recipeMethods;

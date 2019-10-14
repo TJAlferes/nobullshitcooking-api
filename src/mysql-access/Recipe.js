@@ -125,13 +125,7 @@ class Recipe {
         subrecipeTitles.forEach(sub => usedSubrecipes.push(sub.subrecipeTitle));
 
         final.push(
-          {
-            index: {
-              _index: 'recipes',
-              _id: recipeId,
-              //_type: 'recipe'
-            }
-          },
+          {index: {_index: 'recipes', _id: recipeId}},
           {
             ...recipe,
             ...{
@@ -144,7 +138,6 @@ class Recipe {
         );
       }
 
-      //console.log(final);
       return final;
     } catch (err) {
       console.log(err);
@@ -223,7 +216,6 @@ class Recipe {
         }
       };
 
-      console.log(final);
       return final;
     } catch (err) {
       console.log(err);
