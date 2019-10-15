@@ -139,8 +139,6 @@ const userRecipeController = {
         const recipeEquipmentPlaceholders = '(?, ?, ?),'
         .repeat(requiredEquipment.length)
         .slice(0, -1);
-        console.log(recipeEquipmentToCreate);
-        console.log(recipeEquipmentPlaceholders);
         const recipeEquipment = new RecipeEquipment(pool);
         await recipeEquipment.createRecipeEquipment(
           recipeEquipmentToCreate,
@@ -199,7 +197,6 @@ const userRecipeController = {
 
     if (ownership === "public") {
       const recipeInfoForElasticSearch = await recipe.getPublicRecipeForElasticSearchInsert(generatedId);
-      console.log(recipeInfoForElasticSearch);
       const recipeSearch = new RecipeSearch(esClient);
       await recipeSearch.saveRecipe(recipeInfoForElasticSearch);
     }
@@ -346,7 +343,6 @@ const userRecipeController = {
 
     if (ownership === "public") {
       const recipeInfoForElasticSearch = await recipe.getPublicRecipeForElasticSearchInsert(recipeId);
-      console.log(recipeInfoForElasticSearch);
       const recipeSearch = new RecipeSearch(esClient);
       await recipeSearch.saveRecipe(recipeInfoForElasticSearch);
     }
@@ -359,7 +355,6 @@ const userRecipeController = {
     const authorId = req.session.userInfo.userId;
     const ownerId = req.session.userInfo.userId;
 
-    //const plan = new Plan(pool); ********** ?????????? ********** ?????????? ********** ??????????
     const recipeMethods = new RecipeMethods(pool);
     const recipeEquipment = new RecipeEquipment(pool);
     const recipeIngredients = new RecipeIngredients(pool);
@@ -370,7 +365,7 @@ const userRecipeController = {
     await recipeEquipment.deleteRecipeEquipment(recipeId);
     await recipeIngredients.deleteRecipeIngredients(recipeId);
     await recipeSubrecipes.deleteRecipeSubrecipes(recipeId);
-    await recipeSubrecipes.deleteRecipeSubrecipesBySubrecipeId(recipeId);  // is that right?
+    await recipeSubrecipes.deleteRecipeSubrecipesBySubrecipeId(recipeId);
     await recipe.deleteMyPrivateUserRecipe(recipeId, authorId, ownerId);
 
     res.send({message: 'Recipe deleted.'});

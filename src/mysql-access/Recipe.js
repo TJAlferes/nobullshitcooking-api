@@ -461,12 +461,11 @@ class Recipe {
     try {
       const ownerId = 1;
 
-      // get main info
       const sql1 = `
         SELECT
           r.recipe_id AS recipeId,
-          r.author_id AS authorId,
           u.username AS authorName,
+          u.avatar AS authorAvatar,
           rt.recipe_type_name AS recipeTypeName,
           c.cuisine_name AS cuisineName,
           r.title AS title,
@@ -483,7 +482,6 @@ class Recipe {
         WHERE r.recipe_id = ? AND r.owner_id = ?
       `;
 
-      // get methods
       const sql2 = `
         SELECT m.method_name AS methodName
         FROM nobsc_methods m
@@ -491,7 +489,6 @@ class Recipe {
         WHERE rm.recipe_id = ?
       `;
 
-      // get equipment and their respective amounts
       const sql3 = `
         SELECT
           re.amount AS amount,
@@ -501,7 +498,6 @@ class Recipe {
         WHERE re.recipe_id = ?
       `;
 
-      // get ingredients and their respective amounts and measurements
       const sql4 = `
         SELECT
           i.ingredient_name AS ingredientName,
@@ -513,7 +509,6 @@ class Recipe {
         WHERE ri.recipe_id = ?
       `;
 
-      // get subrecipes and their respective amounts and measurements
       const sql5 = `
         SELECT
           r.title AS subrecipeTitle,
@@ -542,7 +537,6 @@ class Recipe {
         }
       };
 
-      console.log(final);
       return final;
     } catch (err) {
       console.log(err);

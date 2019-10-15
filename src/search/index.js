@@ -2,15 +2,15 @@
 //const pool = require('../lib/connections/mysqlPoolConnection');
 //const Recipe = require('../mysql-access/Recipe');
 //const Ingredient = require('../mysql-access/Ingredient');
+//const Equipment = require('../mysql-access/Equipment');
 
 const bulkUp = async function() {
   //const recipe = new Recipe(pool);
   //const ingredient = new Ingredient(pool);
+  //const equipment = new Equipment(pool);
   //const toBulk = await recipe.getAllPublicRecipesForElasticSearchBulkInsert();
   //const toBulk2 = await ingredient.getAllPublicIngredientsForElasticSearchBulkInsert();
-  //console.log(toBulk2[0]);
-  //console.log(toBulk2[1]);
-  //console.log(toBulk2[53]);
+  //const toBulk3 = await equipment.getAllPublicEquipmentForElasticSearchBulkInsert();
 
   // delete
 
@@ -92,6 +92,34 @@ const bulkUp = async function() {
       }
     });
     console.log('wasCreated2: ', wasCreated2);
+
+    const wasCreated3 = await esClient.indices.create({
+      index: "equipment",
+      body: {
+        settings: {
+          analysis: {
+            analyzer: {
+              autocomplete: {
+                tokenizer: "autocomplete",
+                filter: ["lowercase"]
+              },
+              autocomplete_search: {tokenizer: "lowercase"}
+            },
+            tokenizer: {
+              autocomplete: {type: "edge_ngram", min_gram: 2, max_gram: 10, token_chars: ["letter"]}
+            }
+          }
+        },
+        mappings: {
+          properties: {
+            equipmentId: {type: 'integer'},
+            equipmentTypeName: {type: 'keyword'},
+            equipmentName: {type: 'text', analyzer: 'autocomplete', search_analyzer: 'autocomplete_search'}
+          }
+        }
+      }
+    });
+    console.log('wasCreated3: ', wasCreated3);
   } catch (err) {
     console.log(err);
   }*/
@@ -104,8 +132,11 @@ const bulkUp = async function() {
     //const wasRefreshed = await esClient.indices.refresh({index: "recipes"});
     //console.log('wasRefreshed: ', wasRefreshed);
 
-    const wasRefreshed2 = await esClient.indices.refresh({index: "ingredients"});
-    console.log('wasRefreshed2: ', wasRefreshed2);
+    //const wasRefreshed2 = await esClient.indices.refresh({index: "ingredients"});
+    //console.log('wasRefreshed2: ', wasRefreshed2);
+
+    //const wasRefreshed3 = await esClient.indices.refresh({index: "equipment"});
+    //console.log('wasRefreshed3: ', wasRefreshed3);
   } catch (err) {
     console.log(err);
   }*/
@@ -132,8 +163,11 @@ const bulkUp = async function() {
     //const wasBulked = await esClient.bulk({index: "recipes", body: toBulk, refresh: "true"});
     //console.log('wasBulked: ', wasBulked);
 
-    const wasBulked2 = await esClient.bulk({index: "ingredients", body: toBulk2, refresh: "true"});
-    console.log('wasBulked2: ', wasBulked2);
+    //const wasBulked2 = await esClient.bulk({index: "ingredients", body: toBulk2, refresh: "true"});
+    //console.log('wasBulked2: ', wasBulked2);
+
+    //const wasBulked3 = await esClient.bulk({index: "equipment", body: toBulk3, refresh: "true"});
+    //console.log('wasBulked3: ', wasBulked3);
   } catch (err) {
     console.log(err);
   }*/
@@ -146,8 +180,11 @@ const bulkUp = async function() {
     //const wasRefreshedAgain = await esClient.indices.refresh({index: "recipes"});
     //console.log('wasRefreshedAgain: ', wasRefreshedAgain);
 
-    const wasRefreshedAgain2 = await esClient.indices.refresh({index: "ingredients"});
-    console.log('wasRefreshedAgain2: ', wasRefreshedAgain2);
+    //const wasRefreshedAgain2 = await esClient.indices.refresh({index: "ingredients"});
+    //console.log('wasRefreshedAgain2: ', wasRefreshedAgain2);
+
+    //const wasRefreshedAgain3 = await esClient.indices.refresh({index: "equipment"});
+    //console.log('wasRefreshedAgain3: ', wasRefreshedAgain3);
   } catch (err) {
     console.log(err);
   }*/
@@ -216,6 +253,26 @@ const bulkUp = async function() {
         index: "ingredients",
         body: {
           query: {match: {ingredientName: {query: "Mushr", operator: "and"}}},
+          from: 0,
+          size: 5
+        }
+      });
+      console.log('body.hits.hits: ', body.hits.hits);
+    } catch (err) {
+      console.log(err);
+    }
+  }, 10000);*/
+
+  /*let tryNumber3 = 0;
+  const repeatTries3 = setInterval(async function() {
+    if (tryNumber3 == 2) clearInterval(repeatTries3);
+    tryNumber3 = tryNumber3 + 1;
+    console.log('=========== tryNumber2: ', tryNumber3);
+    try {
+      const { body } = await esClient.search({
+        index: "equipment",
+        body: {
+          query: {match: {equipmentName: {query: "Cutti", operator: "and"}}},
           from: 0,
           size: 5
         }

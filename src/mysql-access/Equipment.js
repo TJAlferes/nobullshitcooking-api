@@ -2,6 +2,8 @@ class Equipment {
   constructor(pool) {
     this.pool = pool;
 
+    this.getAllPublicEquipmentForElasticSearchBulkInsert = this.getAllPublicEquipmentForElasticSearchBulkInsert.bind(this);
+
     // public NOBSC equipment
     this.countAllEquipment = this.countAllEquipment.bind(this);
     this.countEquipmentOfType = this.countEquipmentOfType.bind(this);
@@ -27,7 +29,37 @@ class Equipment {
     this.deleteMyPrivateUserEquipment = this.deleteMyPrivateUserEquipment.bind(this);
   }
   
+  //--------------------------------------------------------------------------
 
+  async getAllPublicEquipmentForElasticSearchBulkInsert() {
+    try {
+      const ownerId = 1;
+      const sql1 = `
+        SELECT
+          e.equipment_id AS equipmentId,
+          et.equipment_type_name AS equipmentTypeName,
+          e.equipment_name AS equipmentName,
+          e.equipment_image AS equipmentImage
+        FROM nobsc_equipment e
+        INNER JOIN nobsc_equipment_types et ON et.equipment_type_id = e.equipment_type_id
+        WHERE e.owner_id = ?
+      `;
+      const [ equipmentForBulkInsert ] = await this.pool.execute(sql1, [ownerId]);
+      let final = [];
+      for (let equipment of equipmentForBulkInsert) {  // allows the sequence of awaits we want
+        const { equipmentId } = equipment;
+        final.push(
+          {index: {_index: 'equipment', _id: equipmentId}},
+          equipment
+        );
+      }
+      return final;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  //--------------------------------------------------------------------------
 
   /*
   

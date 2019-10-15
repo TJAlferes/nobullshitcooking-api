@@ -43,4 +43,16 @@ router.post(
   catchExceptions(searchController.findPublicIngredients)
 );
 
+
+
+router.post(
+  '/autocomplete/equipment',
+  catchExceptions(searchController.autocompletePublicEquipment)
+);
+
+router.post(
+  '/find/equipment',
+  catchExceptions(searchController.findPublicEquipment)
+);
+
 module.exports = router;

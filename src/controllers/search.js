@@ -2,6 +2,7 @@ const esClient = require('../lib/connections/elasticsearchClient');
 const AllSearch = require('../elasticsearch-access/AllSearch');
 const RecipeSearch = require('../elasticsearch-access/RecipeSearch');
 const IngredientSearch = require('../elasticsearch-access/IngredientSearch');
+const EquipmentSearch = require('../elasticsearch-access/EquipmentSearch');
 
 const searchController = {
   autocompletePublicAll: async function(req, res) {
@@ -40,6 +41,19 @@ const searchController = {
     const body = req.body.body;
     const ingredientSearch = new IngredientSearch(esClient);
     const found = await ingredientSearch.findIngredients(body);
+    return res.json({found});
+  },
+
+  autocompletePublicEquipment: async function(req, res) {
+    const searchTerm = req.sanitize(req.body.searchTerm);
+    const equipmentSearch = new EquipmentSearch(esClient);
+    const found = await equipmentSearch.autoEquipment(searchTerm);
+    return res.json({found});
+  },
+  findPublicEquipment: async function(req, res) {
+    const body = req.body.body;
+    const equipmentSearch = new EquipmentSearch(esClient);
+    const found = await equipmentSearch.findEquipment(body);
     return res.json({found});
   }
 };

@@ -1,17 +1,11 @@
 class IngredientSearch {
   constructor(esClient) {
     this.client = esClient;
-    //this.countFoundIngredients = this.countFoundIngredients.bind(this);
     this.findIngredients = this.findIngredients.bind(this);
     this.autoIngredients = this.autoIngredients.bind(this);
     this.saveIngredient = this.saveIngredient.bind(this);
     this.deleteIngredient = this.deleteIngredient.bind(this);
   }
-
-  /*async countFoundIngredients(query) {  // not even needed? body.hits.total.value?
-    const res = await this.client.count({body: SimpleQueryStringBody(query)});  // change/finish
-    return res.count;
-  }*/
 
   async findIngredients(searchBody) {  // deep pagination can kill performance, set upper bounds 
     const { body } = await this.client.search({
@@ -48,6 +42,7 @@ class IngredientSearch {
     return body;
   }
 
+  // (staff only)
   async saveIngredient(ingredientInfo) {
     const {
       ingredientId,
@@ -69,6 +64,7 @@ class IngredientSearch {
     return savedIngredient;
   }
 
+  // (staff only)
   async deleteIngredient(ingredientId) {
     const deletedIngredient = await this.client.delete(
       {index: 'ingredients', id: ingredientId},
