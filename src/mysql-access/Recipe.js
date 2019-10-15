@@ -465,6 +465,7 @@ class Recipe {
       const sql1 = `
         SELECT
           r.recipe_id AS recipeId,
+          r.author_id AS authorId,
           u.username AS authorName,
           rt.recipe_type_name AS recipeTypeName,
           c.cuisine_name AS cuisineName,
@@ -474,7 +475,7 @@ class Recipe {
           r.recipe_image AS recipeImage,
           r.equipment_image AS recipeEquipmentImage,
           r.ingredients_image AS recipeIngredientsImage,
-          r.cooking_image AS recipeCookingImage,
+          r.cooking_image AS recipeCookingImage
         FROM nobsc_recipes r
         INNER JOIN nobsc_users u ON u.user_id = r.author_id
         INNER JOIN nobsc_recipe_types rt ON rt.recipe_type_id = r.recipe_type_id
@@ -541,7 +542,7 @@ class Recipe {
         }
       };
 
-      //console.log(final);
+      console.log(final);
       return final;
     } catch (err) {
       console.log(err);

@@ -2,7 +2,6 @@ const pool = require('../lib/connections/mysqlPoolConnection');
 const Recipe = require('../mysql-access/Recipe');
 const validRecipesRequest = require('../lib/validations/recipe/recipesRequest');
 const validRecipeRequest = require('../lib/validations/recipe/recipeRequest');
-const validRecipeTitlesRequest = require('../lib/validations/recipe/recipeTitlesRequest');
 
 const recipeController = {
   viewRecipe: async function(req, res, next) {
