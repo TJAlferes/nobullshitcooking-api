@@ -442,12 +442,13 @@ class Recipe {
       SELECT recipe_id, recipe_type_id, cuisine_id, title, recipe_image
       FROM nobsc_recipes
       WHERE author_id = 1 AND owner_id = 1
+      ORDER BY title ASC
     `;
     const [ allOfficialRecipes ] = await this.pool.execute(sql);
     return allOfficialRecipes;
   }
 
-  async viewAllPublicRecipes() {  // WILL GET BIG!
+  async viewAllPublicRecipes() {  // WILL GET BIG! don't call, delete this
     const sql = `
       SELECT recipe_id, recipe_type_id, cuisine_id, title, recipe_image
       FROM nobsc_recipes
@@ -657,7 +658,7 @@ class Recipe {
 
   async viewAllMyPrivateUserRecipes(ownerId) {
     const sql = `
-      SELECT recipe_id, title, recipe_image
+      SELECT recipe_id, recipe_type_id, cuisine_id, title, recipe_image
       FROM nobsc_recipes
       WHERE owner_id = ?
       ORDER BY title ASC
@@ -668,7 +669,7 @@ class Recipe {
 
   async viewAllMyPublicUserRecipes(authorId, ownerId) {
     const sql = `
-      SELECT recipe_id, title, recipe_image
+      SELECT recipe_id, recipe_type_id, cuisine_id, title, recipe_image
       FROM nobsc_recipes
       WHERE author_id = ? AND owner_id = ?
       ORDER BY title ASC

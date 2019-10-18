@@ -136,6 +136,7 @@ class Ingredient {
       SELECT ingredient_id, ingredient_type_id, ingredient_name, ingredient_image
       FROM nobsc_ingredients
       WHERE owner_id = 1
+      ORDER BY ingredient_name ASC
     `;
     const [ allOfficialIngredients ] = await this.pool.execute(sql);
     return allOfficialIngredients;

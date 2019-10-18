@@ -138,6 +138,7 @@ class Equipment {
       SELECT equipment_id, equipment_type_id, equipment_name, equipment_image
       FROM nobsc_equipment
       WHERE owner_id = 1
+      ORDER BY equipment_name ASC
     `;
     const [ allOfficialEquipment ] = await this.pool.execute(sql);
     return allOfficialEquipment;
