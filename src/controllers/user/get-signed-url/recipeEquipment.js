@@ -6,8 +6,6 @@ const AWS_NOBSC_USER_RECIPE_EQUIPMENT_S3_BUCKET = process.env.AWS_NOBSC_USER_REC
 
 module.exports = async function(req, res) {
   const fileNameFullSize = `${req.session.userInfo.username}-${uuidv4()}`;
-  const fileNameThumbSize = `${fileNameFullSize}-thumb`;
-  const fileNameTinySize = `${fileNameFullSize}-tiny`;
   const fileType = req.sanitize(req.body.fileType);
 
   const s3 = new AWS.S3({
@@ -30,25 +28,9 @@ module.exports = async function(req, res) {
     Expires: 50
   });
 
-  const signatureThumbSize = await getSignedUrlPromise('putObject', {
-    Bucket: AWS_NOBSC_USER_RECIPE_EQUIPMENT_S3_BUCKET,
-    Key: fileNameThumbSize,
-    ContentType: fileType,
-    Expires: 50
-  });
-
-  const signatureTinySize = await getSignedUrlPromise('putObject', {
-    Bucket: AWS_NOBSC_USER_RECIPE_EQUIPMENT_S3_BUCKET,
-    Key: fileNameTinySize,
-    ContentType: fileType,
-    Expires: 50
-  });
-
   res.json({
     success: true,
     signedRequestFullSize: signatureFullSize,
-    signedRequestThumbSize: signatureThumbSize,
-    signedRequestTinySize: signatureTinySize,
     urlFullSize: fileNameFullSize
   });
 };
