@@ -2,7 +2,7 @@ const pool = require('../../lib/connections/mysqlPoolConnection');
 const esClient = require('../../lib/connections/elasticsearchClient');
  
 const Recipe = require('../../mysql-access/Recipe');
-const RecipeMethods = require('../../mysql-access/RecipeMethod');
+const RecipeMethod = require('../../mysql-access/RecipeMethod');
 const RecipeEquipment = require('../../mysql-access/RecipeEquipment');
 const RecipeIngredients = require('../../mysql-access/RecipeIngredient');
 const RecipeSubrecipes = require('../../mysql-access/RecipeSubrecipe');
@@ -116,8 +116,8 @@ const userRecipeController = {
         const recipeMethodsPlaceholders = '(?, ?),'
         .repeat(requiredMethods.length)
         .slice(0, -1);
-        const recipeMethods = new RecipeMethods(pool);
-        await recipeMethods.createRecipeMethods(
+        const recipeMethod = new RecipeMethod(pool);
+        await recipeMethod.createRecipeMethods(
           recipeMethodsToCreate,
           recipeMethodsPlaceholders
         );
@@ -359,13 +359,13 @@ const userRecipeController = {
     const authorId = req.session.userInfo.userId;
     const ownerId = req.session.userInfo.userId;
 
-    const recipeMethods = new RecipeMethods(pool);
+    const recipeMethod = new RecipeMethod(pool);
     const recipeEquipment = new RecipeEquipment(pool);
     const recipeIngredients = new RecipeIngredients(pool);
     const recipeSubrecipes = new RecipeSubrecipes(pool);
     const recipe = new Recipe(pool);
 
-    await recipeMethods.deleteRecipeMethods(recipeId);
+    await recipeMethod.deleteRecipeMethods(recipeId);
     await recipeEquipment.deleteRecipeEquipment(recipeId);
     await recipeIngredients.deleteRecipeIngredients(recipeId);
     await recipeSubrecipes.deleteRecipeSubrecipes(recipeId);
