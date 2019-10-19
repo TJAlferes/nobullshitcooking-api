@@ -780,6 +780,7 @@ class Recipe {
   async getInfoToEditMyUserRecipe(recipeId, authorId, ownerId) {
     const sql1 = `
       SELECT
+        r.recipe_id AS recipeId,
         r.recipe_type_id AS recipeTypeId,
         r.cuisine_id AS cuisineId,
         r.owner_id AS ownerId,
@@ -883,6 +884,7 @@ class Recipe {
       WHERE recipe_id = ? AND author_id = ? AND owner_id = ?
       LIMIT 1
     `;
+    console.log('recipeId: ', recipeId);
     const [ updatedRecipe ] = await this.pool.execute(sql, [
       recipeTypeId,
       cuisineId,

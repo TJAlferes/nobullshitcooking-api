@@ -205,7 +205,7 @@ const userRecipeController = {
   },
 
   updateMyUserRecipe: async function(req, res) {
-    const recipeId = req.sanitize(req.body.recipeInfo.recipeId);
+    const recipeId = Number(req.sanitize(req.body.recipeInfo.recipeId));
     const recipeTypeId = Number(req.sanitize(req.body.recipeInfo.recipeTypeId));
     const cuisineId = Number(req.sanitize(req.body.recipeInfo.cuisineId));
     const title = req.sanitize(req.body.recipeInfo.title);
@@ -223,6 +223,10 @@ const userRecipeController = {
     const authorId = req.session.userInfo.userId;
     const ownership = req.sanitize(req.body.recipeInfo.ownership);
     const ownerId = (ownership === "private") ? req.session.userInfo.userId : 1;
+
+    if (recipeId == "" || typeof recipeId === "undefined") {
+      return res.send({message: 'Invalid recipe ID!'});
+    }
 
     const recipeToUpdateWith = validRecipeEntity({
       recipeTypeId,
