@@ -244,13 +244,13 @@ const userRecipeController = {
     if (requiredMethods !== "none") {
       if (requiredMethods.map(rM => 
         validRecipeMethodsEntity({
-          recipeId: generatedId,
+          recipeId,
           methodId: rM.methodId
         })
       )) {
         recipeMethodsToUpdateWith = [];
         requiredMethods.map(rM => {
-          recipeMethodsToUpdateWith.push(generatedId, rM.methodId)
+          recipeMethodsToUpdateWith.push(recipeId, rM.methodId)
         });
       }
     }
@@ -268,14 +268,14 @@ const userRecipeController = {
     if (requiredEquipment !== "none") {
       if (requiredEquipment.map(rE =>
         validRecipeEquipmentEntity({
-          recipeId: generatedId,
+          recipeId,
           equipmentId: rE.equipment,
           amount: rE.amount
         })
       )) {
         recipeEquipmentToUpdateWith = [];
         requiredEquipment.map(rE => {
-          recipeEquipmentToUpdateWith.push(generatedId, rE.equipment, rE.amount)
+          recipeEquipmentToUpdateWith.push(recipeId, rE.equipment, rE.amount)
         });
       }
     }
@@ -293,7 +293,7 @@ const userRecipeController = {
     if (requiredIngredients !== "none") {
       if (requiredIngredients.map(rI =>
         validRecipeIngredientsEntity({
-          recipeId: generatedId,
+          recipeId,
           ingredientId: rI.ingredient,
           amount: rI.amount,
           measurementId: rI.unit
@@ -301,7 +301,7 @@ const userRecipeController = {
       )) {
         recipeIngredientsToUpdateWith = [];
         requiredIngredients.map(rI => {
-          recipeIngredientsToUpdateWith.push(generatedId, rI.ingredient, rI.amount, rI.unit);
+          recipeIngredientsToUpdateWith.push(recipeId, rI.ingredient, rI.amount, rI.unit);
         });
       }
     }
@@ -319,7 +319,7 @@ const userRecipeController = {
     if (requiredSubrecipes !== "none") {
       if (requiredSubrecipes.map(rS =>
         validRecipeSubrecipesEntity({
-          recipeId: generatedId,
+          recipeId,
           subrecipeId: rS.subrecipe,
           amount: rS.amount,
           measurementId: rS.unit
@@ -327,7 +327,7 @@ const userRecipeController = {
       )) {
         recipeSubrecipesToUpdateWith = [];
         requiredSubrecipes.map(rS => {
-          recipeSubrecipesToUpdateWith.push(generatedId, rS.subrecipe, rS.amount, rS.unit);
+          recipeSubrecipesToUpdateWith.push(recipeId, rS.subrecipe, rS.amount, rS.unit);
         });
       }
     }
