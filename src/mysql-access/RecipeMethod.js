@@ -29,6 +29,8 @@ class RecipeMethod {
   }
 
   async updateRecipeMethods(recipeMethods, recipeMethodsPlaceholders, recipeId) {
+    console.log('recipeMethods: ', recipeMethods);
+    console.log('recipeMethodsPlaceholders: ', recipeMethodsPlaceholders);
     const sql1 = `
       DELETE
       FROM nobsc_recipe_methods

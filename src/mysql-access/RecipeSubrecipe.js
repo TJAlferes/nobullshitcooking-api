@@ -31,6 +31,8 @@ class RecipeSubrecipe {
   }
 
   async updateRecipeSubrecipes(recipeSubrecipes, recipeSubrecipesPlaceholders, recipeId) {
+    console.log('recipeSubrecipes: ', recipeSubrecipes);
+    console.log('recipeSubrecipesPlaceholders: ', recipeSubrecipesPlaceholders);
     const sql1 = `
       DELETE
       FROM nobsc_recipe_subrecipes

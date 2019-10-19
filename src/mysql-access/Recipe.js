@@ -867,6 +867,7 @@ class Recipe {
       ingredientsImage,
       cookingImage,
     } = recipeToUpdateWith;
+    console.log('recipeToUpdateWith: ', recipeToUpdateWith);
     const sql = `
       UPDATE nobsc_recipes
       SET

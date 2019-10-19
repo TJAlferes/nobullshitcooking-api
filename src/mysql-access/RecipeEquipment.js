@@ -30,6 +30,8 @@ class RecipeEquipment {
   }
 
   async updateRecipeEquipment(recipeEquipment, recipeEquipmentPlaceholders, recipeId) {
+    console.log('recipeEquipment: ', recipeEquipment);
+    console.log('recipeEquipmentPlaceholders: ', recipeEquipmentPlaceholders);
     const sql1 = `
       DELETE
       FROM nobsc_recipe_equipment
