@@ -4,6 +4,7 @@ const validIngredientsRequest = require('../lib/validations/ingredient/ingredien
 const validIngredientRequest = require('../lib/validations/ingredient/ingredientRequest');
 
 const ingredientController = {
+  // We will probably delete this one, because ElasticSearch handles this now
   viewIngredient: async function(req, res, next) {  // split into three methods?
     try {
       const types = (req.body.types) ? req.body.types : [];
@@ -49,17 +50,12 @@ const ingredientController = {
     const rows = await ingredient.viewAllOfficialIngredients();
     res.send(rows);
   },
-  viewIngredientDetail: async function(req, res, next) {
-    try {
-      const ingredientId = Number(req.sanitize(req.params.ingredientId));
-      validIngredientRequest({ingredientId});
-      const ingredient = new Ingredient(pool);
-      const [ row ] = await ingredient.viewIngredientById(ingredientId);
-      res.send(row);
-      next();
-    } catch(err) {
-      next(err);
-    }
+  viewIngredientDetail: async function(req, res) {
+    const ingredientId = Number(req.sanitize(req.params.ingredientId));
+    validIngredientRequest({ingredientId});
+    const ingredient = new Ingredient(pool);
+    const [ row ] = await ingredient.viewIngredientById(ingredientId);
+    res.send(row);
   }
 };
 

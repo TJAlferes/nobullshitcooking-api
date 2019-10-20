@@ -5,6 +5,11 @@ class Recipe {
     this.getAllPublicRecipesForElasticSearchBulkInsert = this.getAllPublicRecipesForElasticSearchBulkInsert.bind(this);
     this.getPublicRecipeForElasticSearchInsert = this.getPublicRecipeForElasticSearchInsert.bind(this);
 
+
+
+    // We will probably delete all this, because ElasticSearch handles it now
+    // (From here...)
+    /*
     this.countAllRecipes = this.countAllRecipes.bind(this);
     this.countRecipesOfType = this.countRecipesOfType.bind(this);
     this.countRecipesOfTypes = this.countRecipesOfTypes.bind(this);
@@ -24,26 +29,26 @@ class Recipe {
     this.viewRecipesOfCuisinesAndType = this.viewRecipesOfCuisinesAndType.bind(this);
     this.viewRecipesOfCuisineAndTypes = this.viewRecipesOfCuisineAndTypes.bind(this);
     this.viewRecipesOfCuisineAndType = this.viewRecipesOfCuisineAndType.bind(this);
+    */
+    // (... to here.)
+
+
 
     this.viewAllOfficialRecipes = this.viewAllOfficialRecipes.bind(this);
     this.viewAllPublicRecipes = this.viewAllPublicRecipes.bind(this);
-
     this.viewRecipeById = this.viewRecipeById.bind(this);
-
     this.createRecipe = this.createRecipe.bind(this);
-
     this.updateRecipe = this.updateRecipe.bind(this);
     this.deleteRecipe = this.deleteRecipe.bind(this);
+
+
 
     this.viewAllMyPrivateUserRecipes = this.viewAllMyPrivateUserRecipes.bind(this);
     this.viewAllMyPublicUserRecipes = this.viewAllMyPublicUserRecipes.bind(this);
     this.viewMyPrivateUserRecipe = this.viewMyPrivateUserRecipe.bind(this);
     this.viewMyPublicUserRecipe = this.viewMyPublicUserRecipe.bind(this);
-
     this.getInfoToEditMyUserRecipe = this.getInfoToEditMyUserRecipe.bind(this);
-
     this.updateMyUserRecipe = this.updateMyUserRecipe.bind(this);
-
     this.deleteMyPrivateUserRecipe = this.deleteMyPrivateUserRecipe.bind(this);
     this.disownMyPublicUserRecipe = this.disownMyPublicUserRecipe.bind(this);
   }
@@ -221,6 +226,10 @@ class Recipe {
   }
 
   //--------------------------------------------------------------------------
+
+
+
+  /*
 
   async countAllRecipes() {
     const sql = `
@@ -437,6 +446,12 @@ class Recipe {
     return allRecipes;
   }
 
+  */
+
+
+
+  //--------------------------------------------------------------------------
+
   async viewAllOfficialRecipes() {
     const sql = `
       SELECT recipe_id, recipe_type_id, cuisine_id, title, recipe_image
@@ -544,8 +559,6 @@ class Recipe {
     }
   }
 
-  //--------------------------------------------------------------------------
-
   async createRecipe(recipeToCreate) {
     const {
       recipeTypeId,
@@ -592,8 +605,6 @@ class Recipe {
     ]);
     return createdRecipe;
   }
-
-  //--------------------------------------------------------------------------
   
   async updateRecipe(recipeToUpdateWith, recipeId) {
     const {
@@ -654,7 +665,11 @@ class Recipe {
     return deletedRecipe;
   }
 
+
+
   //--------------------------------------------------------------------------
+
+
 
   async viewAllMyPrivateUserRecipes(ownerId) {
     const sql = `
@@ -775,8 +790,6 @@ class Recipe {
     return myPublicUserRecipe;
   }
 
-
-
   async getInfoToEditMyUserRecipe(recipeId, authorId, ownerId) {
     const sql1 = `
       SELECT
@@ -851,8 +864,6 @@ class Recipe {
     
     return final;
   }
-
-
 
   async updateMyUserRecipe(recipeToUpdateWith, recipeId) {
     const {

@@ -3,6 +3,8 @@ const uuidv4 = require('uuid/v4');
 //const pool = require('../data-access/dbPoolConnection');
 //const User = require('../data-access/user/User');
 
+// NOTE: Notifications are not implemented yet, and possibly never will be
+
 const notificationController = {
   viewNotificationForUser: async function(req, res, next) {
     try {

@@ -4,95 +4,70 @@ const Ingredient = require('../../mysql-access/Ingredient');
 const validIngredientEntity = require('../../lib/validations/ingredient/ingredientEntity');
 
 const userIngredientController = {
-  viewAllMyPrivateUserIngredients: async function(req, res, next) {
-    try {
-      const ownerId = req.session.userInfo.userId;
-      const ingredient = new Ingredient(pool);
-      const rows = await ingredient.viewAllMyPrivateUserIngredients(ownerId);
-      res.send(rows);
-      next();
-    } catch(err) {
-      next(err);
-    }
+  viewAllMyPrivateUserIngredients: async function(req, res) {
+    const ownerId = req.session.userInfo.userId;
+    const ingredient = new Ingredient(pool);
+    const rows = await ingredient.viewAllMyPrivateUserIngredients(ownerId);
+    res.send(rows);
   },
-  viewMyPrivateUserIngredient: async function(req, res, next) {
-    try {
-      const ingredientId = req.sanitize(req.body.ingredientId);
-      const ownerId = req.session.userInfo.userId;
-      const ingredient = new Ingredient(pool);
-      const [ row ] = await ingredient.viewMyPrivateUserIngredient(ownerId, ingredientId);
-      res.send(row);
-      next();
-    } catch(err) {
-      next(err);
-    }
+  viewMyPrivateUserIngredient: async function(req, res) {
+    const ingredientId = Number(req.sanitize(req.body.ingredientId));
+    const ownerId = req.session.userInfo.userId;
+    const ingredient = new Ingredient(pool);
+    const [ row ] = await ingredient.viewMyPrivateUserIngredient(ownerId, ingredientId);
+    res.send(row);
   },
-  createMyPrivateUserIngredient: async function(req, res, next) {
-    try {
-      const ingredientTypeId = Number(req.sanitize(req.body.ingredientInfo.ingredientTypeId));
-      const ingredientName = req.sanitize(req.body.ingredientInfo.ingredientName);
-      const ingredientDescription = req.sanitize(req.body.ingredientInfo.description);
-      const ingredientImage = req.sanitize(req.body.ingredientInfo.ingredientImage);
+  createMyPrivateUserIngredient: async function(req, res) {
+    const ingredientTypeId = Number(req.sanitize(req.body.ingredientInfo.ingredientTypeId));
+    const ingredientName = req.sanitize(req.body.ingredientInfo.ingredientName);
+    const ingredientDescription = req.sanitize(req.body.ingredientInfo.description);
+    const ingredientImage = req.sanitize(req.body.ingredientInfo.ingredientImage);
 
-      const authorId = req.session.userInfo.userId;
-      const ownerId = req.session.userInfo.userId;
+    const authorId = req.session.userInfo.userId;
+    const ownerId = req.session.userInfo.userId;
 
-      const ingredientToCreate = validIngredientEntity({
-        ingredientTypeId,
-        authorId,
-        ownerId,
-        ingredientName,
-        ingredientDescription,
-        ingredientImage
-      });
-      const ingredient = new Ingredient(pool);
-      await ingredient.createMyPrivateUserIngredient(ingredientToCreate);
-      res.send({message: 'Ingredient created'});
-      next();
-    } catch(err) {
-      next(err);
-    }
+    const ingredientToCreate = validIngredientEntity({
+      ingredientTypeId,
+      authorId,
+      ownerId,
+      ingredientName,
+      ingredientDescription,
+      ingredientImage
+    });
+    const ingredient = new Ingredient(pool);
+    await ingredient.createMyPrivateUserIngredient(ingredientToCreate);
+    res.send({message: 'Ingredient created'});
   },
-  updateMyPrivateUserIngredient: async function(req, res, next) {
-    try {
-      const ingredientId = req.sanitize(req.body.ingredientInfo.ingredientId);
-      const ingredientTypeId = Number(req.sanitize(req.body.ingredientInfo.ingredientTypeId));
-      const ingredientName = req.sanitize(req.body.ingredientInfo.ingredientName);
-      const ingredientDescription = req.sanitize(req.body.ingredientInfo.description);
-      const ingredientImage = req.sanitize(req.body.ingredientInfo.ingredientImage);
+  updateMyPrivateUserIngredient: async function(req, res) {
+    const ingredientId = Number(req.sanitize(req.body.ingredientInfo.ingredientId));
+    const ingredientTypeId = Number(req.sanitize(req.body.ingredientInfo.ingredientTypeId));
+    const ingredientName = req.sanitize(req.body.ingredientInfo.ingredientName);
+    const ingredientDescription = req.sanitize(req.body.ingredientInfo.description);
+    const ingredientImage = req.sanitize(req.body.ingredientInfo.ingredientImage);
 
-      const authorId = req.session.userInfo.userId;
-      const ownerId = req.session.userInfo.userId;
+    const authorId = req.session.userInfo.userId;
+    const ownerId = req.session.userInfo.userId;
 
-      const ingredientToUpdateWith = validIngredientEntity({
-        ingredientTypeId,
-        authorId,
-        ownerId,
-        ingredientName,
-        ingredientDescription,
-        ingredientImage
-      });
-      const ingredient = new Ingredient(pool);
-      await ingredient.updateMyPrivateUserIngredient(ingredientToUpdateWith, ingredientId);
-      res.send({message: 'Ingredient updated'});
-      next();
-    } catch(err) {
-      next(err);
-    }
+    const ingredientToUpdateWith = validIngredientEntity({
+      ingredientTypeId,
+      authorId,
+      ownerId,
+      ingredientName,
+      ingredientDescription,
+      ingredientImage
+    });
+    const ingredient = new Ingredient(pool);
+    await ingredient.updateMyPrivateUserIngredient(ingredientToUpdateWith, ingredientId);
+    res.send({message: 'Ingredient updated'});
   },
-  deleteMyPrivateUserIngredient: async function(req, res, next) {
-    try {
-      const ingredientId = req.sanitize(req.body.ingredientId);
-      const ownerId = req.session.userInfo.userId;
-      const recipeIngredient = new RecipeIngredient(pool);
-      const ingredient = new Ingredient(pool);
-      await recipeIngredient.deleteRecipeIngredientsByIngredientId(ingredientId);
-      await ingredient.deleteMyPrivateUserIngredient(ownerId, ingredientId);
-      res.send({message: 'Ingredient deleted'});
-      next();
-    } catch(err) {
-      next(err);
-    }
+  deleteMyPrivateUserIngredient: async function(req, res) {
+    const ingredientId = Number(req.sanitize(req.body.ingredientId));
+    const ownerId = req.session.userInfo.userId;
+    const recipeIngredient = new RecipeIngredient(pool);
+    const ingredient = new Ingredient(pool);
+    await recipeIngredient.deleteRecipeIngredientsByIngredientId(ingredientId);
+    await ingredient.deleteMyPrivateUserIngredient(ownerId, ingredientId);
+    res.send({message: 'Ingredient deleted'});
   }
 };
 

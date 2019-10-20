@@ -4,6 +4,7 @@ const validRecipesRequest = require('../lib/validations/recipe/recipesRequest');
 const validRecipeRequest = require('../lib/validations/recipe/recipeRequest');
 
 const recipeController = {
+  // We will probably delete this one, because ElasticSearch handles this now
   viewRecipe: async function(req, res, next) {
     try {
       const types = (req.body.types) ? req.body.types : [];
