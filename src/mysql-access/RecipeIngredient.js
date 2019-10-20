@@ -31,8 +31,6 @@ class RecipeIngredient {
   }
 
   async updateRecipeIngredients(recipeIngredients, recipeIngredientsPlaceholders, recipeId) {
-    console.log('recipeIngredients: ', recipeIngredients);
-    console.log('recipeIngredientsPlaceholders: ', recipeIngredientsPlaceholders);
     const sql1 = `
       DELETE
       FROM nobsc_recipe_ingredients
@@ -49,7 +47,7 @@ class RecipeIngredient {
     try {
       await connection.query(sql1, [recipeId]);
       if (sql2 !== "none") {
-        const [ updatedRecipeIngredients ] = await connection.query(sql2, [recipeIngredients]);
+        const [ updatedRecipeIngredients ] = await connection.query(sql2, recipeIngredients);
         await connection.commit();
         return updatedRecipeIngredients;
       } else {

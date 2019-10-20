@@ -31,8 +31,6 @@ class RecipeSubrecipe {
   }
 
   async updateRecipeSubrecipes(recipeSubrecipes, recipeSubrecipesPlaceholders, recipeId) {
-    console.log('recipeSubrecipes: ', recipeSubrecipes);
-    console.log('recipeSubrecipesPlaceholders: ', recipeSubrecipesPlaceholders);
     const sql1 = `
       DELETE
       FROM nobsc_recipe_subrecipes
@@ -49,7 +47,7 @@ class RecipeSubrecipe {
     try {
       await connection.query(sql1, [recipeId]);
       if (sql2 !== "none") {
-        const [ updatedRecipeSubrecipes ] = await connection.query(sql2, [recipeSubrecipes]);
+        const [ updatedRecipeSubrecipes ] = await connection.query(sql2, recipeSubrecipes);
         await connection.commit();
         return updatedRecipeSubrecipes;
       } else {

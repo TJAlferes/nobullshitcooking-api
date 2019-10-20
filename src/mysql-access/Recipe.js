@@ -868,7 +868,6 @@ class Recipe {
       ingredientsImage,
       cookingImage,
     } = recipeToUpdateWith;
-    console.log('recipeToUpdateWith: ', recipeToUpdateWith);
     const sql = `
       UPDATE nobsc_recipes
       SET
@@ -884,7 +883,6 @@ class Recipe {
       WHERE recipe_id = ? AND author_id = ? AND owner_id = ?
       LIMIT 1
     `;
-    console.log('recipeId: ', recipeId);
     const [ updatedRecipe ] = await this.pool.execute(sql, [
       recipeTypeId,
       cuisineId,

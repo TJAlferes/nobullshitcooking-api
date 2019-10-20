@@ -4,8 +4,8 @@ const esClient = require('../../lib/connections/elasticsearchClient');
 const Recipe = require('../../mysql-access/Recipe');
 const RecipeMethod = require('../../mysql-access/RecipeMethod');
 const RecipeEquipment = require('../../mysql-access/RecipeEquipment');
-const RecipeIngredients = require('../../mysql-access/RecipeIngredient');
-const RecipeSubrecipes = require('../../mysql-access/RecipeSubrecipe');
+const RecipeIngredient = require('../../mysql-access/RecipeIngredient');
+const RecipeSubrecipe = require('../../mysql-access/RecipeSubrecipe');
 const RecipeSearch = require('../../elasticsearch-access/RecipeSearch');
 
 const validRecipeEntity = require('../../lib/validations/recipe/recipeEntity');
@@ -163,8 +163,8 @@ const userRecipeController = {
         const recipeIngredientsPlaceholders = '(?, ?, ?, ?),'
         .repeat(requiredIngredients.length)
         .slice(0, -1);
-        const recipeIngredients = new RecipeIngredients(pool);
-        await recipeIngredients.createRecipeIngredients(
+        const recipeIngredient = new RecipeIngredient(pool);
+        await recipeIngredient.createRecipeIngredients(
           recipeIngredientsToCreate,
           recipeIngredientsPlaceholders
         );
@@ -187,8 +187,8 @@ const userRecipeController = {
         const recipeSubrecipesPlaceholders = '(?, ?, ?, ?),'
         .repeat(requiredSubrecipes.length)
         .slice(0, -1);
-        const recipeSubrecipes = new RecipeSubrecipes(pool);
-        await recipeSubrecipes.createRecipeSubrecipes(
+        const recipeSubrecipe = new RecipeSubrecipe(pool);
+        await recipeSubrecipe.createRecipeSubrecipes(
           recipeSubrecipesToCreate,
           recipeSubrecipesPlaceholders
         );
@@ -361,15 +361,15 @@ const userRecipeController = {
 
     const recipeMethod = new RecipeMethod(pool);
     const recipeEquipment = new RecipeEquipment(pool);
-    const recipeIngredients = new RecipeIngredients(pool);
-    const recipeSubrecipes = new RecipeSubrecipes(pool);
+    const recipeIngredient = new RecipeIngredient(pool);
+    const recipeSubrecipe = new RecipeSubrecipe(pool);
     const recipe = new Recipe(pool);
 
     await recipeMethod.deleteRecipeMethods(recipeId);
     await recipeEquipment.deleteRecipeEquipment(recipeId);
-    await recipeIngredients.deleteRecipeIngredients(recipeId);
-    await recipeSubrecipes.deleteRecipeSubrecipes(recipeId);
-    await recipeSubrecipes.deleteRecipeSubrecipesBySubrecipeId(recipeId);
+    await recipeIngredient.deleteRecipeIngredient(recipeId);
+    await recipeSubrecipe.deleteRecipeSubrecipes(recipeId);
+    await recipeSubrecipe.deleteRecipeSubrecipesBySubrecipeId(recipeId);
     await recipe.deleteMyPrivateUserRecipe(recipeId, authorId, ownerId);
 
     res.send({message: 'Recipe deleted.'});

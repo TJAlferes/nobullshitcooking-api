@@ -29,8 +29,6 @@ class RecipeMethod {
   }
 
   async updateRecipeMethods(recipeMethods, recipeMethodsPlaceholders, recipeId) {
-    console.log('recipeMethods: ', recipeMethods);
-    console.log('recipeMethodsPlaceholders: ', recipeMethodsPlaceholders);
     const sql1 = `
       DELETE
       FROM nobsc_recipe_methods
@@ -47,7 +45,7 @@ class RecipeMethod {
     try {
       await connection.query(sql1, [recipeId]);
       if (sql2 !== "none") {
-        const [ updatedRecipeMethods ] = await connection.query(sql2, [recipeMethods]);
+        const [ updatedRecipeMethods ] = await connection.query(sql2, recipeMethods);
         await connection.commit();
         return updatedRecipeMethods;
       } else {
