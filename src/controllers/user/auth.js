@@ -54,6 +54,8 @@ const userAuthController = {
   },
 
   /*verify: async function(req, res) {
+    // TO DO: implement this!
+    
     const email = req.sanitize(req.body.userInfo.email);
     const pass = req.sanitize(req.body.userInfo.password);
     const confirmationCode = req.sanitize(req.body.userInfo.confirmationCode);
@@ -124,7 +126,11 @@ const userAuthController = {
     const user = new User(pool);
     await user.setAvatar(avatar, userId);
     res.send({message: 'Avatar set.'});
-  }
+  },
+
+  /*deleteAccount: async function(req, res) {
+    // TO DO: implement this!
+  }*/
 };
 
 module.exports = userAuthController;

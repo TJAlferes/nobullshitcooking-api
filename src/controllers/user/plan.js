@@ -18,7 +18,7 @@ const userPlanController = {
   },
   createMyPrivatePlan: async function(req, res) {
     const planName = req.sanitize(req.body.planInfo.planName);
-    const planData = req.sanitize(req.body.planInfo.planData);
+    const planData = req.body.planInfo.planData;
 
     const authorId = req.session.userInfo.userId;
     const ownerId = req.session.userInfo.userId;
@@ -31,7 +31,7 @@ const userPlanController = {
   updateMyPrivatePlan: async function(req, res) {
     const planId = Number(req.sanitize(req.body.planInfo.planId));
     const planName = req.sanitize(req.body.planInfo.planName);
-    const planData = req.sanitize(req.body.planInfo.planData);
+    const planData = req.body.planInfo.planData;
 
     const authorId = req.session.userInfo.userId;
     const ownerId = req.session.userInfo.userId;

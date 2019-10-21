@@ -31,7 +31,7 @@ const userRecipeController = {
   },
 
   viewMyPrivateUserRecipe: async function(req, res) {
-    const recipeId = req.sanitize(req.body.recipeId);
+    const recipeId = Number(req.sanitize(req.body.recipeId));
     const ownerId = req.session.userInfo.userId;
     const recipe = new Recipe(pool);
     const [ row ] = await recipe.viewMyPrivateUserRecipe(recipeId, ownerId);
@@ -39,7 +39,7 @@ const userRecipeController = {
   },
 
   viewMyPublicUserRecipe: async function(req, res) {
-    const recipeId = req.sanitize(req.body.recipeId);
+    const recipeId = Number(req.sanitize(req.body.recipeId));
     const authorId = req.session.userInfo.userId;
     const ownerId = 1;
     const recipe = new Recipe(pool);
@@ -48,7 +48,7 @@ const userRecipeController = {
   },
 
   getInfoToEditMyPrivateUserRecipe: async function(req, res) {
-    const recipeId = req.sanitize(req.body.recipeId);
+    const recipeId = Number(req.sanitize(req.body.recipeId));
     const authorId = req.session.userInfo.userId;
     const ownerId = req.session.userInfo.userId;
     const recipe = new Recipe(pool);
@@ -57,7 +57,7 @@ const userRecipeController = {
   },
 
   getInfoToEditMyPublicUserRecipe: async function(req, res) {
-    const recipeId = req.sanitize(req.body.recipeId);
+    const recipeId = Number(req.sanitize(req.body.recipeId));
     const authorId = req.session.userInfo.userId;
     const ownerId = 1;
     const recipe = new Recipe(pool);
@@ -355,7 +355,7 @@ const userRecipeController = {
   },
 
   deleteMyPrivateUserRecipe: async function(req, res) {
-    const recipeId = req.sanitize(req.body.recipeId);
+    const recipeId = Number(req.sanitize(req.body.recipeId));
     const authorId = req.session.userInfo.userId;
     const ownerId = req.session.userInfo.userId;
 
@@ -377,7 +377,7 @@ const userRecipeController = {
 
   disownMyPublicUserRecipe: async function(req, res) {
     const newAuthorId = 2;
-    const recipeId = req.sanitize(req.body.recipeId);
+    const recipeId = Number(req.sanitize(req.body.recipeId));
     const authorId = req.session.userInfo.userId;
     const recipe = new Recipe(pool);
     await recipe.disownMyPublicUserRecipe(newAuthorId, recipeId, authorId);

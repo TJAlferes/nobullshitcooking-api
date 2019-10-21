@@ -44,16 +44,14 @@ class Plan {
   }
 
   async updateMyPrivatePlan(planToUpdateWith, planId) {
-    const { authorId, ownerId, planName, planData } = planToUpdateWith;
+    const { planName, planData, ownerId } = planToUpdateWith;
     const sql = `
       UPDATE nobsc_plans
-      SET author_id = ?, owner_id = ?, plan_name = ?, plan_data = ?
+      SET plan_name = ?, plan_data = ?
       WHERE owner_id = ? AND plan_id = ?
       LIMIT 1
     `;
     const [ updatedPlan ] = await this.pool.execute(sql, [
-      authorId,
-      ownerId,
       planName,
       planData,
       ownerId,
