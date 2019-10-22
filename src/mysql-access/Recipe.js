@@ -164,7 +164,7 @@ class Recipe {
         INNER JOIN nobsc_users u ON u.user_id = r.author_id
         INNER JOIN nobsc_recipe_types rt ON rt.recipe_type_id = r.recipe_type_id
         INNER JOIN nobsc_cuisines c ON c.cuisine_id = r.cuisine_id
-        WHERE r.owner_id = ?
+        WHERE r.recipe_id = ? AND r.owner_id = ?
       `;
       const sql2 = `
         SELECT m.method_name AS methodName
@@ -191,7 +191,7 @@ class Recipe {
         WHERE rs.recipe_id = ?
       `;
 
-      const [ recipeForInsert ] = await this.pool.execute(sql1, [ownerId]);
+      const [ recipeForInsert ] = await this.pool.execute(sql1, [recipeId, ownerId]);
 
       // remember to account for one or multiple
       const [ methodNames ] = await this.pool.execute(sql2, [recipeId]);
@@ -209,8 +209,9 @@ class Recipe {
       ingredientNames.forEach(ing => usedIngredients.push(ing.ingredientName));
       subrecipeTitles.forEach(sub => usedSubrecipes.push(sub.subrecipeTitle));
 
+      const [ recipeForInsertDestructured ] = recipeForInsert;
       const final = {
-        ...recipeForInsert,
+        ...{...recipeForInsertDestructured},
         ...{
           methodNames: usedMethods,
           equipmentNames: usedEquipment,
@@ -219,7 +220,7 @@ class Recipe {
         }
       };
 
-      return final;
+      return final; 
     } catch (err) {
       console.log(err);
     }

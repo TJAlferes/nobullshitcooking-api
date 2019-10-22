@@ -4,7 +4,7 @@ class RecipeSearch {
     this.findRecipes = this.findRecipes.bind(this);
     this.autoRecipes = this.autoRecipes.bind(this);
     this.saveRecipe = this.saveRecipe.bind(this);
-    this.deleteRecipe = this.deleteRecipe.bind(this);
+    //this.deleteRecipe = this.deleteRecipe.bind(this);
   }
 
   async findRecipes(searchBody) {  // deep pagination can kill performance, set upper bounds 
@@ -60,7 +60,7 @@ class RecipeSearch {
       ingredientNames,
       subrecipeNames
     } = recipeInfo;
-    const savedRecipe = await this.client.index({
+    await this.client.index({
       index: 'recipes',
       id: recipeId,
       body: {
@@ -79,17 +79,17 @@ class RecipeSearch {
       }
     });
     await this.client.indices.refresh({index: 'recipes'});
-    return savedRecipe;
   }
 
-  async deleteRecipe(recipeId) {
+  // may not use
+  /*async deleteRecipe(recipeId) {
     const deletedRecipe = await this.client.delete(
       {index: 'recipes', id: recipeId},
       {ignore: [404]}
     );
     await this.client.indices.refresh({index: 'recipes'});
-    return deletedRecipe;
-  }
+    //return deletedRecipe;
+  }*/
 }
 
 module.exports = RecipeSearch;

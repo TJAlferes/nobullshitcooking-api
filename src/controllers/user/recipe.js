@@ -195,7 +195,7 @@ const userRecipeController = {
       }
     }
 
-    if (ownership === "public") {
+    if (ownerId === 1) {
       const recipeInfoForElasticSearch = await recipe.getPublicRecipeForElasticSearchInsert(generatedId);
       const recipeSearch = new RecipeSearch(esClient);
       await recipeSearch.saveRecipe(recipeInfoForElasticSearch);
@@ -345,7 +345,7 @@ const userRecipeController = {
       recipeId
     );
 
-    if (ownership === "public") {
+    if (ownerId === 1) {
       const recipeInfoForElasticSearch = await recipe.getPublicRecipeForElasticSearchInsert(recipeId);
       const recipeSearch = new RecipeSearch(esClient);
       await recipeSearch.saveRecipe(recipeInfoForElasticSearch);
