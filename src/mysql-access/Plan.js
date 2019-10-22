@@ -10,7 +10,7 @@ class Plan {
   
   async viewAllMyPrivatePlans(ownerId) {
     const sql = `
-      SELECT plan_id, plan_name
+      SELECT plan_id, plan_name, plan_data
       FROM nobsc_plans
       WHERE owner_id = ?
     `;

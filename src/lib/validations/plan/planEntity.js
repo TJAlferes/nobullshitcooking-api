@@ -5,10 +5,10 @@ const validPlanEntity = struct(
     authorId: 'number',
     ownerId: 'number',
     planName: 'string',
-    planData: 'object'
+    planData: 'string'
   },
   {
-    planData: {
+    planData: JSON.stringify({
       1: [],
       2: [],
       3: [],
@@ -37,7 +37,7 @@ const validPlanEntity = struct(
       26: [],
       27: [],
       28: []
-    }
+    })
   }
 );
 

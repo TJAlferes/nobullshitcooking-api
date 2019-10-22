@@ -148,7 +148,7 @@ CREATE TABLE `nobsc_friendships` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `nobsc_plans` (
-  `plan_id` int(10) unsigned NOT NULL,
+  `plan_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `author_id` int(10) unsigned NOT NULL,
   `owner_id` int(10) unsigned NOT NULL,
   `plan_name` varchar(100) NOT NULL DEFAULT '',
