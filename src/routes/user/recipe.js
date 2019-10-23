@@ -36,7 +36,7 @@ router.delete(
   '/disown/public',
   userIsAuth,
   catchExceptions(userRecipeController.disownMyPublicUserRecipe)
-);
+);  // change to router.put
 
 
 

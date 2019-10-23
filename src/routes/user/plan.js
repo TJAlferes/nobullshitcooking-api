@@ -34,7 +34,7 @@ router.put(
   catchExceptions(userPlanController.updateMyPrivatePlan)
 );
 
-router.put(
+router.delete(
   '/delete',
   userIsAuth,
   catchExceptions(userPlanController.deleteMyPrivatePlan)
