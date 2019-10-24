@@ -931,7 +931,7 @@ class Recipe {
     const sql = `
       UPDATE nobsc_recipes
       SET author_id = ?
-      WHERE recipe_id = ? AND author_id = ?
+      WHERE recipe_id = ? AND author_id = ? AND owner_id = 1
       LIMIT 1
     `;
     const [ disownedPublicUserRecipe ] = await this.pool.execute(sql, [

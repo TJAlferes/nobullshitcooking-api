@@ -367,7 +367,7 @@ const userRecipeController = {
 
     await recipeMethod.deleteRecipeMethods(recipeId);
     await recipeEquipment.deleteRecipeEquipment(recipeId);
-    await recipeIngredient.deleteRecipeIngredient(recipeId);
+    await recipeIngredient.deleteRecipeIngredients(recipeId);
     await recipeSubrecipe.deleteRecipeSubrecipes(recipeId);
     await recipeSubrecipe.deleteRecipeSubrecipesBySubrecipeId(recipeId);
     await recipe.deleteMyPrivateUserRecipe(recipeId, authorId, ownerId);
@@ -381,6 +381,11 @@ const userRecipeController = {
     const authorId = req.session.userInfo.userId;
     const recipe = new Recipe(pool);
     await recipe.disownMyPublicUserRecipe(newAuthorId, recipeId, authorId);
+    // (make sure the update goes through first though)
+    const recipeInfoForElasticSearch = await recipe.getPublicRecipeForElasticSearchInsert(generatedId);
+    const recipeSearch = new RecipeSearch(esClient);
+    await recipeSearch.saveRecipe(recipeInfoForElasticSearch);
+
     res.send({message: 'Recipe disowned.'});
   }
 };
