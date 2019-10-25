@@ -45,7 +45,7 @@ const equipmentController = {
       next(err);
     }
   },
-  viewAllOfficialEquipment: async function (res, res) {
+  viewAllOfficialEquipment: async function (req, res) {
     const equipment = new Equipment(pool);
     const rows = await equipment.viewAllOfficialEquipment();
     res.send(rows);

@@ -45,7 +45,7 @@ const ingredientController = {
       next(err);
     }
   },
-  viewAllOfficialIngredients: async function (res, res) {
+  viewAllOfficialIngredients: async function (req, res) {
     const ingredient = new Ingredient(pool);
     const rows = await ingredient.viewAllOfficialIngredients();
     res.send(rows);
