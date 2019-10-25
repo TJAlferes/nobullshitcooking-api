@@ -233,7 +233,7 @@ class Equipment {
  
   async viewAllMyPrivateUserEquipment(ownerId) {
     const sql = `
-      SELECT equipment_id, equipment_name, equipment_image
+      SELECT equipment_id, equipment_type_id, equipment_name, equipment_image, equipment_description
       FROM nobsc_equipment
       WHERE owner_id = ?
       ORDER BY equipment_name ASC

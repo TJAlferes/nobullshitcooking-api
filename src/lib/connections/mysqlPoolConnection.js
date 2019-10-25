@@ -20,6 +20,9 @@ const pool = process.env.NODE_ENV === 'production'
   queueLimit: process.env.DB_QUEUE_LIMIT,
   insecureAuth: true
 });
+
+// (Probably delete this? Old config from beginner days)
+// (This was to access it from your dev machine, Elastic Beanstalk uses its own)
 /*: mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,

@@ -232,7 +232,7 @@ class Ingredient {
 
   async viewAllMyPrivateUserIngredients(ownerId) {
     const sql = `
-      SELECT ingredient_id, ingredient_name, ingredient_image
+      SELECT ingredient_id, ingredient_type_id, ingredient_name, ingredient_image, ingredient_description
       FROM nobsc_ingredients
       WHERE owner_id = ?
       ORDER BY ingredient_name ASC

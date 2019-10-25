@@ -20,7 +20,7 @@ const userIngredientController = {
   createMyPrivateUserIngredient: async function(req, res) {
     const ingredientTypeId = Number(req.sanitize(req.body.ingredientInfo.ingredientTypeId));
     const ingredientName = req.sanitize(req.body.ingredientInfo.ingredientName);
-    const ingredientDescription = req.sanitize(req.body.ingredientInfo.description);
+    const ingredientDescription = req.sanitize(req.body.ingredientInfo.ingredientDescription);
     const ingredientImage = req.sanitize(req.body.ingredientInfo.ingredientImage);
 
     const authorId = req.session.userInfo.userId;
@@ -36,13 +36,13 @@ const userIngredientController = {
     });
     const ingredient = new Ingredient(pool);
     await ingredient.createMyPrivateUserIngredient(ingredientToCreate);
-    res.send({message: 'Ingredient created'});
+    res.send({message: 'Ingredient created.'});
   },
   updateMyPrivateUserIngredient: async function(req, res) {
     const ingredientId = Number(req.sanitize(req.body.ingredientInfo.ingredientId));
     const ingredientTypeId = Number(req.sanitize(req.body.ingredientInfo.ingredientTypeId));
     const ingredientName = req.sanitize(req.body.ingredientInfo.ingredientName);
-    const ingredientDescription = req.sanitize(req.body.ingredientInfo.description);
+    const ingredientDescription = req.sanitize(req.body.ingredientInfo.ingredientDescription);
     const ingredientImage = req.sanitize(req.body.ingredientInfo.ingredientImage);
 
     const authorId = req.session.userInfo.userId;
@@ -58,7 +58,7 @@ const userIngredientController = {
     });
     const ingredient = new Ingredient(pool);
     await ingredient.updateMyPrivateUserIngredient(ingredientToUpdateWith, ingredientId);
-    res.send({message: 'Ingredient updated'});
+    res.send({message: 'Ingredient updated.'});
   },
   deleteMyPrivateUserIngredient: async function(req, res) {
     const ingredientId = Number(req.sanitize(req.body.ingredientId));
@@ -67,7 +67,7 @@ const userIngredientController = {
     const ingredient = new Ingredient(pool);
     await recipeIngredient.deleteRecipeIngredientsByIngredientId(ingredientId);
     await ingredient.deleteMyPrivateUserIngredient(ownerId, ingredientId);
-    res.send({message: 'Ingredient deleted'});
+    res.send({message: 'Ingredient deleted.'});
   }
 };
 

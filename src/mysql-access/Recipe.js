@@ -535,7 +535,7 @@ class Recipe {
         INNER JOIN nobsc_recipe_subrecipes rs ON rs.subrecipe_id = r.recipe_id
         INNER JOIN nobsc_measurements m ON rs.measurement_id = m.measurement_id
         WHERE rs.recipe_id = ?
-      `;
+      `; 
 
       const [ recipe ] = await this.pool.execute(sql1, [recipeId, ownerId]);
       // remember to account for one or multiple
@@ -695,53 +695,86 @@ class Recipe {
   }
 
   async viewMyPrivateUserRecipe(recipeId, ownerId) {
-    const sql = `
+    const sql1 = `
       SELECT
-        r.recipe_id,
-        rt.recipe_type_name,
-        c.cuisine_name,
-        u.username AS author,
-        u.username AS owner,
-        r.title,
-        r.description,
-        r.directions,
-        md.method_name,
-        re.amount,
-        e.equipment_name,
-        ri.amount,
-        m.measurement_name AS ingredient_unit,
-        e.ingredient_name,
-        rs.amount,
-        m.measurement_name AS subrecipe_unit,
-        r.title AS subtitle,
-        r.recipe_image,
-        r.equipment_image,
-        r.ingredients_image,
-        r.cooking_image
+        r.recipe_id AS recipeId,
+        u.username AS authorName,
+        u.avatar AS authorAvatar,
+        rt.recipe_type_name AS recipeTypeName,
+        c.cuisine_name AS cuisineName,
+        r.title AS title,
+        r.description AS description,
+        r.directions AS directions,
+        r.recipe_image AS recipeImage,
+        r.equipment_image AS recipeEquipmentImage,
+        r.ingredients_image AS recipeIngredientsImage,
+        r.cooking_image AS recipeCookingImage
       FROM nobsc_recipes r
+      INNER JOIN nobsc_users u ON u.user_id = r.author_id
       INNER JOIN nobsc_recipe_types rt ON rt.recipe_type_id = r.recipe_type_id
       INNER JOIN nobsc_cuisines c ON c.cuisine_id = r.cuisine_id
-      INNER JOIN nobsc_users u ON u.user_id = r.author_id
-      INNER JOIN nobsc_user u ON u.user_id = r.owner_id
-      INNER JOIN nobsc_recipe_methods rmd ON rmd.recipe_id = r.recipe_id
-      INNER JOIN nobsc_recipe_methods rmd ON rmd.method_id = md.method_id 
-      INNER JOIN nobsc_recipe_equipment re ON re.recipe_id = r.recipe_id
-      INNER JOIN nobsc_recipe_equipment re ON re.equipment_id = e.equipment_id
-      INNER JOIN nobsc_recipe_ingredients ri ON ri.recipe_id = r.recipe_id
-      INNER JOIN nobsc_recipe_ingredients ri ON ri.measurement_id = m.measurement_id
-      INNER JOIN nobsc_recipe_ingredients ri ON ri.ingredient_id = i.ingredient_id
-      INNER JOIN nobsc_recipe_subrecipes rs ON rs.recipe_id = r.recipe_id
-      INNER JOIN nobsc_recipe_subrecipes rs ON rs.measurement_id = m.measurement_id
-      INNER JOIN nobsc_recipe_subrecipes rs ON rs.subrecipe_id = r.recipe_id
       WHERE r.recipe_id = ? AND r.owner_id = ?
     `;
-    const [ myPrivateUserRecipe ] = await this.pool.execute(sql, [
-      recipeId,
-      ownerId
-    ]);
-    return myPrivateUserRecipe;
+
+    const sql2 = `
+      SELECT m.method_name AS methodName
+      FROM nobsc_methods m
+      INNER JOIN nobsc_recipe_methods rm ON rm.method_id = m.method_id
+      WHERE rm.recipe_id = ?
+    `;
+
+    const sql3 = `
+      SELECT
+        re.amount AS amount,
+        e.equipment_name AS equipmentName
+      FROM nobsc_equipment e
+      INNER JOIN nobsc_recipe_equipment re ON re.equipment_id = e.equipment_id
+      WHERE re.recipe_id = ?
+    `;
+
+    const sql4 = `
+      SELECT
+        i.ingredient_name AS ingredientName,
+        ri.amount AS amount,
+        m.measurement_name AS measurementName
+      FROM nobsc_ingredients i
+      INNER JOIN nobsc_recipe_ingredients ri ON ri.ingredient_id = i.ingredient_id
+      INNER JOIN nobsc_measurements m ON ri.measurement_id = m.measurement_id
+      WHERE ri.recipe_id = ?
+    `;
+
+    const sql5 = `
+      SELECT
+        r.title AS subrecipeTitle,
+        rs.amount AS amount,
+        m.measurement_name AS measurementName
+      FROM nobsc_recipes r
+      INNER JOIN nobsc_recipe_subrecipes rs ON rs.subrecipe_id = r.recipe_id
+      INNER JOIN nobsc_measurements m ON rs.measurement_id = m.measurement_id
+      WHERE rs.recipe_id = ?
+    `; 
+
+    const [ recipe ] = await this.pool.execute(sql1, [recipeId, ownerId]);
+    // remember to account for one or multiple
+    const [ requiredMethods ] = await this.pool.execute(sql2, [recipeId]);
+    const [ requiredEquipment ] = await this.pool.execute(sql3, [recipeId]);
+    const [ requiredIngredients ] = await this.pool.execute(sql4, [recipeId]);
+    const [ requiredSubrecipes ] = await this.pool.execute(sql5, [recipeId]);
+
+    let final = {
+      recipe,
+      ...{
+        requiredMethods,
+        requiredEquipment,
+        requiredIngredients,
+        requiredSubrecipes
+      }
+    };
+
+    return final;
   }
 
+  // not needed, delete
   async viewMyPublicUserRecipe(recipeId, authorId, ownerId) {
     const sql = `
       SELECT

@@ -34,7 +34,7 @@ const userRecipeController = {
     const recipeId = Number(req.sanitize(req.body.recipeId));
     const ownerId = req.session.userInfo.userId;
     const recipe = new Recipe(pool);
-    const [ row ] = await recipe.viewMyPrivateUserRecipe(recipeId, ownerId);
+    const row = await recipe.viewMyPrivateUserRecipe(recipeId, ownerId);
     res.send(row);
   },
 

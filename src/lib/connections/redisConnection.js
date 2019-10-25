@@ -3,44 +3,20 @@
 const Redis = require('ioredis');
 
 const pubClient = process.env.NODE_ENV === 'production'
-? new Redis({
-  host: process.env.REDIS_HOST,
-  port: 6379
-})
-: new Redis({
-  host: 'redis-dev',
-  port: 6379,
-});
+? new Redis({host: process.env.ELASTICACHE_HOST, port: 6379})
+: new Redis({host: 'redis-dev', port: 6379});
 
 const subClient = process.env.NODE_ENV === 'production'
-? new Redis({
-  host: process.env.REDIS_HOST,
-  port: 6379
-})
-: new Redis({
-  host: 'redis-dev',
-  port: 6379,
-});
+? new Redis({host: process.env.ELASTICACHE_HOST, port: 6379})
+: new Redis({host: 'redis-dev', port: 6379});
 
 const sessClient = process.env.NODE_ENV === 'production'
-? new Redis({
-  host: process.env.REDIS_HOST,
-  port: 6379
-})
-: new Redis({
-  host: 'redis-dev',
-  port: 6379,
-});
+? new Redis({host: process.env.ELASTICACHE_HOST, port: 6379})
+: new Redis({host: 'redis-dev', port: 6379});
 
 const workerClient = process.env.NODE_ENV === 'production'
-? new Redis({
-  host: process.env.REDIS_HOST,
-  port: 6379
-})
-: new Redis({
-  host: 'redis-dev',
-  port: 6379,
-});
+? new Redis({host: process.env.ELASTICACHE_HOST, port: 6379})
+: new Redis({host: 'redis-dev', port: 6379});
 
 //console.log('========== ioredis new Redis ========== ');
 //console.log('client', pubClient);

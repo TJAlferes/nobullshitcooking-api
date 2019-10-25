@@ -16,7 +16,7 @@ const userProfileController = {
     const publicRecipes = await recipe.viewAllMyPublicUserRecipes(id, 1);
 
     const favoriteRecipe = new FavoriteRecipe(pool);
-    const favoriteRecipes = favoriteRecipe.viewMyFavoriteRecipes(id);
+    const favoriteRecipes = await favoriteRecipe.viewMyFavoriteRecipes(id);
 
     res.send({message: 'Success.', avatar, publicRecipes, favoriteRecipes});
   }
