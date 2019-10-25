@@ -1,20 +1,20 @@
 const esClient = require('../lib/connections/elasticsearchClient');
 const pool = require('../lib/connections/mysqlPoolConnection');
 const Recipe = require('../mysql-access/Recipe');
-//const Ingredient = require('../mysql-access/Ingredient');
-//const Equipment = require('../mysql-access/Equipment');
+const Ingredient = require('../mysql-access/Ingredient');
+const Equipment = require('../mysql-access/Equipment');
 
 const bulkUp = async function() {
   const recipe = new Recipe(pool);
-  //const ingredient = new Ingredient(pool);
-  //const equipment = new Equipment(pool);
+  const ingredient = new Ingredient(pool);
+  const equipment = new Equipment(pool);
   const toBulk = await recipe.getAllPublicRecipesForElasticSearchBulkInsert();
-  //const toBulk2 = await ingredient.getAllPublicIngredientsForElasticSearchBulkInsert();
-  //const toBulk3 = await equipment.getAllPublicEquipmentForElasticSearchBulkInsert();
+  const toBulk2 = await ingredient.getAllPublicIngredientsForElasticSearchBulkInsert();
+  const toBulk3 = await equipment.getAllPublicEquipmentForElasticSearchBulkInsert();
 
   // delete
 
-  try {
+  /*try {
     const wasDeleted = await esClient.indices.delete({index: "recipes"});
     console.log('wasDeleted: ', wasDeleted);
 
@@ -22,7 +22,7 @@ const bulkUp = async function() {
     //console.log('wasDeleted2: ', wasDeleted2);
   } catch (err) {
     console.log(err);
-  }
+  }*/
 
 
 
@@ -65,7 +65,7 @@ const bulkUp = async function() {
     });
     console.log('wasCreated: ', wasCreated);
 
-    /*const wasCreated2 = await esClient.indices.create({
+    const wasCreated2 = await esClient.indices.create({
       index: "ingredients",
       body: {
         settings: {
@@ -119,7 +119,7 @@ const bulkUp = async function() {
         }
       }
     });
-    console.log('wasCreated3: ', wasCreated3);*/
+    console.log('wasCreated3: ', wasCreated3);
 
   } catch (err) {
     console.log(err);
@@ -164,11 +164,11 @@ const bulkUp = async function() {
     const wasBulked = await esClient.bulk({index: "recipes", body: toBulk, refresh: "true"});
     console.log('wasBulked: ', wasBulked);
 
-    //const wasBulked2 = await esClient.bulk({index: "ingredients", body: toBulk2, refresh: "true"});
-    //console.log('wasBulked2: ', wasBulked2);
+    const wasBulked2 = await esClient.bulk({index: "ingredients", body: toBulk2, refresh: "true"});
+    console.log('wasBulked2: ', wasBulked2);
 
-    //const wasBulked3 = await esClient.bulk({index: "equipment", body: toBulk3, refresh: "true"});
-    //console.log('wasBulked3: ', wasBulked3);
+    const wasBulked3 = await esClient.bulk({index: "equipment", body: toBulk3, refresh: "true"});
+    console.log('wasBulked3: ', wasBulked3);
   } catch (err) {
     console.log(err);
   }
@@ -181,11 +181,11 @@ const bulkUp = async function() {
     const wasRefreshedAgain = await esClient.indices.refresh({index: "recipes"});
     console.log('wasRefreshedAgain: ', wasRefreshedAgain);
 
-    //const wasRefreshedAgain2 = await esClient.indices.refresh({index: "ingredients"});
-    //console.log('wasRefreshedAgain2: ', wasRefreshedAgain2);
+    const wasRefreshedAgain2 = await esClient.indices.refresh({index: "ingredients"});
+    console.log('wasRefreshedAgain2: ', wasRefreshedAgain2);
 
-    //const wasRefreshedAgain3 = await esClient.indices.refresh({index: "equipment"});
-    //console.log('wasRefreshedAgain3: ', wasRefreshedAgain3);
+    const wasRefreshedAgain3 = await esClient.indices.refresh({index: "equipment"});
+    console.log('wasRefreshedAgain3: ', wasRefreshedAgain3);
   } catch (err) {
     console.log(err);
   }
@@ -224,7 +224,7 @@ const bulkUp = async function() {
 
   // sample searches
 
-  let tryNumber = 0;
+  /*let tryNumber = 0;
   const repeatTries = setInterval(async function() {
     if (tryNumber == 2) clearInterval(repeatTries);
     tryNumber = tryNumber + 1;
@@ -242,7 +242,7 @@ const bulkUp = async function() {
     } catch (err) {
       console.log(err);
     }
-  }, 10000);
+  }, 10000);*/
 
   /*let tryNumber2 = 0;
   const repeatTries2 = setInterval(async function() {
@@ -285,4 +285,4 @@ const bulkUp = async function() {
   }, 10000);*/
 };
 
-//module.exports = bulkUp;
+module.exports = bulkUp;

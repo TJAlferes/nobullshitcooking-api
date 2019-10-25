@@ -50,7 +50,7 @@ const {
   subClient,
   sessClient
 } = require('./lib/connections/redisConnection');
-//const bulkUp = require('./search');
+const bulkUp = require('./search');
 
 
 
@@ -147,9 +147,12 @@ const session = expressSession(sessionOptions);
 // prod
 if (app.get('env') === 'production') {
   app.set('trust proxy', 1);  // trust first proxy
-  /*sessionOptions.cookie.secure = true;
-  sessionOptions.cookie.sameSite = true;
-  sessionOptions.cookie.httpOnly = true;*/
+  sessionOptions.cookie = {
+    sameSite: true,
+    maxAge: 86400000,
+    httpOnly: true,
+    secure: true
+  };
   corsOptions.origin = ['https://nobullshitcooking.net'];
 }  // enforce https? or elasticbeanstalk already does?
 
@@ -184,14 +187,14 @@ cleanUp();  // next()?
 }), (60 * 1000));*/
 
 // move this, and create startup conditional
-/*try {
+try {
   setTimeout(() => {
     console.log('trying');
     bulkUp();  // next()?
-  }, 80000);
+  }, 120000);  // at the 2 minute mark
 } catch(err) {
   console.log(err);
-}*/
+}
 
 
 
