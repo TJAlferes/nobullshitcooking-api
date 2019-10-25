@@ -66,8 +66,8 @@ const staffRecipeController = {
           const recipeMethodsPlaceholders = '(?, ?),'
           .repeat(requiredMethods.length)
           .slice(0, -1);
-          const recipeMethods = new RecipeMethods(pool);
-          await recipeMethods.createRecipeMethods(
+          const recipeMethod = new RecipeMethod(pool);
+          await recipeMethod.createRecipeMethods(
             recipeMethodsToCreate,
             recipeMethodsPlaceholders
           );
@@ -115,8 +115,8 @@ const staffRecipeController = {
           const recipeIngredientsPlaceholders = '(?, ?, ?, ?),'
           .repeat(requiredIngredients.length)
           .slice(0, -1);
-          const recipeIngredients = new RecipeIngredients(pool);
-          await recipeIngredients.createRecipeIngredients(
+          const recipeIngredient = new RecipeIngredient(pool);
+          await recipeIngredient.createRecipeIngredients(
             recipeIngredientsToCreate,
             recipeIngredientsPlaceholders
           );
@@ -139,8 +139,8 @@ const staffRecipeController = {
           const recipeSubrecipesPlaceholders = '(?, ?, ?, ?),'
           .repeat(requiredSubrecipes.length)
           .slice(0, -1);
-          const recipeSubrecipes = new RecipeSubrecipes(pool);
-          await recipeSubrecipes.createRecipeSubrecipes(
+          const recipeSubrecipe = new RecipeSubrecipe(pool);
+          await recipeSubrecipe.createRecipeSubrecipes(
             recipeSubrecipesToCreate,
             recipeSubrecipesPlaceholders
           );
@@ -315,7 +315,7 @@ const staffRecipeController = {
       await recipeEquipment.deleteRecipeEquipment(recipeId);
       await recipeIngredient.deleteRecipeIngredients(recipeId);
       await recipeSubrecipe.deleteRecipeSubrecipes(recipeId);
-      await recipeSubrecipes.deleteRecipeSubrecipesBySubrecipeId(recipeId);  // is that right?
+      await recipeSubrecipe.deleteRecipeSubrecipesBySubrecipeId(recipeId);  // is that right?
       await recipe.deleteRecipe(recipeId);
 
       res.send('Recipe deleted.');
