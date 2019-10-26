@@ -254,7 +254,8 @@ let PORT;
 
 if (app.get('env') === 'production') {
   PORT = process.env.PORT || 8081;
-  server.listen(PORT, () => console.log('Listening on port ' + PORT));
+  //server.listen(PORT, () => console.log('Listening on port ' + PORT));
+  server.listen(PORT, 'localhost', () => console.log('Listening on port ' + PORT));
 } else {
   PORT = process.env.PORT || 3003;
   server.listen(PORT, '0.0.0.0', () => console.log('Listening on port ' + PORT));
