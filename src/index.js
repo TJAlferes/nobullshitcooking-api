@@ -180,8 +180,14 @@ io.adapter(redisAdapter({pubClient, subClient}));
 io.use(socketAuth);
 io.on('connection', socketConnection);
 const INTERVAL = 60 * 60 * 1000 * 3;  // 3 hours
-setInterval(cleanUp, INTERVAL);  // next()?
-cleanUp();  // next()?
+setInterval(cleanUp, INTERVAL);
+try {
+  setTimeout(() => {
+    cleanUp();
+  }, 30000);  // at the 30 second mark
+} catch(err) {
+  console.log(err);
+}
 /*setInterval(() => io.of('/').adapter.clients((err, clients) => {
   console.log(clients); // an array containing all connected socket ids
 }), (60 * 1000));*/
@@ -189,8 +195,7 @@ cleanUp();  // next()?
 // move this, and create startup conditional
 try {
   setTimeout(() => {
-    console.log('trying');
-    bulkUp();  // next()?
+    bulkUp();
   }, 120000);  // at the 2 minute mark
 } catch(err) {
   console.log(err);

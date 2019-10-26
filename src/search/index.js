@@ -14,15 +14,18 @@ const bulkUp = async function() {
 
   // delete
 
-  /*try {
+  try {
     const wasDeleted = await esClient.indices.delete({index: "recipes"});
-    console.log('wasDeleted: ', wasDeleted);
+    //console.log('wasDeleted: ', wasDeleted);
 
-    //const wasDeleted2 = await esClient.indices.delete({index: "ingredients"});
+    const wasDeleted2 = await esClient.indices.delete({index: "ingredients"});
     //console.log('wasDeleted2: ', wasDeleted2);
+
+    const wasDeleted3 = await esClient.indices.delete({index: "equipment"});
+    //console.log('wasDeleted3: ', wasDeleted3);
   } catch (err) {
     console.log(err);
-  }*/
+  }
 
 
 
@@ -63,7 +66,7 @@ const bulkUp = async function() {
         }
       }
     });
-    console.log('wasCreated: ', wasCreated);
+    //console.log('wasCreated: ', wasCreated);
 
     const wasCreated2 = await esClient.indices.create({
       index: "ingredients",
@@ -91,7 +94,7 @@ const bulkUp = async function() {
         }
       }
     });
-    console.log('wasCreated2: ', wasCreated2);
+    //console.log('wasCreated2: ', wasCreated2);
 
     const wasCreated3 = await esClient.indices.create({
       index: "equipment",
@@ -119,7 +122,7 @@ const bulkUp = async function() {
         }
       }
     });
-    console.log('wasCreated3: ', wasCreated3);
+    //console.log('wasCreated3: ', wasCreated3);
 
   } catch (err) {
     console.log(err);
@@ -162,13 +165,13 @@ const bulkUp = async function() {
 
   try {
     const wasBulked = await esClient.bulk({index: "recipes", body: toBulk, refresh: "true"});
-    console.log('wasBulked: ', wasBulked);
+    //console.log('wasBulked: ', wasBulked);
 
     const wasBulked2 = await esClient.bulk({index: "ingredients", body: toBulk2, refresh: "true"});
-    console.log('wasBulked2: ', wasBulked2);
+    //console.log('wasBulked2: ', wasBulked2);
 
     const wasBulked3 = await esClient.bulk({index: "equipment", body: toBulk3, refresh: "true"});
-    console.log('wasBulked3: ', wasBulked3);
+    //console.log('wasBulked3: ', wasBulked3);
   } catch (err) {
     console.log(err);
   }
@@ -179,13 +182,13 @@ const bulkUp = async function() {
 
   try {
     const wasRefreshedAgain = await esClient.indices.refresh({index: "recipes"});
-    console.log('wasRefreshedAgain: ', wasRefreshedAgain);
+    //console.log('wasRefreshedAgain: ', wasRefreshedAgain);
 
     const wasRefreshedAgain2 = await esClient.indices.refresh({index: "ingredients"});
-    console.log('wasRefreshedAgain2: ', wasRefreshedAgain2);
+    //console.log('wasRefreshedAgain2: ', wasRefreshedAgain2);
 
     const wasRefreshedAgain3 = await esClient.indices.refresh({index: "equipment"});
-    console.log('wasRefreshedAgain3: ', wasRefreshedAgain3);
+    //console.log('wasRefreshedAgain3: ', wasRefreshedAgain3);
   } catch (err) {
     console.log(err);
   }
