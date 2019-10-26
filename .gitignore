@@ -1,4 +1,5 @@
 .env
+.elbsg.config
 node_modules/
 logs
 *.log
