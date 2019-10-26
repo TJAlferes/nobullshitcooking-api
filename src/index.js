@@ -195,8 +195,9 @@ try {
 // move this, and create startup conditional
 try {
   setTimeout(() => {
+    console.log('Now running bulkUp.');
     bulkUp();
-  }, 120000);  // at the 2 minute mark
+  }, 60000);  // at the 1 minute mark
 } catch(err) {
   console.log(err);
 }
@@ -251,15 +252,17 @@ process.on('unhandledRejection', (reason, promise) => {
 ##############################################################################*/
 
 let PORT;
+PORT = process.env.PORT || 8081;
+server.listen(PORT, '127.0.0.1', () => console.log('Listening on port ' + PORT));
 
-if (app.get('env') === 'production') {
+/*if (app.get('env') === 'production') {
   PORT = process.env.PORT || 8081;
   //server.listen(PORT, () => console.log('Listening on port ' + PORT));
   //server.listen(PORT, 'localhost', () => console.log('Listening on port ' + PORT));
-  ///server.listen(PORT, '127.0.0.1', () => console.log('Listening on port ' + PORT));
-  server.listen(PORT, '0.0.0.0', () => console.log('Listening on port ' + PORT));
+  server.listen(PORT, '127.0.0.1', () => console.log('Listening on port ' + PORT));
+  //server.listen(PORT, '0.0.0.0', () => console.log('Listening on port ' + PORT));
 } else {
   PORT = process.env.PORT || 3003;
   server.listen(PORT, '0.0.0.0', () => console.log('Listening on port ' + PORT));
-}
+}*/
 //app.listen(PORT, () => console.log('Listening on port ' + PORT));

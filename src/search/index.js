@@ -11,6 +11,8 @@ const bulkUp = async function() {
   const toBulk = await recipe.getAllPublicRecipesForElasticSearchBulkInsert();
   const toBulk2 = await ingredient.getAllPublicIngredientsForElasticSearchBulkInsert();
   const toBulk3 = await equipment.getAllPublicEquipmentForElasticSearchBulkInsert();
+  console.log('toBulk:');
+  console.log(toBulk);
 
   // delete
 
@@ -165,7 +167,7 @@ const bulkUp = async function() {
 
   try {
     const wasBulked = await esClient.bulk({index: "recipes", body: toBulk, refresh: "true"});
-    //console.log('wasBulked: ', wasBulked);
+    console.log('wasBulked: ', wasBulked);
 
     const wasBulked2 = await esClient.bulk({index: "ingredients", body: toBulk2, refresh: "true"});
     //console.log('wasBulked2: ', wasBulked2);
