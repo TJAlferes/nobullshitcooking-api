@@ -1,3 +1,4 @@
+/*
 const esClient = require('../lib/connections/elasticsearchClient');
 const pool = require('../lib/connections/mysqlPoolConnection');
 const Recipe = require('../mysql-access/Recipe');
@@ -11,8 +12,8 @@ const bulkUp = async function() {
   const toBulk = await recipe.getAllPublicRecipesForElasticSearchBulkInsert();
   const toBulk2 = await ingredient.getAllPublicIngredientsForElasticSearchBulkInsert();
   const toBulk3 = await equipment.getAllPublicEquipmentForElasticSearchBulkInsert();
-  console.log('toBulk:');
-  console.log(toBulk);
+
+
 
   // delete
 
@@ -134,7 +135,7 @@ const bulkUp = async function() {
 
   // refresh
 
-  /*try {
+  try {
     //const wasRefreshed = await esClient.indices.refresh({index: "recipes"});
     //console.log('wasRefreshed: ', wasRefreshed);
 
@@ -145,13 +146,13 @@ const bulkUp = async function() {
     //console.log('wasRefreshed3: ', wasRefreshed3);
   } catch (err) {
     console.log(err);
-  }*/
+  }
 
 
 
   // check existence
 
-  /*try {
+  try {
     //const doesExist = await esClient.indices.exists({index: "recipes"});
     //console.log('doesExist: ', doesExist);
 
@@ -159,7 +160,7 @@ const bulkUp = async function() {
     console.log('doesExist2: ', doesExist2);
   } catch (err) {
     console.log(err);
-  }*/
+  }
 
 
 
@@ -199,7 +200,7 @@ const bulkUp = async function() {
 
   // sample analyzers
 
-  /*try {
+  try {
     const { body } = await esClient.indices.analyze({
       index: "recipes",
       body: {
@@ -210,9 +211,9 @@ const bulkUp = async function() {
     console.log('testAnalyze: ', body.tokens);
   } catch (err) {
     console.log(err);
-  }*/
+  }
 
-  /*try {
+  try {
     const { body } = await esClient.indices.analyze({
       index: "ingredients",
       body: {
@@ -223,13 +224,13 @@ const bulkUp = async function() {
     console.log('testAnalyze: ', body.tokens);
   } catch (err) {
     console.log(err);
-  }*/
+  }
   
 
 
   // sample searches
 
-  /*let tryNumber = 0;
+  let tryNumber = 0;
   const repeatTries = setInterval(async function() {
     if (tryNumber == 2) clearInterval(repeatTries);
     tryNumber = tryNumber + 1;
@@ -247,9 +248,9 @@ const bulkUp = async function() {
     } catch (err) {
       console.log(err);
     }
-  }, 10000);*/
+  }, 10000);
 
-  /*let tryNumber2 = 0;
+  let tryNumber2 = 0;
   const repeatTries2 = setInterval(async function() {
     if (tryNumber2 == 2) clearInterval(repeatTries2);
     tryNumber2 = tryNumber2 + 1;
@@ -267,9 +268,9 @@ const bulkUp = async function() {
     } catch (err) {
       console.log(err);
     }
-  }, 10000);*/
+  }, 10000);
 
-  /*let tryNumber3 = 0;
+  let tryNumber3 = 0;
   const repeatTries3 = setInterval(async function() {
     if (tryNumber3 == 2) clearInterval(repeatTries3);
     tryNumber3 = tryNumber3 + 1;
@@ -287,7 +288,8 @@ const bulkUp = async function() {
     } catch (err) {
       console.log(err);
     }
-  }, 10000);*/
+  }, 10000);
 };
 
 module.exports = bulkUp;
+*/

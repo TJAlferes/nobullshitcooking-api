@@ -50,7 +50,7 @@ const {
   subClient,
   sessClient
 } = require('./lib/connections/redisConnection');
-const bulkUp = require('./search');
+//const bulkUp = require('./search');
 
 
 
@@ -193,14 +193,14 @@ try {
 }), (60 * 1000));*/
 
 // move this, and create startup conditional
-try {
+/*try {
   setTimeout(() => {
     console.log('Now running bulkUp.');
     bulkUp();
   }, 60000);  // at the 1 minute mark
 } catch(err) {
   console.log(err);
-}
+}*/
 
 
 
