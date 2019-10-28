@@ -69,9 +69,10 @@ async function cleanUpChats() {
 }
 
 const cleanUp = async function() {
-  console.log('Clean Up Isle NOBSC Messenger');
+  console.log('Clean Up Isle NOBSC Messenger (START)');
   await cleanUpRooms();
   await cleanUpChats();
+  console.log('Clean Up Isle NOBSC Messenger (END)');
 }
 
 module.exports = cleanUp;
