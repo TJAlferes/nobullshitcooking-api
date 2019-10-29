@@ -43,7 +43,7 @@ const {
   searchRoutes
 } = require('./routes');
 const socketConnection = require('./chat');
-const cleanUp = require('./chat/workers');
+//const cleanUp = require('./chat/workers');
 const MessengerUser = require('./redis-access/MessengerUser');  // move
 const {
   pubClient,
@@ -131,14 +131,12 @@ const sessionOptions = {
   secret: process.env.SESSION_SECRET || "secret",
   resave: true,
   saveUninitialized: true,
-  /*
-  cookie: {},
   cookie: {
     sameSite: false,
     maxAge: 86400000,
     httpOnly: false,
     secure: false
-  },*/
+  },
   unset: "destroy"
 };
 const session = expressSession(sessionOptions);
@@ -146,7 +144,7 @@ const session = expressSession(sessionOptions);
 
 // prod
 if (app.get('env') === 'production') {
-  app.set('trust proxy', 1);  // trust first proxy
+  app.set('trust proxy', 2);  //app.set('trust proxy', 1);  // trust first proxy
   sessionOptions.cookie = {
     sameSite: true,
     maxAge: 86400000,
@@ -180,9 +178,9 @@ io.adapter(redisAdapter({pubClient, subClient}));
 io.use(socketAuth);
 io.on('connection', socketConnection);
 const INTERVAL = 60 * 60 * 1000 * 3;  // 3 hours
-setInterval(cleanUp, INTERVAL);
+//setInterval(cleanUp, INTERVAL);
 
-let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+/*let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 let fooOne = async () => {
   await wait(20000);
@@ -201,7 +199,7 @@ let fooOne = async () => {
   const rV4 = await cleanUp();
   console.log('rV4: ', rV4);
 };
-fooOne();
+fooOne();*/
 /*(async function() {
   try {
     setTimeout(() => {
@@ -246,6 +244,7 @@ fooOne();
 
 app.get('/', (req, res) => {
   try {
+    console.log(req);
     res.send(`No Bullshit Cooking Backend API.`);
   } catch(err) {
     console.log(err);
