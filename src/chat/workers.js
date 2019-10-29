@@ -83,21 +83,22 @@ async function cleanUpChats() {
   }
 }
 
-const cleanUp = function() {
+const cleanUp = async function() {
   console.log('Clean Up Isle NOBSC Messenger (START)');
   try {
     //workerClient.zadd('rooms', Date.now(), "testroom");
-    workerClient.set('testkey', 'heelllllooooothheeeerrrrreeeee');
-    const thing1 = workerClient.get('testkey');
+    await workerClient.set('testkey', 'heelllllooooothheeeerrrrreeeee');
+    const thing1 = await workerClient.get('testkey');
     console.log(thing1);
   } catch (err) {
     console.log('=====!=====!=====!=====!=====', err);
   }
 
+  let thing2;
   try {
     //await workerClient.zadd('rooms', Date.now(), "testroom");
-    workerClient.set('testkey2', 'heelllllooooobbaaabbbbbeeeeeeeee');
-    const thing2 = workerClient.get('testkey2');
+    await workerClient.set('testkey2', 'heelllllooooobbaaabbbbbeeeeeeeee');
+    thing2 = await workerClient.get('testkey2');
     console.log(thing2);
   } catch (err) {
     console.log('=====!=====!=====!=====!=====', err);
@@ -114,6 +115,7 @@ const cleanUp = function() {
   //await cleanUpRooms();
   //await cleanUpChats();
   console.log('Clean Up Isle NOBSC Messenger (END)');
+  return thing2;
 }
 
 module.exports = cleanUp;

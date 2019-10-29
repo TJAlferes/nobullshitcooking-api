@@ -181,25 +181,40 @@ io.use(socketAuth);
 io.on('connection', socketConnection);
 const INTERVAL = 60 * 60 * 1000 * 3;  // 3 hours
 setInterval(cleanUp, INTERVAL);
-try {
-  setTimeout(() => {
-    cleanUp();
-    cleanUp();
-    console.log('`after` 1 and 2');
-  }, 20000);  // at the 20 second mark
-  setTimeout(() => {
-    cleanUp();
-    cleanUp();
-    console.log('`after` 3 and 4');
-  }, 40000);  // at the 40 second mark
-  setTimeout(() => {
-    cleanUp();
-    cleanUp();
-    console.log('`after` 5 and 6');
-  }, 60000);  // at the 60 second mark
-} catch(err) {
-  console.log(err);
-}
+
+let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+let fooOne = async () => {
+  await wait(20000);
+  const rV1 = await cleanUp();
+  console.log('rv1: ', rv1);
+  await wait(20000);
+  const rV2 = await cleanUp();
+  console.log('rv2: ', rv2);
+};
+fooOne();
+/*(async function() {
+  try {
+    setTimeout(() => {
+      const rV1 = await cleanUp();
+      console.
+      const rV2 = await cleanUp();
+      console.log('`after` 1 and 2');
+    }, 20000);  // at the 20 second mark
+    setTimeout(() => {
+      cleanUp();
+      cleanUp();
+      console.log('`after` 3 and 4');
+    }, 40000);  // at the 40 second mark
+    setTimeout(() => {
+      cleanUp();
+      cleanUp();
+      console.log('`after` 5 and 6');
+    }, 60000);  // at the 60 second mark
+  } catch(err) {
+    console.log(err);
+  }
+})();*/
 /*setInterval(() => io.of('/').adapter.clients((err, clients) => {
   console.log(clients); // an array containing all connected socket ids
 }), (60 * 1000));*/
