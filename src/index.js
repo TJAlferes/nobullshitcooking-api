@@ -186,11 +186,20 @@ let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 let fooOne = async () => {
   await wait(20000);
+
   const rV1 = await cleanUp();
   console.log('rV1: ', rV1);
-  await wait(20000);
+
   const rV2 = await cleanUp();
   console.log('rV2: ', rV2);
+
+  await wait(20000);
+
+  const rV3 = await cleanUp();
+  console.log('rV3: ', rV3);
+
+  const rV4 = await cleanUp();
+  console.log('rV4: ', rV4);
 };
 fooOne();
 /*(async function() {

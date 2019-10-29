@@ -89,7 +89,7 @@ const cleanUp = async function() {
     //workerClient.zadd('rooms', Date.now(), "testroom");
     await workerClient.set('testkey', 'heelllllooooothheeeerrrrreeeee');
     const thing1 = await workerClient.get('testkey');
-    console.log(thing1);
+    console.log('thing1: ', thing1);
   } catch (err) {
     console.log('=====!=====!=====!=====!=====', err);
   }
@@ -99,7 +99,7 @@ const cleanUp = async function() {
     //await workerClient.zadd('rooms', Date.now(), "testroom");
     await workerClient.set('testkey2', 'heelllllooooobbaaabbbbbeeeeeeeee');
     thing2 = await workerClient.get('testkey2');
-    console.log(thing2);
+    console.log('thing2: ', thing2);
   } catch (err) {
     console.log('=====!=====!=====!=====!=====', err);
   }

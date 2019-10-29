@@ -44,6 +44,9 @@ sessClient.on('close', () => console.log('sess close!!!!!!!!!!!'));
 //console.log('workerClient', workerClient);
 workerClient.on('ready', () => console.log('worker ready!!!!!!!!!!!'));
 workerClient.on('error', () => console.log('worker error!!!!!!!!!!!'));
+workerClient.on('error', e => console.log('worker error!:', e));
+workerClient.on('error', () => console.log('worker error!!!!!!!!!!!'));
+workerClient.on('error', e => console.log('worker error!:', e));
 workerClient.on('close', () => console.log('worker close!!!!!!!!!!!'));
 //console.log('============================== ');
 

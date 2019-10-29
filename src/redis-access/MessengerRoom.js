@@ -10,10 +10,7 @@ class MessengerRoom {
 
   async addRoom(room) {
     try {
-      if (room !== '') {
-        await this.pubClient.zadd('rooms', Date.now(), room);
-        console.log(room);
-      }
+      if (room !== '') await this.pubClient.zadd('rooms', Date.now(), room);
     } catch (err) {
       console.error(err);
     }
