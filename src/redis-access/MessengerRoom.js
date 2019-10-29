@@ -12,6 +12,7 @@ class MessengerRoom {
     try {
       if (room !== '') {
         await this.pubClient.zadd('rooms', Date.now(), room);
+        console.log(room);
       }
     } catch (err) {
       console.error(err);

@@ -86,8 +86,13 @@ async function cleanUpChats() {
 const cleanUp = async function() {
   console.log('Clean Up Isle NOBSC Messenger (START)');
   console.log('Clean Up Isle NOBSC Messenger (START)');
-  await cleanUpRooms();
-  await cleanUpChats();
+  try {
+    await workerClient.zadd('rooms', Date.now(), "testroom");
+  } catch (err) {
+    console.log('=====!=====!=====!=====!=====', err);
+  }
+  //await cleanUpRooms();
+  //await cleanUpChats();
   console.log('Clean Up Isle NOBSC Messenger (END)');
   console.log('Clean Up Isle NOBSC Messenger (END)');
 }
