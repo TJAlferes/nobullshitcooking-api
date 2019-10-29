@@ -184,7 +184,14 @@ setInterval(cleanUp, INTERVAL);
 try {
   setTimeout(() => {
     cleanUp();
-  }, 30000);  // at the 30 second mark
+    cleanUp();
+    console.log('`after` 1 and 2');
+  }, 20000);  // at the 20 second mark
+  setTimeout(() => {
+    cleanUp();
+    cleanUp();
+    console.log('`after` 3 and 4');
+  }, 40000);  // at the 40 second mark
 } catch(err) {
   console.log(err);
 }

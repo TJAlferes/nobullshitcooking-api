@@ -83,11 +83,17 @@ async function cleanUpChats() {
   }
 }
 
-const cleanUp = async function() {
+const cleanUp = function() {
   console.log('Clean Up Isle NOBSC Messenger (START)');
   console.log('Clean Up Isle NOBSC Messenger (START)');
   try {
-    await workerClient.zadd('rooms', Date.now(), "testroom");
+    workerClient.zadd('rooms', Date.now(), "testroom");
+  } catch (err) {
+    console.log('=====!=====!=====!=====!=====', err);
+  }
+  
+  try {
+    workerClient.zadd('rooms', Date.now(), "testroom");
   } catch (err) {
     console.log('=====!=====!=====!=====!=====', err);
   }
