@@ -187,10 +187,10 @@ let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 let fooOne = async () => {
   await wait(20000);
   const rV1 = await cleanUp();
-  console.log('rv1: ', rv1);
+  console.log('rV1: ', rV1);
   await wait(20000);
   const rV2 = await cleanUp();
-  console.log('rv2: ', rv2);
+  console.log('rV2: ', rV2);
 };
 fooOne();
 /*(async function() {
