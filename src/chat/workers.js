@@ -83,25 +83,34 @@ async function cleanUpChats() {
   }
 }
 
-const cleanUp = function() {
+const cleanUp = async function() {
   console.log('Clean Up Isle NOBSC Messenger (START)');
   try {
-    workerClient.zadd('rooms', Date.now(), "testroom");
-    workerClient.set('testkey', 'heelllllooooothheeeerrrrreeeee');
-    workerClient.get('testkey');
+    //workerClient.zadd('rooms', Date.now(), "testroom");
+    await workerClient.set('testkey', 'heelllllooooothheeeerrrrreeeee');
+    const thing1 = await workerClient.get('testkey');
+    console.log(thing1);
   } catch (err) {
     console.log('=====!=====!=====!=====!=====', err);
   }
-  
-  console.log('in betweeeeeeeen');
 
   try {
-    workerClient.zadd('rooms', Date.now(), "testroom");
-    workerClient.set('testkey', 'heelllllooooothheeeerrrrreeeee');
-    workerClient.get('testkey');
+    //await workerClient.zadd('rooms', Date.now(), "testroom");
+    await workerClient.set('testkey2', 'heelllllooooobbaaabbbbbeeeeeeeee');
+    const thing2 = await workerClient.get('testkey2');
+    console.log(thing2);
   } catch (err) {
     console.log('=====!=====!=====!=====!=====', err);
   }
+
+  /*try {
+    //await workerClient.zadd('rooms', Date.now(), "testroom");
+    await workerClient.set('testkey3', 'heelllllooooofather');
+    const thing3 = workerClient.get('testkey3');
+    console.log(thing3);
+  } catch (err) {
+    console.log('=====!=====!=====!=====!=====', err);
+  }*/
   //await cleanUpRooms();
   //await cleanUpChats();
   console.log('Clean Up Isle NOBSC Messenger (END)');

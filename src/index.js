@@ -192,6 +192,11 @@ try {
     cleanUp();
     console.log('`after` 3 and 4');
   }, 40000);  // at the 40 second mark
+  setTimeout(() => {
+    cleanUp();
+    cleanUp();
+    console.log('`after` 3 and 4');
+  }, 60000);  // at the 60 second mark
 } catch(err) {
   console.log(err);
 }
