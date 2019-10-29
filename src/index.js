@@ -195,7 +195,7 @@ try {
   setTimeout(() => {
     cleanUp();
     cleanUp();
-    console.log('`after` 3 and 4');
+    console.log('`after` 5 and 6');
   }, 60000);  // at the 60 second mark
 } catch(err) {
   console.log(err);
