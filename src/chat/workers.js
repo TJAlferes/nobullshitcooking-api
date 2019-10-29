@@ -85,21 +85,25 @@ async function cleanUpChats() {
 
 const cleanUp = function() {
   console.log('Clean Up Isle NOBSC Messenger (START)');
-  console.log('Clean Up Isle NOBSC Messenger (START)');
   try {
     workerClient.zadd('rooms', Date.now(), "testroom");
+    workerClient.set('testkey', 'heelllllooooothheeeerrrrreeeee');
+    workerClient.get('testkey');
   } catch (err) {
     console.log('=====!=====!=====!=====!=====', err);
   }
   
+  console.log('in betweeeeeeeen');
+
   try {
     workerClient.zadd('rooms', Date.now(), "testroom");
+    workerClient.set('testkey', 'heelllllooooothheeeerrrrreeeee');
+    workerClient.get('testkey');
   } catch (err) {
     console.log('=====!=====!=====!=====!=====', err);
   }
   //await cleanUpRooms();
   //await cleanUpChats();
-  console.log('Clean Up Isle NOBSC Messenger (END)');
   console.log('Clean Up Isle NOBSC Messenger (END)');
 }
 

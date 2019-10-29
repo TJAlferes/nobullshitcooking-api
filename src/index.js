@@ -260,8 +260,8 @@ process.on('unhandledRejection', (reason, promise) => {
 
 let PORT;
 PORT = process.env.PORT || 8081;
-//server.listen(PORT, '127.0.0.1', () => console.log('Listening on port ' + PORT));
-server.listen(PORT, () => console.log('Listening on port ' + PORT));
+server.listen(PORT, '127.0.0.1', () => console.log('Listening on port ' + PORT));
+//server.listen(PORT, () => console.log('Listening on port ' + PORT));
 
 
 // try 3003 for prod too?
