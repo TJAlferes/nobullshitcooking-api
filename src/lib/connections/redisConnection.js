@@ -20,6 +20,7 @@ const workerClient = process.env.NODE_ENV === 'production'
 
 //console.log('========== ioredis new Redis ========== ');
 //console.log('pubClient', pubClient);
+pubClient.on('connect', () => console.log('pub ready!!!!!!!!!!!'));
 pubClient.on('ready', () => console.log('pub ready!!!!!!!!!!!'));
 pubClient.on('error', () => console.log('pub error!!!!!!!!!!!'));
 pubClient.on('close', () => console.log('pub close!!!!!!!!!!!'));
@@ -27,6 +28,7 @@ pubClient.on('close', () => console.log('pub close!!!!!!!!!!!'));
 
 //console.log('========== ioredis new Redis ========== ');
 //console.log('subClient', subClient);
+subClient.on('connect', () => console.log('sub ready!!!!!!!!!!!'));
 subClient.on('ready', () => console.log('sub ready!!!!!!!!!!!'));
 subClient.on('error', () => console.log('sub error!!!!!!!!!!!'));
 subClient.on('close', () => console.log('sub close!!!!!!!!!!!'));
@@ -34,6 +36,7 @@ subClient.on('close', () => console.log('sub close!!!!!!!!!!!'));
 
 //console.log('========== ioredis new Redis ========== ');
 //console.log('sessClient', sessClient);
+sessClient.on('connect', () => console.log('sess ready!!!!!!!!!!!'));
 sessClient.on('ready', () => console.log('sess ready!!!!!!!!!!!'));
 sessClient.on('error', () => console.log('sess error!!!!!!!!!!!'));
 sessClient.on('close', () => console.log('sess close!!!!!!!!!!!'));
@@ -42,11 +45,9 @@ sessClient.on('close', () => console.log('sess close!!!!!!!!!!!'));
 
 //console.log('========== ioredis new Redis ========== ');
 //console.log('workerClient', workerClient);
+workerClient.on('connect', () => console.log('worker ready!!!!!!!!!!!'));
 workerClient.on('ready', () => console.log('worker ready!!!!!!!!!!!'));
 workerClient.on('error', () => console.log('worker error!!!!!!!!!!!'));
-workerClient.on('error', e => console.log('worker error!:', e));
-workerClient.on('error', () => console.log('worker error!!!!!!!!!!!'));
-workerClient.on('error', e => console.log('worker error!:', e));
 workerClient.on('close', () => console.log('worker close!!!!!!!!!!!'));
 //console.log('============================== ');
 
