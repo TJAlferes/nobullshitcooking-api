@@ -178,7 +178,7 @@ io.adapter(redisAdapter({pubClient, subClient}));
 io.use(socketAuth);
 io.on('connection', socketConnection);
 const INTERVAL = 60 * 60 * 1000 * 3;  // 3 hours
-setInterval(cleanUp, INTERVAL);
+//setInterval(cleanUp, INTERVAL);
 
 let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -199,7 +199,7 @@ let fooOne = async () => {
   const rV4 = await cleanUp();
   console.log('rV4: ', rV4);
 };
-fooOne();
+//fooOne();
 /*(async function() {
   try {
     setTimeout(() => {
@@ -244,7 +244,7 @@ fooOne();
 
 app.get('/', (req, res) => {
   try {
-    console.log(req);
+    console.log(`No Bullshit Cooking Backend API.`);
     res.send(`No Bullshit Cooking Backend API.`);
   } catch(err) {
     console.log(err);
@@ -287,21 +287,11 @@ process.on('unhandledRejection', (reason, promise) => {
 ##############################################################################*/
 
 let PORT;
-PORT = process.env.PORT || 8081;
-server.listen(PORT, '127.0.0.1', () => console.log('Listening on port ' + PORT));
-//server.listen(PORT, () => console.log('Listening on port ' + PORT));
 
-
-// try 3003 for prod too?
-
-/*if (app.get('env') === 'production') {
+if (app.get('env') === 'production') {
   PORT = process.env.PORT || 8081;
-  //server.listen(PORT, () => console.log('Listening on port ' + PORT));
-  //server.listen(PORT, 'localhost', () => console.log('Listening on port ' + PORT));
   server.listen(PORT, '127.0.0.1', () => console.log('Listening on port ' + PORT));
-  //server.listen(PORT, '0.0.0.0', () => console.log('Listening on port ' + PORT));
 } else {
   PORT = process.env.PORT || 3003;
   server.listen(PORT, '0.0.0.0', () => console.log('Listening on port ' + PORT));
-}*/
-//app.listen(PORT, () => console.log('Listening on port ' + PORT));
+}
