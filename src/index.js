@@ -43,7 +43,7 @@ const {
   searchRoutes
 } = require('./routes');
 const socketConnection = require('./chat');
-//const cleanUp = require('./chat/workers');
+const cleanUp = require('./chat/workers');
 const MessengerUser = require('./redis-access/MessengerUser');  // move
 const {
   pubClient,
