@@ -46,12 +46,13 @@ const {
 const socketConnection = require('./chat');
 const cleanUp = require('./chat/workers');
 const MessengerUser = require('./redis-access/MessengerUser');  // move
+*/
 const {
   pubClient,
   subClient,
-  sessClient
+  sessClient,
+  workerClient
 } = require('./lib/connections/redisConnection');
-*/
 //const bulkUp = require('./search');
 
 
@@ -230,6 +231,32 @@ fooOne();
     console.log(err);
   }
 })();*/
+try {
+  workerClient.set("foo", "bar");
+  workerClient.get("foo", function(err, result) {
+    if (err) {
+      console.error(err);
+    } else {
+      console.log(result);
+    }
+  });
+  workerClient.get("foo", function(err, result) {
+    if (err) {
+      console.error(err);
+    } else {
+      console.log(result);
+    }
+  });
+  workerClient.get("foo").then(function(result) {
+    console.log(result);
+  });
+  workerClient.get("foo").then(function(result) {
+    console.log(result);
+  });
+  workerClient.del("foo");
+} catch(err) {
+  console.log(err);
+}
 /*setInterval(() => io.of('/').adapter.clients((err, clients) => {
   console.log(clients); // an array containing all connected socket ids
 }), (60 * 1000));*/
@@ -252,7 +279,7 @@ fooOne();
 
 app.get('/', (req, res) => {
   try {
-    console.log(`No Bullshit Cooking Backend API 80-good-2.`);
+    console.log(`No Bullshit Cooking Backend API foo-bar-1.`);
     res.send(`No Bullshit Cooking Backend API.`);
   } catch(err) {
     console.log(err);
@@ -283,6 +310,7 @@ process.on('unhandledRejection', (reason, promise) => {
   console.log('Unhandled Rejection at:', reason.stack || reason);
 });
 
+// NOT for prod
 app.use((error, req, res, next) => {
   //req.log.error(error);
   res.json({error: {message: error.message, status: error.status || 500}});
