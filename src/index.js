@@ -244,7 +244,7 @@ let fooOne = async () => {
 
 app.get('/', (req, res) => {
   try {
-    console.log(`No Bullshit Cooking Backend API.`);
+    console.log(`No Bullshit Cooking Backend API 80-good-2.`);
     res.send(`No Bullshit Cooking Backend API.`);
   } catch(err) {
     console.log(err);
