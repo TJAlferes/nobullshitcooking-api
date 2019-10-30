@@ -1,3 +1,4 @@
+/*
 'use strict';
 
 const { workerClient } = require('../lib/connections/redisConnection');
@@ -111,14 +112,14 @@ const cleanUp = async function() {
     console.log('=====!=====!=====!=====!=====', err);
   }
 
-  /*try {
+  try {
     //await workerClient.zadd('rooms', Date.now(), "testroom");
     await workerClient.set('testkey3', 'heelllllooooofather');
     const thing3 = workerClient.get('testkey3');
     console.log(thing3);
   } catch (err) {
     console.log('=====!=====!=====!=====!=====', err);
-  }*/
+  }
   //await cleanUpRooms();
   //await cleanUpChats();
   console.log('Clean Up Isle NOBSC Messenger (END)');
@@ -126,3 +127,4 @@ const cleanUp = async function() {
 }
 
 module.exports = cleanUp;
+*/

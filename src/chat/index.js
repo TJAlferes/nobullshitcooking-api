@@ -1,3 +1,4 @@
+/*
 'use strict';
 
 const pool = require('../lib/connections/mysqlPoolConnection');
@@ -41,12 +42,10 @@ const socketConnection = async function(socket) {
 
 
 
-  /*
-  the one thing left to do here is
-  no longer appear online for blocked users and deleted friends during that same session,
-  the former we should definitely implement,
-  the latter we may need really need
-  */
+  //the one thing left to do here is
+  //no longer appear online for blocked users and deleted friends during that same session,
+  //the former we should definitely implement,
+  //the latter we may need really need
   socket.on('GetOnline', async function() {
     const acceptedFriends = await nobscFriendship.viewAllMyAcceptedFriendships(user);
   
@@ -175,3 +174,4 @@ const socketConnection = async function(socket) {
 };
 
 module.exports = socketConnection;
+*/

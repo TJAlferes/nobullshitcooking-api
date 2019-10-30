@@ -15,14 +15,14 @@ const helmet = require('helmet');
 //const csurf = require('csurf');  // no longer needed?
 const compression = require('compression');
 
-const expressSession = require("express-session");
-const connectRedis = require('connect-redis');
+//const expressSession = require("express-session");
+//const connectRedis = require('connect-redis');
 
-const http = require('http');
-const socketIO = require('socket.io');
-const redisAdapter = require('socket.io-redis');
-const cookie = require('cookie');
-const cookieParser = require('cookie-parser');
+//const http = require('http');
+//const socketIO = require('socket.io');
+//const redisAdapter = require('socket.io-redis');
+//const cookie = require('cookie');
+//const cookieParser = require('cookie-parser');
 
 //const { buildSchema } = require('graphql');
 //const expressGraphQL = require('express-graphql');
@@ -42,6 +42,7 @@ const {
   userRoutes,
   searchRoutes
 } = require('./routes');
+/*
 const socketConnection = require('./chat');
 const cleanUp = require('./chat/workers');
 const MessengerUser = require('./redis-access/MessengerUser');  // move
@@ -50,6 +51,7 @@ const {
   subClient,
   sessClient
 } = require('./lib/connections/redisConnection');
+*/
 //const bulkUp = require('./search');
 
 
@@ -67,8 +69,8 @@ const corsOptions = {origin: ['http://localhost:8080'], credentials: true};
 
 
 // chat    // move
-const server = http.Server(app);
-const io = socketIO(server);
+//const server = http.Server(app);
+//const io = socketIO(server);
 
 /*
 Note to self:
@@ -90,7 +92,7 @@ const pubClient = new Redis.Cluster(redisClusterOptions, elasticacheWithTLS);
 const subClient = new Redis.Cluster(redisClusterOptions, elasticacheWithTLS);
 */
 
-const socketAuth = (socket, next) => {
+/*const socketAuth = (socket, next) => {
   const parsedCookie = cookie.parse(socket.request.headers.cookie);
   const sid = cookieParser.signedCookie(
     parsedCookie['connect.sid'],
@@ -119,10 +121,11 @@ const socketAuth = (socket, next) => {
       return next(new Error('Not authenticated.'));
     }
   });
-};
+};*/
 
 
 // session
+/*
 const RedisStore = connectRedis(expressSession);
 const redisSession = new RedisStore({client: sessClient});
 const sessionOptions = {
@@ -140,17 +143,18 @@ const sessionOptions = {
   unset: "destroy"
 };
 const session = expressSession(sessionOptions);
+*/
 
 
 // prod
 if (app.get('env') === 'production') {
   app.set('trust proxy', 1);  // trust first proxy
-  sessionOptions.cookie = {
+  /*sessionOptions.cookie = {
     sameSite: true,
     maxAge: 86400000,
     httpOnly: true,
     secure: true
-  };
+  };*/
   corsOptions.origin = ['https://nobullshitcooking.net'];
 }  // enforce https? or elasticbeanstalk already does?
 
@@ -162,7 +166,7 @@ if (app.get('env') === 'production') {
 
 //app.use(expressPinoLogger());
 app.use(express.json());
-app.use(session);
+//app.use(session);
 app.use(expressRateLimit(rateLimiterOptions));
 //app.use(session);
 app.use(cors(corsOptions));
@@ -174,11 +178,14 @@ app.use(helmet());
 app.use(compression());  // elasticbeanstalk/nginx already does?
 
 // move these
+/*
 io.adapter(redisAdapter({pubClient, subClient}));
 io.use(socketAuth);
 io.on('connection', socketConnection);
+*/
 const INTERVAL = 60 * 60 * 1000 * 3;  // 3 hours
-//setInterval(cleanUp, INTERVAL);
+/*
+setInterval(cleanUp, INTERVAL);
 
 let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -199,7 +206,8 @@ let fooOne = async () => {
   const rV4 = await cleanUp();
   console.log('rV4: ', rV4);
 };
-//fooOne();
+fooOne();
+*/
 /*(async function() {
   try {
     setTimeout(() => {
@@ -275,10 +283,10 @@ process.on('unhandledRejection', (reason, promise) => {
   console.log('Unhandled Rejection at:', reason.stack || reason);
 });
 
-/*app.use((error, req, res, next) => {
+app.use((error, req, res, next) => {
   //req.log.error(error);
   res.json({error: {message: error.message, status: error.status || 500}});
-});*/
+});
 
 
 
@@ -290,8 +298,10 @@ let PORT;
 
 if (app.get('env') === 'production') {
   PORT = process.env.PORT || 8081;
-  server.listen(PORT, '127.0.0.1', () => console.log('Listening on port ' + PORT));
+  //server.listen(PORT, '127.0.0.1', () => console.log('Listening on port ' + PORT));
+  app.listen(PORT, '127.0.0.1', () => console.log('Listening on port ' + PORT));
 } else {
   PORT = process.env.PORT || 3003;
+  //server.listen(PORT, '0.0.0.0', () => console.log('Listening on port ' + PORT));
   server.listen(PORT, '0.0.0.0', () => console.log('Listening on port ' + PORT));
 }

@@ -1,3 +1,4 @@
+/*
 'use strict';
 
 const Redis = require('ioredis');
@@ -52,3 +53,4 @@ workerClient.on('close', () => console.log('worker close!!!!!!!!!!!'));
 //console.log('============================== ');
 
 module.exports = {pubClient, subClient, sessClient, workerClient};
+*/
