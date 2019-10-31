@@ -187,7 +187,6 @@ io.on('connection', socketConnection);
 //const INTERVAL = 60 * 60 * 1000 * 3;  // 3 hours
 const MINTERVAL = 30 * 1000;  // 30 seconds
 //setInterval(cleanUp, INTERVAL);
-setInterval(fooOne, MINTERVAL);
 
 //let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 /*let fooOne = async () => {
@@ -225,7 +224,7 @@ fooOne();*/
     console.log(err);
   }
 })();*/
-let fooOne = async () => {
+const fooOne = async () => {
   try {
     console.log('fooOne call START');
     workerClient.set("foo", "bar");
@@ -256,6 +255,7 @@ let fooOne = async () => {
     console.log(err);
   }
 };
+setInterval(fooOne, MINTERVAL);
 
 /*setInterval(() => io.of('/').adapter.clients((err, clients) => {
   console.log(clients); // an array containing all connected socket ids
@@ -279,7 +279,7 @@ let fooOne = async () => {
 
 app.get('/', (req, res) => {
   try {
-    console.log(`No Bullshit Cooking Backend API foo-bar-1.`);
+    console.log(`No Bullshit Cooking Backend API.`);
     res.send(`No Bullshit Cooking Backend API.`);
   } catch(err) {
     console.log(err);
