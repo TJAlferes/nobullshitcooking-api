@@ -55,6 +55,11 @@ const {
 } = require('./lib/connections/redisConnection');
 //const bulkUp = require('./search');
 
+const redis = require('redis');
+const client = redis.createClient(6379, process.env.ELASTICACHE_PROD_PRIMARY);
+const { promisify } = require('util');
+const getAsync = promisify(client.get).bind(client);
+
 
 
 /*##############################################################################
@@ -229,11 +234,16 @@ const fooOne = async () => {
   console.log('fooOne call START');
   const key = 'cat';
   try {
-    console.log(workerClient);
-    await workerClient.set(key, 'Garfield');
-    const result = await workerClient.get(key);
-    console.log(result);
-    workerClient.del("foo");
+    //console.log(client);
+    //console.log(workerClient);
+    client.set(key, 'Garfield');
+    const res = await getAsync(key);
+    console.log(res);
+    console.log(res);
+    //await workerClient.set(key, 'Garfield');
+    //const result = await workerClient.get(key);
+    //console.log(result);
+    //workerClient.del("foo");
   } catch (error) {
     console.error(error);
   }
@@ -259,6 +269,15 @@ const fooOne = async () => {
 
 const fooZero = async () => {
   await wait(30000);
+  fooOne();
+  fooOne();
+  await wait(10000);
+  fooOne();
+  fooOne();
+  await wait(10000);
+  fooOne();
+  fooOne();
+  await wait(10000);
   fooOne();
   fooOne();
   await wait(10000);
@@ -349,5 +368,5 @@ if (app.get('env') === 'production') {
 } else {
   PORT = process.env.PORT || 3003;
   //server.listen(PORT, '0.0.0.0', () => console.log('Listening on port ' + PORT));
-  server.listen(PORT, '0.0.0.0', () => console.log('Listening on port ' + PORT));
+  app.listen(PORT, '0.0.0.0', () => console.log('Listening on port ' + PORT));
 }
