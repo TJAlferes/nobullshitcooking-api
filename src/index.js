@@ -227,10 +227,22 @@ fooOne();*/
 const fooOne = async () => {
   try {
     console.log('fooOne call START');
-    await workerClient.set("foo", "bar");
-    const worker = await workerClient.get("foo");
-    console.log('result: ', worker);
-    await workerClient.del("foo");
+    workerClient.set("foo", "bar");
+    async function getShit() {
+      return new Promise((resolve, reject) => {
+        workerClient.get("foo", (err, reply) => err ? reject(err) : resolve(reply));
+      })
+      .then(reply => {
+        if (reply === null) return Promise.reject(null);
+        console.log(reply);
+        return reply;
+      })
+      .then(data => ({data}))
+      .catch(() => Promise.reject({data: {}}));
+    }
+    const gotFoo = await getShit();
+    console.log('result: ', gotFoo);
+    workerClient.del("foo");
     console.log('fooOne call END');
   } catch(err) {
     console.log(err);
