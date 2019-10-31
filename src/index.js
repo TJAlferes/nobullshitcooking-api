@@ -224,30 +224,38 @@ fooOne();*/
     console.log(err);
   }
 })();*/
+
 const fooOne = async () => {
+  console.log('fooOne call START');
+  const key = 'cat';
   try {
-    console.log('fooOne call START');
-    workerClient.set("foo", "bar");
-    async function getShit() {
-      return new Promise((resolve, reject) => {
-        workerClient.get("foo", (err, reply) => err ? reject(err) : resolve(reply));
-      })
-      .then(reply => {
-        if (reply === null) return Promise.reject(null);
-        console.log(reply);
-        return reply;
-      })
-      .then(data => ({data}))
-      .catch(() => Promise.reject({data: {}}));
-    }
-    const gotFoo = await getShit();
-    console.log('result: ', gotFoo);
+    await workerClient.set(key, 'Garfield');
+    const result = await workerClient.get(key);
+    console.log(result);
     workerClient.del("foo");
-    console.log('fooOne call END');
-  } catch(err) {
-    console.log(err);
+  } catch (error) {
+    console.error(error);
   }
+  //workerClient.disconnect();
+  /*workerClient.set("foo", "bar");
+  async function getShit() {
+    return new Promise((resolve, reject) => {
+      workerClient.get("foo", (err, reply) => err ? reject(err) : resolve(reply));
+    })
+    .then(reply => {
+      if (reply === null) return Promise.reject(null);
+      console.log(reply);
+      return reply;
+    })
+    .then(data => ({data}))
+    .catch(() => Promise.reject({data: {}}));
+  }
+  const gotFoo = await getShit();
+  console.log('result: ', gotFoo);
+  workerClient.del("foo");*/
+  console.log('fooOne call END');
 };
+
 const fooZero = async () => {
   await wait(10000);
   fooOne();
@@ -260,6 +268,7 @@ const fooZero = async () => {
   fooOne();
 };
 fooZero();
+
 //setInterval(fooOne, MINTERVAL);
 
 /*setInterval(() => io.of('/').adapter.clients((err, clients) => {
