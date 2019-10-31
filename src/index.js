@@ -190,8 +190,8 @@ const fooOne = async () => {
   console.log('fooOne call START');
   const key = 'cat';
   try {
-    client.set(key, 'Garfield');
-    const res = await getAsync(key);
+    workerClient.set(key, 'Garfield');
+    const res = await workerClient.get(key);
     console.log(res);
     console.log(res);
   } catch (error) {
