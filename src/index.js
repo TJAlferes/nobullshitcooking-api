@@ -184,31 +184,25 @@ io.adapter(redisAdapter({pubClient, subClient}));
 io.use(socketAuth);
 io.on('connection', socketConnection);
 */
-const INTERVAL = 60 * 60 * 1000 * 3;  // 3 hours
-/*
-setInterval(cleanUp, INTERVAL);
+//const INTERVAL = 60 * 60 * 1000 * 3;  // 3 hours
+const MINTERVAL = 30 * 1000;  // 30 seconds
+//setInterval(cleanUp, INTERVAL);
+setInterval(fooOne, MINTERVAL);
 
-let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-
-let fooOne = async () => {
+//let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+/*let fooOne = async () => {
   await wait(20000);
-
   const rV1 = await cleanUp();
   console.log('rV1: ', rV1);
-
   const rV2 = await cleanUp();
   console.log('rV2: ', rV2);
-
   await wait(20000);
-
   const rV3 = await cleanUp();
   console.log('rV3: ', rV3);
-
   const rV4 = await cleanUp();
   console.log('rV4: ', rV4);
 };
-fooOne();
-*/
+fooOne();*/
 /*(async function() {
   try {
     setTimeout(() => {
@@ -231,32 +225,39 @@ fooOne();
     console.log(err);
   }
 })();*/
-try {
-  workerClient.set("foo", "bar");
-  workerClient.get("foo", function(err, result) {
-    if (err) {
-      console.error(err);
-    } else {
+let fooOne = async () => {
+  console.log
+  try {
+    console.log('fooOne call START');
+    workerClient.set("foo", "bar");
+    const worker = workerClient.get("foo", function(err, result) {
+      if (err) {
+        console.error(err);
+      } else {
+        console.log(result);
+      }
+    });
+    console.log(worker);
+    workerClient.get("foo", function(err, result) {
+      if (err) {
+        console.error(err);
+      } else {
+        console.log(result);
+      }
+    });
+    workerClient.get("foo").then(function(result) {
       console.log(result);
-    }
-  });
-  workerClient.get("foo", function(err, result) {
-    if (err) {
-      console.error(err);
-    } else {
+    });
+    workerClient.get("foo").then(function(result) {
       console.log(result);
-    }
-  });
-  workerClient.get("foo").then(function(result) {
-    console.log(result);
-  });
-  workerClient.get("foo").then(function(result) {
-    console.log(result);
-  });
-  workerClient.del("foo");
-} catch(err) {
-  console.log(err);
-}
+    });
+    workerClient.del("foo");
+    console.log('fooOne call END');
+  } catch(err) {
+    console.log(err);
+  }
+};
+
 /*setInterval(() => io.of('/').adapter.clients((err, clients) => {
   console.log(clients); // an array containing all connected socket ids
 }), (60 * 1000));*/
