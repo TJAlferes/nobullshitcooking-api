@@ -1,4 +1,3 @@
-/*
 'use strict';
 
 const { workerClient } = require('../lib/connections/redisConnection');
@@ -22,9 +21,6 @@ async function cleanUpRooms() {
             .del(`rooms:${room}:chats`)
             .exec();
 
-            console.log('INSIDE! 1');
-            console.log('INSIDE! 1');
-
             workerClient.zrangebyscore(
               'users',
               '-inf',
@@ -33,8 +29,6 @@ async function cleanUpRooms() {
                 if (err !== null) {
                   console.log(err);
                 } else {
-                  console.log('INSIDE! 2');
-                  console.log('INSIDE! 2');
                   users.forEach(function(user) {
                     workerClient.zrem(`rooms:${room}`, user);
                   });
@@ -46,7 +40,7 @@ async function cleanUpRooms() {
       }
     );
   } catch (err) {
-    console.log('=====!=====!=====!=====!=====', err);
+    console.log(err);
   }
 }
 
@@ -65,8 +59,6 @@ async function cleanUpChats() {
             if (err !== null) {
               console.log(err);
             } else {
-              console.log('INSIDE! 3');
-              console.log('INSIDE! 3');
               rooms.forEach(function(room) {
                 workerClient.zremrangebyscore(
                   `rooms:${room}:chats`,
@@ -80,51 +72,15 @@ async function cleanUpChats() {
       }
     );
   } catch (err) {
-    console.log('=====!=====!=====!=====!=====', err);
+    console.log(err);
   }
 }
 
 const cleanUp = async function() {
   console.log('Clean Up Isle NOBSC Messenger (START)');
-
-  workerClient.info(function(err, res) {
-    console.log('INSIDE INFO');
-    if (err !== null) console.log(err);
-    console.log(res);
-  });
-
-  try {
-    //workerClient.zadd('rooms', Date.now(), "testroom");
-    await workerClient.set('testkey', 'heelllllooooothheeeerrrrreeeee');
-    const thing1 = await workerClient.get('testkey');
-    console.log('thing1: ', thing1);
-  } catch (err) {
-    console.log('=====!=====!=====!=====!=====', err);
-  }
-
-  let thing2;
-  try {
-    //await workerClient.zadd('rooms', Date.now(), "testroom");
-    await workerClient.set('testkey2', 'heelllllooooobbaaabbbbbeeeeeeeee');
-    thing2 = await workerClient.get('testkey2');
-    console.log('thing2: ', thing2);
-  } catch (err) {
-    console.log('=====!=====!=====!=====!=====', err);
-  }
-
-  try {
-    //await workerClient.zadd('rooms', Date.now(), "testroom");
-    await workerClient.set('testkey3', 'heelllllooooofather');
-    const thing3 = workerClient.get('testkey3');
-    console.log(thing3);
-  } catch (err) {
-    console.log('=====!=====!=====!=====!=====', err);
-  }
-  //await cleanUpRooms();
-  //await cleanUpChats();
+  await cleanUpRooms();
+  await cleanUpChats();
   console.log('Clean Up Isle NOBSC Messenger (END)');
-  return thing2;
 }
 
 module.exports = cleanUp;
-*/

@@ -15,14 +15,14 @@ const helmet = require('helmet');
 //const csurf = require('csurf');  // no longer needed?
 const compression = require('compression');
 
-//const expressSession = require("express-session");
-//const connectRedis = require('connect-redis');
+const expressSession = require("express-session");
+const connectRedis = require('connect-redis');
 
-//const http = require('http');
-//const socketIO = require('socket.io');
-//const redisAdapter = require('socket.io-redis');
-//const cookie = require('cookie');
-//const cookieParser = require('cookie-parser');
+const http = require('http');
+const socketIO = require('socket.io');
+const redisAdapter = require('socket.io-redis');
+const cookie = require('cookie');
+const cookieParser = require('cookie-parser');
 
 //const { buildSchema } = require('graphql');
 //const expressGraphQL = require('express-graphql');
@@ -42,23 +42,21 @@ const {
   userRoutes,
   searchRoutes
 } = require('./routes');
-/*
 const socketConnection = require('./chat');
 const cleanUp = require('./chat/workers');
 const MessengerUser = require('./redis-access/MessengerUser');  // move
-*/
 const {
   pubClient,
   subClient,
-  sessClient,
-  workerClient
+  sessClient
 } = require('./lib/connections/redisConnection');
 //const bulkUp = require('./search');
-
+/*
 const redis = require('redis');
 const client = redis.createClient(6379, process.env.ELASTICACHE_PROD_PRIMARY);
 const { promisify } = require('util');
 const getAsync = promisify(client.get).bind(client);
+*/
 
 
 
@@ -75,8 +73,8 @@ const corsOptions = {origin: ['http://localhost:8080'], credentials: true};
 
 
 // chat    // move
-//const server = http.Server(app);
-//const io = socketIO(server);
+const server = http.Server(app);
+const io = socketIO(server);
 
 /*
 Note to self:
@@ -97,8 +95,7 @@ const elasticacheWithTLS = {
 const pubClient = new Redis.Cluster(redisClusterOptions, elasticacheWithTLS);
 const subClient = new Redis.Cluster(redisClusterOptions, elasticacheWithTLS);
 */
-
-/*const socketAuth = (socket, next) => {
+const socketAuth = (socket, next) => {
   const parsedCookie = cookie.parse(socket.request.headers.cookie);
   const sid = cookieParser.signedCookie(
     parsedCookie['connect.sid'],
@@ -127,11 +124,10 @@ const subClient = new Redis.Cluster(redisClusterOptions, elasticacheWithTLS);
       return next(new Error('Not authenticated.'));
     }
   });
-};*/
+};
 
 
 // session
-/*
 const RedisStore = connectRedis(expressSession);
 const redisSession = new RedisStore({client: sessClient});
 const sessionOptions = {
@@ -149,18 +145,17 @@ const sessionOptions = {
   unset: "destroy"
 };
 const session = expressSession(sessionOptions);
-*/
 
 
 // prod
 if (app.get('env') === 'production') {
   app.set('trust proxy', 1);  // trust first proxy
-  /*sessionOptions.cookie = {
+  sessionOptions.cookie = {
     sameSite: true,
     maxAge: 86400000,
     httpOnly: true,
     secure: true
-  };*/
+  };
   corsOptions.origin = ['https://nobullshitcooking.net'];
 }  // enforce https? or elasticbeanstalk already does?
 
@@ -174,7 +169,7 @@ if (app.get('env') === 'production') {
 app.use(express.json());
 //app.use(session);
 app.use(expressRateLimit(rateLimiterOptions));
-//app.use(session);
+app.use(session);
 app.use(cors(corsOptions));
 //app.use(helmet());  // get working
 //app.use(hpp());
@@ -184,112 +179,37 @@ app.use(helmet());
 app.use(compression());  // elasticbeanstalk/nginx already does?
 
 // move these
-/*
 io.adapter(redisAdapter({pubClient, subClient}));
 io.use(socketAuth);
 io.on('connection', socketConnection);
-*/
-//const INTERVAL = 60 * 60 * 1000 * 3;  // 3 hours
-const MINTERVAL = 30 * 1000;  // 30 seconds
-//setInterval(cleanUp, INTERVAL);
+const INTERVAL = 60 * 60 * 1000 * 3;  // 3 hours
+setInterval(cleanUp, INTERVAL);
 
 let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-/*let fooOne = async () => {
-  await wait(20000);
-  const rV1 = await cleanUp();
-  console.log('rV1: ', rV1);
-  const rV2 = await cleanUp();
-  console.log('rV2: ', rV2);
-  await wait(20000);
-  const rV3 = await cleanUp();
-  console.log('rV3: ', rV3);
-  const rV4 = await cleanUp();
-  console.log('rV4: ', rV4);
-};
-fooOne();*/
-/*(async function() {
-  try {
-    setTimeout(() => {
-      const rV1 = await cleanUp();
-      console.
-      const rV2 = await cleanUp();
-      console.log('`after` 1 and 2');
-    }, 20000);  // at the 20 second mark
-    setTimeout(() => {
-      cleanUp();
-      cleanUp();
-      console.log('`after` 3 and 4');
-    }, 40000);  // at the 40 second mark
-    setTimeout(() => {
-      cleanUp();
-      cleanUp();
-      console.log('`after` 5 and 6');
-    }, 60000);  // at the 60 second mark
-  } catch(err) {
-    console.log(err);
-  }
-})();*/
-
 const fooOne = async () => {
   console.log('fooOne call START');
   const key = 'cat';
   try {
-    //console.log(client);
-    //console.log(workerClient);
     client.set(key, 'Garfield');
     const res = await getAsync(key);
     console.log(res);
     console.log(res);
-    //await workerClient.set(key, 'Garfield');
-    //const result = await workerClient.get(key);
-    //console.log(result);
-    //workerClient.del("foo");
   } catch (error) {
     console.error(error);
   }
-  //workerClient.disconnect();
-  /*workerClient.set("foo", "bar");
-  async function getShit() {
-    return new Promise((resolve, reject) => {
-      workerClient.get("foo", (err, reply) => err ? reject(err) : resolve(reply));
-    })
-    .then(reply => {
-      if (reply === null) return Promise.reject(null);
-      console.log(reply);
-      return reply;
-    })
-    .then(data => ({data}))
-    .catch(() => Promise.reject({data: {}}));
-  }
-  const gotFoo = await getShit();
-  console.log('result: ', gotFoo);
-  workerClient.del("foo");*/
   console.log('fooOne call END');
 };
-
 const fooZero = async () => {
   await wait(30000);
   fooOne();
+  await wait(10000);
   fooOne();
   await wait(10000);
   fooOne();
-  fooOne();
   await wait(10000);
-  fooOne();
-  fooOne();
-  await wait(10000);
-  fooOne();
-  fooOne();
-  await wait(10000);
-  fooOne();
-  fooOne();
-  await wait(10000);
-  fooOne();
   fooOne();
 };
 fooZero();
-
-//setInterval(fooOne, MINTERVAL);
 
 /*setInterval(() => io.of('/').adapter.clients((err, clients) => {
   console.log(clients); // an array containing all connected socket ids
@@ -311,12 +231,8 @@ fooZero();
 3. routes
 ##############################################################################*/
 
-let blah = 1;
 app.get('/', (req, res) => {
   try {
-    blah = blah + 1;
-    console.log(blah);
-    console.log(`No Bullshit Cooking Backend API.`);
     res.send(`No Bullshit Cooking Backend API.`);
   } catch(err) {
     console.log(err);
@@ -347,11 +263,12 @@ process.on('unhandledRejection', (reason, promise) => {
   console.log('Unhandled Rejection at:', reason.stack || reason);
 });
 
-// NOT for prod
-app.use((error, req, res, next) => {
-  //req.log.error(error);
-  res.json({error: {message: error.message, status: error.status || 500}});
-});
+/*if (app.get('env') === 'development') {
+  app.use((error, req, res, next) => {
+    //req.log.error(error);
+    res.json({error: {message: error.message, status: error.status || 500}});
+  });
+}*/
 
 
 
@@ -363,10 +280,10 @@ let PORT;
 
 if (app.get('env') === 'production') {
   PORT = process.env.PORT || 8081;
-  //server.listen(PORT, '127.0.0.1', () => console.log('Listening on port ' + PORT));
-  app.listen(PORT, '127.0.0.1', () => console.log('Listening on port ' + PORT));
+  server.listen(PORT, '127.0.0.1', () => console.log('Listening on port ' + PORT));
+  //app.listen(PORT, '127.0.0.1', () => console.log('Listening on port ' + PORT));
 } else {
   PORT = process.env.PORT || 3003;
-  //server.listen(PORT, '0.0.0.0', () => console.log('Listening on port ' + PORT));
-  app.listen(PORT, '0.0.0.0', () => console.log('Listening on port ' + PORT));
+  server.listen(PORT, '0.0.0.0', () => console.log('Listening on port ' + PORT));
+  //app.listen(PORT, '0.0.0.0', () => console.log('Listening on port ' + PORT));
 }

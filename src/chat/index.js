@@ -1,4 +1,3 @@
-/*
 'use strict';
 
 const pool = require('../lib/connections/mysqlPoolConnection');
@@ -174,4 +173,3 @@ const socketConnection = async function(socket) {
 };
 
 module.exports = socketConnection;
-*/

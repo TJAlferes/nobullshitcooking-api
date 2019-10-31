@@ -18,6 +18,8 @@ const workerClient = process.env.NODE_ENV === 'production'
 ? new Redis({host: process.env.ELASTICACHE_PROD_PRIMARY, port: 6379})
 : new Redis({host: 'redis-dev', port: 6379});
 
+// set up proper retry logic?
+
 //console.log('========== ioredis new Redis ========== ');
 //console.log('pubClient', pubClient);
 pubClient.on('connect', () => console.log('pub connect!!!!!!!!!!!'));
@@ -41,7 +43,6 @@ sessClient.on('ready', () => console.log('sess ready!!!!!!!!!!!'));
 sessClient.on('error', () => console.log('sess error!!!!!!!!!!!'));
 sessClient.on('close', () => console.log('sess close!!!!!!!!!!!'));
 //console.log('============================== ');
-// set up proper retry logic
 
 //console.log('========== ioredis new Redis ========== ');
 //console.log('workerClient', workerClient);
