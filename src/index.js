@@ -277,8 +277,11 @@ setInterval(fooOne, MINTERVAL);
 3. routes
 ##############################################################################*/
 
+let blah = 1;
 app.get('/', (req, res) => {
   try {
+    blah = blah + 1;
+    console.log(blah);
     console.log(`No Bullshit Cooking Backend API.`);
     res.send(`No Bullshit Cooking Backend API.`);
   } catch(err) {
