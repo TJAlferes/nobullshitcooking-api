@@ -226,7 +226,6 @@ fooOne();*/
   }
 })();*/
 let fooOne = async () => {
-  console.log
   try {
     console.log('fooOne call START');
     workerClient.set("foo", "bar");
