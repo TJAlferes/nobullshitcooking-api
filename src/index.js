@@ -48,7 +48,8 @@ const MessengerUser = require('./redis-access/MessengerUser');  // move
 const {
   pubClient,
   subClient,
-  sessClient
+  sessClient,
+  workerClient
 } = require('./lib/connections/redisConnection');
 //const bulkUp = require('./search');
 /*
@@ -187,17 +188,16 @@ setInterval(cleanUp, INTERVAL);
 
 let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 const fooOne = async () => {
-  console.log('fooOne call START');
-  const key = 'cat';
   try {
-    workerClient.set(key, 'Garfield');
-    const res = await workerClient.get(key);
-    console.log(res);
-    console.log(res);
+    workerClient.set('cat', 'Garfield');
+    workerClient.set('character', 'Guts');
+    const res1 = await workerClient.get('cat');
+    console.log(res1);
+    const res2 = await workerClient.get('character');
+    console.log(res2);
   } catch (error) {
     console.error(error);
   }
-  console.log('fooOne call END');
 };
 const fooZero = async () => {
   await wait(30000);
