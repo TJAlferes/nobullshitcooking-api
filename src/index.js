@@ -229,6 +229,7 @@ const fooOne = async () => {
   console.log('fooOne call START');
   const key = 'cat';
   try {
+    console.log(workerClient);
     await workerClient.set(key, 'Garfield');
     const result = await workerClient.get(key);
     console.log(result);
@@ -257,7 +258,7 @@ const fooOne = async () => {
 };
 
 const fooZero = async () => {
-  await wait(10000);
+  await wait(30000);
   fooOne();
   fooOne();
   await wait(10000);
