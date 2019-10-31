@@ -188,7 +188,7 @@ io.on('connection', socketConnection);
 const MINTERVAL = 30 * 1000;  // 30 seconds
 //setInterval(cleanUp, INTERVAL);
 
-//let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 /*let fooOne = async () => {
   await wait(20000);
   const rV1 = await cleanUp();
@@ -227,35 +227,28 @@ fooOne();*/
 const fooOne = async () => {
   try {
     console.log('fooOne call START');
-    workerClient.set("foo", "bar");
-    const worker = workerClient.get("foo", function(err, result) {
-      if (err) {
-        console.error(err);
-      } else {
-        console.log(result);
-      }
-    });
-    console.log(worker);
-    workerClient.get("foo", function(err, result) {
-      if (err) {
-        console.error(err);
-      } else {
-        console.log(result);
-      }
-    });
-    workerClient.get("foo").then(function(result) {
-      console.log(result);
-    });
-    workerClient.get("foo").then(function(result) {
-      console.log(result);
-    });
-    workerClient.del("foo");
+    await workerClient.set("foo", "bar");
+    const worker = await workerClient.get("foo");
+    console.log('result: ', worker);
+    await workerClient.del("foo");
     console.log('fooOne call END');
   } catch(err) {
     console.log(err);
   }
 };
-setInterval(fooOne, MINTERVAL);
+const fooZero = async () => {
+  await wait(10000);
+  fooOne();
+  fooOne();
+  await wait(10000);
+  fooOne();
+  fooOne();
+  await wait(10000);
+  fooOne();
+  fooOne();
+};
+fooZero();
+//setInterval(fooOne, MINTERVAL);
 
 /*setInterval(() => io.of('/').adapter.clients((err, clients) => {
   console.log(clients); // an array containing all connected socket ids
