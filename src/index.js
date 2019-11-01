@@ -137,12 +137,6 @@ const sessionOptions = {
   secret: process.env.SESSION_SECRET || "secret",
   resave: true,
   saveUninitialized: true,
-  cookie: {
-    sameSite: false,
-    maxAge: 86400000,
-    httpOnly: false,
-    secure: false
-  },
   unset: "destroy"
 };
 const session = expressSession(sessionOptions);
@@ -151,13 +145,20 @@ const session = expressSession(sessionOptions);
 // prod
 if (app.get('env') === 'production') {
   app.set('trust proxy', 1);  // trust first proxy
-  sessionOptions.cookie = {
+  /*sessionOptions.cookie = {
     sameSite: true,
     maxAge: 86400000,
     httpOnly: true,
     secure: true
-  };
+  };*/
   corsOptions.origin = ['https://nobullshitcooking.com'];
+} else if (app.get('env') === 'development') {
+  sessionOptions.cookie = {
+    sameSite: false,
+    maxAge: 86400000,
+    httpOnly: false,
+    secure: false
+  };
 }
 
 
