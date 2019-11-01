@@ -157,8 +157,8 @@ if (app.get('env') === 'production') {
     httpOnly: true,
     secure: true
   };
-  corsOptions.origin = ['https://nobullshitcooking.net'];
-}  // enforce https? or elasticbeanstalk already does?
+  corsOptions.origin = ['https://nobullshitcooking.com'];
+}
 
 
 
