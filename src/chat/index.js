@@ -11,39 +11,21 @@ const MessengerUser = require('../redis-access/MessengerUser');
 
 const User = (id, name, avatar) => ({id, user: name, avatar});
 
-const Chat = (messageToAdd, room, user) => {
-  const now = new Date;
-  const hour = now.getHours();
-  let minute = now.getMinutes();
-  let second = now.getSeconds();
-  if (minute.toString().length === 1) minute = `0${minute}`;
-  if (second.toString().length === 1) second = `0${second}`;
-  const ts = `${hour}:${minute}:${second}`;
-  return {
-    id: user.id + (new Date).getTime().toString(),
-    ts,
-    message: messageToAdd,
-    room,
-    user
-  };
-};
+const Chat = (messageToAdd, room, user) => ({
+  id: user.id + (new Date).getTime().toString(),
+  //ts: (new Date).getTime(),
+  message: messageToAdd,
+  room,
+  user
+});
 
-const Whisper = (whisperToAdd, nameToWhisper, user) => {
-  const now = new Date;
-  const hour = now.getHours();
-  let minute = now.getMinutes();
-  let second = now.getSeconds();
-  if (minute.toString().length === 1) minute = `0${minute}`;
-  if (second.toString().length === 1) second = `0${second}`;
-  const ts = `${hour}:${minute}:${second}`;
-  return {
-    id: user.id + (new Date).getTime().toString(),
-    ts,
-    whisper: whisperToAdd,
-    to: nameToWhisper,
-    user
-  };
-};
+const Whisper = (whisperToAdd, nameToWhisper, user) => ({
+  id: user.id + (new Date).getTime().toString(),
+  //ts: (new Date).getTime(),
+  whisper: whisperToAdd,
+  to: nameToWhisper,
+  user
+});
 
 
 
