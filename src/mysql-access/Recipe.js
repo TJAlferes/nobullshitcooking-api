@@ -455,7 +455,7 @@ class Recipe {
 
   async viewAllOfficialRecipes() {
     const sql = `
-      SELECT recipe_id, recipe_type_id, cuisine_id, title, recipe_image
+      SELECT recipe_id, recipe_type_id, cuisine_id, title, recipe_image, owner_id
       FROM nobsc_recipes
       WHERE author_id = 1 AND owner_id = 1
       ORDER BY title ASC
@@ -674,7 +674,7 @@ class Recipe {
 
   async viewAllMyPrivateUserRecipes(ownerId) {
     const sql = `
-      SELECT recipe_id, recipe_type_id, cuisine_id, title, recipe_image
+      SELECT recipe_id, recipe_type_id, cuisine_id, title, recipe_image, owner_id
       FROM nobsc_recipes
       WHERE owner_id = ?
       ORDER BY title ASC
@@ -685,7 +685,7 @@ class Recipe {
 
   async viewAllMyPublicUserRecipes(authorId, ownerId) {
     const sql = `
-      SELECT recipe_id, recipe_type_id, cuisine_id, title, recipe_image
+      SELECT recipe_id, recipe_type_id, cuisine_id, title, recipe_image, owner_id
       FROM nobsc_recipes
       WHERE author_id = ? AND owner_id = ?
       ORDER BY title ASC

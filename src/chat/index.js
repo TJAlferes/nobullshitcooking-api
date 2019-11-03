@@ -85,6 +85,7 @@ const socketConnection = async function(socket) {
     const chat = Chat(messageToAdd, room, User(user, name, avatar));
 
     await messengerChat.addChat(chat);
+    // DOUBLE CHECK THAT THIS CAN GO TO OTHER NODES!!!
     socket.broadcast.to(room).emit('AddChat', chat);
     socket.emit('AddChat', chat);
   });
@@ -104,6 +105,7 @@ const socketConnection = async function(socket) {
         if (userIsConnected) {
           const room = userIsConnected;
           const whisper = Whisper(whisperToAdd, nameToWhisper, User(user, name, avatar));
+          // DOUBLE CHECK THAT THIS CAN GO TO OTHER NODES!!!
           socket.broadcast.to(room).emit('AddWhisper', whisper);
           socket.emit('AddWhisper', whisper);
         } else {

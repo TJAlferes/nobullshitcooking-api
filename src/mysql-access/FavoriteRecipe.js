@@ -47,7 +47,8 @@ class FavoriteRecipe {
       SELECT 
         f.recipe_id AS recipe_id,
         r.title AS title,
-        r.recipe_image AS recipe_image
+        r.recipe_image AS recipe_image,
+        r.owner_id AS owner_id
       FROM nobsc_favorite_recipes f
       INNER JOIN nobsc_recipes r ON r.recipe_id = f.recipe_id
       WHERE f.user_id = ?
