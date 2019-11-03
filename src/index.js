@@ -173,7 +173,7 @@ app.use(express.json());
 app.use(expressRateLimit(rateLimiterOptions));
 app.use(session);
 app.use(cors(corsOptions));
-//app.options('*', cors());  // ???
+//app.options('*', cors());  // ??? (See Allison's socket disconnect err)
 //app.use(helmet());  // get working!!!
 //app.use(hpp());
 app.use(expressSanitizer());  // must be called after express.json()
