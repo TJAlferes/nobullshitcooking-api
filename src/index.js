@@ -145,6 +145,11 @@ const session = expressSession(sessionOptions);
 // prod
 if (app.get('env') === 'production') {
   app.set('trust proxy', 1);  // trust first proxy
+  // new Chrome requirements:
+  sessionOptions.cookie = {
+    sameSite: none,
+    secure: true
+  };
   /*sessionOptions.cookie = {
     sameSite: true,
     maxAge: 86400000,

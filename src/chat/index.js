@@ -47,11 +47,13 @@ const socketConnection = async function(socket) {
   //the latter we may need really need
   socket.on('GetOnline', async function() {
     const acceptedFriends = await nobscFriendship.viewAllMyAcceptedFriendships(user);
+    console.log(acceptedFriends);
   
     if (acceptedFriends.length) {
       if (acceptedFriends.length > 1) {
         let friendsOnline = [];
-        for (acceptedFriend of acceptedFriends) {
+        for (let acceptedFriend of acceptedFriends) {
+          console.log('acceptedFriend: ', acceptedFriend);
           const userIsConnected = await messengerUser.getUserSocketId(acceptedFriend.user_id);
           if (userIsConnected) {
             socket.broadcast.to(userIsConnected).emit('ShowOnline', User(user, name, avatar));
@@ -157,10 +159,12 @@ const socketConnection = async function(socket) {
     }
 
     const acceptedFriends = await nobscFriendship.viewAllMyAcceptedFriendships(user);
+    console.log(acceptedFriends);
 
     if (acceptedFriends.length) {
       if (acceptedFriends.length > 1) {
-        for (acceptedFriend of acceptedFriends) {
+        for (let acceptedFriend of acceptedFriends) {
+          console.log('acceptedFriend: ', acceptedFriend);
           const userIsConnected = await messengerUser.getUserSocketId(acceptedFriend.user_id);
           if (userIsConnected) socket.broadcast.to(userIsConnected).emit('ShowOffline', User(user, name, avatar));
         }
