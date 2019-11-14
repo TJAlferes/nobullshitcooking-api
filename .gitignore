@@ -1,9 +1,8 @@
 .env
-.elbsg.config
+elbsg.config
 node_modules/
 logs
 *.log
 npm-debug.log*
 .npm
 dist/
-sessions/

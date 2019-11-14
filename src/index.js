@@ -52,12 +52,6 @@ const {
   workerClient
 } = require('./lib/connections/redisConnection');
 //const bulkUp = require('./search');
-/*
-const redis = require('redis');
-const client = redis.createClient(6379, process.env.ELASTICACHE_PROD_PRIMARY);
-const { promisify } = require('util');
-const getAsync = promisify(client.get).bind(client);
-*/
 
 
 
@@ -179,7 +173,7 @@ app.use(expressRateLimit(rateLimiterOptions));
 app.use(session);
 app.use(cors(corsOptions));
 //app.options('*', cors());  // ??? (See Allison's socket disconnect err)
-//app.use(helmet());  // get working!!!
+app.use(helmet());
 //app.use(hpp());
 app.use(expressSanitizer());  // must be called after express.json()
 app.use(helmet());
@@ -188,6 +182,14 @@ app.use(compression());  // elasticbeanstalk/nginx already does?
 
 // move these
 io.adapter(redisAdapter({pubClient, subClient}));
+/*const socket = io({
+  transports: ['websocket']
+});
+// on reconnection, reset the transports option, as the Websocket
+// connection may have failed (caused by proxy, firewall, browser, ...)
+socket.on('reconnect_attempt', () => {
+  socket.io.opts.transports = ['polling', 'websocket'];
+});*/
 io.use(socketAuth);
 io.on('connection', socketConnection);
 const INTERVAL = 60 * 60 * 1000 * 3;  // 3 hours

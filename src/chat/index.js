@@ -47,17 +47,21 @@ const socketConnection = async function(socket) {
   //the latter we may need really need
   socket.on('GetOnline', async function() {
     const acceptedFriends = await nobscFriendship.viewAllMyAcceptedFriendships(user);
-    console.log(acceptedFriends);
   
     if (acceptedFriends.length) {
       if (acceptedFriends.length > 1) {
         let friendsOnline = [];
         for (let acceptedFriend of acceptedFriends) {
-          console.log('acceptedFriend: ', acceptedFriend);
           const userIsConnected = await messengerUser.getUserSocketId(acceptedFriend.user_id);
           if (userIsConnected) {
-            socket.broadcast.to(userIsConnected).emit('ShowOnline', User(user, name, avatar));
-            friendsOnline.push(User(acceptedFriend.user_id, acceptedFriend.username, acceptedFriend.avatar));
+            socket.broadcast.to(userIsConnected)
+            .emit('ShowOnline', User(user, name, avatar));
+
+            friendsOnline.push(User(
+              acceptedFriend.user_id,
+              acceptedFriend.username,
+              acceptedFriend.avatar
+            ));
           }
         }
         if (friendsOnline.length) socket.emit('GetOnline', friendsOnline);
@@ -65,8 +69,15 @@ const socketConnection = async function(socket) {
         let friendOnline = [];
         const userIsConnected = await messengerUser.getUserSocketId(acceptedFriends[0].user_id);
         if (userIsConnected) {
-          socket.broadcast.to(userIsConnected).emit('ShowOnline', User(user, name, avatar));
-          friendOnline.push(User(acceptedFriends[0].user_id, acceptedFriends[0].username, acceptedFriends[0].avatar));
+          socket.broadcast.to(userIsConnected)
+          .emit('ShowOnline', User(user, name, avatar));
+
+          friendOnline.push(User(
+            acceptedFriends[0].user_id,
+            acceptedFriends[0].username,
+            acceptedFriends[0].avatar
+          ));
+
           socket.emit('GetOnline', friendOnline);
         }
       }
@@ -87,7 +98,6 @@ const socketConnection = async function(socket) {
     const chat = Chat(messageToAdd, room, User(user, name, avatar));
 
     await messengerChat.addChat(chat);
-    // DOUBLE CHECK THAT THIS CAN GO TO OTHER NODES!!!
     socket.broadcast.to(room).emit('AddChat', chat);
     socket.emit('AddChat', chat);
   });
@@ -103,11 +113,11 @@ const socketConnection = async function(socket) {
 
       if (!blockedByUser) {
         const userIsConnected = await messengerUser.getUserSocketId(userExists[0].user_id);
+        console.log('userIsConnected: ', userIsConnected);
 
         if (userIsConnected) {
           const room = userIsConnected;
           const whisper = Whisper(whisperToAdd, nameToWhisper, User(user, name, avatar));
-          // DOUBLE CHECK THAT THIS CAN GO TO OTHER NODES!!!
           socket.broadcast.to(room).emit('AddWhisper', whisper);
           socket.emit('AddWhisper', whisper);
         } else {
@@ -129,8 +139,11 @@ const socketConnection = async function(socket) {
     for (let room in currentRooms) {
       if (currentRooms[room] !== socket.id) {
         socket.leave(currentRooms[room]);
+
         messengerRoom.removeUserFromRoom(user, currentRooms[room]);
-        socket.broadcast.to(currentRooms[room]).emit('RemoveUser', User(user, name, avatar));
+
+        socket.broadcast.to(currentRooms[room])
+        .emit('RemoveUser', User(user, name, avatar));
       }
     }
 
@@ -139,9 +152,11 @@ const socketConnection = async function(socket) {
 
       await messengerRoom.addRoom(roomToAdd);
       await messengerRoom.addUserToRoom(user, roomToAdd);
+
       socket.broadcast.to(roomToAdd).emit('AddUser', User(user, name, avatar));
 
       const users = await messengerRoom.getUsersInRoom(roomToAdd);
+
       socket.emit('GetUser', users, roomToAdd);
     }
   });
@@ -150,6 +165,7 @@ const socketConnection = async function(socket) {
 
   socket.on('disconnecting', async function() {
     const clonedSocket = {...socket};
+    console.log('DISCONNECTING!!!!!');
 
     for (let room in clonedSocket.rooms) {
       if (room !== clonedSocket.id) {
@@ -159,18 +175,22 @@ const socketConnection = async function(socket) {
     }
 
     const acceptedFriends = await nobscFriendship.viewAllMyAcceptedFriendships(user);
-    console.log(acceptedFriends);
 
     if (acceptedFriends.length) {
       if (acceptedFriends.length > 1) {
         for (let acceptedFriend of acceptedFriends) {
-          console.log('acceptedFriend: ', acceptedFriend);
           const userIsConnected = await messengerUser.getUserSocketId(acceptedFriend.user_id);
-          if (userIsConnected) socket.broadcast.to(userIsConnected).emit('ShowOffline', User(user, name, avatar));
+          if (userIsConnected) {
+            socket.broadcast.to(userIsConnected)
+            .emit('ShowOffline', User(user, name, avatar));
+          }
         }
       } else {
         const userIsConnected = await messengerUser.getUserSocketId(acceptedFriends[0].user_id);
-        if (userIsConnected) socket.broadcast.to(userIsConnected).emit('ShowOffline', User(user, name, avatar));
+        if (userIsConnected) {
+          socket.broadcast.to(userIsConnected)
+          .emit('ShowOffline', User(user, name, avatar));
+        }
       }
     }
 
