@@ -99,6 +99,7 @@ const socketAuth = (socket, next) => {
   const socketid = socket.id;
 
   if (parsedCookie['connect.sid'] === sid) {
+    console.log('1, session cookie sid ERROR, Not Authenticated!!!!!');
     return next(new Error('Not authenticated.'));
   }
 
@@ -116,6 +117,7 @@ const socketAuth = (socket, next) => {
       );
       return next();
     } else {
+      console.log('2, session.userInfo.userId ERROR, Not authenticated!!!!!');
       return next(new Error('Not authenticated.'));
     }
   });

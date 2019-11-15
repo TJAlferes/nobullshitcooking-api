@@ -118,6 +118,7 @@ const socketConnection = async function(socket) {
         if (userIsConnected) {
           const room = userIsConnected;
           const whisper = Whisper(whisperToAdd, nameToWhisper, User(user, name, avatar));
+          console.log('WHISPER: ', whisper);
           socket.broadcast.to(room).emit('AddWhisper', whisper);
           socket.emit('AddWhisper', whisper);
         } else {
