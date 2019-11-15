@@ -69,7 +69,7 @@ const corsOptions = {origin: ['http://localhost:8080'], credentials: true};
 
 // chat    // move
 const server = http.Server(app);
-const io = socketIO(server);
+const io = socketIO(server, {transports: ['websocket']});
 
 /*
 Note to self:
