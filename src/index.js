@@ -91,6 +91,7 @@ const pubClient = new Redis.Cluster(redisClusterOptions, elasticacheWithTLS);
 const subClient = new Redis.Cluster(redisClusterOptions, elasticacheWithTLS);
 */
 const socketAuth = (socket, next) => {
+  console.log('IN SOCKETAUTH!!!!!');
   const parsedCookie = cookie.parse(socket.request.headers.cookie);
   const sid = cookieParser.signedCookie(
     parsedCookie['connect.sid'],
@@ -170,6 +171,7 @@ if (app.get('env') === 'production') {
 
 //app.use(expressPinoLogger());
 app.use(express.json());
+app.use(express.urlencoded({extended: false}));
 //app.use(session);
 app.use(expressRateLimit(rateLimiterOptions));
 app.use(session);
@@ -178,20 +180,11 @@ app.use(cors(corsOptions));
 app.use(helmet());
 //app.use(hpp());
 app.use(expressSanitizer());  // must be called after express.json()
-app.use(helmet());
 //app.use(csurf());  // must be called after cookies/sessions  // https://github.com/pillarjs/understanding-csrf
 app.use(compression());  // elasticbeanstalk/nginx already does?
 
 // move these
 io.adapter(redisAdapter({pubClient, subClient}));
-/*const socket = io({
-  transports: ['websocket']
-});
-// on reconnection, reset the transports option, as the Websocket
-// connection may have failed (caused by proxy, firewall, browser, ...)
-socket.on('reconnect_attempt', () => {
-  socket.io.opts.transports = ['polling', 'websocket'];
-});*/
 io.use(socketAuth);
 io.on('connection', socketConnection);
 const INTERVAL = 60 * 60 * 1000 * 3;  // 3 hours
@@ -281,7 +274,9 @@ process.on('unhandledRejection', (reason, promise) => {
   });
 }*/
 
-
+app.use((error, req, res, next) => {
+  res.status(error.statusCode || 500).json({ error: error.message });
+});
 
 /*##############################################################################
 5. listen
