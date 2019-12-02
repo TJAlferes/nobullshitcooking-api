@@ -69,7 +69,7 @@ const corsOptions = {origin: ['http://localhost:8080'], credentials: true};
 
 // chat    // move
 const server = http.Server(app);
-const io = socketIO(server, {transports: ['websocket']});
+const io = socketIO(server);
 
 /*
 Note to self:
@@ -176,7 +176,7 @@ app.use(express.urlencoded({extended: false}));
 app.use(expressRateLimit(rateLimiterOptions));
 app.use(session);
 app.use(cors(corsOptions));
-//app.options('*', cors());  // ??? (See Allison's socket disconnect err)
+//app.options('*', cors());
 app.use(helmet());
 //app.use(hpp());
 app.use(expressSanitizer());  // must be called after express.json()

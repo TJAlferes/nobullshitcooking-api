@@ -9,11 +9,14 @@ const MessengerChat = require('../redis-access/MessengerChat');
 const MessengerRoom = require('../redis-access/MessengerRoom');
 const MessengerUser = require('../redis-access/MessengerUser');
 
-const User = (id, name, avatar) => ({id, user: name, avatar});
+const User = (id, name, avatar) => ({
+  id,
+  user: name,
+  avatar
+});
 
 const Chat = (messageToAdd, room, user) => ({
   id: user.id + (new Date).getTime().toString(),
-  //ts: (new Date).getTime(),
   message: messageToAdd,
   room,
   user
@@ -21,7 +24,6 @@ const Chat = (messageToAdd, room, user) => ({
 
 const Whisper = (whisperToAdd, nameToWhisper, user) => ({
   id: user.id + (new Date).getTime().toString(),
-  //ts: (new Date).getTime(),
   whisper: whisperToAdd,
   to: nameToWhisper,
   user
@@ -38,6 +40,13 @@ const socketConnection = async function(socket) {
   const messengerUser = new MessengerUser(pubClient);
   const messengerRoom = new MessengerRoom(pubClient, subClient);
   const messengerChat = new MessengerChat(pubClient);
+
+
+  
+  socket.on('error', (error) => {
+    console.log('ERROR!!!!!');
+    console.log('error: ', error);
+  });
 
 
 
@@ -95,7 +104,15 @@ const socketConnection = async function(socket) {
 
   socket.on('AddChat', async function(messageToAdd) {
     const room = Object.keys(socket.rooms).filter(r => r !== socket.id);
-    const chat = Chat(messageToAdd, room, User(user, name, avatar));
+    const chat = Chat(
+      messageToAdd,
+      room,
+      User(
+        user,
+        name,
+        avatar
+      )
+    );
 
     await messengerChat.addChat(chat);
     socket.broadcast.to(room).emit('AddChat', chat);
@@ -113,12 +130,19 @@ const socketConnection = async function(socket) {
 
       if (!blockedByUser) {
         const userIsConnected = await messengerUser.getUserSocketId(userExists[0].user_id);
-        console.log('userIsConnected: ', userIsConnected);
 
         if (userIsConnected) {
           const room = userIsConnected;
-          const whisper = Whisper(whisperToAdd, nameToWhisper, User(user, name, avatar));
-          console.log('WHISPER: ', whisper);
+          const whisper = Whisper(
+            whisperToAdd,
+            nameToWhisper,
+            User(
+              user,
+              name,
+              avatar
+            )
+          );
+
           socket.broadcast.to(room).emit('AddWhisper', whisper);
           socket.emit('AddWhisper', whisper);
         } else {
@@ -144,7 +168,14 @@ const socketConnection = async function(socket) {
         messengerRoom.removeUserFromRoom(user, currentRooms[room]);
 
         socket.broadcast.to(currentRooms[room])
-        .emit('RemoveUser', User(user, name, avatar));
+        .emit(
+          'RemoveUser',
+          User(
+            user,
+            name,
+            avatar
+          )
+        );
       }
     }
 
@@ -154,7 +185,15 @@ const socketConnection = async function(socket) {
       await messengerRoom.addRoom(roomToAdd);
       await messengerRoom.addUserToRoom(user, roomToAdd);
 
-      socket.broadcast.to(roomToAdd).emit('AddUser', User(user, name, avatar));
+      socket.broadcast.to(roomToAdd)
+      .emit(
+        'AddUser',
+        User(
+          user,
+          name,
+          avatar
+        )
+      );
 
       const users = await messengerRoom.getUsersInRoom(roomToAdd);
 
@@ -164,10 +203,13 @@ const socketConnection = async function(socket) {
 
 
 
-  socket.on('disconnecting', async function() {
+  socket.on('disconnecting', async function(reason) {
     const clonedSocket = {...socket};
     console.log('DISCONNECTING!!!!!');
+    console.log('reason: ', reason);
 
+    // move all this?
+    
     for (let room in clonedSocket.rooms) {
       if (room !== clonedSocket.id) {
         socket.broadcast.to(room).emit('RemoveUser', User(user, name, avatar));
@@ -196,6 +238,13 @@ const socketConnection = async function(socket) {
     }
 
     await messengerUser.removeUser(user);
+  });
+
+
+
+  socket.on('disconnect', async function(reason) {
+    console.log('DISCONNECT!!!!!');
+    console.log('reason: ', reason);
   });
 };
 
