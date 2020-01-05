@@ -1,3 +1,4 @@
+/*
 const esClient = require('../lib/connections/elasticsearchClient');
 const pool = require('../lib/connections/mysqlPoolConnection');
 const Recipe = require('../mysql-access/Recipe');
@@ -16,7 +17,7 @@ const bulkUp = async function() {
 
   // delete
 
-  /*try {
+  try {
     const wasDeleted = await esClient.indices.delete({index: "recipes"});
     console.log('wasDeleted: ', wasDeleted);
     const wasDeleted2 = await esClient.indices.delete({index: "ingredients"});
@@ -25,7 +26,7 @@ const bulkUp = async function() {
     console.log('wasDeleted3: ', wasDeleted3);
   } catch (err) {
     console.log(err);
-  }*/
+  }
 
 
 
@@ -281,3 +282,4 @@ const bulkUp = async function() {
 };
 
 module.exports = bulkUp;
+*/

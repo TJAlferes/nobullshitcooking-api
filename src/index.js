@@ -51,7 +51,7 @@ const {
   sessClient,
   workerClient
 } = require('./lib/connections/redisConnection');
-const bulkUp = require('./search');
+//const bulkUp = require('./search');
 
 
 
@@ -175,14 +175,14 @@ io.on('connection', socketConnection);
 const INTERVAL = 60 * 60 * 1000 * 3;  // 3 hours
 setInterval(cleanUp, INTERVAL);
 // move this, and create startup conditional
-try {
+/*try {
   setTimeout(() => {
     console.log('Now running bulkUp.');
     bulkUp();
   }, 60000);  // at the 1 minute mark
 } catch(err) {
   console.log(err);
-}
+}*/
 
 
 
