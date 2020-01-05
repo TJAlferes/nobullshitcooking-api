@@ -51,7 +51,7 @@ const {
   sessClient,
   workerClient
 } = require('./lib/connections/redisConnection');
-//const bulkUp = require('./search');
+const bulkUp = require('./search');
 
 
 
@@ -71,27 +71,7 @@ const corsOptions = {origin: ['http://localhost:8080'], credentials: true};
 const server = http.Server(app);
 const io = socketIO(server);
 
-/*
-Note to self:
-Do NOT use Cluster for PubSub, instead, see on youtube:
-Redis Labs | Scaling Redis PubSub with Shahar Mor
-/watch?v=6G22a5Iooqk
-Though what if you need distributed locking (like redlock)?
-Research this question later on.
-
-const redisClusterOptions = [
-  {host: process.env.REDIS_HOST, port: 6380, password: process.env.REDIS_PASSWORD},
-  {host: process.env.REDIS_HOST, port: 6381, password: process.env.REDIS_PASSWORD}
-];
-const elasticacheWithTLS = {
-  dnsLookup: (address, callback) => callback(null, address),
-  redisOptions: {tls: {}}
-};
-const pubClient = new Redis.Cluster(redisClusterOptions, elasticacheWithTLS);
-const subClient = new Redis.Cluster(redisClusterOptions, elasticacheWithTLS);
-*/
 const socketAuth = (socket, next) => {
-  console.log('IN SOCKETAUTH!!!!!');
   const parsedCookie = cookie.parse(socket.request.headers.cookie);
   const sid = cookieParser.signedCookie(
     parsedCookie['connect.sid'],
@@ -100,7 +80,6 @@ const socketAuth = (socket, next) => {
   const socketid = socket.id;
 
   if (parsedCookie['connect.sid'] === sid) {
-    console.log('1, session cookie sid ERROR, Not Authenticated!!!!!');
     return next(new Error('Not authenticated.'));
   }
 
@@ -118,7 +97,6 @@ const socketAuth = (socket, next) => {
       );
       return next();
     } else {
-      console.log('2, session.userInfo.userId ERROR, Not authenticated!!!!!');
       return next(new Error('Not authenticated.'));
     }
   });
@@ -141,26 +119,33 @@ const session = expressSession(sessionOptions);
 
 // prod
 if (app.get('env') === 'production') {
+
   app.set('trust proxy', 1);  // trust first proxy
+
   // new Chrome requirements:
   /*sessionOptions.cookie = {
     sameSite: none,
     secure: true
   };*/
+
   /*sessionOptions.cookie = {
     sameSite: true,
     maxAge: 86400000,
     httpOnly: true,
     secure: true
   };*/
+
   corsOptions.origin = ['https://nobullshitcooking.com'];
+
 } else if (app.get('env') === 'development') {
+
   sessionOptions.cookie = {
     sameSite: false,
     maxAge: 86400000,
     httpOnly: false,
     secure: false
   };
+
 }
 
 
@@ -172,62 +157,32 @@ if (app.get('env') === 'production') {
 //app.use(expressPinoLogger());
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
-//app.use(session);
 app.use(expressRateLimit(rateLimiterOptions));
 app.use(session);
 app.use(cors(corsOptions));
 //app.options('*', cors());
 app.use(helmet());
 //app.use(hpp());
-app.use(expressSanitizer());  // must be called after express.json()
-//app.use(csurf());  // must be called after cookies/sessions  // https://github.com/pillarjs/understanding-csrf
-app.use(compression());  // elasticbeanstalk/nginx already does?
+app.use(expressSanitizer());
+//app.use(csurf());
+app.use(compression());
 
 // move these
 io.adapter(redisAdapter({pubClient, subClient}));
 io.use(socketAuth);
 io.on('connection', socketConnection);
+
 const INTERVAL = 60 * 60 * 1000 * 3;  // 3 hours
 setInterval(cleanUp, INTERVAL);
-
-let wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-const fooOne = async () => {
-  try {
-    workerClient.set('cat', 'Garfield');
-    workerClient.set('character', 'Guts');
-    const res1 = await workerClient.get('cat');
-    console.log(res1);
-    const res2 = await workerClient.get('character');
-    console.log(res2);
-  } catch (error) {
-    console.error(error);
-  }
-};
-const fooZero = async () => {
-  await wait(30000);
-  fooOne();
-  await wait(10000);
-  fooOne();
-  await wait(10000);
-  fooOne();
-  await wait(10000);
-  fooOne();
-};
-fooZero();
-
-/*setInterval(() => io.of('/').adapter.clients((err, clients) => {
-  console.log(clients); // an array containing all connected socket ids
-}), (60 * 1000));*/
-
 // move this, and create startup conditional
-/*try {
+try {
   setTimeout(() => {
     console.log('Now running bulkUp.');
     bulkUp();
   }, 60000);  // at the 1 minute mark
 } catch(err) {
   console.log(err);
-}*/
+}
 
 
 
@@ -267,16 +222,17 @@ process.on('unhandledRejection', (reason, promise) => {
   console.log('Unhandled Rejection at:', reason.stack || reason);
 });
 
-/*if (app.get('env') === 'development') {
+if (app.get('env') === 'development') {
   app.use((error, req, res, next) => {
-    //req.log.error(error);
-    res.json({error: {message: error.message, status: error.status || 500}});
+    res.status(error.statusCode || 500).json({error});
   });
-}*/
+} else {
+  app.use((error, req, res, next) => {
+    res.status(error.statusCode || 500).json({error: error.message});
+  });
+}
 
-app.use((error, req, res, next) => {
-  res.status(error.statusCode || 500).json({ error: error.message });
-});
+
 
 /*##############################################################################
 5. listen
@@ -287,9 +243,7 @@ let PORT;
 if (app.get('env') === 'production') {
   PORT = process.env.PORT || 8081;
   server.listen(PORT, '127.0.0.1', () => console.log('Listening on port ' + PORT));
-  //app.listen(PORT, '127.0.0.1', () => console.log('Listening on port ' + PORT));
 } else {
   PORT = process.env.PORT || 3003;
   server.listen(PORT, '0.0.0.0', () => console.log('Listening on port ' + PORT));
-  //app.listen(PORT, '0.0.0.0', () => console.log('Listening on port ' + PORT));
 }

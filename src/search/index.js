@@ -1,4 +1,3 @@
-/*
 const esClient = require('../lib/connections/elasticsearchClient');
 const pool = require('../lib/connections/mysqlPoolConnection');
 const Recipe = require('../mysql-access/Recipe');
@@ -17,18 +16,16 @@ const bulkUp = async function() {
 
   // delete
 
-  try {
+  /*try {
     const wasDeleted = await esClient.indices.delete({index: "recipes"});
-    //console.log('wasDeleted: ', wasDeleted);
-
+    console.log('wasDeleted: ', wasDeleted);
     const wasDeleted2 = await esClient.indices.delete({index: "ingredients"});
-    //console.log('wasDeleted2: ', wasDeleted2);
-
+    console.log('wasDeleted2: ', wasDeleted2);
     const wasDeleted3 = await esClient.indices.delete({index: "equipment"});
-    //console.log('wasDeleted3: ', wasDeleted3);
+    console.log('wasDeleted3: ', wasDeleted3);
   } catch (err) {
     console.log(err);
-  }
+  }*/
 
 
 
@@ -48,7 +45,12 @@ const bulkUp = async function() {
               autocomplete_search: {tokenizer: "lowercase"}
             },
             tokenizer: {
-              autocomplete: {type: "edge_ngram", min_gram: 2, max_gram: 10, token_chars: ["letter"]}
+              autocomplete: {
+                type: "edge_ngram",
+                min_gram: 2,
+                max_gram: 10,
+                token_chars: ["letter"]
+              }
             }
           }
         },
@@ -58,7 +60,11 @@ const bulkUp = async function() {
             authorName: {type: 'keyword'},
             recipeTypeName: {type: 'keyword'},
             cuisineName: {type: 'keyword'},
-            title: {type: 'text', analyzer: 'autocomplete', search_analyzer: 'autocomplete_search'},
+            title: {
+              type: 'text',
+              analyzer: 'autocomplete',
+              search_analyzer: 'autocomplete_search'
+            },
             description: {type: 'text'},
             directions: {type: 'text'},
             methodNames: {type: 'keyword'},
@@ -84,7 +90,12 @@ const bulkUp = async function() {
               autocomplete_search: {tokenizer: "lowercase"}
             },
             tokenizer: {
-              autocomplete: {type: "edge_ngram", min_gram: 2, max_gram: 10, token_chars: ["letter"]}
+              autocomplete: {
+                type: "edge_ngram",
+                min_gram: 2,
+                max_gram: 10,
+                token_chars: ["letter"]
+              }
             }
           }
         },
@@ -92,7 +103,11 @@ const bulkUp = async function() {
           properties: {
             ingredientId: {type: 'integer'},
             ingredientTypeName: {type: 'keyword'},
-            ingredientName: {type: 'text', analyzer: 'autocomplete', search_analyzer: 'autocomplete_search'}
+            ingredientName: {
+              type: 'text',
+              analyzer: 'autocomplete',
+              search_analyzer: 'autocomplete_search'
+            }
           }
         }
       }
@@ -112,7 +127,12 @@ const bulkUp = async function() {
               autocomplete_search: {tokenizer: "lowercase"}
             },
             tokenizer: {
-              autocomplete: {type: "edge_ngram", min_gram: 2, max_gram: 10, token_chars: ["letter"]}
+              autocomplete: {
+                type: "edge_ngram",
+                min_gram: 2,
+                max_gram: 10,
+                token_chars: ["letter"]
+              }
             }
           }
         },
@@ -120,7 +140,11 @@ const bulkUp = async function() {
           properties: {
             equipmentId: {type: 'integer'},
             equipmentTypeName: {type: 'keyword'},
-            equipmentName: {type: 'text', analyzer: 'autocomplete', search_analyzer: 'autocomplete_search'}
+            equipmentName: {
+              type: 'text',
+              analyzer: 'autocomplete',
+              search_analyzer: 'autocomplete_search'
+            }
           }
         }
       }
@@ -133,48 +157,15 @@ const bulkUp = async function() {
 
 
 
-  // refresh
-
-  try {
-    //const wasRefreshed = await esClient.indices.refresh({index: "recipes"});
-    //console.log('wasRefreshed: ', wasRefreshed);
-
-    //const wasRefreshed2 = await esClient.indices.refresh({index: "ingredients"});
-    //console.log('wasRefreshed2: ', wasRefreshed2);
-
-    //const wasRefreshed3 = await esClient.indices.refresh({index: "equipment"});
-    //console.log('wasRefreshed3: ', wasRefreshed3);
-  } catch (err) {
-    console.log(err);
-  }
-
-
-
-  // check existence
-
-  try {
-    //const doesExist = await esClient.indices.exists({index: "recipes"});
-    //console.log('doesExist: ', doesExist);
-
-    const doesExist2 = await esClient.indices.exists({index: "ingredients"});
-    console.log('doesExist2: ', doesExist2);
-  } catch (err) {
-    console.log(err);
-  }
-
-
-
   // bulk insert
 
   try {
     const wasBulked = await esClient.bulk({index: "recipes", body: toBulk, refresh: "true"});
     console.log('wasBulked: ', wasBulked);
-
     const wasBulked2 = await esClient.bulk({index: "ingredients", body: toBulk2, refresh: "true"});
-    //console.log('wasBulked2: ', wasBulked2);
-
+    console.log('wasBulked2: ', wasBulked2);
     const wasBulked3 = await esClient.bulk({index: "equipment", body: toBulk3, refresh: "true"});
-    //console.log('wasBulked3: ', wasBulked3);
+    console.log('wasBulked3: ', wasBulked3);
   } catch (err) {
     console.log(err);
   }
@@ -185,13 +176,11 @@ const bulkUp = async function() {
 
   try {
     const wasRefreshedAgain = await esClient.indices.refresh({index: "recipes"});
-    //console.log('wasRefreshedAgain: ', wasRefreshedAgain);
-
+    console.log('wasRefreshedAgain: ', wasRefreshedAgain);
     const wasRefreshedAgain2 = await esClient.indices.refresh({index: "ingredients"});
-    //console.log('wasRefreshedAgain2: ', wasRefreshedAgain2);
-
+    console.log('wasRefreshedAgain2: ', wasRefreshedAgain2);
     const wasRefreshedAgain3 = await esClient.indices.refresh({index: "equipment"});
-    //console.log('wasRefreshedAgain3: ', wasRefreshedAgain3);
+    console.log('wasRefreshedAgain3: ', wasRefreshedAgain3);
   } catch (err) {
     console.log(err);
   }
@@ -292,4 +281,3 @@ const bulkUp = async function() {
 };
 
 module.exports = bulkUp;
-*/
