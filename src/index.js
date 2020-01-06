@@ -69,7 +69,7 @@ const corsOptions = {origin: ['http://localhost:8080'], credentials: true};
 
 // chat    // move
 const server = http.Server(app);
-const io = socketIO(server);
+const io = socketIO(server, {pingTimeout: 60000});
 
 const socketAuth = (socket, next) => {
   const parsedCookie = cookie.parse(socket.request.headers.cookie);
