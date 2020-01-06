@@ -228,7 +228,7 @@ if (app.get('env') === 'development') {
   });
 } else {
   app.use((error, req, res, next) => {
-    res.status(error.statusCode || 500).json({error: error.message});
+    res.status(error.statusCode || 500).json({error: error.message});  // ???
   });
 }
 
