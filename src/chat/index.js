@@ -42,11 +42,10 @@ const socketConnection = async function(socket) {
   const messengerChat = new MessengerChat(pubClient);
 
 
-  
-  socket.on('error', (error) => {
-    console.log('ERROR!!!!!');
-    console.log('error: ', error);
-  });
+
+  // +=========+
+  // |  Users  |
+  // +=========+
 
 
 
@@ -54,6 +53,7 @@ const socketConnection = async function(socket) {
   //no longer appear online for blocked users and deleted friends during that same session,
   //the former we should definitely implement,
   //the latter we may need really need
+  // rename
   socket.on('GetOnline', async function() {
     const acceptedFriends = await nobscFriendship.viewAllMyAcceptedFriendships(user);
   
@@ -102,16 +102,18 @@ const socketConnection = async function(socket) {
 
 
 
+  // +============+
+  // |  Messages  |
+  // +============+
+
+
+
   socket.on('AddChat', async function(messageToAdd) {
     const room = Object.keys(socket.rooms).filter(r => r !== socket.id);
     const chat = Chat(
       messageToAdd,
       room,
-      User(
-        user,
-        name,
-        avatar
-      )
+      User(user, name, avatar)
     );
 
     await messengerChat.addChat(chat);
@@ -136,11 +138,7 @@ const socketConnection = async function(socket) {
           const whisper = Whisper(
             whisperToAdd,
             nameToWhisper,
-            User(
-              user,
-              name,
-              avatar
-            )
+            User(user, name, avatar)
           );
 
           socket.broadcast.to(room).emit('AddWhisper', whisper);
@@ -158,6 +156,12 @@ const socketConnection = async function(socket) {
 
 
 
+  // +=========+
+  // |  Rooms  |
+  // +=========+
+
+
+
   socket.on('AddRoom', async function(roomToAdd) {
     const currentRooms = socket.rooms;
 
@@ -170,11 +174,7 @@ const socketConnection = async function(socket) {
         socket.broadcast.to(currentRooms[room])
         .emit(
           'RemoveUser',
-          User(
-            user,
-            name,
-            avatar
-          )
+          User(user, name, avatar)
         );
       }
     }
@@ -188,11 +188,7 @@ const socketConnection = async function(socket) {
       socket.broadcast.to(roomToAdd)
       .emit(
         'AddUser',
-        User(
-          user,
-          name,
-          avatar
-        )
+        User(user, name, avatar)
       );
 
       const users = await messengerRoom.getUsersInRoom(roomToAdd);
@@ -203,10 +199,40 @@ const socketConnection = async function(socket) {
 
 
 
+  socket.on('RejoinRoom', async function(roomToRejoin) {
+    if (roomToRejoin !== '') {
+      socket.join(roomToRejoin);
+
+      await messengerRoom.addRoom(roomToRejoin);
+      await messengerRoom.addUserToRoom(user, roomToRejoin);
+
+      socket.broadcast.to(roomToRejoin)
+      .emit(
+        'AddUser',
+        User(user, name, avatar)
+      );
+
+      const users = await messengerRoom.getUsersInRoom(roomToRejoin);
+
+      socket.emit('RegetUser', users, roomToRejoin);
+    }
+  });
+
+
+
+  // +===================+
+  // |  SocketIO events  |
+  // +===================+
+
+
+
+  socket.on('error', (error) => console.log('error: ', error));
+
+
+
   socket.on('disconnecting', async function(reason) {
     const clonedSocket = {...socket};
-    console.log('DISCONNECTING!!!!!');
-    console.log('reason: ', reason);
+    console.log('disconnecting; reason: ', reason);
 
     // move all this?
     
@@ -243,8 +269,7 @@ const socketConnection = async function(socket) {
 
 
   socket.on('disconnect', async function(reason) {
-    console.log('DISCONNECT!!!!!');
-    console.log('reason: ', reason);
+    console.log('disconnect; reason: ', reason);
   });
 };
 
