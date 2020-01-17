@@ -4,6 +4,8 @@ const { workerClient } = require('../lib/connections/redisConnection');
 
 const DELTA = 60 * 60 * 1000 * 2;  // 2 hours
 
+// add some comments
+
 async function cleanUpRooms() {
   try {
     await workerClient.zrangebyscore(

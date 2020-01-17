@@ -6,36 +6,37 @@ class MessengerUser {
     this.removeUser = this.removeUser.bind(this);
   }
 
-  async getUserSocketId(user) {
+  async getUserSocketId(userId) {
     try {
-      const foundUserSocketId = await this.client.hget(`user:${user}`, 'socketid');
+      const foundUserSocketId = await this.client
+      .hget(`user:${userId}`, 'socketid');
       return foundUserSocketId;
     } catch (err) {
       console.error(err);
     }
   }
 
-  async addUser(user, name, avatar, sid, socketid) {
+  async addUser(userId, username, avatar, sid, socketid) {
     try {
       await this.client
       .multi()
-      .hset(`user:${user}`, 'name', name)
-      .hset(`user:${user}`, 'avatar', avatar)
-      .hset(`user:${user}`, 'sid', sid)
-      .hset(`user:${user}`, 'socketid', socketid)
-      .zadd('users', Date.now(), user)
+      .hset(`user:${userId}`, 'username', username)
+      .hset(`user:${userId}`, 'avatar', avatar)
+      .hset(`user:${userId}`, 'sid', sid)
+      .hset(`user:${userId}`, 'socketid', socketid)
+      .zadd('users', Date.now(), userId)
       .exec();
     } catch (err) {
       console.error(err);
     }
   }
 
-  async removeUser(user) {
+  async removeUser(userId) {
     try {
       await this.client
       .multi()
-      .zrem('users', user)
-      .del(`user:${user}`)
+      .zrem('users', userId)
+      .del(`user:${userId}`)
       .exec()
     } catch (err) {
       console.error(err);

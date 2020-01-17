@@ -18,38 +18,46 @@ class MessengerRoom {
 
   async getUsersInRoom(room) {
     try {
-      const User = (id, name, avatar) => ({id, user: name, avatar});
-      let users = [];
+      const User = (userId, username, avatar) => ({
+        userId,
+        username,
+        avatar
+      });
+
       const data = await this.pubClient.zrange(`rooms:${room}`, 0, -1);
+      
       const pubClient = this.pubClient;
-      for (let u of data){
-        const userHash = await pubClient.hgetall(`user:${u}`);
-        users.push(User(u, userHash.name, userHash.avatar));
+      let users = [];
+
+      for (let userId of data){
+        const userHash = await pubClient.hgetall(`user:${userId}`);
+        users.push(User(userId, userHash.username, userHash.avatar));
       }
+
       return users;
     } catch (err) {
       console.error(err);
     }
   }
   
-  async addUserToRoom(user, room) {
+  async addUserToRoom(userId, room) {
     try {
       await this.pubClient
       .multi()
-      .zadd(`rooms:${room}`, Date.now(), user)
-      .set(`user:${user}:room`, room)
+      .zadd(`rooms:${room}`, Date.now(), userId)
+      .set(`user:${userId}:room`, room)
       .exec();
     } catch (err) {
       console.error(err);
     }
   }
   
-  async removeUserFromRoom(user, room) {
+  async removeUserFromRoom(userId, room) {
     try {
       await this.pubClient
       .multi()
-      .zrem(`rooms:${room}`, user)
-      .del(`user:${user}:room`)
+      .zrem(`rooms:${room}`, userId)
+      .del(`user:${userId}:room`)
       .exec();
     } catch (err) {
       console.error(err);

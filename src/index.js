@@ -73,10 +73,12 @@ const io = socketIO(server, {pingTimeout: 60000});
 
 const socketAuth = (socket, next) => {
   const parsedCookie = cookie.parse(socket.request.headers.cookie);
+
   const sid = cookieParser.signedCookie(
     parsedCookie['connect.sid'],
     process.env.SESSION_SECRET
   );
+
   const socketid = socket.id;
 
   if (parsedCookie['connect.sid'] === sid) {
@@ -85,9 +87,12 @@ const socketAuth = (socket, next) => {
 
   redisSession.get(sid, function(err, session) {
     if (session.userInfo.userId) {
+
       socket.request.userInfo = session.userInfo;
       socket.request.sid = sid;
+
       const messengerUser = new MessengerUser(pubClient);
+
       messengerUser.addUser(
         session.userInfo.userId,
         session.userInfo.username,
@@ -95,9 +100,13 @@ const socketAuth = (socket, next) => {
         sid,
         socketid
       );
+
       return next();
+
     } else {
+
       return next(new Error('Not authenticated.'));
+      
     }
   });
 };
