@@ -8,7 +8,7 @@
     "prod-start": "node build/bundle.js",
     "start": "node src/index.js",
     "build": "webpack --config webpack.prod.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --color",
     "transpile": "babel app.js -o index.js"
   },
   "author": "",
@@ -60,6 +60,7 @@
     "babel-loader": "^8.0.6",
     "jest": "^24.9.0",
     "rimraf": "^2.7.1",
+    "supertest": "^4.0.2",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.10.1",

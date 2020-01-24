@@ -46,8 +46,7 @@ const cleanUp = require('./chat/workers');
 const {
   pubClient,
   subClient,
-  sessClient,
-  workerClient
+  sessClient
 } = require('./lib/connections/redisConnection');
 //const bulkUp = require('./search');
 
