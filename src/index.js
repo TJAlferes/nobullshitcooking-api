@@ -21,8 +21,6 @@ const connectRedis = require('connect-redis');
 const http = require('http');
 const socketIO = require('socket.io');
 const redisAdapter = require('socket.io-redis');
-const cookie = require('cookie');
-const cookieParser = require('cookie-parser');
 
 //const { buildSchema } = require('graphql');
 //const expressGraphQL = require('express-graphql');
@@ -42,9 +40,9 @@ const {
   userRoutes,
   searchRoutes
 } = require('./routes');
-const socketConnection = require('./chat');
+const socketConnection = require('./chat/socketConnection');
+const socketAuth = require('./chat/socketAuth');
 const cleanUp = require('./chat/workers');
-const MessengerUser = require('./redis-access/MessengerUser');  // move
 const {
   pubClient,
   subClient,
@@ -67,49 +65,9 @@ const rateLimiterOptions = {windowMs: 1 * 60 * 1000, max: 1000};  // limit each 
 const corsOptions = {origin: ['http://localhost:8080'], credentials: true};
 
 
-// chat    // move
+// chat
 const server = http.Server(app);
 const io = socketIO(server, {pingTimeout: 60000});
-
-const socketAuth = (socket, next) => {
-  const parsedCookie = cookie.parse(socket.request.headers.cookie);
-
-  const sid = cookieParser.signedCookie(
-    parsedCookie['connect.sid'],
-    process.env.SESSION_SECRET
-  );
-
-  const socketid = socket.id;
-
-  if (parsedCookie['connect.sid'] === sid) {
-    return next(new Error('Not authenticated.'));
-  }
-
-  redisSession.get(sid, function(err, session) {
-    if (session.userInfo.userId) {
-
-      socket.request.userInfo = session.userInfo;
-      socket.request.sid = sid;
-
-      const messengerUser = new MessengerUser(pubClient);
-
-      messengerUser.addUser(
-        session.userInfo.userId,
-        session.userInfo.username,
-        session.userInfo.avatar,
-        sid,
-        socketid
-      );
-
-      return next();
-
-    } else {
-
-      return next(new Error('Not authenticated.'));
-      
-    }
-  });
-};
 
 
 // session
@@ -178,7 +136,7 @@ app.use(compression());
 
 // move these
 io.adapter(redisAdapter({pubClient, subClient}));
-io.use(socketAuth);
+io.use(socketAuth(redisSession));
 io.on('connection', socketConnection);
 
 const INTERVAL = 60 * 60 * 1000 * 3;  // 3 hours
