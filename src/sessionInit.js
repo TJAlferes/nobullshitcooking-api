@@ -5,7 +5,9 @@ const connectRedis = require('connect-redis');
 
 const { sessClient } = require('./lib/connections/redisConnection');
 
-function sessionInit(app) {
+const socketInit = require('./socketInit');
+
+function sessionInit(app, server) {
   const RedisStore = connectRedis(expressSession);
   const redisSession = new RedisStore({client: sessClient});
 
@@ -38,7 +40,9 @@ function sessionInit(app) {
       secure: false
     };
   }
-  
+
+  socketInit(server, redisSession);
+
   return expressSession(sessionOptions);
 }
 

@@ -29,8 +29,6 @@ const {
   searchRoutes
 } = require('./routes');
 
-const socketInit = require('./socketInit');
-
 //const bulkUp = require('./search');
 
 const app = express();
@@ -45,7 +43,7 @@ if (app.get('env') === 'production') {
   corsOptions.origin = ['https://nobullshitcooking.com'];
 }
 
-const session = sessionInit(app);
+const session = sessionInit(app, server);
 
 //app.use(expressPinoLogger());
 app.use(express.json());
@@ -59,8 +57,6 @@ app.use(helmet());
 app.use(expressSanitizer());
 //app.use(csurf());
 app.use(compression());
-
-socketInit();
 
 // move this, and create startup conditional
 /*try {
