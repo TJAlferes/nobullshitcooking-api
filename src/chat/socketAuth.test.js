@@ -1,7 +1,62 @@
-//const socketAuth = require('./socketAuth');
+'use strict';
+
+const {
+  sessionIdsAreEqual,
+  addMessengerUser,
+  socketAuth
+} = require('./socketAuth');
+
+describe('the sessionIdsAreEqual helper function', () => {
+  it('should return true if session Ids are equal', () => {
+    const socket = {
+      request: {
+        headers: {
+          cookie: {
+            'connect.sid': '123456789'
+          }
+        }
+      }
+    };
+    const actual = sessionIdsAreEqual(socket);
+    const expected = true;
+    expect(actual).toEqual(expected);
+  });
+  it('should return false if session Ids are not equal', () => {
+    const socket = {
+      request: {
+        headers: {
+          cookie: {}
+        }
+      }
+    };
+    const actual = sessionIdsAreEqual(socket);
+    const expected = false;
+    expect(actual).toEqual(expected);
+  });
+});
+
+describe('the addMessengerUser helper function', () => {
+  it('should copy the sid to the socket.request', () => {
+    const socket = {
+      request: {
+        headers: {
+          cookie: {
+            'connect.sid': '123456789'
+          }
+        }
+      }
+    };
+    const sid;
+    const session;
+    addMessengerUser(socket, sid, session);
+    const actual = sock
+    expect(1).toEqual(1);
+  });
+});
 
 describe('the socketAuth middleware', () => {
   it('needs finished tests', () => {
+
     expect(1).toEqual(1);
   });
 });

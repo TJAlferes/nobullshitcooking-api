@@ -11,6 +11,9 @@
     "test": "jest --color",
     "transpile": "babel app.js -o index.js"
   },
+  "jest": {
+    "testEnvironment": "node"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
