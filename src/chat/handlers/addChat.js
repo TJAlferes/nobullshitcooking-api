@@ -14,6 +14,7 @@ async function addChat(
   );
 
   await messengerChat.addChat(chat);
+  
   socket.broadcast.to(room).emit('AddChat', chat);
   socket.emit('AddChat', chat);
 };

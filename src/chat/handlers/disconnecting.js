@@ -16,6 +16,7 @@ async function disconnecting(
     if (room !== clonedSocket.id) {
       socket.broadcast.to(room)
       .emit('RemoveUser', User(userId, username, avatar));
+
       messengerRoom.removeUserFromRoom(userId, room);
     }
   }
@@ -23,30 +24,16 @@ async function disconnecting(
   const acceptedFriends = await nobscFriendship
   .viewAllMyAcceptedFriendships(userId);
 
-  if (acceptedFriends.length) {
-    if (acceptedFriends.length > 1) {
+  if (!acceptedFriends.length) return;
 
-      for (let acceptedFriend of acceptedFriends) {
-        const userIsConnected = await messengerUser
-        .getUserSocketId(acceptedFriend.user_id);
+  for (let acceptedFriend of acceptedFriends) {
+    const onlineFriend = await messengerUser
+    .getUserSocketId(acceptedFriend.user_id);
 
-        if (userIsConnected) {
-          socket.broadcast.to(userIsConnected)
-          .emit('ShowOffline', User(userId, username, avatar));
-        }
-      }
+    if (!onlineFriend) return;
 
-    } else {
-
-      const userIsConnected = await messengerUser
-      .getUserSocketId(acceptedFriends[0].user_id);
-
-      if (userIsConnected) {
-        socket.broadcast.to(userIsConnected)
-        .emit('ShowOffline', User(userId, username, avatar));
-      }
-
-    }
+    socket.broadcast.to(onlineFriend)
+    .emit('ShowOffline', User(userId, username, avatar));
   }
 
   await messengerUser.removeUser(userId);

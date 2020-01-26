@@ -7,6 +7,11 @@ const {
 } = require('./socketAuth');
 
 describe('the sessionIdsAreEqual helper function', () => {
+  it('should have one parameter', () => {
+    const actual = sessionIdsAreEqual.length;
+    const expected = 1;
+    expect(actual).toEqual(expected);
+  });
   it('should return true if session Ids are equal', () => {
     const socket = {
       request: {
@@ -36,6 +41,11 @@ describe('the sessionIdsAreEqual helper function', () => {
 });
 
 describe('the addMessengerUser helper function', () => {
+  it('should have three parameters', () => {
+    const actual = addMessengerUser.length;
+    const expected = 3;
+    expect(actual).toEqual(expected);
+  });
   it('should copy the sid to the socket.request', () => {
     const socket = {
       request: {
@@ -55,6 +65,11 @@ describe('the addMessengerUser helper function', () => {
 });
 
 describe('the socketAuth middleware', () => {
+  it('should have one parameter', () => {
+    const actual = socketAuth.length;
+    const expected = 1;
+    expect(actual).toEqual(expected);
+  });
   it('needs finished tests', () => {
 
     expect(1).toEqual(1);

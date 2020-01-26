@@ -1,8 +1,9 @@
 const cookie = require('cookie');
 const cookieParser = require('cookie-parser');
 
-const MessengerUser = require('../redis-access/MessengerUser');
 const { pubClient } = require('../lib/connections/redisConnection');
+
+const MessengerUser = require('../redis-access/MessengerUser');
 
 const sessionIdsAreEqual = socket => {
   const parsedCookie = cookie.parse(socket.request.headers.cookie);
