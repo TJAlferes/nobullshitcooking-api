@@ -1,9 +1,7 @@
 class SavedRecipe {
   constructor(pool) {
     this.pool = pool;
-
     this.deleteAllSavesOfRecipe = this.deleteAllSavesOfRecipe.bind(this);
-
     this.viewMySavedRecipes = this.viewMySavedRecipes.bind(this);
     this.createMySavedRecipe = this.createMySavedRecipe.bind(this);
     this.deleteMySavedRecipe = this.deleteMySavedRecipe.bind(this);
@@ -18,10 +16,6 @@ class SavedRecipe {
     const [ unsavedRecipes ] = await this.pool.execute(sql, [recipeId]);
     return unsavedRecipes;
   }
-
-
-
-
 
   async viewMySavedRecipes(userId) {
     const sql = `

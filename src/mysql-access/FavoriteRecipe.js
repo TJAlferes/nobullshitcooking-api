@@ -1,10 +1,8 @@
 class FavoriteRecipe {
   constructor(pool) {
     this.pool = pool;
-    
     //this.viewMostFavorited = this.viewMostFavorited.bind(this);
     this.deleteAllFavoritesOfRecipe = this.deleteAllFavoritesOfRecipe.bind(this);
-
     this.viewMyFavoriteRecipes = this.viewMyFavoriteRecipes.bind(this);
     this.createMyFavoriteRecipe = this.createMyFavoriteRecipe.bind(this);
     this.deleteMyFavoriteRecipe = this.deleteMyFavoriteRecipe.bind(this);
@@ -37,10 +35,6 @@ class FavoriteRecipe {
     const [ unfavoritedRecipes ] = await this.pool.execute(sql, [recipeId]);
     return unfavoritedRecipes;
   }
-
-
-
-
 
   async viewMyFavoriteRecipes(userId) {
     const sql = `

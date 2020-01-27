@@ -11,7 +11,7 @@ const ingredientTypeController = {
   viewIngredientTypeById: async function(req, res) {
     const ingredientTypeId = Number(req.sanitize(req.params.ingredientTypeId));
     validIngredientTypeRequest({ingredientTypeId});
-    //if (ingredientTypeId < 1 || ingredientTypeId > 18) throw new Error('invalid ingredient type');
+    //if (ingredientTypeId < 1 || ingredientTypeId > 18) return res.send('invalid ingredient type');
     const ingredientType = new IngredientType(pool);
     const [ row ] = await ingredientType.viewIngredientTypeById(ingredientTypeId);
     res.send(row);

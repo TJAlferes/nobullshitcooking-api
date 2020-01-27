@@ -78,3 +78,5 @@ class Grocer {
     return deletedPrivateUserGrocer;
   }
 }
+
+module.exports = Grocer;

@@ -93,26 +93,29 @@ const userAuthController = {
     const user = new User(pool);
 
     const userExists = await user.getUserByEmail(email);
-    //if (userExists && crypto.timingSafeEqual(userExists[0].email, email)) {
-    if (userExists.length) {
-      if (userExists[0].email == email) {
-        const isCorrectPassword = await bcrypt.compare(pass, userExists[0].pass);
-        if (isCorrectPassword) {
-          const userId = userExists[0].user_id;
-          const username = userExists[0].username;
-          const avatar = userExists[0].avatar;
-
-          req.session.userInfo = {};
-          req.session.userInfo.userId = userId;
-          req.session.userInfo.username = username;
-          req.session.userInfo.avatar = avatar;
-
-          return res.json({message: 'Signed in.', username, avatar});
-        }
-      }
+    //if (userExists && crypto.timingSafeEqual(userExists[0].email, email))
+    if (!userExists.length) {
+      return res.send({message: 'Incorrect email or password.'});
     }
-    
-    res.send({message: 'Incorrect email or password.'});
+    if (userExists[0].email !== email) {
+      return res.send({message: 'Incorrect email or password.'});
+    }
+
+    const isCorrectPassword = await bcrypt.compare(pass, userExists[0].pass);
+    if (!isCorrectPassword) {
+      return res.send({message: 'Incorrect email or password.'});
+    }
+
+    req.session.userInfo = {};
+    req.session.userInfo.userId = userExists[0].user_id;
+    req.session.userInfo.username = userExists[0].username;
+    req.session.userInfo.avatar = userExists[0].avatar;
+
+    return res.json({
+      message: 'Signed in.',
+      username: userExists[0].username,
+      avatar: userExists[0].avatar
+    });
   },
 
   logout: async function(req, res) {

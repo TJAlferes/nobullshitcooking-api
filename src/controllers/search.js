@@ -12,7 +12,7 @@ const searchController = {
     return res.json({found});
   },
   findPublicAll: async function(req, res) {
-    const body = req.body.body;
+    const body = req.body.body;  // security?
     const allSearch = new AllSearch(esClient);
     const found = await allSearch.findAll(body);
     return res.json({found});
@@ -25,7 +25,7 @@ const searchController = {
     return res.json({found});
   },
   findPublicRecipes: async function(req, res) {
-    const body = req.body.body;
+    const body = req.body.body;  // security?
     const recipeSearch = new RecipeSearch(esClient);
     const found = await recipeSearch.findRecipes(body);
     return res.json({found});
@@ -38,7 +38,7 @@ const searchController = {
     return res.json({found});
   },
   findPublicIngredients: async function(req, res) {
-    const body = req.body.body;
+    const body = req.body.body;  // security?
     const ingredientSearch = new IngredientSearch(esClient);
     const found = await ingredientSearch.findIngredients(body);
     return res.json({found});
@@ -51,7 +51,7 @@ const searchController = {
     return res.json({found});
   },
   findPublicEquipment: async function(req, res) {
-    const body = req.body.body;
+    const body = req.body.body;  // security?
     const equipmentSearch = new EquipmentSearch(esClient);
     const found = await equipmentSearch.findEquipment(body);
     return res.json({found});

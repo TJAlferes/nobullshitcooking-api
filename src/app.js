@@ -2,61 +2,13 @@
 
 const http = require('http');
 const express = require('express');
-//const expressPinoLogger = require('express-pino-logger');
-const expressRateLimit = require('express-rate-limit');
-const expressSanitizer = require('express-sanitizer');  // Use something else? This is popular, yet is based on abandonware...
-const cors = require('cors');
-const helmet = require('helmet');
-//const hpp = require('hpp');
-//const csurf = require('csurf');  // no longer needed?
-const compression = require('compression');
-//const { buildSchema } = require('graphql');
-//const expressGraphQL = require('express-graphql');
 
-const {
-  equipmentRoutes,
-  equipmentTypeRoutes,
-  ingredientRoutes,
-  ingredientTypeRoutes,
-  recipeRoutes,
-  recipeTypeRoutes,
-  cuisineRoutes,
-  methodRoutes,
-  measurementRoutes,
-  favoriteRecipeRoutes,
-  staffRoutes,
-  userRoutes,
-  searchRoutes
-} = require('./routes');
-
+const middlewareInit = require('./middlewareInit');
+const routesInit = require('./routesInit');
 //const bulkUp = require('./search');
 
 const app = express();
 const server = http.Server(app);
-
-const rateLimiterOptions = {windowMs: 1 * 60 * 1000, max: 1000};  // limit each IP to 1000 requests per minute (100?)
-
-const corsOptions = {origin: ['http://localhost:8080'], credentials: true};
-
-if (app.get('env') === 'production') {
-  app.set('trust proxy', 1);  // trust first proxy
-  corsOptions.origin = ['https://nobullshitcooking.com'];
-}
-
-const session = sessionInit(app, server);
-
-//app.use(expressPinoLogger());
-app.use(express.json());
-app.use(express.urlencoded({extended: false}));
-app.use(expressRateLimit(rateLimiterOptions));
-app.use(session);
-app.use(cors(corsOptions));
-//app.options('*', cors());
-app.use(helmet());
-//app.use(hpp());
-app.use(expressSanitizer());
-//app.use(csurf());
-app.use(compression());
 
 // move this, and create startup conditional
 /*try {
@@ -68,27 +20,16 @@ app.use(compression());
   console.log(err);
 }*/
 
-app.get('/', (req, res) => {
-  try {
-    res.send(`No Bullshit Cooking Backend API.`);
-  } catch(err) {
-    console.log(err);
-  }
-});
-app.use('/equipment', equipmentRoutes);
-app.use('/equipment-type', equipmentTypeRoutes);
-app.use('/ingredient', ingredientRoutes);
-app.use('/ingredient-type', ingredientTypeRoutes);
-app.use('/recipe', recipeRoutes);
-app.use('/recipe-type', recipeTypeRoutes);
-app.use('/cuisine', cuisineRoutes);
-app.use('/method', methodRoutes);
-app.use('/measurement', measurementRoutes);
-app.use('/favorite-recipe', favoriteRecipeRoutes);
-app.use('/staff', staffRoutes);
-app.use('/user', userRoutes);
-app.use('/search', searchRoutes);
-//app.use('/graphql', expressGraphQL({schema, rootValue, graphiql: true}));
+/*
+middlewareInit then calls sessionInit,
+and sessionInit in turn calls socketInit
+
+typically we want to avoid such triple nesting,
+however here it seems unavoidable,
+because of the dependent relationships of these things
+*/
+middlewareInit(app);  // must run before routesInit
+routesInit(app);
 
 process.on('unhandledRejection', (reason, promise) => {
   console.log('Unhandled Rejection at:', reason.stack || reason);

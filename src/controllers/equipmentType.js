@@ -11,7 +11,7 @@ const equipmentTypeController = {
   viewEquipmentTypeById: async function(req, res) {
     const equipmentTypeId = Number(req.sanitize(req.params.equipmentTypeId));
     validEquipmentTypeRequest({equipmentTypeId});
-    //if (equipmentTypeId < 1 || equipmentTypeId > 5) throw new Error('invalid equipment type');
+    //if (equipmentTypeId < 1 || equipmentTypeId > 5) return res.send('invalid equipment type');
     const equipmentType = new EquipmentType(pool);
     const [ row ] = await equipmentType.viewEquipmentTypeById(equipmentTypeId);
     res.send(row);
