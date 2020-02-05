@@ -57,7 +57,7 @@ const userAuthController = {
 
     await user.createUser(userToCreate);
 
-    emailConfirmationCode(email);
+    emailConfirmationCode(email, confirmationCode);
 
     res.send({message: 'User account created.'});
   },
@@ -87,6 +87,56 @@ const userAuthController = {
     }
 
     res.send('User account verified.');
+  },
+
+  resendConfirmationCode: async function (req, res) {
+    const email = req.sanitize(req.body.userInfo.email);
+    const pass = req.sanitize(req.body.userInfo.password);
+
+    validRegisterRequest({email, pass, username});
+
+    if (username.length < 6) {
+      return res.send({message: 'Username must be at least 6 characters.'});
+    }
+    if (username.length > 20) {
+      return res.send({message: 'Username must be no more than 20 characters.'});
+    }
+    // Problem: This would invalidate some older/alternative email types. Remove?
+    if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
+      return res.send({message: 'Invalid email.'});
+    }
+    if (pass.length < 6) {
+      return res.send({message: 'Password must be at least 6 characters.'});
+    }
+    if (pass.length > 54) {
+      return res.send({message: 'Password must be no more than 54 characters.'});
+    }
+
+    const user = new User(pool);
+
+    const userExists = await user.getUserByName(username);
+    if (!userExists.length) return res.send({message: 'Username does not exist.'});
+
+    const emailExists = await user.getUserByEmail(email);
+    if (!emailExists.length) return res.send({message: 'Email does not exist.'});
+
+    const isCorrectPassword = await bcrypt.compare(pass, userExists[0].pass);
+    if (!isCorrectPassword) {
+      return res.send({message: 'Incorrect email or password.'});
+    }
+
+    const alreadyConfirmed = userExists[0].confirmation_code === null;
+    if (alreadyConfirmed) {
+      return res.send({
+        message: 'Account already verified.'
+      });
+    }
+
+    const confirmationCode = uuidv4();  // use JWT instead?
+
+    emailConfirmationCode(email, confirmationCode);
+
+    res.send({message: 'Confirmation code re-sent.'});
   },
 
   login: async function(req, res) {
@@ -143,11 +193,15 @@ const userAuthController = {
   },
 
   /*changeUsername: async function(req, res) {
-    // TO DO: implement this!
+    // TO DO: implement this! write a test first!
+  }*/
+
+  /*changeEmail: async function(req, res) {
+    // TO DO: implement this! write a test first!
   }*/
 
   /*changePassword: async function(req, res) {
-    // TO DO: implement this!
+    // TO DO: implement this! write a test first!
   }*/
 
   setAvatar: async function(req, res) {
@@ -159,7 +213,7 @@ const userAuthController = {
   },
 
   /*deleteAccount: async function(req, res) {
-    // TO DO: implement this!
+    // TO DO: implement this! write a test first!
   }*/
 };
 

@@ -1,6 +1,6 @@
 const emailUser = require('./services/simple-email-service');
 
-const emailConfirmationCode = email => {
+const emailConfirmationCode = (email, confirmationCode) => {
   const from = "No Bullshit Cooking <staff@nobullshitcooking.com>";
 
   const to = email;
