@@ -1,13 +1,14 @@
 //const crypto = require('crypto');
 const bcrypt = require('bcrypt');
-//const uuidv4 = require('uuid/v4');
+const uuidv4 = require('uuid/v4');
 //const sgMail = require('@sendgrid/mail');
 
 const pool = require('../../lib/connections/mysqlPoolConnection');
 const User = require('../../mysql-access/User');
+const sendEmailToUser = require('../../lib/services/simple-email-service');
 const validLoginRequest = require('../../lib/validations/user/loginRequest');
 const validRegisterRequest = require('../../lib/validations/user/registerRequest');
-//const validVerifyRequest = require('../../lib/validations/user/verifyRequest');
+const validVerifyRequest = require('../../lib/validations/user/verifyRequest');
 const validUserEntity = require('../../lib/validations/user/userEntity');
 
 const SALT_ROUNDS = 10;
@@ -46,16 +47,43 @@ const userAuthController = {
     if (emailExists.length) return res.send({message: 'Email already in use.'});
 
     const encryptedPassword = await bcrypt.hash(pass, SALT_ROUNDS);
-    //const confirmationCode = uuidv4();
-    const userToCreate = validUserEntity({email, pass: encryptedPassword, username});
+    const confirmationCode = uuidv4();  // use JWT instead?
+
+    const userToCreate = validUserEntity({
+      email,
+      pass: encryptedPassword,
+      username,
+      confirmationCode
+    });
+
     await user.createUser(userToCreate);
+
+    const from = "No Bullshit Cooking <staff@nobullshitcooking.com>";
+    const to = email;
+    const subject = "Confirmation Code For No Bullshit Cooking";
+    const bodyText = "Confirmation Code For No Bullshit Cooking\r\n"
+                    + "Please enter the following confirmation code at:\r\n"
+                    + "https://nobullshitcooking.com/user/verify\r\n"
+                    + confirmationCode;
+    const bodyHtml = `
+      <html>
+      <head></head>
+      <body>
+        <h1>Confirmation Code For No Bullshit Cooking</h1>
+        <p>Please enter the following confirmation code at:</p>
+        <p>https://nobullshitcooking.com/user/verify</p>
+        ${confirmationCode}
+      </body>
+      </html>
+    `;
+    const charset = "UTF-8";
+
+    sendEmailToUser(from, to, subject, bodyText, bodyHtml, charset);
 
     res.send({message: 'User account created.'});
   },
 
-  /*verify: async function(req, res) {
-    // TO DO: implement this!
-    
+  verify: async function(req, res) {
     const email = req.sanitize(req.body.userInfo.email);
     const pass = req.sanitize(req.body.userInfo.password);
     const confirmationCode = req.sanitize(req.body.userInfo.confirmationCode);
@@ -66,16 +94,21 @@ const userAuthController = {
 
     const emailExists = await user.getUserByEmail(email);
     if (!emailExists.length) {
-      return res.send('An issue occurred, please double check your info and try again.');
+      return res.send({
+        message: 'An issue occurred, please double check your info and try again.'
+      });
     }
 
     const temporaryCode = await user.getTemporaryConfirmationCode(email);
-    if (temporaryCode[0].confirmation_code !== confirmationCode) {
-      return res.send('An issue occurred, please double check your info and try again.');
+    const wrongCode = temporaryCode[0].confirmation_code !== confirmationCode
+    if (wrongCode) {
+      return res.send({
+        message: 'An issue occurred, please double check your info and try again.'
+      });
     }
 
     res.send('User account verified.');
-  },*/
+  },
 
   login: async function(req, res) {
     const email = req.sanitize(req.body.userInfo.email);
@@ -83,7 +116,7 @@ const userAuthController = {
 
     validLoginRequest({email, pass});
 
-    // Problem: This would invalidate some older/alternative email types. Remove?
+    // Problem: This would invalidate some older/alternative email types.
     if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
       return res.send({message: 'Invalid email.'});
     }
@@ -106,6 +139,13 @@ const userAuthController = {
       return res.send({message: 'Incorrect email or password.'});
     }
 
+    const notYetConfirmed = userExists[0].confirmation_code !== null;
+    if (notYetConfirmed) {
+      return res.send({
+        message: 'Please check your email for your confirmation code.'
+      });
+    }
+
     req.session.userInfo = {};
     req.session.userInfo.userId = userExists[0].user_id;
     req.session.userInfo.username = userExists[0].username;
@@ -122,6 +162,14 @@ const userAuthController = {
     await req.session.destroy();
     res.end();
   },
+
+  /*changeUsername: async function(req, res) {
+    // TO DO: implement this!
+  }*/
+
+  /*changePassword: async function(req, res) {
+    // TO DO: implement this!
+  }*/
 
   setAvatar: async function(req, res) {
     const avatar = req.sanitize(req.body.avatar);

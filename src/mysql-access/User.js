@@ -14,7 +14,7 @@ class User {
 
   async getUserByEmail(email) {
     const sql = `
-      SELECT user_id, email, pass, username, avatar
+      SELECT user_id, email, pass, username, avatar, confirmation_code
       FROM nobsc_users
       WHERE email = ?
     `;
