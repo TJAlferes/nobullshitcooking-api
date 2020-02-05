@@ -1,7 +1,6 @@
 //const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const uuidv4 = require('uuid/v4');
-//const sgMail = require('@sendgrid/mail');
 
 const pool = require('../../lib/connections/mysqlPoolConnection');
 const User = require('../../mysql-access/User');
