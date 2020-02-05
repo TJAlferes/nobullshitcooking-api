@@ -3,7 +3,7 @@
 //require('dotenv').config();
 const AWS = require('aws-sdk');
 
-const sendEmailToUser = (from, to, subject, body_text, body_html, charset) => {
+const emailToUser = (from, to, subject, body_text, body_html, charset) => {
   const ses = new AWS.SES();
 
   const params = { 
@@ -38,4 +38,4 @@ const sendEmailToUser = (from, to, subject, body_text, body_html, charset) => {
   });
 };
 
-module.exports = sendEmailToUser;
+module.exports = emailToUser;

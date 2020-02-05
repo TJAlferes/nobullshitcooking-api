@@ -5,7 +5,7 @@ const uuidv4 = require('uuid/v4');
 
 const pool = require('../../lib/connections/mysqlPoolConnection');
 const User = require('../../mysql-access/User');
-const sendEmailToUser = require('../../lib/services/simple-email-service');
+const emailConfirmationCode = require('../../lib/services/email-confirmation-code');
 const validLoginRequest = require('../../lib/validations/user/loginRequest');
 const validRegisterRequest = require('../../lib/validations/user/registerRequest');
 const validVerifyRequest = require('../../lib/validations/user/verifyRequest');
@@ -58,27 +58,7 @@ const userAuthController = {
 
     await user.createUser(userToCreate);
 
-    const from = "No Bullshit Cooking <staff@nobullshitcooking.com>";
-    const to = email;
-    const subject = "Confirmation Code For No Bullshit Cooking";
-    const bodyText = "Confirmation Code For No Bullshit Cooking\r\n"
-                    + "Please enter the following confirmation code at:\r\n"
-                    + "https://nobullshitcooking.com/user/verify\r\n"
-                    + confirmationCode;
-    const bodyHtml = `
-      <html>
-      <head></head>
-      <body>
-        <h1>Confirmation Code For No Bullshit Cooking</h1>
-        <p>Please enter the following confirmation code at:</p>
-        <p>https://nobullshitcooking.com/user/verify</p>
-        ${confirmationCode}
-      </body>
-      </html>
-    `;
-    const charset = "UTF-8";
-
-    sendEmailToUser(from, to, subject, bodyText, bodyHtml, charset);
+    emailConfirmationCode(email);
 
     res.send({message: 'User account created.'});
   },
