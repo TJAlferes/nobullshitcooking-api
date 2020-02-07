@@ -61,6 +61,7 @@
     "@babel/runtime-corejs3": "^7.8.4",
     "babel-loader": "^8.0.6",
     "jest": "^24.9.0",
+    "node-mocks-http": "^1.8.1",
     "rimraf": "^2.7.1",
     "sinon": "^8.1.1",
     "supertest": "^4.0.2",

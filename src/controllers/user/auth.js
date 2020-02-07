@@ -2,13 +2,22 @@
 const bcrypt = require('bcrypt');
 const uuidv4 = require('uuid/v4');
 
-const pool = require('../../lib/connections/mysqlPoolConnection');
 const User = require('../../mysql-access/User');
+
+const pool = require('../../lib/connections/mysqlPoolConnection');
+
 const emailConfirmationCode = require('../../lib/services/email-confirmation-code');
-const validLoginRequest = require('../../lib/validations/user/loginRequest');
-const validRegisterRequest = require('../../lib/validations/user/registerRequest');
-const validVerifyRequest = require('../../lib/validations/user/verifyRequest');
-const validUserEntity = require('../../lib/validations/user/userEntity');
+
+const {
+  validRegisterRequest,
+  validRegister,
+  validUserEntity,
+  validVerifyRequest,
+  validVerify,
+  validResend,
+  validLoginRequest,
+  validLogin
+} = require('../../lib/validations/user/index');
 
 const SALT_ROUNDS = 10;
 
@@ -18,35 +27,20 @@ const userAuthController = {
     const pass = req.sanitize(req.body.userInfo.password);
     const username = req.sanitize(req.body.userInfo.username);
 
-    validRegisterRequest({email, pass, username});
-
-    if (username.length < 6) {
-      return res.send({message: 'Username must be at least 6 characters.'});
-    }
-    if (username.length > 20) {
-      return res.send({message: 'Username must be no more than 20 characters.'});
-    }
-    // Problem: This would invalidate some older/alternative email types. Remove?
-    if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
-      return res.send({message: 'Invalid email.'});
-    }
-    if (pass.length < 6) {
-      return res.send({message: 'Password must be at least 6 characters.'});
-    }
-    if (pass.length > 54) {
-      return res.send({message: 'Password must be no more than 54 characters.'});
-    }
+    validRegisterRequest({email, pass, username});  // TypeScript?
 
     const user = new User(pool);
 
-    const userExists = await user.getUserByName(username);
-    if (userExists.length) return res.send({message: 'Username already taken.'});
+    const {
+      valid,
+      feedback
+    } = await validRegister({email, pass, username}, user);
 
-    const emailExists = await user.getUserByEmail(email);
-    if (emailExists.length) return res.send({message: 'Email already in use.'});
+    if (!valid) return res.send({message: feedback});
 
     const encryptedPassword = await bcrypt.hash(pass, SALT_ROUNDS);
-    const confirmationCode = uuidv4();  // use JWT instead?
+    
+    const confirmationCode = uuidv4();  // JWT?
 
     const userToCreate = validUserEntity({
       email,
@@ -71,20 +65,14 @@ const userAuthController = {
 
     const user = new User(pool);
 
-    const emailExists = await user.getUserByEmail(email);
-    if (!emailExists.length) {
-      return res.send({
-        message: 'An issue occurred, please double check your info and try again.'
-      });
-    }
+    const {
+      valid,
+      feedback
+    } = await validVerify({email, confirmationCode}, user);
 
-    const temporaryCode = await user.getTemporaryConfirmationCode(email);
-    const wrongCode = temporaryCode[0].confirmation_code !== confirmationCode
-    if (wrongCode) {
-      return res.send({
-        message: 'An issue occurred, please double check your info and try again.'
-      });
-    }
+    if (!valid) return res.send({message: feedback});
+
+    //user.verifyUser(email);  // change from uuid to null
 
     res.send('User account verified.');
   },
@@ -93,44 +81,13 @@ const userAuthController = {
     const email = req.sanitize(req.body.userInfo.email);
     const pass = req.sanitize(req.body.userInfo.password);
 
-    validRegisterRequest({email, pass, username});
-
-    if (username.length < 6) {
-      return res.send({message: 'Username must be at least 6 characters.'});
-    }
-    if (username.length > 20) {
-      return res.send({message: 'Username must be no more than 20 characters.'});
-    }
-    // Problem: This would invalidate some older/alternative email types. Remove?
-    if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
-      return res.send({message: 'Invalid email.'});
-    }
-    if (pass.length < 6) {
-      return res.send({message: 'Password must be at least 6 characters.'});
-    }
-    if (pass.length > 54) {
-      return res.send({message: 'Password must be no more than 54 characters.'});
-    }
+    validLoginRequest({email, pass});
 
     const user = new User(pool);
 
-    const userExists = await user.getUserByName(username);
-    if (!userExists.length) return res.send({message: 'Username does not exist.'});
+    const { valid, feedback } = await validResend({email, pass}, user);
 
-    const emailExists = await user.getUserByEmail(email);
-    if (!emailExists.length) return res.send({message: 'Email does not exist.'});
-
-    const isCorrectPassword = await bcrypt.compare(pass, userExists[0].pass);
-    if (!isCorrectPassword) {
-      return res.send({message: 'Incorrect email or password.'});
-    }
-
-    const alreadyConfirmed = userExists[0].confirmation_code === null;
-    if (alreadyConfirmed) {
-      return res.send({
-        message: 'Account already verified.'
-      });
-    }
+    if (!valid) return res.send({message: feedback});
 
     const confirmationCode = uuidv4();  // use JWT instead?
 
@@ -145,35 +102,11 @@ const userAuthController = {
 
     validLoginRequest({email, pass});
 
-    // Problem: This would invalidate some older/alternative email types.
-    if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
-      return res.send({message: 'Invalid email.'});
-    }
-    if (pass.length < 6) return res.send({message: 'Invalid password.'});
-    if (pass.length > 54) return res.send({message: 'Invalid password.'});
-
     const user = new User(pool);
 
-    const userExists = await user.getUserByEmail(email);
-    //if (userExists && crypto.timingSafeEqual(userExists[0].email, email))
-    if (!userExists.length) {
-      return res.send({message: 'Incorrect email or password.'});
-    }
-    if (userExists[0].email !== email) {
-      return res.send({message: 'Incorrect email or password.'});
-    }
+    const { valid, feedback } = await validLogin({email, pass}, user);
 
-    const isCorrectPassword = await bcrypt.compare(pass, userExists[0].pass);
-    if (!isCorrectPassword) {
-      return res.send({message: 'Incorrect email or password.'});
-    }
-
-    const notYetConfirmed = userExists[0].confirmation_code !== null;
-    if (notYetConfirmed) {
-      return res.send({
-        message: 'Please check your email for your confirmation code.'
-      });
-    }
+    if (!valid) return res.send({message: feedback});
 
     req.session.userInfo = {};
     req.session.userInfo.userId = userExists[0].user_id;
@@ -192,18 +125,6 @@ const userAuthController = {
     res.end();
   },
 
-  /*changeUsername: async function(req, res) {
-    // TO DO: implement this! write a test first!
-  }*/
-
-  /*changeEmail: async function(req, res) {
-    // TO DO: implement this! write a test first!
-  }*/
-
-  /*changePassword: async function(req, res) {
-    // TO DO: implement this! write a test first!
-  }*/
-
   setAvatar: async function(req, res) {
     const avatar = req.sanitize(req.body.avatar);
     const userId = req.session.userInfo.userId;
@@ -212,9 +133,22 @@ const userAuthController = {
     res.send({message: 'Avatar set.'});
   },
 
-  /*deleteAccount: async function(req, res) {
+  changeUsername: async function(req, res) {
     // TO DO: implement this! write a test first!
-  }*/
+    // use res.status().json(); instead of res.send(); ?
+  },
+
+  changeEmail: async function(req, res) {
+    // TO DO: implement this! write a test first!
+  },
+
+  changePassword: async function(req, res) {
+    // TO DO: implement this! write a test first!
+  },
+
+  deleteAccount: async function(req, res) {
+    // TO DO: implement this! write a test first!
+  }
 };
 
 module.exports = userAuthController;
