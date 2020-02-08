@@ -43,18 +43,18 @@ router.post(
 );
 
 router.post(
-  '/change-username',
-  catchExceptions(userAuthController.changeUsername)
+  '/update/username',
+  catchExceptions(userAuthController.updateUsername)
 );
 
 router.post(
-  '/change-email',
-  catchExceptions(userAuthController.changeEmail)
+  '/update/email',
+  catchExceptions(userAuthController.updateEmail)
 );
 
 router.post(
-  '/change-password',
-  catchExceptions(userAuthController.changePassword)
+  '/update/password',
+  catchExceptions(userAuthController.updatePassword)
 );
 
 router.post(

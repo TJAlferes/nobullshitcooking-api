@@ -16,7 +16,9 @@ class RecipeEquipment {
       WHERE re.recipe_id = ?
       ORDER BY e.equipment_type_id
     `;
+
     const [ recipeEquipment ] = await this.pool.execute(sql, [recipeId]);
+
     return recipeEquipment;
   }
 
@@ -25,38 +27,64 @@ class RecipeEquipment {
       INSERT INTO nobsc_recipe_equipment (recipe_id, equipment_id, amount)
       VALUES ${recipeEquipmentPlaceholders} 
     `;
-    const [ createdRecipeEquipment ] = await this.pool.execute(sql, recipeEquipment);
+
+    const [ createdRecipeEquipment ] = await this.pool
+    .execute(sql, recipeEquipment);
+
     return createdRecipeEquipment;
   }
 
-  async updateRecipeEquipment(recipeEquipment, recipeEquipmentPlaceholders, recipeId) {
+  async updateRecipeEquipment(
+    recipeEquipment,
+    recipeEquipmentPlaceholders,
+    recipeId
+  ) {
     const sql1 = `
       DELETE
       FROM nobsc_recipe_equipment
       WHERE recipe_id = ?
     `;
+
     const sql2 = (recipeEquipment !== "none")
     ? `
       INSERT INTO nobsc_recipe_equipment (recipe_id, equipment_id, amount)
       VALUES ${recipeEquipmentPlaceholders} 
     `
     : "none";
+
     const connection = await this.pool.getConnection();
+
     await connection.beginTransaction();
+
     try {
+
       await connection.query(sql1, [recipeId]);
+
       if (sql2 !== "none") {
-        const [ updatedRecipeEquipment ] = await connection.query(sql2, recipeEquipment);
+
+        const [ updatedRecipeEquipment ] = await connection
+        .query(sql2, recipeEquipment);
+        
         await connection.commit();
+
         return updatedRecipeEquipment;
+
       } else {
+
         await connection.commit();
+
       }
+
     } catch (err) {
+
       await connection.rollback();
+
       throw err;
+
     } finally {
+
       connection.release();
+
     }
   }
 
@@ -66,7 +94,10 @@ class RecipeEquipment {
       FROM nobsc_recipe_equipment
       WHERE recipe_id = ?
     `;
-    const [ deletedRecipeEquipment ] = await this.pool.execute(sql, [recipeId]);
+
+    const [ deletedRecipeEquipment ] = await this.pool
+    .execute(sql, [recipeId]);
+
     return deletedRecipeEquipment;
   }
 
@@ -76,7 +107,10 @@ class RecipeEquipment {
       FROM nobsc_recipe_equipment
       WHERE equipment_id = ?
     `;
-    const [ deletedRecipeEquipment ] = await this.pool.execute(sql, [equipmentId]);
+
+    const [ deletedRecipeEquipment ] = await this.pool
+    .execute(sql, [equipmentId]);
+
     return deletedRecipeEquipment;
   }
 }

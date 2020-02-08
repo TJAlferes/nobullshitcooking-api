@@ -39,7 +39,7 @@ const userAuthController = {
     if (!valid) return res.send({message: feedback});
 
     const encryptedPassword = await bcrypt.hash(pass, SALT_ROUNDS);
-    
+
     const confirmationCode = uuidv4();  // JWT?
 
     const userToCreate = validUserEntity({
@@ -133,16 +133,16 @@ const userAuthController = {
     res.send({message: 'Avatar set.'});
   },
 
-  changeUsername: async function(req, res) {
+  updateUsername: async function(req, res) {
     // TO DO: implement this! write a test first!
     // use res.status().json(); instead of res.send(); ?
   },
 
-  changeEmail: async function(req, res) {
+  updateEmail: async function(req, res) {
     // TO DO: implement this! write a test first!
   },
 
-  changePassword: async function(req, res) {
+  updatePassword: async function(req, res) {
     // TO DO: implement this! write a test first!
   },
 

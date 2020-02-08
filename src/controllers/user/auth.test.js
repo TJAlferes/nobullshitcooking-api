@@ -1,21 +1,32 @@
 const httpMocks = require('node-mocks-http');
+//const request = require('supertest');
+
+//const app = require('../../app');
 
 const userAuthController = require('./auth');
 
-let req;
-let res;
-let next;
-
-beforeEach(() => {
-  req = httpMocks.createRequest();
-  res = httpMocks.createResponse();
-  next = jest.fn();
-});
-
 describe('userAuthController', () => {
-  describe('changeUsername', () => {
-    it('should send a response', () => {
-      expect(res.send()).toBeCalledTimes(1);
+  let req;
+  let res;
+
+  // move into inner describes?
+  beforeEach(() => {
+    req = httpMocks.createRequest();
+    res = httpMocks.createResponse();
+  });
+
+  describe('updateUsername', () => {
+    /*it('should integrate', () => {
+      return request(app).put('/user/auth/update/username').expect(200);
+    });*/
+
+    it('should send a response', async () => {
+      req.body.userInfo = {
+        username
+      };
+      await userAuthController.updateUsername(req, res);
+      //expect(res.send()).toBeCalledTimes(1);  // only works with jest.fn()
+
     });
   });
 });

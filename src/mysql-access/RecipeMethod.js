@@ -15,7 +15,9 @@ class RecipeMethod {
       WHERE rm.recipe_id = ?
       ORDER BY m.method_id
     `;
+
     const [ recipeMethods ] = await this.pool.execute(sql, [recipeId]);
+
     return recipeMethods;
   }
 
@@ -24,38 +26,64 @@ class RecipeMethod {
       INSERT INTO nobsc_recipe_methods (recipe_id, method_id)
       VALUES ${recipeMethodsPlaceholders} 
     `;
-    const [ createdRecipeMethods ] = await this.pool.execute(sql, recipeMethods);
+
+    const [ createdRecipeMethods ] = await this.pool
+    .execute(sql, recipeMethods);
+
     return createdRecipeMethods;
   }
 
-  async updateRecipeMethods(recipeMethods, recipeMethodsPlaceholders, recipeId) {
+  async updateRecipeMethods(
+    recipeMethods,
+    recipeMethodsPlaceholders,
+    recipeId
+  ) {
     const sql1 = `
       DELETE
       FROM nobsc_recipe_methods
       WHERE recipe_id = ?
     `;
+
     const sql2 = (recipeMethods !== "none")
     ? `
       INSERT INTO nobsc_recipe_methods (recipe_id, method_id)
       VALUES ${recipeMethodsPlaceholders} 
     `
     : "none";
+
     const connection = await this.pool.getConnection();
+
     await connection.beginTransaction();
+
     try {
+
       await connection.query(sql1, [recipeId]);
+
       if (sql2 !== "none") {
-        const [ updatedRecipeMethods ] = await connection.query(sql2, recipeMethods);
+
+        const [ updatedRecipeMethods ] = await connection
+        .query(sql2, recipeMethods);
+
         await connection.commit();
+        
         return updatedRecipeMethods;
+
       } else {
+
         await connection.commit();
+
       }
+
     } catch (err) {
+
       await connection.rollback();
+
       throw err;
+
     } finally {
+
       connection.release();
+
     }
   }
 
@@ -65,7 +93,9 @@ class RecipeMethod {
       FROM nobsc_recipe_methods
       WHERE recipe_id = ?
     `;
+
     const [ deletedRecipeMethods ] = await this.pool.execute(sql, [recipeId]);
+
     return deletedRecipeMethods;
   }
 }
