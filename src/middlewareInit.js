@@ -1,3 +1,4 @@
+const express = require('express');
 //const expressPinoLogger = require('express-pino-logger');
 const expressRateLimit = require('express-rate-limit');
 const expressSanitizer = require('express-sanitizer');  // Use something else? This is popular, yet is based on abandonware...
@@ -9,7 +10,7 @@ const compression = require('compression');
 
 const sessionInit = require('./sessionInit');
 
-function middlewareInit(app) {
+function middlewareInit(app, server) {
   const rateLimiterOptions = {windowMs: 1 * 60 * 1000, max: 1000};  // limit each IP to 1000 requests per minute (100?)
 
   const corsOptions = {origin: ['http://localhost:8080'], credentials: true};

@@ -28,7 +28,7 @@ typically we want to avoid such triple nesting,
 however here it seems unavoidable,
 because of the dependent relationships of these things
 */
-middlewareInit(app);  // must run before routesInit
+middlewareInit(app, server);  // must run before routesInit
 routesInit(app);
 
 process.on('unhandledRejection', (reason, promise) => {

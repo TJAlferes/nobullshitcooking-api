@@ -1,4 +1,4 @@
-const emailUser = require('./services/simple-email-service');
+const emailUser = require('./simple-email-service');
 
 const emailConfirmationCode = (email, confirmationCode) => {
   const from = "No Bullshit Cooking <staff@nobullshitcooking.com>";
