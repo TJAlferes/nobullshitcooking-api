@@ -1,7 +1,9 @@
+\W
+
 USE nobsc;
 
 CREATE TABLE `nobsc_staff` (
-  `staff_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `staff_id` int unsigned NOT NULL AUTO_INCREMENT,
   `email` varchar(60) UNIQUE NOT NULL,
   `pass` char(60) NOT NULL,
   `staffname` varchar(20) UNIQUE NOT NULL,
@@ -11,7 +13,7 @@ CREATE TABLE `nobsc_staff` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `nobsc_users` (
-  `user_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int unsigned NOT NULL AUTO_INCREMENT,
   `email` varchar(60) UNIQUE NOT NULL,
   `pass` char(60) NOT NULL,
   `username` varchar(20) UNIQUE NOT NULL,
@@ -21,47 +23,47 @@ CREATE TABLE `nobsc_users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `nobsc_recipe_types` (
-  `recipe_type_id` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `recipe_type_id` tinyint unsigned NOT NULL DEFAULT '0',
   `recipe_type_name` varchar(25) DEFAULT NULL,
   PRIMARY KEY (`recipe_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `nobsc_ingredient_types` (
-  `ingredient_type_id` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `ingredient_type_id` tinyint unsigned NOT NULL DEFAULT '0',
   `ingredient_type_name` varchar(25) DEFAULT NULL,
   PRIMARY KEY (`ingredient_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `nobsc_equipment_types` (
-  `equipment_type_id` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `equipment_type_id` tinyint unsigned NOT NULL DEFAULT '0',
   `equipment_type_name` varchar(25) DEFAULT NULL,
   PRIMARY KEY (`equipment_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `nobsc_methods` (
-  `method_id` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `method_id` tinyint unsigned NOT NULL DEFAULT '0',
   `method_name` varchar(25) DEFAULT NULL,
   PRIMARY KEY (`method_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `nobsc_cuisines` (
-  `cuisine_id` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `cuisine_name` varchar(25) DEFAULT NULL,
+  `cuisine_id` tinyint unsigned NOT NULL DEFAULT '0',
+  `cuisine_name` varchar(40) DEFAULT NULL,
   PRIMARY KEY (`cuisine_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `nobsc_measurements` (
-  `measurement_id` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `measurement_id` tinyint unsigned NOT NULL DEFAULT '0',
   `measurement_name` varchar(25) DEFAULT NULL,
   PRIMARY KEY (`measurement_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `nobsc_recipes` (
-  `recipe_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `recipe_type_id` tinyint(3) unsigned NOT NULL,
-  `cuisine_id` tinyint(3) unsigned NOT NULL,
-  `author_id` int(10) unsigned NOT NULL,
-  `owner_id` int(10) unsigned NOT NULL,
+  `recipe_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `recipe_type_id` tinyint unsigned NOT NULL,
+  `cuisine_id` tinyint unsigned NOT NULL,
+  `author_id` int unsigned NOT NULL,
+  `owner_id` int unsigned NOT NULL,
   `title` varchar(100) NOT NULL DEFAULT '',
   `description` varchar(150) NOT NULL DEFAULT '',
   `directions` text NOT NULL,
@@ -77,10 +79,10 @@ CREATE TABLE `nobsc_recipes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `nobsc_ingredients` (
-  `ingredient_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  `ingredient_type_id` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `author_id` int(10) unsigned NOT NULL,
-  `owner_id` int(10) unsigned NOT NULL,
+  `ingredient_id` smallint unsigned NOT NULL AUTO_INCREMENT,
+  `ingredient_type_id` tinyint unsigned NOT NULL DEFAULT '0',
+  `author_id` int unsigned NOT NULL,
+  `owner_id` int unsigned NOT NULL,
   `ingredient_name` varchar(100) NOT NULL,
   `ingredient_description` text NOT NULL,
   `ingredient_image` varchar(100) NOT NULL DEFAULT 'nobsc-ingredient-default',
@@ -91,10 +93,10 @@ CREATE TABLE `nobsc_ingredients` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `nobsc_equipment` (
-  `equipment_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  `equipment_type_id` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `author_id` int(10) unsigned NOT NULL,
-  `owner_id` int(10) unsigned NOT NULL,
+  `equipment_id` smallint unsigned NOT NULL AUTO_INCREMENT,
+  `equipment_type_id` tinyint unsigned NOT NULL DEFAULT '0',
+  `author_id` int unsigned NOT NULL,
+  `owner_id` int unsigned NOT NULL,
   `equipment_name` varchar(100) NOT NULL,
   `equipment_description` text NOT NULL,
   `equipment_image` varchar(100) NOT NULL DEFAULT 'nobsc-equipment-default',
@@ -105,19 +107,19 @@ CREATE TABLE `nobsc_equipment` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `nobsc_recipe_subrecipes` (
-  `recipe_id` int(10) unsigned NOT NULL,
-  `subrecipe_id` int(10) unsigned NOT NULL,
-  `amount` decimal(5,2) unsigned NOT NULL,
-  `measurement_id` tinyint(3) unsigned NOT NULL,
+  `recipe_id` int unsigned NOT NULL,
+  `subrecipe_id` int unsigned NOT NULL,
+  `amount` decimal(5,2) NOT NULL,
+  `measurement_id` tinyint unsigned NOT NULL,
   FOREIGN KEY (`recipe_id`) REFERENCES `nobsc_recipes` (`recipe_id`),
   FOREIGN KEY (`subrecipe_id`) REFERENCES `nobsc_recipes` (`recipe_id`),
   FOREIGN KEY (`measurement_id`) REFERENCES `nobsc_measurements` (`measurement_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `nobsc_recipe_ingredients` (
-  `recipe_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `ingredient_id` smallint(5) unsigned NOT NULL DEFAULT '0',
-  `amount` decimal(5,2) unsigned NOT NULL,
+  `recipe_id` int unsigned NOT NULL DEFAULT '0',
+  `ingredient_id` smallint unsigned NOT NULL DEFAULT '0',
+  `amount` decimal(5,2) NOT NULL,
   `measurement_id` tinyint(3) unsigned NOT NULL,
   FOREIGN KEY (`recipe_id`) REFERENCES `nobsc_recipes` (`recipe_id`),
   FOREIGN KEY (`ingredient_id`) REFERENCES `nobsc_ingredients` (`ingredient_id`),
@@ -125,32 +127,32 @@ CREATE TABLE `nobsc_recipe_ingredients` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `nobsc_recipe_equipment` (
-  `recipe_id` int(10) unsigned NOT NULL,
-  `equipment_id` smallint(5) unsigned NOT NULL,
+  `recipe_id` int unsigned NOT NULL,
+  `equipment_id` smallint unsigned NOT NULL,
   `amount` tinyint(3) unsigned NOT NULL,
   FOREIGN KEY (`recipe_id`) REFERENCES `nobsc_recipes` (`recipe_id`),
   FOREIGN KEY (`equipment_id`) REFERENCES `nobsc_equipment` (`equipment_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `nobsc_recipe_methods` (
-  `recipe_id` int(10) unsigned NOT NULL,
-  `method_id` tinyint(3) unsigned NOT NULL,
+  `recipe_id` int unsigned NOT NULL,
+  `method_id` tinyint unsigned NOT NULL,
   FOREIGN KEY (`recipe_id`) REFERENCES `nobsc_recipes` (`recipe_id`),
   FOREIGN KEY (`method_id`) REFERENCES `nobsc_methods` (`method_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `nobsc_friendships` (
-  `user_id` int(10) unsigned NOT NULL,
-  `friend_id` int(10) unsigned NOT NULL,
+  `user_id` int unsigned NOT NULL,
+  `friend_id` int unsigned NOT NULL,
   `status` varchar(20) NOT NULL,
   FOREIGN KEY (`user_id`) REFERENCES `nobsc_users` (`user_id`),
   FOREIGN KEY (`friend_id`) REFERENCES `nobsc_users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `nobsc_plans` (
-  `plan_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `author_id` int(10) unsigned NOT NULL,
-  `owner_id` int(10) unsigned NOT NULL,
+  `plan_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `author_id` int unsigned NOT NULL,
+  `owner_id` int unsigned NOT NULL,
   `plan_name` varchar(100) NOT NULL DEFAULT '',
   `plan_data` json DEFAULT NULL,
   PRIMARY KEY (`plan_id`),
@@ -159,24 +161,24 @@ CREATE TABLE `nobsc_plans` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `nobsc_favorite_recipes` (
-  `user_id` int(10) unsigned NOT NULL,
-  `recipe_id` int(10) unsigned NOT NULL,
+  `user_id` int unsigned NOT NULL,
+  `recipe_id` int unsigned NOT NULL,
   FOREIGN KEY (`user_id`) REFERENCES `nobsc_users` (`user_id`),
   FOREIGN KEY (`recipe_id`) REFERENCES `nobsc_recipes` (`recipe_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `nobsc_saved_recipes` (
-  `user_id` int(10) unsigned NOT NULL,
-  `recipe_id` int(10) unsigned NOT NULL,
+  `user_id` int unsigned NOT NULL,
+  `recipe_id` int unsigned NOT NULL,
   FOREIGN KEY (`user_id`) REFERENCES `nobsc_users` (`user_id`),
   FOREIGN KEY (`recipe_id`) REFERENCES `nobsc_recipes` (`recipe_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `nobsc_notifications` (
-  `notification_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `sender_id` int(10) unsigned NOT NULL,
-  `receiver_id` int(10) unsigned NOT NULL,
-  `read` tinyint(1) NOT NULL DEFAULT '0',
+  `notification_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `sender_id` int unsigned NOT NULL,
+  `receiver_id` int unsigned NOT NULL,
+  `read` tinyint NOT NULL DEFAULT '0',
   `type` varchar(45) NOT NULL,
   `note` varchar(255) NOT NULL,
   `created_on` date NOT NULL,
