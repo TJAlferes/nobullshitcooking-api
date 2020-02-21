@@ -120,7 +120,7 @@ CREATE TABLE `nobsc_recipe_ingredients` (
   `recipe_id` int unsigned NOT NULL DEFAULT '0',
   `ingredient_id` smallint unsigned NOT NULL DEFAULT '0',
   `amount` decimal(5,2) NOT NULL,
-  `measurement_id` tinyint(3) unsigned NOT NULL,
+  `measurement_id` tinyint unsigned NOT NULL,
   FOREIGN KEY (`recipe_id`) REFERENCES `nobsc_recipes` (`recipe_id`),
   FOREIGN KEY (`ingredient_id`) REFERENCES `nobsc_ingredients` (`ingredient_id`),
   FOREIGN KEY (`measurement_id`) REFERENCES `nobsc_measurements` (`measurement_id`)
@@ -129,7 +129,7 @@ CREATE TABLE `nobsc_recipe_ingredients` (
 CREATE TABLE `nobsc_recipe_equipment` (
   `recipe_id` int unsigned NOT NULL,
   `equipment_id` smallint unsigned NOT NULL,
-  `amount` tinyint(3) unsigned NOT NULL,
+  `amount` tinyint unsigned NOT NULL,
   FOREIGN KEY (`recipe_id`) REFERENCES `nobsc_recipes` (`recipe_id`),
   FOREIGN KEY (`equipment_id`) REFERENCES `nobsc_equipment` (`equipment_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
