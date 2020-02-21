@@ -1,4 +1,4 @@
-const getUser = async function(socket, messengerRoom, room) {
+async function getUser(socket, messengerRoom, room) {
   const users = await messengerRoom.getUsersInRoom(room);
   socket.emit('GetUser', users);
 };
