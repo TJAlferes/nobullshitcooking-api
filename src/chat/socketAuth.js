@@ -27,17 +27,21 @@ const addMessengerUser = (socket, sid, session) => {
   );
 };
 
-const socketAuth = redisSession => (socket, next) => {
-  if (!sessionIdsAreEqual(socket)) return next(new Error('Not authenticated.'));
-  redisSession.get(sid, function(err, session) {
-    if (!session.userInfo.userId) return next(new Error('Not authenticated.'));
-    addMessengerUser(socket, sid, session);
-  });
-  return next();
-};
+const useSocketAuth = (io, redisSession) => {
+  const socketAuth = (socket, next) => {
+    if (!sessionIdsAreEqual(socket)) return next(new Error('Not authenticated.'));
+    redisSession.get(sid, function(err, session) {
+      if (!session.userInfo.userId) return next(new Error('Not authenticated.'));
+      addMessengerUser(socket, sid, session);
+    });
+    return next();
+  };
+
+  io.use(socketAuth);
+}
 
 module.exports = {
   sessionIdsAreEqual,
   addMessengerUser,
-  socketAuth
+  useSocketAuth
 };

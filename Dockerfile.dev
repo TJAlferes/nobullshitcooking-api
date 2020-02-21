@@ -20,5 +20,5 @@ WORKDIR /api/src
 COPY ./src .
 #CMD /node/node_modules/.bin/webpack-dev-server --config webpack.dev.js --mode development --open --hot --host 0.0.0.0 --port 3003
 #CMD /node/node_modules/.bin/nodemon src/index.js
-#CMD node --inspect=0.0.0.0:9229 src/index.js
-CMD DEBUG=* node index.js
+#CMD DEBUG=* node index.js
+CMD node index.js

@@ -1,4 +1,4 @@
-const validLogin = async ({ email, pass }, user) => {
+const validLogin = async (bcrypt, user, { email, pass }) => {
   // Problem: This would invalidate some older/alternative email types.
   if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
     return {valid: false, feedback: 'Invalid email.'};
@@ -34,8 +34,8 @@ const validLogin = async ({ email, pass }, user) => {
       feedback: 'Please check your email for your confirmation code.'
     };
   }
-
-  return {valid: true, feedback: 'Valid.'};
+  
+  return {valid: true, feedback: 'Valid.', userExists: userExists[0]};
 };
 
 module.exports = validLogin;

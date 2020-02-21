@@ -104,19 +104,23 @@ const userAuthController = {
 
     const user = new User(pool);
 
-    const { valid, feedback } = await validLogin({email, pass}, user);
+    const {
+      valid,
+      feedback,
+      userExists
+    } = await validLogin(bcrypt, user, {email, pass});
 
     if (!valid) return res.send({message: feedback});
 
     req.session.userInfo = {};
-    req.session.userInfo.userId = userExists[0].user_id;
-    req.session.userInfo.username = userExists[0].username;
-    req.session.userInfo.avatar = userExists[0].avatar;
+    req.session.userInfo.userId = userExists.user_id;
+    req.session.userInfo.username = userExists.username;
+    req.session.userInfo.avatar = userExists.avatar;
 
     return res.json({
       message: 'Signed in.',
-      username: userExists[0].username,
-      avatar: userExists[0].avatar
+      username: userExists.username,
+      avatar: userExists.avatar
     });
   },
 
