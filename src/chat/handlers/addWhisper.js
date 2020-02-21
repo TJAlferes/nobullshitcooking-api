@@ -5,11 +5,11 @@ async function addWhisper(
   nobscUser,
   nobscFriendship,
   messengerUser,
+  whisperText,
+  to,
   userId,
   username,
-  avatar,
-  whisperText,
-  to
+  avatar
 ) {
   const userExists = await nobscUser.getUserIdByUsername(to);
 

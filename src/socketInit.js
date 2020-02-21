@@ -16,7 +16,7 @@ function socketInit(server, redisSession) {
   const io = socketIO(server, {pingTimeout: 60000});
 
   io.adapter(redisAdapter({pubClient, subClient}));
-  useSocketAuth(io, redisSession);
+  useSocketAuth(io, redisSession);  // pass pubClient?
   io.on('connection', socketConnection);
 
   const INTERVAL = 60 * 60 * 1000 * 3;  // 3 hours

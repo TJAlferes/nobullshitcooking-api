@@ -1,3 +1,5 @@
+'use strict';
+
 const cookie = require('cookie');
 const cookieParser = require('cookie-parser');
 
@@ -11,7 +13,7 @@ const sessionIdsAreEqual = socket => {
     parsedCookie['connect.sid'],
     process.env.SESSION_SECRET
   );
-  return parsedCookie['connect.sid'] === sid;
+  return parsedCookie['connect.sid'] === sid ? false : sid;
 };
 
 const addMessengerUser = (socket, sid, session) => {
@@ -28,14 +30,17 @@ const addMessengerUser = (socket, sid, session) => {
 };
 
 const useSocketAuth = (io, redisSession) => {
-  const socketAuth = (socket, next) => {
-    if (!sessionIdsAreEqual(socket)) return next(new Error('Not authenticated.'));
+  function socketAuth(socket, next) {
+    const sid = sessionIdsAreEqual(socket);
+
+    if (sid === false) return next(new Error('Not authenticated.'));
+
     redisSession.get(sid, function(err, session) {
       if (!session.userInfo.userId) return next(new Error('Not authenticated.'));
       addMessengerUser(socket, sid, session);
+      return next();
     });
-    return next();
-  };
+  }
 
   io.use(socketAuth);
 }

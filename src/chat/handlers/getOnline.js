@@ -1,4 +1,4 @@
-const getOnline = async function(
+async function getOnline(
   socket,
   User,
   nobscFriendship,
@@ -7,6 +7,7 @@ const getOnline = async function(
   username,
   avatar
 ) {
+  console.log('getOnline called');
   const acceptedFriends = await nobscFriendship
   .viewAllMyAcceptedFriendships(userId);
 

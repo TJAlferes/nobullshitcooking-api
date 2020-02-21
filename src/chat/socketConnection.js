@@ -60,7 +60,16 @@ const socketConnection = async function(socket) {
   // Messages
 
   socket.on('AddChat', function(chatMessageText) {
-    addChat(socket, ChatMessage, User, messengerChat, chatMessageText);
+    addChat(
+      socket,
+      ChatMessage,
+      User,
+      messengerChat,
+      chatMessageText,
+      userId,
+      username,
+      avatar
+    );
   });
 
   socket.on('AddWhisper', function(whisperText, to) {
@@ -71,11 +80,11 @@ const socketConnection = async function(socket) {
       nobscUser,
       nobscFriendship,
       messengerUser,
+      whisperText,
+      to,
       userId,
       username,
-      avatar,
-      whisperText,
-      to
+      avatar
     );
   });
 

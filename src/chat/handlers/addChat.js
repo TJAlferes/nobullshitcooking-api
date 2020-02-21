@@ -3,7 +3,10 @@ async function addChat(
   ChatMessage,
   User,
   messengerChat,
-  chatMessageText
+  chatMessageText,
+  userId,
+  username,
+  avatar
 ) {
   const room = Object.keys(socket.rooms).filter(r => r !== socket.id);
 
