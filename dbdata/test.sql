@@ -22,6 +22,16 @@ CREATE TABLE `nobsc_users` (
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+
+
+CREATE TABLE `nobsc_suppliers` (
+  `supplier_id` smallint unsigned NOT NULL DEFAULT '0',
+  `supplier_name` varchar(60) UNIQUE NOT NULL,
+  PRIMARY KEY (`supplier_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
 CREATE TABLE `nobsc_recipe_types` (
   `recipe_type_id` tinyint unsigned NOT NULL DEFAULT '0',
   `recipe_type_name` varchar(25) DEFAULT NULL,
@@ -48,8 +58,18 @@ CREATE TABLE `nobsc_methods` (
 
 CREATE TABLE `nobsc_cuisines` (
   `cuisine_id` tinyint unsigned NOT NULL DEFAULT '0',
-  `cuisine_name` varchar(40) DEFAULT NULL,
+  `cuisine_name` varchar(40) NOT NULL DEFAULT '',
+  `cuisine_nation` varchar(40) NOT NULL DEFAULT '',
+  `cuisine_intro` text NOT NULL DEFAULT '',
+  `cuisine_wiki`
   PRIMARY KEY (`cuisine_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `nobsc_cuisine_suppliers` (
+  `cuisine_id` int unsigned NOT NULL,
+  `supplier_id` tinyint unsigned NOT NULL,
+  FOREIGN KEY (`recipe_id`) REFERENCES `nobsc_recipes` (`recipe_id`),
+  FOREIGN KEY (`method_id`) REFERENCES `nobsc_methods` (`method_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `nobsc_measurements` (
@@ -141,6 +161,17 @@ CREATE TABLE `nobsc_recipe_methods` (
   FOREIGN KEY (`method_id`) REFERENCES `nobsc_methods` (`method_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+
+
+CREATE TABLE `nobsc_cuisine_suppliers` (
+  `cuisine_id` int unsigned NOT NULL,
+  `supplier_id` tinyint unsigned NOT NULL,
+  FOREIGN KEY (`recipe_id`) REFERENCES `nobsc_recipes` (`recipe_id`),
+  FOREIGN KEY (`method_id`) REFERENCES `nobsc_methods` (`method_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
 CREATE TABLE `nobsc_friendships` (
   `user_id` int unsigned NOT NULL,
   `friend_id` int unsigned NOT NULL,
@@ -187,6 +218,8 @@ CREATE TABLE `nobsc_notifications` (
   FOREIGN KEY (`receiver_id`) REFERENCES `nobsc_users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+
+
 INSERT INTO nobsc_staff
 (email, pass, staffname)
 VALUES
@@ -197,6 +230,8 @@ INSERT INTO nobsc_users
 VALUES
 ("tjalferes@tjalferes.com", "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "NOBSC"),
 ("tjalferes@gmail.com", "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "Unknown");
+
+
 
 INSERT INTO nobsc_recipe_types
 (recipe_type_id, recipe_type_name)
@@ -274,75 +309,75 @@ VALUES
 (24, "Smoke");
 
 INSERT INTO nobsc_cuisines
-(cuisine_id, cuisine_name)
+(cuisine_id, cuisine_name, cuisine_nation, )
 VALUES
-(1, "Afghanistan"),
-(2, "Albania"),
-(3, "Algeria"),
-(4, "Andorra"),
-(5, "Angola"),
-(6, "Antigua and Barbuda"),
-(7, "Argentina"),
-(8, "Armenia"),
-(9, "Australia"),
-(10, "Austra"),
+(1, "", "Afghanistan"),
+(2, "", "Albania"),
+(3, "", "Algeria"),
+(4, "", "Andorra"),
+(5, "", "Angola"),
+(6, "", "Antigua and Barbuda"),
+(7, "", "Argentina"),
+(8, "", "Armenia"),
+(9, "", "Australia"),
+(10, "", "Austra"),
 
-(11, "Azerbaijan"),
-(12, "Bahamas"),
-(13, "Bahrain"),
-(14, "Bangladesh"),
-(15, "Barbados"),
-(16, "Belarus"),
-(17, "Belgium"),
-(18, "Belize"),
-(19, "Benin"),
-(20, "Bhutan"),
+(11, "", "Azerbaijan"),
+(12, "", "Bahamas"),
+(13, "", "Bahrain"),
+(14, "", "Bangladesh"),
+(15, "", "Barbados"),
+(16, "", "Belarus"),
+(17, "", "Belgium"),
+(18, "", "Belize"),
+(19, "", "Benin"),
+(20, "", "Bhutan"),
 
-(21, "Bolivia"),
-(22, "Bosnia and Herzegovina"),
-(23, "Botswana"),
-(24, "Brazil"),
-(25, "Brunei"),
-(26, "Bulgaria"),
-(27, "Burkina Faso"),
-(28, "Burundi"),
-(29, "Côte d'Ivoire"),
-(30, "Cabo Verde"),
+(21, "", "Bolivia"),
+(22, "", "Bosnia and Herzegovina"),
+(23, "", "Botswana"),
+(24, "", "Brazil"),
+(25, "", "Brunei"),
+(26, "", "Bulgaria"),
+(27, "", "Burkina Faso"),
+(28, "", "Burundi"),
+(29, "", "Côte d'Ivoire"),
+(30, "", "Cabo Verde"),
 
-(31, "Cambodia"),
-(32, "Cameroon"),
-(33, "Canada"),
-(34, "Central African Republic"),
-(35, "Chad"),
-(36, "Chile"),
-(37, "China"),
-(38, "Colombia"),
-(39, "Comoros"),
-(40, "Congo, Democratic Republic of the"),
+(31, "", "Cambodia"),
+(32, "", "Cameroon"),
+(33, "", "Canada"),
+(34, "", "Central African Republic"),
+(35, "", "Chad"),
+(36, "", "Chile"),
+(37, "", "China"),
+(38, "", "Colombia"),
+(39, "", "Comoros"),
+(40, "", "Congo, Democratic Republic of the"),
 
-(41, "Congo, Republic of the"),
-(42, "Costa Rica"),
-(43, "Croatia"),
-(44, "Cuba"),
-(45, "Cyprus"),
-(46, "Czechia"),
-(47, "Denmark"),
-(48, "Djibouti"),
-(49, "Dominica"),
-(50, "Dominican Republic"),
+(41, "", "Congo, Republic of the"),
+(42, "", "Costa Rica"),
+(43, "", "Croatia"),
+(44, "", "Cuba"),
+(45, "", "Cyprus"),
+(46, "", "Czechia"),
+(47, "", "Denmark"),
+(48, "", "Djibouti"),
+(49, "", "Dominica"),
+(50, "", "Dominican Republic"),
 
-(51, "Ecuador"),
-(52, "Egypt"),
-(53, "El Salvador"),
-(54, "Equatorial Guinea"),
-(55, "Eritrea"),
-(56, "Estonia"),
-(57, "Eswatini"),
-(58, "Ethiopia"),
-(59, "Fiji"),
-(60, "Finland"),
+(51, "", "Ecuador"),
+(52, "", "Egypt"),
+(53, "", "El Salvador"),
+(54, "", "Equatorial Guinea"),
+(55, "", "Eritrea"),
+(56, "", "Estonia"),
+(57, "", "Eswatini"),
+(58, "", "Ethiopia"),
+(59, "", "Fiji"),
+(60, "", "Finland"),
 
-(61, "France"),
+(61, "", "France"),
 (62, "Gabon"),
 (63, "Gambia"),
 (64, "Georgia"),

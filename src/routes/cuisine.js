@@ -15,6 +15,11 @@ router.get(
 );
 
 router.get(
+  '/detail/:cuisineId',
+  catchExceptions(cuisineController.viewCuisineDetailById)
+);
+
+router.get(
   '/:cuisineId',
   catchExceptions(cuisineController.viewCuisineById)
 );
