@@ -65,13 +65,6 @@ CREATE TABLE `nobsc_cuisines` (
   PRIMARY KEY (`cuisine_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `nobsc_cuisine_suppliers` (
-  `cuisine_id` int unsigned NOT NULL,
-  `supplier_id` tinyint unsigned NOT NULL,
-  FOREIGN KEY (`recipe_id`) REFERENCES `nobsc_recipes` (`recipe_id`),
-  FOREIGN KEY (`method_id`) REFERENCES `nobsc_methods` (`method_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 CREATE TABLE `nobsc_measurements` (
   `measurement_id` tinyint unsigned NOT NULL DEFAULT '0',
   `measurement_name` varchar(25) DEFAULT NULL,
@@ -161,23 +154,18 @@ CREATE TABLE `nobsc_recipe_methods` (
   FOREIGN KEY (`method_id`) REFERENCES `nobsc_methods` (`method_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-
-
-CREATE TABLE `nobsc_cuisine_suppliers` (
-  `cuisine_id` int unsigned NOT NULL,
-  `supplier_id` tinyint unsigned NOT NULL,
-  FOREIGN KEY (`recipe_id`) REFERENCES `nobsc_recipes` (`recipe_id`),
-  FOREIGN KEY (`method_id`) REFERENCES `nobsc_methods` (`method_id`)
+CREATE TABLE `nobsc_favorite_recipes` (
+  `user_id` int unsigned NOT NULL,
+  `recipe_id` int unsigned NOT NULL,
+  FOREIGN KEY (`user_id`) REFERENCES `nobsc_users` (`user_id`),
+  FOREIGN KEY (`recipe_id`) REFERENCES `nobsc_recipes` (`recipe_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-
-
-CREATE TABLE `nobsc_friendships` (
+CREATE TABLE `nobsc_saved_recipes` (
   `user_id` int unsigned NOT NULL,
-  `friend_id` int unsigned NOT NULL,
-  `status` varchar(20) NOT NULL,
+  `recipe_id` int unsigned NOT NULL,
   FOREIGN KEY (`user_id`) REFERENCES `nobsc_users` (`user_id`),
-  FOREIGN KEY (`friend_id`) REFERENCES `nobsc_users` (`user_id`)
+  FOREIGN KEY (`recipe_id`) REFERENCES `nobsc_recipes` (`recipe_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `nobsc_plans` (
@@ -191,18 +179,42 @@ CREATE TABLE `nobsc_plans` (
   FOREIGN KEY (`owner_id`) REFERENCES `nobsc_users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `nobsc_favorite_recipes` (
-  `user_id` int unsigned NOT NULL,
-  `recipe_id` int unsigned NOT NULL,
-  FOREIGN KEY (`user_id`) REFERENCES `nobsc_users` (`user_id`),
-  FOREIGN KEY (`recipe_id`) REFERENCES `nobsc_recipes` (`recipe_id`)
+
+
+CREATE TABLE `nobsc_cuisine_suppliers` (
+  `cuisine_id` tinyint unsigned NOT NULL,
+  `supplier_id` smallint unsigned NOT NULL,
+  FOREIGN KEY (`cuisine_id`) REFERENCES `nobsc_cuisines` (`cuisine_id`),
+  FOREIGN KEY (`supplier_id`) REFERENCES `nobsc_suppliers` (`supplier_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `nobsc_saved_recipes` (
+CREATE TABLE `nobsc_cuisine_equipment` (
+  `cuisine_id` tinyint unsigned NOT NULL,
+  `equipment_id` smallint unsigned NOT NULL,
+  FOREIGN KEY (`cuisine_id`) REFERENCES `nobsc_cuisines` (`cuisine_id`),
+  FOREIGN KEY (`equipment_id`) REFERENCES `nobsc_equipment` (`equipment_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `nobsc_cuisine_ingredients` (
+  `cuisine_id` tinyint unsigned NOT NULL,
+  `ingredient_id` smallint unsigned NOT NULL DEFAULT '0',
+  FOREIGN KEY (`cuisine_id`) REFERENCES `nobsc_cuisines` (`cuisine_id`),
+  FOREIGN KEY (`ingredient_id`) REFERENCES `nobsc_ingredients` (`ingredient_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `nobsc_cuisine_plans` (
+  `cuisine_id` tinyint unsigned NOT NULL,
+  `plan_id` int unsigned NOT NULL,
+  FOREIGN KEY (`cuisine_id`) REFERENCES `nobsc_cuisines` (`cuisine_id`),
+  FOREIGN KEY (`plan_id`) REFERENCES `nobsc_plan` (`plan_id`),
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `nobsc_friendships` (
   `user_id` int unsigned NOT NULL,
-  `recipe_id` int unsigned NOT NULL,
+  `friend_id` int unsigned NOT NULL,
+  `status` varchar(20) NOT NULL,
   FOREIGN KEY (`user_id`) REFERENCES `nobsc_users` (`user_id`),
-  FOREIGN KEY (`recipe_id`) REFERENCES `nobsc_recipes` (`recipe_id`)
+  FOREIGN KEY (`friend_id`) REFERENCES `nobsc_users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `nobsc_notifications` (
@@ -309,95 +321,95 @@ VALUES
 (24, "Smoke");
 
 INSERT INTO nobsc_cuisines
-(cuisine_id, cuisine_name, cuisine_nation, )
+(cuisine_id, cuisine_name, cuisine_nation, cuisine_wiki, cuisine_intro)
 VALUES
-(1, "", "Afghanistan"),
-(2, "", "Albania"),
-(3, "", "Algeria"),
-(4, "", "Andorra"),
-(5, "", "Angola"),
-(6, "", "Antigua and Barbuda"),
-(7, "", "Argentina"),
-(8, "", "Armenia"),
-(9, "", "Australia"),
-(10, "", "Austra"),
+(1, "Afghan", "Afghanistan", "Afghan_cuisine", ""),
+(2, "Albanian", "Albania", "Albanian_cuisine", ""),
+(3, "Algerian", "Algeria", "Algerian_cuisine", ""),
+(4, "Catalan", "Andorra", "", ""),
+(5, "Angolan", "Angola", "Angolan_cuisine", ""),
+(6, "", "Antigua and Barbuda", "Antigua_and_Barbuda_cuisine", ""),
+(7, "Argentine", "Argentina", "Argentine_cuisine", ""),
+(8, "Armenian", "Armenia", "Armenian_cuisine", ""),
+(9, "Australian", "Australia", "Australian_cuisine", ""),
+(10, "", "Austria", "", ""),
 
-(11, "", "Azerbaijan"),
-(12, "", "Bahamas"),
-(13, "", "Bahrain"),
-(14, "", "Bangladesh"),
-(15, "", "Barbados"),
-(16, "", "Belarus"),
-(17, "", "Belgium"),
-(18, "", "Belize"),
-(19, "", "Benin"),
-(20, "", "Bhutan"),
+(11, "", "Azerbaijan", "", ""),
+(12, "", "Bahamas", "", ""),
+(13, "", "Bahrain", "", ""),
+(14, "", "Bangladesh", "", ""),
+(15, "", "Barbados", "", ""),
+(16, "", "Belarus", "", ""),
+(17, "", "Belgium", "", ""),
+(18, "", "Belize", "", ""),
+(19, "", "Benin", "", ""),
+(20, "", "Bhutan", "", ""),
 
-(21, "", "Bolivia"),
-(22, "", "Bosnia and Herzegovina"),
-(23, "", "Botswana"),
-(24, "", "Brazil"),
-(25, "", "Brunei"),
-(26, "", "Bulgaria"),
-(27, "", "Burkina Faso"),
-(28, "", "Burundi"),
-(29, "", "Côte d'Ivoire"),
-(30, "", "Cabo Verde"),
+(21, "", "Bolivia", "", ""),
+(22, "", "Bosnia and Herzegovina", "", ""),
+(23, "", "Botswana", "", ""),
+(24, "", "Brazil", "", ""),
+(25, "", "Brunei", "", ""),
+(26, "", "Bulgaria", "", ""),
+(27, "", "Burkina Faso", "", ""),
+(28, "", "Burundi", "", ""),
+(29, "", "Côte d'Ivoire", "", ""),
+(30, "", "Cabo Verde", "", ""),
 
-(31, "", "Cambodia"),
-(32, "", "Cameroon"),
-(33, "", "Canada"),
-(34, "", "Central African Republic"),
-(35, "", "Chad"),
-(36, "", "Chile"),
-(37, "", "China"),
-(38, "", "Colombia"),
-(39, "", "Comoros"),
-(40, "", "Congo, Democratic Republic of the"),
+(31, "", "Cambodia", "", ""),
+(32, "", "Cameroon", "", ""),
+(33, "", "Canada", "", ""),
+(34, "", "Central African Republic", "", ""),
+(35, "", "Chad", "", ""),
+(36, "", "Chile", "", ""),
+(37, "", "China", "", ""),
+(38, "", "Colombia", "", ""),
+(39, "", "Comoros", "", ""),
+(40, "", "Congo, Democratic Republic of the", "", ""),
 
-(41, "", "Congo, Republic of the"),
-(42, "", "Costa Rica"),
-(43, "", "Croatia"),
-(44, "", "Cuba"),
-(45, "", "Cyprus"),
-(46, "", "Czechia"),
-(47, "", "Denmark"),
-(48, "", "Djibouti"),
-(49, "", "Dominica"),
-(50, "", "Dominican Republic"),
+(41, "", "Congo, Republic of the", "", ""),
+(42, "", "Costa Rica", "", ""),
+(43, "", "Croatia", "", ""),
+(44, "", "Cuba", "", ""),
+(45, "", "Cyprus", "", ""),
+(46, "", "Czechia", "", ""),
+(47, "", "Denmark", "", ""),
+(48, "", "Djibouti", "", ""),
+(49, "", "Dominica", "", ""),
+(50, "", "Dominican Republic", "", ""),
 
-(51, "", "Ecuador"),
-(52, "", "Egypt"),
-(53, "", "El Salvador"),
-(54, "", "Equatorial Guinea"),
-(55, "", "Eritrea"),
-(56, "", "Estonia"),
-(57, "", "Eswatini"),
-(58, "", "Ethiopia"),
-(59, "", "Fiji"),
-(60, "", "Finland"),
+(51, "", "Ecuador", "", ""),
+(52, "", "Egypt", "", ""),
+(53, "", "El Salvador", "", ""),
+(54, "", "Equatorial Guinea", "", ""),
+(55, "", "Eritrea", "", ""),
+(56, "", "Estonia", "", ""),
+(57, "", "Eswatini", "", ""),
+(58, "", "Ethiopia", "", ""),
+(59, "", "Fiji", "", ""),
+(60, "", "Finland", "", ""),
 
-(61, "", "France"),
-(62, "Gabon"),
-(63, "Gambia"),
-(64, "Georgia"),
-(65, "Germany"),
-(66, "Ghana"),
-(67, "Greece"),
-(68, "Grenada"),
-(69, "Guatemala"),
-(70, "Guinea"),
+(61, "", "France", "", ""),
+(62, "Gabon", "", ""),
+(63, "Gambia", "", ""),
+(64, "Georgia", "", ""),
+(65, "Germany", "", ""),
+(66, "Ghana", "", ""),
+(67, "Greece", "", ""),
+(68, "Grenada", "", ""),
+(69, "Guatemala", "", ""),
+(70, "Guinea", "", ""),
 
-(71, "Guinea-Bissau"),
-(72, "Guyana"),
-(73, "Haiti"),
-(74, "Honduras"),
-(75, "Hungary"),
-(76, "Iceland"),
-(77, "India"),
-(78, "Indonesia"),
-(79, "Iran"),
-(80, "Iraq"),
+(71, "Guinea-Bissau", "", ""),
+(72, "Guyana", "", ""),
+(73, "Haiti", "", ""),
+(74, "Honduras", "", ""),
+(75, "Hungary", "", ""),
+(76, "Iceland", "", ""),
+(77, "India", "", ""),
+(78, "Indonesia", "", ""),
+(79, "Iran", "", ""),
+(80, "Iraq", "", ""),
 
 (81, "Ireland"),
 (82, "Israel"),
@@ -443,89 +455,89 @@ VALUES
 (119, "Myanmar"),
 (120, "Namibia"),
 
-(121, "Nauru"),
-(122, "Nepal"),
-(123, "Netherlands"),
-(124, "New Zealand"),
-(125, "Nicaragua"),
-(126, "Niger"),
-(127, "Nigeria"),
-(128, "North Korea"),
-(129, "North Macedonia"),
-(130, "Norway"),
+(121, "Nauru", "", ""),
+(122, "Nepal", "", ""),
+(123, "Netherlands", "", ""),
+(124, "New Zealand", "", ""),
+(125, "Nicaragua", "", ""),
+(126, "Niger", "", ""),
+(127, "Nigeria", "", ""),
+(128, "North Korea", "", ""),
+(129, "North Macedonia", "", ""),
+(130, "Norway", "", ""),
 
-(131, "Oman"),
-(132, "Pakistan"),
-(133, "Palau"),
-(134, "Palestine"),
-(135, "Panama"),
-(136, "Papua New Guinea"),
-(137, "Paraguay"),
-(138, "Peru"),
-(139, "Philippines"),
-(140, "Poland"),
+(131, "Oman", "", ""),
+(132, "Pakistan", "", ""),
+(133, "Palau", "", ""),
+(134, "Palestine", "", ""),
+(135, "Panama", "", ""),
+(136, "Papua New Guinea", "", ""),
+(137, "Paraguay", "", ""),
+(138, "Peru", "", ""),
+(139, "Philippines", "", ""),
+(140, "Poland", "", ""),
 
-(141, "Portugal"),
-(142, "Qatar"),
-(143, "Romania"),
-(144, "Russia"),
-(145, "Rwanda"),
-(146, "Saint Kitts and Nevis"),
-(147, "Saint Lucia"),
-(148, "Saint Vincent and the Grenadines"),
-(149, "Samoa"),
-(150, "San Marino"),
+(141, "Portugal", "", ""),
+(142, "Qatar", "", ""),
+(143, "Romania", "", ""),
+(144, "Russia", "", ""),
+(145, "Rwanda", "", ""),
+(146, "Saint Kitts and Nevis", "", ""),
+(147, "Saint Lucia", "", ""),
+(148, "Saint Vincent and the Grenadines", "", ""),
+(149, "Samoa", "", ""),
+(150, "San Marino", "", ""),
 
-(151, "Sao Tome and Principe"),
-(152, "Saudi Arabia"),
-(153, "Senegal"),
-(154, "Serbia"),
-(155, "Seychelles"),
-(156, "Sierra Leone"),
-(157, "Singapore"),
-(158, "Slovakia"),
-(159, "Slovenia"),
-(160, "Solomon Islands"),
+(151, "Sao Tome and Principe", "", ""),
+(152, "Saudi Arabia", "", ""),
+(153, "Senegal", "", ""),
+(154, "Serbia", "", ""),
+(155, "Seychelles", "", ""),
+(156, "Sierra Leone", "", ""),
+(157, "Singapore", "", ""),
+(158, "Slovakia", "", ""),
+(159, "Slovenia", "", ""),
+(160, "Solomon Islands", "", ""),
 
-(161, "Somalia"),
-(162, "South Africa"),
-(163, "South Korea"),
-(164, "South Sudan"),
-(165, "Spain"),
-(166, "Sri Lanka"),
-(167, "Sudan"),
-(168, "Suriname"),
-(169, "Sweden"),
-(170, "Switzerland"),
+(161, "Somalia", "", ""),
+(162, "South Africa", "", ""),
+(163, "South Korea", "", ""),
+(164, "South Sudan", "", ""),
+(165, "Spain", "", ""),
+(166, "Sri Lanka", "", ""),
+(167, "Sudan", "", ""),
+(168, "Suriname", "", ""),
+(169, "Sweden", "", ""),
+(170, "Switzerland", "", ""),
 
-(171, "Syria"),
-(172, "Taiwan"),
-(173, "Tajikistan"),
-(174, "Tanzania"),
-(175, "Thailand"),
-(176, "Timor-Leste"),
-(177, "Togo"),
-(178, "Tonga"),
-(179, "Trinidad and Tobago"),
-(180, "Tunisia"),
+(171, "Syria", "", ""),
+(172, "Taiwan", "", ""),
+(173, "Tajikistan", "", ""),
+(174, "Tanzania", "", ""),
+(175, "Thailand", "", ""),
+(176, "Timor-Leste", "", ""),
+(177, "Togo", "", ""),
+(178, "Tonga", "", ""),
+(179, "Trinidad and Tobago", "", ""),
+(180, "Tunisia", "", ""),
 
-(181, "Turkey"),
-(182, "Turkmenistan"),
-(183, "Tuvalu"),
-(184, "Uganda"),
-(185, "Ukraine"),
-(186, "United Arab Emirates"),
-(187, "United Kingdom"),
-(188, "United States of America"),
-(189, "Uruguay"),
-(190, "Uzbekistan"),
+(181, "Turkey", "", ""),
+(182, "Turkmenistan", "", ""),
+(183, "Tuvalu", "", ""),
+(184, "Uganda", "", ""),
+(185, "Ukraine", "", ""),
+(186, "United Arab Emirates", "", ""),
+(187, "United Kingdom", "", ""),
+(188, "United States of America", "", ""),
+(189, "Uruguay", "", ""),
+(190, "Uzbekistan", "", ""),
 
-(191, "Vanuatu"),
-(192, "Venezuala"),
-(193, "Vietnam"),
-(194, "Yemen"),
-(195, "Zambia"),
-(196, "Zimbabwe");
+(191, "Vanuatu", "", ""),
+(192, "Venezuala", "", ""),
+(193, "Vietnam", "", ""),
+(194, "Yemen", "", ""),
+(195, "Zambia", "", ""),
+(196, "Zimbabwe", "", "");
 
 
 
