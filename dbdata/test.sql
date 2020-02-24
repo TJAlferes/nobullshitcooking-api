@@ -59,7 +59,7 @@ CREATE TABLE `nobsc_methods` (
 CREATE TABLE `nobsc_cuisines` (
   `cuisine_id` tinyint unsigned NOT NULL DEFAULT '0',
   `cuisine_name` varchar(40) NOT NULL DEFAULT '',
-  `cuisine_nation` varchar(40) NOT NULL DEFAULT '',
+  `cuisine_nation` varchar(40) UNIQUE NOT NULL,
   `cuisine_intro` text NOT NULL DEFAULT '',
   `cuisine_wiki`
   PRIMARY KEY (`cuisine_id`)
@@ -202,12 +202,7 @@ CREATE TABLE `nobsc_cuisine_ingredients` (
   FOREIGN KEY (`ingredient_id`) REFERENCES `nobsc_ingredients` (`ingredient_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `nobsc_cuisine_plans` (
-  `cuisine_id` tinyint unsigned NOT NULL,
-  `plan_id` int unsigned NOT NULL,
-  FOREIGN KEY (`cuisine_id`) REFERENCES `nobsc_cuisines` (`cuisine_id`),
-  FOREIGN KEY (`plan_id`) REFERENCES `nobsc_plan` (`plan_id`),
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 CREATE TABLE `nobsc_friendships` (
   `user_id` int unsigned NOT NULL,
@@ -361,26 +356,26 @@ VALUES
 (33, "Canadian", "Canada", "Canadian_cuisine", ""),
 (34, "Central African Republic", "Central African Republic", "Cuisine_of_the_Central_African_Republic", ""),
 (35, "Chadian", "Chad", "Chadian_cuisine", ""),
-(36, "", "Chile", "", ""),
-(37, "", "China", "", ""),
-(38, "", "Colombia", "", ""),
-(39, "", "Comoros", "", ""),
-(40, "", "Congo, Democratic Republic of the", "", ""),
+(36, "Chilean", "Chile", "Chilean_cuisine", ""),
+(37, "Chinese", "China", "Chinese_cuisine", ""),
+(38, "Colombian", "Colombia", "Colombian_cuisine", ""),
+(39, "NA", "Comoros", "NA", ""),
+(40, "Congolese", "Congo, Democratic Republic of the", "Congolese_cuisine", ""),
 
-(41, "", "Congo, Republic of the", "", ""),
-(42, "", "Costa Rica", "", ""),
-(43, "", "Croatia", "", ""),
-(44, "", "Cuba", "", ""),
-(45, "", "Cyprus", "", ""),
-(46, "", "Czechia", "", ""),
-(47, "", "Denmark", "", ""),
-(48, "", "Djibouti", "", ""),
-(49, "", "Dominica", "", ""),
-(50, "", "Dominican Republic", "", ""),
+(41, "Congolese", "Congo, Republic of the", "Congolese_cuisine", ""),
+(42, "Costa Rican", "Costa Rica", "Costa_Rican_cuisine", ""),
+(43, "Croatian", "Croatia", "Croatian_cuisine", ""),
+(44, "Cuban", "Cuba", "Cuban_cuisine", ""),
+(45, "Cypriot", "Cyprus", "Cypriot_cuisine", ""),
+(46, "Czech", "Czechia", "Czech_cuisine", ""),
+(47, "Danish", "Denmark", "Danish_cuisine", ""),
+(48, "Djiboutian", "Djibouti", "Djiboutian_cuisine", ""),
+(49, "Dominica", "Dominica", "Dominica_cuisine", ""),
+(50, "Dominican Republic", "Dominican Republic", "Dominican_Republic_cuisine", ""),
 
-(51, "", "Ecuador", "", ""),
-(52, "", "Egypt", "", ""),
-(53, "", "El Salvador", "", ""),
+(51, "Ecuadorian", "Ecuador", "Ecuadorian_cuisine", ""),
+(52, "Egyptian", "Egypt", "Egyptian_cuisine", ""),
+(53, "Salvadoran", "El Salvador", "Salvadoran_cuisine", ""),
 (54, "", "Equatorial Guinea", "", ""),
 (55, "", "Eritrea", "", ""),
 (56, "", "Estonia", "", ""),
