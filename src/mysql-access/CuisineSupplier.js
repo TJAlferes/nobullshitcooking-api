@@ -3,8 +3,8 @@ class CuisineSupplier {
     this.pool = pool;
     this.viewCuisineSuppliersByCuisineId = this.viewCuisineSuppliersByCuisineId.bind(this);
     this.createCuisineSupplier = this.createCuisineSupplier.bind(this);
-    this.updateCuisineSupplier = this.updateCuisineSupplier.bind(this);
     this.deleteCuisineSupplier = this.deleteCuisineSupplier.bind(this);
+    this.deleteCuisineSuppliersBySupplierId = this.deleteCuisineSuppliersBySupplierId.bind(this);
   }
 
   async viewCuisineSuppliersByCuisineId(cuisineId) {
@@ -35,18 +35,32 @@ class CuisineSupplier {
     return createdCuisineSupplier;
   }
 
-  async updateCuisineSupplier() {
+  async deleteCuisineSupplier(cuisineId, supplierId) {
     const sql = `
-    
+      DELETE
+      FROM nobsc_cuisine_suppliers
+      WHERE cuisineId = ? AND supplier_id = ?
     `;
     
+    const [ deletedCuisineSupplier ] = await this.pool.execute(sql, [
+      cuisineId,
+      supplierId
+    ]);
+
+    return deletedCuisineSupplier;
   }
 
-  async deleteCuisineSupplier() {
+  async deleteCuisineSuppliersBySupplierId(supplierId) {
     const sql = `
-    
+      DELETE
+      FROM nobsc_cuisine_suppliers
+      WHERE supplier_id = ?
     `;
     
+    const [ deletedCuisineSuppliers ] = await this.pool
+    .execute(sql, [supplierId]);
+
+    return deletedCuisineSuppliers;
   }
 }
 

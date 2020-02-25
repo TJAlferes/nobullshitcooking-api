@@ -88,6 +88,7 @@ class RecipeEquipment {
     }
   }
 
+  // TO DO: rename to deleteRecipeEquipmentByRecipeId
   async deleteRecipeEquipment(recipeId) {
     const sql = `
       DELETE

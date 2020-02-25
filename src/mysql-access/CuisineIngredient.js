@@ -3,7 +3,6 @@ class CuisineIngredient {
     this.pool = pool;
     this.viewCuisineIngredientsByCuisineId = this.viewCuisineIngredientsByCuisineId.bind(this);
     this.createCuisineIngredient = this.createCuisineIngredient.bind(this);
-    this.updateCuisineIngredient = this.updateCuisineIngredient.bind(this);
     this.deleteCuisineIngredient = this.deleteCuisineIngredient.bind(this);
   }
 
@@ -22,25 +21,33 @@ class CuisineIngredient {
     return cuisineEquipment;
   }
 
-  async createCuisineIngredient() {
+  async createCuisineIngredient(cuisineId, ingredientId) {
     const sql = `
-    
+      INSERT INTO nobsc_cuisine_ingredients (cuisine_id, ingredient_id)
+      VALUES (?, ?)
     `;
-    
+
+    const [ createdCuisineIngredient ] = await this.pool.execute(sql, [
+      cuisineId,
+      ingredientId
+    ]);
+
+    return createdCuisineIngredient;
   }
 
-  async updateCuisineIngredient() {
+  async deleteCuisineIngredient(cuisineId, ingredientId) {
     const sql = `
-    
+      DELETE
+      FROM nobsc_cuisine_ingredients
+      WHERE cuisineId = ? AND ingredient_id = ?
     `;
     
-  }
+    const [ deletedCuisineIngredient ] = await this.pool.execute(sql, [
+      cuisineId,
+      ingredientId
+    ]);
 
-  async deleteCuisineIngredient() {
-    const sql = `
-    
-    `;
-    
+    return deletedCuisineIngredient;
   }
 }
 

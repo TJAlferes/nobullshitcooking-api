@@ -29,8 +29,8 @@ class Supplier {
       INSERT INTO nobsc_suppliers (supplier_name)
       VALUES (?)
     `;
-    const [ createdPlan ] = await this.pool.execute(sql, [supplierName]);
-    return createdPlan;
+    const [ createdSupplier ] = await this.pool.execute(sql, [supplierName]);
+    return createdSupplier;
   }
 
   async updateSupplier(supplierToUpdateWith, supplierId) {
