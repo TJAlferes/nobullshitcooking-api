@@ -43,13 +43,12 @@ class IngredientSearch {
   }
 
   // (staff only)
-  async saveIngredient(ingredientInfo) {
-    const {
-      ingredientId,
-      ingredientTypeName,
-      ingredientName,
-      ingredientImage
-    } = ingredientInfo;
+  async saveIngredient({
+    ingredientId,
+    ingredientTypeName,
+    ingredientName,
+    ingredientImage
+  }) {
     const savedIngredient = await this.client.index({
       index: 'ingredients',
       id: ingredientId,

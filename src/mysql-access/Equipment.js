@@ -59,7 +59,7 @@ class Equipment {
     }
   }
 
-  async getEquipmentForElasticSearchInsert(equipmentId) {
+  async getEquipmentForElasticSearchInsert(equipmentId, ownerId) {
     const sql = `
       SELECT
         e.equipment_id AS equipmentId,

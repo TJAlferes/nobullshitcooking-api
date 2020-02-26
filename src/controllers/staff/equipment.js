@@ -1,5 +1,10 @@
 const pool = require('../../lib/connections/mysqlPoolConnection');
+const esClient = require('../../lib/connections/elasticsearchClient');
+
 const Equipment = require('../../mysql-access/Equipment');
+
+const EquipmentSearch = require('../../elasticsearch-access/EquipmentSearch');
+
 const validEquipmentEntity = require('../../lib/validations/equipment/equipmentEntity');
 
 const staffEquipmentController = {
@@ -20,18 +25,25 @@ const staffEquipmentController = {
       equipmentDescription,
       equipmentImage
     });
+
     const equipment = new Equipment(pool);
-    await equipment.createEquipment(equipmentToCreate);
+
+    const createdEquipment = await equipment
+    .createEquipment(equipmentToCreate);
+
+    const generatedId = createdEquipment.insertId;
 
     const [ equipmentForInsert ] = await equipment
-    .getEquipmentForElasticSearchInsert(equipmentId);
+    .getEquipmentForElasticSearchInsert(generatedId, ownerId);
 
     const equipmentInfo = {
-      equipmentId: equipmentForInsert.equipmentId,
-      equipmentTypeName: equipmentForInsert.equipmentTypeName,
-      equipmentName: equipmentForInsert.equipmentName,
-      equipmentImage: equipmentForInsert.equipmentImage
+      equipmentId: equipmentForInsert[0].equipmentId,
+      equipmentTypeName: equipmentForInsert[0].equipmentTypeName,
+      equipmentName: equipmentForInsert[0].equipmentName,
+      equipmentImage: equipmentForInsert[0].equipmentImage
     };
+
+    const equipmentSearch = new EquipmentSearch(esClient);
 
     await equipmentSearch.saveEquipment(equipmentInfo);
 
@@ -55,19 +67,35 @@ const staffEquipmentController = {
       equipmentDescription,
       equipmentImage
     });
+
     const equipment = new Equipment(pool);
+
     await equipment.updateEquipment(equipmentToUpdateWith, equipmentId);
 
-    // TO DO: ElasticSearch
+    const [ equipmentForInsert ] = await equipment
+    .getEquipmentForElasticSearchInsert(equipmentId, ownerId);
+
+    const equipmentInfo = {
+      equipmentId: equipmentForInsert[0].equipmentId,
+      equipmentTypeName: equipmentForInsert[0].equipmentTypeName,
+      equipmentName: equipmentForInsert[0].equipmentName,
+      equipmentImage: equipmentForInsert[0].equipmentImage
+    };
+
+    const equipmentSearch = new EquipmentSearch(esClient);
+
+    await equipmentSearch.saveEquipment(equipmentInfo);
 
     res.send({message: 'Equipment updated.'});
   },
   deleteEquipment: async function(req, res) {
     const equipmentId = Number(req.sanitize(req.body.equipmentId));
+    
     const equipment = new Equipment(pool);
     await equipment.deleteEquipment(equipmentId);
 
-    // TO DO: ElasticSearch
+    const equipmentSearch = new EquipmentSearch(esClient);
+    await equipmentSearch.deleteEquipment(equipmentId);
 
     res.send({message: 'Equipment deleted.'});
   }

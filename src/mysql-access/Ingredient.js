@@ -3,6 +3,7 @@ class Ingredient {
     this.pool = pool;
 
     this.getAllPublicIngredientsForElasticSearchBulkInsert = this.getAllPublicIngredientsForElasticSearchBulkInsert.bind(this);
+    this.getIngredientForElasticSearchInsert = this.getIngredientForElasticSearchInsert.bind(this);
 
     // public NOBSC ingredients
     this.countAllIngredients = this.countAllIngredients.bind(this);
@@ -57,6 +58,29 @@ class Ingredient {
     } catch (err) {
       console.log(err);
     }
+  }
+
+  async getIngredientForElasticSearchInsert(ingredientId, ownerId) {
+    const sql = `
+      SELECT
+        i.ingredient_id AS ingredientId,
+        it.ingredient_type_name AS ingredientTypeName,
+        i.ingredient_name AS ingredientName,
+        i.ingredient_image AS ingredientImage
+      FROM nobsc_ingredients i
+      INNER JOIN nobsc_ingredient_types it ON it.ingredient_type_id = e.ingredient_type_id
+      WHERE i.ingredient_id = ? i.owner_id = ?
+    `;
+    const [ ingredientForInsert ] = await this.pool.execute(sql, [
+      ingredientId,
+      ownerId
+    ]);
+    /*const { ingredientId } = ingredientForInsert;
+    return [
+      {index: {_index: 'ingredient', _id: ingredientId}},
+      ingredientForInsert
+    ];*/
+    return ingredientForInsert;
   }
 
   //--------------------------------------------------------------------------
