@@ -1,4 +1,5 @@
 const pool = require('../../lib/connections/mysqlPoolConnection');
+const CuisineSupplier = require('../../mysql-access/CuisineSupplier');
 const Supplier = require('../../mysql-access/Supplier');
 
 const staffSupplierController = {
@@ -27,8 +28,13 @@ const staffSupplierController = {
   },
   deleteSupplier: async function (req, res) {
     const supplierId = Number(req.santize(req.body.supplierInfo.supplierId));
+
+    const cuisineSupplier = new CuisineSupplier(pool);
+    await cuisineSupplier.deleteCuisineSuppliersBySupplierId(supplierId);
+
     const supplier = new Supplier(pool);
     const [ row ] = await supplier.deleteSupplier(supplierId);
+    
     res.send(row);
   }
 };
