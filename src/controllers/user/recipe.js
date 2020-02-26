@@ -1,6 +1,6 @@
 const pool = require('../../lib/connections/mysqlPoolConnection');
 const esClient = require('../../lib/connections/elasticsearchClient');
- 
+
 const Recipe = require('../../mysql-access/Recipe');
 const RecipeMethod = require('../../mysql-access/RecipeMethod');
 const RecipeEquipment = require('../../mysql-access/RecipeEquipment');
@@ -8,6 +8,9 @@ const RecipeIngredient = require('../../mysql-access/RecipeIngredient');
 const RecipeSubrecipe = require('../../mysql-access/RecipeSubrecipe');
 
 const RecipeSearch = require('../../elasticsearch-access/RecipeSearch');
+
+const createRecipeService = require('../../lib/services/create-recipe');
+const updateRecipeService = require('../../lib/services/update-recipe');
 
 const validRecipeEntity = require('../../lib/validations/recipe/recipeEntity');
 const validRecipeMethodsEntity = require('../../lib/validations/recipeMethod/recipeMethodEntity');
@@ -99,130 +102,60 @@ const userRecipeController = {
       cookingImage
     });
 
-    const recipe = new Recipe(pool);
-
-    const createdRecipe = await recipe.createRecipe(recipeToCreate);
-
-    const generatedId = createdRecipe.insertId;
-
-    if (
-      requiredMethods !== "none" &&
-      requiredMethods.length > 0 &&
+    if (requiredMethods !== "none" && requiredMethods.length > 0) {
       requiredMethods.map(rM => validRecipeMethodsEntity({
         recipeId: generatedId,
         methodId: rM.methodId
-      }))
-    ) {
-      let recipeMethodsToCreate = [];
-      requiredMethods.map(rM => {
-        recipeMethodsToCreate.push(generatedId, rM.methodId)
-      });
-
-      const recipeMethodsPlaceholders = '(?, ?),'
-      .repeat(requiredMethods.length)
-      .slice(0, -1);
-
-      const recipeMethod = new RecipeMethod(pool);
-
-      await recipeMethod.createRecipeMethods(
-        recipeMethodsToCreate,
-        recipeMethodsPlaceholders
-      );
+      }));
     }
 
-    if (
-      requiredEquipment !== "none" &&
-      requiredEquipment.length > 0 &&
+    if (requiredEquipment !== "none" && requiredEquipment.length > 0) {
       requiredEquipment.map(rE => validRecipeEquipmentEntity({
         recipeId: generatedId,
         equipmentId: rE.equipment,
         amount: rE.amount
-      }))
-    ) {
-      let recipeEquipmentToCreate = [];
-
-      requiredEquipment.map(rE => {
-        recipeEquipmentToCreate.push(generatedId, rE.equipment, rE.amount);
-      });
-
-      const recipeEquipmentPlaceholders = '(?, ?, ?),'
-      .repeat(requiredEquipment.length)
-      .slice(0, -1);
-
-      const recipeEquipment = new RecipeEquipment(pool);
-
-      await recipeEquipment.createRecipeEquipment(
-        recipeEquipmentToCreate,
-        recipeEquipmentPlaceholders
-      );
+      }));
     }
 
-    if (
-      requiredIngredients !== "none" &&
-      requiredIngredients.length > 0 &&
+    if (requiredIngredients !== "none" && requiredIngredients.length > 0) {
       requiredIngredients.map(rI => validRecipeIngredientsEntity({
         recipeId: generatedId,
         ingredientId: rI.ingredient,
         amount: rI.amount,
         measurementId: rI.unit
-      }))
-    ) {
-      let recipeIngredientsToCreate = [];
-
-      requiredIngredients.map(rI => {
-        recipeIngredientsToCreate
-        .push(generatedId, rI.ingredient, rI.amount, rI.unit);
-      });
-
-      const recipeIngredientsPlaceholders = '(?, ?, ?, ?),'
-      .repeat(requiredIngredients.length)
-      .slice(0, -1);
-
-      const recipeIngredient = new RecipeIngredient(pool);
-
-      await recipeIngredient.createRecipeIngredients(
-        recipeIngredientsToCreate,
-        recipeIngredientsPlaceholders
-      );
+      }));
     }
 
-    if (
-      requiredSubrecipes !== "none" &&
-      requiredSubrecipes.length > 0 &&
+    if (requiredSubrecipes !== "none" & requiredSubrecipes.length > 0) {
       requiredSubrecipes.map(rS => validRecipeSubrecipesEntity({
         recipeId: generatedId,
         subrecipeId: rS.subrecipe,
         amount: rS.amount,
         measurementId: rS.unit
-      }))
-    ) {
-      let recipeSubrecipesToCreate = [];
-
-      requiredSubrecipes.map(rS => {
-        recipeSubrecipesToCreate
-        .push(generatedId, rS.subrecipe, rS.amount, rS.unit);
-      })
-
-      const recipeSubrecipesPlaceholders = '(?, ?, ?, ?),'
-      .repeat(requiredSubrecipes.length)
-      .slice(0, -1);
-
-      const recipeSubrecipe = new RecipeSubrecipe(pool);
-
-      await recipeSubrecipe.createRecipeSubrecipes(
-        recipeSubrecipesToCreate,
-        recipeSubrecipesPlaceholders
-      );
+      }));
     }
 
-    if (ownerId === 1) {
-      const recipeInfoForElasticSearch = await recipe
-      .getPublicRecipeForElasticSearchInsert(generatedId);
+    const recipe = new Recipe(pool);
+    const recipeMethod = new RecipeMethod(pool);
+    const recipeEquipment = new RecipeEquipment(pool);
+    const recipeIngredient = new RecipeIngredient(pool);
+    const recipeSubrecipe = new RecipeSubrecipe(pool);
+    const recipeSearch = new RecipeSearch(esClient);
 
-      const recipeSearch = new RecipeSearch(esClient);
-
-      await recipeSearch.saveRecipe(recipeInfoForElasticSearch);
-    }
+    await createRecipeService({
+      recipe,
+      recipeMethod,
+      recipeEquipment,
+      recipeIngredient,
+      recipeSubrecipe,
+      recipeSearch,
+      ownerId,
+      recipeToCreate,
+      requiredMethods,
+      requiredEquipment,
+      requiredIngredients,
+      requiredSubrecipes
+    });
     
     res.send({message: 'Recipe created.'});
   },
@@ -265,149 +198,60 @@ const userRecipeController = {
       cookingImage
     });
 
-    const recipe = new Recipe(pool);
-
-    await recipe.updateMyUserRecipe(recipeToUpdateWith, recipeId);
-
-    //
-
-    let recipeMethodsToUpdateWith = "none";
-    let recipeMethodsPlaceholders = "none";
-
-    if (
-      requiredMethods !== "none" &&
+    if (requiredMethods !== "none") {
       requiredMethods.map(rM => validRecipeMethodsEntity({
         recipeId,
         methodId: rM.methodId
-      }))
-    ) {
-      recipeMethodsToUpdateWith = [];
-
-      requiredMethods.map(rM => {
-        recipeMethodsToUpdateWith.push(recipeId, rM.methodId)
-      });
-
-      recipeMethodsPlaceholders = '(?, ?),'
-      .repeat(requiredMethods.length)
-      .slice(0, -1);
+      }));
     }
 
-    const recipeMethod = new RecipeMethod(pool);
-
-    await recipeMethod.updateRecipeMethods(
-      recipeMethodsToUpdateWith,
-      recipeMethodsPlaceholders,
-      recipeId
-    );
-
-    //
-
-    let recipeEquipmentToUpdateWith = "none";
-    let recipeEquipmentPlaceholders = "none";
-
-    if (
-      requiredEquipment !== "none" &&
+    if (requiredEquipment !== "none") {
       requiredEquipment.map(rE => validRecipeEquipmentEntity({
         recipeId,
         equipmentId: rE.equipment,
         amount: rE.amount
-      }))
-    ) {
-      recipeEquipmentToUpdateWith = [];
-
-      requiredEquipment.map(rE => {
-        recipeEquipmentToUpdateWith.push(recipeId, rE.equipment, rE.amount)
-      });
-
-      recipeEquipmentPlaceholders = '(?, ?, ?),'
-      .repeat(requiredEquipment.length)
-      .slice(0, -1);
+      }));
     }
 
-    const recipeEquipment = new RecipeEquipment(pool);
-
-    await recipeEquipment.updateRecipeEquipment(
-      recipeEquipmentToUpdateWith,
-      recipeEquipmentPlaceholders,
-      recipeId
-    );
-
-    //
-
-    let recipeIngredientsToUpdateWith = "none";
-    let recipeIngredientsPlaceholders = "none";
-
-    if (
-      requiredIngredients !== "none" &&
+    if (requiredIngredients !== "none") {
       requiredIngredients.map(rI => validRecipeIngredientsEntity({
         recipeId,
         ingredientId: rI.ingredient,
         amount: rI.amount,
         measurementId: rI.unit
-      }))
-    ) {
-      recipeIngredientsToUpdateWith = [];
-
-      requiredIngredients.map(rI => {
-        recipeIngredientsToUpdateWith
-        .push(recipeId, rI.ingredient, rI.amount, rI.unit);
-      });
-
-      recipeIngredientsPlaceholders = '(?, ?, ?, ?),'
-      .repeat(requiredIngredients.length)
-      .slice(0, -1);
+      }));
     }
 
-    const recipeIngredient = new RecipeIngredient(pool);
-
-    await recipeIngredient.updateRecipeIngredients(
-      recipeIngredientsToUpdateWith,
-      recipeIngredientsPlaceholders,
-      recipeId
-    );
-
-    //
-
-    let recipeSubrecipesToUpdateWith = "none";
-    let recipeSubrecipesPlaceholders = "none";
-
-    if (
-      requiredSubrecipes !== "none" &&
+    if (requiredSubrecipes !== "none") {
       requiredSubrecipes.map(rS => validRecipeSubrecipesEntity({
         recipeId,
         subrecipeId: rS.subrecipe,
         amount: rS.amount,
         measurementId: rS.unit
-      }))
-    ) {
-      recipeSubrecipesToUpdateWith = [];
-
-      requiredSubrecipes.map(rS => {
-        recipeSubrecipesToUpdateWith
-        .push(recipeId, rS.subrecipe, rS.amount, rS.unit);
-      });
-
-      recipeSubrecipesPlaceholders = '(?, ?, ?, ?),'
-      .repeat(requiredSubrecipes.length)
-      .slice(0, -1);
+      }));
     }
 
+    const recipe = new Recipe(pool);
+    const recipeMethod = new RecipeMethod(pool);
+    const recipeEquipment = new RecipeEquipment(pool);
+    const recipeIngredient = new RecipeIngredient(pool);
     const recipeSubrecipe = new RecipeSubrecipe(pool);
+    const recipeSearch = new RecipeSearch(esClient);
 
-    await recipeSubrecipe.updateRecipeSubrecipes(
-      recipeSubrecipesToUpdateWith,
-      recipeSubrecipesPlaceholders,
-      recipeId
-    );
-
-    if (ownerId === 1) {
-      const recipeInfoForElasticSearch = await recipe
-      .getPublicRecipeForElasticSearchInsert(recipeId);
-
-      const recipeSearch = new RecipeSearch(esClient);
-
-      await recipeSearch.saveRecipe(recipeInfoForElasticSearch);
-    }
+    await updateRecipeService({
+      recipe,
+      recipeMethod,
+      recipeEquipment,
+      recipeIngredient,
+      recipeSubrecipe,
+      recipeSearch,
+      ownerId,
+      recipeToUpdateWith,
+      requiredMethods,
+      requiredEquipment,
+      requiredIngredients,
+      requiredSubrecipes
+    });
 
     res.send({message: 'Recipe updated.'});
   },
