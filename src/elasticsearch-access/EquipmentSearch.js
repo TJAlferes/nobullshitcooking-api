@@ -43,13 +43,12 @@ class EquipmentSearch {
   }
 
   // (staff only)
-  async saveEquipment(equipmentInfo) {
-    const {
-      equipmentId,
-      equipmentTypeName,
-      equipmentName,
-      equipmentImage
-    } = equipmentInfo;
+  async saveEquipment({
+    equipmentId,
+    equipmentTypeName,
+    equipmentName,
+    equipmentImage
+  }) {
     const savedEquipment = await this.client.index({
       index: 'equipment',
       id: equipmentId,

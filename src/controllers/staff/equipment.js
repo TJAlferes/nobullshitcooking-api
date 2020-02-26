@@ -21,11 +21,21 @@ const staffEquipmentController = {
       equipmentImage
     });
     const equipment = new Equipment(pool);
-    const [ row ] = await equipment.createEquipment(equipmentToCreate);
+    await equipment.createEquipment(equipmentToCreate);
 
-    // TO DO: ElasticSearch
+    const [ equipmentForInsert ] = await equipment
+    .getEquipmentForElasticSearchInsert(equipmentId);
 
-    res.send(row);
+    const equipmentInfo = {
+      equipmentId: equipmentForInsert.equipmentId,
+      equipmentTypeName: equipmentForInsert.equipmentTypeName,
+      equipmentName: equipmentForInsert.equipmentName,
+      equipmentImage: equipmentForInsert.equipmentImage
+    };
+
+    await equipmentSearch.saveEquipment(equipmentInfo);
+
+    res.send({message: 'Equipment created.'});
   },
   updateEquipment: async function(req, res) {
     const equipmentId = Number(req.sanitize(req.body.equipmentInfo.equipmentId));
@@ -46,20 +56,20 @@ const staffEquipmentController = {
       equipmentImage
     });
     const equipment = new Equipment(pool);
-    const [ row ] = await equipment.updateEquipment(equipmentToUpdateWith, equipmentId);
+    await equipment.updateEquipment(equipmentToUpdateWith, equipmentId);
 
     // TO DO: ElasticSearch
 
-    res.send(row);
+    res.send({message: 'Equipment updated.'});
   },
   deleteEquipment: async function(req, res) {
     const equipmentId = Number(req.sanitize(req.body.equipmentId));
     const equipment = new Equipment(pool);
-    const [ row ] = await equipment.deleteEquipment(equipmentId);
+    await equipment.deleteEquipment(equipmentId);
 
     // TO DO: ElasticSearch
 
-    res.send(row);
+    res.send({message: 'Equipment deleted.'});
   }
 };
 

@@ -3,7 +3,7 @@ class Equipment {
     this.pool = pool;
 
     this.getAllPublicEquipmentForElasticSearchBulkInsert = this.getAllPublicEquipmentForElasticSearchBulkInsert.bind(this);
-
+    this.getEquipmentForElasticSearchInsert = this.getEquipmentForElasticSearchInsert.bind(this);
     // public NOBSC equipment
     this.countAllEquipment = this.countAllEquipment.bind(this);
     this.countEquipmentOfType = this.countEquipmentOfType.bind(this);
@@ -57,6 +57,29 @@ class Equipment {
     } catch (err) {
       console.log(err);
     }
+  }
+
+  async getEquipmentForElasticSearchInsert(equipmentId) {
+    const sql = `
+      SELECT
+        e.equipment_id AS equipmentId,
+        et.equipment_type_name AS equipmentTypeName,
+        e.equipment_name AS equipmentName,
+        e.equipment_image AS equipmentImage
+      FROM nobsc_equipment e
+      INNER JOIN nobsc_equipment_types et ON et.equipment_type_id = e.equipment_type_id
+      WHERE e.equipment_id = ? e.owner_id = ?
+    `;
+    const [ equipmentForInsert ] = await this.pool.execute(sql, [
+      equipmentId,
+      ownerId
+    ]);
+    /*const { equipmentId } = equipmentForInsert;
+    return [
+      {index: {_index: 'equipment', _id: equipmentId}},
+      equipmentForInsert
+    ];*/
+    return equipmentForInsert;
   }
 
   //--------------------------------------------------------------------------

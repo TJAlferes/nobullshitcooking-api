@@ -53,28 +53,6 @@ const staffRecipeController = {
       cookingImage
     });
 
-    const recipe = new Recipe(pool);
-    const recipeMethod = new RecipeMethod(pool);
-    const recipeEquipment = new RecipeEquipment(pool);
-    const recipeIngredient = new RecipeIngredient(pool);
-    const recipeSubrecipe = new RecipeSubrecipe(pool);
-    const recipeSearch = new RecipeSearch(esClient);
-
-    await createRecipeService({
-      recipe,
-      recipeMethod,
-      recipeEquipment,
-      recipeIngredient,
-      recipeSubrecipe,
-      recipeSearch,
-      ownerId,
-      recipeToCreate,
-      requiredMethods,
-      requiredEquipment,
-      requiredIngredients,
-      requiredSubrecipes
-    });
-
     if (requiredMethods !== "none" && requiredMethods.length > 0) {
       requiredMethods.map(rM => validRecipeMethodsEntity({
         recipeId: generatedId,
@@ -107,6 +85,28 @@ const staffRecipeController = {
         measurementId: rS.unit
       }));
     }
+
+    const recipe = new Recipe(pool);
+    const recipeMethod = new RecipeMethod(pool);
+    const recipeEquipment = new RecipeEquipment(pool);
+    const recipeIngredient = new RecipeIngredient(pool);
+    const recipeSubrecipe = new RecipeSubrecipe(pool);
+    const recipeSearch = new RecipeSearch(esClient);
+
+    await createRecipeService({
+      recipe,
+      recipeMethod,
+      recipeEquipment,
+      recipeIngredient,
+      recipeSubrecipe,
+      recipeSearch,
+      ownerId,
+      recipeToCreate,
+      requiredMethods,
+      requiredEquipment,
+      requiredIngredients,
+      requiredSubrecipes
+    });
 
     res.send({message: 'Recipe created.'});
   },
@@ -205,7 +205,7 @@ const staffRecipeController = {
     res.send('Recipe updated.');
   },
   deleteRecipe: async function(req, res) {
-    const recipeId = req.sanitize(req.body.recipeId);
+    const recipeId = Number(req.sanitize(req.body.recipeId));
 
     // transaction(s)?:
     const favoriteRecipe = new FavoriteRecipe(pool);
@@ -216,6 +216,8 @@ const staffRecipeController = {
     const recipeSubrecipe = new RecipeSubrecipe(pool);
     const recipe = new Recipe(pool);
 
+    const recipeSearch = new RecipeSearch(esClient);
+
     await favoriteRecipe.deleteAllFavoritesOfRecipe(recipeId);
     await savedRecipe.deleteAllSavesOfRecipe(recipeId);
     await recipeMethod.deleteRecipeMethods(recipeId);
@@ -225,7 +227,7 @@ const staffRecipeController = {
     await recipeSubrecipe.deleteRecipeSubrecipesBySubrecipeId(recipeId);  // is that right?
     await recipe.deleteRecipe(recipeId);
 
-    // TO DO: ElasticSearch
+    await recipeSearch.deleteRecipe(recipeId);
 
     res.send('Recipe deleted.');
   }
