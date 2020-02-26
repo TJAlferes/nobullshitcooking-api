@@ -1,4 +1,5 @@
 const pool = require('../../lib/connections/mysqlPoolConnection');
+
 const CuisineSupplier = require('../../mysql-access/CuisineSupplier');
 const Supplier = require('../../mysql-access/Supplier');
 
@@ -7,24 +8,24 @@ const staffSupplierController = {
     const supplierName = req.santize(req.body.supplierInfo.supplierName);
 
     // TO DO: validate
-
+    
     const supplier = new Supplier(pool);
-    const [ row ] = await supplier.createSupplier(supplierName);
-    res.send(row);
+    await supplier.createSupplier(supplierName);
+
+    res.send({message: 'Supplier created.'});
   },
   updateSupplier: async function (req, res) {
     const supplierId = Number(req.santize(req.body.supplierInfo.supplierId));
     const supplierName = req.santize(req.body.supplierInfo.supplierName);
 
     // TO DO: validate
+
     const supplierToUpdateWith = {supplierName};
 
     const supplier = new Supplier(pool);
+    await supplier.updateSupplier(supplierToUpdateWith, supplierId);
 
-    const [ row ] = await supplier
-    .updateSupplier(supplierToUpdateWith, supplierId);
-
-    res.send(row);
+    res.send({message: 'Supplier updated.'});
   },
   deleteSupplier: async function (req, res) {
     const supplierId = Number(req.santize(req.body.supplierInfo.supplierId));
@@ -33,9 +34,9 @@ const staffSupplierController = {
     await cuisineSupplier.deleteCuisineSuppliersBySupplierId(supplierId);
 
     const supplier = new Supplier(pool);
-    const [ row ] = await supplier.deleteSupplier(supplierId);
+    await supplier.deleteSupplier(supplierId);
     
-    res.send(row);
+    res.send({message: 'Supplier deleted.'});
   }
 };
 
