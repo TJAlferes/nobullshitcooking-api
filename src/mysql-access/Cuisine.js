@@ -29,11 +29,11 @@ class Cuisine {
     const ownerId = 1;
     const sql1 = `
       SELECT
-        c.cuisine_id,
-        c.cuisine_name,
-        c.cuisine_nation,
-        c.cuisine_wiki,
-        c.cuisine_intro
+        cuisine_id,
+        cuisine_name,
+        cuisine_nation,
+        cuisine_wiki,
+        cuisine_intro
       FROM nobsc_cuisines
       WHERE cuisine_id = ?
     `;
@@ -71,7 +71,7 @@ class Cuisine {
     const [ officialRecipes ] = await this.pool.execute(sql5, [ownerId, cuisineId]);
     
     const detail = {
-      cuisine,
+      cuisine: cuisine[0],
       cuisineSuppliers,
       cuisineEquipment,
       cuisineIngredients,
