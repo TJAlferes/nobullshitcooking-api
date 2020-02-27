@@ -35,6 +35,7 @@ class CuisineSupplier {
     return createdCuisineSupplier;
   }
 
+  // used when deleting a cuisine-supplier relationship
   async deleteCuisineSupplier(cuisineId, supplierId) {
     const sql = `
       DELETE
@@ -50,6 +51,7 @@ class CuisineSupplier {
     return deletedCuisineSupplier;
   }
 
+  // used when deleting a supplier
   async deleteCuisineSuppliersBySupplierId(supplierId) {
     const sql = `
       DELETE
