@@ -22,6 +22,9 @@ class CuisineSupplier {
   }
 
   async createCuisineSupplier(cuisineId, supplierId) {
+    // to prevent duplicates?
+    await this.deleteCuisineSupplier(cuisineId, supplierId);  // ?
+
     const sql = `
       INSERT INTO nobsc_cuisine_suppliers (cuisine_id, supplier_id)
       VALUES (?, ?)

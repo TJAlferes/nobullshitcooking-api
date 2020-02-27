@@ -3,17 +3,6 @@ const pool = require('../../lib/connections/mysqlPoolConnection');
 const CuisineSupplier = require('../../mysql-access/CuisineSupplier');
 
 const staffCuisineSupplierController = {
-  viewCuisineSuppliersByCuisineId: async function(req, res) {
-    const cuisineId = Number(req.sanitize(req.body.cuisineId));
-
-    const cuisineSupplier = new CuisineSupplier(pool);
-
-    const suppliers = await cuisineSupplier
-    .viewCuisineSuppliersByCuisineId(cuisineId);
-
-    res.send({suppliers});
-  },
-
   createCuisineSupplier: async function(req, res) {
     const supplierId = Number(req.sanitize(req.body.supplierId));
 

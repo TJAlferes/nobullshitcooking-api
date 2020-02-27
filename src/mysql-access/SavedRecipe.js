@@ -34,6 +34,7 @@ class SavedRecipe {
   }
 
   async createMySavedRecipe(userId, recipeId) {
+    await this.deleteMySavedRecipe(userId, recipeId);
     const sql = `
       INSERT INTO nobsc_saved_recipes (user_id, recipe_id)
       VALUES (?, ?)

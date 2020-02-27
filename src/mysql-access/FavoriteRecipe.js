@@ -53,6 +53,7 @@ class FavoriteRecipe {
   }
 
   async createMyFavoriteRecipe(userId, recipeId) {
+    await this.deleteMyFavoriteRecipe(userId, recipeId);
     const sql = `
       INSERT INTO nobsc_favorite_recipes (user_id, recipe_id)
       VALUES (?, ?)
