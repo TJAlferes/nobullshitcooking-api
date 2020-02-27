@@ -20,8 +20,8 @@ const cuisineController = {
     const cuisineId = Number(req.sanitize(req.params.cuisineId));
     validCuisineRequest({cuisineId});
     const cuisine = new Cuisine(pool);
-    const [ row ] = await cuisine.viewCuisineDetailById(cuisineId);
-    res.send(row);
+    const detail = await cuisine.viewCuisineDetailById(cuisineId);
+    res.send(detail);
   },
 };
 

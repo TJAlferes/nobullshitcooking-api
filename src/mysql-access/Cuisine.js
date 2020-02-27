@@ -65,12 +65,18 @@ class Cuisine {
     `;
 
     const [ cuisine ] = await this.pool.execute(sql1, [cuisineId]);
-    const [ cuisine ] = await this.pool.execute(sql2, [cuisineId]);
-    const [ cuisine ] = await this.pool.execute(sql3, [cuisineId]);
-    const [ cuisine ] = await this.pool.execute(sql4, [cuisineId]);
-    const [ cuisine ] = await this.pool.execute(sql5, [ownerId, cuisineId]);
+    const [ cuisineSuppliers ] = await this.pool.execute(sql2, [cuisineId]);
+    const [ cuisineEquipment ] = await this.pool.execute(sql3, [cuisineId]);
+    const [ cuisineIngredients ] = await this.pool.execute(sql4, [cuisineId]);
+    const [ officialRecipes ] = await this.pool.execute(sql5, [ownerId, cuisineId]);
     
-    return cuisine;
+    return {
+      cuisine,
+      cuisineSuppliers,
+      cuisineEquipment,
+      cuisineIngredients,
+      officialRecipes
+    };
   }
 }
 
