@@ -16,3 +16,5 @@ router.get(
     cuisineIngredientController.viewCuisineIngredientsByCuisineId
   )
 );
+
+module.exports = router;

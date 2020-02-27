@@ -4,7 +4,7 @@ const catchExceptions = require('../../lib/utils/catchExceptions');
 const staffIsAuth = require('../../lib/utils/staffIsAuth');
 
 const staffSupplierController = require(
-  '../../controllers/staff/Supplier'
+  '../../controllers/staff/supplier'
 );
 
 const router = Router();
@@ -42,3 +42,5 @@ router.delete(
   staffIsAuth,
   catchExceptions(staffSupplierController.deleteSupplier)
 );
+
+module.exports = router;

@@ -16,3 +16,5 @@ router.get(
     cuisineEquipmentController.viewCuisineEquipmentByCuisineId
   )
 );
+
+module.exports = router;

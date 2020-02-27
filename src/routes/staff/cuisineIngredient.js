@@ -36,3 +36,5 @@ router.delete(
     staffCuisineIngredientController.deleteCuisineIngredient
   )
 );
+
+module.exports = router;

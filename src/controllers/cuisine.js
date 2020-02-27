@@ -18,9 +18,10 @@ const cuisineController = {
   },
   viewCuisineDetailById: async function(req, res) {
     const cuisineId = Number(req.sanitize(req.params.cuisineId));
-    validCuisineRequest({cuisineId});
+    //validCuisineRequest({cuisineId});
     const cuisine = new Cuisine(pool);
     const detail = await cuisine.viewCuisineDetailById(cuisineId);
+    console.log(detail);
     res.send(detail);
   },
 };

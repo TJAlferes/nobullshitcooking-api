@@ -60,8 +60,8 @@ CREATE TABLE `nobsc_cuisines` (
   `cuisine_id` tinyint unsigned NOT NULL DEFAULT '0',
   `cuisine_name` varchar(40) NOT NULL DEFAULT '',
   `cuisine_nation` varchar(40) UNIQUE NOT NULL,
-  `cuisine_intro` text NOT NULL DEFAULT '',
-  `cuisine_wiki`
+  `cuisine_wiki` varchar(60) NOT NULL DEFAULT '',
+  `cuisine_intro` text NOT NULL,
   PRIMARY KEY (`cuisine_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
