@@ -7,7 +7,7 @@ require('dotenv').config();
 
 const { app, server } = require('./app');
 
-let PORT;
+let PORT: string | number;
 
 if (app.get('env') === 'production') {
   PORT = process.env.PORT || 8081;

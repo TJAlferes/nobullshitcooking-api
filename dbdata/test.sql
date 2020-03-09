@@ -533,7 +533,7 @@ VALUES
 (194, "Yemeni", "Yemen", "Yemeni_cuisine", ""),
 (195, "Zambian", "Zambia", "Zambian_cuisine", ""),
 (196, "Zimbabwean", "Zimbabwe", "Zimbabwe#Cuisine", "");
-
+--(197, "NA") ?
 
 
 INSERT INTO nobsc_measurements
