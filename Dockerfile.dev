@@ -7,7 +7,7 @@ COPY ./dbdata/test.sql /dbdata/test.sql
 
 #2
 
-FROM node:10.16.0
+FROM node:12.16.1
 
 EXPOSE 3003
 
