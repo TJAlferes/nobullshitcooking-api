@@ -19,26 +19,28 @@ const validRecipeIngredientsEntity = require('../../lib/validations/recipeIngred
 const validRecipeSubrecipesEntity = require('../../lib/validations/recipeSubrecipe/recipeSubrecipeEntity');
 
 const userRecipeController = {
-  viewAllMyPrivateUserRecipes: async function(req, res) {
+  viewAllMyPrivateUserRecipes: async function(req, res) {  // where exactly is this needed? planner? dashboard?
+    const authorId = req.session.userInfo.userId;
     const ownerId = req.session.userInfo.userId;
     const recipe = new Recipe(pool);
-    const rows = await recipe.viewAllMyPrivateUserRecipes(ownerId);
+    const rows = await recipe.viewRecipes(authorId, ownerId);
     res.send(rows);
   },
   
-  viewAllMyPublicUserRecipes: async function(req, res) {
+  viewAllMyPublicUserRecipes: async function(req, res) {  // where exactly is this needed? planner? dashboard?
     const authorId = req.session.userInfo.userId;
     const ownerId = 1;
     const recipe = new Recipe(pool);
-    const rows = await recipe.viewAllMyPublicUserRecipes(authorId, ownerId);
+    const rows = await recipe.viewRecipes(authorId, ownerId);
     res.send(rows);
   },
 
   viewMyPrivateUserRecipe: async function(req, res) {
     const recipeId = Number(req.sanitize(req.body.recipeId));
+    const authorId = 1;
     const ownerId = req.session.userInfo.userId;
     const recipe = new Recipe(pool);
-    const row = await recipe.viewMyPrivateUserRecipe(recipeId, ownerId);
+    const [ row ] = await recipe.viewRecipeById(recipeId, authorId, ownerId);
     res.send(row);
   },
 
@@ -47,7 +49,7 @@ const userRecipeController = {
     const authorId = req.session.userInfo.userId;
     const ownerId = 1;
     const recipe = new Recipe(pool);
-    const [ row ] = await recipe.viewMyPublicUserRecipe(recipeId, authorId, ownerId);
+    const [ row ] = await recipe.viewRecipeById(recipeId, authorId, ownerId);
     res.send(row);
   },
 
