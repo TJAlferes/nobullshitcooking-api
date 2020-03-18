@@ -9,11 +9,6 @@ const router = Router();
 
 // for /ingredient/...
 
-router.post(
-  '/',
-  catchExceptions(ingredientController.viewIngredient)
-);
-
 router.get(
   '/official/all',
   catchExceptions(ingredientController.viewAllOfficialIngredients)

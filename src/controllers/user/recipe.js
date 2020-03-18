@@ -19,7 +19,7 @@ const validRecipeIngredientsEntity = require('../../lib/validations/recipeIngred
 const validRecipeSubrecipesEntity = require('../../lib/validations/recipeSubrecipe/recipeSubrecipeEntity');
 
 const userRecipeController = {
-  viewAllMyPrivateUserRecipes: async function(req, res) {  // where exactly is this needed? planner? dashboard?
+  viewAllMyPrivateUserRecipes: async function(req, res) {
     const authorId = req.session.userInfo.userId;
     const ownerId = req.session.userInfo.userId;
     const recipe = new Recipe(pool);
@@ -27,7 +27,7 @@ const userRecipeController = {
     res.send(rows);
   },
   
-  viewAllMyPublicUserRecipes: async function(req, res) {  // where exactly is this needed? planner? dashboard?
+  viewAllMyPublicUserRecipes: async function(req, res) {
     const authorId = req.session.userInfo.userId;
     const ownerId = 1;
     const recipe = new Recipe(pool);

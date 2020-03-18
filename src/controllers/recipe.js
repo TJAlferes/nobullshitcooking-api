@@ -3,7 +3,7 @@ const Recipe = require('../mysql-access/Recipe');
 const validRecipeRequest = require('../lib/validations/recipe/recipeRequest');
 
 const recipeController = {
-  viewAllOfficialRecipes: async function(req, res) {  // why exactly is this needed? planner?
+  viewAllOfficialRecipes: async function(req, res) {
     const authorId = 1;
     const ownerId = 1;
     const recipe = new Recipe(pool);

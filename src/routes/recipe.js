@@ -9,20 +9,15 @@ const router = Router();
 
 // for /recipe/...
 
-router.post(
-  '/',
-  catchExceptions(recipeController.viewRecipe)
-);
-
 router.get(
   '/official/all',
   catchExceptions(recipeController.viewAllOfficialRecipes)
 );
 
-router.get(
+/*router.get(
   '/public/all',
   catchExceptions(recipeController.viewAllPublicRecipes)
-);
+);*/
 
 router.get(
   '/:recipeId',

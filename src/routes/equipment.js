@@ -9,11 +9,6 @@ const router = Router();
 
 // for /equipment/...
 
-router.post(
-  '/',
-  catchExceptions(equipmentController.viewEquipment)
-);
-
 router.get(
   '/official/all',
   catchExceptions(equipmentController.viewAllOfficialEquipment)
