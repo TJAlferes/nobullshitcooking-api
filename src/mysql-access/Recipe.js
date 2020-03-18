@@ -6,7 +6,6 @@ class Recipe {
     this.getPublicRecipeForElasticSearchInsert = this.getPublicRecipeForElasticSearchInsert.bind(this);
 
     this.viewAllOfficialRecipes = this.viewAllOfficialRecipes.bind(this);
-    this.viewAllPublicRecipes = this.viewAllPublicRecipes.bind(this);
     this.viewRecipeById = this.viewRecipeById.bind(this);
     this.createRecipe = this.createRecipe.bind(this);
     this.updateRecipe = this.updateRecipe.bind(this);
@@ -210,16 +209,6 @@ class Recipe {
     `;
     const [ allOfficialRecipes ] = await this.pool.execute(sql);
     return allOfficialRecipes;
-  }
-
-  async viewAllPublicRecipes() {  // WILL GET BIG! don't call, delete this
-    const sql = `
-      SELECT recipe_id, recipe_type_id, cuisine_id, title, recipe_image
-      FROM nobsc_recipes
-      WHERE author_id != 1 AND owner_id = 1
-    `;
-    const [ allPublicRecipes ] = await this.pool.execute(sql);
-    return allPublicRecipes;
   }
 
   async viewRecipeById(recipeId) {
