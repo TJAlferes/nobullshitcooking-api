@@ -5,16 +5,18 @@ const validIngredientEntity = require('../../lib/validations/ingredient/ingredie
 
 const userIngredientController = {
   viewAllMyPrivateUserIngredients: async function(req, res) {
+    const authorId = req.session.userInfo.userId;
     const ownerId = req.session.userInfo.userId;
     const ingredient = new Ingredient(pool);
-    const rows = await ingredient.viewAllMyPrivateUserIngredients(ownerId);
+    const rows = await ingredient.viewIngredients(authorId, ownerId);
     res.send(rows);
   },
   viewMyPrivateUserIngredient: async function(req, res) {
     const ingredientId = Number(req.sanitize(req.body.ingredientId));
+    const authorId = req.session.userInfo.userId;
     const ownerId = req.session.userInfo.userId;
     const ingredient = new Ingredient(pool);
-    const [ row ] = await ingredient.viewMyPrivateUserIngredient(ownerId, ingredientId);
+    const [ row ] = await ingredient.viewIngredientById(ingredientId, authorId, ownerId);
     res.send(row);
   },
   createMyPrivateUserIngredient: async function(req, res) {

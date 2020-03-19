@@ -14,11 +14,6 @@ router.get(
   catchExceptions(recipeController.viewAllOfficialRecipes)
 );
 
-/*router.get(
-  '/public/all',
-  catchExceptions(recipeController.viewAllPublicRecipes)
-);*/
-
 router.get(
   '/:recipeId',
   catchExceptions(recipeController.viewRecipeDetail)

@@ -4,15 +4,19 @@ const validIngredientRequest = require('../lib/validations/ingredient/ingredient
 
 const ingredientController = {
   viewAllOfficialIngredients: async function (req, res) {
+    const authorId = 1;
+    const ownerId = 1;
     const ingredient = new Ingredient(pool);
-    const rows = await ingredient.viewAllOfficialIngredients();
+    const rows = await ingredient.viewAllOfficialIngredients(authorId, ownerId);
     res.send(rows);
   },
   viewIngredientDetail: async function(req, res) {
     const ingredientId = Number(req.sanitize(req.params.ingredientId));
+    const authorId = 1;
+    const ownerId = 1;
     validIngredientRequest({ingredientId});
     const ingredient = new Ingredient(pool);
-    const [ row ] = await ingredient.viewIngredientById(ingredientId);
+    const [ row ] = await ingredient.viewIngredientById(ingredientId, authorId, ownerId);
     res.send(row);
   }
 };

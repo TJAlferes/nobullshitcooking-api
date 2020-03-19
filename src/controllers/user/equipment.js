@@ -5,16 +5,18 @@ const validEquipmentEntity = require('../../lib/validations/equipment/equipmentE
 
 const userEquipmentController = {
   viewAllMyPrivateUserEquipment: async function(req, res) {
+    const authorId = req.session.userInfo.userId;
     const ownerId = req.session.userInfo.userId;
     const equipment = new Equipment(pool);
-    const rows = await equipment.viewAllMyPrivateUserEquipment(ownerId);
+    const rows = await equipment.viewEquipment(authorId, ownerId);
     res.send(rows);
   },
   viewMyPrivateUserEquipment: async function(req, res) {
     const equipmentId = Number(req.sanitize(req.body.equipmentId));
+    const authorId = req.session.userInfo.userId;
     const ownerId = req.session.userInfo.userId;
     const equipment = new Equipment(pool);
-    const [ row ] = await equipment.viewMyPrivateUserEquipment(ownerId, equipmentId);
+    const [ row ] = await equipment.viewEquipmentById(equipmentId, authorId, ownerId);
     res.send(row);
   },
   createMyPrivateUserEquipment: async function(req, res) {

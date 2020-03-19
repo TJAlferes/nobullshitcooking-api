@@ -4,15 +4,19 @@ const validEquipmentRequest = require('../lib/validations/equipment/equipmentReq
 
 const equipmentController = {
   viewAllOfficialEquipment: async function (req, res) {
+    const authorId = 1;
+    const ownerId = 1;
     const equipment = new Equipment(pool);
-    const rows = await equipment.viewAllOfficialEquipment();
+    const rows = await equipment.viewEquipment(authorId, ownerId);
     res.send(rows);
   },
   viewEquipmentDetail: async function(req, res) {
     const equipmentId = Number(req.sanitize(req.params.equipmentId));
+    const authorId = 1;
+    const ownerId = 1;
     validEquipmentRequest({equipmentId});
     const equipment = new Equipment(pool);
-    const [ row ] = await equipment.viewEquipmentById(equipmentId);
+    const [ row ] = await equipment.viewEquipmentById(equipmentId, authorId, ownerId);
     res.send(row);
   }
 };

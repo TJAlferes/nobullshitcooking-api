@@ -5,26 +5,12 @@ class Ingredient {
     this.getAllPublicIngredientsForElasticSearchBulkInsert = this.getAllPublicIngredientsForElasticSearchBulkInsert.bind(this);
     this.getIngredientForElasticSearchInsert = this.getIngredientForElasticSearchInsert.bind(this);
 
-    // public NOBSC ingredients
-    this.countAllIngredients = this.countAllIngredients.bind(this);
-    this.countIngredientsOfType = this.countIngredientsOfType.bind(this);
-    this.countIngredientsOfTypes = this.countIngredientsOfTypes.bind(this);
-
-    this.viewAllIngredients = this.viewAllIngredients.bind(this);
-    this.viewIngredientsOfType = this.viewIngredientsOfType.bind(this);
-    this.viewIngredientsOfTypes = this.viewIngredientsOfTypes.bind(this);
-
-    this.viewAllOfficialIngredients = this.viewAllOfficialIngredients.bind(this);
-
+    this.viewIngredients = this.viewIngredients.bind(this);
     this.viewIngredientById = this.viewIngredientById.bind(this);
-
     this.createIngredient = this.createIngredient.bind(this);
     this.updateIngredient = this.updateIngredient.bind(this);
     this.deleteIngredient = this.deleteIngredient.bind(this);
 
-    // private user ingredients
-    this.viewAllMyPrivateUserIngredients = this.viewAllMyPrivateUserIngredients.bind(this);
-    this.viewMyPrivateUserIngredient = this.viewMyPrivateUserIngredient.bind(this);
     this.createMyPrivateUserIngredient = this.createMyPrivateUserIngredient.bind(this);
     this.updateMyPrivateUserIngredient = this.updateMyPrivateUserIngredient.bind(this);
     this.deleteMyPrivateUserIngredient = this.deleteMyPrivateUserIngredient.bind(this);
@@ -84,89 +70,28 @@ class Ingredient {
   }
 
   //--------------------------------------------------------------------------
-  
-  /*
-  
-  public NOBSC ingredients
 
-  */
-
-  async countAllIngredients() {
+  async viewIngredients(authorId, ownerId) {
     const sql = `
-      SELECT COUNT(*) AS total
+      SELECT
+        i.ingredient_id AS ingredient_id,
+        i.ingredient_type_id AS ingredient_type_id,
+        i.owner_id AS owner_id,
+        t.ingredient_type_name AS ingredient_type_name,
+        i.ingredient_name AS ingredient_name,
+        i.ingredient_description AS ingredient_description,
+        i.ingredient_image AS ingredient_image
       FROM nobsc_ingredients
-    `;
-    const [ allIngredientsCount ] = await this.pool.execute(sql);
-    return allIngredientsCount;
-  }
-
-  async countIngredientsOfType(typeId) {
-    const sql = `
-      SELECT COUNT(*) AS total
-      FROM nobsc_ingredients
-      WHERE ingredient_type_id = ?
-    `;
-    const [ allIngredientsOfTypeCount ] = await this.pool.execute(sql, [typeId]);
-    return allIngredientsOfTypeCount;
-  }
-
-  async countIngredientsOfTypes(placeholders, typeIds) {  // typeIds must be an array
-    const sql = `
-      SELECT COUNT(*) AS total
-      FROM nobsc_ingredients
-      WHERE ingredient_type_id IN (${placeholders})
-    `;
-    const [ allIngredientsOfTypesCount ] = await this.pool.execute(sql, typeIds);
-    return allIngredientsOfTypesCount;
-  }
-
-  async viewAllIngredients(starting, display) {
-    const sql = `
-      SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image
-      FROM nobsc_ingredients
-      ORDER BY ingredient_name ASC
-      LIMIT ?, ?
-    `;
-    const [ allIngredients ] = await this.pool.execute(sql, [starting, display]);
-    return allIngredients;
-  }
-
-  async viewIngredientsOfType(starting, display, typeId) {
-    const sql = `
-      SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image
-      FROM nobsc_ingredients
-      WHERE ingredient_type_id = ?
-      ORDER BY ingredient_name ASC
-      LIMIT ?, ?
-    `;
-    const [ allIngredientsOfType ] = await this.pool.execute(sql, [typeId, starting, display]);
-    return allIngredientsOfType;
-  }
-
-  async viewIngredientsOfTypes(starting, display, placeholders, typeIds) {  // typeIds must be an array
-    const sql = `
-      SELECT ingredient_id, ingredient_name, ingredient_type_id, ingredient_image
-      FROM nobsc_ingredients
-      WHERE ingredient_type_id IN (${placeholders})
-      ORDER BY ingredient_name ASC
-      LIMIT ${starting}, ${display}
-    `;  // TO DO: change to ? for security 
-    const [ allIngredientsOfTypes ] = await this.pool.execute(sql, typeIds);
-    return allIngredientsOfTypes;
-  }
-
-  async viewAllOfficialIngredients() {
-    const sql = `
-      SELECT ingredient_id, ingredient_type_id, ingredient_name, ingredient_image
-      FROM nobsc_ingredients
-      WHERE owner_id = 1
+      INNER JOIN nobsc_ingredient_types t ON i.ingredient_type_id = t.ingredient_type_id
+      WHERE i.author_id = ? AND i.owner_id = ?
       ORDER BY ingredient_name ASC
     `;
-    const [ allOfficialIngredients ] = await this.pool.execute(sql);
-    return allOfficialIngredients;
+    const [ ingredients ] = await this.pool
+    .execute(sql, [authorId, ownerId]);
+    return ingredients;
   }
 
-  async viewIngredientById(ingredientId) {
+  async viewIngredientById(ingredientId, authorId, ownerId) {
     const sql = `
       SELECT
         i.ingredient_id AS ingredient_id,
@@ -178,7 +103,8 @@ class Ingredient {
       INNER JOIN nobsc_ingredient_types t ON i.ingredient_type_id = t.ingredient_type_id
       WHERE owner_id = 1 AND ingredient_id = ?
     `;
-    const [ ingredient ] = await this.pool.execute(sql, [ingredientId]);
+    const [ ingredient ] = await this.pool
+    .execute(sql, [ingredientId, authorId, ownerId]);
     return ingredient;
   }
 
@@ -246,40 +172,7 @@ class Ingredient {
     return deletedIngredient;
   }
 
-
-
-  /*
-
-  private user ingredients
-
-  */
-
-  async viewAllMyPrivateUserIngredients(ownerId) {
-    const sql = `
-      SELECT ingredient_id, ingredient_type_id, ingredient_name, ingredient_image, ingredient_description
-      FROM nobsc_ingredients
-      WHERE owner_id = ?
-      ORDER BY ingredient_name ASC
-    `;
-    const [ allMyPrivateUserIngredients ] = await this.pool.execute(sql, [ownerId]);
-    return allMyPrivateUserIngredients;
-  }
-
-  async viewMyPrivateUserIngredient(ownerId, ingredientId) {
-    const sql = `
-      SELECT
-        i.ingredient_id AS ingredient_id,
-        t.ingredient_type_name AS ingredient_type_name
-        i.ingredient_name AS ingredient_name,
-        i.ingredient_description AS ingredient_description,
-        i.ingredient_image AS ingredient_image
-      FROM nobsc_ingredients i
-      INNER JOIN nobsc_ingredient_types t ON i.ingredient_type_id = t.ingredient_type_id
-      WHERE owner_id = ? AND ingredient_id = ?
-    `;
-    const [ myPrivateUserIngredient ] = await this.pool.execute(sql, [ownerId, ingredientId]);
-    return myPrivateUserIngredient;
-  }
+  //--------------------------------------------------------------------------
 
   async createMyPrivateUserIngredient(ingredientToCreate) {
     const {
