@@ -23,10 +23,13 @@ class Equipment {
       const ownerId = 1;
       const sql1 = `
         SELECT
-          e.equipment_id AS equipmentId,
-          et.equipment_type_name AS equipmentTypeName,
-          e.equipment_name AS equipmentName,
-          e.equipment_image AS equipmentImage
+          e.equipment_id,
+          e.equipment_type_id,
+          e.owner_id,
+          et.equipment_type_name,
+          e.equipment_name,
+          e.equipment_description,
+          e.equipment_image
         FROM nobsc_equipment e
         INNER JOIN nobsc_equipment_types et ON et.equipment_type_id = e.equipment_type_id
         WHERE e.owner_id = ?
@@ -34,9 +37,9 @@ class Equipment {
       const [ equipmentForBulkInsert ] = await this.pool.execute(sql1, [ownerId]);
       let final = [];
       for (let equipment of equipmentForBulkInsert) {  // allows the sequence of awaits we want
-        const { equipmentId } = equipment;
+        const { equipment_id } = equipment;
         final.push(
-          {index: {_index: 'equipment', _id: equipmentId}},
+          {index: {_index: 'equipment', _id: equipment_id}},
           equipment
         );
       }
@@ -46,13 +49,17 @@ class Equipment {
     }
   }
 
+  // this is just viewEquipmentById 
   async getEquipmentForElasticSearchInsert(equipmentId, ownerId) {
     const sql = `
       SELECT
-        e.equipment_id AS equipmentId,
-        et.equipment_type_name AS equipmentTypeName,
-        e.equipment_name AS equipmentName,
-        e.equipment_image AS equipmentImage
+        e.equipment_id,
+        e.equipment_type_id,
+        e.owner_id,
+        et.equipment_type_name,
+        e.equipment_name,
+        e.equipment_description,
+        e.equipment_image
       FROM nobsc_equipment e
       INNER JOIN nobsc_equipment_types et ON et.equipment_type_id = e.equipment_type_id
       WHERE e.equipment_id = ? e.owner_id = ?
@@ -61,9 +68,9 @@ class Equipment {
       equipmentId,
       ownerId
     ]);
-    /*const { equipmentId } = equipmentForInsert;
+    /*const { equipment_id } = equipmentForInsert;
     return [
-      {index: {_index: 'equipment', _id: equipmentId}},
+      {index: {_index: 'equipment', _id: equipment_id}},
       equipmentForInsert
     ];*/
     return equipmentForInsert;

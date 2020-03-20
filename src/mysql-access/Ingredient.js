@@ -23,10 +23,13 @@ class Ingredient {
       const ownerId = 1;
       const sql1 = `
         SELECT
-          i.ingredient_id AS ingredientId,
-          it.ingredient_type_name AS ingredientTypeName,
-          i.ingredient_name AS ingredientName,
-          i.ingredient_image AS ingredientImage
+          i.ingredient_id AS ingredient_id,
+          i.ingredient_type_id AS ingredient_type_id,
+          i.owner_id AS owner_id,
+          t.ingredient_type_name AS ingredient_type_name,
+          i.ingredient_name AS ingredient_name,
+          i.ingredient_description AS ingredient_description,
+          i.ingredient_image AS ingredient_image
         FROM nobsc_ingredients i
         INNER JOIN nobsc_ingredient_types it ON it.ingredient_type_id = i.ingredient_type_id
         WHERE i.owner_id = ?
@@ -34,9 +37,9 @@ class Ingredient {
       const [ ingredientsForBulkInsert ] = await this.pool.execute(sql1, [ownerId]);
       let final = [];
       for (let ingredient of ingredientsForBulkInsert) {  // allows the sequence of awaits we want
-        const { ingredientId } = ingredient;
+        const { ingredient_id } = ingredient;
         final.push(
-          {index: {_index: 'ingredients', _id: ingredientId}},
+          {index: {_index: 'ingredients', _id: ingredient_id}},
           ingredient
         );
       }
@@ -47,12 +50,16 @@ class Ingredient {
   }
 
   async getIngredientForElasticSearchInsert(ingredientId, ownerId) {
+    //const ownerId = 1;
     const sql = `
       SELECT
-        i.ingredient_id AS ingredientId,
-        it.ingredient_type_name AS ingredientTypeName,
-        i.ingredient_name AS ingredientName,
-        i.ingredient_image AS ingredientImage
+        i.ingredient_id AS ingredient_id,
+        i.ingredient_type_id AS ingredient_type_id,
+        i.owner_id AS owner_id,
+        t.ingredient_type_name AS ingredient_type_name,
+        i.ingredient_name AS ingredient_name,
+        i.ingredient_description AS ingredient_description,
+        i.ingredient_image AS ingredient_image
       FROM nobsc_ingredients i
       INNER JOIN nobsc_ingredient_types it ON it.ingredient_type_id = e.ingredient_type_id
       WHERE i.ingredient_id = ? i.owner_id = ?
@@ -61,9 +68,9 @@ class Ingredient {
       ingredientId,
       ownerId
     ]);
-    /*const { ingredientId } = ingredientForInsert;
+    /*const { ingredient_id } = ingredientForInsert;
     return [
-      {index: {_index: 'ingredient', _id: ingredientId}},
+      {index: {_index: 'ingredient', _id: ingredient_id}},
       ingredientForInsert
     ];*/
     return ingredientForInsert;

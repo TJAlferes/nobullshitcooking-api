@@ -45,37 +45,36 @@ class RecipeSearch {
     return body;
   }
 
-  async saveRecipe(recipeInfo) {
-    const {
-      recipeId,
-      authorName,
-      recipeTypeName,
-      cuisineName,
-      title,
-      description,
-      directions,
-      recipeImage,
-      methodNames,
-      equipmentNames,
-      ingredientNames,
-      subrecipeNames
-    } = recipeInfo;
+  async saveRecipe({
+    recipe_id,
+    author,
+    recipe_type_name,
+    cuisine_name,
+    title,
+    description,
+    directions,
+    recipe_image,
+    method_names,
+    equipment_names,
+    ingredient_names,
+    subrecipe_titles
+  }) {
     await this.client.index({
       index: 'recipes',
-      id: recipeId,
+      id: recipe_id,
       body: {
-        recipeId,
-        authorName,
-        recipeTypeName,
-        cuisineName,
+        recipe_id,
+        author,
+        recipe_type_name,
+        cuisine_name,
         title,
         description,
         directions,
-        recipeImage,
-        methodNames,
-        equipmentNames,
-        ingredientNames,
-        subrecipeNames
+        recipe_image,
+        method_names,
+        equipment_names,
+        ingredient_names,
+        subrecipe_titles
       }
     });
     await this.client.indices.refresh({index: 'recipes'});
