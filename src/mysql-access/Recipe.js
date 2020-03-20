@@ -182,9 +182,9 @@ class Recipe {
         u.avatar AS author_avatar,
         rt.recipe_type_name,
         c.cuisine_name,
-        r.title AS title,
-        r.description AS description,
-        r.directions AS directions,
+        r.title,
+        r.description,
+        r.directions,
         r.recipe_image,
         r.equipment_image,
         r.ingredients_image,
@@ -202,28 +202,20 @@ class Recipe {
       WHERE rm.recipe_id = ?
     `;
     const sql3 = `
-      SELECT
-        re.amount AS amount,
-        e.equipment_name
+      SELECT re.amount, e.equipment_name
       FROM nobsc_equipment e
       INNER JOIN nobsc_recipe_equipment re ON re.equipment_id = e.equipment_id
       WHERE re.recipe_id = ?
     `;
     const sql4 = `
-      SELECT
-        i.ingredient_name,
-        ri.amount AS amount,
-        m.measurement_name
+      SELECT i.ingredient_name, ri.amount, m.measurement_name
       FROM nobsc_ingredients i
       INNER JOIN nobsc_recipe_ingredients ri ON ri.ingredient_id = i.ingredient_id
       INNER JOIN nobsc_measurements m ON ri.measurement_id = m.measurement_id
       WHERE ri.recipe_id = ?
     `;
     const sql5 = `
-      SELECT
-        r.title AS subrecipe_title,
-        rs.amount AS amount,
-        m.measurement_name
+      SELECT r.title AS subrecipe_title, rs.amount, m.measurement_name
       FROM nobsc_recipes r
       INNER JOIN nobsc_recipe_subrecipes rs ON rs.subrecipe_id = r.recipe_id
       INNER JOIN nobsc_measurements m ON rs.measurement_id = m.measurement_id
@@ -366,15 +358,10 @@ class Recipe {
       WHERE r.recipe_id = ? AND r.author_id = ? AND r.owner_id = ?
     `;
     const sql2 = `
-      SELECT method_id
-      FROM nobsc_recipe_methods
-      WHERE recipe_id = ?
+      SELECT method_id FROM nobsc_recipe_methods WHERE recipe_id = ?
     `;
     const sql3 = `
-      SELECT
-        re.amount,
-        e.equipment_type_id,
-        re.equipment_id
+      SELECT re.amount, e.equipment_type_id, re.equipment_id
       FROM nobsc_equipment e
       INNER JOIN nobsc_recipe_equipment re ON re.equipment_id = e.equipment_id
       WHERE re.recipe_id = ?
