@@ -19,7 +19,7 @@ class Recipe {
 
   async getAllPublicRecipesForElasticSearchBulkInsert() {
     const ownerId = 1;
-    const sql1 = `
+    const sql = `
       SELECT
         r.recipe_id,
         u.username AS author,
@@ -28,62 +28,43 @@ class Recipe {
         r.title,
         r.description,
         r.directions,
-        r.recipe_image
+        r.recipe_image,
+        (
+          SELECT GROUP_CONCAT(m.method_name SEPARATOR ', ')
+          FROM nobsc_methods m
+          INNER JOIN nobsc_recipe_methods rm ON rm.method_id = m.method_id
+          WHERE rm.recipe_id = r.recipe_id
+        ) method_names,
+        (
+          SELECT GROUP_CONCAT(e.equipment_name SEPARATOR ', ')
+          FROM nobsc_equipment e
+          INNER JOIN nobsc_recipe_equipment re ON re.equipment_id = e.equipment_id
+          WHERE re.recipe_id = r.recipe_id
+        ) equipment_names,
+        (
+          SELECT GROUP_CONCAT(i.ingredient_name SEPARATOR ', ')
+          FROM nobsc_ingredients i
+          INNER JOIN nobsc_recipe_ingredients ri ON ri.ingredient_id = i.ingredient_id
+          WHERE ri.recipe_id = r.recipe_id
+        ) ingredient_names,
+        (
+          SELECT GROUP_CONCAT(r.title SEPARATOR ', ')
+          FROM nobsc_recipes r
+          INNER JOIN nobsc_recipe_subrecipes rs ON rs.subrecipe_id = r.recipe_id
+          WHERE rs.recipe_id = r.recipe_id
+        ) subrecipe_titles
       FROM nobsc_recipes r
       INNER JOIN nobsc_users u ON u.user_id = r.author_id
       INNER JOIN nobsc_recipe_types rt ON rt.recipe_type_id = r.recipe_type_id
       INNER JOIN nobsc_cuisines c ON c.cuisine_id = r.cuisine_id
-      WHERE r.owner_id = ?
+      WHERE r.owner_id = 1
     `;
-    const sql2 = `
-      SELECT m.method_name
-      FROM nobsc_methods m
-      INNER JOIN nobsc_recipe_methods rm ON rm.method_id = m.method_id
-      WHERE rm.recipe_id = ?
-    `;
-    const sql3 = `
-      SELECT e.equipment_name
-      FROM nobsc_equipment e
-      INNER JOIN nobsc_recipe_equipment re ON re.equipment_id = e.equipment_id
-      WHERE re.recipe_id = ?
-    `;
-    const sql4 = `
-      SELECT i.ingredient_name
-      FROM nobsc_ingredients i
-      INNER JOIN nobsc_recipe_ingredients ri ON ri.ingredient_id = i.ingredient_id
-      WHERE ri.recipe_id = ?
-    `;
-    const sql5 = `
-      SELECT r.title AS subrecipe_title
-      FROM nobsc_recipes r
-      INNER JOIN nobsc_recipe_subrecipes rs ON rs.subrecipe_id = r.recipe_id
-      WHERE rs.recipe_id = ?
-    `;
-    const [ recipesForBulkInsert ] = await this.pool.execute(sql1, [ownerId]);
+    const [ recipes ] = await this.pool.execute(sql, [ownerId]);
     let final = [];
-    for (let recipe of recipesForBulkInsert) {
-      const { recipeId } = recipe;
-      const [ methodNames ] = await this.pool.execute(sql2, [recipeId]);
-      const [ equipmentNames ] = await this.pool.execute(sql3, [recipeId]);
-      const [ ingredientNames ] = await this.pool.execute(sql4, [recipeId]);
-      const [ subrecipeTitles ] = await this.pool.execute(sql5, [recipeId]);
-      let method_names = [];
-      let equipment_names = [];
-      let ingredient_names = [];
-      let subrecipe_titles = [];
-      methodNames.forEach(met => method_names.push(met.method_name));
-      equipmentNames.forEach(equ => equipment_names.push(equ.equipment_name));
-      ingredientNames.forEach(ing => ingredient_names.push(ing.ingredient_name));
-      subrecipeTitles.forEach(sub => subrecipe_titles.push(sub.subrecipe_title));
+    for (let recipe of recipes) {
       final.push(
-        {index: {_index: 'recipes', _id: recipeId}},
-        {
-          ...recipe,
-          method_names,
-          equipment_names,
-          ingredient_names,
-          subrecipe_titles
-        }
+        {index: {_index: 'recipes', _id: recipe.recipe_id}},
+        {...recipe}
       );
     }
     return final;
@@ -91,7 +72,7 @@ class Recipe {
 
   async getPublicRecipeForElasticSearchInsert(recipeId) {
     const ownerId = 1;
-    const sql1 = `
+    const sql = `
       SELECT
         r.recipe_id,
         u.username AS author,
@@ -100,59 +81,40 @@ class Recipe {
         r.title,
         r.description,
         r.directions,
-        r.recipe_image
+        r.recipe_image,
+        (
+          SELECT GROUP_CONCAT(m.method_name SEPARATOR ', ')
+          FROM nobsc_methods m
+          INNER JOIN nobsc_recipe_methods rm ON rm.method_id = m.method_id
+          WHERE rm.recipe_id = r.recipe_id
+        ) method_names,
+        (
+          SELECT GROUP_CONCAT(e.equipment_name SEPARATOR ', ')
+          FROM nobsc_equipment e
+          INNER JOIN nobsc_recipe_equipment re ON re.equipment_id = e.equipment_id
+          WHERE re.recipe_id = r.recipe_id
+        ) equipment_names,
+        (
+          SELECT GROUP_CONCAT(i.ingredient_name SEPARATOR ', ')
+          FROM nobsc_ingredients i
+          INNER JOIN nobsc_recipe_ingredients ri ON ri.ingredient_id = i.ingredient_id
+          WHERE ri.recipe_id = r.recipe_id
+        ) ingredient_names,
+        (
+          SELECT GROUP_CONCAT(r.title SEPARATOR ', ')
+          FROM nobsc_recipes r
+          INNER JOIN nobsc_recipe_subrecipes rs ON rs.subrecipe_id = r.recipe_id
+          WHERE rs.recipe_id = r.recipe_id
+        ) subrecipe_titles
       FROM nobsc_recipes r
       INNER JOIN nobsc_users u ON u.user_id = r.author_id
       INNER JOIN nobsc_recipe_types rt ON rt.recipe_type_id = r.recipe_type_id
       INNER JOIN nobsc_cuisines c ON c.cuisine_id = r.cuisine_id
       WHERE r.recipe_id = ? AND r.owner_id = ?
     `;
-    const sql2 = `
-      SELECT m.method_name
-      FROM nobsc_methods m
-      INNER JOIN nobsc_recipe_methods rm ON rm.method_id = m.method_id
-      WHERE rm.recipe_id = ?
-    `;
-    const sql3 = `
-      SELECT e.equipment_name
-      FROM nobsc_equipment e
-      INNER JOIN nobsc_recipe_equipment re ON re.equipment_id = e.equipment_id
-      WHERE re.recipe_id = ?
-    `;
-    const sql4 = `
-      SELECT i.ingredient_name
-      FROM nobsc_ingredients i
-      INNER JOIN nobsc_recipe_ingredients ri ON ri.ingredient_id = i.ingredient_id
-      WHERE ri.recipe_id = ?
-    `;
-    const sql5 = `
-      SELECT r.title AS subrecipe_title
-      FROM nobsc_recipes r
-      INNER JOIN nobsc_recipe_subrecipes rs ON rs.subrecipe_id = r.recipe_id
-      WHERE rs.recipe_id = ?
-    `;
-    const [ recipeForInsert ] = await this.pool
-    .execute(sql1, [recipeId, ownerId]);
-    const [ recipeForInsertDestructured ] = recipeForInsert;
-    const [ methodNames ] = await this.pool.execute(sql2, [recipeId]);
-    const [ equipmentNames ] = await this.pool.execute(sql3, [recipeId]);
-    const [ ingredientNames ] = await this.pool.execute(sql4, [recipeId]);
-    const [ subrecipeTitles ] = await this.pool.execute(sql5, [recipeId]);
-    let method_names = [];
-    let equipment_names = [];
-    let ingredient_names = [];
-    let subrecipe_titles = [];
-    methodNames.forEach(met => method_names.push(met.method_name));
-    equipmentNames.forEach(equ => equipment_names.push(equ.equipment_name));
-    ingredientNames.forEach(ing => ingredient_names.push(ing.ingredient_name));
-    subrecipeTitles.forEach(sub => subrecipe_titles.push(sub.subrecipe_title));
-    return {
-      ...recipeForInsertDestructured,
-      method_names,
-      equipment_names,
-      ingredient_names,
-      subrecipe_titles
-    };
+    const [ recipe ] = await this.pool
+    .execute(sql, [recipeId, ownerId]);
+    return recipe;
   }
 
   //--------------------------------------------------------------------------
@@ -175,66 +137,68 @@ class Recipe {
   }
 
   async viewRecipeById(recipeId, authorId, ownerId) {
-    const sql1 = `
+    const sql = `
       SELECT
-        r.recipe_id
-        u.username AS author,
-        u.avatar AS author_avatar,
-        rt.recipe_type_name,
-        c.cuisine_name,
-        r.title,
-        r.description,
-        r.directions,
-        r.recipe_image,
-        r.equipment_image,
-        r.ingredients_image,
-        r.cooking_image
+      r.recipe_id,
+      u.username AS author,
+      u.avatar AS author_avatar,
+      rt.recipe_type_name,
+      c.cuisine_name,
+      r.title,
+      r.description,
+      r.directions,
+      r.recipe_image,
+      r.equipment_image,
+      r.ingredients_image,
+      r.cooking_image,
+      (
+        SELECT CONCAT('[', GROUP_CONCAT(JSON_OBJECT(
+          'method_name', m.method_name
+        )), ']')
+        FROM nobsc_methods m
+        INNER JOIN nobsc_recipe_methods rm ON rm.method_id = m.method_id
+        WHERE rm.recipe_id = r.recipe_id
+      ) method_names,
+      (
+        SELECT CONCAT('[', GROUP_CONCAT(JSON_OBJECT(
+          'amount', re.amount,
+          'equipment_name', e.equipment_name
+        )), ']')
+        FROM nobsc_equipment e
+        INNER JOIN nobsc_recipe_equipment re ON re.equipment_id = e.equipment_id
+        WHERE re.recipe_id = r.recipe_id
+      ) equipment_names,
+      (
+        SELECT CONCAT('[', GROUP_CONCAT(JSON_OBJECT(
+          'amount', ri.amount,
+          'measurement_name', m.measurement_name,
+          'ingredient_name', i.ingredient_name
+        )), ']')
+        FROM nobsc_ingredients i
+        INNER JOIN nobsc_recipe_ingredients ri ON ri.ingredient_id = i.ingredient_id
+        INNER JOIN nobsc_measurements m ON m.measurement_id = ri.measurement_id
+        WHERE ri.recipe_id = r.recipe_id
+      ) ingredient_names,
+      (
+        SELECT CONCAT('[', GROUP_CONCAT(JSON_OBJECT(
+          'amount', rs.amount,
+          'measurement_name', m.measurement_name,
+          'subrecipe_title', r.title
+        )), ']')
+        FROM nobsc_recipes r
+        INNER JOIN nobsc_recipe_subrecipes rs ON rs.subrecipe_id = r.recipe_id
+        INNER JOIN nobsc_measurements m ON m.measurement_id = rs.measurement_id
+        WHERE rs.recipe_id = r.recipe_id
+      ) subrecipe_titles
       FROM nobsc_recipes r
       INNER JOIN nobsc_users u ON u.user_id = r.author_id
       INNER JOIN nobsc_recipe_types rt ON rt.recipe_type_id = r.recipe_type_id
       INNER JOIN nobsc_cuisines c ON c.cuisine_id = r.cuisine_id
       WHERE r.recipe_id = ? AND r.author_id = ? AND r.owner_id = ?
     `;
-    const sql2 = `
-      SELECT m.method_name
-      FROM nobsc_methods m
-      INNER JOIN nobsc_recipe_methods rm ON rm.method_id = m.method_id
-      WHERE rm.recipe_id = ?
-    `;
-    const sql3 = `
-      SELECT re.amount, e.equipment_name
-      FROM nobsc_equipment e
-      INNER JOIN nobsc_recipe_equipment re ON re.equipment_id = e.equipment_id
-      WHERE re.recipe_id = ?
-    `;
-    const sql4 = `
-      SELECT i.ingredient_name, ri.amount, m.measurement_name
-      FROM nobsc_ingredients i
-      INNER JOIN nobsc_recipe_ingredients ri ON ri.ingredient_id = i.ingredient_id
-      INNER JOIN nobsc_measurements m ON ri.measurement_id = m.measurement_id
-      WHERE ri.recipe_id = ?
-    `;
-    const sql5 = `
-      SELECT r.title AS subrecipe_title, rs.amount, m.measurement_name
-      FROM nobsc_recipes r
-      INNER JOIN nobsc_recipe_subrecipes rs ON rs.subrecipe_id = r.recipe_id
-      INNER JOIN nobsc_measurements m ON rs.measurement_id = m.measurement_id
-      WHERE rs.recipe_id = ?
-    `; 
     const [ recipe ] = await this.pool
-    .execute(sql1, [recipeId, authorId, ownerId]);
-    const [ recipeDestructured ] = recipe;
-    const [ required_methods ] = await this.pool.execute(sql2, [recipeId]);
-    const [ required_equipment ] = await this.pool.execute(sql3, [recipeId]);
-    const [ required_ingredients ] = await this.pool.execute(sql4, [recipeId]);
-    const [ required_subrecipes ] = await this.pool.execute(sql5, [recipeId]);
-    return {
-      ...recipeDestructured,
-      required_methods,
-      required_equipment,
-      required_ingredients,
-      required_subrecipes
-    };
+    .execute(sql, [recipeId, authorId, ownerId]);
+    return recipe;
   }
 
   async createRecipe(recipeToCreate) {
@@ -341,66 +305,68 @@ class Recipe {
   //--------------------------------------------------------------------------
 
   async getInfoToEditMyUserRecipe(recipeId, authorId, ownerId) {
-    const sql1 = `
-      SELECT
-        r.recipe_id,
-        r.recipe_type_id,
-        r.cuisine_id,
-        r.owner_id,
-        r.title,
-        r.description,
-        r.directions,
-        r.recipe_image,
-        r.equipment_image,
-        r.ingredients_image,
-        r.cooking_image
-      FROM nobsc_recipes r
-      WHERE r.recipe_id = ? AND r.author_id = ? AND r.owner_id = ?
-    `;
-    const sql2 = `
-      SELECT method_id FROM nobsc_recipe_methods WHERE recipe_id = ?
-    `;
-    const sql3 = `
-      SELECT re.amount, e.equipment_type_id, re.equipment_id
+    const sql = `
+    SELECT
+    r.recipe_id,
+    r.recipe_type_id,
+    r.cuisine_id,
+    r.owner_id,
+    r.title,
+    r.description,
+    r.directions,
+    r.recipe_image,
+    r.equipment_image,
+    r.ingredients_image,
+    r.cooking_image,
+    (
+      SELECT CONCAT('[', GROUP_CONCAT(JSON_OBJECT(
+        'method_id', rm.method_id
+      )), ']')
+      FROM nobsc_recipe_methods rm
+      WHERE rm.recipe_id = r.recipe_id
+    ) required_methods,
+    (
+      SELECT CONCAT('[', GROUP_CONCAT(JSON_OBJECT(
+      'amount', re.amount,
+        'equipment_type_id', e.equipment_type_id,
+        'equipment_id', re.equipment_id
+      )), ']')
       FROM nobsc_equipment e
       INNER JOIN nobsc_recipe_equipment re ON re.equipment_id = e.equipment_id
-      WHERE re.recipe_id = ?
-    `;
-    const sql4 = `
-      SELECT
-        ri.amount,
-        ri.measurement_id,
-        i.ingredient_type_id,
-        ri.ingredient_id
+      WHERE re.recipe_id = r.recipe_id
+    ) required_equipment,
+    (
+      SELECT CONCAT('[', GROUP_CONCAT(JSON_OBJECT(
+        'amount', ri.amount,
+        'measurement_id', ri.measurement_id,
+        'ingredient_type_id', i.ingredient_type_id,
+        'ingredient_id', ri.ingredient_id
+      )), ']')
       FROM nobsc_ingredients i
       INNER JOIN nobsc_recipe_ingredients ri ON ri.ingredient_id = i.ingredient_id
-      WHERE ri.recipe_id = ?
-    `;
-    const sql5 = `
-      SELECT
-        rs.amount AS amount,
-        rs.measurement_id,
-        r.recipe_type_id,
-        r.cuisine_id,
-        rs.subrecipe_id
+      WHERE ri.recipe_id = r.recipe_id
+    ) required_ingredients,
+    (
+      SELECT CONCAT('[', GROUP_CONCAT(JSON_OBJECT(
+        'amount', rs.amount,
+        'measurement_id', rs.measurement_id,
+        'recipe_type_id', r.recipe_type_id,
+        'cuisine_id', r.cuisine_id,
+        'subrecipe_id', rs.subrecipe_id
+      )), ']')
       FROM nobsc_recipes r
       INNER JOIN nobsc_recipe_subrecipes rs ON rs.subrecipe_id = r.recipe_id
-      WHERE rs.recipe_id = ?
+      WHERE rs.recipe_id = r.recipe_id
+    ) required_subrecipes
+    FROM nobsc_recipes r
+    INNER JOIN nobsc_users u ON u.user_id = r.author_id
+    INNER JOIN nobsc_recipe_types rt ON rt.recipe_type_id = r.recipe_type_id
+    INNER JOIN nobsc_cuisines c ON c.cuisine_id = r.cuisine_id
+    WHERE r.recipe_id = ? AND r.author_id = ? AND r.owner_id = ?;
     `;
     const [ recipe ] = await this.pool
-    .execute(sql1, [recipeId, authorId, ownerId]);
-    const [ recipeDestructured ] = recipe;
-    const [ requiredMethods ] = await this.pool.execute(sql2, [recipeId]);
-    const [ requiredEquipment ] = await this.pool.execute(sql3, [recipeId]);
-    const [ requiredIngredients ] = await this.pool.execute(sql4, [recipeId]);
-    const [ requiredSubrecipes ] = await this.pool.execute(sql5, [recipeId]);
-    return {
-      ...recipeDestructured,
-      requiredMethods,
-      requiredEquipment,
-      requiredIngredients,
-      requiredSubrecipes
-    };
+    .execute(sql, [recipeId, authorId, ownerId]);
+    return recipe;
   }
 
   async updateMyUserRecipe(recipeToUpdateWith, recipeId) {
