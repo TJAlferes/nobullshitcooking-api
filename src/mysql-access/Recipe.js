@@ -30,34 +30,41 @@ class Recipe {
         r.directions,
         r.recipe_image,
         (
-          SELECT GROUP_CONCAT(m.method_name SEPARATOR ', ')
+          SELECT
+            CONCAT('[', GROUP_CONCAT(m.method_name SEPARATOR ', '), ']')
           FROM nobsc_methods m
           INNER JOIN nobsc_recipe_methods rm ON rm.method_id = m.method_id
           WHERE rm.recipe_id = r.recipe_id
         ) method_names,
         (
-          SELECT GROUP_CONCAT(e.equipment_name SEPARATOR ', ')
+          SELECT
+            CONCAT('[', GROUP_CONCAT(e.equipment_name SEPARATOR ', '), ']')
           FROM nobsc_equipment e
-          INNER JOIN nobsc_recipe_equipment re ON re.equipment_id = e.equipment_id
+          INNER JOIN nobsc_recipe_equipment re
+          ON re.equipment_id = e.equipment_id
           WHERE re.recipe_id = r.recipe_id
         ) equipment_names,
         (
-          SELECT GROUP_CONCAT(i.ingredient_name SEPARATOR ', ')
+          SELECT
+            CONCAT('[', GROUP_CONCAT(i.ingredient_name SEPARATOR ', '), ']')
           FROM nobsc_ingredients i
-          INNER JOIN nobsc_recipe_ingredients ri ON ri.ingredient_id = i.ingredient_id
+          INNER JOIN nobsc_recipe_ingredients ri
+          ON ri.ingredient_id = i.ingredient_id
           WHERE ri.recipe_id = r.recipe_id
         ) ingredient_names,
         (
-          SELECT GROUP_CONCAT(r.title SEPARATOR ', ')
+          SELECT
+            CONCAT('[', GROUP_CONCAT(r.title SEPARATOR ', '), ']')
           FROM nobsc_recipes r
-          INNER JOIN nobsc_recipe_subrecipes rs ON rs.subrecipe_id = r.recipe_id
+          INNER JOIN nobsc_recipe_subrecipes rs
+          ON rs.subrecipe_id = r.recipe_id
           WHERE rs.recipe_id = r.recipe_id
         ) subrecipe_titles
       FROM nobsc_recipes r
       INNER JOIN nobsc_users u ON u.user_id = r.author_id
       INNER JOIN nobsc_recipe_types rt ON rt.recipe_type_id = r.recipe_type_id
       INNER JOIN nobsc_cuisines c ON c.cuisine_id = r.cuisine_id
-      WHERE r.owner_id = 1
+      WHERE r.owner_id = ?
     `;
     const [ recipes ] = await this.pool.execute(sql, [ownerId]);
     let final = [];
@@ -83,25 +90,31 @@ class Recipe {
         r.directions,
         r.recipe_image,
         (
-          SELECT GROUP_CONCAT(m.method_name SEPARATOR ', ')
+          SELECT
+            CONCAT('[', GROUP_CONCAT(m.method_name SEPARATOR ', '), ']')
           FROM nobsc_methods m
           INNER JOIN nobsc_recipe_methods rm ON rm.method_id = m.method_id
           WHERE rm.recipe_id = r.recipe_id
         ) method_names,
         (
-          SELECT GROUP_CONCAT(e.equipment_name SEPARATOR ', ')
+          SELECT
+            CONCAT('[', GROUP_CONCAT(e.equipment_name SEPARATOR ', '), ']')
           FROM nobsc_equipment e
-          INNER JOIN nobsc_recipe_equipment re ON re.equipment_id = e.equipment_id
+          INNER JOIN nobsc_recipe_equipment re
+          ON re.equipment_id = e.equipment_id
           WHERE re.recipe_id = r.recipe_id
         ) equipment_names,
         (
-          SELECT GROUP_CONCAT(i.ingredient_name SEPARATOR ', ')
+          SELECT
+            CONCAT('[', GROUP_CONCAT(i.ingredient_name SEPARATOR ', '), ']')
           FROM nobsc_ingredients i
-          INNER JOIN nobsc_recipe_ingredients ri ON ri.ingredient_id = i.ingredient_id
+          INNER JOIN nobsc_recipe_ingredients ri
+          ON ri.ingredient_id = i.ingredient_id
           WHERE ri.recipe_id = r.recipe_id
         ) ingredient_names,
         (
-          SELECT GROUP_CONCAT(r.title SEPARATOR ', ')
+          SELECT
+            CONCAT('[', GROUP_CONCAT(r.title SEPARATOR ', '), ']')
           FROM nobsc_recipes r
           INNER JOIN nobsc_recipe_subrecipes rs ON rs.subrecipe_id = r.recipe_id
           WHERE rs.recipe_id = r.recipe_id
@@ -175,7 +188,8 @@ class Recipe {
           'ingredient_name', i.ingredient_name
         )), ']')
         FROM nobsc_ingredients i
-        INNER JOIN nobsc_recipe_ingredients ri ON ri.ingredient_id = i.ingredient_id
+        INNER JOIN nobsc_recipe_ingredients ri
+        ON ri.ingredient_id = i.ingredient_id
         INNER JOIN nobsc_measurements m ON m.measurement_id = ri.measurement_id
         WHERE ri.recipe_id = r.recipe_id
       ) ingredient_names,
@@ -343,7 +357,8 @@ class Recipe {
         'ingredient_id', ri.ingredient_id
       )), ']')
       FROM nobsc_ingredients i
-      INNER JOIN nobsc_recipe_ingredients ri ON ri.ingredient_id = i.ingredient_id
+      INNER JOIN nobsc_recipe_ingredients ri
+      ON ri.ingredient_id = i.ingredient_id
       WHERE ri.recipe_id = r.recipe_id
     ) required_ingredients,
     (
