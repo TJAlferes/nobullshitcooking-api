@@ -1,3 +1,4 @@
+import { Request, Response } from 'express';
 //const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 
@@ -10,7 +11,7 @@ const validStaffEntity = require('../../lib/validations/staff/staffEntity');
 const SALT_ROUNDS = 10;
 
 const staffAuthController = {
-  register: async function(req, res) {
+  register: async function(req: Request, res: Response) {
     const email = req.sanitize(req.body.staffInfo.email);
     const pass = req.sanitize(req.body.staffInfo.password);
     const staffname = req.sanitize(req.body.staffInfo.staffname);
@@ -49,7 +50,7 @@ const staffAuthController = {
     res.send({message: 'Staff account created.'});
   },
   
-  login: async function(req, res) {
+  login: async function(req: Request, res: Response) {
     const email = req.sanitize(req.body.staffInfo.email);
     const pass = req.sanitize(req.body.staffInfo.password);
 
@@ -84,7 +85,7 @@ const staffAuthController = {
     res.send({message: 'Incorrect email or password.'});
   },
 
-  logout: async function(req, res) {
+  logout: async function(req: Request, res: Response) {
     await req.session.destroy();
     res.end();
   }

@@ -1,10 +1,11 @@
 require('dotenv').config();
 const uuidv4 = require('uuid/v4');
 const AWS = require('aws-sdk');
+import { Request, Response } from 'express';
 
 const AWS_NOBSC_USER_RECIPE_EQUIPMENT_S3_BUCKET = process.env.AWS_NOBSC_USER_RECIPE_EQUIPMENT_S3_BUCKET;
 
-module.exports = async function(req, res) {
+module.exports = async function(req: Request, res: Response) {
   const fileNameFullSize = `${req.session.userInfo.username}-${uuidv4()}`;
   const fileType = req.sanitize(req.body.fileType);
 

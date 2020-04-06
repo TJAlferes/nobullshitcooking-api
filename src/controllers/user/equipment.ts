@@ -1,17 +1,19 @@
+import { Request, Response } from 'express';
+
 const pool = require('../../lib/connections/mysqlPoolConnection');
 const RecipeEquipment = require('../../mysql-access/RecipeEquipment');
 const Equipment = require('../../mysql-access/Equipment');
 const validEquipmentEntity = require('../../lib/validations/equipment/equipmentEntity');
 
 const userEquipmentController = {
-  viewAllMyPrivateUserEquipment: async function(req, res) {
+  viewAllMyPrivateUserEquipment: async function(req: Request, res: Response) {
     const authorId = req.session.userInfo.userId;
     const ownerId = req.session.userInfo.userId;
     const equipment = new Equipment(pool);
     const rows = await equipment.viewEquipment(authorId, ownerId);
     res.send(rows);
   },
-  viewMyPrivateUserEquipment: async function(req, res) {
+  viewMyPrivateUserEquipment: async function(req: Request, res: Response) {
     const equipmentId = Number(req.body.equipmentId);
     const authorId = req.session.userInfo.userId;
     const ownerId = req.session.userInfo.userId;
@@ -19,7 +21,7 @@ const userEquipmentController = {
     const [ row ] = await equipment.viewEquipmentById(equipmentId, authorId, ownerId);
     res.send(row);
   },
-  createMyPrivateUserEquipment: async function(req, res) {
+  createMyPrivateUserEquipment: async function(req: Request, res: Response) {
     const equipmentTypeId = Number(req.body.equipmentInfo.equipmentTypeId);
     const equipmentName = req.body.equipmentInfo.equipmentName;
     const equipmentDescription = req.body.equipmentInfo.equipmentDescription;
@@ -40,7 +42,7 @@ const userEquipmentController = {
     await equipment.createMyPrivateUserEquipment(equipmentToCreate);
     res.send({message: 'Equipment created.'});
   },
-  updateMyPrivateUserEquipment: async function(req, res) {
+  updateMyPrivateUserEquipment: async function(req: Request, res: Response) {
     const equipmentId = Number(req.body.equipmentInfo.equipmentId);
     const equipmentTypeId = Number(req.body.equipmentInfo.equipmentTypeId);
     const equipmentName = req.body.equipmentInfo.equipmentName;
@@ -62,7 +64,7 @@ const userEquipmentController = {
     await equipment.updateMyPrivateUserEquipment(equipmentToUpdateWith, equipmentId);
     res.send({message: 'Equipment updated.'});
   },
-  deleteMyPrivateUserEquipment: async function(req, res) {
+  deleteMyPrivateUserEquipment: async function(req: Request, res: Response) {
     const equipmentId = Number(req.body.equipmentId);
     const ownerId = req.session.userInfo.userId;
     const recipeEquipment = new RecipeEquipment(pool);

@@ -1,3 +1,4 @@
+import { Request, Response } from 'express';
 //const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const uuidv4 = require('uuid/v4');
@@ -22,7 +23,7 @@ const {
 const SALT_ROUNDS = 10;
 
 const userAuthController = {
-  register: async function(req, res) {
+  register: async function(req: Request, res: Response) {
     const email = req.body.userInfo.email;
     const pass = req.body.userInfo.password;
     const username = req.body.userInfo.username;
@@ -56,7 +57,7 @@ const userAuthController = {
     res.send({message: 'User account created.'});
   },
 
-  verify: async function(req, res) {
+  verify: async function(req: Request, res: Response) {
     const email = req.body.userInfo.email;
     const pass = req.body.userInfo.password;
 
@@ -76,7 +77,7 @@ const userAuthController = {
     res.send('User account verified.');
   },
 
-  resendConfirmationCode: async function (req, res) {
+  resendConfirmationCode: async function (req: Request, res: Response) {
     const email = req.body.userInfo.email;
     const pass = req.body.userInfo.password;
 
@@ -95,7 +96,7 @@ const userAuthController = {
     res.send({message: 'Confirmation code re-sent.'});
   },
 
-  login: async function(req, res) {
+  login: async function(req: Request, res: Response) {
     const email = req.body.userInfo.email;
     const pass = req.body.userInfo.password;
 
@@ -123,12 +124,12 @@ const userAuthController = {
     });
   },
 
-  logout: async function(req, res) {
+  logout: async function(req: Request, res: Response) {
     await req.session.destroy();
     res.end();
   },
 
-  setAvatar: async function(req, res) {
+  setAvatar: async function(req: Request, res: Response) {
     const avatar = req.body.avatar;
     const userId = req.session.userInfo.userId;
     const user = new User(pool);
@@ -136,20 +137,20 @@ const userAuthController = {
     res.send({message: 'Avatar set.'});
   },
 
-  updateUsername: async function(req, res) {
+  updateUsername: async function(req: Request, res: Response) {
     // TO DO: implement this! write a test first!
     // use res.status().json(); instead of res.send(); ?
   },
 
-  updateEmail: async function(req, res) {
+  updateEmail: async function(req: Request, res: Response) {
     // TO DO: implement this! write a test first!
   },
 
-  updatePassword: async function(req, res) {
+  updatePassword: async function(req: Request, res: Response) {
     // TO DO: implement this! write a test first!
   },
 
-  deleteAccount: async function(req, res) {
+  deleteAccount: async function(req: Request, res: Response) {
     // TO DO: implement this! write a test first!
   }
 };

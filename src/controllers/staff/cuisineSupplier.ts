@@ -1,9 +1,11 @@
+import { Request, Response } from 'express';
+
 const pool = require('../../lib/connections/mysqlPoolConnection');
 
 const CuisineSupplier = require('../../mysql-access/CuisineSupplier');
 
 const staffCuisineSupplierController = {
-  createCuisineSupplier: async function(req, res) {
+  createCuisineSupplier: async function(req: Request, res: Response) {
     const supplierId = Number(req.sanitize(req.body.supplierId));
 
     const cuisineSupplier = new CuisineSupplier(pool);
@@ -13,7 +15,7 @@ const staffCuisineSupplierController = {
     res.send({message: 'Cuisine supplier created.'});
   },
 
-  deleteCuisineSupplier: async function(req, res) {
+  deleteCuisineSupplier: async function(req: Request, res: Response) {
     const cuisineId = Number(req.sanitize(req.body.cuisineId));
     const supplierId = Number(req.sanitize(req.body.supplierId));
 

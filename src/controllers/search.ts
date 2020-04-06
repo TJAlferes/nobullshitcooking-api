@@ -1,3 +1,5 @@
+import { Request, Response } from 'express';
+
 const esClient = require('../lib/connections/elasticsearchClient');
 const AllSearch = require('../elasticsearch-access/AllSearch');
 const RecipeSearch = require('../elasticsearch-access/RecipeSearch');
@@ -5,52 +7,52 @@ const IngredientSearch = require('../elasticsearch-access/IngredientSearch');
 const EquipmentSearch = require('../elasticsearch-access/EquipmentSearch');
 
 const searchController = {
-  autocompletePublicAll: async function(req, res) {
+  autocompletePublicAll: async function(req: Request, res: Response) {
     const searchTerm = req.sanitize(req.body.searchTerm);
     const allSearch = new AllSearch(esClient);
     const found = await allSearch.autoAll(searchTerm);
     return res.json({found});
   },
-  findPublicAll: async function(req, res) {
+  findPublicAll: async function(req: Request, res: Response) {
     const body = req.body.body;  // security?
     const allSearch = new AllSearch(esClient);
     const found = await allSearch.findAll(body);
     return res.json({found});
   },
 
-  autocompletePublicRecipes: async function(req, res) {
+  autocompletePublicRecipes: async function(req: Request, res: Response) {
     const searchTerm = req.sanitize(req.body.searchTerm);
     const recipeSearch = new RecipeSearch(esClient);
     const found = await recipeSearch.autoRecipes(searchTerm);
     return res.json({found});
   },
-  findPublicRecipes: async function(req, res) {
+  findPublicRecipes: async function(req: Request, res: Response) {
     const body = req.body.body;  // security?
     const recipeSearch = new RecipeSearch(esClient);
     const found = await recipeSearch.findRecipes(body);
     return res.json({found});
   },
 
-  autocompletePublicIngredients: async function(req, res) {
+  autocompletePublicIngredients: async function(req: Request, res: Response) {
     const searchTerm = req.sanitize(req.body.searchTerm);
     const ingredientSearch = new IngredientSearch(esClient);
     const found = await ingredientSearch.autoIngredients(searchTerm);
     return res.json({found});
   },
-  findPublicIngredients: async function(req, res) {
+  findPublicIngredients: async function(req: Request, res: Response) {
     const body = req.body.body;  // security?
     const ingredientSearch = new IngredientSearch(esClient);
     const found = await ingredientSearch.findIngredients(body);
     return res.json({found});
   },
 
-  autocompletePublicEquipment: async function(req, res) {
+  autocompletePublicEquipment: async function(req: Request, res: Response) {
     const searchTerm = req.sanitize(req.body.searchTerm);
     const equipmentSearch = new EquipmentSearch(esClient);
     const found = await equipmentSearch.autoEquipment(searchTerm);
     return res.json({found});
   },
-  findPublicEquipment: async function(req, res) {
+  findPublicEquipment: async function(req: Request, res: Response) {
     const body = req.body.body;  // security?
     const equipmentSearch = new EquipmentSearch(esClient);
     const found = await equipmentSearch.findEquipment(body);

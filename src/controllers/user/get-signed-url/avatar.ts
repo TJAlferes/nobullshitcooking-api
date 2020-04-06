@@ -1,9 +1,10 @@
 require('dotenv').config();
 const AWS = require('aws-sdk');
+import { Request, Response } from 'express';
 
 const AWS_NOBSC_USER_AVATARS_S3_BUCKET = process.env.AWS_NOBSC_USER_AVATARS_S3_BUCKET;
 
-module.exports = async function(req, res) {
+module.exports = async function(req: Request, res: Response) {
   const fileNameFullSize = `${req.session.userInfo.username}`;
   const fileNameTinySize = `${fileNameFullSize}-tiny`;
   const fileType = req.sanitize(req.body.fileType);

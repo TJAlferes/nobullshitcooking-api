@@ -1,3 +1,5 @@
+import { Request, Response } from 'express';
+
 const pool = require('../../lib/connections/mysqlPoolConnection');
 const esClient = require('../../lib/connections/elasticsearchClient');
 
@@ -21,7 +23,7 @@ const validRecipeIngredientsEntity = require('../../lib/validations/recipeIngred
 const validRecipeSubrecipesEntity = require('../../lib/validations/recipeSubrecipe/recipeSubrecipeEntity');
 
 const staffRecipeController = {
-  createRecipe: async function(req, res) {
+  createRecipe: async function(req: Request, res: Response) {
     const recipeTypeId = Number(req.sanitize(req.body.recipeInfo.recipeTypeId));
     const cuisineId = Number(req.sanitize(req.body.recipeInfo.cuisineId));
     const title = req.sanitize(req.body.recipeInfo.title);
@@ -77,7 +79,7 @@ const staffRecipeController = {
       }));
     }
 
-    if (requiredSubrecipes !== "none" & requiredSubrecipes.length > 0) {
+    if (requiredSubrecipes !== "none" && requiredSubrecipes.length > 0) {
       requiredSubrecipes.map(rS => validRecipeSubrecipesEntity({
         recipeId: generatedId,
         subrecipeId: rS.subrecipe,
@@ -110,7 +112,7 @@ const staffRecipeController = {
 
     res.send({message: 'Recipe created.'});
   },
-  updateRecipe: async function(req, res) {
+  updateRecipe: async function(req: Request, res: Response) {
     const recipeId = Number(req.sanitize(req.body.recipeInfo.recipeId));
     const recipeTypeId = Number(req.sanitize(req.body.recipeInfo.recipeTypeId));
     const cuisineId = Number(req.sanitize(req.body.recipeInfo.cuisineId));
@@ -204,7 +206,7 @@ const staffRecipeController = {
 
     res.send('Recipe updated.');
   },
-  deleteRecipe: async function(req, res) {
+  deleteRecipe: async function(req: Request, res: Response) {
     const recipeId = Number(req.sanitize(req.body.recipeId));
 
     // transaction(s)?:

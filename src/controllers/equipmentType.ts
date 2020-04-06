@@ -1,14 +1,16 @@
+import { Request, Response } from 'express';
+
 const pool = require('../lib/connections/mysqlPoolConnection');
 const EquipmentType = require('../mysql-access/EquipmentType');
 const validEquipmentTypeRequest = require('../lib/validations/equipmentType/equipmentTypeRequest');
 
 const equipmentTypeController = {
-  viewAllEquipmentTypes: async function(req, res) {
+  viewAllEquipmentTypes: async function(req: Request, res: Response) {
     const equipmentType = new EquipmentType(pool);
     const rows = await equipmentType.viewAllEquipmentTypes();
     res.send(rows);
   },
-  viewEquipmentTypeById: async function(req, res) {
+  viewEquipmentTypeById: async function(req: Request, res: Response) {
     const equipmentTypeId = Number(req.sanitize(req.params.equipmentTypeId));
     validEquipmentTypeRequest({equipmentTypeId});
     //if (equipmentTypeId < 1 || equipmentTypeId > 5) return res.send('invalid equipment type');

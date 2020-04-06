@@ -1,3 +1,5 @@
+import { Request, Response } from 'express';
+
 const pool = require('../../lib/connections/mysqlPoolConnection');
 const esClient = require('../../lib/connections/elasticsearchClient');
 
@@ -8,7 +10,7 @@ const IngredientSearch = require('../../elasticsearch-access/IngredientSearch');
 const validIngredientEntity = require('../../lib/validations/ingredient/ingredientEntity');
 
 const staffIngredientController = {
-  createIngredient: async function(req, res) {
+  createIngredient: async function(req: Request, res: Response) {
     const ingredientTypeId = Number(req.sanitize(req.body.ingredientInfo.ingredientTypeId));
     const ingredientName = req.sanitize(req.body.ingredientInfo.ingredientName);
     const ingredientDescription = req.sanitize(req.body.ingredientInfo.ingredientDescription);
@@ -49,7 +51,7 @@ const staffIngredientController = {
 
     res.send({message: 'Ingredient created.'});
   },
-  updateIngredient: async function(req, res) {
+  updateIngredient: async function(req: Request, res: Response) {
     const ingredientId = Number(req.sanitize(req.body.ingredientInfo.ingredientId));
     const ingredientTypeId = Number(req.sanitize(req.body.ingredientInfo.ingredientTypeId));
     const ingredientName = req.sanitize(req.body.ingredientInfo.ingredientName);
@@ -88,7 +90,7 @@ const staffIngredientController = {
 
     res.send({message: 'Ingredient updated.'});
   },
-  deleteIngredient: async function(req, res) {
+  deleteIngredient: async function(req: Request, res: Response) {
     const ingredientId = Number(req.sanitize(req.body.ingredientId));
 
     const ingredient = new Ingredient(pool);

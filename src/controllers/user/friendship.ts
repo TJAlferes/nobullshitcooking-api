@@ -1,16 +1,18 @@
+import { Request, Response } from 'express';
+
 const pool = require('../../lib/connections/mysqlPoolConnection');
 const User = require('../../mysql-access/User');
 const Friendship = require('../../mysql-access/Friendship');
 const validFriendshipEntity = require('../../lib/validations/friendship/friendshipEntity');
 
 const userFriendshipController = {
-  viewAllMyFriendships: async function(req, res) {
+  viewAllMyFriendships: async function(req: Request, res: Response) {
     const userId = req.session.userInfo.userId;
     const friendship = new Friendship(pool);
     const rows = await friendship.viewAllMyFriendships(userId);
     res.send(rows);
   },
-  createFriendship: async function(req, res) {
+  createFriendship: async function(req: Request, res: Response) {
     const friendName = req.body.friendName;
 
     const user = new User(pool);
@@ -53,7 +55,7 @@ const userFriendshipController = {
 
     res.send({message: 'Friendship request sent.'});
   },
-  acceptFriendship: async function(req, res) {
+  acceptFriendship: async function(req: Request, res: Response) {
     const friendName = req.body.friendName;
 
     const user = new User(pool);
@@ -68,7 +70,7 @@ const userFriendshipController = {
 
     res.send({message: 'Friendship request accepted.'});
   },
-  rejectFriendship: async function(req, res) {
+  rejectFriendship: async function(req: Request, res: Response) {
     const friendName = req.body.friendName;
 
     const user = new User(pool);
@@ -83,7 +85,7 @@ const userFriendshipController = {
 
     res.send({message: 'Friendship request rejected.'});
   },
-  deleteFriendship: async function(req, res) {
+  deleteFriendship: async function(req: Request, res: Response) {
     const friendName = req.body.friendName;
 
     const user = new User(pool);
@@ -98,7 +100,7 @@ const userFriendshipController = {
 
     res.send({message: 'No longer friends. Maybe again later.'});
   },
-  blockUser: async function(req, res) {
+  blockUser: async function(req: Request, res: Response) {
     const friendName = req.body.friendName;
 
     const user = new User(pool);
@@ -113,7 +115,7 @@ const userFriendshipController = {
 
     res.send({message: 'User blocked.'});
   },
-  unblockUser: async function(req, res) {
+  unblockUser: async function(req: Request, res: Response) {
     const friendName = req.body.friendName;
 
     const user = new User(pool);

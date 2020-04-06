@@ -1,3 +1,5 @@
+import { Request, Response } from 'express';
+
 const pool = require('../../lib/connections/mysqlPoolConnection');
 const esClient = require('../../lib/connections/elasticsearchClient');
 
@@ -8,7 +10,7 @@ const EquipmentSearch = require('../../elasticsearch-access/EquipmentSearch');
 const validEquipmentEntity = require('../../lib/validations/equipment/equipmentEntity');
 
 const staffEquipmentController = {
-  createEquipment: async function(req, res) {
+  createEquipment: async function(req: Request, res: Response) {
     const equipmentTypeId = Number(req.sanitize(req.body.equipmentInfo.equipmentTypeId));
     const equipmentName = req.sanitize(req.body.equipmentInfo.equipmentName);
     const equipmentDescription = req.sanitize(req.body.equipmentInfo.equipmentDescription);
@@ -49,7 +51,7 @@ const staffEquipmentController = {
 
     res.send({message: 'Equipment created.'});
   },
-  updateEquipment: async function(req, res) {
+  updateEquipment: async function(req: Request, res: Response) {
     const equipmentId = Number(req.sanitize(req.body.equipmentInfo.equipmentId));
     const equipmentTypeId = Number(req.sanitize(req.body.equipmentInfo.equipmentTypeId));
     const equipmentName = req.sanitize(req.body.equipmentInfo.equipmentName);
@@ -88,7 +90,7 @@ const staffEquipmentController = {
 
     res.send({message: 'Equipment updated.'});
   },
-  deleteEquipment: async function(req, res) {
+  deleteEquipment: async function(req: Request, res: Response) {
     const equipmentId = Number(req.sanitize(req.body.equipmentId));
     
     const equipment = new Equipment(pool);

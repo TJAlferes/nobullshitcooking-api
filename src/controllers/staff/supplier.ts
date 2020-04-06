@@ -1,10 +1,12 @@
+import { Request, Response } from 'express';
+
 const pool = require('../../lib/connections/mysqlPoolConnection');
 
 const CuisineSupplier = require('../../mysql-access/CuisineSupplier');
 const Supplier = require('../../mysql-access/Supplier');
 
 const staffSupplierController = {
-  viewAllSuppliers: async function (req, res) {
+  viewAllSuppliers: async function (req: Request, res: Response) {
     const supplier = new Supplier(pool);
 
     await supplier.viewAllSuppliers();
@@ -12,7 +14,7 @@ const staffSupplierController = {
     res.send({suppliers});
   },
 
-  viewSupplierById: async function (req, res) {
+  viewSupplierById: async function (req: Request, res: Response) {
     const supplierId = Number(req.santize(req.body.supplierInfo.supplierId));
 
     const supplier = new Supplier(pool);
@@ -22,7 +24,7 @@ const staffSupplierController = {
     res.send({supplier});
   },
 
-  createSupplier: async function (req, res) {
+  createSupplier: async function (req: Request, res: Response) {
     const supplierName = req.santize(req.body.supplierInfo.supplierName);
 
     // TO DO: validate
@@ -34,7 +36,7 @@ const staffSupplierController = {
     res.send({message: 'Supplier created.'});
   },
 
-  updateSupplier: async function (req, res) {
+  updateSupplier: async function (req: Request, res: Response) {
     const supplierId = Number(req.santize(req.body.supplierInfo.supplierId));
     const supplierName = req.santize(req.body.supplierInfo.supplierName);
 
@@ -49,7 +51,7 @@ const staffSupplierController = {
     res.send({message: 'Supplier updated.'});
   },
   
-  deleteSupplier: async function (req, res) {
+  deleteSupplier: async function (req: Request, res: Response) {
     const supplierId = Number(req.santize(req.body.supplierInfo.supplierId));
 
     const cuisineSupplier = new CuisineSupplier(pool);

@@ -1,10 +1,12 @@
+import { Request, Response } from 'express';
+
 const pool = require('../../lib/connections/mysqlPoolConnection');
 const User = require('../../mysql-access/User');
 const Recipe = require('../../mysql-access/Recipe');
 const FavoriteRecipe = require('../../mysql-access/FavoriteRecipe');
 
 const userProfileController = {
-  viewProfile: async function(req, res) {
+  viewProfile: async function(req: Request, res: Response) {
     const username = req.params.username;
 
     const user = new User(pool);

@@ -1,15 +1,17 @@
+import { Request, Response } from 'express';
+
 const pool = require('../../lib/connections/mysqlPoolConnection');
 const SavedRecipe = require('../../mysql-access/SavedRecipe');
 const validSavedRecipeEntity = require('../../lib/validations/savedRecipe/savedRecipeEntity');
 
 const userSavedRecipeController = {
-  viewMySavedRecipes: async function(req, res) {
+  viewMySavedRecipes: async function(req: Request, res: Response) {
     const userId = req.session.userInfo.userId;
     const savedRecipe = new SavedRecipe(pool);
     const rows = await savedRecipe.viewMySavedRecipes(userId);
     res.send(rows);
   },
-  createMySavedRecipe: async function(req, res) {
+  createMySavedRecipe: async function(req: Request, res: Response) {
     const userId = req.session.userInfo.userId;
     const recipeId = Number(req.body.recipeId);
     validSavedRecipeEntity({userId, recipeId});
@@ -17,7 +19,7 @@ const userSavedRecipeController = {
     await savedRecipe.createMySavedRecipe(userId, recipeId);
     res.send({message: 'Saved.'});
   },
-  deleteMySavedRecipe: async function(req, res) {
+  deleteMySavedRecipe: async function(req: Request, res: Response) {
     const userId = req.session.userInfo.userId;
     const recipeId = Number(req.body.recipeId);
     validSavedRecipeEntity({userId, recipeId});

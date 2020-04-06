@@ -11,7 +11,7 @@ const cuisineController = {
     res.send(rows);
   },
   viewCuisineById: async function(req: Request, res: Response) {
-    const cuisineId = Number(req.sanitize(req.params.cuisineId));
+    const cuisineId = Number(req.params.cuisineId);
     validCuisineRequest({cuisineId});
     //if (cuisineId < 1 || cuisineId > 196) return res.send('invalid cuisine');
     const cuisine = new Cuisine(pool);
@@ -19,7 +19,7 @@ const cuisineController = {
     res.send(row);
   },
   viewCuisineDetailById: async function(req: Request, res: Response) {
-    const cuisineId = Number(req.sanitize(req.params.cuisineId));
+    const cuisineId = Number(req.params.cuisineId);
     validCuisineRequest({cuisineId});
     const cuisine = new Cuisine(pool);
     const detail = await cuisine.viewCuisineDetailById(cuisineId);

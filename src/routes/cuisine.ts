@@ -1,4 +1,5 @@
 const { Router } = require('express');
+const { param } = require('express-validator');
 
 const catchExceptions = require('../lib/utils/catchExceptions');
 const cuisineController = require('../controllers/cuisine');
@@ -16,11 +17,13 @@ router.get(
 
 router.get(
   '/detail/:cuisineId',
+  [param('cuisineId').not().isEmpty().trim().escape()],
   catchExceptions(cuisineController.viewCuisineDetailById)
 );
 
 router.get(
   '/:cuisineId',
+  [param('cuisineId').not().isEmpty().trim().escape()],
   catchExceptions(cuisineController.viewCuisineById)
 );
 

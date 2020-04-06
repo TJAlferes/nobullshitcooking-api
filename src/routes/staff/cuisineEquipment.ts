@@ -1,4 +1,5 @@
 const { Router } = require('express');
+const { body } = require('express-validator');
 
 const catchExceptions = require('../../lib/utils/catchExceptions');
 const staffIsAuth = require('../../lib/utils/staffIsAuth');
@@ -24,6 +25,7 @@ router.post(
 router.post(
   '/create',
   staffIsAuth,
+  [body('equipmentId').not().isEmpty().trim().escape()],
   catchExceptions(
     staffCuisineEquipmentController.createCuisineEquipment
   )
@@ -32,6 +34,10 @@ router.post(
 router.delete(
   '/delete',
   staffIsAuth,
+  [
+    body('cuisineId').not().isEmpty().trim().escape(),
+    body('equipmentId').not().isEmpty().trim().escape()
+  ],
   catchExceptions(
     staffCuisineEquipmentController.deleteCuisineEquipment
   )
