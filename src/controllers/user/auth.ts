@@ -23,9 +23,9 @@ const SALT_ROUNDS = 10;
 
 const userAuthController = {
   register: async function(req, res) {
-    const email = req.sanitize(req.body.userInfo.email);
-    const pass = req.sanitize(req.body.userInfo.password);
-    const username = req.sanitize(req.body.userInfo.username);
+    const email = req.body.userInfo.email;
+    const pass = req.body.userInfo.password;
+    const username = req.body.userInfo.username;
 
     validRegisterRequest({email, pass, username});  // TypeScript?
 
@@ -57,9 +57,8 @@ const userAuthController = {
   },
 
   verify: async function(req, res) {
-    const email = req.sanitize(req.body.userInfo.email);
-    const pass = req.sanitize(req.body.userInfo.password);
-    const confirmationCode = req.sanitize(req.body.userInfo.confirmationCode);
+    const email = req.body.userInfo.email;
+    const pass = req.body.userInfo.password;
 
     validVerifyRequest({email, pass, confirmationCode});
 
@@ -78,8 +77,8 @@ const userAuthController = {
   },
 
   resendConfirmationCode: async function (req, res) {
-    const email = req.sanitize(req.body.userInfo.email);
-    const pass = req.sanitize(req.body.userInfo.password);
+    const email = req.body.userInfo.email;
+    const pass = req.body.userInfo.password;
 
     validLoginRequest({email, pass});
 
@@ -97,8 +96,8 @@ const userAuthController = {
   },
 
   login: async function(req, res) {
-    const email = req.sanitize(req.body.userInfo.email);
-    const pass = req.sanitize(req.body.userInfo.password);
+    const email = req.body.userInfo.email;
+    const pass = req.body.userInfo.password;
 
     validLoginRequest({email, pass});
 
@@ -130,7 +129,7 @@ const userAuthController = {
   },
 
   setAvatar: async function(req, res) {
-    const avatar = req.sanitize(req.body.avatar);
+    const avatar = req.body.avatar;
     const userId = req.session.userInfo.userId;
     const user = new User(pool);
     await user.setAvatar(avatar, userId);
