@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { param } = require('express-validator');
+import { body } from 'express-validator';
 
 const catchExceptions = require('../../lib/utils/catchExceptions');
 const userProfileController = require('../../controllers/user/profile');

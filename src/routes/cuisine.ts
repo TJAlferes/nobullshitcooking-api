@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { param } = require('express-validator');
+import { param } from 'express-validator';
 
 const catchExceptions = require('../lib/utils/catchExceptions');
 const cuisineController = require('../controllers/cuisine');

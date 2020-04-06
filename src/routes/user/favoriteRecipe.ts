@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { body } = require('express-validator');
+import { body } from 'express-validator';
 
 const userIsAuth = require('../../lib/utils/userIsAuth');
 const catchExceptions = require('../../lib/utils/catchExceptions');
