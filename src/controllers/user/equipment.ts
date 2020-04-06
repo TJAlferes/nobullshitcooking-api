@@ -12,7 +12,7 @@ const userEquipmentController = {
     res.send(rows);
   },
   viewMyPrivateUserEquipment: async function(req, res) {
-    const equipmentId = Number(req.sanitize(req.body.equipmentId));
+    const equipmentId = Number(req.body.equipmentId);
     const authorId = req.session.userInfo.userId;
     const ownerId = req.session.userInfo.userId;
     const equipment = new Equipment(pool);
@@ -20,10 +20,10 @@ const userEquipmentController = {
     res.send(row);
   },
   createMyPrivateUserEquipment: async function(req, res) {
-    const equipmentTypeId = Number(req.sanitize(req.body.equipmentInfo.equipmentTypeId));
-    const equipmentName = req.sanitize(req.body.equipmentInfo.equipmentName);
-    const equipmentDescription = req.sanitize(req.body.equipmentInfo.equipmentDescription);
-    const equipmentImage = req.sanitize(req.body.equipmentInfo.equipmentImage);
+    const equipmentTypeId = Number(req.body.equipmentInfo.equipmentTypeId);
+    const equipmentName = req.body.equipmentInfo.equipmentName;
+    const equipmentDescription = req.body.equipmentInfo.equipmentDescription;
+    const equipmentImage = req.body.equipmentInfo.equipmentImage;
 
     const authorId = req.session.userInfo.userId;
     const ownerId = req.session.userInfo.userId;
@@ -41,11 +41,11 @@ const userEquipmentController = {
     res.send({message: 'Equipment created.'});
   },
   updateMyPrivateUserEquipment: async function(req, res) {
-    const equipmentId = Number(req.sanitize(req.body.equipmentInfo.equipmentId));
-    const equipmentTypeId = Number(req.sanitize(req.body.equipmentInfo.equipmentTypeId));
-    const equipmentName = req.sanitize(req.body.equipmentInfo.equipmentName);
-    const equipmentDescription = req.sanitize(req.body.equipmentInfo.equipmentDescription);
-    const equipmentImage = req.sanitize(req.body.equipmentInfo.equipmentImage);
+    const equipmentId = Number(req.body.equipmentInfo.equipmentId);
+    const equipmentTypeId = Number(req.body.equipmentInfo.equipmentTypeId);
+    const equipmentName = req.body.equipmentInfo.equipmentName;
+    const equipmentDescription = req.body.equipmentInfo.equipmentDescription;
+    const equipmentImage = req.body.equipmentInfo.equipmentImage;
 
     const authorId = req.session.userInfo.userId;
     const ownerId = req.session.userInfo.userId;
@@ -63,7 +63,7 @@ const userEquipmentController = {
     res.send({message: 'Equipment updated.'});
   },
   deleteMyPrivateUserEquipment: async function(req, res) {
-    const equipmentId = Number(req.sanitize(req.body.equipmentId));
+    const equipmentId = Number(req.body.equipmentId);
     const ownerId = req.session.userInfo.userId;
     const recipeEquipment = new RecipeEquipment(pool);
     const equipment = new Equipment(pool);

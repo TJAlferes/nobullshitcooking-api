@@ -11,7 +11,7 @@ const userFriendshipController = {
     res.send(rows);
   },
   createFriendship: async function(req, res) {
-    const friendName = req.sanitize(req.body.friendName);
+    const friendName = req.body.friendName;
 
     const user = new User(pool);
     const friendExists = await user.getUserIdByUsername(friendName);
@@ -54,7 +54,7 @@ const userFriendshipController = {
     res.send({message: 'Friendship request sent.'});
   },
   acceptFriendship: async function(req, res) {
-    const friendName = req.sanitize(req.body.friendName);
+    const friendName = req.body.friendName;
 
     const user = new User(pool);
     const friendExists = await user.getUserIdByUsername(friendName);
@@ -69,7 +69,7 @@ const userFriendshipController = {
     res.send({message: 'Friendship request accepted.'});
   },
   rejectFriendship: async function(req, res) {
-    const friendName = req.sanitize(req.body.friendName);
+    const friendName = req.body.friendName;
 
     const user = new User(pool);
     const friendExists = await user.getUserIdByUsername(friendName);
@@ -84,7 +84,7 @@ const userFriendshipController = {
     res.send({message: 'Friendship request rejected.'});
   },
   deleteFriendship: async function(req, res) {
-    const friendName = req.sanitize(req.body.friendName);
+    const friendName = req.body.friendName;
 
     const user = new User(pool);
     const friendExists = await user.getUserIdByUsername(friendName);
@@ -99,7 +99,7 @@ const userFriendshipController = {
     res.send({message: 'No longer friends. Maybe again later.'});
   },
   blockUser: async function(req, res) {
-    const friendName = req.sanitize(req.body.friendName);
+    const friendName = req.body.friendName;
 
     const user = new User(pool);
     const friendExists = await user.getUserIdByUsername(friendName);
@@ -114,7 +114,7 @@ const userFriendshipController = {
     res.send({message: 'User blocked.'});
   },
   unblockUser: async function(req, res) {
-    const friendName = req.sanitize(req.body.friendName);
+    const friendName = req.body.friendName;
 
     const user = new User(pool);
     const friendExists = await user.getUserIdByUsername(friendName);

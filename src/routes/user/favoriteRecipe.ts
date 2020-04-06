@@ -1,4 +1,5 @@
 const { Router } = require('express');
+const { body } = require('express-validator');
 
 const userIsAuth = require('../../lib/utils/userIsAuth');
 const catchExceptions = require('../../lib/utils/catchExceptions');
@@ -19,12 +20,14 @@ router.post(
 router.post(
   '/create',
   userIsAuth,
+  [body('recipeId').not().isEmpty().trim().escape()],
   catchExceptions(userFavoriteRecipeController.createMyFavoriteRecipe)
 );
 
 router.delete(
   '/delete',
   userIsAuth,
+  [body('recipeId').not().isEmpty().trim().escape()],
   catchExceptions(userFavoriteRecipeController.deleteMyFavoriteRecipe)
 );
 

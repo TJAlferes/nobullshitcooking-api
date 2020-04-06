@@ -11,7 +11,7 @@ const userSavedRecipeController = {
   },
   createMySavedRecipe: async function(req, res) {
     const userId = req.session.userInfo.userId;
-    const recipeId = Number(req.sanitize(req.body.recipeId));
+    const recipeId = Number(req.body.recipeId);
     validSavedRecipeEntity({userId, recipeId});
     const savedRecipe = new SavedRecipe(pool);
     await savedRecipe.createMySavedRecipe(userId, recipeId);
@@ -19,7 +19,7 @@ const userSavedRecipeController = {
   },
   deleteMySavedRecipe: async function(req, res) {
     const userId = req.session.userInfo.userId;
-    const recipeId = Number(req.sanitize(req.body.recipeId));
+    const recipeId = Number(req.body.recipeId);
     validSavedRecipeEntity({userId, recipeId});
     const savedRecipe = new SavedRecipe(pool);
     await savedRecipe.deleteMySavedRecipe(userId, recipeId);

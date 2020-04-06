@@ -1,4 +1,5 @@
 const { Router } = require('express');
+const { body } = require('express-validator');
 
 const userIsAuth = require('../../lib/utils/userIsAuth');
 const catchExceptions = require('../../lib/utils/catchExceptions');
@@ -19,12 +20,14 @@ router.post(
 router.post(
   '/create',
   userIsAuth,
+  [body('userId').not().isEmpty().trim().escape()],
   catchExceptions(userSavedRecipeController.createMySavedRecipe)
 );
 
 router.delete(
   '/delete',
   userIsAuth,
+  [body('userId').not().isEmpty().trim().escape()],
   catchExceptions(userSavedRecipeController.deleteMySavedRecipe)
 );
 

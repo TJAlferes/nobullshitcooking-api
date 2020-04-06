@@ -11,7 +11,7 @@ const userFavoriteRecipeController = {
   },
   createMyFavoriteRecipe: async function(req, res) {
     const userId = req.session.userInfo.userId;
-    const recipeId = Number(req.sanitize(req.body.recipeId));
+    const recipeId = Number(req.body.recipeId);
     validFavoriteRecipeEntity({userId, recipeId});
     const favoriteRecipe = new FavoriteRecipe(pool);
     await favoriteRecipe.createMyFavoriteRecipe(userId, recipeId);
@@ -19,7 +19,7 @@ const userFavoriteRecipeController = {
   },
   deleteMyFavoriteRecipe: async function(req, res) {
     const userId = req.session.userInfo.userId;
-    const recipeId = Number(req.sanitize(req.body.recipeId));
+    const recipeId = Number(req.body.recipeId);
     validFavoriteRecipeEntity({userId, recipeId});
     const favoriteRecipe = new FavoriteRecipe(pool);
     await favoriteRecipe.deleteMyFavoriteRecipe(userId, recipeId);

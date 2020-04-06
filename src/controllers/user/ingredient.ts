@@ -12,7 +12,7 @@ const userIngredientController = {
     res.send(rows);
   },
   viewMyPrivateUserIngredient: async function(req, res) {
-    const ingredientId = Number(req.sanitize(req.body.ingredientId));
+    const ingredientId = Number(req.body.ingredientId);
     const authorId = req.session.userInfo.userId;
     const ownerId = req.session.userInfo.userId;
     const ingredient = new Ingredient(pool);
@@ -20,10 +20,10 @@ const userIngredientController = {
     res.send(row);
   },
   createMyPrivateUserIngredient: async function(req, res) {
-    const ingredientTypeId = Number(req.sanitize(req.body.ingredientInfo.ingredientTypeId));
-    const ingredientName = req.sanitize(req.body.ingredientInfo.ingredientName);
-    const ingredientDescription = req.sanitize(req.body.ingredientInfo.ingredientDescription);
-    const ingredientImage = req.sanitize(req.body.ingredientInfo.ingredientImage);
+    const ingredientTypeId = Number(req.body.ingredientInfo.ingredientTypeId);
+    const ingredientName = req.body.ingredientInfo.ingredientName;
+    const ingredientDescription = req.body.ingredientInfo.ingredientDescription;
+    const ingredientImage = req.body.ingredientInfo.ingredientImage;
 
     const authorId = req.session.userInfo.userId;
     const ownerId = req.session.userInfo.userId;
@@ -41,11 +41,11 @@ const userIngredientController = {
     res.send({message: 'Ingredient created.'});
   },
   updateMyPrivateUserIngredient: async function(req, res) {
-    const ingredientId = Number(req.sanitize(req.body.ingredientInfo.ingredientId));
-    const ingredientTypeId = Number(req.sanitize(req.body.ingredientInfo.ingredientTypeId));
-    const ingredientName = req.sanitize(req.body.ingredientInfo.ingredientName);
-    const ingredientDescription = req.sanitize(req.body.ingredientInfo.ingredientDescription);
-    const ingredientImage = req.sanitize(req.body.ingredientInfo.ingredientImage);
+    const ingredientId = Number(req.body.ingredientInfo.ingredientId);
+    const ingredientTypeId = Number(req.body.ingredientInfo.ingredientTypeId);
+    const ingredientName = req.body.ingredientInfo.ingredientName;
+    const ingredientDescription = req.body.ingredientInfo.ingredientDescription;
+    const ingredientImage = req.body.ingredientInfo.ingredientImage;
 
     const authorId = req.session.userInfo.userId;
     const ownerId = req.session.userInfo.userId;
@@ -63,7 +63,7 @@ const userIngredientController = {
     res.send({message: 'Ingredient updated.'});
   },
   deleteMyPrivateUserIngredient: async function(req, res) {
-    const ingredientId = Number(req.sanitize(req.body.ingredientId));
+    const ingredientId = Number(req.body.ingredientId);
     const ownerId = req.session.userInfo.userId;
     const recipeIngredient = new RecipeIngredient(pool);
     const ingredient = new Ingredient(pool);

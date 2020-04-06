@@ -5,7 +5,7 @@ const FavoriteRecipe = require('../../mysql-access/FavoriteRecipe');
 
 const userProfileController = {
   viewProfile: async function(req, res) {
-    const username = req.sanitize(req.params.username);
+    const username = req.params.username;
 
     const user = new User(pool);
     const userExists = await user.getUserIdByUsername(username);

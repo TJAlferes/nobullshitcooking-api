@@ -1,4 +1,5 @@
 const { Router } = require('express');
+const { body } = require('express-validator');
 
 const userIsAuth = require('../../lib/utils/userIsAuth');
 const catchExceptions = require('../../lib/utils/catchExceptions');
@@ -19,24 +20,39 @@ router.post(
 router.post(
   '/one',
   userIsAuth,
+  [body('equipmentId').not().isEmpty().trim().escape()],
   catchExceptions(userEquipmentController.viewMyPrivateUserEquipment)
 );
 
 router.post(
   '/create',
   userIsAuth,
+  [
+    body('equipmentTypeId').not().isEmpty().trim().escape(),
+    body('equipmentName').not().isEmpty().trim().escape(),
+    body('equipmentDescription').not().isEmpty().trim().escape(),
+    body('equipmentImage').not().isEmpty().trim().escape(),
+  ],
   catchExceptions(userEquipmentController.createMyPrivateUserEquipment)
 );
 
 router.put(
   '/update',
   userIsAuth,
+  [
+    body('equipmentId').not().isEmpty().trim().escape(),
+    body('equipmentTypeId').not().isEmpty().trim().escape(),
+    body('equipmentName').not().isEmpty().trim().escape(),
+    body('equipmentDescription').not().isEmpty().trim().escape(),
+    body('equipmentImage').not().isEmpty().trim().escape(),
+  ],
   catchExceptions(userEquipmentController.updateMyPrivateUserEquipment)
 );
 
 router.delete(
   '/delete',
   userIsAuth,
+  [body('equipmentId').not().isEmpty().trim().escape()],
   catchExceptions(userEquipmentController.deleteMyPrivateUserEquipment)
 );
 

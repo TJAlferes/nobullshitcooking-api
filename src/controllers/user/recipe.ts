@@ -36,7 +36,7 @@ const userRecipeController = {
   },
 
   viewMyPrivateUserRecipe: async function(req, res) {
-    const recipeId = Number(req.sanitize(req.body.recipeId));
+    const recipeId = Number(req.body.recipeId);
     const authorId = 1;
     const ownerId = req.session.userInfo.userId;
     const recipe = new Recipe(pool);
@@ -45,7 +45,7 @@ const userRecipeController = {
   },
 
   viewMyPublicUserRecipe: async function(req, res) {
-    const recipeId = Number(req.sanitize(req.body.recipeId));
+    const recipeId = Number(req.body.recipeId);
     const authorId = req.session.userInfo.userId;
     const ownerId = 1;
     const recipe = new Recipe(pool);
@@ -54,7 +54,7 @@ const userRecipeController = {
   },
 
   getInfoToEditMyPrivateUserRecipe: async function(req, res) {
-    const recipeId = Number(req.sanitize(req.body.recipeId));
+    const recipeId = Number(req.body.recipeId);
     const authorId = req.session.userInfo.userId;
     const ownerId = req.session.userInfo.userId;
     const recipe = new Recipe(pool);
@@ -63,7 +63,7 @@ const userRecipeController = {
   },
 
   getInfoToEditMyPublicUserRecipe: async function(req, res) {
-    const recipeId = Number(req.sanitize(req.body.recipeId));
+    const recipeId = Number(req.body.recipeId);
     const authorId = req.session.userInfo.userId;
     const ownerId = 1;
     const recipe = new Recipe(pool);
@@ -72,22 +72,22 @@ const userRecipeController = {
   },
 
   createRecipe: async function(req, res) {
-    const recipeTypeId = Number(req.sanitize(req.body.recipeInfo.recipeTypeId));
-    const cuisineId = Number(req.sanitize(req.body.recipeInfo.cuisineId));
-    const title = req.sanitize(req.body.recipeInfo.title);
-    const description = req.sanitize(req.body.recipeInfo.description);
-    const directions = req.sanitize(req.body.recipeInfo.directions);
+    const recipeTypeId = Number(req.body.recipeInfo.recipeTypeId);
+    const cuisineId = Number(req.body.recipeInfo.cuisineId);
+    const title = req.body.recipeInfo.title;
+    const description = req.body.recipeInfo.description;
+    const directions = req.body.recipeInfo.directions;
     const requiredMethods = req.body.recipeInfo.requiredMethods;
     const requiredEquipment = req.body.recipeInfo.requiredEquipment;
     const requiredIngredients = req.body.recipeInfo.requiredIngredients;
     const requiredSubrecipes = req.body.recipeInfo.requiredSubrecipes;
-    const recipeImage = req.sanitize(req.body.recipeInfo.recipeImage);
-    const equipmentImage = req.sanitize(req.body.recipeInfo.recipeEquipmentImage);
-    const ingredientsImage = req.sanitize(req.body.recipeInfo.recipeIngredientsImage);
-    const cookingImage = req.sanitize(req.body.recipeInfo.recipeCookingImage);
+    const recipeImage = req.body.recipeInfo.recipeImage;
+    const equipmentImage = req.body.recipeInfo.recipeEquipmentImage;
+    const ingredientsImage = req.body.recipeInfo.recipeIngredientsImage;
+    const cookingImage = req.body.recipeInfo.recipeCookingImage;
 
     const authorId = req.session.userInfo.userId;
-    const ownership = req.sanitize(req.body.recipeInfo.ownership);
+    const ownership = req.body.recipeInfo.ownership;
     const ownerId = (ownership === "private") ? req.session.userInfo.userId : 1;
     
     const recipeToCreate = validRecipeEntity({
@@ -128,7 +128,7 @@ const userRecipeController = {
       }));
     }
 
-    if (requiredSubrecipes !== "none" & requiredSubrecipes.length > 0) {
+    if (requiredSubrecipes !== "none" && requiredSubrecipes.length > 0) {
       requiredSubrecipes.map(rS => validRecipeSubrecipesEntity({
         recipeId: generatedId,
         subrecipeId: rS.subrecipe,
@@ -163,23 +163,23 @@ const userRecipeController = {
   },
 
   updateMyUserRecipe: async function(req, res) {
-    const recipeId = Number(req.sanitize(req.body.recipeInfo.recipeId));
-    const recipeTypeId = Number(req.sanitize(req.body.recipeInfo.recipeTypeId));
-    const cuisineId = Number(req.sanitize(req.body.recipeInfo.cuisineId));
-    const title = req.sanitize(req.body.recipeInfo.title);
-    const description = req.sanitize(req.body.recipeInfo.description);
-    const directions = req.sanitize(req.body.recipeInfo.directions);
+    const recipeId = Number(req.body.recipeInfo.recipeId);
+    const recipeTypeId = Number(req.body.recipeInfo.recipeTypeId);
+    const cuisineId = Number(req.body.recipeInfo.cuisineId);
+    const title = req.body.recipeInfo.title;
+    const description = req.body.recipeInfo.description;
+    const directions = req.body.recipeInfo.directions;
     const requiredMethods = req.body.recipeInfo.requiredMethods;
     const requiredEquipment = req.body.recipeInfo.requiredEquipment;
     const requiredIngredients = req.body.recipeInfo.requiredIngredients;
     const requiredSubrecipes = req.body.recipeInfo.requiredSubrecipes;
-    const recipeImage = req.sanitize(req.body.recipeInfo.recipeImage);
-    const equipmentImage = req.sanitize(req.body.recipeInfo.recipeEquipmentImage);
-    const ingredientsImage = req.sanitize(req.body.recipeInfo.recipeIngredientsImage);
-    const cookingImage = req.sanitize(req.body.recipeInfo.recipeCookingImage);
+    const recipeImage = req.body.recipeInfo.recipeImage;
+    const equipmentImage = req.body.recipeInfo.recipeEquipmentImage;
+    const ingredientsImage = req.body.recipeInfo.recipeIngredientsImage;
+    const cookingImage = req.body.recipeInfo.recipeCookingImage;
 
     const authorId = req.session.userInfo.userId;
-    const ownership = req.sanitize(req.body.recipeInfo.ownership);
+    const ownership = req.body.recipeInfo.ownership;
     const ownerId = (ownership === "private") ? req.session.userInfo.userId : 1;
 
     if (recipeId == "" || typeof recipeId === "undefined") {
@@ -259,7 +259,7 @@ const userRecipeController = {
   },
 
   deleteMyPrivateUserRecipe: async function(req, res) {
-    const recipeId = Number(req.sanitize(req.body.recipeId));
+    const recipeId = Number(req.body.recipeId);
     const authorId = req.session.userInfo.userId;
     const ownerId = req.session.userInfo.userId;
 
@@ -280,7 +280,7 @@ const userRecipeController = {
   },
 
   disownMyPublicUserRecipe: async function(req, res) {
-    const recipeId = Number(req.sanitize(req.body.recipeId));
+    const recipeId = Number(req.body.recipeId);
     const authorId = req.session.userInfo.userId;
 
     const newAuthorId = 2;

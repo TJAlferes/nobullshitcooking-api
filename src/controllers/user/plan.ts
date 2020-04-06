@@ -10,14 +10,14 @@ const userPlanController = {
     res.send(myPlans);
   },
   viewMyPrivatePlan: async function(req, res) {
-    const planId = Number(req.sanitize(req.body.planId));
+    const planId = Number(req.body.planId);
     const ownerId = req.session.userInfo.userId;
     const plan = new Plan(pool);
     const [ myPlan ] = await plan.viewMyPrivatePlan(ownerId, planId);
     res.send(myPlan);
   },
   createMyPrivatePlan: async function(req, res) {
-    const planName = req.sanitize(req.body.planInfo.planName);
+    const planName = req.body.planInfo.planName;
     const planData = req.body.planInfo.planData;
 
     const authorId = req.session.userInfo.userId;
@@ -29,8 +29,8 @@ const userPlanController = {
     res.send({message: 'Plan created.'});
   },
   updateMyPrivatePlan: async function(req, res) {
-    const planId = Number(req.sanitize(req.body.planInfo.planId));
-    const planName = req.sanitize(req.body.planInfo.planName);
+    const planId = Number(req.body.planInfo.planId);
+    const planName = req.body.planInfo.planName;
     const planData = req.body.planInfo.planData;
 
     const authorId = req.session.userInfo.userId;
@@ -42,7 +42,7 @@ const userPlanController = {
     res.send({message: 'Plan updated.'});
   },
   deleteMyPrivatePlan: async function(req, res) {
-    const planId = Number(req.sanitize(req.body.planId));
+    const planId = Number(req.body.planId);
     const ownerId = req.session.userInfo.userId;
     const plan = new Plan(pool);
     await plan.deleteMyPrivatePlan(ownerId, planId);
