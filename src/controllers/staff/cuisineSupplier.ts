@@ -6,7 +6,7 @@ const CuisineSupplier = require('../../mysql-access/CuisineSupplier');
 
 const staffCuisineSupplierController = {
   createCuisineSupplier: async function(req: Request, res: Response) {
-    const supplierId = Number(req.sanitize(req.body.supplierId));
+    const supplierId = Number(req.body.supplierId);
 
     const cuisineSupplier = new CuisineSupplier(pool);
 
@@ -16,8 +16,8 @@ const staffCuisineSupplierController = {
   },
 
   deleteCuisineSupplier: async function(req: Request, res: Response) {
-    const cuisineId = Number(req.sanitize(req.body.cuisineId));
-    const supplierId = Number(req.sanitize(req.body.supplierId));
+    const cuisineId = Number(req.body.cuisineId);
+    const supplierId = Number(req.body.supplierId);
 
     const cuisineSupplier = new CuisineSupplier(pool);
 

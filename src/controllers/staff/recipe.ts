@@ -24,19 +24,19 @@ const validRecipeSubrecipesEntity = require('../../lib/validations/recipeSubreci
 
 const staffRecipeController = {
   createRecipe: async function(req: Request, res: Response) {
-    const recipeTypeId = Number(req.sanitize(req.body.recipeInfo.recipeTypeId));
-    const cuisineId = Number(req.sanitize(req.body.recipeInfo.cuisineId));
-    const title = req.sanitize(req.body.recipeInfo.title);
-    const description = req.sanitize(req.body.recipeInfo.description);
-    const directions = req.sanitize(req.body.recipeInfo.directions);
+    const recipeTypeId = Number(req.body.recipeInfo.recipeTypeId);
+    const cuisineId = Number(req.body.recipeInfo.cuisineId);
+    const title = req.body.recipeInfo.title;
+    const description = req.body.recipeInfo.description;
+    const directions = req.body.recipeInfo.directions;
     const requiredMethods = req.body.recipeInfo.requiredMethods;
     const requiredEquipment = req.body.recipeInfo.requiredEquipment;
     const requiredIngredients = req.body.recipeInfo.requiredIngredients;
     const requiredSubrecipes = req.body.recipeInfo.requiredSubrecipes;
-    const recipeImage = req.sanitize(req.body.recipeInfo.recipeImage);
-    const equipmentImage = req.sanitize(req.body.recipeInfo.recipeEquipmentImage);
-    const ingredientsImage = req.sanitize(req.body.recipeInfo.recipeIngredientsImage);
-    const cookingImage = req.sanitize(req.body.recipeInfo.recipeCookingImage);
+    const recipeImage = req.body.recipeInfo.recipeImage;
+    const equipmentImage = req.body.recipeInfo.recipeEquipmentImage;
+    const ingredientsImage = req.body.recipeInfo.recipeIngredientsImage;
+    const cookingImage = req.body.recipeInfo.recipeCookingImage;
 
     const authorId = 1;
     const ownerId = 1;
@@ -113,25 +113,25 @@ const staffRecipeController = {
     res.send({message: 'Recipe created.'});
   },
   updateRecipe: async function(req: Request, res: Response) {
-    const recipeId = Number(req.sanitize(req.body.recipeInfo.recipeId));
-    const recipeTypeId = Number(req.sanitize(req.body.recipeInfo.recipeTypeId));
-    const cuisineId = Number(req.sanitize(req.body.recipeInfo.cuisineId));
-    const title = req.sanitize(req.body.recipeInfo.title);
-    const description = req.sanitize(req.body.recipeInfo.description);
-    const directions = req.sanitize(req.body.recipeInfo.directions);
+    const recipeId = Number(req.body.recipeInfo.recipeId);
+    const recipeTypeId = Number(req.body.recipeInfo.recipeTypeId);
+    const cuisineId = Number(req.body.recipeInfo.cuisineId);
+    const title = req.body.recipeInfo.title;
+    const description = req.body.recipeInfo.description;
+    const directions = req.body.recipeInfo.directions;
     const requiredMethods = req.body.recipeInfo.requiredMethods;
     const requiredEquipment = req.body.recipeInfo.requiredEquipment;
     const requiredIngredients = req.body.recipeInfo.requiredIngredients;
     const requiredSubrecipes = req.body.recipeInfo.requiredSubrecipes;
-    const recipeImage = req.sanitize(req.body.recipeInfo.recipeImage);
-    const equipmentImage = req.sanitize(req.body.recipeInfo.recipeEquipmentImage);
-    const ingredientsImage = req.sanitize(req.body.recipeInfo.recipeIngredientsImage);
-    const cookingImage = req.sanitize(req.body.recipeInfo.recipeCookingImage);
+    const recipeImage = req.body.recipeInfo.recipeImage;
+    const equipmentImage = req.body.recipeInfo.recipeEquipmentImage;
+    const ingredientsImage = req.body.recipeInfo.recipeIngredientsImage;
+    const cookingImage = req.body.recipeInfo.recipeCookingImage;
 
     const authorId = 1;
     const ownerId = 1;
 
-    if (recipeId == "" || typeof recipeId === "undefined") {
+    if (typeof recipeId === "undefined") {
       return res.send({message: 'Invalid recipe ID!'});
     }
 
@@ -207,7 +207,7 @@ const staffRecipeController = {
     res.send('Recipe updated.');
   },
   deleteRecipe: async function(req: Request, res: Response) {
-    const recipeId = Number(req.sanitize(req.body.recipeId));
+    const recipeId = Number(req.body.recipeId);
 
     // transaction(s)?:
     const favoriteRecipe = new FavoriteRecipe(pool);

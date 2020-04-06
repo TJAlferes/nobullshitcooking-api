@@ -1,4 +1,4 @@
-const { struct } = require('superstruct');
+import { struct } from 'superstruct';
 
 const validRecipeRequest = struct({
   recipeId: 'number',

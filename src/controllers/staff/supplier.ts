@@ -9,23 +9,23 @@ const staffSupplierController = {
   viewAllSuppliers: async function (req: Request, res: Response) {
     const supplier = new Supplier(pool);
 
-    await supplier.viewAllSuppliers();
+    const allFoundSuppliers = await supplier.viewAllSuppliers();
 
-    res.send({suppliers});
+    res.send({suppliers: allFoundSuppliers});
   },
 
   viewSupplierById: async function (req: Request, res: Response) {
-    const supplierId = Number(req.santize(req.body.supplierInfo.supplierId));
+    const supplierId = Number(req.body.supplierInfo.supplierId);
 
     const supplier = new Supplier(pool);
 
-    await supplier.viewSupplierById(supplierId);
+    const foundSupplier = await supplier.viewSupplierById(supplierId);
 
-    res.send({supplier});
+    res.send({supplier: foundSupplier});
   },
 
   createSupplier: async function (req: Request, res: Response) {
-    const supplierName = req.santize(req.body.supplierInfo.supplierName);
+    const supplierName = req.body.supplierInfo.supplierName;
 
     // TO DO: validate
     
@@ -37,8 +37,8 @@ const staffSupplierController = {
   },
 
   updateSupplier: async function (req: Request, res: Response) {
-    const supplierId = Number(req.santize(req.body.supplierInfo.supplierId));
-    const supplierName = req.santize(req.body.supplierInfo.supplierName);
+    const supplierId = Number(req.body.supplierInfo.supplierId);
+    const supplierName = req.body.supplierInfo.supplierName;
 
     // TO DO: validate
 
@@ -52,7 +52,7 @@ const staffSupplierController = {
   },
   
   deleteSupplier: async function (req: Request, res: Response) {
-    const supplierId = Number(req.santize(req.body.supplierInfo.supplierId));
+    const supplierId = Number(req.body.supplierInfo.supplierId);
 
     const cuisineSupplier = new CuisineSupplier(pool);
 

@@ -11,10 +11,10 @@ const validEquipmentEntity = require('../../lib/validations/equipment/equipmentE
 
 const staffEquipmentController = {
   createEquipment: async function(req: Request, res: Response) {
-    const equipmentTypeId = Number(req.sanitize(req.body.equipmentInfo.equipmentTypeId));
-    const equipmentName = req.sanitize(req.body.equipmentInfo.equipmentName);
-    const equipmentDescription = req.sanitize(req.body.equipmentInfo.equipmentDescription);
-    const equipmentImage = req.sanitize(req.body.equipmentInfo.equipmentImage);
+    const equipmentTypeId = Number(req.body.equipmentInfo.equipmentTypeId);
+    const equipmentName = req.body.equipmentInfo.equipmentName;
+    const equipmentDescription = req.body.equipmentInfo.equipmentDescription;
+    const equipmentImage = req.body.equipmentInfo.equipmentImage;
 
     const authorId = 1;
     const ownerId = 1;
@@ -52,11 +52,11 @@ const staffEquipmentController = {
     res.send({message: 'Equipment created.'});
   },
   updateEquipment: async function(req: Request, res: Response) {
-    const equipmentId = Number(req.sanitize(req.body.equipmentInfo.equipmentId));
-    const equipmentTypeId = Number(req.sanitize(req.body.equipmentInfo.equipmentTypeId));
-    const equipmentName = req.sanitize(req.body.equipmentInfo.equipmentName);
-    const equipmentDescription = req.sanitize(req.body.equipmentInfo.equipmentDescription);
-    const equipmentImage = req.sanitize(req.body.equipmentInfo.equipmentImage);
+    const equipmentId = Number(req.body.equipmentInfo.equipmentId);
+    const equipmentTypeId = Number(req.body.equipmentInfo.equipmentTypeId);
+    const equipmentName = req.body.equipmentInfo.equipmentName;
+    const equipmentDescription = req.body.equipmentInfo.equipmentDescription;
+    const equipmentImage = req.body.equipmentInfo.equipmentImage;
 
     const authorId = 1;
     const ownerId = 1;
@@ -91,7 +91,7 @@ const staffEquipmentController = {
     res.send({message: 'Equipment updated.'});
   },
   deleteEquipment: async function(req: Request, res: Response) {
-    const equipmentId = Number(req.sanitize(req.body.equipmentId));
+    const equipmentId = Number(req.body.equipmentId);
     
     const equipment = new Equipment(pool);
     await equipment.deleteEquipment(equipmentId);

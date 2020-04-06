@@ -21,9 +21,9 @@ router.post(
     body('description').not().isEmpty().trim().escape(),
     body('directions').not().isEmpty().trim().escape(),
     body('recipeImage').not().isEmpty().trim().escape(),
-    body('equipmentImage').not().isEmpty().trim().escape(),
-    body('ingredientsImage').not().isEmpty().trim().escape(),
-    body('cookingImage').not().isEmpty().trim().escape(),
+    body('recipeEquipmentImage').not().isEmpty().trim().escape(),
+    body('recipeIngredientsImage').not().isEmpty().trim().escape(),
+    body('recipeCookingImage').not().isEmpty().trim().escape(),
     body('ownership').not().isEmpty().trim().escape()
   ],
   catchExceptions(userRecipeController.createRecipe)
@@ -40,9 +40,9 @@ router.put(
     body('description').not().isEmpty().trim().escape(),
     body('directions').not().isEmpty().trim().escape(),
     body('recipeImage').not().isEmpty().trim().escape(),
-    body('equipmentImage').not().isEmpty().trim().escape(),
-    body('ingredientsImage').not().isEmpty().trim().escape(),
-    body('cookingImage').not().isEmpty().trim().escape(),
+    body('recipeEquipmentImage').not().isEmpty().trim().escape(),
+    body('recipeIngredientsImage').not().isEmpty().trim().escape(),
+    body('recipeCookingImage').not().isEmpty().trim().escape(),
     body('ownership').not().isEmpty().trim().escape()
   ],
   catchExceptions(userRecipeController.updateMyUserRecipe)

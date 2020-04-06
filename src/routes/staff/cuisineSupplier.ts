@@ -25,6 +25,7 @@ router.post(
 router.post(
   '/create',
   staffIsAuth,
+  [body('supplierId').not().isEmpty().trim().escape()],
   catchExceptions(
     staffCuisineSupplierController.createCuisineSupplier
   )
@@ -33,6 +34,10 @@ router.post(
 router.delete(
   '/delete',
   staffIsAuth,
+  [
+    body('cuisineId').not().isEmpty().trim().escape(),
+    body('supplierId').not().isEmpty().trim().escape()
+  ],
   catchExceptions(
     staffCuisineSupplierController.deleteCuisineSupplier
   )

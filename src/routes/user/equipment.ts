@@ -31,7 +31,7 @@ router.post(
     body('equipmentTypeId').not().isEmpty().trim().escape(),
     body('equipmentName').not().isEmpty().trim().escape(),
     body('equipmentDescription').not().isEmpty().trim().escape(),
-    body('equipmentImage').not().isEmpty().trim().escape(),
+    body('equipmentImage').not().isEmpty().trim().escape()
   ],
   catchExceptions(userEquipmentController.createMyPrivateUserEquipment)
 );
@@ -44,7 +44,7 @@ router.put(
     body('equipmentTypeId').not().isEmpty().trim().escape(),
     body('equipmentName').not().isEmpty().trim().escape(),
     body('equipmentDescription').not().isEmpty().trim().escape(),
-    body('equipmentImage').not().isEmpty().trim().escape(),
+    body('equipmentImage').not().isEmpty().trim().escape()
   ],
   catchExceptions(userEquipmentController.updateMyPrivateUserEquipment)
 );

@@ -11,10 +11,10 @@ const validIngredientEntity = require('../../lib/validations/ingredient/ingredie
 
 const staffIngredientController = {
   createIngredient: async function(req: Request, res: Response) {
-    const ingredientTypeId = Number(req.sanitize(req.body.ingredientInfo.ingredientTypeId));
-    const ingredientName = req.sanitize(req.body.ingredientInfo.ingredientName);
-    const ingredientDescription = req.sanitize(req.body.ingredientInfo.ingredientDescription);
-    const ingredientImage = req.sanitize(req.body.ingredientInfo.ingredientImage);
+    const ingredientTypeId = Number(req.body.ingredientInfo.ingredientTypeId);
+    const ingredientName = req.body.ingredientInfo.ingredientName;
+    const ingredientDescription = req.body.ingredientInfo.ingredientDescription;
+    const ingredientImage = req.body.ingredientInfo.ingredientImage;
 
     const authorId = 1;
     const ownerId = 1;
@@ -52,11 +52,11 @@ const staffIngredientController = {
     res.send({message: 'Ingredient created.'});
   },
   updateIngredient: async function(req: Request, res: Response) {
-    const ingredientId = Number(req.sanitize(req.body.ingredientInfo.ingredientId));
-    const ingredientTypeId = Number(req.sanitize(req.body.ingredientInfo.ingredientTypeId));
-    const ingredientName = req.sanitize(req.body.ingredientInfo.ingredientName);
-    const ingredientDescription = req.sanitize(req.body.ingredientInfo.ingredientDescription);
-    const ingredientImage = req.sanitize(req.body.ingredientInfo.ingredientImage);
+    const ingredientId = Number(req.body.ingredientInfo.ingredientId);
+    const ingredientTypeId = Number(req.body.ingredientInfo.ingredientTypeId);
+    const ingredientName = req.body.ingredientInfo.ingredientName;
+    const ingredientDescription = req.body.ingredientInfo.ingredientDescription;
+    const ingredientImage = req.body.ingredientInfo.ingredientImage;
 
     const authorId = 1;
     const ownerId = 1;
@@ -91,7 +91,7 @@ const staffIngredientController = {
     res.send({message: 'Ingredient updated.'});
   },
   deleteIngredient: async function(req: Request, res: Response) {
-    const ingredientId = Number(req.sanitize(req.body.ingredientId));
+    const ingredientId = Number(req.body.ingredientId);
 
     const ingredient = new Ingredient(pool);
     await ingredient.deleteIngredient(ingredientId);

@@ -14,18 +14,32 @@ const router = Router();
 router.post(
   '/create',
   staffIsAuth,
+  [
+    body('ingredientTypeId').not().isEmpty().trim().escape(),
+    body('ingredientName').not().isEmpty().trim().escape(),
+    body('ingredientDescription').not().isEmpty().trim().escape(),
+    body('ingredientImage').not().isEmpty().trim().escape()
+  ],
   catchExceptions(staffIngredientController.createIngredient)
 );
 
 router.put(
   '/update',
   staffIsAuth,
+  [
+    body('ingredientId').not().isEmpty().trim().escape(),
+    body('ingredientTypeId').not().isEmpty().trim().escape(),
+    body('ingredientName').not().isEmpty().trim().escape(),
+    body('ingredientDescription').not().isEmpty().trim().escape(),
+    body('ingredientImage').not().isEmpty().trim().escape()
+  ],
   catchExceptions(staffIngredientController.updateIngredient)
 );
 
 router.delete(
   '/delete',
   staffIsAuth,
+  [body('ingredientId').not().isEmpty().trim().escape()],
   catchExceptions(staffIngredientController.deleteIngredient)
 );
 

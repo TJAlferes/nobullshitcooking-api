@@ -31,7 +31,7 @@ router.post(
     body('ingredientTypeId').not().isEmpty().trim().escape(),
     body('ingredientName').not().isEmpty().trim().escape(),
     body('ingredientDescription').not().isEmpty().trim().escape(),
-    body('ingredientImage').not().isEmpty().trim().escape(),
+    body('ingredientImage').not().isEmpty().trim().escape()
   ],
   catchExceptions(userIngredientController.createMyPrivateUserIngredient)
 );
@@ -44,7 +44,7 @@ router.put(
     body('ingredientTypeId').not().isEmpty().trim().escape(),
     body('ingredientName').not().isEmpty().trim().escape(),
     body('ingredientDescription').not().isEmpty().trim().escape(),
-    body('ingredientImage').not().isEmpty().trim().escape(),
+    body('ingredientImage').not().isEmpty().trim().escape()
   ],
   catchExceptions(userIngredientController.updateMyPrivateUserIngredient)
 );

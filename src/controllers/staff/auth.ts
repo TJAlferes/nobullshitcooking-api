@@ -12,9 +12,9 @@ const SALT_ROUNDS = 10;
 
 const staffAuthController = {
   register: async function(req: Request, res: Response) {
-    const email = req.sanitize(req.body.staffInfo.email);
-    const pass = req.sanitize(req.body.staffInfo.password);
-    const staffname = req.sanitize(req.body.staffInfo.staffname);
+    const email = req.body.staffInfo.email;
+    const pass = req.body.staffInfo.password;
+    const staffname = req.body.staffInfo.staffname;
 
     validRegisterRequest({email, pass, staffname});
 
@@ -51,8 +51,8 @@ const staffAuthController = {
   },
   
   login: async function(req: Request, res: Response) {
-    const email = req.sanitize(req.body.staffInfo.email);
-    const pass = req.sanitize(req.body.staffInfo.password);
+    const email = req.body.staffInfo.email;
+    const pass = req.body.staffInfo.password;
 
     validLoginRequest({email, pass});
 

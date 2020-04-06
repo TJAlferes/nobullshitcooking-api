@@ -12,19 +12,28 @@ const router = Router();
 // for /staff/auth/...
 
 router.post(
-  '/logout',
-  staffIsAuth,
-  catchExceptions(staffAuthController.logout)
+  '/register',
+  [
+    body('email').not().isEmpty().trim().escape(),
+    body('password').not().isEmpty().trim().escape(),
+    body('staffname').not().isEmpty().trim().escape()
+  ],
+  catchExceptions(staffAuthController.register)
 );
 
 router.post(
   '/login',
+  [
+    body('email').not().isEmpty().trim().escape(),
+    body('password').not().isEmpty().trim().escape()
+  ],
   catchExceptions(staffAuthController.login)
 );
 
 router.post(
-  '/register',
-  catchExceptions(staffAuthController.register)
+  '/logout',
+  staffIsAuth,
+  catchExceptions(staffAuthController.logout)
 );
 
 module.exports = router;

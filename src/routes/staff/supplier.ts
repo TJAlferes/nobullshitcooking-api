@@ -17,6 +17,7 @@ const router = Router();
 router.post(
   '/',
   staffIsAuth,
+  [body('supplierId').not().isEmpty().trim().escape()],
   catchExceptions(staffSupplierController.viewSuppliersById)
 );
 
@@ -29,18 +30,24 @@ router.post(
 router.post(
   '/create',
   staffIsAuth,
+  [body('supplierName').not().isEmpty().trim().escape()],
   catchExceptions(staffSupplierController.createSupplier)
 );
 
 router.put(
   '/update',
   staffIsAuth,
+  [
+    body('supplierId').not().isEmpty().trim().escape(),
+    body('supplierName').not().isEmpty().trim().escape()
+  ],
   catchExceptions(staffSupplierController.updateSupplier)
 );
 
 router.delete(
   '/delete',
   staffIsAuth,
+  [body('supplierId').not().isEmpty().trim().escape()],
   catchExceptions(staffSupplierController.deleteSupplier)
 );
 
