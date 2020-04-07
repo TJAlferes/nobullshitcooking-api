@@ -1,6 +1,6 @@
 import { struct } from 'superstruct';
 
-const validStaffEntity = struct(
+export const validStaffEntity = struct(
   {
     email: 'string',
     pass: 'string',
@@ -13,5 +13,3 @@ const validStaffEntity = struct(
     role: 'staff'
   }
 );
-
-module.exports = validStaffEntity;

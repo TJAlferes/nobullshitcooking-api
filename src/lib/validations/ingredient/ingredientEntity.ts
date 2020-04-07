@@ -1,6 +1,6 @@
 import { struct } from 'superstruct';
 
-const validIngredientEntity = struct(
+export const validIngredientEntity = struct(
   {
     ingredientTypeId: 'number',
     authorId: 'number',
@@ -13,5 +13,3 @@ const validIngredientEntity = struct(
     ingredientImage: 'nobsc-ingredient-default'
   }
 );
-
-module.exports = validIngredientEntity;

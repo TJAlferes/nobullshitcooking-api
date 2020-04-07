@@ -1,6 +1,6 @@
 import { struct } from 'superstruct';
 
-const validNotificationEntity = struct({
+export const validNotificationEntity = struct({
   senderId: 'number',
   receiverId: 'number',
   read: 'number',
@@ -8,5 +8,3 @@ const validNotificationEntity = struct({
   note: 'string',
   createdOn: 'string'
 });
-
-module.exports = validNotificationEntity;

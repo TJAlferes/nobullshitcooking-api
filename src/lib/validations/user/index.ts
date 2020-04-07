@@ -1,19 +1,8 @@
-const validRegisterRequest = require('./registerRequest');
-const validRegister = require('./register');
-const validUserEntity = require('./userEntity');
-const validVerifyRequest = require('./verifyRequest');
-const validVerify = require('./verify');
-const validResend = require('./resend');
-const validLoginRequest = require('./loginRequest');
-const validLogin = require('./login');
-
-module.exports = {
-  validRegisterRequest,
-  validRegister,
-  validUserEntity,
-  validVerifyRequest,
-  validVerify,
-  validResend,
-  validLoginRequest,
-  validLogin
-};
+export { validRegisterRequest } from './registerRequest';
+export { validRegister } from './register';
+export { validUserEntity } from './userEntity';
+export { validVerifyRequest } from './verifyRequest';
+export { validVerify } from './verify';
+export { validResend } from './resend';
+export { validLoginRequest } from './loginRequest';
+export { validLogin } from './login';

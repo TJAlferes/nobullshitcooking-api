@@ -1,10 +1,8 @@
 import { struct } from 'superstruct';
 
-const validRecipesRequest = struct({
+export const validRecipesRequest = struct({
   types: ['string?|number?'],
   cuisines: ['string?|number?'],
   starting: 'number',
   display: 'number'
 });
-
-module.exports = validRecipesRequest;

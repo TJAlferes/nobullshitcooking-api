@@ -1,4 +1,4 @@
-class MessengerChat {
+export class MessengerChat {
   constructor(client) {
     this.client = client;
     this.addChat = this.addChat.bind(this);
@@ -16,5 +16,3 @@ class MessengerChat {
     }
   };
 }
-
-module.exports = MessengerChat;

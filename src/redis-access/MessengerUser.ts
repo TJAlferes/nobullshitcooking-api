@@ -1,4 +1,4 @@
-class MessengerUser {
+export class MessengerUser {
   constructor(client) {
     this.client = client;
     this.getUserSocketId = this.getUserSocketId.bind(this);
@@ -43,5 +43,3 @@ class MessengerUser {
     }
   }
 }
-
-module.exports = MessengerUser;

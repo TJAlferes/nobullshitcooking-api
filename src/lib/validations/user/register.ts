@@ -1,4 +1,11 @@
-const validRegister = async ({ email, pass, username }, user) => {
+export async function validRegister(
+  {
+    email,
+    pass,
+    username
+  },
+  user
+) {
   if (username.length < 6) {
     return {
       valid: false,
@@ -42,6 +49,4 @@ const validRegister = async ({ email, pass, username }, user) => {
   }
 
   return {valid: true, feedback: 'Valid.'};
-};
-
-module.exports = validRegister;
+}

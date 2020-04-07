@@ -1,8 +1,6 @@
 import { struct } from 'superstruct';
 
-const validMeasurementRequest = struct({
+export const validMeasurementRequest = struct({
   measurementId: 'number',
   measurementName: 'string?'
 });
-
-module.exports = validMeasurementRequest;

@@ -1,6 +1,6 @@
 import { struct } from 'superstruct';
 
-const validPlanEntity = struct(
+export const validPlanEntity = struct(
   {
     authorId: 'number',
     ownerId: 'number',
@@ -40,5 +40,3 @@ const validPlanEntity = struct(
     })
   }
 );
-
-module.exports = validPlanEntity;

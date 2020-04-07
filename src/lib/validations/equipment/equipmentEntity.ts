@@ -1,6 +1,6 @@
 import { struct } from 'superstruct';
 
-const validEquipmentEntity = struct(
+export const validEquipmentEntity = struct(
   {
     equipmentTypeId: 'number',
     authorId: 'number',
@@ -13,5 +13,3 @@ const validEquipmentEntity = struct(
     equipmentImage: 'nobsc-equipment-default'
   }
 );
-
-module.exports = validEquipmentEntity;

@@ -1,9 +1,7 @@
 import { struct } from 'superstruct';
 
-const validIngredientRequest = struct({
+export const validIngredientRequest = struct({
   ingredientId: 'number',
   ingredientTypeId: 'number?',
   ingredientName: 'string?'
 });
-
-module.exports = validIngredientRequest;

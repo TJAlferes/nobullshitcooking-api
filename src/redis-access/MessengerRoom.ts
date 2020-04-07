@@ -1,4 +1,4 @@
-class MessengerRoom {
+export class MessengerRoom {
   constructor(pubClient, subClient) {
     this.pubClient = pubClient;
     this.subClient = subClient;
@@ -64,5 +64,3 @@ class MessengerRoom {
     }
   };
 }
-
-module.exports = MessengerRoom;

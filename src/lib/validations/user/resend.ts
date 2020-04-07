@@ -1,4 +1,10 @@
-const validResend = async ({ email, pass }, user) => {
+export async function validResend(
+  {
+    email,
+    pass
+  },
+  user
+) {
   // Problem: This would invalidate some older/alternative email types.
   if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
     return {valid: false, feedback: 'Invalid email.'};
@@ -31,6 +37,4 @@ const validResend = async ({ email, pass }, user) => {
   if (alreadyConfirmed) return {valid: false, feedback: 'Already verified.'};
 
   return {valid: true, feedback: 'Valid.'};
-};
-
-module.exports = validResend;
+}

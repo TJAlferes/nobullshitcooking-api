@@ -1,4 +1,10 @@
-const validVerify = async ({ email, confirmationCode }, user) => {
+export async function validVerify(
+  {
+    email,
+    confirmationCode
+  },
+  user
+) {
   const emailExists = await user.getUserByEmail(email);
 
   if (!emailExists.length) {
@@ -18,6 +24,4 @@ const validVerify = async ({ email, confirmationCode }, user) => {
   }
 
   return {valid: true, feedback: 'Valid.'};
-};
-
-module.exports = validVerify;
+}

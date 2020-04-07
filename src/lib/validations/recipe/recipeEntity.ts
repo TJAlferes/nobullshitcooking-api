@@ -1,6 +1,6 @@
 import { struct } from 'superstruct';
 
-const validRecipeEntity = struct(
+export const validRecipeEntity = struct(
   {
     recipeTypeId: 'number',
     cuisineId: 'number',
@@ -21,5 +21,3 @@ const validRecipeEntity = struct(
     cookingImage: 'nobsc-recipe-cooking-default'
   }
 );
-
-module.exports = validRecipeEntity;

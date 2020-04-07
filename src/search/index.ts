@@ -1,11 +1,11 @@
-const esClient = require('../lib/connections/elasticsearchClient');
-const pool = require('../lib/connections/mysqlPoolConnection');
+import { esClient } from '../lib/connections/elasticsearchClient';
+import { pool } from '../lib/connections/mysqlPoolConnection';
 
 const Recipe = require('../mysql-access/Recipe');
 const Ingredient = require('../mysql-access/Ingredient');
 const Equipment = require('../mysql-access/Equipment');
 
-const bulkUp = async function() {
+export async function bulkUp() {
   const recipe = new Recipe(pool);
   const ingredient = new Ingredient(pool);
   const equipment = new Equipment(pool);
@@ -209,6 +209,4 @@ const bulkUp = async function() {
     console.log('body.hits.hits: ', body.hits.hits);
   }, 10000);
   */
-};
-
-module.exports = bulkUp;
+}
