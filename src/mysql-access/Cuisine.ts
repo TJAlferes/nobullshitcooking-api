@@ -1,5 +1,9 @@
-class Cuisine {
-  constructor(pool) {
+import { Pool } from 'mysql2/promise';
+
+export class Cuisine {
+  pool: Pool;
+
+  constructor(pool: Pool) {
     this.pool = pool;
     this.viewAllCuisines = this.viewAllCuisines.bind(this);
     this.viewCuisineById = this.viewCuisineById.bind(this);
@@ -15,7 +19,7 @@ class Cuisine {
     return allCuisines;
   }
 
-  async viewCuisineById(cuisineId) {
+  async viewCuisineById(cuisineId: number) {
     const sql = `
       SELECT cuisine_id, cuisine_name, cuisine_nation
       FROM nobsc_cuisines
@@ -25,8 +29,9 @@ class Cuisine {
     return cuisine;
   }
 
-  async viewCuisineDetailById(cuisineId) {
+  async viewCuisineDetailById(cuisineId: number) {
     const ownerId = 1;
+    // TO DO: subqueries and functions
     const sql1 = `
       SELECT
         cuisine_id,
@@ -81,5 +86,3 @@ class Cuisine {
     return detail;
   }
 }
-
-module.exports = Cuisine;
