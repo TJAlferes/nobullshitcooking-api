@@ -1,4 +1,10 @@
-class RecipeIngredient {
+export interface IRecipeIngredient {
+  ingredient: number
+  amount: number
+  unit: number
+}
+
+export class RecipeIngredient {
   constructor(pool) {
     this.pool = pool;
     this.viewRecipeIngredientsByRecipeId = this.viewRecipeIngredientsByRecipeId.bind(this);
@@ -8,7 +14,7 @@ class RecipeIngredient {
     this.deleteRecipeIngredientsByIngredientId = this.deleteRecipeIngredientsByIngredientId.bind(this);
   }
 
-  async viewRecipeIngredientsByRecipeId(recipeId) {
+  async viewRecipeIngredientsByRecipeId(recipeId: number) {
     const sql = `
       SELECT ri.amount, m.measurement_name, i.ingredient_name
       FROM nobsc_recipe_ingredients ri
@@ -24,8 +30,8 @@ class RecipeIngredient {
   }
 
   async createRecipeIngredients(
-    recipeIngredients,
-    recipeIngredientsPlaceholders
+    recipeIngredients: number[],
+    recipeIngredientsPlaceholders: string
   ) {
     const sql = `
       INSERT INTO nobsc_recipe_ingredients
@@ -40,9 +46,9 @@ class RecipeIngredient {
   }
 
   async updateRecipeIngredients(
-    recipeIngredients,
-    recipeIngredientsPlaceholders,
-    recipeId
+    recipeIngredients: number[],
+    recipeIngredientsPlaceholders: string,
+    recipeId: number
   ) {
     const sql1 = `
       DELETE
@@ -50,7 +56,7 @@ class RecipeIngredient {
       WHERE recipe_id = ?
     `;
 
-    const sql2 = (recipeIngredients !== "none")
+    const sql2 = (recipeIngredients.length)
     ? `
       INSERT INTO nobsc_recipe_ingredients
       (recipe_id, ingredient_id, amount, measurement_id)
@@ -94,7 +100,7 @@ class RecipeIngredient {
     }
   }
 
-  async deleteRecipeIngredients(recipeId) {
+  async deleteRecipeIngredients(recipeId: number) {
     const sql = `
       DELETE
       FROM nobsc_recipe_ingredients
@@ -107,7 +113,7 @@ class RecipeIngredient {
     return deletedRecipeIngredients;
   }
 
-  async deleteRecipeIngredientsByIngredientId(ingredientId) {
+  async deleteRecipeIngredientsByIngredientId(ingredientId: number) {
     const sql = `
       DELETE
       FROM nobsc_recipe_ingredients
@@ -120,5 +126,3 @@ class RecipeIngredient {
     return deletedRecipeIngredients;
   }
 }
-
-module.exports = RecipeIngredient;

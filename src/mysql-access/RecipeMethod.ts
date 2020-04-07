@@ -1,4 +1,8 @@
-class RecipeMethod {
+export interface IRecipeMethod {
+  methodId: number
+}
+
+export class RecipeMethod {
   constructor(pool) {
     this.pool = pool;
     this.viewRecipeMethodsByRecipeId = this.viewRecipeMethodsByRecipeId.bind(this);
@@ -7,7 +11,7 @@ class RecipeMethod {
     this.deleteRecipeMethods = this.deleteRecipeMethods.bind(this);
   }
 
-  async viewRecipeMethodsByRecipeId(recipeId) {
+  async viewRecipeMethodsByRecipeId(recipeId: number) {
     const sql = `
       SELECT m.method_name
       FROM nobsc_recipe_methods rm
@@ -21,7 +25,10 @@ class RecipeMethod {
     return recipeMethods;
   }
 
-  async createRecipeMethods(recipeMethods, recipeMethodsPlaceholders) {
+  async createRecipeMethods(
+    recipeMethods: number[],
+    recipeMethodsPlaceholders: string
+  ) {
     const sql = `
       INSERT INTO nobsc_recipe_methods (recipe_id, method_id)
       VALUES ${recipeMethodsPlaceholders} 
@@ -34,9 +41,9 @@ class RecipeMethod {
   }
 
   async updateRecipeMethods(
-    recipeMethods,
-    recipeMethodsPlaceholders,
-    recipeId
+    recipeMethods: number[],
+    recipeMethodsPlaceholders: string,
+    recipeId: number
   ) {
     const sql1 = `
       DELETE
@@ -44,7 +51,7 @@ class RecipeMethod {
       WHERE recipe_id = ?
     `;
 
-    const sql2 = (recipeMethods !== "none")
+    const sql2 = (recipeMethods.length)
     ? `
       INSERT INTO nobsc_recipe_methods (recipe_id, method_id)
       VALUES ${recipeMethodsPlaceholders} 
@@ -87,7 +94,7 @@ class RecipeMethod {
     }
   }
 
-  async deleteRecipeMethods(recipeId) {
+  async deleteRecipeMethods(recipeId: number) {
     const sql = `
       DELETE
       FROM nobsc_recipe_methods
@@ -99,5 +106,3 @@ class RecipeMethod {
     return deletedRecipeMethods;
   }
 }
-
-module.exports = RecipeMethod;

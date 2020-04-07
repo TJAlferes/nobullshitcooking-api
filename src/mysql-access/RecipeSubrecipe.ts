@@ -1,4 +1,10 @@
-class RecipeSubrecipe {
+export interface IRecipeSubrecipe {
+  subrecipe: number
+  amount: number
+  unit: number
+}
+
+export class RecipeSubrecipe {
   constructor(pool) {
     this.pool = pool;
     this.viewRecipeSubrecipesByRecipeId = this.viewRecipeSubrecipesByRecipeId.bind(this);
@@ -8,7 +14,7 @@ class RecipeSubrecipe {
     this.deleteRecipeSubrecipesBySubrecipeId = this.deleteRecipeSubrecipesBySubrecipeId.bind(this);
   }
 
-  async viewRecipeSubrecipesByRecipeId(recipeId) {
+  async viewRecipeSubrecipesByRecipeId(recipeId: number) {
     const sql = `
       SELECT rs.amount, m.measurement_name, r.title
       FROM nobsc_recipe_subrecipes rs
@@ -23,7 +29,10 @@ class RecipeSubrecipe {
     return recipeSubrecipes;
   }
 
-  async createRecipeSubrecipes(recipeSubrecipes, recipeSubrecipesPlaceholders) {
+  async createRecipeSubrecipes(
+    recipeSubrecipes: number[],
+    recipeSubrecipesPlaceholders: string
+  ) {
     const sql = `
       INSERT INTO nobsc_recipe_subrecipes
       (recipe_id, subrecipe_id, amount, measurement_id)
@@ -37,9 +46,9 @@ class RecipeSubrecipe {
   }
 
   async updateRecipeSubrecipes(
-    recipeSubrecipes,
-    recipeSubrecipesPlaceholders,
-    recipeId
+    recipeSubrecipes: number[],
+    recipeSubrecipesPlaceholders: string,
+    recipeId: number
   ) {
     const sql1 = `
       DELETE
@@ -47,7 +56,7 @@ class RecipeSubrecipe {
       WHERE recipe_id = ?
     `;
 
-    const sql2 = (recipeSubrecipes !== "none")
+    const sql2 = (recipeSubrecipes.length)
     ? `
       INSERT INTO nobsc_recipe_subrecipes
       (recipe_id, subrecipe_id, amount, measurement_id)
@@ -91,7 +100,7 @@ class RecipeSubrecipe {
     }
   }
 
-  async deleteRecipeSubrecipes(recipeId) {
+  async deleteRecipeSubrecipes(recipeId: number) {
     const sql = `
       DELETE
       FROM nobsc_recipe_subrecipes
@@ -112,7 +121,7 @@ class RecipeSubrecipe {
     return deletedRecipeSubrecipes;
   }
 
-  async deleteRecipeSubrecipesBySubrecipeId(subrecipeId) {
+  async deleteRecipeSubrecipesBySubrecipeId(subrecipeId: number) {
     const sql = `
       DELETE
       FROM nobsc_recipe_subrecipes
@@ -125,5 +134,3 @@ class RecipeSubrecipe {
     return deletedRecipeSubrecipes;
   }
 }
-
-module.exports = RecipeSubrecipe;

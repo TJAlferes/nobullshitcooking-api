@@ -1,4 +1,9 @@
-class RecipeEquipment {
+export interface IRecipeEquipment {
+  equipment: number
+  amount: number
+}
+
+export class RecipeEquipment {
   constructor(pool) {
     this.pool = pool;
     this.viewRecipeEquipmentByRecipeId = this.viewRecipeEquipmentByRecipeId.bind(this);
@@ -8,7 +13,7 @@ class RecipeEquipment {
     this.deleteRecipeEquipmentByEquipmentId = this.deleteRecipeEquipmentByEquipmentId.bind(this);
   }
 
-  async viewRecipeEquipmentByRecipeId(recipeId) {
+  async viewRecipeEquipmentByRecipeId(recipeId: number) {
     const sql = `
       SELECT re.amount, e.equipment_name
       FROM nobsc_recipe_equipment re
@@ -22,7 +27,10 @@ class RecipeEquipment {
     return recipeEquipment;
   }
 
-  async createRecipeEquipment(recipeEquipment, recipeEquipmentPlaceholders) {
+  async createRecipeEquipment(
+    recipeEquipment: number[],
+    recipeEquipmentPlaceholders: string
+  ) {
     const sql = `
       INSERT INTO nobsc_recipe_equipment (recipe_id, equipment_id, amount)
       VALUES ${recipeEquipmentPlaceholders} 
@@ -35,9 +43,9 @@ class RecipeEquipment {
   }
 
   async updateRecipeEquipment(
-    recipeEquipment,
-    recipeEquipmentPlaceholders,
-    recipeId
+    recipeEquipment: number[],
+    recipeEquipmentPlaceholders: string,
+    recipeId: number
   ) {
     const sql1 = `
       DELETE
@@ -45,7 +53,7 @@ class RecipeEquipment {
       WHERE recipe_id = ?
     `;
 
-    const sql2 = (recipeEquipment !== "none")
+    const sql2 = (recipeEquipment.length)
     ? `
       INSERT INTO nobsc_recipe_equipment (recipe_id, equipment_id, amount)
       VALUES ${recipeEquipmentPlaceholders} 
@@ -89,7 +97,7 @@ class RecipeEquipment {
   }
 
   // TO DO: rename to deleteRecipeEquipmentByRecipeId
-  async deleteRecipeEquipment(recipeId) {
+  async deleteRecipeEquipment(recipeId: number) {
     const sql = `
       DELETE
       FROM nobsc_recipe_equipment
@@ -102,7 +110,7 @@ class RecipeEquipment {
     return deletedRecipeEquipment;
   }
 
-  async deleteRecipeEquipmentByEquipmentId(equipmentId) {
+  async deleteRecipeEquipmentByEquipmentId(equipmentId: number) {
     const sql = `
       DELETE
       FROM nobsc_recipe_equipment
@@ -115,5 +123,3 @@ class RecipeEquipment {
     return deletedRecipeEquipment;
   }
 }
-
-module.exports = RecipeEquipment;

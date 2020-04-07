@@ -1,30 +1,74 @@
 'use strict';
 
+const pool = require('../connections/mysqlPoolConnection');
+const esClient = require('../connections/elasticsearchClient');
+
+const Recipe = require('../../mysql-access/Recipe');
+import { RecipeMethod, IRecipeMethod } from '../../mysql-access/RecipeMethod';
+import { RecipeEquipment, IRecipeEquipment } from '../../mysql-access/RecipeEquipment';
+import { RecipeIngredient, IRecipeIngredient } from '../../mysql-access/RecipeIngredient';
+import { RecipeSubrecipe, IRecipeSubrecipe } from '../../mysql-access/RecipeSubrecipe';
+const RecipeSearch = require('../../elasticsearch-access/RecipeSearch');
+
+const validRecipeMethodsEntity = require('../validations/recipeMethod/recipeMethodEntity');
+const validRecipeEquipmentEntity = require('../validations/recipeEquipment/recipeEquipmentEntity');
+const validRecipeIngredientsEntity = require('../validations/recipeIngredient/recipeIngredientEntity');
+const validRecipeSubrecipesEntity = require('../validations/recipeSubrecipe/recipeSubrecipeEntity');
+
+interface UpdateRecipeService {
+  recipeId: number
+  ownerId: number
+  recipeToUpdateWith: RecipeToUpdateWith
+  requiredMethods: []
+  requiredEquipment: []
+  requiredIngredients: []
+  requiredSubrecipes: []
+}
+
+interface RecipeToUpdateWith {
+  recipeTypeId: number
+  cuisineId: number
+  authorId: number
+  ownerId: number
+  title: string
+  description: string
+  directions: string
+  recipeImage: string
+  equipmentImage: string
+  ingredientsImage: string
+  cookingImage: string
+}
+
 async function updateRecipeService({
-  recipe,
-  recipeMethod,
-  recipeEquipment,
-  recipeIngredient,
-  recipeSubrecipe,
-  recipeSearch,
+  recipeId,
   ownerId,
   recipeToUpdateWith,
   requiredMethods,
   requiredEquipment,
   requiredIngredients,
   requiredSubrecipes
-}) {
+}: UpdateRecipeService) {
+  const recipe = new Recipe(pool);
+  const recipeMethod = new RecipeMethod(pool);
+  const recipeEquipment = new RecipeEquipment(pool);
+  const recipeIngredient = new RecipeIngredient(pool);
+  const recipeSubrecipe = new RecipeSubrecipe(pool);
+  const recipeSearch = new RecipeSearch(esClient);
+
   await recipe.updateMyUserRecipe(recipeToUpdateWith, recipeId);
 
   //
 
-  let recipeMethodsToUpdateWith = "none";
+  let recipeMethodsToUpdateWith: number[] = [];
   let recipeMethodsPlaceholders = "none";
 
-  if (requiredMethods !== "none") {
-    recipeMethodsToUpdateWith = [];
+  if (requiredMethods.length) {
+    requiredMethods.map((rM: IRecipeMethod) => validRecipeMethodsEntity({
+      recipeId,
+      methodId: rM.methodId
+    }));
 
-    requiredMethods.map(rM => {
+    requiredMethods.map((rM: IRecipeMethod) => {
       recipeMethodsToUpdateWith.push(recipeId, rM.methodId)
     });
 
@@ -41,11 +85,17 @@ async function updateRecipeService({
 
   //
 
-  let recipeEquipmentToUpdateWith = "none";
+  let recipeEquipmentToUpdateWith: number[] = [];
   let recipeEquipmentPlaceholders = "none";
 
-  if (requiredEquipment !== "none") {
+  if (requiredEquipment !== "none" && requiredEquipment.length) {
     recipeEquipmentToUpdateWith = [];
+
+    requiredEquipment.map(rE => validRecipeEquipmentEntity({
+      recipeId,
+      equipmentId: rE.equipment,
+      amount: rE.amount
+    }));
 
     requiredEquipment.map(rE => {
       recipeEquipmentToUpdateWith.push(recipeId, rE.equipment, rE.amount)
@@ -64,11 +114,18 @@ async function updateRecipeService({
 
   //
 
-  let recipeIngredientsToUpdateWith = "none";
+  let recipeIngredientsToUpdateWith: number[] = [];
   let recipeIngredientsPlaceholders = "none";
 
-  if (requiredIngredients !== "none") {
+  if (requiredIngredients !== "none" && requiredIngredients.length) {
     recipeIngredientsToUpdateWith = [];
+
+    requiredIngredients.map(rI => validRecipeIngredientsEntity({
+      recipeId,
+      ingredientId: rI.ingredient,
+      amount: rI.amount,
+      measurementId: rI.unit
+    }));
 
     requiredIngredients.map(rI => {
       recipeIngredientsToUpdateWith
@@ -88,11 +145,18 @@ async function updateRecipeService({
 
   //
 
-  let recipeSubrecipesToUpdateWith = "none";
+  let recipeSubrecipesToUpdateWith: number[] = [];
   let recipeSubrecipesPlaceholders = "none";
 
-  if (requiredSubrecipes !== "none") {
+  if (requiredSubrecipes !== "none" && requiredSubrecipes.length) {
     recipeSubrecipesToUpdateWith = [];
+
+    requiredSubrecipes.map(rS => validRecipeSubrecipesEntity({
+      recipeId,
+      subrecipeId: rS.subrecipe,
+      amount: rS.amount,
+      measurementId: rS.unit
+    }));
 
     requiredSubrecipes.map(rS => {
       recipeSubrecipesToUpdateWith

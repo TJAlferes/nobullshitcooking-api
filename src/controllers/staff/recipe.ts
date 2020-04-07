@@ -17,10 +17,6 @@ const createRecipeService = require('../../lib/services/create-recipe');
 const updateRecipeService = require('../../lib/services/update-recipe');
 
 const validRecipeEntity = require('../../lib/validations/recipe/recipeEntity');
-const validRecipeMethodsEntity = require('../../lib/validations/recipeMethod/recipeMethodEntity');
-const validRecipeEquipmentEntity = require('../../lib/validations/recipeEquipment/recipeEquipmentEntity');
-const validRecipeIngredientsEntity = require('../../lib/validations/recipeIngredient/recipeIngredientEntity');
-const validRecipeSubrecipesEntity = require('../../lib/validations/recipeSubrecipe/recipeSubrecipeEntity');
 
 const staffRecipeController = {
   createRecipe: async function(req: Request, res: Response) {
@@ -55,53 +51,7 @@ const staffRecipeController = {
       cookingImage
     });
 
-    if (requiredMethods !== "none" && requiredMethods.length > 0) {
-      requiredMethods.map(rM => validRecipeMethodsEntity({
-        recipeId: generatedId,
-        methodId: rM.methodId
-      }));
-    }
-
-    if (requiredEquipment !== "none" && requiredEquipment.length > 0) {
-      requiredEquipment.map(rE => validRecipeEquipmentEntity({
-        recipeId: generatedId,
-        equipmentId: rE.equipment,
-        amount: rE.amount
-      }));
-    }
-
-    if (requiredIngredients !== "none" && requiredIngredients.length > 0) {
-      requiredIngredients.map(rI => validRecipeIngredientsEntity({
-        recipeId: generatedId,
-        ingredientId: rI.ingredient,
-        amount: rI.amount,
-        measurementId: rI.unit
-      }));
-    }
-
-    if (requiredSubrecipes !== "none" && requiredSubrecipes.length > 0) {
-      requiredSubrecipes.map(rS => validRecipeSubrecipesEntity({
-        recipeId: generatedId,
-        subrecipeId: rS.subrecipe,
-        amount: rS.amount,
-        measurementId: rS.unit
-      }));
-    }
-
-    const recipe = new Recipe(pool);
-    const recipeMethod = new RecipeMethod(pool);
-    const recipeEquipment = new RecipeEquipment(pool);
-    const recipeIngredient = new RecipeIngredient(pool);
-    const recipeSubrecipe = new RecipeSubrecipe(pool);
-    const recipeSearch = new RecipeSearch(esClient);
-
     await createRecipeService({
-      recipe,
-      recipeMethod,
-      recipeEquipment,
-      recipeIngredient,
-      recipeSubrecipe,
-      recipeSearch,
       ownerId,
       recipeToCreate,
       requiredMethods,
@@ -149,53 +99,8 @@ const staffRecipeController = {
       cookingImage
     });
 
-    if (requiredMethods !== "none") {
-      requiredMethods.map(rM => validRecipeMethodsEntity({
-        recipeId,
-        methodId: rM.methodId
-      }));
-    }
-
-    if (requiredEquipment !== "none") {
-      requiredEquipment.map(rE => validRecipeEquipmentEntity({
-        recipeId,
-        equipmentId: rE.equipment,
-        amount: rE.amount
-      }));
-    }
-
-    if (requiredIngredients !== "none") {
-      requiredIngredients.map(rI => validRecipeIngredientsEntity({
-        recipeId,
-        ingredientId: rI.ingredient,
-        amount: rI.amount,
-        measurementId: rI.unit
-      }));
-    }
-
-    if (requiredSubrecipes !== "none") {
-      requiredSubrecipes.map(rS => validRecipeSubrecipesEntity({
-        recipeId,
-        subrecipeId: rS.subrecipe,
-        amount: rS.amount,
-        measurementId: rS.unit
-      }));
-    }
-
-    const recipe = new Recipe(pool);
-    const recipeMethod = new RecipeMethod(pool);
-    const recipeEquipment = new RecipeEquipment(pool);
-    const recipeIngredient = new RecipeIngredient(pool);
-    const recipeSubrecipe = new RecipeSubrecipe(pool);
-    const recipeSearch = new RecipeSearch(esClient);
-
     await updateRecipeService({
-      recipe,
-      recipeMethod,
-      recipeEquipment,
-      recipeIngredient,
-      recipeSubrecipe,
-      recipeSearch,
+      recipeId,
       ownerId,
       recipeToUpdateWith,
       requiredMethods,
