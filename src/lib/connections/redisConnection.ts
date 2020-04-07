@@ -1,20 +1,20 @@
 'use strict';
 
-const Redis = require('ioredis');
+import Redis from 'ioredis';
 
-const pubClient = process.env.NODE_ENV === 'production'
+export const pubClient = process.env.NODE_ENV === 'production'
 ? new Redis({host: process.env.ELASTICACHE_PROD_PRIMARY, port: 6379})
 : new Redis({host: 'redis-dev', port: 6379});
 
-const subClient = process.env.NODE_ENV === 'production'
+export const subClient = process.env.NODE_ENV === 'production'
 ? new Redis({host: process.env.ELASTICACHE_PROD_PRIMARY, port: 6379})
 : new Redis({host: 'redis-dev', port: 6379});
 
-const sessClient = process.env.NODE_ENV === 'production'
+export const sessClient = process.env.NODE_ENV === 'production'
 ? new Redis({host: process.env.ELASTICACHE_PROD_PRIMARY, port: 6379})
 : new Redis({host: 'redis-dev', port: 6379});
 
-const workerClient = process.env.NODE_ENV === 'production'
+export const workerClient = process.env.NODE_ENV === 'production'
 ? new Redis({host: process.env.ELASTICACHE_PROD_PRIMARY, port: 6379})
 : new Redis({host: 'redis-dev', port: 6379});
 
@@ -51,5 +51,3 @@ workerClient.on('ready', () => console.log('worker ready!!!!!!!!!!!'));
 workerClient.on('error', () => console.log('worker error!!!!!!!!!!!'));
 workerClient.on('close', () => console.log('worker close!!!!!!!!!!!'));
 //console.log('============================== ');
-
-module.exports = {pubClient, subClient, sessClient, workerClient};

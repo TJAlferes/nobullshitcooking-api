@@ -74,6 +74,7 @@
     "@types/express-session": "^1.17.0",
     "@types/helmet": "0.0.45",
     "@types/ioredis": "^4.14.9",
+    "@types/mysql2": "github:types/mysql2",
     "@types/node": "^13.11.0",
     "@types/socket.io": "^2.1.4",
     "@types/socket.io-redis": "^1.0.25",

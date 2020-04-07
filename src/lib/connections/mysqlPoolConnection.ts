@@ -1,6 +1,6 @@
-const mysql = require('mysql2/promise');
+import mysql from 'mysql2/promise';
 
-const pool = process.env.NODE_ENV === 'production'
+export const pool = process.env.NODE_ENV === 'production'
 ? mysql.createPool({
   host: process.env.RDS_HOSTNAME,
   user: process.env.RDS_USERNAME,
@@ -21,21 +21,7 @@ const pool = process.env.NODE_ENV === 'production'
   insecureAuth: true
 });
 
-// (Probably delete this? Old config from beginner days)
-// (This was to access it from your dev machine, Elastic Beanstalk uses its own)
-/*: mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
-  waitForConnections: process.env.DB_WAIT_FOR_CONNECTIONS,
-  connectionLimit: process.env.DB_CONNECTION_LIMIT,
-  queueLimit: process.env.DB_QUEUE_LIMIT
-});*/
-
 //console.log('========== mysql2/promise createPool ========== ');
 //console.log('pool', pool);
 //console.log('============================== ');
 // set up proper retry logic
-
-module.exports = pool;
