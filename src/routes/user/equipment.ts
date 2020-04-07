@@ -1,11 +1,11 @@
-const { Router } = require('express');
+import { Router } from 'express';
 import { body } from 'express-validator';
 
 const userIsAuth = require('../../lib/utils/userIsAuth');
 const catchExceptions = require('../../lib/utils/catchExceptions');
 const userEquipmentController = require('../../controllers/user/equipment');
 
-const router = Router();
+export const router = Router();
 
 // /v1/... ?
 
@@ -55,5 +55,3 @@ router.delete(
   [body('equipmentId').not().isEmpty().trim().escape()],
   catchExceptions(userEquipmentController.deleteMyPrivateUserEquipment)
 );
-
-module.exports = router;

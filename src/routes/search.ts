@@ -1,9 +1,9 @@
-const { Router } = require('express');
+import { Router } from 'express';
 
 const catchExceptions = require('../lib/utils/catchExceptions');
 const searchController = require('../controllers/search');
 
-const router = Router();
+export const router = Router();
 
 // /v1/... ?
 
@@ -54,5 +54,3 @@ router.post(
   '/find/equipment',
   catchExceptions(searchController.findPublicEquipment)
 );
-
-module.exports = router;

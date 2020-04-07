@@ -1,11 +1,11 @@
-const { Router } = require('express');
+import { Router } from 'express';
 import { body } from 'express-validator';
 
 const userIsAuth = require('../../lib/utils/userIsAuth');
 const catchExceptions = require('../../lib/utils/catchExceptions');
 const userFriendshipController = require('../../controllers/user/friendship');
 
-const router = Router();
+export const router = Router();
 
 // /v1/... ?
 
@@ -58,5 +58,3 @@ router.delete(
   [body('friendname').not().isEmpty().trim().escape()],
   catchExceptions(userFriendshipController.unblockUser)
 );
-
-module.exports = router;

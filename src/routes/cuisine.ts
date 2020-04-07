@@ -1,10 +1,10 @@
-const { Router } = require('express');
+import { Router } from 'express';
 import { param } from 'express-validator';
 
 const catchExceptions = require('../lib/utils/catchExceptions');
 const cuisineController = require('../controllers/cuisine');
 
-const router = Router();
+export const router = Router();
 
 // /v1/... ?
 
@@ -26,5 +26,3 @@ router.get(
   [param('cuisineId').not().isEmpty().trim().escape()],
   catchExceptions(cuisineController.viewCuisineById)
 );
-
-module.exports = router;

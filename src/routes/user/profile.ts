@@ -1,10 +1,10 @@
-const { Router } = require('express');
-import { body } from 'express-validator';
+import { Router } from 'express';
+import { param } from 'express-validator';
 
 const catchExceptions = require('../../lib/utils/catchExceptions');
 const userProfileController = require('../../controllers/user/profile');
 
-const router = Router();
+export const router = Router();
 
 // /v1/... ?
 
@@ -15,5 +15,3 @@ router.get(
   [param('username').not().isEmpty().trim().escape()],
   catchExceptions(userProfileController.viewProfile)
 );
-
-module.exports = router;

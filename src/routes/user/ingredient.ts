@@ -1,11 +1,11 @@
-const { Router } = require('express');
+import { Router } from 'express';
 import { body } from 'express-validator';
 
 const userIsAuth = require('../../lib/utils/userIsAuth');
 const catchExceptions = require('../../lib/utils/catchExceptions');
 const userIngredientController = require('../../controllers/user/ingredient');
 
-const router = Router();
+export const router = Router();
 
 // /v1/... ?
 
@@ -55,5 +55,3 @@ router.delete(
   [body('ingredientId').not().isEmpty().trim().escape()],
   catchExceptions(userIngredientController.deleteMyPrivateUserIngredient)
 );
-
-module.exports = router;

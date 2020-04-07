@@ -1,11 +1,11 @@
-const { Router } = require('express');
+import { Router } from 'express';
 import { body } from 'express-validator';
 
 const staffIsAuth = require('../../lib/utils/staffIsAuth');
 const catchExceptions = require('../../lib/utils/catchExceptions');
 const staffIngredientController = require('../../controllers/staff/ingredient');
 
-const router = Router();
+export const router = Router();
 
 // /v1/... ?
 
@@ -42,5 +42,3 @@ router.delete(
   [body('ingredientId').not().isEmpty().trim().escape()],
   catchExceptions(staffIngredientController.deleteIngredient)
 );
-
-module.exports = router;

@@ -1,11 +1,11 @@
-const { Router } = require('express');
+import { Router } from 'express';
 import { body } from 'express-validator';
 
 const userIsAuth = require('../../lib/utils/userIsAuth');
 const catchExceptions = require('../../lib/utils/catchExceptions');
 const userRecipeController = require('../../controllers/user/recipe');
 
-const router = Router();
+export const router = Router();
 
 // /v1/... ?
 
@@ -101,5 +101,3 @@ router.post(
   [body('recipeId').not().isEmpty().trim().escape()],
   catchExceptions(userRecipeController.getInfoToEditMyPublicUserRecipe)
 );
-
-module.exports = router;

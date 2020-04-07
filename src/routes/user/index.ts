@@ -1,23 +1,23 @@
-const { Router } = require('express');
+import { Router } from 'express';
 
-const userAuthRouter = require('./auth');
-const userProfileRouter = require('./profile');
-const userGetSignedUrlAvatarRouter = require('./get-signed-url/avatar');
-const userGetSignedUrlEquipmentRouter = require('./get-signed-url/equipment');
-const userGetSignedUrlIngredientRouter = require('./get-signed-url/ingredient');
-const userGetSignedUrlRecipeRouter = require('./get-signed-url/recipe');
-const userGetSignedUrlRecipeEquipmentRouter = require('./get-signed-url/recipeEquipment');
-const userGetSignedUrlRecipeIngredientsRouter = require('./get-signed-url/recipeIngredients');
-const userGetSignedUrlRecipeCookingRouter = require('./get-signed-url/recipeCooking');
-const userFriendshipRouter = require('./friendship');
-const userFavoriteRecipeRouter = require('./favoriteRecipe');
-const userSavedRecipeRouter = require('./savedRecipe');
-const userPlanRouter = require('./plan');
-const userEquipmentRouter = require('./equipment');
-const userIngredientRouter = require('./ingredient');
-const userRecipeRouter = require('./recipe');
+import { router as userAuthRouter } from './auth';
+import { router as userProfileRouter } from './profile';
+import { router as userGetSignedUrlAvatarRouter } from './get-signed-url/avatar';
+import { router as userGetSignedUrlEquipmentRouter } from './get-signed-url/equipment';
+import { router as userGetSignedUrlIngredientRouter } from './get-signed-url/ingredient';
+import { router as userGetSignedUrlRecipeRouter } from './get-signed-url/recipe';
+import { router as userGetSignedUrlRecipeEquipmentRouter } from './get-signed-url/recipeEquipment';
+import { router as userGetSignedUrlRecipeIngredientsRouter } from './get-signed-url/recipeIngredients';
+import { router as userGetSignedUrlRecipeCookingRouter } from './get-signed-url/recipeCooking';
+import { router as userFriendshipRouter } from './friendship';
+import { router as userFavoriteRecipeRouter } from './favoriteRecipe';
+import { router as userSavedRecipeRouter } from './savedRecipe';
+import { router as userPlanRouter } from './plan';
+import { router as userEquipmentRouter } from './equipment';
+import { router as userIngredientRouter } from './ingredient';
+import { router as userRecipeRouter } from './recipe';
 
-const router = Router();
+export const router = Router();
 
 router.use('/auth', userAuthRouter);
 router.use('/profile', userProfileRouter);
@@ -35,5 +35,3 @@ router.use('/plan', userPlanRouter);
 router.use('/equipment', userEquipmentRouter);
 router.use('/ingredient', userIngredientRouter);
 router.use('/recipe', userRecipeRouter);
-
-module.exports = router;

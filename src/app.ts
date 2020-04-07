@@ -1,24 +1,14 @@
 'use strict';
 
-const http = require('http');
-const express = require('express');
+import http from 'http';
+import express from 'express';
 
-const middlewareInit = require('./middlewareInit');
-const routesInit = require('./routesInit');
-//const bulkUp = require('./search');
+import { middlewareInit}  from './middlewareInit';
+import { routesInit } from './routesInit';
+//import { bulkUp } from './search');
 
-const app = express();
-const server = http.Server(app);
-
-// move this, and create startup conditional
-/*try {
-  setTimeout(() => {
-    console.log('Now running bulkUp.');
-    bulkUp();
-  }, 60000);  // at the 1 minute mark
-} catch(err) {
-  console.log(err);
-}*/
+export const app = express();
+export const server = http.Server(app);
 
 /*
 middlewareInit then calls sessionInit,
@@ -47,4 +37,12 @@ if (app.get('env') === 'development') {
   });
 }
 
-module.exports = {app, server};
+// move this, and create startup conditional
+/*try {
+  setTimeout(() => {
+    console.log('Now running bulkUp.');
+    bulkUp();
+  }, 60000);  // at the 1 minute mark
+} catch(err) {
+  console.log(err);
+}*/

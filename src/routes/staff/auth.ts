@@ -1,11 +1,11 @@
-const { Router } = require('express');
+import { Router } from 'express';
 import { body } from 'express-validator';
 
 const staffIsAuth = require('../../lib/utils/staffIsAuth');
 const catchExceptions = require('../../lib/utils/catchExceptions');
 const staffAuthController = require('../../controllers/staff/auth');
 
-const router = Router();
+export const router = Router();
 
 // /v1/... ?
 
@@ -35,5 +35,3 @@ router.post(
   staffIsAuth,
   catchExceptions(staffAuthController.logout)
 );
-
-module.exports = router;

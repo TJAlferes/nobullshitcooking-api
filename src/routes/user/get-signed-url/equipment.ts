@@ -1,10 +1,10 @@
-const { Router } = require('express');
+import { Router } from 'express';
 
 const userIsAuth = require('../../../lib/utils/userIsAuth');
 const catchExceptions = require('../../../lib/utils/catchExceptions');
 const getSignedUrlEquipment = require('../../../controllers/user/get-signed-url/equipment');
 
-const router = Router();
+export const router = Router();
 
 // /v1/... ?
 
@@ -15,5 +15,3 @@ router.post(
   userIsAuth,
   catchExceptions(getSignedUrlEquipment)
 );
-
-module.exports = router;

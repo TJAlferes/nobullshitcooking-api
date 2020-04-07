@@ -1,10 +1,10 @@
-const { Router } = require('express');
+import { Router } from 'express';
 
 const catchExceptions = require('../lib/utils/catchExceptions');
 
 const cuisineIngredientController = require('../controllers/cuisineIngredient');
 
-const router = Router();
+export const router = Router();
 
 // /v1/... ?
 
@@ -16,5 +16,3 @@ router.get(
     cuisineIngredientController.viewCuisineIngredientsByCuisineId
   )
 );
-
-module.exports = router;

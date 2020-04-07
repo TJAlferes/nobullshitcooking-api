@@ -1,4 +1,4 @@
-const { Router } = require('express');
+import { Router } from 'express';
 import { body } from 'express-validator';
 
 const catchExceptions = require('../../lib/utils/catchExceptions');
@@ -8,7 +8,7 @@ const staffCuisineSupplierController = require(
   '../../controllers/staff/cuisineSupplier'
 );
 
-const router = Router();
+export const router = Router();
 
 // /v1/... ?
 
@@ -42,5 +42,3 @@ router.delete(
     staffCuisineSupplierController.deleteCuisineSupplier
   )
 );
-
-module.exports = router;

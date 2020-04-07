@@ -1,9 +1,9 @@
-const { Router } = require('express');
+import { Router } from 'express';
 
 const catchExceptions = require('../lib/utils/catchExceptions');
 const recipeController = require('../controllers/recipe');
 
-const router = Router();
+export const router = Router();
 
 // /v1/... ?
 
@@ -18,5 +18,3 @@ router.get(
   '/:recipeId',
   catchExceptions(recipeController.viewRecipeDetail)
 );
-
-module.exports = router;

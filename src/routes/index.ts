@@ -1,41 +1,19 @@
-const equipmentRoutes = require('./equipment');
-const equipmentTypeRoutes = require('./equipmentType');
-const ingredientRoutes = require('./ingredient');
-const ingredientTypeRoutes = require('./ingredientType');
-const recipeRoutes = require('./recipe');
-const recipeTypeRoutes = require('./recipeType');
-const cuisineRoutes = require('./cuisine');
-const cuisineEquipmentRoutes = require('./cuisineEquipment');
-const cuisineIngredientRoutes = require('./cuisineIngredient');
-const cuisineSupplierRoutes = require('./cuisineSupplier');
-const methodRoutes = require('./method');
-const measurementRoutes = require('./measurement');
-const favoriteRecipeRoutes = require('./favoriteRecipe');
+export { router as equipmentRoutes } from './equipment';
+export { router as equipmentTypeRoutes } from './equipmentType';
+export { router as ingredientRoutes } from './ingredient';
+export { router as ingredientTypeRoutes } from './ingredientType';
+export { router as recipeRoutes } from './recipe';
+export { router as recipeTypeRoutes } from './recipeType';
+export { router as cuisineRoutes } from './cuisine';
+export { router as cuisineEquipmentRoutes } from './cuisineEquipment';
+export { router as cuisineIngredientRoutes } from './cuisineIngredient';
+export { router as cuisineSupplierRoutes } from './cuisineSupplier';
+export { router as methodRoutes } from './method';
+export { router as measurementRoutes } from './measurement';
+export { router as favoriteRecipeRoutes } from './favoriteRecipe';
 
-const staffRoutes = require('./staff/index');
+export { router as staffRoutes } from './staff/index';
 
-const userRoutes = require('./user/index');
+export { router as userRoutes } from './user/index';
 
-const searchRoutes = require('./search');
-
-module.exports = {
-  equipmentRoutes,
-  equipmentTypeRoutes,
-  ingredientRoutes,
-  ingredientTypeRoutes,
-  recipeRoutes,
-  recipeTypeRoutes,
-  cuisineRoutes,
-  cuisineEquipmentRoutes,
-  cuisineIngredientRoutes,
-  cuisineSupplierRoutes,
-  methodRoutes,
-  measurementRoutes,
-  favoriteRecipeRoutes,
-
-  staffRoutes,
-
-  userRoutes,
-  
-  searchRoutes
-};
+export { router as searchRoutes } from './search';

@@ -1,11 +1,11 @@
-const { Router } = require('express');
+import { Router } from 'express';
 import { body } from 'express-validator';
 
 const userIsAuth = require('../../lib/utils/userIsAuth');
 const catchExceptions = require('../../lib/utils/catchExceptions');
 const userFavoriteRecipeController = require('../../controllers/user/favoriteRecipe');
 
-const router = Router();
+export const router = Router();
 
 // /v1/... ?
 
@@ -30,5 +30,3 @@ router.delete(
   [body('recipeId').not().isEmpty().trim().escape()],
   catchExceptions(userFavoriteRecipeController.deleteMyFavoriteRecipe)
 );
-
-module.exports = router;

@@ -1,9 +1,9 @@
-const { Router } = require('express');
+import { Router } from 'express';
 
 const catchExceptions = require('../lib/utils/catchExceptions');
 const favoriteRecipeController = require('../controllers/favoriteRecipe');
 
-const router = Router();
+export const router = Router();
 
 // /v1/... ?
 
@@ -13,5 +13,3 @@ router.get(
   '/',
   catchExceptions(favoriteRecipeController.viewMostFavorited)
 );
-
-module.exports = router;
