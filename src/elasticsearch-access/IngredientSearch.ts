@@ -1,4 +1,11 @@
-class IngredientSearch {
+interface SaveIngredient {
+  ingredientId: number
+  ingredientTypeName: string
+  ingredientName: string
+  ingredientImage: string
+}
+
+export class IngredientSearch {
   constructor(esClient) {
     this.client = esClient;
     this.findIngredients = this.findIngredients.bind(this);
@@ -15,7 +22,7 @@ class IngredientSearch {
     return body;
   }
 
-  async autoIngredients(searchTerm) {
+  async autoIngredients(searchTerm: string) {
     const { body } = await this.client.search({
       index: "ingredients",
       body: {
@@ -48,7 +55,7 @@ class IngredientSearch {
     ingredientTypeName,
     ingredientName,
     ingredientImage
-  }) {
+  }: SaveIngredient) {
     const savedIngredient = await this.client.index({
       index: 'ingredients',
       id: ingredientId,
@@ -64,7 +71,7 @@ class IngredientSearch {
   }
 
   // (staff only)
-  async deleteIngredient(ingredientId) {
+  async deleteIngredient(ingredientId: number) {
     const deletedIngredient = await this.client.delete(
       {index: 'ingredients', id: ingredientId},
       {ignore: [404]}
@@ -73,5 +80,3 @@ class IngredientSearch {
     return deletedIngredient;
   }
 }
-
-module.exports = IngredientSearch;

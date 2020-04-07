@@ -1,4 +1,11 @@
-class EquipmentSearch {
+interface SaveEquipment {
+  equipmentId: number
+  equipmentTypeName: string
+  equipmentName: string
+  equipmentImage: string
+}
+
+export class EquipmentSearch {
   constructor(esClient) {
     this.client = esClient;
     this.findEquipment = this.findEquipment.bind(this);
@@ -15,7 +22,7 @@ class EquipmentSearch {
     return body;
   }
 
-  async autoEquipment(searchTerm) {
+  async autoEquipment(searchTerm: string) {
     const { body } = await this.client.search({
       index: "equipment",
       body: {
@@ -48,7 +55,7 @@ class EquipmentSearch {
     equipmentTypeName,
     equipmentName,
     equipmentImage
-  }) {
+  }: SaveEquipment) {
     const savedEquipment = await this.client.index({
       index: 'equipment',
       id: equipmentId,
@@ -64,7 +71,7 @@ class EquipmentSearch {
   }
 
   // (staff only)
-  async deleteEquipment(equipmentId) {
+  async deleteEquipment(equipmentId: number) {
     const deletedEquipment = await this.client.delete(
       {index: 'equipment', id: equipmentId},
       {ignore: [404]}
@@ -73,5 +80,3 @@ class EquipmentSearch {
     return deletedEquipment;
   }
 }
-
-module.exports = EquipmentSearch;

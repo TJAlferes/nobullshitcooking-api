@@ -8,7 +8,7 @@ import { RecipeMethod, IRecipeMethod } from '../../mysql-access/RecipeMethod';
 import { RecipeEquipment, IRecipeEquipment } from '../../mysql-access/RecipeEquipment';
 import { RecipeIngredient, IRecipeIngredient } from '../../mysql-access/RecipeIngredient';
 import { RecipeSubrecipe, IRecipeSubrecipe } from '../../mysql-access/RecipeSubrecipe';
-const RecipeSearch = require('../../elasticsearch-access/RecipeSearch');
+import { RecipeSearch } from '../../elasticsearch-access/RecipeSearch';
 
 const validRecipeMethodsEntity = require('../validations/recipeMethod/recipeMethodEntity');
 const validRecipeEquipmentEntity = require('../validations/recipeEquipment/recipeEquipmentEntity');

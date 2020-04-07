@@ -88,16 +88,17 @@ async function updateRecipeService({
   let recipeEquipmentToUpdateWith: number[] = [];
   let recipeEquipmentPlaceholders = "none";
 
-  if (requiredEquipment !== "none" && requiredEquipment.length) {
+  if (requiredEquipment.length) {
     recipeEquipmentToUpdateWith = [];
 
-    requiredEquipment.map(rE => validRecipeEquipmentEntity({
+    requiredEquipment
+    .map((rE: IRecipeEquipment) => validRecipeEquipmentEntity({
       recipeId,
       equipmentId: rE.equipment,
       amount: rE.amount
     }));
 
-    requiredEquipment.map(rE => {
+    requiredEquipment.map((rE: IRecipeEquipment) => {
       recipeEquipmentToUpdateWith.push(recipeId, rE.equipment, rE.amount)
     });
 
@@ -117,17 +118,18 @@ async function updateRecipeService({
   let recipeIngredientsToUpdateWith: number[] = [];
   let recipeIngredientsPlaceholders = "none";
 
-  if (requiredIngredients !== "none" && requiredIngredients.length) {
+  if (requiredIngredients.length) {
     recipeIngredientsToUpdateWith = [];
 
-    requiredIngredients.map(rI => validRecipeIngredientsEntity({
+    requiredIngredients
+    .map((rI: IRecipeIngredient) => validRecipeIngredientsEntity({
       recipeId,
       ingredientId: rI.ingredient,
       amount: rI.amount,
       measurementId: rI.unit
     }));
 
-    requiredIngredients.map(rI => {
+    requiredIngredients.map((rI: IRecipeIngredient) => {
       recipeIngredientsToUpdateWith
       .push(recipeId, rI.ingredient, rI.amount, rI.unit);
     });
@@ -148,17 +150,18 @@ async function updateRecipeService({
   let recipeSubrecipesToUpdateWith: number[] = [];
   let recipeSubrecipesPlaceholders = "none";
 
-  if (requiredSubrecipes !== "none" && requiredSubrecipes.length) {
+  if (requiredSubrecipes.length) {
     recipeSubrecipesToUpdateWith = [];
 
-    requiredSubrecipes.map(rS => validRecipeSubrecipesEntity({
+    requiredSubrecipes
+    .map((rS: IRecipeSubrecipe) => validRecipeSubrecipesEntity({
       recipeId,
       subrecipeId: rS.subrecipe,
       amount: rS.amount,
       measurementId: rS.unit
     }));
 
-    requiredSubrecipes.map(rS => {
+    requiredSubrecipes.map((rS: IRecipeSubrecipe) => {
       recipeSubrecipesToUpdateWith
       .push(recipeId, rS.subrecipe, rS.amount, rS.unit);
     });

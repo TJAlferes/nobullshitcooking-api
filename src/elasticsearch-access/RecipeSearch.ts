@@ -1,4 +1,19 @@
-class RecipeSearch {
+interface SaveRecipe {
+  recipe_id: number
+  author: string
+  recipe_type_name: string
+  cuisine_name: string
+  title: string
+  description: string
+  directions: string
+  recipe_image: string
+  method_names: string[]
+  equipment_names: string[]
+  ingredient_names: string[]
+  subrecipe_titles: string[]
+}
+
+export class RecipeSearch {
   constructor(esClient) {
     this.client = esClient;
     this.findRecipes = this.findRecipes.bind(this);
@@ -15,7 +30,7 @@ class RecipeSearch {
     return body;
   }
 
-  async autoRecipes(searchTerm) {
+  async autoRecipes(searchTerm: string) {
     const { body } = await this.client.search({
       index: "recipes",
       body: {
@@ -58,7 +73,7 @@ class RecipeSearch {
     equipment_names,
     ingredient_names,
     subrecipe_titles
-  }) {
+  }: SaveRecipe) {
     await this.client.index({
       index: 'recipes',
       id: recipe_id,
@@ -80,7 +95,7 @@ class RecipeSearch {
     await this.client.indices.refresh({index: 'recipes'});
   }
 
-  async deleteRecipe(recipeId) {
+  async deleteRecipe(recipeId: number) {
     await this.client.delete(
       {index: 'recipes', id: recipeId},
       {ignore: [404]}
@@ -88,5 +103,3 @@ class RecipeSearch {
     await this.client.indices.refresh({index: 'recipes'});
   }
 }
-
-module.exports = RecipeSearch;

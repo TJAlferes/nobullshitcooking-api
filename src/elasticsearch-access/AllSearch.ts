@@ -1,4 +1,4 @@
-class AllSearch {
+export class AllSearch {
   constructor(esClient) {
     this.client = esClient;
     this.findAll = this.findAll.bind(this);
@@ -10,7 +10,7 @@ class AllSearch {
     return body;
   }
 
-  async autoAll(searchTerm) {
+  async autoAll(searchTerm: string) {
     const { body } = await this.client.search({
       index: "_all",
       body: {
@@ -34,5 +34,3 @@ class AllSearch {
     return body;
   }
 }
-
-module.exports = AllSearch;
