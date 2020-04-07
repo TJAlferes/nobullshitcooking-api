@@ -1,7 +1,7 @@
 'use strict';
 
-const pool = require('../connections/mysqlPoolConnection');
-const esClient = require('../connections/elasticsearchClient');
+import { pool } from '../connections/mysqlPoolConnection';
+import { esClient } from '../connections/elasticsearchClient';
 
 const Recipe = require('../../mysql-access/Recipe');
 import { RecipeMethod, IRecipeMethod } from '../../mysql-access/RecipeMethod';

@@ -1,6 +1,9 @@
-const emailUser = require('./simple-email-service');
+import { emailToUser } from './simple-email-service';
 
-const emailConfirmationCode = (email, confirmationCode) => {
+export function emailConfirmationCode(
+  email: string,
+  confirmationCode: string
+) {
   const from = "No Bullshit Cooking <staff@nobullshitcooking.com>";
 
   const to = email;
@@ -26,7 +29,5 @@ const emailConfirmationCode = (email, confirmationCode) => {
 
   const charset = "UTF-8";
 
-  emailUser(from, to, subject, bodyText, bodyHtml, charset);
-};
-
-module.exports = emailConfirmationCode;
+  emailToUser(from, to, subject, bodyText, bodyHtml, charset);
+}

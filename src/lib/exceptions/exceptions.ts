@@ -1,13 +1,21 @@
 'use strict';
 
-class Exception extends Error {
-  constructor(code, name, message, payload) {
+export class ExceptionError extends Error {
+  code: (number|null);
+  payload: object;
+
+  constructor(
+    code: (number|null),
+    name: string,
+    message: string,
+    payload: object
+  ) {
     super();
     this.code = code;
     this.name = name;
     this.message = message;
     this.payload = payload;
-    Error.captureStackTrace(this, Exception);  // !
+    Error.captureStackTrace(this, ExceptionError);  // !
   }
 
   toString() {
@@ -15,20 +23,30 @@ class Exception extends Error {
   }
 }
 
-module.exports.ExceptionError = Exception;
-
-module.exports.Exception = function(message, payload) {
-  return new Exception(null, null, message, payload);
+export function Exception(
+  message: string,
+  payload: object
+) {
+  return new ExceptionError(null, "", message, payload);
 };
 
-module.exports.ValidationException = function(message, payload) {
-  return new Exception(400, 'ValidationException', message, payload);
+export function ValidationException(
+  message: string,
+  payload: object
+) {
+  return new ExceptionError(400, 'ValidationException', message, payload);
 };
 
-module.exports.ForbiddenException = function(message, payload) {
-  return new Exception(403, 'ForbiddenException', message, payload);
+export function ForbiddenException(
+  message: string,
+  payload: object
+) {
+  return new ExceptionError(403, 'ForbiddenException', message, payload);
 };
 
-module.exports.NotFoundException = function(message, payload) {
-  return new Exception(404, 'NotFoundException', message, payload);
+export function NotFoundException(
+  message: string,
+  payload: object
+) {
+  return new ExceptionError(404, 'NotFoundException', message, payload);
 };

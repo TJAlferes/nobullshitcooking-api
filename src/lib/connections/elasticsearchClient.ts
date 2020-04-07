@@ -1,6 +1,6 @@
 'use strict';
 
-import { Client, errors } from '@elastic/elasticsearch';
+import { Client } from '@elastic/elasticsearch';
 
 export const esClient = process.env.NODE_ENV === 'production'
 ? new Client({node: process.env.ELASTICSEARCH_PROD})

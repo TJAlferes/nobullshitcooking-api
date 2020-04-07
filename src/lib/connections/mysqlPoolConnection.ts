@@ -6,18 +6,18 @@ export const pool = process.env.NODE_ENV === 'production'
   user: process.env.RDS_USERNAME,
   password: process.env.RDS_PASSWORD,
   database: process.env.RDS_DB_NAME,
-  waitForConnections: process.env.DB_WAIT_FOR_CONNECTIONS,
-  connectionLimit: process.env.DB_CONNECTION_LIMIT,
-  queueLimit: process.env.DB_QUEUE_LIMIT
+  waitForConnections: Boolean(process.env.DB_WAIT_FOR_CONNECTIONS),
+  connectionLimit: Number(process.env.DB_CONNECTION_LIMIT),
+  queueLimit: Number(process.env.DB_QUEUE_LIMIT)
 })
 : mysql.createPool({
   host: process.env.MYSQL_HOST,
   user: process.env.MYSQL_USER,
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DATABASE,
-  waitForConnections: process.env.DB_WAIT_FOR_CONNECTIONS,
-  connectionLimit: process.env.DB_CONNECTION_LIMIT,
-  queueLimit: process.env.DB_QUEUE_LIMIT,
+  waitForConnections: Boolean(process.env.DB_WAIT_FOR_CONNECTIONS),
+  connectionLimit: Number(process.env.DB_CONNECTION_LIMIT),
+  queueLimit: Number(process.env.DB_QUEUE_LIMIT),
   insecureAuth: true
 });
 
