@@ -59,7 +59,7 @@ const createESClient = awsCredsifyAll(
 );
 console.log(createESClient);*/
 
-const esClient = process.env.NODE_ENV === 'production'
+export const esClient = process.env.NODE_ENV === 'production'
 ? new Client({node: process.env.ELASTICSEARCH_PROD})
 : new Client({node: process.env.ES_DEV_NODE});
 
@@ -69,4 +69,4 @@ const esClient = process.env.NODE_ENV === 'production'
 
 //console.log(errors);
 
-module.exports = esClient;  // () ?
+//module.exports = esClient;  // () ?

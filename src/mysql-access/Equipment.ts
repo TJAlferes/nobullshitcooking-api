@@ -23,7 +23,7 @@ class Equipment {
       const ownerId = 1;
       const sql1 = `
         SELECT
-          e.equipment_id,
+          CAST(e.equipment_id AS CHAR),
           e.equipment_type_id,
           e.owner_id,
           et.equipment_type_name,
@@ -48,12 +48,14 @@ class Equipment {
       console.log(err);
     }
   }
-
-  // this is just viewEquipmentById 
-  async getEquipmentForElasticSearchInsert(equipmentId, ownerId) {
+  
+  async getEquipmentForElasticSearchInsert(
+    equipmentId: number,
+    ownerId: number
+  ) {
     const sql = `
       SELECT
-        e.equipment_id,
+        CAST(e.equipment_id AS CHAR),
         e.equipment_type_id,
         e.owner_id,
         et.equipment_type_name,

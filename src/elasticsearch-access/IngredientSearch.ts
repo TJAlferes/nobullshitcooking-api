@@ -1,12 +1,16 @@
+import { Client } from '@elastic/elasticsearch';
+
 interface SaveIngredient {
-  ingredientId: number
+  ingredientId: string
   ingredientTypeName: string
   ingredientName: string
   ingredientImage: string
 }
 
 export class IngredientSearch {
-  constructor(esClient) {
+  client: Client;
+
+  constructor(esClient: Client) {
     this.client = esClient;
     this.findIngredients = this.findIngredients.bind(this);
     this.autoIngredients = this.autoIngredients.bind(this);
@@ -14,7 +18,7 @@ export class IngredientSearch {
     this.deleteIngredient = this.deleteIngredient.bind(this);
   }
 
-  async findIngredients(searchBody) {  // deep pagination can kill performance, set upper bounds 
+  async findIngredients(searchBody: object) {  // deep pagination can kill performance, set upper bounds 
     const { body } = await this.client.search({
       index: "ingredients",
       body: searchBody
@@ -71,7 +75,7 @@ export class IngredientSearch {
   }
 
   // (staff only)
-  async deleteIngredient(ingredientId: number) {
+  async deleteIngredient(ingredientId: string) {
     const deletedIngredient = await this.client.delete(
       {index: 'ingredients', id: ingredientId},
       {ignore: [404]}

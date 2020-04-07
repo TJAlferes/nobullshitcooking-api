@@ -21,7 +21,7 @@ class Recipe {
     const ownerId = 1;
     const sql = `
       SELECT
-        r.recipe_id,
+        CAST(r.recipe_id AS CHAR),
         u.username AS author,
         rt.recipe_type_name,
         c.cuisine_name,
@@ -77,11 +77,11 @@ class Recipe {
     return final;
   }
 
-  async getPublicRecipeForElasticSearchInsert(recipeId) {
+  async getPublicRecipeForElasticSearchInsert(recipeId: number) {
     const ownerId = 1;
     const sql = `
       SELECT
-        r.recipe_id,
+        CAST(r.recipe_id AS CHAR),
         u.username AS author,
         rt.recipe_type_name,
         c.cuisine_name,

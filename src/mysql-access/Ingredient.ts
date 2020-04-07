@@ -23,13 +23,13 @@ class Ingredient {
       const ownerId = 1;
       const sql1 = `
         SELECT
-          i.ingredient_id AS ingredient_id,
-          i.ingredient_type_id AS ingredient_type_id,
-          i.owner_id AS owner_id,
-          t.ingredient_type_name AS ingredient_type_name,
-          i.ingredient_name AS ingredient_name,
-          i.ingredient_description AS ingredient_description,
-          i.ingredient_image AS ingredient_image
+          CAST(i.ingredient_id AS CHAR),
+          i.ingredient_type_id,
+          i.owner_id,
+          t.ingredient_type_name,
+          i.ingredient_name,
+          i.ingredient_description,
+          i.ingredient_image
         FROM nobsc_ingredients i
         INNER JOIN nobsc_ingredient_types it ON it.ingredient_type_id = i.ingredient_type_id
         WHERE i.owner_id = ?
@@ -49,17 +49,19 @@ class Ingredient {
     }
   }
 
-  async getIngredientForElasticSearchInsert(ingredientId, ownerId) {
-    //const ownerId = 1;
+  async getIngredientForElasticSearchInsert(
+    ingredientId: number,
+    ownerId: number
+  ) {
     const sql = `
       SELECT
-        i.ingredient_id AS ingredient_id,
-        i.ingredient_type_id AS ingredient_type_id,
-        i.owner_id AS owner_id,
-        t.ingredient_type_name AS ingredient_type_name,
-        i.ingredient_name AS ingredient_name,
-        i.ingredient_description AS ingredient_description,
-        i.ingredient_image AS ingredient_image
+        CAST(i.ingredient_id AS CHAR),
+        i.ingredient_type_id,
+        i.owner_id,
+        t.ingredient_type_name,
+        i.ingredient_name,
+        i.ingredient_description,
+        i.ingredient_image
       FROM nobsc_ingredients i
       INNER JOIN nobsc_ingredient_types it ON it.ingredient_type_id = e.ingredient_type_id
       WHERE i.ingredient_id = ? i.owner_id = ?

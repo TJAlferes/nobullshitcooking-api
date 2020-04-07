@@ -1,12 +1,16 @@
+import { Client } from '@elastic/elasticsearch';
+
 interface SaveEquipment {
-  equipmentId: number
+  equipmentId: string
   equipmentTypeName: string
   equipmentName: string
   equipmentImage: string
 }
 
 export class EquipmentSearch {
-  constructor(esClient) {
+  client: Client;
+
+  constructor(esClient: Client) {
     this.client = esClient;
     this.findEquipment = this.findEquipment.bind(this);
     this.autoEquipment = this.autoEquipment.bind(this);
@@ -14,7 +18,7 @@ export class EquipmentSearch {
     this.deleteEquipment = this.deleteEquipment.bind(this);
   }
 
-  async findEquipment(searchBody) {  // deep pagination can kill performance, set upper bounds 
+  async findEquipment(searchBody: object) {  // deep pagination can kill performance, set upper bounds 
     const { body } = await this.client.search({
       index: "equipment",
       body: searchBody
@@ -71,7 +75,7 @@ export class EquipmentSearch {
   }
 
   // (staff only)
-  async deleteEquipment(equipmentId: number) {
+  async deleteEquipment(equipmentId: string) {
     const deletedEquipment = await this.client.delete(
       {index: 'equipment', id: equipmentId},
       {ignore: [404]}

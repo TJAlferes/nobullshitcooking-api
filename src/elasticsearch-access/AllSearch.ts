@@ -1,12 +1,18 @@
+import { Client } from '@elastic/elasticsearch';
+
 export class AllSearch {
-  constructor(esClient) {
+  client: Client;
+  constructor(esClient: Client) {
     this.client = esClient;
     this.findAll = this.findAll.bind(this);
     this.autoAll = this.autoAll.bind(this);
   }
 
-  async findAll(searchBody) {  // deep pagination can kill performance, set upper bounds 
-    const { body } = await this.client.search({index: "_all", body: searchBody});
+  async findAll(searchBody: object) {  // deep pagination can kill performance, set upper bounds 
+    const { body } = await this.client.search({
+      index: "_all",
+      body: searchBody
+    });
     return body;
   }
 
