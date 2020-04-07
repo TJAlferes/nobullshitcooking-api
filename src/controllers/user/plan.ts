@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-const pool = require('../../lib/connections/mysqlPoolConnection');
+import { pool } from '../../lib/connections/mysqlPoolConnection';
 const Plan = require('../../mysql-access/Plan');
 const validPlanEntity = require('../../lib/validations/plan/planEntity');
 

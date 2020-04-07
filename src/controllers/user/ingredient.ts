@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-const pool = require('../../lib/connections/mysqlPoolConnection');
+import { pool } from '../../lib/connections/mysqlPoolConnection';
 const RecipeIngredient = require('../../mysql-access/RecipeIngredient');
 const Ingredient = require('../../mysql-access/Ingredient');
 const validIngredientEntity = require('../../lib/validations/ingredient/ingredientEntity');

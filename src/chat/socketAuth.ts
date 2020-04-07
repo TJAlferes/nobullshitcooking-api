@@ -1,13 +1,13 @@
 'use strict';
 
-const cookie = require('cookie');
-const cookieParser = require('cookie-parser');
+import cookie from 'cookie';
+import cookieParser from 'cookie-parser';
 
-const { pubClient } = require('../lib/connections/redisConnection');
+import { pubClient } from '../lib/connections/redisConnection';
 
 const MessengerUser = require('../redis-access/MessengerUser');
 
-const sessionIdsAreEqual = socket => {
+export function sessionIdsAreEqual(socket) {
   const parsedCookie = cookie.parse(socket.request.headers.cookie);
   const sid = cookieParser.signedCookie(
     parsedCookie['connect.sid'],
@@ -16,7 +16,7 @@ const sessionIdsAreEqual = socket => {
   return parsedCookie['connect.sid'] === sid ? false : sid;
 };
 
-const addMessengerUser = (socket, sid, session) => {
+export function addMessengerUser(socket, sid, session) {
   socket.request.sid = sid;
   socket.request.userInfo = session.userInfo;
   const messengerUser = new MessengerUser(pubClient);
@@ -29,7 +29,7 @@ const addMessengerUser = (socket, sid, session) => {
   );
 };
 
-const useSocketAuth = (io, redisSession) => {
+export function useSocketAuth(io, redisSession) {
   function socketAuth(socket, next) {
     const sid = sessionIdsAreEqual(socket);
 
@@ -44,9 +44,3 @@ const useSocketAuth = (io, redisSession) => {
 
   io.use(socketAuth);
 }
-
-module.exports = {
-  sessionIdsAreEqual,
-  addMessengerUser,
-  useSocketAuth
-};

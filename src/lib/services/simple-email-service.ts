@@ -3,7 +3,7 @@
 //require('dotenv').config();
 const AWS = require('aws-sdk');
 
-export function emailToUser(
+export function emailUser(
   from: string,
   to: string,
   subject: string,

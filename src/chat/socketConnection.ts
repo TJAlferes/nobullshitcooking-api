@@ -1,10 +1,10 @@
 'use strict';
 
-const pool = require('../lib/connections/mysqlPoolConnection');
+import { pool } from '../lib/connections/mysqlPoolConnection';
 const NOBSCUser = require('../mysql-access/User');
 const NOBSCFriendship = require('../mysql-access/Friendship');
 
-const { pubClient, subClient } = require('../lib/connections/redisConnection');
+import { pubClient, subClient } from '../lib/connections/redisConnection';
 
 const MessengerChat = require('../redis-access/MessengerChat');
 const MessengerRoom = require('../redis-access/MessengerRoom');
@@ -22,7 +22,7 @@ const User = require('./entities/User');
 const ChatMessage = require('./entities/ChatMessage');
 const Whisper = require('./entities/Whisper');
 
-const socketConnection = async function(socket) {
+export async function socketConnection(socket) {
   const userId = socket.request.userInfo.userId;
   const username = socket.request.userInfo.username;
   const avatar = socket.request.userInfo.avatar;
@@ -135,6 +135,4 @@ const socketConnection = async function(socket) {
   /*socket.on('disconnect', async function(reason) {
     console.log('disconnect; reason: ', reason);
   });*/
-};
-
-module.exports = socketConnection;
+}

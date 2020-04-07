@@ -1,18 +1,15 @@
 'use strict';
 
-const socketIO = require('socket.io');
-const redisAdapter = require('socket.io-redis');
+import socketIO from 'socket.io';
+import redisAdapter from 'socket.io-redis';
 
-const {
-  pubClient,
-  subClient
-} = require('./lib/connections/redisConnection');
+import { pubClient, subClient } from './lib/connections/redisConnection';
 
-const socketConnection = require('./chat/socketConnection');
-const { useSocketAuth } = require('./chat/socketAuth');
-const cleanUp = require('./chat/workers');
+import { socketConnection } from './chat/socketConnection';
+import { useSocketAuth } from './chat/socketAuth';
+import { cleanUp } from './chat/workers';
 
-function socketInit(server, redisSession) {
+export function socketInit(server, redisSession) {
   const io = socketIO(server, {pingTimeout: 60000});
 
   io.adapter(redisAdapter({pubClient, subClient}));
@@ -23,5 +20,3 @@ function socketInit(server, redisSession) {
   setInterval(cleanUp, INTERVAL);
   //return io;
 }
-
-module.exports = socketInit;

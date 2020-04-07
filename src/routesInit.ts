@@ -1,7 +1,7 @@
 //const { buildSchema } = require('graphql');  // move also
 //const expressGraphQL = require('express-graphql');  // move also
 
-const {
+import {
   equipmentRoutes,
   equipmentTypeRoutes,
   ingredientRoutes,
@@ -18,9 +18,9 @@ const {
   staffRoutes,
   userRoutes,
   searchRoutes
-} = require('./routes');
+} from './routes';
 
-function routesInit(app) {
+export function routesInit(app) {
   app.get('/', (req, res) => {
     res.send(`No Bullshit Cooking Backend API.`);
   });
@@ -43,5 +43,3 @@ function routesInit(app) {
   app.use('/search', searchRoutes);
   //app.use('/graphql', expressGraphQL({schema, rootValue, graphiql: true}));  // move also
 }
-
-module.exports = routesInit;

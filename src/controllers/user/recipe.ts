@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
-const pool = require('../../lib/connections/mysqlPoolConnection');
-const esClient = require('../../lib/connections/elasticsearchClient');
+import { pool } from '../../lib/connections/mysqlPoolConnection';
+import { esClient } from '../../lib/connections/elasticsearchClient';
 
 const Recipe = require('../../mysql-access/Recipe');
 const RecipeMethod = require('../../mysql-access/RecipeMethod');
@@ -10,17 +10,13 @@ const RecipeIngredient = require('../../mysql-access/RecipeIngredient');
 const RecipeSubrecipe = require('../../mysql-access/RecipeSubrecipe');
 
 const RecipeSearch = require('../../elasticsearch-access/RecipeSearch');
-
-const createRecipeService = require('../../lib/services/create-recipe');
-const updateRecipeService = require('../../lib/services/update-recipe');
+ 
+import { createRecipeService } from '../../lib/services/create-recipe';
+import { updateRecipeService } from '../../lib/services/update-recipe';
 
 const validRecipeEntity = require('../../lib/validations/recipe/recipeEntity');
-const validRecipeMethodsEntity = require('../../lib/validations/recipeMethod/recipeMethodEntity');
-const validRecipeEquipmentEntity = require('../../lib/validations/recipeEquipment/recipeEquipmentEntity');
-const validRecipeIngredientsEntity = require('../../lib/validations/recipeIngredient/recipeIngredientEntity');
-const validRecipeSubrecipesEntity = require('../../lib/validations/recipeSubrecipe/recipeSubrecipeEntity');
 
-const userRecipeController = {
+export const userRecipeController = {
   viewAllMyPrivateUserRecipes: async function(req: Request, res: Response) {
     const authorId = req.session.userInfo.userId;
     const ownerId = req.session.userInfo.userId;
@@ -106,53 +102,7 @@ const userRecipeController = {
       cookingImage
     });
 
-    if (requiredMethods !== "none" && requiredMethods.length > 0) {
-      requiredMethods.map(rM => validRecipeMethodsEntity({
-        recipeId: generatedId,
-        methodId: rM.methodId
-      }));
-    }
-
-    if (requiredEquipment !== "none" && requiredEquipment.length > 0) {
-      requiredEquipment.map(rE => validRecipeEquipmentEntity({
-        recipeId: generatedId,
-        equipmentId: rE.equipment,
-        amount: rE.amount
-      }));
-    }
-
-    if (requiredIngredients !== "none" && requiredIngredients.length > 0) {
-      requiredIngredients.map(rI => validRecipeIngredientsEntity({
-        recipeId: generatedId,
-        ingredientId: rI.ingredient,
-        amount: rI.amount,
-        measurementId: rI.unit
-      }));
-    }
-
-    if (requiredSubrecipes !== "none" && requiredSubrecipes.length > 0) {
-      requiredSubrecipes.map(rS => validRecipeSubrecipesEntity({
-        recipeId: generatedId,
-        subrecipeId: rS.subrecipe,
-        amount: rS.amount,
-        measurementId: rS.unit
-      }));
-    }
-
-    const recipe = new Recipe(pool);
-    const recipeMethod = new RecipeMethod(pool);
-    const recipeEquipment = new RecipeEquipment(pool);
-    const recipeIngredient = new RecipeIngredient(pool);
-    const recipeSubrecipe = new RecipeSubrecipe(pool);
-    const recipeSearch = new RecipeSearch(esClient);
-
     await createRecipeService({
-      recipe,
-      recipeMethod,
-      recipeEquipment,
-      recipeIngredient,
-      recipeSubrecipe,
-      recipeSearch,
       ownerId,
       recipeToCreate,
       requiredMethods,
@@ -184,7 +134,7 @@ const userRecipeController = {
     const ownership = req.body.recipeInfo.ownership;
     const ownerId = (ownership === "private") ? req.session.userInfo.userId : 1;
 
-    if (recipeId == "" || typeof recipeId === "undefined") {
+    if (typeof recipeId === "undefined") {
       return res.send({message: 'Invalid recipe ID!'});
     }
 
@@ -202,53 +152,8 @@ const userRecipeController = {
       cookingImage
     });
 
-    if (requiredMethods !== "none") {
-      requiredMethods.map(rM => validRecipeMethodsEntity({
-        recipeId,
-        methodId: rM.methodId
-      }));
-    }
-
-    if (requiredEquipment !== "none") {
-      requiredEquipment.map(rE => validRecipeEquipmentEntity({
-        recipeId,
-        equipmentId: rE.equipment,
-        amount: rE.amount
-      }));
-    }
-
-    if (requiredIngredients !== "none") {
-      requiredIngredients.map(rI => validRecipeIngredientsEntity({
-        recipeId,
-        ingredientId: rI.ingredient,
-        amount: rI.amount,
-        measurementId: rI.unit
-      }));
-    }
-
-    if (requiredSubrecipes !== "none") {
-      requiredSubrecipes.map(rS => validRecipeSubrecipesEntity({
-        recipeId,
-        subrecipeId: rS.subrecipe,
-        amount: rS.amount,
-        measurementId: rS.unit
-      }));
-    }
-
-    const recipe = new Recipe(pool);
-    const recipeMethod = new RecipeMethod(pool);
-    const recipeEquipment = new RecipeEquipment(pool);
-    const recipeIngredient = new RecipeIngredient(pool);
-    const recipeSubrecipe = new RecipeSubrecipe(pool);
-    const recipeSearch = new RecipeSearch(esClient);
-
     await updateRecipeService({
-      recipe,
-      recipeMethod,
-      recipeEquipment,
-      recipeIngredient,
-      recipeSubrecipe,
-      recipeSearch,
+      recipeId,
       ownerId,
       recipeToUpdateWith,
       requiredMethods,
@@ -302,5 +207,3 @@ const userRecipeController = {
     res.send({message: 'Recipe disowned.'});
   }
 };
-
-module.exports = userRecipeController;

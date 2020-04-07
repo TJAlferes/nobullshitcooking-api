@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
-const pool = require('../../lib/connections/mysqlPoolConnection');
-const esClient = require('../../lib/connections/elasticsearchClient');
+import { pool } from '../../lib/connections/mysqlPoolConnection';
+import { esClient } from '../../lib/connections/elasticsearchClient';
 
 const Recipe = require('../../mysql-access/Recipe');
 const RecipeMethod = require('../../mysql-access/RecipeMethod');
@@ -13,12 +13,12 @@ const SavedRecipe = require('../../mysql-access/SavedRecipe');
 
 const RecipeSearch = require('../../elasticsearch-access/RecipeSearch');
 
-const createRecipeService = require('../../lib/services/create-recipe');
-const updateRecipeService = require('../../lib/services/update-recipe');
+import { createRecipeService } from '../../lib/services/create-recipe';
+import { updateRecipeService } from '../../lib/services/update-recipe';
 
 const validRecipeEntity = require('../../lib/validations/recipe/recipeEntity');
 
-const staffRecipeController = {
+export const staffRecipeController = {
   createRecipe: async function(req: Request, res: Response) {
     const recipeTypeId = Number(req.body.recipeInfo.recipeTypeId);
     const cuisineId = Number(req.body.recipeInfo.cuisineId);
@@ -139,5 +139,3 @@ const staffRecipeController = {
     res.send('Recipe deleted.');
   }
 };
-
-module.exports = staffRecipeController;

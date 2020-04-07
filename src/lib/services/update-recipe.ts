@@ -39,7 +39,7 @@ interface RecipeToUpdateWith {
   cookingImage: string
 }
 
-async function updateRecipeService({
+export async function updateRecipeService({
   recipeId,
   ownerId,
   recipeToUpdateWith,
@@ -184,5 +184,3 @@ async function updateRecipeService({
     await recipeSearch.saveRecipe(recipeInfoForElasticSearch);
   }
 }
-
-module.exports = updateRecipeService;

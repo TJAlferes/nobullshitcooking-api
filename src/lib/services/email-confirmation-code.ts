@@ -1,4 +1,4 @@
-import { emailToUser } from './simple-email-service';
+import { emailUser } from './simple-email-service';
 
 export function emailConfirmationCode(
   email: string,
@@ -29,5 +29,5 @@ export function emailConfirmationCode(
 
   const charset = "UTF-8";
 
-  emailToUser(from, to, subject, bodyText, bodyHtml, charset);
+  emailUser(from, to, subject, bodyText, bodyHtml, charset);
 }

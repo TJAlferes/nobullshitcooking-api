@@ -1,13 +1,13 @@
 'use strict';
 
-const expressSession = require("express-session");
-const connectRedis = require('connect-redis');
+import expressSession from 'express-session';
+import connectRedis from 'connect-redis';
 
-const { sessClient } = require('./lib/connections/redisConnection');
+import { sessClient } from './lib/connections/redisConnection';
 
-const socketInit = require('./socketInit');
+import { socketInit } from './socketInit';
 
-function sessionInit(app, server) {
+export function sessionInit(app, server) {
   const RedisStore = connectRedis(expressSession);
   const redisSession = new RedisStore({client: sessClient});
 
@@ -45,5 +45,3 @@ function sessionInit(app, server) {
 
   return expressSession(sessionOptions);
 }
-
-module.exports = sessionInit;

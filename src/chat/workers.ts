@@ -1,6 +1,6 @@
 'use strict';
 
-const { workerClient } = require('../lib/connections/redisConnection');
+import { workerClient } from '../lib/connections/redisConnection';
 
 const DELTA = 60 * 60 * 1000 * 2;  // 2 hours
 
@@ -76,11 +76,9 @@ async function cleanUpChats() {
   }
 }
 
-const cleanUp = async function() {
+export async function cleanUp() {
   console.log('Clean Up Isle NOBSC Messenger (START)');
   await cleanUpRooms();
   await cleanUpChats();
   console.log('Clean Up Isle NOBSC Messenger (END)');
 }
-
-module.exports = cleanUp;

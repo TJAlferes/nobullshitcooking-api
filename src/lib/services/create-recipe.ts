@@ -38,7 +38,7 @@ interface RecipeToCreate {
   cookingImage: string
 }
 
-async function createRecipeService({
+export async function createRecipeService({
   ownerId,
   recipeToCreate,
   requiredMethods,
@@ -162,5 +162,3 @@ async function createRecipeService({
     await recipeSearch.saveRecipe(recipeInfoForElasticSearch);
   }
 }
-
-module.exports = createRecipeService;

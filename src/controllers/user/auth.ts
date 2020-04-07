@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
 //const crypto = require('crypto');
-const bcrypt = require('bcrypt');
-const uuidv4 = require('uuid/v4');
+import bcrypt from 'bcrypt';
+import uuidv4 from 'uuid/v4';
 
 const User = require('../../mysql-access/User');
 
-const pool = require('../../lib/connections/mysqlPoolConnection');
+import { pool } from '../../lib/connections/mysqlPoolConnection';
 
-const emailConfirmationCode = require('../../lib/services/email-confirmation-code');
+import { emailConfirmationCode } from '../../lib/services/email-confirmation-code';
 
 const {
   validRegisterRequest,
