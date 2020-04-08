@@ -1,5 +1,55 @@
 import { Pool } from 'mysql2/promise';
 
+interface IPlan {
+  authorId: number
+  ownerId: number
+  planName: string
+  planData: PlanData
+}
+
+interface PlanData {
+  1: PlanRecipe[],
+  2: PlanRecipe[],
+  3: PlanRecipe[],
+  4: PlanRecipe[],
+  5: PlanRecipe[],
+  6: PlanRecipe[],
+  7: PlanRecipe[],
+  8: PlanRecipe[],
+  9: PlanRecipe[],
+  10: PlanRecipe[],
+  11: PlanRecipe[],
+  12: PlanRecipe[],
+  13: PlanRecipe[],
+  14: PlanRecipe[],
+  15: PlanRecipe[],
+  16: PlanRecipe[],
+  17: PlanRecipe[],
+  18: PlanRecipe[],
+  19: PlanRecipe[],
+  20: PlanRecipe[],
+  21: PlanRecipe[],
+  22: PlanRecipe[],
+  23: PlanRecipe[],
+  24: PlanRecipe[],
+  25: PlanRecipe[],
+  26: PlanRecipe[],
+  27: PlanRecipe[],
+  28: PlanRecipe[]
+}
+
+interface PlanRecipe {
+  key: string
+  image: string
+  text: string
+}
+
+interface IPlanUpdate {
+  planName: string
+  planData: string
+  ownerId: string
+}
+
 export class Plan {
   pool: Pool;
 
@@ -12,7 +62,7 @@ export class Plan {
     this.deleteMyPrivatePlan = this.deleteMyPrivatePlan.bind(this);
   }
   
-  async viewAllMyPrivatePlans(ownerId) {
+  async viewAllMyPrivatePlans(ownerId: number) {
     const sql = `
       SELECT plan_id, plan_name, plan_data
       FROM nobsc_plans
@@ -22,7 +72,7 @@ export class Plan {
     return plans;
   }
 
-  async viewMyPrivatePlan(ownerId, planId) {
+  async viewMyPrivatePlan(ownerId: number, planId: number) {
     const sql = `
       SELECT plan_id, plan_name, plan_data
       FROM nobsc_plans
@@ -32,8 +82,7 @@ export class Plan {
     return plan;
   }
 
-  async createMyPrivatePlan(planToCreate) {
-    const { authorId, ownerId, planName, planData } = planToCreate;
+  async createMyPrivatePlan({ authorId, ownerId, planName, planData }: IPlan) {
     const sql = `
       INSERT INTO nobsc_plans (author_id, owner_id, plan_name, plan_data)
       VALUES (?, ?, ?, ?)
@@ -47,8 +96,14 @@ export class Plan {
     return createdPlan;
   }
 
-  async updateMyPrivatePlan(planToUpdateWith, planId) {
-    const { planName, planData, ownerId } = planToUpdateWith;
+  async updateMyPrivatePlan(
+    {
+      planName,
+      planData,
+      ownerId
+    }: IPlanUpdate,
+    planId: number
+  ) {
     const sql = `
       UPDATE nobsc_plans
       SET plan_name = ?, plan_data = ?
@@ -64,7 +119,7 @@ export class Plan {
     return updatedPlan;
   }
 
-  async deleteMyPrivatePlan(ownerId, planId) {
+  async deleteMyPrivatePlan(ownerId: number, planId: number) {
     const sql = `
       DELETE
       FROM nobsc_plans

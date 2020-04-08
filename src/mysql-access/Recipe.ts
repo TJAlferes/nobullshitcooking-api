@@ -1,5 +1,19 @@
 import { Pool } from 'mysql2/promise';
 
+interface IRecipe {
+  recipeTypeId: number
+  cuisineId: number
+  authorId: number
+  ownerId: number
+  title: string
+  description: string
+  directions: string
+  recipeImage: string
+  equipmentImage: string
+  ingredientsImage: string
+  cookingImage: string
+}
+
 export class Recipe {
   pool: Pool;
 
@@ -136,7 +150,7 @@ export class Recipe {
 
   //--------------------------------------------------------------------------
 
-  async viewRecipes(authorId, ownerId) {
+  async viewRecipes(authorId: number, ownerId: number) {
     const sql = `
       SELECT
         recipe_id,
@@ -153,7 +167,7 @@ export class Recipe {
     return recipes;
   }
 
-  async viewRecipeById(recipeId, authorId, ownerId) {
+  async viewRecipeById(recipeId: number, authorId: number, ownerId: number) {
     const sql = `
       SELECT
       r.recipe_id,
@@ -219,20 +233,19 @@ export class Recipe {
     return recipe;
   }
 
-  async createRecipe(recipeToCreate) {
-    const {
-      recipeTypeId,
-      cuisineId,
-      authorId,
-      ownerId,
-      title,
-      description,
-      directions,
-      recipeImage,
-      equipmentImage,
-      ingredientsImage,
-      cookingImage
-    } = recipeToCreate;
+  async createRecipe({
+    recipeTypeId,
+    cuisineId,
+    authorId,
+    ownerId,
+    title,
+    description,
+    directions,
+    recipeImage,
+    equipmentImage,
+    ingredientsImage,
+    cookingImage
+  }: IRecipe) {
     const sql = `
       INSERT INTO nobsc_recipes (
         recipe_type_id,
@@ -266,8 +279,8 @@ export class Recipe {
     return createdRecipe;
   }
   
-  async updateRecipe(recipeToUpdateWith, recipeId) {
-    const {
+  async updateRecipe(
+    {
       recipeTypeId,
       cuisineId,
       authorId,
@@ -278,8 +291,10 @@ export class Recipe {
       recipeImage,
       equipmentImage,
       ingredientsImage,
-      cookingImage,
-    } = recipeToUpdateWith;
+      cookingImage
+    }: IRecipe,
+    recipeId: number
+  ) {
     const sql = `
       UPDATE nobsc_recipes
       SET
@@ -314,7 +329,7 @@ export class Recipe {
     return updatedRecipe;
   }
   
-  async deleteRecipe(recipeId) {
+  async deleteRecipe(recipeId: number) {
     const sql = `DELETE FROM nobsc_recipes WHERE recipe_id = ? LIMIT 1`;
     const [ deletedRecipe ] = await this.pool.execute(sql, [recipeId]);
     return deletedRecipe;
@@ -322,7 +337,11 @@ export class Recipe {
 
   //--------------------------------------------------------------------------
 
-  async getInfoToEditMyUserRecipe(recipeId, authorId, ownerId) {
+  async getInfoToEditMyUserRecipe(
+    recipeId: number,
+    authorId: number,
+    ownerId: number
+  ) {
     const sql = `
     SELECT
     r.recipe_id,
@@ -388,8 +407,8 @@ export class Recipe {
     return recipe;
   }
 
-  async updateMyUserRecipe(recipeToUpdateWith, recipeId) {
-    const {
+  async updateMyUserRecipe(
+    {
       recipeTypeId,
       cuisineId,
       authorId,
@@ -400,8 +419,10 @@ export class Recipe {
       recipeImage,
       equipmentImage,
       ingredientsImage,
-      cookingImage,
-    } = recipeToUpdateWith;
+      cookingImage
+    }: IRecipe,
+    recipeId: number
+  ) {
     const sql = `
       UPDATE nobsc_recipes
       SET
@@ -434,7 +455,11 @@ export class Recipe {
     return updatedRecipe;
   }
 
-  async deleteMyPrivateUserRecipe(recipeId, authorId, ownerId) {
+  async deleteMyPrivateUserRecipe(
+    recipeId: number,
+    authorId: number,
+    ownerId: number
+  ) {
     const sql = `
       DELETE
       FROM nobsc_recipes
@@ -449,7 +474,11 @@ export class Recipe {
     return deletedPrivateUserRecipe;
   }
 
-  async disownMyPublicUserRecipe(newAuthorId, recipeId, authorId) {
+  async disownMyPublicUserRecipe(
+    newAuthorId: number,
+    recipeId: number,
+    authorId: number
+  ) {
     const sql = `
       UPDATE nobsc_recipes
       SET author_id = ?

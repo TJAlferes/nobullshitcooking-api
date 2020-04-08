@@ -1,5 +1,11 @@
 import { Pool } from 'mysql2/promise';
 
+interface IUser {
+  email: string
+  pass: string
+  username: string
+}
+
 export class User {
   pool: Pool;
 
@@ -16,29 +22,27 @@ export class User {
     //this.deleteUser = this.deleteUser.bind(this);
   }
 
-  async getUserByEmail(email) {
+  async getUserByEmail(email: string) {
     const sql = `
       SELECT user_id, email, pass, username, avatar, confirmation_code
       FROM nobsc_users
       WHERE email = ?
     `;
     const [ userByEmail ] = await this.pool.execute(sql, [email]);
-    //if (!userByEmail) throw new Error("getUserByEmail failed");
     return userByEmail;
   }
 
-  async getUserByName(username) {
+  async getUserByName(username: string) {
     const sql = `
       SELECT user_id, email, pass, username
       FROM nobsc_users
       WHERE username = ?
     `;
     const [ userByName ] = await this.pool.execute(sql, [username]);
-    //if (!userByName) throw new Error("getUserByName failed");
     return userByName;
   }
 
-  async getUserIdByUsername(username) {
+  async getUserIdByUsername(username: string) {
     const sql = `
       SELECT user_id, avatar
       FROM nobsc_users
@@ -48,7 +52,7 @@ export class User {
     return userId;
   }
 
-  async viewAllUsers(starting, display) {
+  async viewAllUsers(starting: number, display: number) {
     const sql = `
       SELECT username, avatar
       FROM nobsc_users
@@ -56,33 +60,30 @@ export class User {
       LIMIT ?, ?
     `;
     const [ allUsers ] = await this.pool.execute(sql, [starting, display]);
-    if (!allUsers) throw new Error("viewAllUsers failed");
     return allUsers;
   }
 
-  async viewUserById(userId) {
+  async viewUserById(userId: number) {
     const sql = `
       SELECT username, avatar
       FROM nobsc_users
       WHERE user_id = ?
     `;
     const [ user ] = await this.pool.execute(sql, [userId]);
-    if (!user) throw new Error("viewUserById failed");
     return user;
   }
 
-  async createUser(userToCreate) {
-    const { email, pass, username } = userToCreate;
+  async createUser({ email, pass, username }: IUser) {
     const sql = `
       INSERT INTO nobsc_users (email, pass, username)
       VALUES (?, ?, ?)
     `;
-    const [ createdUser ] = await this.pool.execute(sql, [email, pass, username]);
-    if (!createdUser) throw new Error("createUser failed");
+    const [ createdUser ] = await this.pool
+    .execute(sql, [email, pass, username]);
     return createdUser;
   }
 
-  async setAvatar(avatar, userId) {
+  async setAvatar(avatar: string, userId: number) {
     const sql = `
       UPDATE nobsc_users
       SET avatar = ?
@@ -101,8 +102,8 @@ export class User {
       WHERE user_id = ?
       LIMIT 1
     `;
-    const [ updatedUser ] = await this.pool.execute(sql, [email, pass, username, avatar, userId]);
-    if (!updatedUser) throw new Error("updateUser failed");
+    const [ updatedUser ] = await this.pool
+    .execute(sql, [email, pass, username, avatar, userId]);
     return updatedUser;
   }*/
 
@@ -114,9 +115,6 @@ export class User {
       LIMIT 1
     `;
     const [ deletedUser ] = await this.pool.execute(sql, [userId]);
-    if (!deletedUser) throw new Error("deleteUser failed");
     return deletedUser;
   }*/
 }
-
-module.exports = User;

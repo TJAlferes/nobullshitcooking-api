@@ -1,5 +1,15 @@
-class Staff {
-  constructor(pool) {
+import { Pool } from 'mysql2/promise';
+
+interface IStaff {
+  email: string
+  pass: string
+  staffname: string
+}
+
+export class Staff {
+  pool: Pool;
+
+  constructor(pool: Pool) {
     this.pool = pool;
     this.getStaffByEmail = this.getStaffByEmail.bind(this);
     this.getStaffByName = this.getStaffByName.bind(this);
@@ -10,7 +20,7 @@ class Staff {
     //this.deleteStaff = this.deleteStaff.bind(this);
   }
 
-  async getStaffByEmail(email) {
+  async getStaffByEmail(email: string) {
     const sql = `
       SELECT staff_id, email, pass, staffname
       FROM nobsc_staff
@@ -20,7 +30,7 @@ class Staff {
     return staffByEmail;
   }
 
-  async getStaffByName(staffname) {
+  async getStaffByName(staffname: string) {
     const sql = `
       SELECT staff_id, email, pass, staffname
       FROM nobsc_staff
@@ -30,7 +40,7 @@ class Staff {
     return staffByName;
   }
 
-  async viewAllStaff(starting, display) {
+  async viewAllStaff(starting: number, display: number) {
     const sql = `
       SELECT staffname, avatar
       FROM nobsc_staff
@@ -38,29 +48,26 @@ class Staff {
       LIMIT ?, ?
     `;
     const [ allStaff ] = await this.pool.execute(sql, [starting, display]);
-    if (!allStaff) throw new Error("viewAllStaff failed");
     return allStaff;
   }
 
-  async viewStaffById(staffId) {
+  async viewStaffById(staffId: number) {
     const sql = `
       SELECT staffname, avatar
       FROM nobsc_staff
       WHERE staff_id = ?
     `;
     const [ staff ] = await this.pool.execute(sql, [staffId]);
-    if (!staff) throw new Error("viewStaffById failed");
     return staff;
   }
 
-  async createStaff(staffToCreate) {
-    const { email, pass, staffname } = staffToCreate;
+  async createStaff({ email, pass, staffname }: IStaff) {
     const sql = `
       INSERT INTO nobsc_staff (email, pass, staffname)
       VALUES (?, ?, ?)
     `;
-    const [ createdStaff ] = await this.pool.execute(sql, [email, pass, staffname]);
-    if (!createdStaff) throw new Error("createdStaff failed");
+    const [ createdStaff ] = await this.pool
+    .execute(sql, [email, pass, staffname]);
     return createdStaff;
   }
 
@@ -89,5 +96,3 @@ class Staff {
     return deletedStaff;
   }*/
 }
-
-module.exports = Staff;

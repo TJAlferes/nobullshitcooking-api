@@ -1,3 +1,5 @@
+import { Pool } from 'mysql2/promise';
+
 export interface IRecipeSubrecipe {
   subrecipe: number
   amount: number
@@ -5,7 +7,9 @@ export interface IRecipeSubrecipe {
 }
 
 export class RecipeSubrecipe {
-  constructor(pool) {
+  pool: Pool;
+
+  constructor(pool: Pool) {
     this.pool = pool;
     this.viewRecipeSubrecipesByRecipeId = this.viewRecipeSubrecipesByRecipeId.bind(this);
     this.createRecipeSubrecipes = this.createRecipeSubrecipes.bind(this);

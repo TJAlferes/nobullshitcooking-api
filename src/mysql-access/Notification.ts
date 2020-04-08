@@ -4,7 +4,7 @@ interface INotification {
   senderId: number
   receiverId: number
   note: string
-  read: Boolean
+  read: boolean
 }
 
 export class Notification {
@@ -16,7 +16,7 @@ export class Notification {
     this.viewAllNotificationsForUser = this.viewAllNotificationsForUser.bind(this);
     this.markNotificationAsRead = this.markNotificationAsRead.bind(this);
     this.createNotification = this.createNotification.bind(this);
-    //this.deleteOldNotifications = this.deleteNotifications.bind(this);  // make a weekly(?) job
+    //this.deleteOldNotifications = this.deleteNotifications.bind(this);  // move and make a weekly(?) job
   }
 
   async viewNotificationForUser(notificationId: number, userId: number) {
@@ -43,15 +43,16 @@ export class Notification {
     senderId,
     receiverId,
     note,
-    read }: INotification
-  ) {
+    read
+  }: INotification) {
     const sql = `
       INSERT INTO nobsc_notifications
       (sender_id, receiver_id, read, type, note, created_on)
       VALUES
       (?, ?, ?, ?)
     `;
-    const [ notification ] = await this.pool.execute(sql, [senderId, receiverId, note, read]);
+    const [ notification ] = await this.pool
+    .execute(sql, [senderId, receiverId, note, read]);
     return notification;
   }
 
@@ -61,7 +62,8 @@ export class Notification {
       SET read = 1
       WHERE notification_id = ? and receiver_id = ?
     `;
-    const [ notification ] = await this.pool.execute(sql, [notificationId, userId]);
+    const [ notification ] = await this.pool
+    .execute(sql, [notificationId, userId]);
     return notification;
   }
 

@@ -1,5 +1,9 @@
-class RecipeType {
-  constructor(pool) {
+import { Pool } from 'mysql2/promise';
+
+export class RecipeType {
+  pool: Pool;
+
+  constructor(pool: Pool) {
     this.pool = pool;
     this.viewAllRecipeTypes = this.viewAllRecipeTypes.bind(this);
     this.viewRecipeTypeById = this.viewRecipeTypeById.bind(this);
@@ -14,7 +18,7 @@ class RecipeType {
     return allRecipeTypes;
   }
 
-  async viewRecipeTypeById(typeId) {
+  async viewRecipeTypeById(typeId: number) {
     const sql = `
       SELECT recipe_type_id, recipe_type_name
       FROM nobsc_recipe_types
@@ -24,5 +28,3 @@ class RecipeType {
     return recipeType;
   }
 }
-
-module.exports = RecipeType;

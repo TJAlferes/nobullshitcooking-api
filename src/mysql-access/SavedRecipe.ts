@@ -1,5 +1,9 @@
-class SavedRecipe {
-  constructor(pool) {
+import { Pool } from 'mysql2/promise';
+
+export class SavedRecipe {
+  pool: Pool;
+
+  constructor(pool: Pool) {
     this.pool = pool;
     this.deleteAllSavesOfRecipe = this.deleteAllSavesOfRecipe.bind(this);
     this.viewMySavedRecipes = this.viewMySavedRecipes.bind(this);
@@ -7,7 +11,7 @@ class SavedRecipe {
     this.deleteMySavedRecipe = this.deleteMySavedRecipe.bind(this);
   }
 
-  async deleteAllSavesOfRecipe(recipeId) {
+  async deleteAllSavesOfRecipe(recipeId: number) {
     const sql = `
       DELETE
       FROM nobsc_saved_recipes
@@ -17,7 +21,7 @@ class SavedRecipe {
     return unsavedRecipes;
   }
 
-  async viewMySavedRecipes(userId) {
+  async viewMySavedRecipes(userId: number) {
     const sql = `
       SELECT 
         s.recipe_id AS recipe_id,
@@ -35,7 +39,7 @@ class SavedRecipe {
     return savedRecipes;
   }
 
-  async createMySavedRecipe(userId, recipeId) {
+  async createMySavedRecipe(userId: number, recipeId: number) {
     await this.deleteMySavedRecipe(userId, recipeId);
     const sql = `
       INSERT INTO nobsc_saved_recipes (user_id, recipe_id)
@@ -45,7 +49,7 @@ class SavedRecipe {
     return savedRecipe;
   }
 
-  async deleteMySavedRecipe(userId, recipeId) {
+  async deleteMySavedRecipe(userId: number, recipeId: number) {
     const sql = `
       DELETE
       FROM nobsc_saved_recipes
@@ -56,5 +60,3 @@ class SavedRecipe {
     return unsavedRecipe;
   }
 }
-
-module.exports = SavedRecipe;

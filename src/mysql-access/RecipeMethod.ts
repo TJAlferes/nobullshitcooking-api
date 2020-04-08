@@ -1,9 +1,13 @@
+import { Pool } from 'mysql2/promise';
+
 export interface IRecipeMethod {
   methodId: number
 }
 
 export class RecipeMethod {
-  constructor(pool) {
+  pool: Pool;
+
+  constructor(pool: Pool) {
     this.pool = pool;
     this.viewRecipeMethodsByRecipeId = this.viewRecipeMethodsByRecipeId.bind(this);
     this.createRecipeMethods = this.createRecipeMethods.bind(this);

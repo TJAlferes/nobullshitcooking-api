@@ -1,5 +1,9 @@
 import { Pool } from 'mysql2/promise';
 
+interface ISupplier {
+  supplierName: string
+}
+
 export class Supplier {
   pool: Pool;
 
@@ -18,7 +22,7 @@ export class Supplier {
     return suppliers;
   }
 
-  async viewSupplierById(supplierId) {
+  async viewSupplierById(supplierId: number) {
     const sql = `
       SELECT supplier_id, supplier_name
       FROM nobsc_suppliers
@@ -28,7 +32,7 @@ export class Supplier {
     return supplier;
   }
 
-  async createSupplier(supplierName) {
+  async createSupplier(supplierName: string) {
     const sql = `
       INSERT INTO nobsc_suppliers (supplier_name)
       VALUES (?)
@@ -37,8 +41,7 @@ export class Supplier {
     return createdSupplier;
   }
 
-  async updateSupplier(supplierToUpdateWith, supplierId) {
-    const { supplierName } = supplierToUpdateWith;
+  async updateSupplier({ supplierName }: ISupplier, supplierId: number) {
     const sql = `
       UPDATE nobsc_suppliers
       SET supplier_name = ?
@@ -52,7 +55,7 @@ export class Supplier {
     return updatedSupplier;
   }
 
-  async deleteSupplier(supplierId) {
+  async deleteSupplier(supplierId: number) {
     const sql = `
       DELETE
       FROM nobsc_suppliers
@@ -63,5 +66,3 @@ export class Supplier {
     return deletedSupplier;
   }
 }
-
-module.exports = Supplier;
