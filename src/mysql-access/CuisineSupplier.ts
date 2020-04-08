@@ -1,5 +1,9 @@
-class CuisineSupplier {
-  constructor(pool) {
+import { Pool } from 'mysql2/promise';
+
+export class CuisineSupplier {
+  pool: Pool;
+
+  constructor(pool: Pool) {
     this.pool = pool;
     this.viewCuisineSuppliersByCuisineId = this.viewCuisineSuppliersByCuisineId.bind(this);
     this.createCuisineSupplier = this.createCuisineSupplier.bind(this);
@@ -7,7 +11,7 @@ class CuisineSupplier {
     this.deleteCuisineSuppliersBySupplierId = this.deleteCuisineSuppliersBySupplierId.bind(this);
   }
 
-  async viewCuisineSuppliersByCuisineId(cuisineId) {
+  async viewCuisineSuppliersByCuisineId(cuisineId: number) {
     const sql = `
       SELECT s.supplier_name
       FROM nobsc_cuisine_suppliers cs
@@ -21,7 +25,7 @@ class CuisineSupplier {
     return cuisineSuppliers;
   }
 
-  async createCuisineSupplier(cuisineId, supplierId) {
+  async createCuisineSupplier(cuisineId: number, supplierId: number) {
     // to prevent duplicates?
     await this.deleteCuisineSupplier(cuisineId, supplierId);  // ?
 
@@ -39,7 +43,7 @@ class CuisineSupplier {
   }
 
   // used when deleting a cuisine-supplier relationship
-  async deleteCuisineSupplier(cuisineId, supplierId) {
+  async deleteCuisineSupplier(cuisineId: number, supplierId: number) {
     const sql = `
       DELETE
       FROM nobsc_cuisine_suppliers
@@ -68,5 +72,3 @@ class CuisineSupplier {
     return deletedCuisineSuppliers;
   }
 }
-
-module.exports = CuisineSupplier;

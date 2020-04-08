@@ -1,5 +1,9 @@
-class FavoriteRecipe {
-  constructor(pool) {
+import { Pool } from 'mysql2/promise';
+
+export class FavoriteRecipe {
+  pool: Pool;
+
+  constructor(pool: Pool) {
     this.pool = pool;
     //this.viewMostFavorited = this.viewMostFavorited.bind(this);
     this.deleteAllFavoritesOfRecipe = this.deleteAllFavoritesOfRecipe.bind(this);
@@ -26,7 +30,7 @@ class FavoriteRecipe {
     return mostFavorited;
   }*/
 
-  async deleteAllFavoritesOfRecipe(recipeId) {
+  async deleteAllFavoritesOfRecipe(recipeId: number) {
     const sql = `
       DELETE
       FROM nobsc_favorite_recipes
@@ -36,7 +40,7 @@ class FavoriteRecipe {
     return unfavoritedRecipes;
   }
 
-  async viewMyFavoriteRecipes(userId) {
+  async viewMyFavoriteRecipes(userId: number) {
     const sql = `
       SELECT 
         f.recipe_id AS recipe_id,
@@ -54,7 +58,7 @@ class FavoriteRecipe {
     return favoriteRecipes;
   }
 
-  async createMyFavoriteRecipe(userId, recipeId) {
+  async createMyFavoriteRecipe(userId: number, recipeId: number) {
     await this.deleteMyFavoriteRecipe(userId, recipeId);
     const sql = `
       INSERT INTO nobsc_favorite_recipes (user_id, recipe_id)
@@ -64,7 +68,7 @@ class FavoriteRecipe {
     return favoritedRecipe;
   }
 
-  async deleteMyFavoriteRecipe(userId, recipeId) {
+  async deleteMyFavoriteRecipe(userId: number, recipeId: number) {
     const sql = `
       DELETE
       FROM nobsc_favorite_recipes
@@ -75,5 +79,3 @@ class FavoriteRecipe {
     return unfavoritedRecipe;
   }
 }
-
-module.exports = FavoriteRecipe;

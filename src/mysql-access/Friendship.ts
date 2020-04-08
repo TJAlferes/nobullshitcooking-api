@@ -1,5 +1,16 @@
-class Friendship {
-  constructor(pool) {
+import { Pool } from 'mysql2/promise';
+
+interface IFriendship {
+  userId: number
+  friendId: number
+  status1: string
+  status2: string
+}
+
+export class Friendship {
+  pool: Pool;
+
+  constructor(pool: Pool) {
     this.pool = pool;
     this.getFriendshipByFriendId = this.getFriendshipByFriendId.bind(this);
     this.checkIfBlockedBy = this.checkIfBlockedBy.bind(this);
@@ -28,7 +39,7 @@ class Friendship {
     (except for block/unblock, which must be one-sided)
   */
 
-  async getFriendshipByFriendId(userId, friendId) {
+  async getFriendshipByFriendId(userId: number, friendId: number) {
     const sql = `
       SELECT user_id, friend_id, status
       FROM nobsc_friendships
@@ -38,7 +49,7 @@ class Friendship {
     return friendship;
   }
 
-  async checkIfBlockedBy(userId, friendId) {
+  async checkIfBlockedBy(userId: number, friendId: number) {
     const sql = `
       SELECT user_id, friend_id
       FROM nobsc_friendships
@@ -48,7 +59,7 @@ class Friendship {
     return blockedBy;
   }
 
-  async viewAllMyFriendships(userId) {
+  async viewAllMyFriendships(userId: number) {
     const sql = `
       SELECT
         u.user_id AS user_id,
@@ -63,7 +74,7 @@ class Friendship {
     return friendships;
   }
 
-  async viewAllMyAcceptedFriendships(userId) {
+  async viewAllMyAcceptedFriendships(userId: number) {
     const sql = `
       SELECT
         u.user_id AS user_id,
@@ -78,7 +89,7 @@ class Friendship {
     return acceptedFriendships;
   }
 
-  async viewAllMyPendingFriendships(userId) {
+  async viewAllMyPendingFriendships(userId: number) {
     const sql = `
       SELECT
         u.user_id AS user_id,
@@ -93,7 +104,7 @@ class Friendship {
     return pendingFriendships;
   }
 
-  async viewAllMyBlockedUsers(userId) {
+  async viewAllMyBlockedUsers(userId: number) {
     const sql = `
       SELECT
         u.user_id AS user_id,
@@ -108,8 +119,12 @@ class Friendship {
     return blockedUsers;
   }
 
-  async createFriendship(friendshipToCreate) {
-    const { userId, friendId, status1, status2 } = friendshipToCreate;
+  async createFriendship({
+    userId,
+    friendId,
+    status1,
+    status2
+  }: IFriendship) {
     const sql = `
       INSERT INTO nobsc_friendships (user_id, friend_id, status)
       VALUES (?, ?, ?)
@@ -119,7 +134,7 @@ class Friendship {
     return pendingFriendship;
   }
 
-  async acceptFriendship(userId, friendId) {
+  async acceptFriendship(userId: number, friendId: number) {
     const sql1 = `
       UPDATE nobsc_friendships
       SET status = "accepted"
@@ -137,7 +152,7 @@ class Friendship {
     return acceptedFriendship;
   }
 
-  async rejectFriendship(userId, friendId) {
+  async rejectFriendship(userId: number, friendId: number) {
     const sql = `
       DELETE
       FROM nobsc_friendships
@@ -149,7 +164,7 @@ class Friendship {
     return rejectedFriendship;
   }
 
-  async deleteFriendship(userId, friendId) {
+  async deleteFriendship(userId: number, friendId: number) {
     const sql = `
       DELETE
       FROM nobsc_friendships
@@ -161,7 +176,7 @@ class Friendship {
     return deletedFriendship;
   }
 
-  async blockUser(userId, friendId) {
+  async blockUser(userId: number, friendId: number) {
     const sql1 = `
       DELETE
       FROM nobsc_friendships
@@ -178,7 +193,7 @@ class Friendship {
     return blockedUser;
   }
 
-  async unblockUser(userId, friendId) {
+  async unblockUser(userId: number, friendId: number) {
     const sql = `
       DELETE
       FROM nobsc_friendships
@@ -189,5 +204,3 @@ class Friendship {
     return unblockedUser;
   }
 }
-
-module.exports = Friendship;

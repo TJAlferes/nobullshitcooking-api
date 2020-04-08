@@ -1,5 +1,25 @@
-class Ingredient {
-  constructor(pool) {
+import { Pool } from 'mysql2/promise';
+
+interface IIngredient {
+  ingredientTypeId: number
+  authorId: number
+  ownerId: number
+  ingredientName: string
+  ingredientDescription: string
+  ingredientImage: string
+}
+
+interface IIngredientUpdate {
+  ingredientTypeId: number
+  ingredientName: string
+  ingredientDescription: string
+  ingredientImage: string
+}
+
+export class Ingredient {
+  pool: Pool;
+
+  constructor(pool: Pool) {
     this.pool = pool;
 
     this.getAllPublicIngredientsForElasticSearchBulkInsert = this.getAllPublicIngredientsForElasticSearchBulkInsert.bind(this);
@@ -80,7 +100,7 @@ class Ingredient {
 
   //--------------------------------------------------------------------------
 
-  async viewIngredients(authorId, ownerId) {
+  async viewIngredients(authorId: number, ownerId: number) {
     const sql = `
       SELECT
         i.ingredient_id AS ingredient_id,
@@ -100,7 +120,11 @@ class Ingredient {
     return ingredients;
   }
 
-  async viewIngredientById(ingredientId, authorId, ownerId) {
+  async viewIngredientById(
+    ingredientId: number,
+    authorId: number,
+    ownerId: number
+  ) {
     const sql = `
       SELECT
         i.ingredient_id AS ingredient_id,
@@ -117,15 +141,14 @@ class Ingredient {
     return ingredient;
   }
 
-  async createIngredient(ingredientToCreate) {
-    const {
-      ingredientTypeId,
-      authorId,
-      ownerId,
-      ingredientName,
-      ingredientDescription,
-      ingredientImage
-    } = ingredientToCreate;
+  async createIngredient({
+    ingredientTypeId,
+    authorId,
+    ownerId,
+    ingredientName,
+    ingredientDescription,
+    ingredientImage
+  }: IIngredient) {
     const sql = `
       INSERT INTO nobsc_ingredients
       (ingredient_type_id, author_id, owner_id, ingredient_name, ingredient_description, ingredient_image)
@@ -143,13 +166,15 @@ class Ingredient {
     return createdIngredient;
   }
 
-  async updateIngredient(ingredientToUpdateWith, ingredientId) {
-    const { 
+  async updateIngredient(
+    { 
       ingredientTypeId,
       ingredientName,
       ingredientDescription,
       ingredientImage
-    } = ingredientToUpdateWith;
+    }: IIngredientUpdate,
+    ingredientId: number
+  ) {
     const sql = `
       UPDATE nobsc_ingredients
       SET
@@ -170,7 +195,7 @@ class Ingredient {
     return updatedIngredient;
   }
 
-  async deleteIngredient(ingredientId) {
+  async deleteIngredient(ingredientId: number) {
     const sql = `
       DELETE
       FROM nobsc_ingredients
@@ -183,15 +208,14 @@ class Ingredient {
 
   //--------------------------------------------------------------------------
 
-  async createMyPrivateUserIngredient(ingredientToCreate) {
-    const {
-      ingredientTypeId,
-      authorId,
-      ownerId,
-      ingredientName,
-      ingredientDescription,
-      ingredientImage
-    } = ingredientToCreate;
+  async createMyPrivateUserIngredient({
+    ingredientTypeId,
+    authorId,
+    ownerId,
+    ingredientName,
+    ingredientDescription,
+    ingredientImage
+  }: IIngredient) {
     const sql = `
       INSERT INTO nobsc_ingredients
       (ingredient_type_id, author_id, owner_id, ingredient_name, ingredient_description, ingredient_image)
@@ -209,15 +233,17 @@ class Ingredient {
     return createdPrivateUserIngredient;
   }
 
-  async updateMyPrivateUserIngredient(ingredientToUpdateWith, ingredientId) {
-    const {
+  async updateMyPrivateUserIngredient(
+    {
       ingredientTypeId,
       authorId,
       ownerId,
       ingredientName,
       ingredientDescription,
       ingredientImage
-    } = ingredientToUpdateWith;
+    }: IIngredient,
+    ingredientId: number
+  ) {
     const sql = `
       UPDATE nobsc_ingredients
       SET
@@ -243,7 +269,7 @@ class Ingredient {
     return updatedPrivateUserIngredient;
   }
 
-  async deleteMyPrivateUserIngredient(ownerId, ingredientId) {
+  async deleteMyPrivateUserIngredient(ownerId: number, ingredientId: number) {
     const sql = `
       DELETE
       FROM nobsc_ingredients
@@ -254,5 +280,3 @@ class Ingredient {
     return deletedPrivateUserIngredient;
   }
 }
-
-module.exports = Ingredient;

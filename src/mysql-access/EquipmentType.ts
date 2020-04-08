@@ -1,5 +1,9 @@
-class EquipmentType {
-  constructor(pool) {
+import { Pool } from 'mysql2/promise';
+
+export class EquipmentType {
+  pool: Pool;
+
+  constructor(pool: Pool) {
     this.pool = pool;
     this.viewAllEquipmentTypes = this.viewAllEquipmentTypes.bind(this);
     this.viewEquipmentTypeById = this.viewEquipmentTypeById.bind(this);
@@ -14,7 +18,7 @@ class EquipmentType {
     return allEquipmentTypes;
   }
 
-  async viewEquipmentTypeById(typeId) {
+  async viewEquipmentTypeById(typeId: number) {
     const sql = `
       SELECT equipment_type_id, equipment_type_name
       FROM nobsc_equipment_types
@@ -24,5 +28,3 @@ class EquipmentType {
     return equipmentType;
   }
 }
-
-module.exports = EquipmentType;

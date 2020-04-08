@@ -1,12 +1,16 @@
-class CuisineEquipment {
-  constructor(pool) {
+import { Pool } from 'mysql2/promise';
+
+export class CuisineEquipment {
+  pool: Pool;
+
+  constructor(pool: Pool) {
     this.pool = pool;
     this.viewCuisineEquipmentByCuisineId = this.viewCuisineEquipmentByCuisineId.bind(this);
     this.createCuisineEquipment = this.createCuisineEquipment.bind(this);
     this.deleteCuisineEquipment = this.deleteCuisineEquipment.bind(this);
   }
 
-  async viewCuisineEquipmentByCuisineId(cuisineId) {
+  async viewCuisineEquipmentByCuisineId(cuisineId: number) {
     const sql = `
       SELECT e.equipment_id, e.equipment_name
       FROM nobsc_cuisine_equipment ce
@@ -21,7 +25,7 @@ class CuisineEquipment {
     return cuisineEquipment;
   }
 
-  async createCuisineEquipment(cuisineId, equipmentId) {
+  async createCuisineEquipment(cuisineId: number, equipmentId: number) {
     const sql = `
       INSERT INTO nobsc_cuisine_equipment (cuisine_id, equipment_id)
       VALUES (?, ?)
@@ -35,7 +39,7 @@ class CuisineEquipment {
     return createdCuisineEquipment;
   }
 
-  async deleteCuisineEquipment(cuisineId, equipmentId) {
+  async deleteCuisineEquipment(cuisineId: number, equipmentId: number) {
     const sql = `
       DELETE
       FROM nobsc_cuisine_equipment
@@ -50,5 +54,3 @@ class CuisineEquipment {
     return deletedCuisineEquipment;
   }
 }
-
-module.exports = CuisineEquipment;

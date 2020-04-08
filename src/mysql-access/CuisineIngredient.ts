@@ -1,12 +1,16 @@
-class CuisineIngredient {
-  constructor(pool) {
+import { Pool } from 'mysql2/promise';
+
+export class CuisineIngredient {
+  pool: Pool;
+
+  constructor(pool: Pool) {
     this.pool = pool;
     this.viewCuisineIngredientsByCuisineId = this.viewCuisineIngredientsByCuisineId.bind(this);
     this.createCuisineIngredient = this.createCuisineIngredient.bind(this);
     this.deleteCuisineIngredient = this.deleteCuisineIngredient.bind(this);
   }
 
-  async viewCuisineIngredientsByCuisineId(cuisineId) {
+  async viewCuisineIngredientsByCuisineId(cuisineId: number) {
     const sql = `
       SELECT i.ingredient_id, i.ingredient_name
       FROM nobsc_cuisine_ingredients ci
@@ -21,7 +25,7 @@ class CuisineIngredient {
     return cuisineEquipment;
   }
 
-  async createCuisineIngredient(cuisineId, ingredientId) {
+  async createCuisineIngredient(cuisineId: number, ingredientId: number) {
     const sql = `
       INSERT INTO nobsc_cuisine_ingredients (cuisine_id, ingredient_id)
       VALUES (?, ?)
@@ -35,7 +39,7 @@ class CuisineIngredient {
     return createdCuisineIngredient;
   }
 
-  async deleteCuisineIngredient(cuisineId, ingredientId) {
+  async deleteCuisineIngredient(cuisineId: number, ingredientId: number) {
     const sql = `
       DELETE
       FROM nobsc_cuisine_ingredients
@@ -50,5 +54,3 @@ class CuisineIngredient {
     return deletedCuisineIngredient;
   }
 }
-
-module.exports = CuisineIngredient;

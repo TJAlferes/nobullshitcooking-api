@@ -1,5 +1,25 @@
-class Equipment {
-  constructor(pool) {
+import { Pool } from 'mysql2/promise';
+
+interface IEquipment {
+  equipmentTypeId: number
+  authorId: number
+  ownerId: number
+  equipmentName: string
+  equipmentDescription: string
+  equipmentImage: string
+}
+
+interface IEquipmentUpdate {
+  equipmentTypeId: number
+  equipmentName: string
+  equipmentDescription: string
+  equipmentImage: string
+}
+
+export class Equipment {
+  pool: Pool;
+
+  constructor(pool: Pool) {
     this.pool = pool;
 
     this.getAllPublicEquipmentForElasticSearchBulkInsert = this.getAllPublicEquipmentForElasticSearchBulkInsert.bind(this);
@@ -19,34 +39,30 @@ class Equipment {
   //--------------------------------------------------------------------------
 
   async getAllPublicEquipmentForElasticSearchBulkInsert() {
-    try {
-      const ownerId = 1;
-      const sql1 = `
-        SELECT
-          CAST(e.equipment_id AS CHAR),
-          e.equipment_type_id,
-          e.owner_id,
-          et.equipment_type_name,
-          e.equipment_name,
-          e.equipment_description,
-          e.equipment_image
-        FROM nobsc_equipment e
-        INNER JOIN nobsc_equipment_types et ON et.equipment_type_id = e.equipment_type_id
-        WHERE e.owner_id = ?
-      `;
-      const [ equipmentForBulkInsert ] = await this.pool.execute(sql1, [ownerId]);
-      let final = [];
-      for (let equipment of equipmentForBulkInsert) {  // allows the sequence of awaits we want
-        const { equipment_id } = equipment;
-        final.push(
-          {index: {_index: 'equipment', _id: equipment_id}},
-          equipment
-        );
-      }
-      return final;
-    } catch (err) {
-      console.log(err);
+    const ownerId = 1;
+    const sql1 = `
+      SELECT
+        CAST(e.equipment_id AS CHAR),
+        e.equipment_type_id,
+        e.owner_id,
+        et.equipment_type_name,
+        e.equipment_name,
+        e.equipment_description,
+        e.equipment_image
+      FROM nobsc_equipment e
+      INNER JOIN nobsc_equipment_types et ON et.equipment_type_id = e.equipment_type_id
+      WHERE e.owner_id = ?
+    `;
+    const [ equipmentForBulkInsert ] = await this.pool.execute(sql1, [ownerId]);
+    let final = [];
+    for (let equipment of equipmentForBulkInsert) {  // allows the sequence of awaits we want
+      const { equipment_id } = equipment;
+      final.push(
+        {index: {_index: 'equipment', _id: equipment_id}},
+        equipment
+      );
     }
+    return final;
   }
   
   async getEquipmentForElasticSearchInsert(
@@ -80,7 +96,7 @@ class Equipment {
 
   //--------------------------------------------------------------------------
 
-  async viewEquipment(authorId, ownerId) {
+  async viewEquipment(authorId: number, ownerId: number) {
     const sql = `
       SELECT
         e.equipment_id AS equipment_id,
@@ -100,7 +116,11 @@ class Equipment {
     return equipment;
   }
 
-  async viewEquipmentById(equipmentId, authorId, ownerId) {
+  async viewEquipmentById(
+    equipmentId: number,
+    authorId: number,
+    ownerId: number
+  ) {
     const sql = `
       SELECT
         e.equipment_id AS equipment_id,
@@ -119,15 +139,14 @@ class Equipment {
     return equipment;
   }
 
-  async createEquipment(equipmentToCreate) {
-    const {
-      equipmentTypeId,
-      authorId,
-      ownerId,
-      equipmentName,
-      equipmentDescription,
-      equipmentImage
-    } = equipmentToCreate;
+  async createEquipment({
+    equipmentTypeId,
+    authorId,
+    ownerId,
+    equipmentName,
+    equipmentDescription,
+    equipmentImage
+  }: IEquipment) {
     const sql = `
       INSERT INTO nobsc_equipment
       (equipment_type_id, author_id, owner_id, equipment_name, equipment_description, equipment_image) 
@@ -144,13 +163,15 @@ class Equipment {
     return createdEquipment;
   }
 
-  async updateEquipment(equipmentToUpdateWith, equipmentId) {
-    const {
+  async updateEquipment(
+    {
       equipmentTypeId,
       equipmentName,
       equipmentDescription,
       equipmentImage
-    } = equipmentToUpdateWith;
+    }: IEquipmentUpdate,
+    equipmentId: number
+  ) {
     const sql = `
       UPDATE nobsc_equipment
       SET
@@ -171,7 +192,7 @@ class Equipment {
     return updatedEquipment;
   }
 
-  async deleteEquipment(equipmentId) {
+  async deleteEquipment(equipmentId: number) {
     const sql = `
       DELETE
       FROM nobsc_equipment
@@ -184,15 +205,14 @@ class Equipment {
 
   //--------------------------------------------------------------------------
 
-  async createMyPrivateUserEquipment(equipmentToCreate) {
-    const {
-      equipmentTypeId,
-      authorId,
-      ownerId,
-      equipmentName,
-      equipmentDescription,
-      equipmentImage
-    } = equipmentToCreate;
+  async createMyPrivateUserEquipment({
+    equipmentTypeId,
+    authorId,
+    ownerId,
+    equipmentName,
+    equipmentDescription,
+    equipmentImage
+  }: IEquipment) {
     const sql = `
       INSERT INTO nobsc_equipment
       (equipment_type_id, author_id, owner_id, equipment_name, equipment_description, equipment_image)
@@ -210,15 +230,17 @@ class Equipment {
     return createdPrivateUserEquipment;
   }
 
-  async updateMyPrivateUserEquipment(equipmentToUpdateWith, equipmentId) {
-    const {
+  async updateMyPrivateUserEquipment(
+    {
       equipmentTypeId,
       authorId,
       ownerId,
       equipmentName,
       equipmentDescription,
       equipmentImage
-    } = equipmentToUpdateWith;
+    }: IEquipment,
+    equipmentId: number
+  ) {
     const sql = `
       UPDATE nobsc_equipment
       SET
@@ -244,16 +266,15 @@ class Equipment {
     return updatedPrivateUserEquipment;
   }
 
-  async deleteMyPrivateUserEquipment(ownerId, equipmentId) {
+  async deleteMyPrivateUserEquipment(ownerId: number, equipmentId: number) {
     const sql = `
       DELETE
       FROM nobsc_equipment
       WHERE owner_id = ? AND equipment_id = ?
       LIMIT 1
     `;
-    const [ deletedPrivateUserEquipment ] = await this.pool.execute(sql, [ownerId, equipmentId]);
+    const [ deletedPrivateUserEquipment ] = await this.pool
+    .execute(sql, [ownerId, equipmentId]);
     return deletedPrivateUserEquipment;
   }
 }
-
-module.exports = Equipment;
