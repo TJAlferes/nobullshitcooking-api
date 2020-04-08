@@ -22,7 +22,7 @@ const {
 
 const SALT_ROUNDS = 10;
 
-const userAuthController = {
+export const userAuthController = {
   register: async function(req: Request, res: Response) {
     const email = req.body.userInfo.email;
     const pass = req.body.userInfo.password;
@@ -60,6 +60,7 @@ const userAuthController = {
   verify: async function(req: Request, res: Response) {
     const email = req.body.userInfo.email;
     const pass = req.body.userInfo.password;
+    const confirmationCode = req.body.userInfo.confirmationCode;
 
     validVerifyRequest({email, pass, confirmationCode});
 
@@ -112,10 +113,10 @@ const userAuthController = {
 
     if (!valid) return res.send({message: feedback});
 
-    req.session.userInfo = {};
-    req.session.userInfo.userId = userExists.user_id;
-    req.session.userInfo.username = userExists.username;
-    req.session.userInfo.avatar = userExists.avatar;
+    req.session!.userInfo = {};
+    req.session!.userInfo.userId = userExists.user_id;
+    req.session!.userInfo.username = userExists.username;
+    req.session!.userInfo.avatar = userExists.avatar;
 
     return res.json({
       message: 'Signed in.',
@@ -125,13 +126,13 @@ const userAuthController = {
   },
 
   logout: async function(req: Request, res: Response) {
-    await req.session.destroy();
+    req.session!.destroy(function() {});
     res.end();
   },
 
   setAvatar: async function(req: Request, res: Response) {
     const avatar = req.body.avatar;
-    const userId = req.session.userInfo.userId;
+    const userId = req.session!.userInfo.userId;
     const user = new User(pool);
     await user.setAvatar(avatar, userId);
     res.send({message: 'Avatar set.'});
@@ -154,5 +155,3 @@ const userAuthController = {
     // TO DO: implement this! write a test first!
   }
 };
-
-module.exports = userAuthController;

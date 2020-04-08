@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 
 import { pool } from '../../lib/connections/mysqlPoolConnection';
-const User = require('../../mysql-access/User');
-const Recipe = require('../../mysql-access/Recipe');
-const FavoriteRecipe = require('../../mysql-access/FavoriteRecipe');
+import { User } from '../../mysql-access/User';
+import { Recipe } from '../../mysql-access/Recipe';
+import { FavoriteRecipe } from '../../mysql-access/FavoriteRecipe';
 
-const userProfileController = {
+export const userProfileController = {
   viewProfile: async function(req: Request, res: Response) {
     const username = req.params.username;
 
@@ -23,5 +23,3 @@ const userProfileController = {
     res.send({message: 'Success.', avatar, publicRecipes, favoriteRecipes});
   }
 };
-
-module.exports = userProfileController;

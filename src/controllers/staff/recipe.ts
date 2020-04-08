@@ -2,21 +2,17 @@ import { Request, Response } from 'express';
 
 import { pool } from '../../lib/connections/mysqlPoolConnection';
 import { esClient } from '../../lib/connections/elasticsearchClient';
-
-const Recipe = require('../../mysql-access/Recipe');
-const RecipeMethod = require('../../mysql-access/RecipeMethod');
-const RecipeEquipment = require('../../mysql-access/RecipeEquipment');
-const RecipeIngredient = require('../../mysql-access/RecipeIngredient');
-const RecipeSubrecipe = require('../../mysql-access/RecipeSubrecipe');
-const FavoriteRecipe = require('../../mysql-access/FavoriteRecipe');
-const SavedRecipe = require('../../mysql-access/SavedRecipe');
-
-const RecipeSearch = require('../../elasticsearch-access/RecipeSearch');
-
+import { Recipe } from '../../mysql-access/Recipe';
+import { RecipeMethod } from '../../mysql-access/RecipeMethod';
+import { RecipeEquipment } from '../../mysql-access/RecipeEquipment';
+import { RecipeIngredient } from '../../mysql-access/RecipeIngredient';
+import { RecipeSubrecipe } from '../../mysql-access/RecipeSubrecipe';
+import { FavoriteRecipe } from '../../mysql-access/FavoriteRecipe';
+import { SavedRecipe } from '../../mysql-access/SavedRecipe';
+import { RecipeSearch } from '../../elasticsearch-access/RecipeSearch';
 import { createRecipeService } from '../../lib/services/create-recipe';
 import { updateRecipeService } from '../../lib/services/update-recipe';
-
-const validRecipeEntity = require('../../lib/validations/recipe/recipeEntity');
+import { validRecipeEntity } from '../../lib/validations/recipe/recipeEntity';
 
 export const staffRecipeController = {
   createRecipe: async function(req: Request, res: Response) {
@@ -109,7 +105,7 @@ export const staffRecipeController = {
       requiredSubrecipes
     });
 
-    res.send('Recipe updated.');
+    res.send({message: 'Recipe updated.'});
   },
   deleteRecipe: async function(req: Request, res: Response) {
     const recipeId = Number(req.body.recipeId);
@@ -134,8 +130,8 @@ export const staffRecipeController = {
     await recipeSubrecipe.deleteRecipeSubrecipesBySubrecipeId(recipeId);  // is that right?
     await recipe.deleteRecipe(recipeId);
 
-    await recipeSearch.deleteRecipe(recipeId);
+    await recipeSearch.deleteRecipe(String(recipeId));
 
-    res.send('Recipe deleted.');
+    res.send({message: 'Recipe deleted.'});
   }
 };

@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
 
-const esClient = require('../lib/connections/elasticsearchClient');
-const AllSearch = require('../elasticsearch-access/AllSearch');
-const RecipeSearch = require('../elasticsearch-access/RecipeSearch');
-const IngredientSearch = require('../elasticsearch-access/IngredientSearch');
-const EquipmentSearch = require('../elasticsearch-access/EquipmentSearch');
+import { esClient } from '../lib/connections/elasticsearchClient';
+import { AllSearch } from '../elasticsearch-access/AllSearch';
+import { RecipeSearch } from '../elasticsearch-access/RecipeSearch';
+import { IngredientSearch } from '../elasticsearch-access/IngredientSearch';
+import { EquipmentSearch } from '../elasticsearch-access/EquipmentSearch';
 
-const searchController = {
+export const searchController = {
   autocompletePublicAll: async function(req: Request, res: Response) {
-    const searchTerm = req.sanitize(req.body.searchTerm);
+    const searchTerm = req.body.searchTerm;
     const allSearch = new AllSearch(esClient);
     const found = await allSearch.autoAll(searchTerm);
     return res.json({found});
@@ -21,7 +21,7 @@ const searchController = {
   },
 
   autocompletePublicRecipes: async function(req: Request, res: Response) {
-    const searchTerm = req.sanitize(req.body.searchTerm);
+    const searchTerm = req.body.searchTerm;
     const recipeSearch = new RecipeSearch(esClient);
     const found = await recipeSearch.autoRecipes(searchTerm);
     return res.json({found});
@@ -34,7 +34,7 @@ const searchController = {
   },
 
   autocompletePublicIngredients: async function(req: Request, res: Response) {
-    const searchTerm = req.sanitize(req.body.searchTerm);
+    const searchTerm = req.body.searchTerm;
     const ingredientSearch = new IngredientSearch(esClient);
     const found = await ingredientSearch.autoIngredients(searchTerm);
     return res.json({found});
@@ -47,7 +47,7 @@ const searchController = {
   },
 
   autocompletePublicEquipment: async function(req: Request, res: Response) {
-    const searchTerm = req.sanitize(req.body.searchTerm);
+    const searchTerm = req.body.searchTerm;
     const equipmentSearch = new EquipmentSearch(esClient);
     const found = await equipmentSearch.autoEquipment(searchTerm);
     return res.json({found});
@@ -59,5 +59,3 @@ const searchController = {
     return res.json({found});
   }
 };
-
-module.exports = searchController;

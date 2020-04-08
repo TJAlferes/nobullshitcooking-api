@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 
-const pool = require('../lib/connections/mysqlPoolConnection');
-const SavedRecipe = require('../mysql-access/SavedRecipe');
+import { pool } from '../lib/connections/mysqlPoolConnection';
+import { SavedRecipe } from '../mysql-access/SavedRecipe';
 
-const savedRecipeController = {
+export const savedRecipeController = {
   viewMostSaved: async function(req: Request, res: Response) {
     const limit = req.body.limit; // no. change.
     const savedRecipe = new SavedRecipe(pool);
@@ -11,5 +11,3 @@ const savedRecipeController = {
     res.send(rows);
   }
 };
-
-module.exports = savedRecipeController;

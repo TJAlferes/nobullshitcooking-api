@@ -1,20 +1,23 @@
 require('dotenv').config();
-const AWS = require('aws-sdk');
+import AWS from 'aws-sdk';
 import { Request, Response } from 'express';
 
-const AWS_NOBSC_USER_AVATARS_S3_BUCKET = process.env.AWS_NOBSC_USER_AVATARS_S3_BUCKET;
+import { S3Params } from './types';
 
-module.exports = async function(req: Request, res: Response) {
+const AWS_NOBSC_USER_AVATARS_S3_BUCKET: string =
+process.env.AWS_NOBSC_USER_AVATARS_S3_BUCKET!;
+
+export async function getSignedUrlAvatar(req: Request, res: Response) {
   const fileNameFullSize = `${req.session.userInfo.username}`;
   const fileNameTinySize = `${fileNameFullSize}-tiny`;
-  const fileType = req.sanitize(req.body.fileType);
+  const fileType = req.body.fileType;
 
   const s3 = new AWS.S3({
     accessKeyId: process.env.AWS_NOBSC_USER_AVATARS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_NOBSC_USER_AVATARS_SECRET_ACCESS_KEY
   });
 
-  const getSignedUrlPromise = (operation, params) => {
+  const getSignedUrlPromise = (operation: string, params: S3Params) => {
     return new Promise((resolve, reject) => {
       s3.getSignedUrl(operation, params, (err, data) => {
         err ? reject(err) : resolve(data);

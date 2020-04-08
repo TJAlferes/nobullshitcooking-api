@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 
-const pool = require('../lib/connections/mysqlPoolConnection');
-const Cuisine = require('../mysql-access/Cuisine');
-const validCuisineRequest = require('../lib/validations/cuisine/cuisineRequest');
+import { pool } from '../lib/connections/mysqlPoolConnection';
+import { Cuisine } from '../mysql-access/Cuisine';
+import { validCuisineRequest } from '../lib/validations/cuisine/cuisineRequest';
 
-const cuisineController = {
+export const cuisineController = {
   viewAllCuisines: async function(req: Request, res: Response) {
     const cuisine = new Cuisine(pool);
     const rows = await cuisine.viewAllCuisines();
@@ -26,5 +26,3 @@ const cuisineController = {
     res.send(detail);
   },
 };
-
-module.exports = cuisineController;

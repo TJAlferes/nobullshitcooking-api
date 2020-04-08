@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 
-const pool = require('../lib/connections/mysqlPoolConnection');
-const Recipe = require('../mysql-access/Recipe');
-const validRecipeRequest = require('../lib/validations/recipe/recipeRequest');
+import { pool } from '../lib/connections/mysqlPoolConnection';
+import { Recipe } from '../mysql-access/Recipe';
+import { validRecipeRequest } from '../lib/validations/recipe/recipeRequest';
 
-const recipeController = {
+export const recipeController = {
   viewAllOfficialRecipes: async function(req: Request, res: Response) {
     const authorId = 1;
     const ownerId = 1;
@@ -13,7 +13,7 @@ const recipeController = {
     res.send(rows);
   },
   viewRecipeDetail: async function(req: Request, res: Response) {
-    const recipeId = Number(req.sanitize(req.params.recipeId));
+    const recipeId = Number(req.params.recipeId);
     const authorId = 1;
     const ownerId = 1;
     validRecipeRequest({recipeId});
@@ -22,5 +22,3 @@ const recipeController = {
     res.send(recipeDetail);
   }
 };
-
-module.exports = recipeController;

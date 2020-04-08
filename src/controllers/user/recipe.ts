@@ -1,32 +1,28 @@
 import { Request, Response } from 'express';
 
 import { pool } from '../../lib/connections/mysqlPoolConnection';
-import { esClient } from '../../lib/connections/elasticsearchClient';
-
-const Recipe = require('../../mysql-access/Recipe');
-const RecipeMethod = require('../../mysql-access/RecipeMethod');
-const RecipeEquipment = require('../../mysql-access/RecipeEquipment');
-const RecipeIngredient = require('../../mysql-access/RecipeIngredient');
-const RecipeSubrecipe = require('../../mysql-access/RecipeSubrecipe');
-
-const RecipeSearch = require('../../elasticsearch-access/RecipeSearch');
- 
+import { esClient } from '../../lib/connections/elasticsearchClient'
+import { Recipe } from '../../mysql-access/Recipe';
+import { RecipeMethod } from '../../mysql-access/RecipeMethod';
+import { RecipeEquipment } from '../../mysql-access/RecipeEquipment';
+import { RecipeIngredient } from '../../mysql-access/RecipeIngredient';
+import { RecipeSubrecipe } from '../../mysql-access/RecipeSubrecipe';
+import { RecipeSearch } from '../../elasticsearch-access/RecipeSearch';
 import { createRecipeService } from '../../lib/services/create-recipe';
 import { updateRecipeService } from '../../lib/services/update-recipe';
-
-const validRecipeEntity = require('../../lib/validations/recipe/recipeEntity');
+import { validRecipeEntity } from '../../lib/validations/recipe/recipeEntity';
 
 export const userRecipeController = {
   viewAllMyPrivateUserRecipes: async function(req: Request, res: Response) {
-    const authorId = req.session.userInfo.userId;
-    const ownerId = req.session.userInfo.userId;
+    const authorId = req.session!.userInfo.userId;
+    const ownerId = req.session!.userInfo.userId;
     const recipe = new Recipe(pool);
     const rows = await recipe.viewRecipes(authorId, ownerId);
     res.send(rows);
   },
   
   viewAllMyPublicUserRecipes: async function(req: Request, res: Response) {
-    const authorId = req.session.userInfo.userId;
+    const authorId = req.session!.userInfo.userId;
     const ownerId = 1;
     const recipe = new Recipe(pool);
     const rows = await recipe.viewRecipes(authorId, ownerId);
@@ -36,7 +32,7 @@ export const userRecipeController = {
   viewMyPrivateUserRecipe: async function(req: Request, res: Response) {
     const recipeId = Number(req.body.recipeId);
     const authorId = 1;
-    const ownerId = req.session.userInfo.userId;
+    const ownerId = req.session!.userInfo.userId;
     const recipe = new Recipe(pool);
     const [ row ] = await recipe.viewRecipeById(recipeId, authorId, ownerId);
     res.send(row);
@@ -44,7 +40,7 @@ export const userRecipeController = {
 
   viewMyPublicUserRecipe: async function(req: Request, res: Response) {
     const recipeId = Number(req.body.recipeId);
-    const authorId = req.session.userInfo.userId;
+    const authorId = req.session!.userInfo.userId;
     const ownerId = 1;
     const recipe = new Recipe(pool);
     const [ row ] = await recipe.viewRecipeById(recipeId, authorId, ownerId);
@@ -53,8 +49,8 @@ export const userRecipeController = {
 
   getInfoToEditMyPrivateUserRecipe: async function(req: Request, res: Response) {
     const recipeId = Number(req.body.recipeId);
-    const authorId = req.session.userInfo.userId;
-    const ownerId = req.session.userInfo.userId;
+    const authorId = req.session!.userInfo.userId;
+    const ownerId = req.session!.userInfo.userId;
     const recipe = new Recipe(pool);
     const row = await recipe.getInfoToEditMyUserRecipe(recipeId, authorId, ownerId);
     res.send(row);
@@ -62,7 +58,7 @@ export const userRecipeController = {
 
   getInfoToEditMyPublicUserRecipe: async function(req: Request, res: Response) {
     const recipeId = Number(req.body.recipeId);
-    const authorId = req.session.userInfo.userId;
+    const authorId = req.session!.userInfo.userId;
     const ownerId = 1;
     const recipe = new Recipe(pool);
     const row = await recipe.getInfoToEditMyUserRecipe(recipeId, authorId, ownerId);
@@ -84,9 +80,9 @@ export const userRecipeController = {
     const ingredientsImage = req.body.recipeInfo.recipeIngredientsImage;
     const cookingImage = req.body.recipeInfo.recipeCookingImage;
 
-    const authorId = req.session.userInfo.userId;
+    const authorId = req.session!.userInfo.userId;
     const ownership = req.body.recipeInfo.ownership;
-    const ownerId = (ownership === "private") ? req.session.userInfo.userId : 1;
+    const ownerId = (ownership === "private") ? req.session!.userInfo.userId : 1;
     
     const recipeToCreate = validRecipeEntity({
       recipeTypeId,
@@ -130,9 +126,9 @@ export const userRecipeController = {
     const ingredientsImage = req.body.recipeInfo.recipeIngredientsImage;
     const cookingImage = req.body.recipeInfo.recipeCookingImage;
 
-    const authorId = req.session.userInfo.userId;
+    const authorId = req.session!.userInfo.userId;
     const ownership = req.body.recipeInfo.ownership;
-    const ownerId = (ownership === "private") ? req.session.userInfo.userId : 1;
+    const ownerId = (ownership === "private") ? req.session!.userInfo.userId : 1;
 
     if (typeof recipeId === "undefined") {
       return res.send({message: 'Invalid recipe ID!'});
@@ -167,8 +163,8 @@ export const userRecipeController = {
 
   deleteMyPrivateUserRecipe: async function(req: Request, res: Response) {
     const recipeId = Number(req.body.recipeId);
-    const authorId = req.session.userInfo.userId;
-    const ownerId = req.session.userInfo.userId;
+    const authorId = req.session!.userInfo.userId;
+    const ownerId = req.session!.userInfo.userId;
 
     const recipeMethod = new RecipeMethod(pool);
     const recipeEquipment = new RecipeEquipment(pool);
@@ -188,7 +184,7 @@ export const userRecipeController = {
 
   disownMyPublicUserRecipe: async function(req: Request, res: Response) {
     const recipeId = Number(req.body.recipeId);
-    const authorId = req.session.userInfo.userId;
+    const authorId = req.session!.userInfo.userId;
 
     const newAuthorId = 2;
 
@@ -198,7 +194,7 @@ export const userRecipeController = {
 
     // (make sure the update goes through first though)
     const recipeInfoForElasticSearch = await recipe
-    .getPublicRecipeForElasticSearchInsert(generatedId);
+    .getPublicRecipeForElasticSearchInsert(recipeId);
 
     const recipeSearch = new RecipeSearch(esClient);
 

@@ -1,8 +1,9 @@
 import { Router } from 'express';
+import { body } from 'express-validator';
 
-const userIsAuth = require('../../../lib/utils/userIsAuth');
-const catchExceptions = require('../../../lib/utils/catchExceptions');
-const getSignedUrlIngredient = require('../../../controllers/user/get-signed-url/ingredient');
+import { userIsAuth } from '../../../lib/utils/userIsAuth';
+import { catchExceptions } from '../../../lib/utils/catchExceptions';
+import { getSignedUrlIngredient } from '../../../controllers/user/get-signed-url/ingredient';
 
 export const router = Router();
 
@@ -13,5 +14,6 @@ export const router = Router();
 router.post(
   '/',
   userIsAuth,
+  [body('fileType').not().isEmpty().trim().escape()],
   catchExceptions(getSignedUrlIngredient)
 );

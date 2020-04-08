@@ -1,16 +1,16 @@
 import { Request, Response } from 'express';
-//const crypto = require('crypto');
-const bcrypt = require('bcrypt');
+//import crypto from 'crypto';
+import bcrypt from 'bcrypt';
 
-const pool = require('../../lib/connections/mysqlPoolConnection');
-const Staff = require('../../mysql-access/Staff');
-const validLoginRequest = require('../../lib/validations/staff/loginRequest');
-const validRegisterRequest = require('../../lib/validations/staff/registerRequest');
-const validStaffEntity = require('../../lib/validations/staff/staffEntity');
+import { pool } from '../../lib/connections/mysqlPoolConnection';
+import { Staff } from '../../mysql-access/Staff';
+import { validLoginRequest } from '../../lib/validations/staff/loginRequest';
+import { validRegisterRequest } from '../../lib/validations/staff/registerRequest';
+import { validStaffEntity } from '../../lib/validations/staff/staffEntity';
 
 const SALT_ROUNDS = 10;
 
-const staffAuthController = {
+export const staffAuthController = {
   register: async function(req: Request, res: Response) {
     const email = req.body.staffInfo.email;
     const pass = req.body.staffInfo.password;
@@ -74,9 +74,9 @@ const staffAuthController = {
         const staffname = staffExists[0].staffname;
         const avatar = staffExists[0].avatar;
 
-        req.session.staffInfo = {};
-        req.session.staffInfo.staffId = staffId;
-        req.session.staffInfo.staffname = staffname;
+        req.session!.staffInfo = {};
+        req.session!.staffInfo.staffId = staffId;
+        req.session!.staffInfo.staffname = staffname;
 
         return res.json({message: 'Signed in.', staffname, avatar});
       }
@@ -86,9 +86,7 @@ const staffAuthController = {
   },
 
   logout: async function(req: Request, res: Response) {
-    await req.session.destroy();
+    req.session!.destroy(function() {});
     res.end();
   }
 };
-
-module.exports = staffAuthController;

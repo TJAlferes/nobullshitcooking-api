@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 
-const pool = require('../lib/connections/mysqlPoolConnection');
-const Equipment = require('../mysql-access/Equipment');
-const validEquipmentRequest = require('../lib/validations/equipment/equipmentRequest');
+import { pool } from '../lib/connections/mysqlPoolConnection';
+import { Equipment } from '../mysql-access/Equipment';
+import { validEquipmentRequest } from '../lib/validations/equipment/equipmentRequest';
 
-const equipmentController = {
+export const equipmentController = {
   viewAllOfficialEquipment: async function (req: Request, res: Response) {
     const authorId = 1;
     const ownerId = 1;
@@ -13,7 +13,7 @@ const equipmentController = {
     res.send(rows);
   },
   viewEquipmentDetail: async function(req: Request, res: Response) {
-    const equipmentId = Number(req.sanitize(req.params.equipmentId));
+    const equipmentId = Number(req.params.equipmentId);
     const authorId = 1;
     const ownerId = 1;
     validEquipmentRequest({equipmentId});
@@ -22,5 +22,3 @@ const equipmentController = {
     res.send(row);
   }
 };
-
-module.exports = equipmentController;

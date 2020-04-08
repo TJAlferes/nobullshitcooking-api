@@ -1,22 +1,22 @@
 import { Request, Response } from 'express';
 
 import { pool } from '../../lib/connections/mysqlPoolConnection';
-const RecipeEquipment = require('../../mysql-access/RecipeEquipment');
-const Equipment = require('../../mysql-access/Equipment');
-const validEquipmentEntity = require('../../lib/validations/equipment/equipmentEntity');
+import { RecipeEquipment } from '../../mysql-access/RecipeEquipment';
+import { Equipment } from '../../mysql-access/Equipment';
+import { validEquipmentEntity } from '../../lib/validations/equipment/equipmentEntity';
 
-const userEquipmentController = {
+export const userEquipmentController = {
   viewAllMyPrivateUserEquipment: async function(req: Request, res: Response) {
-    const authorId = req.session.userInfo.userId;
-    const ownerId = req.session.userInfo.userId;
+    const authorId = req.session!.userInfo.userId;
+    const ownerId = req.session!.userInfo.userId;
     const equipment = new Equipment(pool);
     const rows = await equipment.viewEquipment(authorId, ownerId);
     res.send(rows);
   },
   viewMyPrivateUserEquipment: async function(req: Request, res: Response) {
     const equipmentId = Number(req.body.equipmentId);
-    const authorId = req.session.userInfo.userId;
-    const ownerId = req.session.userInfo.userId;
+    const authorId = req.session!.userInfo.userId;
+    const ownerId = req.session!.userInfo.userId;
     const equipment = new Equipment(pool);
     const [ row ] = await equipment.viewEquipmentById(equipmentId, authorId, ownerId);
     res.send(row);
@@ -27,8 +27,8 @@ const userEquipmentController = {
     const equipmentDescription = req.body.equipmentInfo.equipmentDescription;
     const equipmentImage = req.body.equipmentInfo.equipmentImage;
 
-    const authorId = req.session.userInfo.userId;
-    const ownerId = req.session.userInfo.userId;
+    const authorId = req.session!.userInfo.userId;
+    const ownerId = req.session!.userInfo.userId;
 
     const equipmentToCreate = validEquipmentEntity({
       equipmentTypeId,
@@ -49,8 +49,8 @@ const userEquipmentController = {
     const equipmentDescription = req.body.equipmentInfo.equipmentDescription;
     const equipmentImage = req.body.equipmentInfo.equipmentImage;
 
-    const authorId = req.session.userInfo.userId;
-    const ownerId = req.session.userInfo.userId;
+    const authorId = req.session!.userInfo.userId;
+    const ownerId = req.session!.userInfo.userId;
 
     const equipmentToUpdateWith = validEquipmentEntity({
       equipmentTypeId,
@@ -66,7 +66,7 @@ const userEquipmentController = {
   },
   deleteMyPrivateUserEquipment: async function(req: Request, res: Response) {
     const equipmentId = Number(req.body.equipmentId);
-    const ownerId = req.session.userInfo.userId;
+    const ownerId = req.session!.userInfo.userId;
     const recipeEquipment = new RecipeEquipment(pool);
     const equipment = new Equipment(pool);
     await recipeEquipment.deleteRecipeEquipmentByEquipmentId(equipmentId);
@@ -74,5 +74,3 @@ const userEquipmentController = {
     res.send({message: 'Equipment deleted.'});
   }
 };
-
-module.exports = userEquipmentController;

@@ -1,16 +1,16 @@
 import { Request, Response } from 'express';
 
-const pool = require('../lib/connections/mysqlPoolConnection');
-const CuisineSupplier = require('../mysql-access/CuisineSupplier');
+import { pool } from '../lib/connections/mysqlPoolConnection';
+import { CuisineSupplier } from '../mysql-access/CuisineSupplier';
 
 const cuisineSupplierController = {
   viewCuisineSuppliersByCuisineId: async function(req: Request, res: Response) {
-    const cuisineId = Number(req.sanitize(req.params.cuisineId));
+    const cuisineId = Number(req.params.cuisineId);
 
     const cuisineSupplier = new CuisineSupplier(pool);
 
     const suppliers = await cuisineSupplier
-    .viewCuisineSupplierByCuisineId(cuisineId);
+    .viewCuisineSuppliersByCuisineId(cuisineId);
 
     res.send({suppliers});
   }

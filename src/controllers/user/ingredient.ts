@@ -1,22 +1,22 @@
 import { Request, Response } from 'express';
 
 import { pool } from '../../lib/connections/mysqlPoolConnection';
-const RecipeIngredient = require('../../mysql-access/RecipeIngredient');
-const Ingredient = require('../../mysql-access/Ingredient');
-const validIngredientEntity = require('../../lib/validations/ingredient/ingredientEntity');
+import { RecipeIngredient } from '../../mysql-access/RecipeIngredient';
+import { Ingredient } from '../../mysql-access/Ingredient';
+import { validIngredientEntity } from '../../lib/validations/ingredient/ingredientEntity';
 
-const userIngredientController = {
+export const userIngredientController = {
   viewAllMyPrivateUserIngredients: async function(req: Request, res: Response) {
-    const authorId = req.session.userInfo.userId;
-    const ownerId = req.session.userInfo.userId;
+    const authorId = req.session!.userInfo.userId;
+    const ownerId = req.session!.userInfo.userId;
     const ingredient = new Ingredient(pool);
     const rows = await ingredient.viewIngredients(authorId, ownerId);
     res.send(rows);
   },
   viewMyPrivateUserIngredient: async function(req: Request, res: Response) {
     const ingredientId = Number(req.body.ingredientId);
-    const authorId = req.session.userInfo.userId;
-    const ownerId = req.session.userInfo.userId;
+    const authorId = req.session!.userInfo.userId;
+    const ownerId = req.session!.userInfo.userId;
     const ingredient = new Ingredient(pool);
     const [ row ] = await ingredient.viewIngredientById(ingredientId, authorId, ownerId);
     res.send(row);
@@ -27,8 +27,8 @@ const userIngredientController = {
     const ingredientDescription = req.body.ingredientInfo.ingredientDescription;
     const ingredientImage = req.body.ingredientInfo.ingredientImage;
 
-    const authorId = req.session.userInfo.userId;
-    const ownerId = req.session.userInfo.userId;
+    const authorId = req.session!.userInfo.userId;
+    const ownerId = req.session!.userInfo.userId;
 
     const ingredientToCreate = validIngredientEntity({
       ingredientTypeId,
@@ -49,8 +49,8 @@ const userIngredientController = {
     const ingredientDescription = req.body.ingredientInfo.ingredientDescription;
     const ingredientImage = req.body.ingredientInfo.ingredientImage;
 
-    const authorId = req.session.userInfo.userId;
-    const ownerId = req.session.userInfo.userId;
+    const authorId = req.session!.userInfo.userId;
+    const ownerId = req.session!.userInfo.userId;
 
     const ingredientToUpdateWith = validIngredientEntity({
       ingredientTypeId,
@@ -66,7 +66,7 @@ const userIngredientController = {
   },
   deleteMyPrivateUserIngredient: async function(req: Request, res: Response) {
     const ingredientId = Number(req.body.ingredientId);
-    const ownerId = req.session.userInfo.userId;
+    const ownerId = req.session!.userInfo.userId;
     const recipeIngredient = new RecipeIngredient(pool);
     const ingredient = new Ingredient(pool);
     await recipeIngredient.deleteRecipeIngredientsByIngredientId(ingredientId);
@@ -74,5 +74,3 @@ const userIngredientController = {
     res.send({message: 'Ingredient deleted.'});
   }
 };
-
-module.exports = userIngredientController;

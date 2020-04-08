@@ -1,11 +1,10 @@
 import { Request, Response } from 'express';
 
-const pool = require('../../lib/connections/mysqlPoolConnection');
+import { pool } from '../../lib/connections/mysqlPoolConnection';
+import { CuisineSupplier } from '../../mysql-access/CuisineSupplier';
+import { Supplier } from '../../mysql-access/Supplier';
 
-const CuisineSupplier = require('../../mysql-access/CuisineSupplier');
-const Supplier = require('../../mysql-access/Supplier');
-
-const staffSupplierController = {
+export const staffSupplierController = {
   viewAllSuppliers: async function (req: Request, res: Response) {
     const supplier = new Supplier(pool);
 
@@ -65,5 +64,3 @@ const staffSupplierController = {
     res.send({message: 'Supplier deleted.'});
   }
 };
-
-module.exports = staffSupplierController;

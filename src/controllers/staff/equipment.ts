@@ -1,15 +1,12 @@
 import { Request, Response } from 'express';
 
-const pool = require('../../lib/connections/mysqlPoolConnection');
-const esClient = require('../../lib/connections/elasticsearchClient');
+import { pool } from '../../lib/connections/mysqlPoolConnection';
+import { esClient } from '../../lib/connections/elasticsearchClient';
+import { Equipment } from '../../mysql-access/Equipment';
+import { EquipmentSearch } from '../../elasticsearch-access/EquipmentSearch';
+import { validEquipmentEntity } from '../../lib/validations/equipment/equipmentEntity';
 
-const Equipment = require('../../mysql-access/Equipment');
-
-const EquipmentSearch = require('../../elasticsearch-access/EquipmentSearch');
-
-const validEquipmentEntity = require('../../lib/validations/equipment/equipmentEntity');
-
-const staffEquipmentController = {
+export const staffEquipmentController = {
   createEquipment: async function(req: Request, res: Response) {
     const equipmentTypeId = Number(req.body.equipmentInfo.equipmentTypeId);
     const equipmentName = req.body.equipmentInfo.equipmentName;
@@ -97,10 +94,8 @@ const staffEquipmentController = {
     await equipment.deleteEquipment(equipmentId);
 
     const equipmentSearch = new EquipmentSearch(esClient);
-    await equipmentSearch.deleteEquipment(equipmentId);
+    await equipmentSearch.deleteEquipment(String(equipmentId));
 
     res.send({message: 'Equipment deleted.'});
   }
 };
-
-module.exports = staffEquipmentController;

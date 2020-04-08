@@ -1,15 +1,12 @@
 import { Request, Response } from 'express';
 
-const pool = require('../../lib/connections/mysqlPoolConnection');
-const esClient = require('../../lib/connections/elasticsearchClient');
+import { pool } from '../../lib/connections/mysqlPoolConnection';
+import { esClient } from '../../lib/connections/elasticsearchClient';
+import { Ingredient } from '../../mysql-access/Ingredient';
+import { IngredientSearch } from '../../elasticsearch-access/IngredientSearch';
+import { validIngredientEntity } from '../../lib/validations/ingredient/ingredientEntity';
 
-const Ingredient = require('../../mysql-access/Ingredient');
-
-const IngredientSearch = require('../../elasticsearch-access/IngredientSearch');
-
-const validIngredientEntity = require('../../lib/validations/ingredient/ingredientEntity');
-
-const staffIngredientController = {
+export const staffIngredientController = {
   createIngredient: async function(req: Request, res: Response) {
     const ingredientTypeId = Number(req.body.ingredientInfo.ingredientTypeId);
     const ingredientName = req.body.ingredientInfo.ingredientName;
@@ -97,10 +94,8 @@ const staffIngredientController = {
     await ingredient.deleteIngredient(ingredientId);
 
     const ingredientSearch = new IngredientSearch(esClient);
-    await ingredientSearch.deleteIngredient(ingredientId);
+    await ingredientSearch.deleteIngredient(String(ingredientId));
 
     res.send({message: 'Ingredient deleted.'});
   }
 };
-
-module.exports = staffIngredientController;

@@ -1,13 +1,12 @@
 import { Request, Response } from 'express';
-
-const uuidv4 = require('uuid/v4');
+import uuidv4 = require('uuid/v4');
 
 //const pool = require('../data-access/dbPoolConnection');
 //const User = require('../data-access/user/User');
 
 // NOTE: Notifications are not implemented yet, and possibly never will be
 
-const notificationController = {
+export const notificationController = {
   viewNotificationForUser: async function(req: Request, res: Response) {
     const userId = req.session.userInfo.userId;
   },
@@ -24,5 +23,3 @@ const notificationController = {
     // if used in plan
   }
 };
-
-module.exports = notificationController;

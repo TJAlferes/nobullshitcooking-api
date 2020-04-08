@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
 
 import { pool } from '../../lib/connections/mysqlPoolConnection';
-const User = require('../../mysql-access/User');
-const Friendship = require('../../mysql-access/Friendship');
-const validFriendshipEntity = require('../../lib/validations/friendship/friendshipEntity');
+import { User } from '../../mysql-access/User';
+import { Friendship } from '../../mysql-access/Friendship';
+import { validFriendshipEntity } from '../../lib/validations/friendship/friendshipEntity';
 
-const userFriendshipController = {
+export const userFriendshipController = {
   viewAllMyFriendships: async function(req: Request, res: Response) {
-    const userId = req.session.userInfo.userId;
+    const userId = req.session!.userInfo.userId;
     const friendship = new Friendship(pool);
     const rows = await friendship.viewAllMyFriendships(userId);
     res.send(rows);
@@ -20,7 +20,7 @@ const userFriendshipController = {
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
     const friendId = friendExists[0].user_id;
-    const userId = req.session.userInfo.userId;
+    const userId = req.session!.userInfo.userId;
     const status1 = "pending-sent";
     const status2 = "pending-received";
     
@@ -63,7 +63,7 @@ const userFriendshipController = {
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
     const friendId = friendExists[0].user_id;
-    const userId = req.session.userInfo.userId;
+    const userId = req.session!.userInfo.userId;
 
     const friendship = new Friendship(pool);
     await friendship.acceptFriendship(userId, friendId);
@@ -78,7 +78,7 @@ const userFriendshipController = {
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
     const friendId = friendExists[0].user_id;
-    const userId = req.session.userInfo.userId;
+    const userId = req.session!.userInfo.userId;
 
     const friendship = new Friendship(pool);
     await friendship.rejectFriendship(userId, friendId);
@@ -93,7 +93,7 @@ const userFriendshipController = {
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
     const friendId = friendExists[0].user_id;
-    const userId = req.session.userInfo.userId;
+    const userId = req.session!.userInfo.userId;
 
     const friendship = new Friendship(pool);
     await friendship.deleteFriendship(userId, friendId);
@@ -108,7 +108,7 @@ const userFriendshipController = {
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
     const friendId = friendExists[0].user_id;
-    const userId = req.session.userInfo.userId;
+    const userId = req.session!.userInfo.userId;
 
     const friendship = new Friendship(pool);
     await friendship.blockUser(userId, friendId);
@@ -123,7 +123,7 @@ const userFriendshipController = {
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
     const friendId = friendExists[0].user_id;
-    const userId = req.session.userInfo.userId;
+    const userId = req.session!.userInfo.userId;
 
     const friendship = new Friendship(pool);
     await friendship.unblockUser(userId, friendId);
@@ -131,5 +131,3 @@ const userFriendshipController = {
     res.send({message: 'User unblocked.'});
   }
 };
-
-module.exports = userFriendshipController;
