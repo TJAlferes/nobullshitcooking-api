@@ -5,7 +5,7 @@ import cookieParser from 'cookie-parser';
 
 import { pubClient } from '../lib/connections/redisConnection';
 
-const MessengerUser = require('../redis-access/MessengerUser');
+import { MessengerUser } from '../redis-access/MessengerUser';
 
 export function sessionIdsAreEqual(socket) {
   const parsedCookie = cookie.parse(socket.request.headers.cookie);
@@ -14,7 +14,7 @@ export function sessionIdsAreEqual(socket) {
     process.env.SESSION_SECRET
   );
   return parsedCookie['connect.sid'] === sid ? false : sid;
-};
+}
 
 export function addMessengerUser(socket, sid, session) {
   socket.request.sid = sid;
@@ -27,7 +27,7 @@ export function addMessengerUser(socket, sid, session) {
     sid,
     socket.id
   );
-};
+}
 
 export function useSocketAuth(io, redisSession) {
   function socketAuth(socket, next) {

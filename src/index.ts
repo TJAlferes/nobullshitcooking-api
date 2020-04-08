@@ -5,7 +5,7 @@
 require('regenerator-runtime/runtime');
 require('dotenv').config();
 
-const { app, server } = require('./app');
+import { app, server } from './app';
 
 let PORT: string | number;
 

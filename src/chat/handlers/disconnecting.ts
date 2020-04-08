@@ -1,12 +1,13 @@
-async function disconnecting(
+import { ChatUser  } from '../entities/ChatUser';
+
+export async function disconnecting(
   socket,
-  User,
   messengerRoom,
   messengerUser,
   nobscFriendship,
-  userId,
-  username,
-  avatar,
+  userId: number,
+  username: string,
+  avatar: string,
   reason
 ) {
   const clonedSocket = {...socket};
@@ -33,10 +34,8 @@ async function disconnecting(
     if (!onlineFriend) return;
 
     socket.broadcast.to(onlineFriend)
-    .emit('ShowOffline', User(userId, username, avatar));
+    .emit('ShowOffline', ChatUser(userId, username, avatar));
   }
 
   await messengerUser.removeUser(userId);
 }
-
-module.exports = disconnecting;

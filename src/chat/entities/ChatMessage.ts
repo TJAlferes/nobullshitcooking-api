@@ -1,8 +1,21 @@
-const ChatMessage = (chatMessageText, room, user) => ({
-  chatMessageId: user.userId + (new Date).getTime().toString(),
-  chatMessageText,
-  room,
-  user
-});
+import { IChatUser } from './ChatUser';
 
-module.exports = ChatMessage;
+export interface IChatMessage {
+  chatMessageId: string
+  chatMessageText: string
+  room: string
+  user: IChatUser
+}
+
+export function ChatMessage(
+  chatMessageText: string,
+  room: string,
+  user: IChatUser
+): IChatMessage {
+  return {
+    chatMessageId: user.userId + (new Date).getTime().toString(),
+    chatMessageText,
+    room,
+    user
+  };
+};

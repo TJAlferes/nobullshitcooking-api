@@ -1,8 +1,21 @@
-const Whisper = (whisperText, to, user) => ({
-  whisperId: user.userId + (new Date).getTime().toString(),
-  whisperText,
-  to,
-  user
-});
+import { IChatUser } from './ChatUser';
 
-module.exports = Whisper;
+export interface IWhisper {
+  whisperId: string
+  whisperText: string
+  to: string
+  user: IChatUser
+}
+
+export function Whisper(
+  whisperText: string,
+  to: string,
+  user: IChatUser
+): IWhisper {
+  return {
+    whisperId: user.userId + (new Date).getTime().toString(),
+    whisperText,
+    to,
+    user
+  };
+};

@@ -1,15 +1,16 @@
-async function addWhisper(
+import { Whisper  } from '../entities/Whisper';
+import { ChatUser  } from '../entities/ChatUser';
+
+export async function addWhisper(
   socket,
-  Whisper,
-  User,
   nobscUser,
   nobscFriendship,
   messengerUser,
-  whisperText,
-  to,
-  userId,
-  username,
-  avatar
+  whisperText: string,
+  to: string,
+  userId: number,
+  username: string,
+  avatar: string
 ) {
   const userExists = await nobscUser.getUserIdByUsername(to);
 
@@ -39,11 +40,9 @@ async function addWhisper(
   const whisper = Whisper(
     whisperText,
     to,
-    User(userId, username, avatar)
+    ChatUser(userId, username, avatar)
   );
 
   socket.broadcast.to(onlineUser).emit('AddWhisper', whisper);
   socket.emit('AddWhisper', whisper);
-};
-
-module.exports = addWhisper;
+}

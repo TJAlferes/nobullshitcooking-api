@@ -1,26 +1,22 @@
 'use strict';
 
 import { pool } from '../lib/connections/mysqlPoolConnection';
-const NOBSCUser = require('../mysql-access/User');
-const NOBSCFriendship = require('../mysql-access/Friendship');
+import { User as NOBSCUser } from '../mysql-access/User';
+import { Friendship as NOBSCFriendship } from '../mysql-access/Friendship';
 
 import { pubClient, subClient } from '../lib/connections/redisConnection';
 
-const MessengerChat = require('../redis-access/MessengerChat');
-const MessengerRoom = require('../redis-access/MessengerRoom');
-const MessengerUser = require('../redis-access/MessengerUser');
+import { MessengerChat } from '../redis-access/MessengerChat';
+import { MessengerRoom } from '../redis-access/MessengerRoom';
+import { MessengerUser } from '../redis-access/MessengerUser';
 
-const getOnline = require('./handlers/getOnline');
-const getUser = require('./handlers/getUser');
-const addChat = require('./handlers/addChat');
-const addWhisper = require('./handlers/addWhisper');
-const addRoom = require('./handlers/addRoom');
-const rejoinRoom = require('./handlers/rejoinRoom');
-const disconnecting = require('./handlers/disconnecting');
-
-const User = require('./entities/User');
-const ChatMessage = require('./entities/ChatMessage');
-const Whisper = require('./entities/Whisper');
+import { getOnline } from './handlers/getOnline';
+import { getUser } from './handlers/getUser';
+import { addChat } from './handlers/addChat';
+import { addWhisper } from './handlers/addWhisper';
+import { addRoom } from './handlers/addRoom';
+import { rejoinRoom } from './handlers/rejoinRoom';
+import { disconnecting } from './handlers/disconnecting';
 
 export async function socketConnection(socket) {
   const userId = socket.request.userInfo.userId;
@@ -44,7 +40,6 @@ export async function socketConnection(socket) {
   socket.on('GetOnline', function() {
     getOnline(
       socket,
-      User,
       nobscFriendship,
       messengerUser,
       userId,
@@ -53,17 +48,15 @@ export async function socketConnection(socket) {
     );
   });
 
-  socket.on('GetUser', function(room) {
+  socket.on('GetUser', function(room: string) {
     getUser(socket, messengerRoom, room);
   });
 
   // Messages
 
-  socket.on('AddChat', function(chatMessageText) {
+  socket.on('AddChat', function(chatMessageText: string) {
     addChat(
       socket,
-      ChatMessage,
-      User,
       messengerChat,
       chatMessageText,
       userId,
@@ -72,11 +65,9 @@ export async function socketConnection(socket) {
     );
   });
 
-  socket.on('AddWhisper', function(whisperText, to) {
+  socket.on('AddWhisper', function(whisperText: string, to: string) {
     addWhisper(
       socket,
-      Whisper,
-      User,
       nobscUser,
       nobscFriendship,
       messengerUser,
@@ -90,10 +81,9 @@ export async function socketConnection(socket) {
 
   // Rooms
 
-  socket.on('AddRoom', function(room) {
+  socket.on('AddRoom', function(room: string) {
     addRoom(
       socket,
-      User,
       messengerRoom,
       userId,
       username,
@@ -102,10 +92,9 @@ export async function socketConnection(socket) {
     );
   });
 
-  socket.on('RejoinRoom', function(room) {
+  socket.on('RejoinRoom', function(room: string) {
     rejoinRoom(
       socket,
-      User,
       messengerRoom,
       userId,
       username,
@@ -121,7 +110,6 @@ export async function socketConnection(socket) {
   socket.on('disconnecting', function(reason) {
     disconnecting(
       socket,
-      User,
       messengerRoom,
       messengerUser,
       nobscFriendship,

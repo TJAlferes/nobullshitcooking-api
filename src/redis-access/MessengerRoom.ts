@@ -1,5 +1,12 @@
+import { Redis } from 'ioredis';
+
+import { ChatUser } from '../chat/entities/ChatUser';
+
 export class MessengerRoom {
-  constructor(pubClient, subClient) {
+  pubClient: Redis;
+  subClient: Redis;
+
+  constructor(pubClient: Redis, subClient: Redis) {
     this.pubClient = pubClient;
     this.subClient = subClient;
     this.addRoom = this.addRoom.bind(this);
@@ -8,22 +15,16 @@ export class MessengerRoom {
     this.removeUserFromRoom = this.removeUserFromRoom.bind(this);
   }
 
-  async addRoom(room) {
+  async addRoom(room: string) {
     try {
-      if (room !== '') await this.pubClient.zadd('rooms', Date.now(), room);
+      if (room !== '') await this.pubClient.zadd('rooms', `${Date.now()}`, room);
     } catch (err) {
       console.error(err);
     }
   };
 
-  async getUsersInRoom(room) {
+  async getUsersInRoom(room: string) {
     try {
-      const User = (userId, username, avatar) => ({
-        userId,
-        username,
-        avatar
-      });
-
       const data = await this.pubClient.zrange(`rooms:${room}`, 0, -1);
       
       const pubClient = this.pubClient;
@@ -31,7 +32,7 @@ export class MessengerRoom {
 
       for (let userId of data){
         const userHash = await pubClient.hgetall(`user:${userId}`);
-        users.push(User(userId, userHash.username, userHash.avatar));
+        users.push(ChatUser(Number(userId), userHash.username, userHash.avatar));
       }
 
       return users;
@@ -40,11 +41,11 @@ export class MessengerRoom {
     }
   }
   
-  async addUserToRoom(userId, room) {
+  async addUserToRoom(userId: number, room: string) {
     try {
       await this.pubClient
       .multi()
-      .zadd(`rooms:${room}`, Date.now(), userId)
+      .zadd(`rooms:${room}`, `${Date.now()}`, `${userId}`)
       .set(`user:${userId}:room`, room)
       .exec();
     } catch (err) {
@@ -52,7 +53,7 @@ export class MessengerRoom {
     }
   }
   
-  async removeUserFromRoom(userId, room) {
+  async removeUserFromRoom(userId: number, room: string) {
     try {
       await this.pubClient
       .multi()

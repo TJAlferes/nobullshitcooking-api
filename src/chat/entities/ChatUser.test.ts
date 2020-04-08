@@ -1,6 +1,6 @@
-const User = require('./User');
+import { ChatUser } from './User';
 
-const user = User(7, 'Lucky', 'Lucky');
+const user = ChatUser(7, 'Lucky', 'Lucky');
 
 describe('User', () => {
   it('should have three parameters', () => {

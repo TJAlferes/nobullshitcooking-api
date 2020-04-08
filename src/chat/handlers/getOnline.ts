@@ -1,13 +1,13 @@
-async function getOnline(
+import { ChatUser  } from '../entities/ChatUser';
+
+export async function getOnline(
   socket,
-  User,
   nobscFriendship,
   messengerUser,
-  userId,
-  username,
-  avatar
+  userId: number,
+  username: string,
+  avatar: string
 ) {
-  console.log('getOnline called');
   const acceptedFriends = await nobscFriendship
   .viewAllMyAcceptedFriendships(userId);
 
@@ -24,7 +24,7 @@ async function getOnline(
     socket.broadcast.to(onlineFriend)
     .emit('ShowOnline', User(userId, username, avatar));
 
-    online.push(User(
+    online.push(ChatUser(
       acceptedFriend.user_id,
       acceptedFriend.username,
       acceptedFriend.avatar
@@ -32,6 +32,4 @@ async function getOnline(
   }
 
   socket.emit('GetOnline', online);
-};
-
-module.exports = getOnline;
+}

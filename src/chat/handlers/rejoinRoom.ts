@@ -1,11 +1,12 @@
-async function rejoinRoom(
+import { ChatUser  } from '../entities/ChatUser';
+
+export async function rejoinRoom(
   socket,
-  User,
   messengerRoom,
-  userId,
-  username,
-  avatar,
-  room
+  userId: number,
+  username: string,
+  avatar: string,
+  room: string
 ) {
   if (room !== '') {
     socket.join(room);
@@ -14,12 +15,10 @@ async function rejoinRoom(
     await messengerRoom.addUserToRoom(userId, room);
 
     socket.broadcast.to(room)
-    .emit('AddUser', User(userId, username, avatar));
+    .emit('AddUser', ChatUser(userId, username, avatar));
 
     const users = await messengerRoom.getUsersInRoom(room);
     
     socket.emit('RegetUser', users, room);
   }
-};
-
-module.exports = rejoinRoom;
+}
