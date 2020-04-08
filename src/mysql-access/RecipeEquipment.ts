@@ -1,10 +1,14 @@
+import { Pool } from 'mysql2/promise';
+
 export interface IRecipeEquipment {
   equipment: number
   amount: number
 }
 
 export class RecipeEquipment {
-  constructor(pool) {
+  pool: Pool;
+
+  constructor(pool: Pool) {
     this.pool = pool;
     this.viewRecipeEquipmentByRecipeId = this.viewRecipeEquipmentByRecipeId.bind(this);
     this.createRecipeEquipment = this.createRecipeEquipment.bind(this);

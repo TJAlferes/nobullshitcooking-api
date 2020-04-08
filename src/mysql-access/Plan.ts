@@ -1,5 +1,9 @@
-class Plan {
-  constructor(pool) {
+import { Pool } from 'mysql2/promise';
+
+export class Plan {
+  pool: Pool;
+
+  constructor(pool: Pool) {
     this.pool = pool;
     this.viewAllMyPrivatePlans = this.viewAllMyPrivatePlans.bind(this);
     this.viewMyPrivatePlan = this.viewMyPrivatePlan.bind(this);
@@ -71,5 +75,3 @@ class Plan {
     return deletedPlan;
   }
 }
-
-module.exports = Plan;

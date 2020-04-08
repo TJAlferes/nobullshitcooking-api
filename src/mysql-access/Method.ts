@@ -1,5 +1,9 @@
-class Method {
-  constructor(pool) {
+import { Pool } from 'mysql2/promise';
+
+export class Method {
+  pool: Pool;
+
+  constructor(pool: Pool) {
     this.pool = pool;
     this.viewAllMethods = this.viewAllMethods.bind(this);
     this.viewMethodById = this.viewMethodById.bind(this);
@@ -14,7 +18,7 @@ class Method {
     return allMethods;
   }
 
-  async viewMethodById(methodId) {
+  async viewMethodById(methodId: number) {
     const sql = `
       SELECT method_id, method_name
       FROM nobsc_methods
@@ -24,5 +28,3 @@ class Method {
     return method;
   }
 }
-
-module.exports = Method;

@@ -1,5 +1,16 @@
-class Notification {
-  constructor(pool) {
+import { Pool } from 'mysql2/promise';
+
+interface INotification {
+  senderId: number
+  receiverId: number
+  note: string
+  read: Boolean
+}
+
+export class Notification {
+  pool: Pool;
+
+  constructor(pool: Pool) {
     this.pool = pool;
     this.viewNotificationForUser = this.viewNotificationForUser.bind(this);
     this.viewAllNotificationsForUser = this.viewAllNotificationsForUser.bind(this);
@@ -8,7 +19,7 @@ class Notification {
     //this.deleteOldNotifications = this.deleteNotifications.bind(this);  // make a weekly(?) job
   }
 
-  async viewNotificationForUser(notificationId, userId) {
+  async viewNotificationForUser(notificationId: number, userId: number) {
     const sql = `
       SELECT sender_id, type, created_on, note
       FROM nobsc_notifications
@@ -18,7 +29,7 @@ class Notification {
     return notification;
   }
 
-  async viewAllNotificationsForUser(userId) {
+  async viewAllNotificationsForUser(userId: number) {
     const sql = `
       SELECT sender_id, type, created_on
       FROM nobsc_notifications
@@ -28,8 +39,12 @@ class Notification {
     return notifications;
   }
 
-  async createNotification(notificationInfo) {
-    const { senderId, receiverId, note, read } = notificationInfo;
+  async createNotification({
+    senderId,
+    receiverId,
+    note,
+    read }: INotification
+  ) {
     const sql = `
       INSERT INTO nobsc_notifications
       (sender_id, receiver_id, read, type, note, created_on)
@@ -40,7 +55,7 @@ class Notification {
     return notification;
   }
 
-  async markNotificationAsRead(notificationId, userId) {
+  async markNotificationAsRead(notificationId: number, userId: number) {
     const sql = `
       UPDATE nobsc_notifications
       SET read = 1
@@ -72,5 +87,3 @@ class Notification {
   }
   */
 }
-
-module.exports = Notification;

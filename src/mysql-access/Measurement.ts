@@ -1,5 +1,9 @@
-class Measurement {
-  constructor(pool) {
+import { Pool } from 'mysql2/promise';
+
+export class Measurement {
+  pool: Pool;
+
+  constructor(pool: Pool) {
     this.pool = pool;
     this.viewAllMeasurements = this.viewAllMeasurements.bind(this);
     this.viewMeasurementById = this.viewMeasurementById.bind(this);
@@ -14,7 +18,7 @@ class Measurement {
     return allMeasurements;
   }
 
-  async viewMeasurementById(measurementId) {
+  async viewMeasurementById(measurementId: number) {
     const sql = `
       SELECT measurement_id, measurement_name
       FROM nobsc_measurements
@@ -24,5 +28,3 @@ class Measurement {
     return measurement;
   }
 }
-
-module.exports = Measurement;

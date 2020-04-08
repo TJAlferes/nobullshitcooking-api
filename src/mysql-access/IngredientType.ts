@@ -1,5 +1,9 @@
-class IngredientType {
-  constructor(pool) {
+import { Pool } from 'mysql2/promise';
+
+export class IngredientType {
+  pool: Pool;
+
+  constructor(pool: Pool) {
     this.pool = pool;
     this.viewAllIngredientTypes = this.viewAllIngredientTypes.bind(this);
     this.viewIngredientTypeById = this.viewIngredientTypeById.bind(this);
@@ -25,5 +29,3 @@ class IngredientType {
     return ingredientType;
   }
 }
-
-module.exports = IngredientType;

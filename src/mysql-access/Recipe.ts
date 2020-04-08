@@ -1,5 +1,9 @@
-class Recipe {
-  constructor(pool) {
+import { Pool } from 'mysql2/promise';
+
+export class Recipe {
+  pool: Pool;
+
+  constructor(pool: Pool) {
     this.pool = pool;
 
     this.getAllPublicRecipesForElasticSearchBulkInsert = this.getAllPublicRecipesForElasticSearchBulkInsert.bind(this);
@@ -460,5 +464,3 @@ class Recipe {
     return disownedPublicUserRecipe;
   }
 }
-
-module.exports = Recipe;

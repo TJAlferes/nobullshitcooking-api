@@ -1,5 +1,9 @@
-class Supplier {
-  constructor(pool) {
+import { Pool } from 'mysql2/promise';
+
+export class Supplier {
+  pool: Pool;
+
+  constructor(pool: Pool) {
     this.pool = pool;
     this.viewAllSuppliers = this.viewAllSuppliers.bind(this);
     this.viewSupplierById = this.viewSupplierById.bind(this);

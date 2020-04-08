@@ -1,5 +1,9 @@
-class User {
-  constructor(pool) {
+import { Pool } from 'mysql2/promise';
+
+export class User {
+  pool: Pool;
+
+  constructor(pool: Pool) {
     this.pool = pool;
     this.getUserByEmail = this.getUserByEmail.bind(this);
     this.getUserByName = this.getUserByName.bind(this);
