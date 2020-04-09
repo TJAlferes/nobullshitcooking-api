@@ -1,6 +1,8 @@
-const StatusError = require('./StatusError');
+import { Request, Response, NextFunction } from 'express';
 
-export function userIsAuth(req, res, next) {
+import { StatusError } from './StatusError';
+
+export function userIsAuth(req: Request, res: Response, next: NextFunction) {
   if (req.session && req.session.userInfo.userId) return next();  // insufficient?
   return next(new StatusError("Unauthorized", 401));
 };
