@@ -1,14 +1,15 @@
 'use strict';
 
-import http from 'http';
-import express from 'express';
+//import http from 'http';
+import { createServer, IncomingMessage, ServerResponse } from 'http';
+import express, { Request, Response, NextFunction } from 'express';
 
 import { middlewareInit}  from './middlewareInit';
 import { routesInit } from './routesInit';
 //import { bulkUp } from './search');
 
 export const app = express();
-export const server = http.Server(app);
+export const server = createServer(app);
 
 /*
 middlewareInit then calls sessionInit,
@@ -21,16 +22,16 @@ because of the dependent relationships of these things
 middlewareInit(app, server);  // must run before routesInit
 routesInit(app);
 
-process.on('unhandledRejection', (reason, promise) => {
-  console.log('Unhandled Rejection at:', reason.stack || reason);
+process.on('unhandledRejection', (reason, promise: Promise<any>) => {
+  console.log('Unhandled Rejection at:', reason);
 });
 
 if (app.get('env') === 'development') {
-  app.use((error, req, res, next) => {
+  app.use((error, req: Request, res: Response, next: NextFunction) => {
     res.status(error.statusCode || 500).json({error});
   });
 } else {
-  app.use((error, req, res, next) => {
+  app.use((error, req: Request, res: Response, next: NextFunction) => {
     res
     .status(error.statusCode || 500)
     .json({error: error.message || 'something went wrong'});
