@@ -37,6 +37,8 @@ CREATE TABLE `nobsc_content` (
   `content_type_id` smallint unsigned NOT NULL,
   `author_id` int unsigned NOT NULL,
   `owner_id` int unsigned NOT NULL,
+  `created` date NOT NULL,
+  `published` date,
   `content_items` json DEFAULT NULL,
   PRIMARY KEY (`content_id`),
   FOREIGN KEY (`content_type_id`) REFERENCES `nobsc_content_types` (`content_type_id`),

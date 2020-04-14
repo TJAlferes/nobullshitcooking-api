@@ -4,41 +4,41 @@ interface IPlan {
   authorId: number
   ownerId: number
   planName: string
-  planData: PlanData
+  planData: IPlanData
 }
 
-interface PlanData {
-  1: PlanRecipe[],
-  2: PlanRecipe[],
-  3: PlanRecipe[],
-  4: PlanRecipe[],
-  5: PlanRecipe[],
-  6: PlanRecipe[],
-  7: PlanRecipe[],
-  8: PlanRecipe[],
-  9: PlanRecipe[],
-  10: PlanRecipe[],
-  11: PlanRecipe[],
-  12: PlanRecipe[],
-  13: PlanRecipe[],
-  14: PlanRecipe[],
-  15: PlanRecipe[],
-  16: PlanRecipe[],
-  17: PlanRecipe[],
-  18: PlanRecipe[],
-  19: PlanRecipe[],
-  20: PlanRecipe[],
-  21: PlanRecipe[],
-  22: PlanRecipe[],
-  23: PlanRecipe[],
-  24: PlanRecipe[],
-  25: PlanRecipe[],
-  26: PlanRecipe[],
-  27: PlanRecipe[],
-  28: PlanRecipe[]
+interface IPlanData {
+  1: IPlanRecipe[],
+  2: IPlanRecipe[],
+  3: IPlanRecipe[],
+  4: IPlanRecipe[],
+  5: IPlanRecipe[],
+  6: IPlanRecipe[],
+  7: IPlanRecipe[],
+  8: IPlanRecipe[],
+  9: IPlanRecipe[],
+  10: IPlanRecipe[],
+  11: IPlanRecipe[],
+  12: IPlanRecipe[],
+  13: IPlanRecipe[],
+  14: IPlanRecipe[],
+  15: IPlanRecipe[],
+  16: IPlanRecipe[],
+  17: IPlanRecipe[],
+  18: IPlanRecipe[],
+  19: IPlanRecipe[],
+  20: IPlanRecipe[],
+  21: IPlanRecipe[],
+  22: IPlanRecipe[],
+  23: IPlanRecipe[],
+  24: IPlanRecipe[],
+  25: IPlanRecipe[],
+  26: IPlanRecipe[],
+  27: IPlanRecipe[],
+  28: IPlanRecipe[]
 }
 
-interface PlanRecipe {
+interface IPlanRecipe {
   key: string
   image: string
   text: string
