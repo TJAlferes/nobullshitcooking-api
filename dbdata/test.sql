@@ -32,6 +32,25 @@ CREATE TABLE `nobsc_suppliers` (
 
 
 
+CREATE TABLE `nobsc_content` (
+  `content_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `content_type_id` smallint unsigned NOT NULL,
+  `author_id` int unsigned NOT NULL,
+  `owner_id` int unsigned NOT NULL,
+  `content_items` json DEFAULT NULL,
+  PRIMARY KEY (`content_id`),
+  FOREIGN KEY (`content_type_id`) REFERENCES `nobsc_content_types` (`content_type_id`),
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `nobsc_content_types` (
+  `content_type_id` smallint unsigned NOT NULL DEFAULT '0',
+  `parent_id` smallint unsigned NOT NULL DEFAULT '0',
+  `content_type_name` varchar(60) UNIQUE NOT NULL,
+  PRIMARY KEY (`content_type_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+
 CREATE TABLE `nobsc_recipe_types` (
   `recipe_type_id` tinyint unsigned NOT NULL DEFAULT '0',
   `recipe_type_name` varchar(25) DEFAULT NULL,
