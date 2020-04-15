@@ -261,6 +261,30 @@ VALUES
 
 
 
+INSERT INTO nobsc_content
+(content_id, content_type_id, author_id, owner_id, created, published, content_items)
+VALUES
+(1, 2, 1, 1, "4-14-2020", NULL, "{}")
+
+INSERT INTO nobsc_content_types
+(content_type_id, parent_id, content_type_name)
+VALUES
+(1, 0, "Page"),
+(2, 0, "Post"),
+(3, 1, "Guide"),
+(4, 1, "Promo"),
+(5, 1, "Site"),
+(6, 3, "Fitness"),
+(7, 3, "Food"),
+(8, 6, "Exercises"),
+(9, 6, "Principles"),
+(10, 7, "Cuisines"),
+(11, 7, "Methods"),
+(12, 7, "Nutrition"),
+(13, 7, "Equipment"),
+(14, 7, "Ingredients"),
+(15, 7, "Recipes");
+
 INSERT INTO nobsc_recipe_types
 (recipe_type_id, recipe_type_name)
 VALUES

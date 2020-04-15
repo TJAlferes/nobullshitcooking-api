@@ -5,13 +5,13 @@ interface IContent {
   authorId: number
   ownerId: number
   created: Date
-  published: (Date|undefined)
+  published: (Date|null)
   contentItems: IContentItem[]
 }
 
 interface IContentUpdate {
   contentTypeId: number
-  published: (Date|undefined)
+  published: (Date|null)
   contentItems: IContentItem[]
 }
 
@@ -19,8 +19,8 @@ interface IContentItem {
   index: number
   key: string
   element: string
-  attributes: (object|undefined)
-  children: (IContentItem|string|number|undefined)
+  attributes: (object|null)
+  children: (IContentItem|string|number|null)
 }
 
 export class Content {
@@ -36,7 +36,7 @@ export class Content {
 
   async viewContentById(contentId: number) {  // also make ByDate, ByTitle, ByAuthor, ByDateTitle, etc.
     const sql = `
-      SELECT content_items
+      SELECT content_type_id, content_items
       FROM nobsc_content
       WHERE content_id = ?
     `;
