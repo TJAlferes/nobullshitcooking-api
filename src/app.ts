@@ -27,13 +27,13 @@ process.on('unhandledRejection', (reason, promise: Promise<any>) => {
 });
 
 if (app.get('env') === 'development') {
-  app.use((error, req: Request, res: Response, next: NextFunction) => {
-    res.status(error.statusCode || 500).json({error});
+  app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
+    res.status(500).json({error});
   });
 } else {
-  app.use((error, req: Request, res: Response, next: NextFunction) => {
+  app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
     res
-    .status(error.statusCode || 500)
+    .status(500)
     .json({error: error.message || 'something went wrong'});
   });
 }

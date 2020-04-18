@@ -1,5 +1,7 @@
 'use strict';
 
+import { Server } from 'http';
+import { RedisStore } from 'connect-redis';
 import socketIO from 'socket.io';
 import redisAdapter from 'socket.io-redis';
 
@@ -9,7 +11,7 @@ import { socketConnection } from './chat/socketConnection';
 import { useSocketAuth } from './chat/socketAuth';
 import { cleanUp } from './chat/workers';
 
-export function socketInit(server, redisSession) {
+export function socketInit(server: Server, redisSession: RedisStore) {
   const io = socketIO(server, {pingTimeout: 60000});
 
   io.adapter(redisAdapter({pubClient, subClient}));
