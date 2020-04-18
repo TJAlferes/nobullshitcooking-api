@@ -1,6 +1,5 @@
 'use strict';
 
-//import http from 'http';
 import { createServer } from 'http';
 import express, { Request, Response, NextFunction } from 'express';
 
@@ -11,15 +10,7 @@ import { routesInit } from './routesInit';
 export const app = express();
 export const server = createServer(app);
 
-/*
-middlewareInit then calls sessionInit,
-and sessionInit in turn calls socketInit
-
-typically we want to avoid such triple nesting,
-however here it seems unavoidable,
-because of the dependent relationships of these things
-*/
-middlewareInit(app, server);  // must run before routesInit
+middlewareInit(app, server);  // middlewareInit must be called before routesInit
 routesInit(app);
 
 process.on('unhandledRejection', (reason, promise: Promise<any>) => {

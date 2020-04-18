@@ -1,3 +1,4 @@
+import { Server } from 'http';
 import express, { Application } from 'express';
 //import expressPinoLogger from 'express-pino-logger');
 import expressRateLimit from 'express-rate-limit';  // Use rate-limiter-flexible instead? https://github.com/animir/node-rate-limiter-flexible
@@ -9,7 +10,7 @@ import compression from 'compression';
 
 import { sessionInit } from './sessionInit';
 
-export function middlewareInit(app: Application, server) {
+export function middlewareInit(app: Application, server: Server) {
   const rateLimiterOptions = {windowMs: 1 * 60 * 1000, max: 1000};  // limit each IP to 1000 requests per minute (100?)
 
   const corsOptions = {origin: ['http://localhost:8080'], credentials: true};
