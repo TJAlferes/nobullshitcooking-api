@@ -364,7 +364,7 @@ export class Recipe {
     ) required_methods,
     (
       SELECT CONCAT('[', GROUP_CONCAT(JSON_OBJECT(
-      'amount', re.amount,
+        'amount', re.amount,
         'equipment_type_id', e.equipment_type_id,
         'equipment_id', re.equipment_id
       )), ']')

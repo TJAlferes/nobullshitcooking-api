@@ -16,7 +16,7 @@ export class Friendship {
     this.checkIfBlockedBy = this.checkIfBlockedBy.bind(this);
     this.viewAllMyFriendships = this.viewAllMyFriendships.bind(this);
     this.viewAllMyAcceptedFriendships = this.viewAllMyAcceptedFriendships.bind(this);
-    //this.viewAllMyPendingFriendships = this.viewAllMyPendingFriendships.bind(this);
+    this.viewAllMyPendingFriendships = this.viewAllMyPendingFriendships.bind(this);
     this.viewAllMyBlockedUsers = this.viewAllMyBlockedUsers.bind(this);
     this.createFriendship = this.createFriendship.bind(this);
     this.acceptFriendship = this.acceptFriendship.bind(this);

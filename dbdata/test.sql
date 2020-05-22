@@ -278,12 +278,12 @@ VALUES
 (7, 3, "Food"),
 (8, 6, "Exercises"),
 (9, 6, "Principles"),
-(10, 7, "Cuisines"),
-(11, 7, "Methods"),
-(12, 7, "Nutrition"),
-(13, 7, "Equipment"),
-(14, 7, "Ingredients"),
-(15, 7, "Recipes");
+(10, 7, "Recipes"),
+(11, 7, "Cuisines"),
+(12, 7, "Ingredients"),
+(13, 7, "Nutrition"),
+(14, 7, "Equipment"),
+(15, 7, "Methods");
 
 INSERT INTO nobsc_recipe_types
 (recipe_type_id, recipe_type_name)
