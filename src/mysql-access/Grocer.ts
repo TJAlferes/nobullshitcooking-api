@@ -1,5 +1,9 @@
-class Grocer {
-  constructor(pool) {
+import { Pool } from 'mysql2/promise';
+
+export class Grocer {
+  pool: Pool;
+
+  constructor(pool: Pool) {
     this.pool = pool;
     this.viewAllMyPrivateUserGrocers = this.viewAllMyPrivateUserGrocers.bind(this);
     //this.viewMyPrivateUserGrocer = this.viewMyPrivateUserGrocer.bind(this);
@@ -48,9 +52,9 @@ class Grocer {
     const sql = `
       UPDATE nobsc_grocers
       SET
-        grocerName = ?,
-        grocerAddress = ?,
-        grocerNotes = ?
+        grocer_name = ?,
+        grocer_address = ?,
+        grocer_notes = ?
       WHERE owner_id = ? AND grocer_id = ?
       LIMIT 1
     `;
@@ -78,5 +82,3 @@ class Grocer {
     return deletedPrivateUserGrocer;
   }
 }
-
-module.exports = Grocer;

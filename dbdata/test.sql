@@ -48,6 +48,7 @@ CREATE TABLE `nobsc_content_types` (
   `content_type_id` smallint unsigned NOT NULL DEFAULT '0',
   `parent_id` smallint unsigned NOT NULL DEFAULT '0',
   `content_type_name` varchar(60) UNIQUE NOT NULL,
+  `content_type_path` varchar(255) UNIQUE NOT NULL,
   PRIMARY KEY (`content_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -267,9 +268,9 @@ VALUES
 (1, 2, 1, 1, "4-14-2020", NULL, "{}")
 
 INSERT INTO nobsc_content_types
-(content_type_id, parent_id, content_type_name)
+(content_type_id, parent_id, content_type_name, content_type_path)
 VALUES
-(1, 0, "Page"),
+(1, 0, "Page", ""),
 (2, 0, "Post"),
 (3, 1, "Guide"),
 (4, 1, "Promo"),
