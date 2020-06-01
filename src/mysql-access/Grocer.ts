@@ -1,5 +1,16 @@
 import { Pool } from 'mysql2/promise';
 
+interface ICreatingGrocer {
+  ownerId: number;
+  grocerName: string;
+  grocerAddress: string;
+  grocerNotes: string;
+}
+
+interface IEditingGrocer extends ICreatingGrocer {
+  grocerId: number;
+}
+
 export class Grocer {
   pool: Pool;
 
@@ -12,7 +23,7 @@ export class Grocer {
     this.deleteMyPrivateUserGrocer = this.deleteMyPrivateUserGrocer.bind(this);
   }
 
-  async viewAllMyPrivateUserGrocers(ownerId) {
+  async viewAllMyPrivateUserGrocers(ownerId: number) {
     const sql = `
       SELECT grocer_id, grocer_name, grocer_address, grocer_notes
       FROM nobsc_grocers
@@ -30,8 +41,12 @@ export class Grocer {
     `;
   }*/
 
-  async createMyPrivateUserGrocer(grocerToCreate) {
-    const { ownerId, grocerName, grocerAddress, grocerNotes } = grocerToCreate;
+  async createMyPrivateUserGrocer({
+    ownerId,
+    grocerName,
+    grocerAddress,
+    grocerNotes
+  }: ICreatingGrocer) {
     const sql = `
       INSERT INTO nobsc_grocers
       (owner_id, grocer_name, grocer_address, grocer_notes)
@@ -47,8 +62,13 @@ export class Grocer {
     return createdPrivateUserGrocer;
   }
 
-  async updateMyPrivateUserGrocer(grocerToUpdateWith, grocerId) {
-    const { ownerId, grocerName, grocerAddress, grocerNotes } = grocerToUpdateWith;
+  async updateMyPrivateUserGrocer({
+    grocerId,
+    ownerId,
+    grocerName,
+    grocerAddress,
+    grocerNotes
+  }: IEditingGrocer) {
     const sql = `
       UPDATE nobsc_grocers
       SET
@@ -68,7 +88,7 @@ export class Grocer {
     return updatedPrivateUserGrocer;
   }
 
-  async deleteMyPrivateUserGrocer(ownerId, grocerId) {
+  async deleteMyPrivateUserGrocer(ownerId: number, grocerId: number) {
     const sql = `
       DELETE
       FROM nobsc_grocers

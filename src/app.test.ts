@@ -1,10 +1,8 @@
-// organize
+import request from 'supertest';
 
-const request = require('supertest');
-
-const { server } = require('./app');
-const pool = require('../../lib/connections/mysqlPoolConnection');
-const User = require('../../mysql-access/User');
+import { server } from './app';
+import { pool } from './lib/connections/mysqlPoolConnection';
+import { User } from './mysql-access/User';
 
 const user = new User(pool);  // DO NOT use this, make a separate test DB
 

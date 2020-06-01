@@ -80,7 +80,7 @@ export class ContentType {
     return updatedContentType;
   }
 
-  async deleteContentType(contentTypeId) {
+  async deleteContentType(contentTypeId: number) {
     const sql = `
       DELETE
       FROM nobsc_content_types
