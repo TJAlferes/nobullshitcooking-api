@@ -1,9 +1,12 @@
+import { Socket } from 'socket.io';
+
+import { IMessengerUser } from '../../redis-access/MessengerUser';
 import { ChatUser  } from '../entities/ChatUser';
 
 export async function getOnline(
-  socket,
+  socket: Socket,
   nobscFriendship,
-  messengerUser,
+  messengerUser: IMessengerUser,
   userId: number,
   username: string,
   avatar: string
@@ -22,7 +25,7 @@ export async function getOnline(
     if (!onlineFriend) return;
 
     socket.broadcast.to(onlineFriend)
-    .emit('ShowOnline', User(userId, username, avatar));
+    .emit('ShowOnline', ChatUser(userId, username, avatar));
 
     online.push(ChatUser(
       acceptedFriend.user_id,

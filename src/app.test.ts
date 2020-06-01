@@ -40,7 +40,7 @@ describe('the /user/auth/login endpoint', () => {
     .expect(201);
   });
 
-  it('should not log in an already logged in user', () => {
+  it('should not log in an already logged in user', async () => {
     await request(server)
     .post('/user/auth/login')
     .send({email: "loggedinuser@site.com", password: "secret"})

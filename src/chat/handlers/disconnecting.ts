@@ -1,14 +1,18 @@
+import { Socket } from 'socket.io';
+
+import { IMessengerRoom } from '../../redis-access/MessengerRoom';
+import { IMessengerUser } from '../../redis-access/MessengerUser';
 import { ChatUser  } from '../entities/ChatUser';
 
 export async function disconnecting(
-  socket,
-  messengerRoom,
-  messengerUser,
+  socket: Socket,
+  messengerRoom: IMessengerRoom,
+  messengerUser: IMessengerUser,
   nobscFriendship,
   userId: number,
   username: string,
   avatar: string,
-  reason
+  reason: any
 ) {
   const clonedSocket = {...socket};
   //console.log('disconnecting; reason: ', reason);
@@ -16,7 +20,7 @@ export async function disconnecting(
   for (let room in clonedSocket.rooms) {
     if (room !== clonedSocket.id) {
       socket.broadcast.to(room)
-      .emit('RemoveUser', User(userId, username, avatar));
+      .emit('RemoveUser', ChatUser(userId, username, avatar));
 
       messengerRoom.removeUserFromRoom(userId, room);
     }

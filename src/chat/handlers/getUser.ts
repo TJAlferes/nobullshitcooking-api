@@ -1,6 +1,10 @@
+import { Socket } from 'socket.io';
+
+import { IMessengerRoom } from '../../redis-access/MessengerRoom';
+
 export async function getUser(
-  socket,
-  messengerRoom,
+  socket: Socket,
+  messengerRoom: IMessengerRoom,
   room: string
 ) {
   const users = await messengerRoom.getUsersInRoom(room);

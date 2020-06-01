@@ -1,9 +1,8 @@
 import { esClient } from '../lib/connections/elasticsearchClient';
 import { pool } from '../lib/connections/mysqlPoolConnection';
-
-const Recipe = require('../mysql-access/Recipe');
-const Ingredient = require('../mysql-access/Ingredient');
-const Equipment = require('../mysql-access/Equipment');
+import { Equipment } from '../mysql-access/Equipment';
+import { Ingredient } from '../mysql-access/Ingredient';
+import { Recipe } from '../mysql-access/Recipe';
 
 export async function bulkUp() {
   const recipe = new Recipe(pool);

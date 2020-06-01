@@ -1,10 +1,10 @@
 'use strict';
 
-const {
+import {
   sessionIdsAreEqual,
   addMessengerUser,
-  socketAuth
-} = require('./socketAuth');
+  useSocketAuth
+} from './socketAuth';
 
 describe('the sessionIdsAreEqual helper function', () => {
   it('should have one parameter', () => {

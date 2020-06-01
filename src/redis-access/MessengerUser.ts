@@ -53,3 +53,16 @@ export class MessengerUser {
     }
   }
 }
+
+export interface IMessengerUser {
+  client: Redis;
+  getUserSocketId(userId: number): string;
+  addUser(
+    userId: number,
+    username: string,
+    avatar: string,
+    sid: string,
+    socketid: string
+  ): void;
+  removeUser(userId: number): void;
+}

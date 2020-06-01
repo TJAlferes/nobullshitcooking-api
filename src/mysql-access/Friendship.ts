@@ -1,13 +1,6 @@
-import { Pool } from 'mysql2/promise';
+import { Pool, RowDataPacket } from 'mysql2/promise';
 
-interface IFriendship {
-  userId: number
-  friendId: number
-  status1: string
-  status2: string
-}
-
-export class Friendship {
+export class Friendship implements IFriendship {
   pool: Pool;
 
   constructor(pool: Pool) {
@@ -15,8 +8,10 @@ export class Friendship {
     this.getFriendshipByFriendId = this.getFriendshipByFriendId.bind(this);
     this.checkIfBlockedBy = this.checkIfBlockedBy.bind(this);
     this.viewAllMyFriendships = this.viewAllMyFriendships.bind(this);
-    this.viewAllMyAcceptedFriendships = this.viewAllMyAcceptedFriendships.bind(this);
-    this.viewAllMyPendingFriendships = this.viewAllMyPendingFriendships.bind(this);
+    this.viewAllMyAcceptedFriendships =
+    this.viewAllMyAcceptedFriendships.bind(this);
+    this.viewAllMyPendingFriendships =
+    this.viewAllMyPendingFriendships.bind(this);
     this.viewAllMyBlockedUsers = this.viewAllMyBlockedUsers.bind(this);
     this.createFriendship = this.createFriendship.bind(this);
     this.acceptFriendship = this.acceptFriendship.bind(this);
@@ -45,7 +40,8 @@ export class Friendship {
       FROM nobsc_friendships
       WHERE user_id = ? AND friend_id = ?
     `;
-    const [ friendship ] = await this.pool.execute(sql, [userId, friendId]);
+    const [ friendship ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [userId, friendId]);
     return friendship;
   }
 
@@ -55,7 +51,8 @@ export class Friendship {
       FROM nobsc_friendships
       WHERE user_id = ? AND friend_id = ? AND status = "blocked"
     `;
-    const [ blockedBy ] = await this.pool.execute(sql, [friendId, userId]);
+    const [ blockedBy ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [friendId, userId]);
     return blockedBy;
   }
 
@@ -68,9 +65,12 @@ export class Friendship {
         f.status AS status
       FROM nobsc_users u
       INNER JOIN nobsc_friendships f ON u.user_id = f.friend_id
-      WHERE f.user_id = ? AND f.status IN ("accepted", "pending-received", "blocked")
+      WHERE
+        f.user_id = ? AND
+        f.status IN ("accepted", "pending-received", "blocked")
     `;
-    const [ friendships ] = await this.pool.execute(sql, [userId]);
+    const [ friendships ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [userId]);
     return friendships;
   }
 
@@ -85,7 +85,8 @@ export class Friendship {
       INNER JOIN nobsc_friendships f ON u.user_id = f.friend_id
       WHERE f.user_id = ? AND f.status = "accepted"
     `;
-    const [ acceptedFriendships ] = await this.pool.execute(sql, [userId]);
+    const [ acceptedFriendships ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [userId]);
     return acceptedFriendships;
   }
 
@@ -100,7 +101,8 @@ export class Friendship {
       INNER JOIN nobsc_friendships f ON u.user_id = f.friend_id
       WHERE f.user_id = ? AND f.status = "pending-received"
     `;
-    const [ pendingFriendships ] = await this.pool.execute(sql, [userId]);
+    const [ pendingFriendships ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [userId]);
     return pendingFriendships;
   }
 
@@ -115,7 +117,8 @@ export class Friendship {
       INNER JOIN nobsc_friendships f ON u.user_id = f.friend_id
       WHERE f.user_id = ? AND f.status = "blocked"
     `;
-    const [ blockedUsers ] = await this.pool.execute(sql, [userId]);
+    const [ blockedUsers ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [userId]);
     return blockedUsers;
   }
 
@@ -124,13 +127,14 @@ export class Friendship {
     friendId,
     status1,
     status2
-  }: IFriendship) {
+  }: ICreatingFriendship) {
     const sql = `
       INSERT INTO nobsc_friendships (user_id, friend_id, status)
       VALUES (?, ?, ?)
     `;
-    const [ pendingFriendship ] = await this.pool.execute(sql, [userId, friendId, status1]);
-    await this.pool.execute(sql, [friendId, userId, status2]);
+    const [ pendingFriendship ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [userId, friendId, status1]);
+    await this.pool.execute<RowDataPacket[]>(sql, [friendId, userId, status2]);
     return pendingFriendship;
   }
 
@@ -147,8 +151,9 @@ export class Friendship {
       WHERE user_id = ? AND friend_id = ? AND status = "pending-sent"
       LIMIT 1
     `;
-    const [ acceptedFriendship ] = await this.pool.execute(sql1, [userId, friendId]);
-    await this.pool.execute(sql2, [friendId, userId,]);
+    const [ acceptedFriendship ] = await this.pool
+    .execute<RowDataPacket[]>(sql1, [userId, friendId]);
+    await this.pool.execute<RowDataPacket[]>(sql2, [friendId, userId,]);
     return acceptedFriendship;
   }
 
@@ -159,8 +164,9 @@ export class Friendship {
       WHERE user_id = ? AND friend_id = ? AND status != "blocked"
       LIMIT 1
     `;
-    const [ rejectedFriendship ] = await this.pool.execute(sql, [userId, friendId]);
-    await this.pool.execute(sql, [friendId, userId]);
+    const [ rejectedFriendship ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [userId, friendId]);
+    await this.pool.execute<RowDataPacket[]>(sql, [friendId, userId]);
     return rejectedFriendship;
   }
 
@@ -171,8 +177,9 @@ export class Friendship {
       WHERE user_id = ? AND friend_id = ? AND status != "blocked"
       LIMIT 1
     `;
-    const [ deletedFriendship ] = await this.pool.execute(sql, [userId, friendId]);
-    await this.pool.execute(sql, [friendId, userId]);
+    const [ deletedFriendship ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [userId, friendId]);
+    await this.pool.execute<RowDataPacket[]>(sql, [friendId, userId]);
     return deletedFriendship;
   }
 
@@ -189,7 +196,8 @@ export class Friendship {
     `;
     await this.pool.execute(sql1, [userId, friendId]);
     await this.pool.execute(sql1, [friendId, userId]);
-    const [ blockedUser ] = await this.pool.execute(sql2, [userId, friendId]);
+    const [ blockedUser ] = await this.pool
+    .execute<RowDataPacket[]>(sql2, [userId, friendId]);
     return blockedUser;
   }
 
@@ -200,7 +208,38 @@ export class Friendship {
       WHERE user_id = ? AND friend_id = ?
       LIMIT 1
     `;
-    const [ unblockedUser ] = await this.pool.execute(sql, [userId, friendId]);
+    const [ unblockedUser ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [userId, friendId]);
     return unblockedUser;
   }
+}
+
+type Data = Promise<RowDataPacket[]>;
+
+export interface IFriendship {
+  pool: Pool;
+  getFriendshipByFriendId(userId: number, friendId: number): Data;
+  checkIfBlockedBy(userId: number, friendId: number): Data;
+  viewAllMyFriendships(userId: number): Data;
+  viewAllMyAcceptedFriendships(userId: number): Data;
+  viewAllMyPendingFriendships(userId: number): Data;
+  viewAllMyBlockedUsers(userId: number): Data;
+  createFriendship({
+    userId,
+    friendId,
+    status1,
+    status2
+  }: ICreatingFriendship): Data;
+  acceptFriendship(userId: number, friendId: number): Data;
+  rejectFriendship(userId: number, friendId: number): Data;
+  deleteFriendship(userId: number, friendId: number): Data;
+  blockUser(userId: number, friendId: number): Data;
+  unblockUser(userId: number, friendId: number): Data;
+}
+
+interface ICreatingFriendship {
+  userId: number
+  friendId: number
+  status1: string
+  status2: string
 }

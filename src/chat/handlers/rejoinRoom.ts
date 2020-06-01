@@ -1,8 +1,11 @@
+import { Socket } from 'socket.io';
+
+import { IMessengerRoom } from '../../redis-access/MessengerRoom';
 import { ChatUser  } from '../entities/ChatUser';
 
 export async function rejoinRoom(
-  socket,
-  messengerRoom,
+  socket: Socket,
+  messengerRoom: IMessengerRoom,
   userId: number,
   username: string,
   avatar: string,

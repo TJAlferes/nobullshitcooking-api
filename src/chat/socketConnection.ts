@@ -1,24 +1,23 @@
 'use strict';
 
+import { Socket } from 'socket.io';
+
 import { pool } from '../lib/connections/mysqlPoolConnection';
-import { User as NOBSCUser } from '../mysql-access/User';
-import { Friendship as NOBSCFriendship } from '../mysql-access/Friendship';
-
 import { pubClient, subClient } from '../lib/connections/redisConnection';
-
+import { Friendship as NOBSCFriendship } from '../mysql-access/Friendship';
+import { User as NOBSCUser } from '../mysql-access/User';
 import { MessengerChat } from '../redis-access/MessengerChat';
 import { MessengerRoom } from '../redis-access/MessengerRoom';
 import { MessengerUser } from '../redis-access/MessengerUser';
-
+import { addChat } from './handlers/addChat';
+import { addRoom } from './handlers/addRoom';
+import { addWhisper } from './handlers/addWhisper';
+import { disconnecting } from './handlers/disconnecting';
 import { getOnline } from './handlers/getOnline';
 import { getUser } from './handlers/getUser';
-import { addChat } from './handlers/addChat';
-import { addWhisper } from './handlers/addWhisper';
-import { addRoom } from './handlers/addRoom';
 import { rejoinRoom } from './handlers/rejoinRoom';
-import { disconnecting } from './handlers/disconnecting';
 
-export async function socketConnection(socket) {
+export async function socketConnection(socket: Socket) {
   const userId = socket.request.userInfo.userId;
   const username = socket.request.userInfo.username;
   const avatar = socket.request.userInfo.avatar;
@@ -29,6 +28,8 @@ export async function socketConnection(socket) {
   const messengerUser = new MessengerUser(pubClient);
   const messengerRoom = new MessengerRoom(pubClient, subClient);
   const messengerChat = new MessengerChat(pubClient);
+
+  // async?
 
   // Users
 
@@ -105,9 +106,9 @@ export async function socketConnection(socket) {
 
   // SocketIO events
 
-  socket.on('error', (error) => console.log('error: ', error));
+  socket.on('error', (error: Error) => console.log('error: ', error));
 
-  socket.on('disconnecting', function(reason) {
+  socket.on('disconnecting', function(reason: any) {
     disconnecting(
       socket,
       messengerRoom,

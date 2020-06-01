@@ -2,7 +2,7 @@ import { Redis } from 'ioredis';
 
 import { ChatUser } from '../chat/entities/ChatUser';
 
-export class MessengerRoom {
+export class MessengerRoom implements IMessengerRoom {
   pubClient: Redis;
   subClient: Redis;
 
@@ -17,7 +17,9 @@ export class MessengerRoom {
 
   async addRoom(room: string) {
     try {
-      if (room !== '') await this.pubClient.zadd('rooms', `${Date.now()}`, room);
+      if (room !== '') {
+        await this.pubClient.zadd('rooms', `${Date.now()}`, room);
+      }
     } catch (err) {
       console.error(err);
     }
@@ -32,7 +34,8 @@ export class MessengerRoom {
 
       for (let userId of data){
         const userHash = await pubClient.hgetall(`user:${userId}`);
-        users.push(ChatUser(Number(userId), userHash.username, userHash.avatar));
+        users
+        .push(ChatUser(Number(userId), userHash.username, userHash.avatar));
       }
 
       return users;
@@ -64,4 +67,13 @@ export class MessengerRoom {
       console.error(err);
     }
   };
+}
+
+export interface IMessengerRoom {
+  pubClient: Redis;
+  subClient: Redis;
+  addRoom(room: string): void;
+  getUsersInRoom(room: string): void;
+  addUserToRoom(userId: number, room: string): void;
+  removeUserFromRoom(userId: number, room: string): void;
 }

@@ -1,8 +1,11 @@
+import { Socket } from 'socket.io';
+
+import { IMessengerRoom } from '../../redis-access/MessengerRoom';
 import { ChatUser  } from '../entities/ChatUser';
 
 export async function addRoom(
-  socket,
-  messengerRoom,
+  socket: Socket,
+  messengerRoom: IMessengerRoom,
   userId: number,
   username: string,
   avatar: string,
@@ -19,7 +22,7 @@ export async function addRoom(
       messengerRoom.removeUserFromRoom(userId, currentRooms[currentRoom]);
 
       socket.broadcast.to(currentRooms[currentRoom])
-      .emit('RemoveUser', User(userId, username, avatar));
+      .emit('RemoveUser', ChatUser(userId, username, avatar));
     }
   }
 
