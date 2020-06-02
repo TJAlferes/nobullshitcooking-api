@@ -1,4 +1,4 @@
-import { Pool } from 'mysql2/promise';
+import { Pool, RowDataPacket } from 'mysql2/promise';
 
 export class CuisineSupplier {
   pool: Pool;
@@ -71,4 +71,10 @@ export class CuisineSupplier {
 
     return deletedCuisineSuppliers;
   }
+}
+
+type Data = Promise<RowDataPacket[]>;
+
+export interface ICuisineSupplier {
+  pool: Pool;
 }

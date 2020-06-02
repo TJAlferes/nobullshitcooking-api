@@ -1,4 +1,4 @@
-import { Pool } from 'mysql2/promise';
+import { Pool, RowDataPacket } from 'mysql2/promise';
 
 export class FavoriteRecipe {
   pool: Pool;
@@ -78,4 +78,10 @@ export class FavoriteRecipe {
     const [ unfavoritedRecipe ] = await this.pool.execute(sql, [userId, recipeId]);
     return unfavoritedRecipe;
   }
+}
+
+type Data = Promise<RowDataPacket[]>;
+
+export interface IFavoriteRecipe {
+  pool: Pool;
 }

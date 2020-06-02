@@ -1,4 +1,4 @@
-import { Pool } from 'mysql2/promise';
+import { Pool, RowDataPacket } from 'mysql2/promise';
 
 export class Measurement {
   pool: Pool;
@@ -27,4 +27,10 @@ export class Measurement {
     const [ measurement ] = await this.pool.execute(sql, [measurementId]);
     return measurement;
   }
+}
+
+type Data = Promise<RowDataPacket[]>;
+
+export interface IMeasurement {
+  pool: Pool;
 }

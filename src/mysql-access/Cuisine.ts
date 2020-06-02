@@ -1,4 +1,4 @@
-import { Pool } from 'mysql2/promise';
+import { Pool, RowDataPacket } from 'mysql2/promise';
 
 export class Cuisine {
   pool: Pool;
@@ -71,4 +71,10 @@ export class Cuisine {
     .execute(sql, [ownerId, cuisineId]);
     return cuisineDetail;
   }
+}
+
+type Data = Promise<RowDataPacket[]>;
+
+export interface ICuisine {
+  pool: Pool;
 }

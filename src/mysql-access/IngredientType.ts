@@ -1,4 +1,4 @@
-import { Pool } from 'mysql2/promise';
+import { Pool, RowDataPacket } from 'mysql2/promise';
 
 export class IngredientType {
   pool: Pool;
@@ -28,4 +28,10 @@ export class IngredientType {
     console.log(ingredientType);
     return ingredientType;
   }
+}
+
+type Data = Promise<RowDataPacket[]>;
+
+export interface IIngredientType {
+  pool: Pool;
 }

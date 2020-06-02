@@ -1,12 +1,6 @@
-import { Pool } from 'mysql2/promise';
+import { Pool, RowDataPacket } from 'mysql2/promise';
 
-interface IStaff {
-  email: string
-  pass: string
-  staffname: string
-}
-
-export class Staff {
+export class Staff implements IStaff {
   pool: Pool;
 
   constructor(pool: Pool) {
@@ -16,8 +10,8 @@ export class Staff {
     this.viewAllStaff = this.viewAllStaff.bind(this);
     this.viewStaffById = this.viewStaffById.bind(this);
     this.createStaff = this.createStaff.bind(this);
-    //this.updateStaff = this.updateStaff.bind(this);
-    //this.deleteStaff = this.deleteStaff.bind(this);
+    this.updateStaff = this.updateStaff.bind(this);
+    this.deleteStaff = this.deleteStaff.bind(this);
   }
 
   async getStaffByEmail(email: string) {
@@ -26,7 +20,8 @@ export class Staff {
       FROM nobsc_staff
       WHERE email = ?
     `;
-    const [ staffByEmail ] = await this.pool.execute(sql, [email]);
+    const [ staffByEmail ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [email]);
     return staffByEmail;
   }
 
@@ -36,7 +31,8 @@ export class Staff {
       FROM nobsc_staff
       WHERE staffname = ?
     `;
-    const [ staffByName ] = await this.pool.execute(sql, [staffname]);
+    const [ staffByName ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [staffname]);
     return staffByName;
   }
 
@@ -47,7 +43,8 @@ export class Staff {
       ORDER BY staffname ASC
       LIMIT ?, ?
     `;
-    const [ allStaff ] = await this.pool.execute(sql, [starting, display]);
+    const [ allStaff ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [starting, display]);
     return allStaff;
   }
 
@@ -57,42 +54,82 @@ export class Staff {
       FROM nobsc_staff
       WHERE staff_id = ?
     `;
-    const [ staff ] = await this.pool.execute(sql, [staffId]);
+    const [ staff ] = await this.pool.execute<RowDataPacket[]>(sql, [staffId]);
     return staff;
   }
 
-  async createStaff({ email, pass, staffname }: IStaff) {
+  async createStaff({ email, pass, staffname }: ICreatingStaff) {
     const sql = `
       INSERT INTO nobsc_staff (email, pass, staffname)
       VALUES (?, ?, ?)
     `;
     const [ createdStaff ] = await this.pool
-    .execute(sql, [email, pass, staffname]);
+    .execute<RowDataPacket[]>(sql, [email, pass, staffname]);
     return createdStaff;
   }
 
-  /*async updateStaff(staffToUpdateWith, staffId) {
-    const { email, pass, staffname, avatar } = staffToUpdateWith;
+  async updateStaff({
+    staffId,
+    email,
+    pass,
+    staffname,
+    avatar
+  }: IUpdatingStaff) {
     const sql = `
       UPDATE nobsc_staff
       SET email = ?, pass = ?, staffname = ?, avatar = ?
       WHERE staff_id = ?
       LIMIT 1
     `;
-    const [ updatedStaff ] = await this.pool.execute(sql, [email, pass, staffname, avatar, staffId]);
-    if (!updatedStaff) throw new Error("updateStaff failed");
+    const [ updatedStaff ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [email, pass, staffname, avatar, staffId]);
     return updatedStaff;
-  }*/
+  }
 
-  /*async deleteStaff(staffId) {
+  async deleteStaff(staffId: number) {
     const sql = `
       DELETE
       FROM nobsc_staff
       WHERE staff_id = ?
       LIMIT 1
     `;
-    const [ deletedStaff ] = await this.pool.execute(sql, [staffId]);
-    if (!deletedStaff) throw new Error("deleteStaff failed");
+    const [ deletedStaff ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [staffId]);
     return deletedStaff;
-  }*/
+  }
+}
+
+type Data = Promise<RowDataPacket[]>;
+
+export interface IStaff {
+  pool: Pool;
+  getStaffByEmail(email: string): Data;
+  getStaffByName(staffname: string): Data;
+  //getStaffIdByStaffname(staffname: string): Data;
+  viewAllStaff(starting: number, display: number): Data;
+  viewStaffById(staffId: number): Data;
+  createStaff({ email, pass, staffname }: ICreatingStaff): Data;
+  //setAvatar(avatar: string, staffId: number): Data;
+  updateStaff({
+    staffId,
+    email,
+    pass,
+    staffname,
+    avatar
+  }: IUpdatingStaff): Data;
+  deleteStaff(userId: number): Data;
+}
+
+interface ICreatingStaff {
+  email: string;
+  pass: string;
+  staffname: string;
+}
+
+interface IUpdatingStaff {
+  staffId: number;
+  email: string;
+  pass: string;
+  staffname: string;
+  avatar: string;
 }

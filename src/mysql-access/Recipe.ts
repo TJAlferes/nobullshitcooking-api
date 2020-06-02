@@ -1,4 +1,4 @@
-import { Pool } from 'mysql2/promise';
+import { Pool, RowDataPacket } from 'mysql2/promise';
 
 interface IRecipe {
   recipeTypeId: number
@@ -492,4 +492,10 @@ export class Recipe {
     ]);
     return disownedPublicUserRecipe;
   }
+}
+
+type Data = Promise<RowDataPacket[]>;
+
+export interface IRecipe {
+  pool: Pool;
 }

@@ -1,4 +1,4 @@
-import { Pool } from 'mysql2/promise';
+import { Pool, RowDataPacket } from 'mysql2/promise';
 
 interface INotification {
   senderId: number
@@ -88,4 +88,10 @@ export class Notification {
     // etc.
   }
   */
+}
+
+type Data = Promise<RowDataPacket[]>;
+
+export interface INotification {
+  pool: Pool;
 }

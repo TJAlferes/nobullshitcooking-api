@@ -1,4 +1,4 @@
-import { Pool } from 'mysql2/promise';
+import { Pool, RowDataPacket } from 'mysql2/promise';
 
 interface IEquipment {
   equipmentTypeId: number
@@ -277,4 +277,10 @@ export class Equipment {
     .execute(sql, [ownerId, equipmentId]);
     return deletedPrivateUserEquipment;
   }
+}
+
+type Data = Promise<RowDataPacket[]>;
+
+export interface IEquipment {
+  pool: Pool;
 }

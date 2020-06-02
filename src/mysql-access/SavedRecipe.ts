@@ -1,6 +1,6 @@
-import { Pool } from 'mysql2/promise';
+import { Pool, RowDataPacket } from 'mysql2/promise';
 
-export class SavedRecipe {
+export class SavedRecipe implements ISavedRecipe {
   pool: Pool;
 
   constructor(pool: Pool) {
@@ -17,7 +17,8 @@ export class SavedRecipe {
       FROM nobsc_saved_recipes
       WHERE recipe_id = ?
     `;
-    const [ unsavedRecipes ] = await this.pool.execute(sql, [recipeId]);
+    const [ unsavedRecipes ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [recipeId]);
     return unsavedRecipes;
   }
 
@@ -35,7 +36,8 @@ export class SavedRecipe {
       WHERE user_id = ?
       ORDER BY title
     `;
-    const [ savedRecipes ] = await this.pool.execute(sql, [userId]);
+    const [ savedRecipes ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [userId]);
     return savedRecipes;
   }
 
@@ -45,7 +47,8 @@ export class SavedRecipe {
       INSERT INTO nobsc_saved_recipes (user_id, recipe_id)
       VALUES (?, ?)
     `;
-    const [ savedRecipe ] = await this.pool.execute(sql, [userId, recipeId]);
+    const [ savedRecipe ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [userId, recipeId]);
     return savedRecipe;
   }
 
@@ -56,7 +59,18 @@ export class SavedRecipe {
       WHERE user_id = ? AND recipe_id = ?
       LIMIT 1
     `;
-    const [ unsavedRecipe ] = await this.pool.execute(sql, [userId, recipeId]);
+    const [ unsavedRecipe ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [userId, recipeId]);
     return unsavedRecipe;
   }
+}
+
+type Data = Promise<RowDataPacket[]>;
+
+export interface ISavedRecipe {
+  pool: Pool;
+  deleteAllSavesOfRecipe(recipeId: number): Data;
+  viewMySavedRecipes(userId: number): Data;
+  createMySavedRecipe(userId: number, recipeId: number): Data;
+  deleteMySavedRecipe(userId: number, recipeId: number): Data;
 }

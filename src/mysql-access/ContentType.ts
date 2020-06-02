@@ -1,16 +1,6 @@
-import { Pool } from 'mysql2/promise';
+import { Pool, RowDataPacket } from 'mysql2/promise';
 
-interface ICreatingContentType {
-  parentId: number;
-  contentTypeName: string;
-  contentTypePath: string;
-}
-
-interface IEditingContentType extends ICreatingContentType {
-  contentTypeId: number;
-}
-
-export class ContentType {
+export class ContentType implements IContentType {
   pool: Pool;
 
   constructor(pool: Pool) {
@@ -27,7 +17,7 @@ export class ContentType {
       SELECT content_type_id, content_type_name
       FROM nobsc_content_types
     `;
-    const [ allContentTypes ] = await this.pool.execute(sql);
+    const [ allContentTypes ] = await this.pool.execute<RowDataPacket[]>(sql);
     return allContentTypes;
   }
 
@@ -37,7 +27,8 @@ export class ContentType {
       FROM nobsc_content_types
       WHERE content_type_id = ?
     `;
-    const [ contentType ] = await this.pool.execute(sql, [contentTypeId]);
+    const [ contentType ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [contentTypeId]);
     return contentType;
   }
 
@@ -52,7 +43,11 @@ export class ContentType {
       VALUES (?, ?, ?)
     `;
     const [ createdContentType ] = await this.pool
-    .execute(sql, [parentId, contentTypeName, contentTypePath]);
+    .execute<RowDataPacket[]>(sql, [
+      parentId,
+      contentTypeName,
+      contentTypePath
+    ]);
     return createdContentType;
   }
 
@@ -71,7 +66,8 @@ export class ContentType {
       WHERE content_type_id = ?
       LIMIT 1
     `;
-    const [ updatedContentType ] = await this.pool.execute(sql, [
+    const [ updatedContentType ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [
       contentTypeId,
       parentId,
       contentTypeName,
@@ -88,7 +84,28 @@ export class ContentType {
       LIMIT 1
     `;
     const [ deletedContentType ] = await this.pool
-    .execute(sql, [contentTypeId]);
+    .execute<RowDataPacket[]>(sql, [contentTypeId]);
     return deletedContentType;
   }
+}
+
+type Data = Promise<RowDataPacket[]>;
+
+export interface IContentType {
+  pool: Pool;
+  viewAllContentTypes(): Data;
+  viewContentTypeById(contentTypeId: number): Data;
+  createContentType(this);
+  updateContentType(this);
+  deleteContentType(contentTypeId: number): Data;
+}
+
+interface ICreatingContentType {
+  parentId: number;
+  contentTypeName: string;
+  contentTypePath: string;
+}
+
+interface IEditingContentType extends ICreatingContentType {
+  contentTypeId: number;
 }

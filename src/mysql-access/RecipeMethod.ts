@@ -1,4 +1,4 @@
-import { Pool } from 'mysql2/promise';
+import { Pool, RowDataPacket } from 'mysql2/promise';
 
 export interface IRecipeMethod {
   methodId: number
@@ -109,4 +109,10 @@ export class RecipeMethod {
 
     return deletedRecipeMethods;
   }
+}
+
+type Data = Promise<RowDataPacket[]>;
+
+export interface IRecipeMethod {
+  pool: Pool;
 }

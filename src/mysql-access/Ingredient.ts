@@ -1,4 +1,4 @@
-import { Pool } from 'mysql2/promise';
+import { Pool, RowDataPacket } from 'mysql2/promise';
 
 interface IIngredient {
   ingredientTypeId: number
@@ -279,4 +279,10 @@ export class Ingredient {
     const [ deletedPrivateUserIngredient ] = await this.pool.execute(sql, [ownerId, ingredientId]);
     return deletedPrivateUserIngredient;
   }
+}
+
+type Data = Promise<RowDataPacket[]>;
+
+export interface IIngredient {
+  pool: Pool;
 }

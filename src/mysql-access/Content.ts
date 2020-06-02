@@ -1,29 +1,6 @@
-import { Pool } from 'mysql2/promise';
+import { Pool, RowDataPacket } from 'mysql2/promise';
 
-interface IContent {
-  contentTypeId: number
-  authorId: number
-  ownerId: number
-  created: Date
-  published: (Date|null)
-  contentItems: IContentItem[]
-}
-
-interface IContentUpdate {
-  contentTypeId: number
-  published: (Date|null)
-  contentItems: IContentItem[]
-}
-
-interface IContentItem {
-  index: number
-  key: string
-  element: string
-  attributes: (object|null)
-  children: (IContentItem|string|number|null)
-}
-
-export class Content {
+export class Content implements IContent {
   pool: Pool;
 
   constructor(pool: Pool) {
@@ -40,7 +17,8 @@ export class Content {
       FROM nobsc_content
       WHERE content_id = ?
     `;
-    const [ content ] = await this.pool.execute(sql, [contentId]);
+    const [ content ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [contentId]);
     return content;
   }
 
@@ -51,13 +29,13 @@ export class Content {
     created,
     published,
     contentItems
-  }: IContent) {
+  }: ICreatingContent) {
     const sql = `
       INSERT INTO nobsc_content
       (content_type_id, author_id, owner_id, created, published, content_items)
       VALUES (?, ?, ?, ?, ?, ?)
     `;
-    const [ createdContent ] = await this.pool.execute(sql, [
+    const [ createdContent ] = await this.pool.execute<RowDataPacket[]>(sql, [
       contentTypeId,
       authorId,
       ownerId,
@@ -68,22 +46,20 @@ export class Content {
     return createdContent;
   }
 
-  async updateContent(
-    {
-      contentTypeId,
-      published,
-      contentItems
-    }: IContentUpdate,
-    ownerId: number,
-    contentId: number
-  ) {
+  async updateContent({
+    contentId,
+    ownerId,
+    contentTypeId,
+    published,
+    contentItems
+  }: IUpdatingContent) {
     const sql = `
       UPDATE nobsc_content
       SET content_type_id = ?, published = ?, content_items = ?
       WHERE owner_id = ? AND content_id = ?
       LIMIT 1
     `;
-    const [ updatedContent ] = await this.pool.execute(sql, [
+    const [ updatedContent ] = await this.pool.execute<RowDataPacket[]>(sql, [
       contentTypeId,
       published,
       contentItems,
@@ -101,7 +77,56 @@ export class Content {
       LIMIT 1
     `;
     const [ deletedContent ] = await this.pool
-    .execute(sql, [ownerId, contentId]);
+    .execute<RowDataPacket[]>(sql, [ownerId, contentId]);
     return deletedContent;
   }
+}
+
+type Data = Promise<RowDataPacket[]>;
+
+export interface IContent {
+  pool: Pool;
+  viewContentById(contentId: number): Data;
+  createContent({
+    contentTypeId,
+    authorId,
+    ownerId,
+    created,
+    published,
+    contentItems
+  }: ICreatingContent): Data;
+  updateContent({
+    contentId,
+    ownerId,
+    contentTypeId,
+    published,
+    contentItems
+  }: IUpdatingContent): Data;
+  deleteContent(ownerId: number, contentId: number): Data;
+}
+
+interface ICreatingContent {
+  contentTypeId: number;
+  authorId: number;
+  ownerId: number;
+  created: Date;
+  published: (Date|null);
+  contentItems: IContentItem[];
+}
+
+interface IUpdatingContent {
+  contentId: number;
+  ownerId: number;
+  contentTypeId: number;
+  published: (Date|null);
+  contentItems: IContentItem[];
+}
+
+// change to match Slate values
+interface IContentItem {
+  index: number
+  key: string
+  element: string
+  attributes: (object|null)
+  children: (IContentItem|string|number|null)
 }

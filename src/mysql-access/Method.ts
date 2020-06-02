@@ -1,4 +1,4 @@
-import { Pool } from 'mysql2/promise';
+import { Pool, RowDataPacket } from 'mysql2/promise';
 
 export class Method {
   pool: Pool;
@@ -27,4 +27,10 @@ export class Method {
     const [ method ] = await this.pool.execute(sql, [methodId]);
     return method;
   }
+}
+
+type Data = Promise<RowDataPacket[]>;
+
+export interface IMethod {
+  pool: Pool;
 }
