@@ -1,78 +1,59 @@
 import { Pool, RowDataPacket } from 'mysql2/promise';
 
-interface IIngredient {
-  ingredientTypeId: number
-  authorId: number
-  ownerId: number
-  ingredientName: string
-  ingredientDescription: string
-  ingredientImage: string
-}
-
-interface IIngredientUpdate {
-  ingredientTypeId: number
-  ingredientName: string
-  ingredientDescription: string
-  ingredientImage: string
-}
-
-export class Ingredient {
+export class Ingredient implements IIngredient {
   pool: Pool;
 
   constructor(pool: Pool) {
     this.pool = pool;
-
-    this.getAllPublicIngredientsForElasticSearchBulkInsert = this.getAllPublicIngredientsForElasticSearchBulkInsert.bind(this);
-    this.getIngredientForElasticSearchInsert = this.getIngredientForElasticSearchInsert.bind(this);
-
+    this.getAllPublicIngredientsForElasticSearchBulkInsert =
+    this.getAllPublicIngredientsForElasticSearchBulkInsert.bind(this);
+    this.getIngredientForElasticSearchInsert =
+    this.getIngredientForElasticSearchInsert.bind(this);
     this.viewIngredients = this.viewIngredients.bind(this);
     this.viewIngredientById = this.viewIngredientById.bind(this);
     this.createIngredient = this.createIngredient.bind(this);
     this.updateIngredient = this.updateIngredient.bind(this);
     this.deleteIngredient = this.deleteIngredient.bind(this);
-
     this.createMyPrivateUserIngredient = this.createMyPrivateUserIngredient.bind(this);
     this.updateMyPrivateUserIngredient = this.updateMyPrivateUserIngredient.bind(this);
     this.deleteMyPrivateUserIngredient = this.deleteMyPrivateUserIngredient.bind(this);
   }
 
-  //--------------------------------------------------------------------------
-
   async getAllPublicIngredientsForElasticSearchBulkInsert() {
-    try {
-      const ownerId = 1;
-      const sql1 = `
-        SELECT
-          CAST(i.ingredient_id AS CHAR),
-          i.ingredient_type_id,
-          i.owner_id,
-          t.ingredient_type_name,
-          i.ingredient_name,
-          i.ingredient_description,
-          i.ingredient_image
-        FROM nobsc_ingredients i
-        INNER JOIN nobsc_ingredient_types it ON it.ingredient_type_id = i.ingredient_type_id
-        WHERE i.owner_id = ?
-      `;
-      const [ ingredientsForBulkInsert ] = await this.pool.execute(sql1, [ownerId]);
-      let final = [];
-      for (let ingredient of ingredientsForBulkInsert) {  // allows the sequence of awaits we want
-        const { ingredient_id } = ingredient;
-        final.push(
-          {index: {_index: 'ingredients', _id: ingredient_id}},
-          ingredient
-        );
-      }
-      return final;
-    } catch (err) {
-      console.log(err);
+    const ownerId = 1;
+    const sql1 = `
+      SELECT
+        CAST(i.ingredient_id AS CHAR),
+        i.ingredient_type_id,
+        i.owner_id,
+        t.ingredient_type_name,
+        i.ingredient_name,
+        i.ingredient_description,
+        i.ingredient_image
+      FROM nobsc_ingredients i
+      INNER JOIN
+        nobsc_ingredient_types it ON
+        it.ingredient_type_id = i.ingredient_type_id
+      WHERE i.owner_id = ?
+    `;
+    const [ ingredientsForBulkInsert ] = await this.pool
+    .execute<RowDataPacket[]>(sql1, [ownerId]);
+    let final = [];
+
+    // allows the sequence of awaits we want
+    for (let ingredient of ingredientsForBulkInsert) {
+      const { ingredient_id } = ingredient;
+      final.push(
+        {index: {_index: 'ingredients', _id: ingredient_id}},
+        ingredient
+      );
     }
+
+    return final;
   }
 
-  async getIngredientForElasticSearchInsert(
-    ingredientId: number,
-    ownerId: number
-  ) {
+  async getIngredientForElasticSearchInsert(ingredientId: number) {
+    const ownerId = 1;
     const sql = `
       SELECT
         CAST(i.ingredient_id AS CHAR),
@@ -86,7 +67,7 @@ export class Ingredient {
       INNER JOIN nobsc_ingredient_types it ON it.ingredient_type_id = e.ingredient_type_id
       WHERE i.ingredient_id = ? i.owner_id = ?
     `;
-    const [ ingredientForInsert ] = await this.pool.execute(sql, [
+    const [ ingredientForInsert ] = await this.pool.execute<RowDataPacket[]>(sql, [
       ingredientId,
       ownerId
     ]);
@@ -97,8 +78,6 @@ export class Ingredient {
     ];*/
     return ingredientForInsert;
   }
-
-  //--------------------------------------------------------------------------
 
   async viewIngredients(authorId: number, ownerId: number) {
     const sql = `
@@ -116,7 +95,7 @@ export class Ingredient {
       ORDER BY ingredient_name ASC
     `;
     const [ ingredients ] = await this.pool
-    .execute(sql, [authorId, ownerId]);
+    .execute<RowDataPacket[]>(sql, [authorId, ownerId]);
     return ingredients;
   }
 
@@ -137,7 +116,7 @@ export class Ingredient {
       WHERE owner_id = 1 AND ingredient_id = ?
     `;
     const [ ingredient ] = await this.pool
-    .execute(sql, [ingredientId, authorId, ownerId]);
+    .execute<RowDataPacket[]>(sql, [ingredientId, authorId, ownerId]);
     return ingredient;
   }
 
@@ -148,14 +127,14 @@ export class Ingredient {
     ingredientName,
     ingredientDescription,
     ingredientImage
-  }: IIngredient) {
+  }: ICreatingIngredient) {
     const sql = `
       INSERT INTO nobsc_ingredients
       (ingredient_type_id, author_id, owner_id, ingredient_name, ingredient_description, ingredient_image)
       VALUES
       (?, ?, ?, ?, ?, ?)
     `;
-    const [ createdIngredient ] = await this.pool.execute(sql, [
+    const [ createdIngredient ] = await this.pool.execute<RowDataPacket[]>(sql, [
       ingredientTypeId,
       authorId,
       ownerId,
@@ -166,15 +145,13 @@ export class Ingredient {
     return createdIngredient;
   }
 
-  async updateIngredient(
-    { 
-      ingredientTypeId,
-      ingredientName,
-      ingredientDescription,
-      ingredientImage
-    }: IIngredientUpdate,
-    ingredientId: number
-  ) {
+  async updateIngredient({
+    ingredientId,
+    ingredientTypeId,
+    ingredientName,
+    ingredientDescription,
+    ingredientImage
+  }: IUpdatingIngredient) {
     const sql = `
       UPDATE nobsc_ingredients
       SET
@@ -185,7 +162,8 @@ export class Ingredient {
       WHERE ingredient_id = ?
       LIMIT 1
     `;
-    const [ updatedIngredient ] = await this.pool.execute(sql, [
+    const [ updatedIngredient ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [
       ingredientTypeId,
       ingredientName,
       ingredientDescription,
@@ -202,11 +180,10 @@ export class Ingredient {
       WHERE ingredient_id = ?
       LIMIT 1
     `;
-    const [ deletedIngredient ] = await this.pool.execute(sql, [ingredientId]);
+    const [ deletedIngredient ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [ingredientId]);
     return deletedIngredient;
   }
-
-  //--------------------------------------------------------------------------
 
   async createMyPrivateUserIngredient({
     ingredientTypeId,
@@ -215,14 +192,15 @@ export class Ingredient {
     ingredientName,
     ingredientDescription,
     ingredientImage
-  }: IIngredient) {
+  }: ICreatingIngredient) {
     const sql = `
       INSERT INTO nobsc_ingredients
       (ingredient_type_id, author_id, owner_id, ingredient_name, ingredient_description, ingredient_image)
       VALUES
       (?, ?, ?, ?, ?, ?)
     `;
-    const [ createdPrivateUserIngredient ] = await this.pool.execute(sql, [
+    const [ createdPrivateUserIngredient ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [
       ingredientTypeId,
       authorId,
       ownerId,
@@ -233,17 +211,15 @@ export class Ingredient {
     return createdPrivateUserIngredient;
   }
 
-  async updateMyPrivateUserIngredient(
-    {
-      ingredientTypeId,
-      authorId,
-      ownerId,
-      ingredientName,
-      ingredientDescription,
-      ingredientImage
-    }: IIngredient,
-    ingredientId: number
-  ) {
+  async updateMyPrivateUserIngredient({
+    ingredientId,
+    ingredientTypeId,
+    authorId,
+    ownerId,
+    ingredientName,
+    ingredientDescription,
+    ingredientImage
+  }: IUpdatingIngredient) {
     const sql = `
       UPDATE nobsc_ingredients
       SET
@@ -256,7 +232,8 @@ export class Ingredient {
       WHERE owner_id = ? AND ingredient_id = ?
       LIMIT 1
     `;
-    const [ updatedPrivateUserIngredient ] = await this.pool.execute(sql, [
+    const [ updatedPrivateUserIngredient ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [
       ingredientTypeId,
       authorId,
       ownerId,
@@ -276,7 +253,8 @@ export class Ingredient {
       WHERE owner_id = ? AND ingredient_id = ?
       LIMIT 1
     `;
-    const [ deletedPrivateUserIngredient ] = await this.pool.execute(sql, [ownerId, ingredientId]);
+    const [ deletedPrivateUserIngredient ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [ownerId, ingredientId]);
     return deletedPrivateUserIngredient;
   }
 }
@@ -285,4 +263,61 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IIngredient {
   pool: Pool;
+  getAllPublicIngredientsForElasticSearchBulkInsert(): any;  // finish this
+  getIngredientForElasticSearchInsert(ingredientId: number): Data;
+  viewIngredients(authorId: number, ownerId: number): Data;
+  viewIngredientById(
+    ingredientId: number,
+    authorId: number,
+    ownerId: number
+  ): Data;
+  createIngredient({
+    ingredientTypeId,
+    authorId,
+    ownerId,
+    ingredientName,
+    ingredientDescription,
+    ingredientImage
+  }: ICreatingIngredient): Data;
+  updateIngredient({
+    ingredientId,
+    ingredientTypeId,
+    authorId,
+    ownerId,
+    ingredientName,
+    ingredientDescription,
+    ingredientImage
+  }: IUpdatingIngredient): Data;
+  deleteIngredient(ingredientId: number): Data;
+  createMyPrivateUserIngredient({
+    ingredientTypeId,
+    authorId,
+    ownerId,
+    ingredientName,
+    ingredientDescription,
+    ingredientImage
+  }: ICreatingIngredient): Data;
+  updateMyPrivateUserIngredient({
+    ingredientId,
+    ingredientTypeId,
+    authorId,
+    ownerId,
+    ingredientName,
+    ingredientDescription,
+    ingredientImage
+  }: IUpdatingIngredient): Data;
+  deleteMyPrivateUserIngredient(ownerId: number, ingredientId: number): Data;
+}
+
+interface ICreatingIngredient {
+  ingredientTypeId: number;
+  authorId: number;
+  ownerId: number;
+  ingredientName: string;
+  ingredientDescription: string;
+  ingredientImage: string;
+}
+
+interface IUpdatingIngredient extends ICreatingIngredient {
+  ingredientId: number;
 }

@@ -20,10 +20,6 @@
       }
     },
     "preset": "ts-jest/presets/js-with-babel",
-    "moduleNameMapper": {
-      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/fileMock.js",
-      "\\.(css|scss|sass|less)$": "identity-obj-proxy"
-    },
     "transform": {
       "^.+\\.[t]sx?$": "ts-jest",
       "^.+\\.[j]sx?$": "babel-jest"
@@ -39,7 +35,7 @@
     "@babel/polyfill": "^7.10.1",
     "@babel/runtime": "^7.10.2",
     "@elastic/elasticsearch": "^7.7.1",
-    "aws-sdk": "^2.686.0",
+    "aws-sdk": "^2.688.0",
     "bcrypt": "^4.0.1",
     "body-parser": "^1.19.0",
     "compression": "^1.7.4",
@@ -100,10 +96,11 @@
     "@types/supertest": "^2.0.9",
     "@types/uuid": "^7.0.4",
     "babel-loader": "^8.1.0",
-    "jest": "^25.5.4",
+    "jest": "^26.0.1",
     "node-mocks-http": "^1.8.1",
     "rimraf": "^2.7.1",
     "supertest": "^4.0.2",
+    "ts-jest": "^26.1.0",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.3",
     "webpack": "^4.43.0",

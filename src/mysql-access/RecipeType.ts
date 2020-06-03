@@ -1,6 +1,6 @@
 import { Pool, RowDataPacket } from 'mysql2/promise';
 
-export class RecipeType {
+export class RecipeType implements IRecipeType {
   pool: Pool;
 
   constructor(pool: Pool) {
@@ -14,17 +14,18 @@ export class RecipeType {
       SELECT recipe_type_id, recipe_type_name
       FROM nobsc_recipe_types
     `;
-    const [ allRecipeTypes ] = await this.pool.execute(sql);
+    const [ allRecipeTypes ] = await this.pool.execute<RowDataPacket[]>(sql);
     return allRecipeTypes;
   }
 
-  async viewRecipeTypeById(typeId: number) {
+  async viewRecipeTypeById(recipeTypeId: number) {
     const sql = `
       SELECT recipe_type_id, recipe_type_name
       FROM nobsc_recipe_types
       WHERE recipe_type_id = ?
     `;
-    const [ recipeType ] = await this.pool.execute(sql, [typeId]);
+    const [ recipeType ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [recipeTypeId]);
     return recipeType;
   }
 }
@@ -33,4 +34,6 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IRecipeType {
   pool: Pool;
+  viewAllRecipeTypes(): Data;
+  viewRecipeTypeById(recipeTypeId: number): Data;
 }
