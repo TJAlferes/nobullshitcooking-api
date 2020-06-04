@@ -13,6 +13,10 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
+// Testing strategy decision:
+// Does it make sense to unit test these though?
+// Just run actual SQL against seeded test DB?
+
 describe('RecipeType', () => {
   const pool = mysql.createPool();
   const recipeType = new RecipeType(pool);

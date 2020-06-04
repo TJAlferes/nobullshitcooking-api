@@ -186,11 +186,9 @@ export const userRecipeController = {
     const recipeId = Number(req.body.recipeId);
     const authorId = req.session!.userInfo.userId;
 
-    const newAuthorId = 2;
-
     const recipe = new Recipe(pool);
 
-    await recipe.disownMyPublicUserRecipe(newAuthorId, recipeId, authorId);
+    await recipe.disownMyPublicUserRecipe(recipeId, authorId);
 
     // (make sure the update goes through first though)
     const recipeInfoForElasticSearch = await recipe

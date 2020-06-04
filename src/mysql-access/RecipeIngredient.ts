@@ -1,21 +1,17 @@
 import { Pool, RowDataPacket } from 'mysql2/promise';
 
-export interface IRecipeIngredient {
-  ingredient: number
-  amount: number
-  unit: number
-}
-
-export class RecipeIngredient {
+export class RecipeIngredient implements IRecipeIngredient {
   pool: Pool;
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewRecipeIngredientsByRecipeId = this.viewRecipeIngredientsByRecipeId.bind(this);
+    this.viewRecipeIngredientsByRecipeId =
+      this.viewRecipeIngredientsByRecipeId.bind(this);
     this.createRecipeIngredients = this.createRecipeIngredients.bind(this);
     this.updateRecipeIngredients = this.updateRecipeIngredients.bind(this);
     this.deleteRecipeIngredients = this.deleteRecipeIngredients.bind(this);
-    this.deleteRecipeIngredientsByIngredientId = this.deleteRecipeIngredientsByIngredientId.bind(this);
+    this.deleteRecipeIngredientsByIngredientId =
+      this.deleteRecipeIngredientsByIngredientId.bind(this);
   }
 
   async viewRecipeIngredientsByRecipeId(recipeId: number) {
@@ -28,7 +24,8 @@ export class RecipeIngredient {
       ORDER BY i.ingredient_type_id
     `;
 
-    const [ recipeIngredients ] = await this.pool.execute(sql, [recipeId]);
+    const [ recipeIngredients ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [recipeId]);
     
     return recipeIngredients;
   }
@@ -44,11 +41,12 @@ export class RecipeIngredient {
     `;
 
     const [ createdRecipeIngredients ] = await this.pool
-    .execute(sql, recipeIngredients);
+    .execute<RowDataPacket[]>(sql, recipeIngredients);
 
     return createdRecipeIngredients;
   }
 
+  // finish
   async updateRecipeIngredients(
     recipeIngredients: number[],
     recipeIngredientsPlaceholders: string,
@@ -112,7 +110,7 @@ export class RecipeIngredient {
     `;
 
     const [ deletedRecipeIngredients ] = await this.pool
-    .execute(sql, [recipeId]);
+    .execute<RowDataPacket[]>(sql, [recipeId]);
 
     return deletedRecipeIngredients;
   }
@@ -125,7 +123,7 @@ export class RecipeIngredient {
     `;
 
     const [ deletedRecipeIngredients ] = await this.pool
-    .execute(sql, [ingredientId]);
+    .execute<RowDataPacket[]>(sql, [ingredientId]);
 
     return deletedRecipeIngredients;
   }
@@ -135,4 +133,22 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IRecipeIngredient {
   pool: Pool;
+  viewRecipeIngredientsByRecipeId(recipeId: number): Data;
+  createRecipeIngredients(
+    recipeIngredients: number[],
+    recipeIngredientsPlaceholders: string
+  ): Data;
+  updateRecipeIngredients(
+    recipeIngredients: number[],
+    recipeIngredientsPlaceholders: string,
+    recipeId: number
+  ): Data;  // | finish
+  deleteRecipeIngredients(recipeId: number): Data;
+  deleteRecipeIngredientsByIngredientId(ingredientId: number): Data;
 }
+
+/*interface IRecipeSomethingIngredient {
+  ingredient: number
+  amount: number
+  unit: number
+}*/

@@ -1,12 +1,13 @@
 import { Pool, RowDataPacket } from 'mysql2/promise';
 
-export class FavoriteRecipe {
+export class FavoriteRecipe implements IFavoriteRecipe {
   pool: Pool;
 
   constructor(pool: Pool) {
     this.pool = pool;
     //this.viewMostFavorited = this.viewMostFavorited.bind(this);
-    this.deleteAllFavoritesOfRecipe = this.deleteAllFavoritesOfRecipe.bind(this);
+    this.deleteAllFavoritesOfRecipe =
+      this.deleteAllFavoritesOfRecipe.bind(this);
     this.viewMyFavoriteRecipes = this.viewMyFavoriteRecipes.bind(this);
     this.createMyFavoriteRecipe = this.createMyFavoriteRecipe.bind(this);
     this.deleteMyFavoriteRecipe = this.deleteMyFavoriteRecipe.bind(this);
@@ -36,7 +37,8 @@ export class FavoriteRecipe {
       FROM nobsc_favorite_recipes
       WHERE recipe_id = ?
     `;
-    const [ unfavoritedRecipes ] = await this.pool.execute(sql, [recipeId]);
+    const [ unfavoritedRecipes ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [recipeId]);
     return unfavoritedRecipes;
   }
 
@@ -54,7 +56,8 @@ export class FavoriteRecipe {
       WHERE f.user_id = ?
       ORDER BY title
     `;
-    const [ favoriteRecipes ] = await this.pool.execute(sql, [userId]);
+    const [ favoriteRecipes ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [userId]);
     return favoriteRecipes;
   }
 
@@ -64,7 +67,8 @@ export class FavoriteRecipe {
       INSERT INTO nobsc_favorite_recipes (user_id, recipe_id)
       VALUES (?, ?)
     `;
-    const [ favoritedRecipe ] = await this.pool.execute(sql, [userId, recipeId]);
+    const [ favoritedRecipe ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [userId, recipeId]);
     return favoritedRecipe;
   }
 
@@ -75,7 +79,8 @@ export class FavoriteRecipe {
       WHERE user_id = ? AND recipe_id = ?
       LIMIT 1
     `;
-    const [ unfavoritedRecipe ] = await this.pool.execute(sql, [userId, recipeId]);
+    const [ unfavoritedRecipe ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [userId, recipeId]);
     return unfavoritedRecipe;
   }
 }
@@ -84,4 +89,9 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IFavoriteRecipe {
   pool: Pool;
+  //viewMostFavorited(): Data;
+  deleteAllFavoritesOfRecipe(recipeId: number): Data;
+  viewMyFavoriteRecipes(userId: number): Data;
+  createMyFavoriteRecipe(userId: number, recipeId: number): Data;
+  deleteMyFavoriteRecipe(userId: number, recipeId: number): Data;
 }

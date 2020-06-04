@@ -1,6 +1,6 @@
 import { Pool, RowDataPacket } from 'mysql2/promise';
 
-export class Method {
+export class Method implements IMethod {
   pool: Pool;
 
   constructor(pool: Pool) {
@@ -14,7 +14,7 @@ export class Method {
       SELECT method_id, method_name
       FROM nobsc_methods
     `;
-    const [ allMethods ] = await this.pool.execute(sql);
+    const [ allMethods ] = await this.pool.execute<RowDataPacket[]>(sql);
     return allMethods;
   }
 
@@ -24,7 +24,8 @@ export class Method {
       FROM nobsc_methods
       WHERE method_id = ?
     `;
-    const [ method ] = await this.pool.execute(sql, [methodId]);
+    const [ method ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [methodId]);
     return method;
   }
 }
@@ -33,4 +34,6 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IMethod {
   pool: Pool;
+  viewAllMethods(): Data;
+  viewMethodById(methodId: number): Data;
 }

@@ -1,23 +1,12 @@
 import { Pool, RowDataPacket } from 'mysql2/promise';
 
-interface ICreatingGrocer {
-  ownerId: number;
-  grocerName: string;
-  grocerAddress: string;
-  grocerNotes: string;
-}
-
-interface IEditingGrocer extends ICreatingGrocer {
-  grocerId: number;
-}
-
-export class Grocer {
+export class Grocer implements IGrocer {
   pool: Pool;
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewAllMyPrivateUserGrocers = this.viewAllMyPrivateUserGrocers.bind(this);
-    //this.viewMyPrivateUserGrocer = this.viewMyPrivateUserGrocer.bind(this);
+    this.viewAllMyPrivateUserGrocers =
+      this.viewAllMyPrivateUserGrocers.bind(this);
     this.createMyPrivateUserGrocer = this.createMyPrivateUserGrocer.bind(this);
     this.updateMyPrivateUserGrocer = this.updateMyPrivateUserGrocer.bind(this);
     this.deleteMyPrivateUserGrocer = this.deleteMyPrivateUserGrocer.bind(this);
@@ -30,16 +19,10 @@ export class Grocer {
       WHERE owner_id = ?
       ORDER BY grocer_name ASC
     `;
-    const [ allMyPrivateUserGrocers ] = await this.pool.execute(sql, [ownerId]);
+    const [ allMyPrivateUserGrocers ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [ownerId]);
     return allMyPrivateUserGrocers;
   }
-
-  /* we may not need this method -- can just filter in react/redux
-  async viewMyPrivateUserGroceryStore() {
-    const sql = `
-      SELECT
-    `;
-  }*/
 
   async createMyPrivateUserGrocer({
     ownerId,
@@ -53,7 +36,8 @@ export class Grocer {
       VALUES
       (?, ?, ?, ?)
     `;
-    const [ createdPrivateUserGrocer ] = await this.pool.execute(sql, [
+    const [ createdPrivateUserGrocer ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [
       ownerId,
       grocerName,
       grocerAddress,
@@ -68,17 +52,18 @@ export class Grocer {
     grocerName,
     grocerAddress,
     grocerNotes
-  }: IEditingGrocer) {
+  }: IUpdatingGrocer) {
     const sql = `
       UPDATE nobsc_grocers
       SET
         grocer_name = ?,
         grocer_address = ?,
         grocer_notes = ?
-      WHERE owner_id = ? AND grocer_id = ?
+      WHERE grocer_id = ? AND owner_id = ?
       LIMIT 1
     `;
-    const [ updatedPrivateUserGrocer ] = await this.pool.execute(sql, [
+    const [ updatedPrivateUserGrocer ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [
       grocerName,
       grocerAddress,
       grocerNotes,
@@ -88,14 +73,15 @@ export class Grocer {
     return updatedPrivateUserGrocer;
   }
 
-  async deleteMyPrivateUserGrocer(ownerId: number, grocerId: number) {
+  async deleteMyPrivateUserGrocer(grocerId: number, ownerId: number) {
     const sql = `
       DELETE
       FROM nobsc_grocers
       WHERE owner_id = ? AND grocer_id = ?
       LIMIT 1
     `;
-    const [ deletedPrivateUserGrocer ] = await this.pool.execute(sql, [
+    const [ deletedPrivateUserGrocer ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [
       ownerId,
       grocerId
     ]);
@@ -107,4 +93,30 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IGrocer {
   pool: Pool;
+  viewAllMyPrivateUserGrocers(ownerId: number): Data;
+  createMyPrivateUserGrocer({
+    ownerId,
+    grocerName,
+    grocerAddress,
+    grocerNotes
+  }: ICreatingGrocer): Data;
+  updateMyPrivateUserGrocer({
+    grocerId,
+    ownerId,
+    grocerName,
+    grocerAddress,
+    grocerNotes
+  }: IUpdatingGrocer): Data;
+  deleteMyPrivateUserGrocer(grocerId: number, ownerId: number): Data;
+}
+
+interface ICreatingGrocer {
+  ownerId: number;
+  grocerName: string;
+  grocerAddress: string;
+  grocerNotes: string;
+}
+
+interface IUpdatingGrocer extends ICreatingGrocer {
+  grocerId: number;
 }

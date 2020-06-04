@@ -1,15 +1,12 @@
 import { Pool, RowDataPacket } from 'mysql2/promise';
 
-export interface IRecipeMethod {
-  methodId: number
-}
-
-export class RecipeMethod {
+export class RecipeMethod implements IRecipeMethod {
   pool: Pool;
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewRecipeMethodsByRecipeId = this.viewRecipeMethodsByRecipeId.bind(this);
+    this.viewRecipeMethodsByRecipeId =
+      this.viewRecipeMethodsByRecipeId.bind(this);
     this.createRecipeMethods = this.createRecipeMethods.bind(this);
     this.updateRecipeMethods = this.updateRecipeMethods.bind(this);
     this.deleteRecipeMethods = this.deleteRecipeMethods.bind(this);
@@ -24,7 +21,7 @@ export class RecipeMethod {
       ORDER BY m.method_id
     `;
 
-    const [ recipeMethods ] = await this.pool.execute(sql, [recipeId]);
+    const [ recipeMethods ] = await this.pool.execute<RowDataPacket[]>(sql, [recipeId]);
 
     return recipeMethods;
   }
@@ -39,11 +36,12 @@ export class RecipeMethod {
     `;
 
     const [ createdRecipeMethods ] = await this.pool
-    .execute(sql, recipeMethods);
+    .execute<RowDataPacket[]>(sql, recipeMethods);
 
     return createdRecipeMethods;
   }
 
+  // finish
   async updateRecipeMethods(
     recipeMethods: number[],
     recipeMethodsPlaceholders: string,
@@ -105,7 +103,8 @@ export class RecipeMethod {
       WHERE recipe_id = ?
     `;
 
-    const [ deletedRecipeMethods ] = await this.pool.execute(sql, [recipeId]);
+    const [ deletedRecipeMethods ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [recipeId]);
 
     return deletedRecipeMethods;
   }
@@ -115,4 +114,19 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IRecipeMethod {
   pool: Pool;
+  viewRecipeMethodsByRecipeId(recipeId: number): Data;
+  createRecipeMethods(
+    recipeMethods: number[],
+    recipeMethodsPlaceholders: string
+  ): Data;
+  updateRecipeMethods(
+    recipeMethods: number[],
+    recipeMethodsPlaceholders: string,
+    recipeId: number
+  ): Data;  // | finish
+  deleteRecipeMethods(recipeId: number): Data;
 }
+
+/*interface ISomethingRecipeMethod {
+  methodId: number
+}*/

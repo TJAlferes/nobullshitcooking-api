@@ -56,7 +56,7 @@ export class ContentType implements IContentType {
     parentId,
     contentTypeName,
     contentTypePath
-  }: IEditingContentType) {
+  }: IUpdatingContentType) {
     const sql = `
       UPDATE nobsc_content_types
       SET
@@ -95,8 +95,17 @@ export interface IContentType {
   pool: Pool;
   viewAllContentTypes(): Data;
   viewContentTypeById(contentTypeId: number): Data;
-  createContentType(this);
-  updateContentType(this);
+  createContentType({
+    parentId,
+    contentTypeName,
+    contentTypePath
+  }: ICreatingContentType): Data;
+  updateContentType({
+    contentTypeId,
+    parentId,
+    contentTypeName,
+    contentTypePath
+  }: IUpdatingContentType): Data;
   deleteContentType(contentTypeId: number): Data;
 }
 
@@ -106,6 +115,6 @@ interface ICreatingContentType {
   contentTypePath: string;
 }
 
-interface IEditingContentType extends ICreatingContentType {
+interface IUpdatingContentType extends ICreatingContentType {
   contentTypeId: number;
 }

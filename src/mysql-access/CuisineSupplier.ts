@@ -1,14 +1,16 @@
 import { Pool, RowDataPacket } from 'mysql2/promise';
 
-export class CuisineSupplier {
+export class CuisineSupplier implements ICuisineSupplier {
   pool: Pool;
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewCuisineSuppliersByCuisineId = this.viewCuisineSuppliersByCuisineId.bind(this);
+    this.viewCuisineSuppliersByCuisineId =
+    this.viewCuisineSuppliersByCuisineId.bind(this);
     this.createCuisineSupplier = this.createCuisineSupplier.bind(this);
     this.deleteCuisineSupplier = this.deleteCuisineSupplier.bind(this);
-    this.deleteCuisineSuppliersBySupplierId = this.deleteCuisineSuppliersBySupplierId.bind(this);
+    this.deleteCuisineSuppliersBySupplierId =
+    this.deleteCuisineSuppliersBySupplierId.bind(this);
   }
 
   async viewCuisineSuppliersByCuisineId(cuisineId: number) {
@@ -20,7 +22,8 @@ export class CuisineSupplier {
       ORDER BY s.supplier_name ASC
     `;
 
-    const [ cuisineSuppliers ] = await this.pool.execute(sql, [cuisineId]);
+    const [ cuisineSuppliers ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [cuisineId]);
 
     return cuisineSuppliers;
   }
@@ -34,10 +37,8 @@ export class CuisineSupplier {
       VALUES (?, ?)
     `;
 
-    const [ createdCuisineSupplier ] = await this.pool.execute(sql, [
-      cuisineId,
-      supplierId
-    ]);
+    const [ createdCuisineSupplier ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [cuisineId, supplierId]);
 
     return createdCuisineSupplier;
   }
@@ -50,7 +51,8 @@ export class CuisineSupplier {
       WHERE cuisineId = ? AND supplier_id = ?
     `;
     
-    const [ deletedCuisineSupplier ] = await this.pool.execute(sql, [
+    const [ deletedCuisineSupplier ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [
       cuisineId,
       supplierId
     ]);
@@ -59,7 +61,7 @@ export class CuisineSupplier {
   }
 
   // used when deleting a supplier
-  async deleteCuisineSuppliersBySupplierId(supplierId) {
+  async deleteCuisineSuppliersBySupplierId(supplierId: number) {
     const sql = `
       DELETE
       FROM nobsc_cuisine_suppliers
@@ -67,7 +69,7 @@ export class CuisineSupplier {
     `;
     
     const [ deletedCuisineSuppliers ] = await this.pool
-    .execute(sql, [supplierId]);
+    .execute<RowDataPacket[]>(sql, [supplierId]);
 
     return deletedCuisineSuppliers;
   }
@@ -77,4 +79,8 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface ICuisineSupplier {
   pool: Pool;
+  viewCuisineSuppliersByCuisineId(cuisineId: number): Data;
+  createCuisineSupplier(cuisineId: number, supplierId: number): Data;
+  deleteCuisineSupplier(cuisineId: number, supplierId: number): Data;
+  deleteCuisineSuppliersBySupplierId(supplierId: number): Data;
 }

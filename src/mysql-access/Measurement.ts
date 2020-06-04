@@ -1,6 +1,6 @@
 import { Pool, RowDataPacket } from 'mysql2/promise';
 
-export class Measurement {
+export class Measurement implements IMeasurement {
   pool: Pool;
 
   constructor(pool: Pool) {
@@ -14,7 +14,7 @@ export class Measurement {
       SELECT measurement_id, measurement_name
       FROM nobsc_measurements
     `;
-    const [ allMeasurements ] = await this.pool.execute(sql);
+    const [ allMeasurements ] = await this.pool.execute<RowDataPacket[]>(sql);
     return allMeasurements;
   }
 
@@ -24,7 +24,8 @@ export class Measurement {
       FROM nobsc_measurements
       WHERE measurement_id = ?
     `;
-    const [ measurement ] = await this.pool.execute(sql, [measurementId]);
+    const [ measurement ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [measurementId]);
     return measurement;
   }
 }
@@ -33,4 +34,6 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IMeasurement {
   pool: Pool;
+  viewAllMeasurements(): Data;
+  viewMeasurementById(measurementId: number): Data;
 }

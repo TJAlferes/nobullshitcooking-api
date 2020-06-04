@@ -1,6 +1,6 @@
 import { Pool, RowDataPacket } from 'mysql2/promise';
 
-export class CuisineIngredient {
+export class CuisineIngredient implements ICuisineIngredient {
   pool: Pool;
 
   constructor(pool: Pool) {
@@ -20,7 +20,8 @@ export class CuisineIngredient {
       ORDER BY i.ingredient_name ASC
     `;
 
-    const [ cuisineEquipment ] = await this.pool.execute(sql, [cuisineId]);
+    const [ cuisineEquipment ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [cuisineId]);
 
     return cuisineEquipment;
   }
@@ -31,10 +32,8 @@ export class CuisineIngredient {
       VALUES (?, ?)
     `;
 
-    const [ createdCuisineIngredient ] = await this.pool.execute(sql, [
-      cuisineId,
-      ingredientId
-    ]);
+    const [ createdCuisineIngredient ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [cuisineId, ingredientId]);
 
     return createdCuisineIngredient;
   }
@@ -46,10 +45,8 @@ export class CuisineIngredient {
       WHERE cuisineId = ? AND ingredient_id = ?
     `;
     
-    const [ deletedCuisineIngredient ] = await this.pool.execute(sql, [
-      cuisineId,
-      ingredientId
-    ]);
+    const [ deletedCuisineIngredient ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [cuisineId, ingredientId]);
 
     return deletedCuisineIngredient;
   }
@@ -59,4 +56,7 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface ICuisineIngredient {
   pool: Pool;
+  viewCuisineIngredientsByCuisineId(cuisineId: number): Data;
+  createCuisineIngredient(cuisineId: number, ingredientId: number): Data;
+  deleteCuisineIngredient(cuisineId: number, ingredientId: number): Data;
 }

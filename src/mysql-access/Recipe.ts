@@ -1,34 +1,19 @@
 import { Pool, RowDataPacket } from 'mysql2/promise';
 
-interface IRecipe {
-  recipeTypeId: number
-  cuisineId: number
-  authorId: number
-  ownerId: number
-  title: string
-  description: string
-  directions: string
-  recipeImage: string
-  equipmentImage: string
-  ingredientsImage: string
-  cookingImage: string
-}
-
-export class Recipe {
+export class Recipe implements IRecipe {
   pool: Pool;
 
   constructor(pool: Pool) {
     this.pool = pool;
-
-    this.getAllPublicRecipesForElasticSearchBulkInsert = this.getAllPublicRecipesForElasticSearchBulkInsert.bind(this);
-    this.getPublicRecipeForElasticSearchInsert = this.getPublicRecipeForElasticSearchInsert.bind(this);
-
+    this.getAllPublicRecipesForElasticSearchBulkInsert =
+      this.getAllPublicRecipesForElasticSearchBulkInsert.bind(this);
+    this.getPublicRecipeForElasticSearchInsert =
+      this.getPublicRecipeForElasticSearchInsert.bind(this);
     this.viewRecipes = this.viewRecipes.bind(this);
     this.viewRecipeById = this.viewRecipeById.bind(this);
     this.createRecipe = this.createRecipe.bind(this);
     this.updateRecipe = this.updateRecipe.bind(this);
     this.deleteRecipe = this.deleteRecipe.bind(this);
-
     this.getInfoToEditMyUserRecipe = this.getInfoToEditMyUserRecipe.bind(this);
     this.updateMyUserRecipe = this.updateMyUserRecipe.bind(this);
     this.deleteMyPrivateUserRecipe = this.deleteMyPrivateUserRecipe.bind(this);
@@ -84,14 +69,17 @@ export class Recipe {
       INNER JOIN nobsc_cuisines c ON c.cuisine_id = r.cuisine_id
       WHERE r.owner_id = ?
     `;
-    const [ recipes ] = await this.pool.execute(sql, [ownerId]);
+    const [ recipes ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [ownerId]);
     let final = [];
+
     for (let recipe of recipes) {
       final.push(
         {index: {_index: 'recipes', _id: recipe.recipe_id}},
         {...recipe}
       );
     }
+
     return final;
   }
 
@@ -144,11 +132,9 @@ export class Recipe {
       WHERE r.recipe_id = ? AND r.owner_id = ?
     `;
     const [ recipe ] = await this.pool
-    .execute(sql, [recipeId, ownerId]);
+    .execute<RowDataPacket[]>(sql, [recipeId, ownerId]);
     return recipe;
   }
-
-  //--------------------------------------------------------------------------
 
   async viewRecipes(authorId: number, ownerId: number) {
     const sql = `
@@ -163,7 +149,8 @@ export class Recipe {
       WHERE author_id = ? AND owner_id = ?
       ORDER BY title ASC
     `;
-    const [ recipes ] = await this.pool.execute(sql, [authorId, ownerId]);
+    const [ recipes ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [authorId, ownerId]);
     return recipes;
   }
 
@@ -229,7 +216,7 @@ export class Recipe {
       WHERE r.recipe_id = ? AND r.author_id = ? AND r.owner_id = ?
     `;
     const [ recipe ] = await this.pool
-    .execute(sql, [recipeId, authorId, ownerId]);
+    .execute<RowDataPacket[]>(sql, [recipeId, authorId, ownerId]);
     return recipe;
   }
 
@@ -245,7 +232,7 @@ export class Recipe {
     equipmentImage,
     ingredientsImage,
     cookingImage
-  }: IRecipe) {
+  }: ICreatingRecipe) {
     const sql = `
       INSERT INTO nobsc_recipes (
         recipe_type_id,
@@ -263,7 +250,7 @@ export class Recipe {
         ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
       )
     `;
-    const [ createdRecipe ] = await this.pool.execute(sql, [
+    const [ createdRecipe ] = await this.pool.execute<RowDataPacket[]>(sql, [
       recipeTypeId,
       cuisineId,
       authorId,
@@ -279,22 +266,20 @@ export class Recipe {
     return createdRecipe;
   }
   
-  async updateRecipe(
-    {
-      recipeTypeId,
-      cuisineId,
-      authorId,
-      ownerId,
-      title,
-      description,
-      directions,
-      recipeImage,
-      equipmentImage,
-      ingredientsImage,
-      cookingImage
-    }: IRecipe,
-    recipeId: number
-  ) {
+  async updateRecipe({
+    recipeId,
+    recipeTypeId,
+    cuisineId,
+    authorId,
+    ownerId,
+    title,
+    description,
+    directions,
+    recipeImage,
+    equipmentImage,
+    ingredientsImage,
+    cookingImage
+  }: IUpdatingRecipe) {
     const sql = `
       UPDATE nobsc_recipes
       SET
@@ -312,7 +297,7 @@ export class Recipe {
       WHERE recipe_id = ?
       LIMIT 1
     `;
-    const [ updatedRecipe ] = await this.pool.execute(sql, [
+    const [ updatedRecipe ] = await this.pool.execute<RowDataPacket[]>(sql, [
       recipeTypeId,
       cuisineId,
       authorId,
@@ -331,11 +316,10 @@ export class Recipe {
   
   async deleteRecipe(recipeId: number) {
     const sql = `DELETE FROM nobsc_recipes WHERE recipe_id = ? LIMIT 1`;
-    const [ deletedRecipe ] = await this.pool.execute(sql, [recipeId]);
+    const [ deletedRecipe ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [recipeId]);
     return deletedRecipe;
   }
-
-  //--------------------------------------------------------------------------
 
   async getInfoToEditMyUserRecipe(
     recipeId: number,
@@ -403,26 +387,24 @@ export class Recipe {
     WHERE r.recipe_id = ? AND r.author_id = ? AND r.owner_id = ?;
     `;
     const [ recipe ] = await this.pool
-    .execute(sql, [recipeId, authorId, ownerId]);
+    .execute<RowDataPacket[]>(sql, [recipeId, authorId, ownerId]);
     return recipe;
   }
 
-  async updateMyUserRecipe(
-    {
-      recipeTypeId,
-      cuisineId,
-      authorId,
-      ownerId,
-      title,
-      description,
-      directions,
-      recipeImage,
-      equipmentImage,
-      ingredientsImage,
-      cookingImage
-    }: IRecipe,
-    recipeId: number
-  ) {
+  async updateMyUserRecipe({
+    recipeId,
+    recipeTypeId,
+    cuisineId,
+    authorId,
+    ownerId,
+    title,
+    description,
+    directions,
+    recipeImage,
+    equipmentImage,
+    ingredientsImage,
+    cookingImage
+  }: IUpdatingRecipe) {
     const sql = `
       UPDATE nobsc_recipes
       SET
@@ -438,7 +420,7 @@ export class Recipe {
       WHERE recipe_id = ? AND author_id = ? AND owner_id = ?
       LIMIT 1
     `;
-    const [ updatedRecipe ] = await this.pool.execute(sql, [
+    const [ updatedRecipe ] = await this.pool.execute<RowDataPacket[]>(sql, [
       recipeTypeId,
       cuisineId,
       title,
@@ -466,7 +448,8 @@ export class Recipe {
       WHERE recipe_id = ? AND author_id = ? AND owner_id = ?
       LIMIT 1
     `;
-    const [ deletedPrivateUserRecipe ] = await this.pool.execute(sql, [
+    const [ deletedPrivateUserRecipe ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [
       recipeId,
       authorId,
       ownerId
@@ -474,18 +457,16 @@ export class Recipe {
     return deletedPrivateUserRecipe;
   }
 
-  async disownMyPublicUserRecipe(
-    newAuthorId: number,
-    recipeId: number,
-    authorId: number
-  ) {
+  async disownMyPublicUserRecipe(recipeId: number, authorId: number) {
+    const newAuthorId = 2;
     const sql = `
       UPDATE nobsc_recipes
       SET author_id = ?
       WHERE recipe_id = ? AND author_id = ? AND owner_id = 1
       LIMIT 1
     `;
-    const [ disownedPublicUserRecipe ] = await this.pool.execute(sql, [
+    const [ disownedPublicUserRecipe ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [
       newAuthorId,
       recipeId,
       authorId
@@ -498,4 +479,79 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IRecipe {
   pool: Pool;
+  getAllPublicRecipesForElasticSearchBulkInsert(): any;
+  getPublicRecipeForElasticSearchInsert(recipeId: number): Data;
+  viewRecipes(authorId: number, ownerId: number): Data;
+  viewRecipeById(recipeId: number, authorId: number, ownerId: number): Data;
+  createRecipe({
+    recipeTypeId,
+    cuisineId,
+    authorId,
+    ownerId,
+    title,
+    description,
+    directions,
+    recipeImage,
+    equipmentImage,
+    ingredientsImage,
+    cookingImage
+  }: ICreatingRecipe): Data;
+  updateRecipe({
+    recipeId,
+    recipeTypeId,
+    cuisineId,
+    authorId,
+    ownerId,
+    title,
+    description,
+    directions,
+    recipeImage,
+    equipmentImage,
+    ingredientsImage,
+    cookingImage
+  }: IUpdatingRecipe): Data;
+  deleteRecipe(recipeId: number): Data;
+  getInfoToEditMyUserRecipe(
+    recipeId: number,
+    authorId: number,
+    ownerId: number
+  ): Data;
+  updateMyUserRecipe({
+    recipeId,
+    recipeTypeId,
+    cuisineId,
+    authorId,
+    ownerId,
+    title,
+    description,
+    directions,
+    recipeImage,
+    equipmentImage,
+    ingredientsImage,
+    cookingImage
+  }: IUpdatingRecipe): Data;
+  deleteMyPrivateUserRecipe(
+    recipeId: number,
+    authorId: number,
+    ownerId: number
+  ): Data;
+  disownMyPublicUserRecipe(recipeId: number, authorId: number): Data;
+}
+
+interface ICreatingRecipe {
+  recipeTypeId: number;
+  cuisineId: number;
+  authorId: number;
+  ownerId: number;
+  title: string;
+  description: string;
+  directions: string;
+  recipeImage: string;
+  equipmentImage: string;
+  ingredientsImage: string;
+  cookingImage: string;
+}
+
+interface IUpdatingRecipe extends ICreatingRecipe {
+  recipeId: number;
 }
