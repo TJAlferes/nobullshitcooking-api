@@ -1,7 +1,9 @@
 'use strict';
 
+import { NextFunction } from 'express';
 import cookie from 'cookie';
 import cookieParser from 'cookie-parser';
+import { Server, Socket } from 'socket.io';
 
 import { pubClient } from '../lib/connections/redisConnection';
 import { MessengerUser } from '../redis-access/MessengerUser';
@@ -15,7 +17,7 @@ export function sessionIdsAreEqual(socket: ) {
   return parsedCookie['connect.sid'] === sid ? false : sid;
 }
 
-export function addMessengerUser(socket: , sid: , session: ) {
+export function addMessengerUser(socket: Socket, sid: string, session: ) {
   socket.request.sid = sid;
   socket.request.userInfo = session.userInfo;
   const messengerUser = new MessengerUser(pubClient);
@@ -28,13 +30,13 @@ export function addMessengerUser(socket: , sid: , session: ) {
   );
 }
 
-export function useSocketAuth(io: , redisSession: ) {
-  function socketAuth(socket: , next: ) {
+export function useSocketAuth(io: Server, redisSession: ) {
+  function socketAuth(socket: Socket, next: NextFunction) {
     const sid = sessionIdsAreEqual(socket);
 
     if (sid === false) return next(new Error('Not authenticated.'));
 
-    redisSession.get(sid, function(err, session) {
+    redisSession.get(sid, function(err: , session: ) {
       if (!session.userInfo.userId) return next(new Error('Not authenticated.'));
       addMessengerUser(socket, sid, session);
       return next();

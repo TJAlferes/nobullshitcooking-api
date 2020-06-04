@@ -6,6 +6,7 @@ const DELTA = 60 * 60 * 1000 * 2;  // 2 hours
 
 async function cleanUpRooms() {
   try {
+    // remove await here?
     await workerClient.zrangebyscore(
       'rooms',
       '-inf',
@@ -46,6 +47,7 @@ async function cleanUpRooms() {
 
 async function cleanUpChats() {
   try {
+    // remove await here?
     await workerClient.zrange(
       'rooms',
       0,

@@ -1,11 +1,12 @@
 import { Socket } from 'socket.io';
 
+import { IFriendship } from '../../mysql-access/Friendship';
 import { IMessengerUser } from '../../redis-access/MessengerUser';
 import { ChatUser  } from '../entities/ChatUser';
 
 export async function getOnline(
   socket: Socket,
-  nobscFriendship,
+  nobscFriendship: IFriendship,
   messengerUser: IMessengerUser,
   userId: number,
   username: string,

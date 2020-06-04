@@ -8,6 +8,7 @@ export async function bulkUp() {
   const recipe = new Recipe(pool);
   const ingredient = new Ingredient(pool);
   const equipment = new Equipment(pool);
+  
   const bulkRecipes = await recipe
     .getAllPublicRecipesForElasticSearchBulkInsert();
   const bulkIngredients = await ingredient

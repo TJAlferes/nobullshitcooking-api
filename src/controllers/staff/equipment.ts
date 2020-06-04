@@ -37,16 +37,9 @@ export const staffEquipmentController = {
     const [ equipmentForInsert ] = await equipment
     .getEquipmentForElasticSearchInsert(generatedId);
 
-    const equipmentInfo = {
-      equipmentId: equipmentForInsert[0].equipmentId,
-      equipmentTypeName: equipmentForInsert[0].equipmentTypeName,
-      equipmentName: equipmentForInsert[0].equipmentName,
-      equipmentImage: equipmentForInsert[0].equipmentImage
-    };
-
     const equipmentSearch = new EquipmentSearch(esClient);
 
-    await equipmentSearch.saveEquipment(equipmentInfo);
+    await equipmentSearch.saveEquipment(equipmentForInsert[0]);
 
     res.send({message: 'Equipment created.'});
   },
@@ -75,17 +68,10 @@ export const staffEquipmentController = {
 
     const [ equipmentForInsert ] = await equipment
     .getEquipmentForElasticSearchInsert(equipmentId);
-
-    const equipmentInfo = {
-      equipmentId: equipmentForInsert[0].equipmentId,
-      equipmentTypeName: equipmentForInsert[0].equipmentTypeName,
-      equipmentName: equipmentForInsert[0].equipmentName,
-      equipmentImage: equipmentForInsert[0].equipmentImage
-    };
-
+    
     const equipmentSearch = new EquipmentSearch(esClient);
 
-    await equipmentSearch.saveEquipment(equipmentInfo);
+    await equipmentSearch.saveEquipment(equipmentForInsert[0]);
 
     res.send({message: 'Equipment updated.'});
   },

@@ -1,18 +1,18 @@
 import { Request, Response } from 'express';
 
-import { pool } from '../../lib/connections/mysqlPoolConnection';
-import { esClient } from '../../lib/connections/elasticsearchClient';
-import { Recipe } from '../../mysql-access/Recipe';
-import { RecipeMethod } from '../../mysql-access/RecipeMethod';
-import { RecipeEquipment } from '../../mysql-access/RecipeEquipment';
-import { RecipeIngredient } from '../../mysql-access/RecipeIngredient';
-import { RecipeSubrecipe } from '../../mysql-access/RecipeSubrecipe';
-import { FavoriteRecipe } from '../../mysql-access/FavoriteRecipe';
-import { SavedRecipe } from '../../mysql-access/SavedRecipe';
 import { RecipeSearch } from '../../elasticsearch-access/RecipeSearch';
+import { esClient } from '../../lib/connections/elasticsearchClient';
+import { pool } from '../../lib/connections/mysqlPoolConnection';
 import { createRecipeService } from '../../lib/services/create-recipe';
 import { updateRecipeService } from '../../lib/services/update-recipe';
 import { validRecipeEntity } from '../../lib/validations/recipe/recipeEntity';
+import { Recipe } from '../../mysql-access/Recipe';
+import { RecipeEquipment } from '../../mysql-access/RecipeEquipment';
+import { RecipeIngredient } from '../../mysql-access/RecipeIngredient';
+import { RecipeMethod } from '../../mysql-access/RecipeMethod';
+import { RecipeSubrecipe } from '../../mysql-access/RecipeSubrecipe';
+import { FavoriteRecipe } from '../../mysql-access/FavoriteRecipe';
+import { SavedRecipe } from '../../mysql-access/SavedRecipe';
 
 export const staffRecipeController = {
   createRecipe: async function(req: Request, res: Response) {

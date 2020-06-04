@@ -1,13 +1,6 @@
 import { Client } from '@elastic/elasticsearch';
 
-interface SaveEquipment {
-  equipmentId: string
-  equipmentTypeName: string
-  equipmentName: string
-  equipmentImage: string
-}
-
-export class EquipmentSearch {
+export class EquipmentSearch implements IEquipmentSearch {
   client: Client;
 
   constructor(esClient: Client) {
@@ -18,7 +11,8 @@ export class EquipmentSearch {
     this.deleteEquipment = this.deleteEquipment.bind(this);
   }
 
-  async findEquipment(searchBody: object) {  // deep pagination can kill performance, set upper bounds 
+  // deep pagination can kill performance, set upper bounds 
+  async findEquipment(searchBody: object) {
     const { body } = await this.client.search({
       index: "equipment",
       body: searchBody
@@ -55,19 +49,19 @@ export class EquipmentSearch {
 
   // (staff only)
   async saveEquipment({
-    equipmentId,
-    equipmentTypeName,
-    equipmentName,
-    equipmentImage
-  }: SaveEquipment) {
+    equipment_id,
+    equipment_type_name,
+    equipment_name,
+    equipment_image
+  }: ISavingEquipment) {
     const savedEquipment = await this.client.index({
       index: 'equipment',
-      id: equipmentId,
+      id: equipment_id,
       body: {
-        equipmentId,
-        equipmentTypeName,
-        equipmentName,
-        equipmentImage
+        equipment_id,
+        equipment_type_name,
+        equipment_name,
+        equipment_image
       }
     });
     await this.client.indices.refresh({index: 'equipment'});
@@ -83,4 +77,24 @@ export class EquipmentSearch {
     await this.client.indices.refresh({index: 'equipment'});
     return deletedEquipment;
   }
+}
+
+interface IEquipmentSearch {
+  client: Client;
+  findEquipment(searchBody: any): any;  // finish
+  autoEquipment(searchTerm: string): any;  // finish
+  saveEquipment({
+    equipment_id,
+    equipment_type_name,
+    equipment_name,
+    equipment_image
+  }: ISavingEquipment): void;
+  deleteEquipment(equipmentId: string): void;
+}
+
+interface ISavingEquipment {
+  equipment_id: string;
+  equipment_type_name: string;
+  equipment_name: string;
+  equipment_image: string;
 }

@@ -1,13 +1,6 @@
 import { Client } from '@elastic/elasticsearch';
 
-interface SaveIngredient {
-  ingredientId: string
-  ingredientTypeName: string
-  ingredientName: string
-  ingredientImage: string
-}
-
-export class IngredientSearch {
+export class IngredientSearch implements IIngredientSearch {
   client: Client;
 
   constructor(esClient: Client) {
@@ -18,7 +11,8 @@ export class IngredientSearch {
     this.deleteIngredient = this.deleteIngredient.bind(this);
   }
 
-  async findIngredients(searchBody: object) {  // deep pagination can kill performance, set upper bounds 
+  // deep pagination can kill performance, set upper bounds 
+  async findIngredients(searchBody: any) {
     const { body } = await this.client.search({
       index: "ingredients",
       body: searchBody
@@ -55,19 +49,19 @@ export class IngredientSearch {
 
   // (staff only)
   async saveIngredient({
-    ingredientId,
-    ingredientTypeName,
-    ingredientName,
-    ingredientImage
-  }: SaveIngredient) {
+    ingredient_id,
+    ingredient_type_name,
+    ingredient_name,
+    ingredient_image
+  }: ISavingIngredient) {
     const savedIngredient = await this.client.index({
       index: 'ingredients',
-      id: ingredientId,
+      id: ingredient_id,
       body: {
-        ingredientId,
-        ingredientTypeName,
-        ingredientName,
-        ingredientImage
+        ingredient_id,
+        ingredient_type_name,
+        ingredient_name,
+        ingredient_image
       }
     });
     await this.client.indices.refresh({index: 'ingredients'});
@@ -83,4 +77,24 @@ export class IngredientSearch {
     await this.client.indices.refresh({index: 'ingredients'});
     return deletedIngredient;
   }
+}
+
+interface IIngredientSearch {
+  client: Client;
+  findIngredients(searchBody: any): any;  // finish
+  autoIngredients(searchTerm: string): any;  // finish
+  saveIngredient({
+    ingredient_id,
+    ingredient_type_name,
+    ingredient_name,
+    ingredient_image
+  }: ISavingIngredient): void;
+  deleteIngredient(ingredientId: string): void;
+}
+
+interface ISavingIngredient {
+  ingredient_id: string;
+  ingredient_type_name: string;
+  ingredient_name: string;
+  ingredient_image: string;
 }

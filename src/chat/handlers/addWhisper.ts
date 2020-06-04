@@ -1,13 +1,14 @@
 import { Socket } from 'socket.io';
 
 import { IFriendship } from '../../mysql-access/Friendship';
+import { IUser } from '../../mysql-access/User';
 import { IMessengerUser } from '../../redis-access/MessengerUser';
 import { ChatUser  } from '../entities/ChatUser';
 import { Whisper  } from '../entities/Whisper';
 
 export async function addWhisper(
   socket: Socket,
-  nobscUser,
+  nobscUser: IUser,
   nobscFriendship: IFriendship,
   messengerUser: IMessengerUser,
   whisperText: string,

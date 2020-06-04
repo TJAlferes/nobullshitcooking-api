@@ -1,21 +1,6 @@
 import { Client } from '@elastic/elasticsearch';
 
-interface SaveRecipe {
-  recipe_id: string
-  author: string
-  recipe_type_name: string
-  cuisine_name: string
-  title: string
-  description: string
-  directions: string
-  recipe_image: string
-  method_names: string[]
-  equipment_names: string[]
-  ingredient_names: string[]
-  subrecipe_titles: string[]
-}
-
-export class RecipeSearch {
+export class RecipeSearch implements IRecipeSearch {
   client: Client;
 
   constructor(esClient: Client) {
@@ -26,7 +11,8 @@ export class RecipeSearch {
     this.deleteRecipe = this.deleteRecipe.bind(this);
   }
 
-  async findRecipes(searchBody: object) {  // deep pagination can kill performance, set upper bounds 
+  // deep pagination can kill performance, set upper bounds 
+  async findRecipes(searchBody: any) {
     const { body } = await this.client.search({
       index: "recipes",
       body: searchBody
@@ -77,7 +63,7 @@ export class RecipeSearch {
     equipment_names,
     ingredient_names,
     subrecipe_titles
-  }: SaveRecipe) {
+  }: ISavingRecipe) {
     await this.client.index({
       index: 'recipes',
       id: recipe_id,
@@ -106,4 +92,40 @@ export class RecipeSearch {
     );
     await this.client.indices.refresh({index: 'recipes'});
   }
+}
+
+interface IRecipeSearch {
+  client: Client;
+  findRecipes(searchBody: any): any;  // finish
+  autoRecipes(searchTerm: string): any;  // finish
+  saveRecipe({
+    recipe_id,
+    author,
+    recipe_type_name,
+    cuisine_name,
+    title,
+    description,
+    directions,
+    recipe_image,
+    method_names,
+    equipment_names,
+    ingredient_names,
+    subrecipe_titles
+  }: ISavingRecipe): void;
+  deleteRecipe(recipeId: string): void;
+}
+
+interface ISavingRecipe {
+  recipe_id: string;
+  author: string;
+  recipe_type_name: string;
+  cuisine_name: string;
+  title: string;
+  description: string;
+  directions: string;
+  recipe_image: string;
+  method_names: string[];
+  equipment_names: string[];
+  ingredient_names: string[];
+  subrecipe_titles: string[];
 }

@@ -11,15 +11,11 @@ export class MessengerChat implements IMessengerChat {
   }
   
   async addChat(chat: IChatMessage) {
-    try {
-      await this.client
-      .multi()
-      .zadd(`rooms:${chat.room}:chats`, `${Date.now()}`, JSON.stringify(chat))
-      .zadd('rooms', `${(new Date).getTime()}`, JSON.stringify(chat.room))
-      .exec();
-    } catch (err) {
-      console.error(err);
-    }
+    await this.client
+    .multi()
+    .zadd(`rooms:${chat.room}:chats`, `${Date.now()}`, JSON.stringify(chat))
+    .zadd('rooms', `${(new Date).getTime()}`, JSON.stringify(chat.room))
+    .exec();
   };
 }
 

@@ -1,6 +1,6 @@
 import { Redis } from 'ioredis';
 
-export class MessengerUser {
+export class MessengerUser implements IMessengerUser {
   client: Redis;
 
   constructor(client: Redis) {
@@ -11,13 +11,10 @@ export class MessengerUser {
   }
 
   async getUserSocketId(userId: number) {
-    try {
-      const foundUserSocketId = await this.client
-      .hget(`user:${userId}`, 'socketid');
-      return foundUserSocketId;
-    } catch (err) {
-      console.error(err);
-    }
+    const foundUserSocketId = await this.client
+    .hget(`user:${userId}`, 'socketid');
+    //if (!foundUserSocketId) throw ?
+    return foundUserSocketId;
   }
 
   async addUser(
@@ -27,36 +24,28 @@ export class MessengerUser {
     sid: string,
     socketid: string
   ) {
-    try {
-      await this.client
-      .multi()
-      .hset(`user:${userId}`, 'username', username)
-      .hset(`user:${userId}`, 'avatar', avatar)
-      .hset(`user:${userId}`, 'sid', sid)
-      .hset(`user:${userId}`, 'socketid', socketid)
-      .zadd('users', `${Date.now()}`, `${userId}`)
-      .exec();
-    } catch (err) {
-      console.error(err);
-    }
+    await this.client
+    .multi()
+    .hset(`user:${userId}`, 'username', username)
+    .hset(`user:${userId}`, 'avatar', avatar)
+    .hset(`user:${userId}`, 'sid', sid)
+    .hset(`user:${userId}`, 'socketid', socketid)
+    .zadd('users', `${Date.now()}`, `${userId}`)
+    .exec();
   }
 
   async removeUser(userId: number) {
-    try {
-      await this.client
-      .multi()
-      .zrem('users', userId)
-      .del(`user:${userId}`)
-      .exec()
-    } catch (err) {
-      console.error(err);
-    }
+    await this.client
+    .multi()
+    .zrem('users', userId)
+    .del(`user:${userId}`)
+    .exec();
   }
 }
 
 export interface IMessengerUser {
   client: Redis;
-  getUserSocketId(userId: number): string;
+  getUserSocketId(userId: number): Promise<string|null>;
   addUser(
     userId: number,
     username: string,

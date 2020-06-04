@@ -23,7 +23,6 @@ export const userRecipeController = {
 
     res.send(rows);
   },
-  
   viewAllMyPublicUserRecipes: async function(req: Request, res: Response) {
     const authorId = req.session!.userInfo.userId;
     const ownerId = 1;
@@ -34,7 +33,6 @@ export const userRecipeController = {
 
     res.send(rows);
   },
-
   viewMyPrivateUserRecipe: async function(req: Request, res: Response) {
     const recipeId = Number(req.body.recipeId);
     const authorId = req.session!.userInfo.userId;
@@ -46,7 +44,6 @@ export const userRecipeController = {
 
     res.send(row);
   },
-
   viewMyPublicUserRecipe: async function(req: Request, res: Response) {
     const recipeId = Number(req.body.recipeId);
     const authorId = req.session!.userInfo.userId;
@@ -58,7 +55,6 @@ export const userRecipeController = {
 
     res.send(row);
   },
-
   getInfoToEditMyPrivateUserRecipe: async function(
     req: Request,
     res: Response
@@ -74,7 +70,6 @@ export const userRecipeController = {
 
     res.send(row);
   },
-
   getInfoToEditMyPublicUserRecipe: async function(req: Request, res: Response) {
     const recipeId = Number(req.body.recipeId);
     const authorId = req.session!.userInfo.userId;
@@ -87,7 +82,6 @@ export const userRecipeController = {
 
     res.send(row);
   },
-
   createRecipe: async function(req: Request, res: Response) {
     const recipeTypeId = Number(req.body.recipeInfo.recipeTypeId);
     const cuisineId = Number(req.body.recipeInfo.cuisineId);
@@ -134,7 +128,6 @@ export const userRecipeController = {
     
     res.send({message: 'Recipe created.'});
   },
-
   updateMyUserRecipe: async function(req: Request, res: Response) {
     const recipeId = Number(req.body.recipeInfo.recipeId);
     const recipeTypeId = Number(req.body.recipeInfo.recipeTypeId);
@@ -187,7 +180,6 @@ export const userRecipeController = {
 
     res.send({message: 'Recipe updated.'});
   },
-
   deleteMyPrivateUserRecipe: async function(req: Request, res: Response) {
     const recipeId = Number(req.body.recipeId);
     const authorId = req.session!.userInfo.userId;
@@ -208,7 +200,6 @@ export const userRecipeController = {
 
     res.send({message: 'Recipe deleted.'});
   },
-
   disownMyPublicUserRecipe: async function(req: Request, res: Response) {
     const recipeId = Number(req.body.recipeId);
     const authorId = req.session!.userInfo.userId;
@@ -218,12 +209,12 @@ export const userRecipeController = {
     await recipe.disownMyPublicUserRecipe(recipeId, authorId);
 
     // (make sure the update goes through first though)
-    const recipeInfoForElasticSearch = await recipe
+    const [ recipeInfoForElasticSearch ] = await recipe
     .getPublicRecipeForElasticSearchInsert(recipeId);
 
     const recipeSearch = new RecipeSearch(esClient);
 
-    await recipeSearch.saveRecipe(recipeInfoForElasticSearch);
+    await recipeSearch.saveRecipe(recipeInfoForElasticSearch[0]);  // fix?
 
     res.send({message: 'Recipe disowned.'});
   }

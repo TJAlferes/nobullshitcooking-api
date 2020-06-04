@@ -36,17 +36,10 @@ export const staffIngredientController = {
 
     const [ ingredientForInsert ] = await ingredient
     .getIngredientForElasticSearchInsert(generatedId);
-
-    const ingredientInfo = {
-      ingredientId: ingredientForInsert[0].ingredientId,
-      ingredientTypeName: ingredientForInsert[0].ingredientTypeName,
-      ingredientName: ingredientForInsert[0].ingredientName,
-      ingredientImage: ingredientForInsert[0].ingredientImage
-    };
-
+    
     const ingredientSearch = new IngredientSearch(esClient);
 
-    await ingredientSearch.saveIngredient(ingredientInfo);
+    await ingredientSearch.saveIngredient(ingredientForInsert[0]);
 
     res.send({message: 'Ingredient created.'});
   },
@@ -76,17 +69,9 @@ export const staffIngredientController = {
     const [ ingredientForInsert ] = await ingredient
     .getIngredientForElasticSearchInsert(ingredientId);
 
-    // this is probably not needed
-    const ingredientInfo = {
-      ingredientId: ingredientForInsert[0].ingredientId,
-      ingredientTypeName: ingredientForInsert[0].ingredientTypeName,
-      ingredientName: ingredientForInsert[0].ingredientName,
-      ingredientImage: ingredientForInsert[0].ingredientImage
-    };
-
     const ingredientSearch = new IngredientSearch(esClient);
 
-    await ingredientSearch.saveIngredient(ingredientInfo);
+    await ingredientSearch.saveIngredient(ingredientForInsert[0]);
 
     res.send({message: 'Ingredient updated.'});
   },

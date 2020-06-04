@@ -1,5 +1,5 @@
 /*
-// we're not using this yet (if ever)
+// we're not using this yet (if ever) (if using OAuth, use Twitter?)
 
 'use strict';
 

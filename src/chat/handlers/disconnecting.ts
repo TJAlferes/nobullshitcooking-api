@@ -1,5 +1,6 @@
 import { Socket } from 'socket.io';
 
+import { IFriendship } from '../../mysql-access/Friendship';
 import { IMessengerRoom } from '../../redis-access/MessengerRoom';
 import { IMessengerUser } from '../../redis-access/MessengerUser';
 import { ChatUser  } from '../entities/ChatUser';
@@ -8,7 +9,7 @@ export async function disconnecting(
   socket: Socket,
   messengerRoom: IMessengerRoom,
   messengerUser: IMessengerUser,
-  nobscFriendship,
+  nobscFriendship: IFriendship,
   userId: number,
   username: string,
   avatar: string,
