@@ -8,9 +8,12 @@ export async function bulkUp() {
   const recipe = new Recipe(pool);
   const ingredient = new Ingredient(pool);
   const equipment = new Equipment(pool);
-  const bulkRecipes = await recipe.getAllPublicRecipesForElasticSearchBulkInsert();
-  const bulkIngredients = await ingredient.getAllPublicIngredientsForElasticSearchBulkInsert();
-  const bulkEquipment = await equipment.getAllPublicEquipmentForElasticSearchBulkInsert();
+  const bulkRecipes = await recipe
+    .getAllPublicRecipesForElasticSearchBulkInsert();
+  const bulkIngredients = await ingredient
+    .getAllPublicIngredientsForElasticSearchBulkInsert();
+  const bulkEquipment = await equipment
+    .getAllPublicEquipmentForElasticSearchBulkInsert();
 
   // delete
   await esClient.indices.delete({index: "recipes"});
@@ -126,9 +129,21 @@ export async function bulkUp() {
   });
 
   // bulk insert
-  await esClient.bulk({index: "recipes", body: bulkRecipes, refresh: "true"});
-  await esClient.bulk({index: "ingredients", body: bulkIngredients, refresh: "true"});
-  await esClient.bulk({index: "equipment", body: bulkEquipment, refresh: "true"});
+  await esClient.bulk({
+    index: "recipes",
+    body: bulkRecipes,
+    refresh: "true"
+  });
+  await esClient.bulk({
+    index: "ingredients",
+    body: bulkIngredients,
+    refresh: "true"
+  });
+  await esClient.bulk({
+    index: "equipment",
+    body: bulkEquipment,
+    refresh: "true"
+  });
 
   // refresh
   await esClient.indices.refresh({index: "recipes"});

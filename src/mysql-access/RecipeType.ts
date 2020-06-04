@@ -5,11 +5,11 @@ export class RecipeType implements IRecipeType {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewAllRecipeTypes = this.viewAllRecipeTypes.bind(this);
+    this.viewRecipeTypes = this.viewRecipeTypes.bind(this);
     this.viewRecipeTypeById = this.viewRecipeTypeById.bind(this);
   }
 
-  async viewAllRecipeTypes() {
+  async viewRecipeTypes() {
     const sql = `
       SELECT recipe_type_id, recipe_type_name
       FROM nobsc_recipe_types
@@ -34,6 +34,6 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IRecipeType {
   pool: Pool;
-  viewAllRecipeTypes(): Data;
+  viewRecipeTypes(): Data;
   viewRecipeTypeById(recipeTypeId: number): Data;
 }

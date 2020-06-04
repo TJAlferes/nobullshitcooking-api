@@ -1,24 +1,27 @@
 import { Request, Response } from 'express';
 
 import { pool } from '../../lib/connections/mysqlPoolConnection';
-import { RecipeIngredient } from '../../mysql-access/RecipeIngredient';
+import {
+  validIngredientEntity
+} from '../../lib/validations/ingredient/ingredientEntity';
 import { Ingredient } from '../../mysql-access/Ingredient';
-import { validIngredientEntity } from '../../lib/validations/ingredient/ingredientEntity';
+import { RecipeIngredient } from '../../mysql-access/RecipeIngredient';
 
 export const userIngredientController = {
   viewAllMyPrivateUserIngredients: async function(req: Request, res: Response) {
-    const authorId = req.session!.userInfo.userId;
-    const ownerId = req.session!.userInfo.userId;
     const ingredient = new Ingredient(pool);
-    const rows = await ingredient.viewIngredients(authorId, ownerId);
+
+    const rows = await ingredient.viewIngredients();
+
     res.send(rows);
   },
   viewMyPrivateUserIngredient: async function(req: Request, res: Response) {
     const ingredientId = Number(req.body.ingredientId);
-    const authorId = req.session!.userInfo.userId;
-    const ownerId = req.session!.userInfo.userId;
+
     const ingredient = new Ingredient(pool);
-    const [ row ] = await ingredient.viewIngredientById(ingredientId, authorId, ownerId);
+
+    const [ row ] = await ingredient.viewIngredientById(ingredientId);
+
     res.send(row);
   },
   createMyPrivateUserIngredient: async function(req: Request, res: Response) {
@@ -38,8 +41,11 @@ export const userIngredientController = {
       ingredientDescription,
       ingredientImage
     });
+
     const ingredient = new Ingredient(pool);
+
     await ingredient.createMyPrivateUserIngredient(ingredientToCreate);
+
     res.send({message: 'Ingredient created.'});
   },
   updateMyPrivateUserIngredient: async function(req: Request, res: Response) {
@@ -60,17 +66,26 @@ export const userIngredientController = {
       ingredientDescription,
       ingredientImage
     });
+
     const ingredient = new Ingredient(pool);
-    await ingredient.updateMyPrivateUserIngredient(ingredientToUpdateWith, ingredientId);
+
+    await ingredient.updateMyPrivateUserIngredient({
+      ingredientId,
+      ...ingredientToUpdateWith
+    });
+
     res.send({message: 'Ingredient updated.'});
   },
   deleteMyPrivateUserIngredient: async function(req: Request, res: Response) {
     const ingredientId = Number(req.body.ingredientId);
     const ownerId = req.session!.userInfo.userId;
+
     const recipeIngredient = new RecipeIngredient(pool);
     const ingredient = new Ingredient(pool);
+
     await recipeIngredient.deleteRecipeIngredientsByIngredientId(ingredientId);
-    await ingredient.deleteMyPrivateUserIngredient(ownerId, ingredientId);
+    await ingredient.deleteMyPrivateUserIngredient(ingredientId, ownerId);
+
     res.send({message: 'Ingredient deleted.'});
   }
 };

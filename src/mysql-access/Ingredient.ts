@@ -82,7 +82,9 @@ export class Ingredient implements IIngredient {
     return ingredientForInsert;
   }
 
-  async viewIngredients(authorId: number, ownerId: number) {
+  async viewIngredients() {
+    const authorId = 1;
+    const ownerId = 1;
     const sql = `
       SELECT
         i.ingredient_id AS ingredient_id,
@@ -104,11 +106,9 @@ export class Ingredient implements IIngredient {
     return ingredients;
   }
 
-  async viewIngredientById(
-    ingredientId: number,
-    authorId: number,
-    ownerId: number
-  ) {
+  async viewIngredientById(ingredientId: number) {
+    const authorId = 1;
+    const ownerId = 1;
     const sql = `
       SELECT
         i.ingredient_id AS ingredient_id,
@@ -283,12 +283,8 @@ export interface IIngredient {
   pool: Pool;
   getAllPublicIngredientsForElasticSearchBulkInsert(): any;  // finish
   getIngredientForElasticSearchInsert(ingredientId: number): Data;
-  viewIngredients(authorId: number, ownerId: number): Data;
-  viewIngredientById(
-    ingredientId: number,
-    authorId: number,
-    ownerId: number
-  ): Data;
+  viewIngredients(): Data;
+  viewIngredientById(ingredientId: number): Data;
   createIngredient({
     ingredientTypeId,
     authorId,

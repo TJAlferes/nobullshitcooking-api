@@ -82,7 +82,9 @@ export class Equipment implements IEquipment {
     return equipmentForInsert;
   }
 
-  async viewEquipment(authorId: number, ownerId: number) {
+  async viewEquipment() {
+    const authorId = 1;
+    const ownerId = 1;
     const sql = `
       SELECT
         e.equipment_id AS equipment_id,
@@ -104,11 +106,9 @@ export class Equipment implements IEquipment {
     return equipment;
   }
 
-  async viewEquipmentById(
-    equipmentId: number,
-    authorId: number,
-    ownerId: number
-  ) {
+  async viewEquipmentById(equipmentId: number) {
+    const authorId = 1;
+    const ownerId = 1;
     const sql = `
       SELECT
         e.equipment_id AS equipment_id,
@@ -283,12 +283,8 @@ export interface IEquipment {
   pool: Pool;
   getAllPublicEquipmentForElasticSearchBulkInsert(): any;  // finish
   getEquipmentForElasticSearchInsert(equipmentId: number): Data;
-  viewEquipment(authorId: number, ownerId: number): Data;
-  viewEquipmentById(
-    equipmentId: number,
-    authorId: number,
-    ownerId: number
-  ): Data;
+  viewEquipment(): Data;
+  viewEquipmentById(equipmentId: number): Data;
   createEquipment({
     equipmentTypeId,
     authorId,

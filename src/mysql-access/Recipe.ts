@@ -136,7 +136,9 @@ export class Recipe implements IRecipe {
     return recipe;
   }
 
-  async viewRecipes(authorId: number, ownerId: number) {
+  async viewRecipes() {
+    const authorId = 1;
+    const ownerId = 1;
     const sql = `
       SELECT
         recipe_id,
@@ -154,7 +156,9 @@ export class Recipe implements IRecipe {
     return recipes;
   }
 
-  async viewRecipeById(recipeId: number, authorId: number, ownerId: number) {
+  async viewRecipeById(recipeId: number) {
+    const authorId = 1;
+    const ownerId = 1;
     const sql = `
       SELECT
       r.recipe_id,
@@ -481,8 +485,8 @@ export interface IRecipe {
   pool: Pool;
   getAllPublicRecipesForElasticSearchBulkInsert(): any;
   getPublicRecipeForElasticSearchInsert(recipeId: number): Data;
-  viewRecipes(authorId: number, ownerId: number): Data;
-  viewRecipeById(recipeId: number, authorId: number, ownerId: number): Data;
+  viewRecipes(): Data;
+  viewRecipeById(recipeId: number): Data;
   createRecipe({
     recipeTypeId,
     cuisineId,

@@ -5,11 +5,11 @@ export class Measurement implements IMeasurement {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewAllMeasurements = this.viewAllMeasurements.bind(this);
+    this.viewMeasurements = this.viewMeasurements.bind(this);
     this.viewMeasurementById = this.viewMeasurementById.bind(this);
   }
 
-  async viewAllMeasurements() {
+  async viewMeasurements() {
     const sql = `
       SELECT measurement_id, measurement_name
       FROM nobsc_measurements
@@ -34,6 +34,6 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IMeasurement {
   pool: Pool;
-  viewAllMeasurements(): Data;
+  viewMeasurements(): Data;
   viewMeasurementById(measurementId: number): Data;
 }

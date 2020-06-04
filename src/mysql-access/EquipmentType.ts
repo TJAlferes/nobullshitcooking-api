@@ -5,11 +5,11 @@ export class EquipmentType implements IEquipmentType {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewAllEquipmentTypes = this.viewAllEquipmentTypes.bind(this);
+    this.viewEquipmentTypes = this.viewEquipmentTypes.bind(this);
     this.viewEquipmentTypeById = this.viewEquipmentTypeById.bind(this);
   }
 
-  async viewAllEquipmentTypes() {
+  async viewEquipmentTypes() {
     const sql = `
       SELECT equipment_type_id, equipment_type_name
       FROM nobsc_equipment_types
@@ -34,6 +34,6 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IEquipmentType {
   pool: Pool;
-  viewAllEquipmentTypes(): Data;
+  viewEquipmentTypes(): Data;
   viewEquipmentTypeById(equipmentTypeId: number): Data;
 }

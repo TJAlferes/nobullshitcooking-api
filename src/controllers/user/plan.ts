@@ -1,21 +1,27 @@
 import { Request, Response } from 'express';
 
 import { pool } from '../../lib/connections/mysqlPoolConnection';
-import { Plan } from '../../mysql-access/Plan';
 import { validPlanEntity } from '../../lib/validations/plan/planEntity';
+import { Plan } from '../../mysql-access/Plan';
 
 export const userPlanController = {
   viewAllMyPrivatePlans: async function(req: Request, res: Response) {
     const ownerId = req.session!.userInfo.userId;
+
     const plan = new Plan(pool);
+
     const myPlans = await plan.viewAllMyPrivatePlans(ownerId);
+
     res.send(myPlans);
   },
   viewMyPrivatePlan: async function(req: Request, res: Response) {
     const planId = Number(req.body.planId);
     const ownerId = req.session!.userInfo.userId;
+
     const plan = new Plan(pool);
-    const [ myPlan ] = await plan.viewMyPrivatePlan(ownerId, planId);
+
+    const [ myPlan ] = await plan.viewMyPrivatePlan(planId, ownerId);
+
     res.send(myPlan);
   },
   createMyPrivatePlan: async function(req: Request, res: Response) {
@@ -25,9 +31,17 @@ export const userPlanController = {
     const authorId = req.session!.userInfo.userId;
     const ownerId = req.session!.userInfo.userId;
 
-    const planToCreate = validPlanEntity({authorId, ownerId, planName, planData});
+    const planToCreate = validPlanEntity({
+      authorId,
+      ownerId,
+      planName,
+      planData
+    });
+
     const plan = new Plan(pool);
+
     await plan.createMyPrivatePlan(planToCreate);
+
     res.send({message: 'Plan created.'});
   },
   updateMyPrivatePlan: async function(req: Request, res: Response) {
@@ -38,16 +52,27 @@ export const userPlanController = {
     const authorId = req.session!.userInfo.userId;
     const ownerId = req.session!.userInfo.userId;
 
-    const planToUpdateWith = validPlanEntity({authorId, ownerId, planName, planData});
+    const planToUpdateWith = validPlanEntity({
+      authorId,
+      ownerId,
+      planName,
+      planData
+    });
+
     const plan = new Plan(pool);
-    await plan.updateMyPrivatePlan(planToUpdateWith, planId);
+
+    await plan.updateMyPrivatePlan({planId, ...planToUpdateWith});
+
     res.send({message: 'Plan updated.'});
   },
   deleteMyPrivatePlan: async function(req: Request, res: Response) {
     const planId = Number(req.body.planId);
     const ownerId = req.session!.userInfo.userId;
+
     const plan = new Plan(pool);
-    await plan.deleteMyPrivatePlan(ownerId, planId);
+
+    await plan.deleteMyPrivatePlan(planId, ownerId);
+
     res.send({message: 'Plan deleted.'});
   }
 };

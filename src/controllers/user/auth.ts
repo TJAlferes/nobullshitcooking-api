@@ -1,15 +1,13 @@
 import { Request, Response } from 'express';
 //const crypto = require('crypto');
 import bcrypt from 'bcrypt';
-import uuidv4 from 'uuid/v4';
-
-const User = require('../../mysql-access/User');
+import { v4 as uuidv4 } from 'uuid';
 
 import { pool } from '../../lib/connections/mysqlPoolConnection';
-
-import { emailConfirmationCode } from '../../lib/services/email-confirmation-code';
-
-const {
+import {
+  emailConfirmationCode
+} from '../../lib/services/email-confirmation-code';
+import {
   validRegisterRequest,
   validRegister,
   validUserEntity,
@@ -18,7 +16,8 @@ const {
   validResend,
   validLoginRequest,
   validLogin
-} = require('../../lib/validations/user/index');
+} from '../../lib/validations/user/index';
+import { User } from '../../mysql-access/User';
 
 const SALT_ROUNDS = 10;
 
@@ -133,8 +132,11 @@ export const userAuthController = {
   setAvatar: async function(req: Request, res: Response) {
     const avatar = req.body.avatar;
     const userId = req.session!.userInfo.userId;
+
     const user = new User(pool);
+
     await user.setAvatar(avatar, userId);
+    
     res.send({message: 'Avatar set.'});
   },
 

@@ -5,14 +5,14 @@ export class ContentType implements IContentType {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewAllContentTypes = this.viewAllContentTypes.bind(this);
+    this.viewContentTypes = this.viewContentTypes.bind(this);
     this.viewContentTypeById = this.viewContentTypeById.bind(this);
     this.createContentType = this.createContentType.bind(this);
     this.updateContentType = this.updateContentType.bind(this);
     this.deleteContentType = this.deleteContentType.bind(this);
   }
 
-  async viewAllContentTypes() {
+  async viewContentTypes() {
     const sql = `
       SELECT content_type_id, content_type_name
       FROM nobsc_content_types
@@ -93,7 +93,7 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IContentType {
   pool: Pool;
-  viewAllContentTypes(): Data;
+  viewContentTypes(): Data;
   viewContentTypeById(contentTypeId: number): Data;
   createContentType({
     parentId,

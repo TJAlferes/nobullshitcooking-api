@@ -5,12 +5,12 @@ export class Cuisine implements ICuisine {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewAllCuisines = this.viewAllCuisines.bind(this);
+    this.viewCuisines = this.viewCuisines.bind(this);
     this.viewCuisineById = this.viewCuisineById.bind(this);
     this.viewCuisineDetailById = this.viewCuisineDetailById.bind(this);
   }
 
-  async viewAllCuisines() {
+  async viewCuisines() {
     const sql = `
       SELECT cuisine_id, cuisine_name, cuisine_nation
       FROM nobsc_cuisines
@@ -86,7 +86,7 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface ICuisine {
   pool: Pool;
-  viewAllCuisines(): Data;
+  viewCuisines(): Data;
   viewCuisineById(cuisineId: number): Data;
   viewCuisineDetailById(cuisineId: number): Data;
 }

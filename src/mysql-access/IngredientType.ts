@@ -5,11 +5,11 @@ export class IngredientType implements IIngredientType {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewAllIngredientTypes = this.viewAllIngredientTypes.bind(this);
+    this.viewIngredientTypes = this.viewIngredientTypes.bind(this);
     this.viewIngredientTypeById = this.viewIngredientTypeById.bind(this);
   }
 
-  async viewAllIngredientTypes() {
+  async viewIngredientTypes() {
     const sql = `
       SELECT ingredient_type_id, ingredient_type_name
       FROM nobsc_ingredient_types
@@ -35,6 +35,6 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IIngredientType {
   pool: Pool;
-  viewAllIngredientTypes(): Data;
+  viewIngredientTypes(): Data;
   viewIngredientTypeById(ingredientTypeId: number): Data;
 }
