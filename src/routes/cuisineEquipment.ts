@@ -1,8 +1,7 @@
 import { Router } from 'express';
 
-const catchExceptions = require('../lib/utils/catchExceptions');
-
-const cuisineEquipmentController = require('../controllers/cuisineEquipment');
+import { cuisineEquipmentController } from '../controllers/cuisineEquipment';
+import { catchExceptions } from '../lib/utils/catchExceptions';
 
 export const router = Router();
 

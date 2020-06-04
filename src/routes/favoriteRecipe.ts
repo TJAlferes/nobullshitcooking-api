@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
-const catchExceptions = require('../lib/utils/catchExceptions');
-const favoriteRecipeController = require('../controllers/favoriteRecipe');
+import { favoriteRecipeController } from '../controllers/favoriteRecipe';
+import { catchExceptions } from '../lib/utils/catchExceptions';
 
 export const router = Router();
 

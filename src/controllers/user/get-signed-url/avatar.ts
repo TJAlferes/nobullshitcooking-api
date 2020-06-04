@@ -1,5 +1,5 @@
 require('dotenv').config();
-import AWS from 'aws-sdk';
+import S3 from 'aws-sdk/clients/s3';
 import { Request, Response } from 'express';
 
 import { S3Params } from './types';
@@ -12,7 +12,7 @@ export async function getSignedUrlAvatar(req: Request, res: Response) {
   const fileNameTinySize = `${fileNameFullSize}-tiny`;
   const fileType = req.body.fileType;
 
-  const s3 = new AWS.S3({
+  const s3 = new S3({
     accessKeyId: process.env.AWS_NOBSC_USER_AVATARS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_NOBSC_USER_AVATARS_SECRET_ACCESS_KEY
   });

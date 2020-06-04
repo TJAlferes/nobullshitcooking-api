@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
 
-const userIsAuth = require('../../lib/utils/userIsAuth');
-const catchExceptions = require('../../lib/utils/catchExceptions');
-const userFavoriteRecipeController = require('../../controllers/user/favoriteRecipe');
+import { userFavoriteRecipeController } from '../../controllers/user/favoriteRecipe';
+import { catchExceptions } from '../../lib/utils/catchExceptions';
+import { userIsAuth } from '../../lib/utils/userIsAuth';
 
 export const router = Router();
 

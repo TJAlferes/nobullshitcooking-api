@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
-const catchExceptions = require('../lib/utils/catchExceptions');
-const searchController = require('../controllers/search');
+import { searchController } from '../controllers/search';
+import { catchExceptions } from '../lib/utils/catchExceptions';
 
 export const router = Router();
 
@@ -19,8 +19,6 @@ router.post(
   catchExceptions(searchController.findPublicAll)
 );
 
-
-
 router.post(
   '/autocomplete/recipes',
   catchExceptions(searchController.autocompletePublicRecipes)
@@ -31,8 +29,6 @@ router.post(
   catchExceptions(searchController.findPublicRecipes)
 );
 
-
-
 router.post(
   '/autocomplete/ingredients',
   catchExceptions(searchController.autocompletePublicIngredients)
@@ -42,8 +38,6 @@ router.post(
   '/find/ingredients',
   catchExceptions(searchController.findPublicIngredients)
 );
-
-
 
 router.post(
   '/autocomplete/equipment',

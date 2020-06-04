@@ -1,26 +1,17 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
 
-const catchExceptions = require('../../lib/utils/catchExceptions');
-const staffIsAuth = require('../../lib/utils/staffIsAuth');
-
-const staffCuisineSupplierController = require(
-  '../../controllers/staff/cuisineSupplier'
-);
+import {
+  staffCuisineSupplierController
+} from '../../controllers/staff/cuisineSupplier';
+import { catchExceptions } from '../../lib/utils/catchExceptions';
+import { staffIsAuth } from '../../lib/utils/staffIsAuth';
 
 export const router = Router();
 
 // /v1/... ?
 
 // for /staff/cuisine-supplier/...
-
-router.post(
-  '/',
-  staffIsAuth,
-  catchExceptions(
-    staffCuisineSupplierController.viewCuisineSuppliersByCuisineId
-  )
-);
 
 router.post(
   '/create',

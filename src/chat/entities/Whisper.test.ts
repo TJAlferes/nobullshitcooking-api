@@ -1,4 +1,4 @@
-const Whisper = require('./Whisper');
+import { Whisper } from './Whisper';
 
 const whisper = Whisper('hello', 'Batman', {
   userId: 7,

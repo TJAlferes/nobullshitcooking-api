@@ -1,13 +1,13 @@
 import { Router } from 'express';
 
-export { router as staffAuthRouter } from './auth';
-export { router as staffCuisineEquipmentRouter } from './cuisineEquipment';
-export { router as staffCuisineIngredientRouter } from './cuisineIngredient';
-export { router as staffCuisineSupplierRouter } from './cuisineSupplier';
-export { router as staffEquipmentRouter } from './equipment';
-export { router as staffIngredientRouter } from './ingredient';
-export { router as staffRecipeRouter } from './recipe';
-export { router as staffSupplierRouter } from './supplier';
+import { router as staffAuthRouter } from './auth';
+import { router as staffCuisineEquipmentRouter } from './cuisineEquipment';
+import { router as staffCuisineIngredientRouter } from './cuisineIngredient';
+import { router as staffCuisineSupplierRouter } from './cuisineSupplier';
+import { router as staffEquipmentRouter } from './equipment';
+import { router as staffIngredientRouter } from './ingredient';
+import { router as staffRecipeRouter } from './recipe';
+import { router as staffSupplierRouter } from './supplier';
 
 export const router = Router();
 

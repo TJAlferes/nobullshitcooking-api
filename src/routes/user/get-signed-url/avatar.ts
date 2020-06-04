@@ -1,9 +1,11 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
 
-import { userIsAuth } from '../../../lib/utils/userIsAuth';
+import {
+  getSignedUrlAvatar
+} from '../../../controllers/user/get-signed-url/avatar';
 import { catchExceptions } from '../../../lib/utils/catchExceptions';
-import { getSignedUrlAvatar } from '../../../controllers/user/get-signed-url/avatar';
+import { userIsAuth } from '../../../lib/utils/userIsAuth';
 
 export const router = Router();
 

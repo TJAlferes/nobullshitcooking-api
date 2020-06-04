@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
-const catchExceptions = require('../lib/utils/catchExceptions');
-const equipmentTypeController = require('../controllers/equipmentType');
+import { equipmentTypeController } from '../controllers/equipmentType';
+import { catchExceptions } from '../lib/utils/catchExceptions';
 
 export const router = Router();
 
@@ -11,7 +11,7 @@ export const router = Router();
 
 router.get(
   '/',
-  catchExceptions(equipmentTypeController.viewAllEquipmentTypes)
+  catchExceptions(equipmentTypeController.viewEquipmentTypes)
 );
 
 router.get(

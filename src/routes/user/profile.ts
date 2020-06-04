@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { param } from 'express-validator';
 
-const catchExceptions = require('../../lib/utils/catchExceptions');
-const userProfileController = require('../../controllers/user/profile');
+import { userProfileController } from '../../controllers/user/profile';
+import { catchExceptions } from '../../lib/utils/catchExceptions';
 
 export const router = Router();
 

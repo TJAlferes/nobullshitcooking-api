@@ -1,9 +1,11 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
 
-import { userIsAuth } from '../../../lib/utils/userIsAuth';
+import {
+  getSignedUrlRecipe
+} from '../../../controllers/user/get-signed-url/recipe';
 import { catchExceptions } from '../../../lib/utils/catchExceptions';
-import { getSignedUrlRecipe } from '../../../controllers/user/get-signed-url/recipe';
+import { userIsAuth } from '../../../lib/utils/userIsAuth';
 
 export const router = Router();
 

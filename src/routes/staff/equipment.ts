@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
 
-const staffIsAuth = require('../../lib/utils/staffIsAuth');
-const catchExceptions = require('../../lib/utils/catchExceptions');
-const staffEquipmentController = require('../../controllers/staff/equipment');
+import { staffEquipmentController } from '../../controllers/staff/equipment';
+import { catchExceptions } from '../../lib/utils/catchExceptions';
+import { staffIsAuth } from '../../lib/utils/staffIsAuth';
 
 export const router = Router();
 

@@ -1,6 +1,6 @@
 require('dotenv').config();
 import { v4 as uuidv4 } from 'uuid';  // do in React instead?
-import AWS from 'aws-sdk';
+import S3 from 'aws-sdk/clients/s3';
 import { Request, Response } from 'express';
 
 import { S3Params } from './types';
@@ -12,7 +12,7 @@ export async function getSignedUrlRecipeEquipment(req: Request, res: Response) {
   const fileNameFullSize = `${req.session!.userInfo.username}-${uuidv4()}`;
   const fileType = req.body.fileType;
 
-  const s3 = new AWS.S3({
+  const s3 = new S3({
     accessKeyId: process.env.AWS_NOBSC_USER_RECIPE_EQUIPMENT_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_NOBSC_USER_RECIPE_EQUIPMENT_SECRET_ACCESS_KEY
   });

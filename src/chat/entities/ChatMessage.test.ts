@@ -1,4 +1,4 @@
-const ChatMessage = require('./ChatMessage');
+import { ChatMessage } from './ChatMessage';
 
 const chat = ChatMessage('hello', '5067', {
   userId: 7,

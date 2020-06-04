@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { param } from 'express-validator';
 
-const catchExceptions = require('../lib/utils/catchExceptions');
-const cuisineController = require('../controllers/cuisine');
+import { cuisineController } from '../controllers/cuisine';
+import { catchExceptions } from '../lib/utils/catchExceptions';
 
 export const router = Router();
 
@@ -12,7 +12,7 @@ export const router = Router();
 
 router.get(
   '/',
-  catchExceptions(cuisineController.viewAllCuisines)
+  catchExceptions(cuisineController.viewCuisines)
 );
 
 router.get(

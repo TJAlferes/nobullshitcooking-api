@@ -1,10 +1,10 @@
-import { ChatUser } from './User';
+import { ChatUser } from './ChatUser';
 
 const user = ChatUser(7, 'Lucky', 'Lucky');
 
 describe('User', () => {
   it('should have three parameters', () => {
-    const actual = User.length;
+    const actual = ChatUser.length;
     const expected = 3;
     expect(actual).toEqual(expected);
   });
