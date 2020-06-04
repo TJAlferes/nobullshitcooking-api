@@ -127,6 +127,6 @@ export interface IRecipeMethod {
   deleteRecipeMethods(recipeId: number): Data;
 }
 
-/*interface ISomethingRecipeMethod {
-  methodId: number
-}*/
+export interface IMakeRecipeMethod {
+  methodId: number;
+}

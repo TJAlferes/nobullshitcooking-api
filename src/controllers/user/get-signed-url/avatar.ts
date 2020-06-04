@@ -8,7 +8,7 @@ const AWS_NOBSC_USER_AVATARS_S3_BUCKET: string =
 process.env.AWS_NOBSC_USER_AVATARS_S3_BUCKET!;
 
 export async function getSignedUrlAvatar(req: Request, res: Response) {
-  const fileNameFullSize = `${req.session.userInfo.username}`;
+  const fileNameFullSize = `${req.session!.userInfo.username}`;
   const fileNameTinySize = `${fileNameFullSize}-tiny`;
   const fileType = req.body.fileType;
 

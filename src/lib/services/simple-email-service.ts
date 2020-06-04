@@ -39,7 +39,8 @@ export function emailUser(
     //ConfigurationSetName: configuration_set
   };
 
-  ses.sendEmail(params, function(err, data) {
+  // fix types here
+  ses.sendEmail(params, function(err: any, data: any) {
     if (err) console.log(err.message);
     else console.log("Email sent! Message ID: ", data.MessageId);
   });

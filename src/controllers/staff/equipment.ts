@@ -1,10 +1,12 @@
 import { Request, Response } from 'express';
 
-import { pool } from '../../lib/connections/mysqlPoolConnection';
-import { esClient } from '../../lib/connections/elasticsearchClient';
-import { Equipment } from '../../mysql-access/Equipment';
 import { EquipmentSearch } from '../../elasticsearch-access/EquipmentSearch';
-import { validEquipmentEntity } from '../../lib/validations/equipment/equipmentEntity';
+import { esClient } from '../../lib/connections/elasticsearchClient';
+import { pool } from '../../lib/connections/mysqlPoolConnection';
+import {
+  validEquipmentEntity
+} from '../../lib/validations/equipment/equipmentEntity';
+import { Equipment } from '../../mysql-access/Equipment';
 
 export const staffEquipmentController = {
   createEquipment: async function(req: Request, res: Response) {
@@ -33,7 +35,7 @@ export const staffEquipmentController = {
     const generatedId = createdEquipment.insertId;
 
     const [ equipmentForInsert ] = await equipment
-    .getEquipmentForElasticSearchInsert(generatedId, ownerId);
+    .getEquipmentForElasticSearchInsert(generatedId);
 
     const equipmentInfo = {
       equipmentId: equipmentForInsert[0].equipmentId,
@@ -69,10 +71,10 @@ export const staffEquipmentController = {
 
     const equipment = new Equipment(pool);
 
-    await equipment.updateEquipment(equipmentToUpdateWith, equipmentId);
+    await equipment.updateEquipment({equipmentId, ...equipmentToUpdateWith});
 
     const [ equipmentForInsert ] = await equipment
-    .getEquipmentForElasticSearchInsert(equipmentId, ownerId);
+    .getEquipmentForElasticSearchInsert(equipmentId);
 
     const equipmentInfo = {
       equipmentId: equipmentForInsert[0].equipmentId,
@@ -91,9 +93,9 @@ export const staffEquipmentController = {
     const equipmentId = Number(req.body.equipmentId);
     
     const equipment = new Equipment(pool);
-    await equipment.deleteEquipment(equipmentId);
-
     const equipmentSearch = new EquipmentSearch(esClient);
+
+    await equipment.deleteEquipment(equipmentId);
     await equipmentSearch.deleteEquipment(String(equipmentId));
 
     res.send({message: 'Equipment deleted.'});

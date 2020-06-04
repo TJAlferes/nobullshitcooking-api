@@ -9,18 +9,24 @@ import { RecipeEquipment } from '../../mysql-access/RecipeEquipment';
 
 export const userEquipmentController = {
   viewAllMyPrivateUserEquipment: async function(req: Request, res: Response) {
+    const authorId = req.session!.userInfo.userId;
+    const ownerId = req.session!.userInfo.userId;
+
     const equipment = new Equipment(pool);
 
-    const rows = await equipment.viewEquipment();
+    const rows = await equipment.viewEquipment(authorId, ownerId);
 
     res.send(rows);
   },
   viewMyPrivateUserEquipment: async function(req: Request, res: Response) {
     const equipmentId = Number(req.body.equipmentId);
+    const authorId = req.session!.userInfo.userId;
+    const ownerId = req.session!.userInfo.userId;
 
     const equipment = new Equipment(pool);
 
-    const [ row ] = await equipment.viewEquipmentById(equipmentId);
+    const [ row ] = await equipment
+    .viewEquipmentById(equipmentId, authorId, ownerId);
 
     res.send(row);
   },

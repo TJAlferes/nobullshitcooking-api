@@ -1,42 +1,37 @@
 'use strict';
 
-import { pool } from '../connections/mysqlPoolConnection';
 import { esClient } from '../connections/elasticsearchClient';
-
-const Recipe = require('../../mysql-access/Recipe');
-import { RecipeMethod, IRecipeMethod } from '../../mysql-access/RecipeMethod';
-import { RecipeEquipment, IRecipeEquipment } from '../../mysql-access/RecipeEquipment';
-import { RecipeIngredient, IRecipeIngredient } from '../../mysql-access/RecipeIngredient';
-import { RecipeSubrecipe, IRecipeSubrecipe } from '../../mysql-access/RecipeSubrecipe';
+import { pool } from '../connections/mysqlPoolConnection';
 import { RecipeSearch } from '../../elasticsearch-access/RecipeSearch';
-
-const validRecipeMethodsEntity = require('../validations/recipeMethod/recipeMethodEntity');
-const validRecipeEquipmentEntity = require('../validations/recipeEquipment/recipeEquipmentEntity');
-const validRecipeIngredientsEntity = require('../validations/recipeIngredient/recipeIngredientEntity');
-const validRecipeSubrecipesEntity = require('../validations/recipeSubrecipe/recipeSubrecipeEntity');
-
-interface CreateRecipeService {
-  ownerId: number
-  recipeToCreate: RecipeToCreate
-  requiredMethods: []
-  requiredEquipment: []
-  requiredIngredients: []
-  requiredSubrecipes: []
-}
-
-interface RecipeToCreate {
-  recipeTypeId: number
-  cuisineId: number
-  authorId: number
-  ownerId: number
-  title: string
-  description: string
-  directions: string
-  recipeImage: string
-  equipmentImage: string
-  ingredientsImage: string
-  cookingImage: string
-}
+import { Recipe, ICreatingRecipe } from '../../mysql-access/Recipe';
+import {
+  RecipeEquipment,
+  IMakeRecipeEquipment
+} from '../../mysql-access/RecipeEquipment';
+import {
+  RecipeIngredient,
+  IMakeRecipeIngredient
+} from '../../mysql-access/RecipeIngredient';
+import {
+  RecipeMethod,
+  IMakeRecipeMethod
+} from '../../mysql-access/RecipeMethod';
+import {
+  RecipeSubrecipe,
+  IMakeRecipeSubrecipe
+} from '../../mysql-access/RecipeSubrecipe';
+import {
+  validRecipeEquipmentEntity
+} from '../validations/recipeEquipment/recipeEquipmentEntity';
+import {
+  validRecipeIngredientEntity
+} from '../validations/recipeIngredient/recipeIngredientEntity';
+import {
+  validRecipeMethodEntity
+} from '../validations/recipeMethod/recipeMethodEntity';
+import {
+  validRecipeSubrecipeEntity
+} from '../validations/recipeSubrecipe/recipeSubrecipeEntity';
 
 export async function createRecipeService({
   ownerId,
@@ -60,12 +55,12 @@ export async function createRecipeService({
   if (requiredMethods.length) {
     let recipeMethodsToCreate: number[] = [];
 
-    requiredMethods.map((rM: IRecipeMethod) => validRecipeMethodsEntity({
+    requiredMethods.map(rM => validRecipeMethodEntity({
       recipeId: generatedId,
       methodId: rM.methodId
     }));
 
-    requiredMethods.map((rM: IRecipeMethod) => {
+    requiredMethods.map(rM => {
       recipeMethodsToCreate.push(generatedId, rM.methodId)
     });
 
@@ -83,13 +78,13 @@ export async function createRecipeService({
     let recipeEquipmentToCreate: number[] = [];
 
     requiredEquipment
-    .map((rE: IRecipeEquipment) => validRecipeEquipmentEntity({
+    .map(rE => validRecipeEquipmentEntity({
       recipeId: generatedId,
       equipmentId: rE.equipment,
       amount: rE.amount
     }));
 
-    requiredEquipment.map((rE: IRecipeEquipment) => {
+    requiredEquipment.map(rE => {
       recipeEquipmentToCreate.push(generatedId, rE.equipment, rE.amount);
     });
 
@@ -107,14 +102,14 @@ export async function createRecipeService({
     let recipeIngredientsToCreate: number[] = [];
 
     requiredIngredients
-    .map((rI: IRecipeIngredient) => validRecipeIngredientsEntity({
+    .map(rI => validRecipeIngredientEntity({
       recipeId: generatedId,
       ingredientId: rI.ingredient,
       amount: rI.amount,
       measurementId: rI.unit
     }));
 
-    requiredIngredients.map((rI: IRecipeIngredient) => {
+    requiredIngredients.map(rI => {
       recipeIngredientsToCreate
       .push(generatedId, rI.ingredient, rI.amount, rI.unit);
     });
@@ -133,14 +128,14 @@ export async function createRecipeService({
     let recipeSubrecipesToCreate: number[] = [];
 
     requiredSubrecipes
-    .map((rS: IRecipeSubrecipe) => validRecipeSubrecipesEntity({
+    .map(rS => validRecipeSubrecipeEntity({
       recipeId: generatedId,
       subrecipeId: rS.subrecipe,
       amount: rS.amount,
       measurementId: rS.unit
     }));
 
-    requiredSubrecipes.map((rS: IRecipeSubrecipe) => {
+    requiredSubrecipes.map(rS => {
       recipeSubrecipesToCreate
       .push(generatedId, rS.subrecipe, rS.amount, rS.unit);
     })
@@ -156,9 +151,18 @@ export async function createRecipeService({
   }
 
   if (ownerId === 1) {
-    const recipeInfoForElasticSearch = await recipe
+    const [ recipeInfoForElasticSearch ] = await recipe
     .getPublicRecipeForElasticSearchInsert(generatedId);
 
-    await recipeSearch.saveRecipe(recipeInfoForElasticSearch);
+    await recipeSearch.saveRecipe(recipeInfoForElasticSearch[0]);  // fix?
   }
+}
+
+interface CreateRecipeService {
+  ownerId: number;
+  recipeToCreate: ICreatingRecipe;
+  requiredEquipment: IMakeRecipeEquipment[];
+  requiredIngredients: IMakeRecipeIngredient[];
+  requiredMethods: IMakeRecipeMethod[];
+  requiredSubrecipes: IMakeRecipeSubrecipe[];
 }

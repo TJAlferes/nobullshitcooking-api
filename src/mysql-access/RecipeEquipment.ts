@@ -145,7 +145,7 @@ export interface IRecipeEquipment {
   deleteRecipeEquipmentByEquipmentId(equipmentId: number): Data;
 }
 
-/*interface IRecipeSomethingEquipment {
-  equipment: number
-  amount: number
-}*/
+export interface IMakeRecipeEquipment {
+  equipment: number;
+  amount: number;
+}

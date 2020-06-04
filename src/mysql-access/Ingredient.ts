@@ -1,4 +1,4 @@
-import { Pool, RowDataPacket } from 'mysql2/promise';
+import { Pool, RowDataPacket, ResultSetHeader } from 'mysql2/promise';
 
 export class Ingredient implements IIngredient {
   pool: Pool;
@@ -82,9 +82,7 @@ export class Ingredient implements IIngredient {
     return ingredientForInsert;
   }
 
-  async viewIngredients() {
-    const authorId = 1;
-    const ownerId = 1;
+  async viewIngredients(authorId: number, ownerId: number) {
     const sql = `
       SELECT
         i.ingredient_id AS ingredient_id,
@@ -106,9 +104,11 @@ export class Ingredient implements IIngredient {
     return ingredients;
   }
 
-  async viewIngredientById(ingredientId: number) {
-    const authorId = 1;
-    const ownerId = 1;
+  async viewIngredientById(
+    ingredientId: number,
+    authorId: number,
+    ownerId: number
+  ) {
     const sql = `
       SELECT
         i.ingredient_id AS ingredient_id,
@@ -146,7 +146,7 @@ export class Ingredient implements IIngredient {
       ) VALUES (?, ?, ?, ?, ?, ?)
     `;
     const [ createdIngredient ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [
+    .execute<RowDataPacket[] & ResultSetHeader>(sql, [
       ingredientTypeId,
       authorId,
       ownerId,
@@ -279,12 +279,18 @@ export class Ingredient implements IIngredient {
 
 type Data = Promise<RowDataPacket[]>;
 
+type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
+
 export interface IIngredient {
   pool: Pool;
   getAllPublicIngredientsForElasticSearchBulkInsert(): any;  // finish
   getIngredientForElasticSearchInsert(ingredientId: number): Data;
-  viewIngredients(): Data;
-  viewIngredientById(ingredientId: number): Data;
+  viewIngredients(authorId: number, ownerId: number): Data;
+  viewIngredientById(
+    ingredientId: number,
+    authorId: number,
+    ownerId: number
+  ): Data;
   createIngredient({
     ingredientTypeId,
     authorId,
@@ -292,7 +298,7 @@ export interface IIngredient {
     ingredientName,
     ingredientDescription,
     ingredientImage
-  }: ICreatingIngredient): Data;
+  }: ICreatingIngredient): DataWithHeader;
   updateIngredient({
     ingredientId,
     ingredientTypeId,

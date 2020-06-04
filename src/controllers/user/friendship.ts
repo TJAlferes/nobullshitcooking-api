@@ -4,8 +4,8 @@ import { pool } from '../../lib/connections/mysqlPoolConnection';
 import {
   validFriendshipEntity
 } from '../../lib/validations/friendship/friendshipEntity';
-import { User } from '../../mysql-access/User';
 import { Friendship } from '../../mysql-access/Friendship';
+import { User } from '../../mysql-access/User';
 
 export const userFriendshipController = {
   viewAllMyFriendships: async function(req: Request, res: Response) {

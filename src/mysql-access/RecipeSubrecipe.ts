@@ -154,8 +154,8 @@ export interface IRecipeSubrecipe {
   deleteRecipeSubrecipesBySubrecipeId(subrecipeId: number): Data;
 }
 
-/*interface IRecipeSubrecipe {
-  subrecipe: number
-  amount: number
-  unit: number
-}*/
+export interface IMakeRecipeSubrecipe {
+  subrecipe: number;
+  amount: number;
+  unit: number;
+}

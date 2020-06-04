@@ -1,5 +1,5 @@
 require('dotenv').config();
-import uuidv4 from 'uuid/v4';  // do in React instead?
+import { v4 as uuidv4 } from 'uuid';  // do in React instead?
 import AWS from 'aws-sdk';
 import { Request, Response } from 'express';
 
@@ -9,7 +9,7 @@ const AWS_NOBSC_USER_EQUIPMENT_S3_BUCKET: string =
 process.env.AWS_NOBSC_USER_EQUIPMENT_S3_BUCKET!;
 
 export async function getSignedUrlEquipment(req: Request, res: Response) {
-  const fileNameFullSize = `${req.session.userInfo.username}-${uuidv4()}`;
+  const fileNameFullSize = `${req.session!.userInfo.username}-${uuidv4()}`;
   const fileNameTinySize = `${fileNameFullSize}-tiny`;
   const fileType = req.body.fileType;
 

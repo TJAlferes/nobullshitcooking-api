@@ -18,7 +18,7 @@ export const userProfileController = {
     
     const recipe = new Recipe(pool);
 
-    const publicRecipes = await recipe.viewAllMyPublicUserRecipes(id, 1);
+    const publicRecipes = await recipe.viewRecipes(id, 1);
 
     const favoriteRecipe = new FavoriteRecipe(pool);
     

@@ -147,8 +147,8 @@ export interface IRecipeIngredient {
   deleteRecipeIngredientsByIngredientId(ingredientId: number): Data;
 }
 
-/*interface IRecipeSomethingIngredient {
-  ingredient: number
-  amount: number
-  unit: number
-}*/
+export interface IMakeRecipeIngredient {
+  ingredient: number;
+  amount: number;
+  unit: number;
+}

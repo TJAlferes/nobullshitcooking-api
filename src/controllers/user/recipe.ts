@@ -16,26 +16,34 @@ export const userRecipeController = {
   viewAllMyPrivateUserRecipes: async function(req: Request, res: Response) {
     const authorId = req.session!.userInfo.userId;
     const ownerId = req.session!.userInfo.userId;
+
     const recipe = new Recipe(pool);
-    // TO DO: change these back, for equipment and ingredient too
+
     const rows = await recipe.viewRecipes(authorId, ownerId);
+
     res.send(rows);
   },
   
   viewAllMyPublicUserRecipes: async function(req: Request, res: Response) {
     const authorId = req.session!.userInfo.userId;
     const ownerId = 1;
+
     const recipe = new Recipe(pool);
+
     const rows = await recipe.viewRecipes(authorId, ownerId);
+
     res.send(rows);
   },
 
   viewMyPrivateUserRecipe: async function(req: Request, res: Response) {
     const recipeId = Number(req.body.recipeId);
-    const authorId = 1;
+    const authorId = req.session!.userInfo.userId;
     const ownerId = req.session!.userInfo.userId;
+
     const recipe = new Recipe(pool);
+
     const [ row ] = await recipe.viewRecipeById(recipeId, authorId, ownerId);
+
     res.send(row);
   },
 
@@ -43,17 +51,27 @@ export const userRecipeController = {
     const recipeId = Number(req.body.recipeId);
     const authorId = req.session!.userInfo.userId;
     const ownerId = 1;
+
     const recipe = new Recipe(pool);
+
     const [ row ] = await recipe.viewRecipeById(recipeId, authorId, ownerId);
+
     res.send(row);
   },
 
-  getInfoToEditMyPrivateUserRecipe: async function(req: Request, res: Response) {
+  getInfoToEditMyPrivateUserRecipe: async function(
+    req: Request,
+    res: Response
+  ) {
     const recipeId = Number(req.body.recipeId);
     const authorId = req.session!.userInfo.userId;
     const ownerId = req.session!.userInfo.userId;
+
     const recipe = new Recipe(pool);
-    const row = await recipe.getInfoToEditMyUserRecipe(recipeId, authorId, ownerId);
+
+    const row = await recipe
+    .getInfoToEditMyUserRecipe(recipeId, authorId, ownerId);
+
     res.send(row);
   },
 
@@ -61,8 +79,12 @@ export const userRecipeController = {
     const recipeId = Number(req.body.recipeId);
     const authorId = req.session!.userInfo.userId;
     const ownerId = 1;
+
     const recipe = new Recipe(pool);
-    const row = await recipe.getInfoToEditMyUserRecipe(recipeId, authorId, ownerId);
+
+    const row = await recipe
+    .getInfoToEditMyUserRecipe(recipeId, authorId, ownerId);
+
     res.send(row);
   },
 
@@ -83,7 +105,9 @@ export const userRecipeController = {
 
     const authorId = req.session!.userInfo.userId;
     const ownership = req.body.recipeInfo.ownership;
-    const ownerId = (ownership === "private") ? req.session!.userInfo.userId : 1;
+    const ownerId = (ownership === "private")
+    ? req.session!.userInfo.userId
+    : 1;
     
     const recipeToCreate = validRecipeEntity({
       recipeTypeId,
@@ -129,7 +153,9 @@ export const userRecipeController = {
 
     const authorId = req.session!.userInfo.userId;
     const ownership = req.body.recipeInfo.ownership;
-    const ownerId = (ownership === "private") ? req.session!.userInfo.userId : 1;
+    const ownerId = (ownership === "private")
+    ? req.session!.userInfo.userId
+    : 1;
 
     if (typeof recipeId === "undefined") {
       return res.send({message: 'Invalid recipe ID!'});

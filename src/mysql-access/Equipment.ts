@@ -1,4 +1,4 @@
-import { Pool, RowDataPacket } from 'mysql2/promise';
+import { Pool, RowDataPacket, ResultSetHeader } from 'mysql2/promise';
 
 export class Equipment implements IEquipment {
   pool: Pool;
@@ -82,9 +82,7 @@ export class Equipment implements IEquipment {
     return equipmentForInsert;
   }
 
-  async viewEquipment() {
-    const authorId = 1;
-    const ownerId = 1;
+  async viewEquipment(authorId: number, ownerId: number) {
     const sql = `
       SELECT
         e.equipment_id AS equipment_id,
@@ -106,9 +104,11 @@ export class Equipment implements IEquipment {
     return equipment;
   }
 
-  async viewEquipmentById(equipmentId: number) {
-    const authorId = 1;
-    const ownerId = 1;
+  async viewEquipmentById(
+    equipmentId: number,
+    authorId: number,
+    ownerId: number
+  ) {
     const sql = `
       SELECT
         e.equipment_id AS equipment_id,
@@ -147,7 +147,8 @@ export class Equipment implements IEquipment {
         equipment_image
       ) VALUES (?, ?, ?, ?, ?, ?)
     `;
-    const [ createdEquipment ] = await this.pool.execute<RowDataPacket[]>(sql, [
+    const [ createdEquipment ] = await this.pool
+    .execute<RowDataPacket[] & ResultSetHeader>(sql, [
       equipmentTypeId,
       authorId,
       ownerId,
@@ -279,12 +280,18 @@ export class Equipment implements IEquipment {
 
 type Data = Promise<RowDataPacket[]>;
 
+type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
+
 export interface IEquipment {
   pool: Pool;
   getAllPublicEquipmentForElasticSearchBulkInsert(): any;  // finish
   getEquipmentForElasticSearchInsert(equipmentId: number): Data;
-  viewEquipment(): Data;
-  viewEquipmentById(equipmentId: number): Data;
+  viewEquipment(authorId: number, ownerId: number): Data;
+  viewEquipmentById(
+    equipmentId: number,
+    authorId: number,
+    ownerId: number
+  ): Data;
   createEquipment({
     equipmentTypeId,
     authorId,
@@ -292,7 +299,7 @@ export interface IEquipment {
     equipmentName,
     equipmentDescription,
     equipmentImage
-  }: ICreatingEquipment): Data;
+  }: ICreatingEquipment): DataWithHeader;
   updateEquipment({
     equipmentId,
     equipmentTypeId,

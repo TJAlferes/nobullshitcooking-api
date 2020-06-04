@@ -9,18 +9,24 @@ import { RecipeIngredient } from '../../mysql-access/RecipeIngredient';
 
 export const userIngredientController = {
   viewAllMyPrivateUserIngredients: async function(req: Request, res: Response) {
+    const authorId = req.session!.userInfo.userId;
+    const ownerId = req.session!.userInfo.userId;
+
     const ingredient = new Ingredient(pool);
 
-    const rows = await ingredient.viewIngredients();
+    const rows = await ingredient.viewIngredients(authorId, ownerId);
 
     res.send(rows);
   },
   viewMyPrivateUserIngredient: async function(req: Request, res: Response) {
     const ingredientId = Number(req.body.ingredientId);
+    const authorId = req.session!.userInfo.userId;
+    const ownerId = req.session!.userInfo.userId;
 
     const ingredient = new Ingredient(pool);
 
-    const [ row ] = await ingredient.viewIngredientById(ingredientId);
+    const [ row ] = await ingredient
+    .viewIngredientById(ingredientId, authorId, ownerId);
 
     res.send(row);
   },

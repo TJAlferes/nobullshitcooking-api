@@ -1,4 +1,4 @@
-import { Pool, RowDataPacket } from 'mysql2/promise';
+import { Pool, RowDataPacket, ResultSetHeader } from 'mysql2/promise';
 
 export class Recipe implements IRecipe {
   pool: Pool;
@@ -136,9 +136,7 @@ export class Recipe implements IRecipe {
     return recipe;
   }
 
-  async viewRecipes() {
-    const authorId = 1;
-    const ownerId = 1;
+  async viewRecipes(authorId: number, ownerId: number) {
     const sql = `
       SELECT
         recipe_id,
@@ -156,9 +154,7 @@ export class Recipe implements IRecipe {
     return recipes;
   }
 
-  async viewRecipeById(recipeId: number) {
-    const authorId = 1;
-    const ownerId = 1;
+  async viewRecipeById(recipeId: number, authorId: number, ownerId: number) {
     const sql = `
       SELECT
       r.recipe_id,
@@ -254,7 +250,8 @@ export class Recipe implements IRecipe {
         ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
       )
     `;
-    const [ createdRecipe ] = await this.pool.execute<RowDataPacket[]>(sql, [
+    const [ createdRecipe ] = await this.pool
+    .execute<RowDataPacket[] & ResultSetHeader>(sql, [
       recipeTypeId,
       cuisineId,
       authorId,
@@ -481,12 +478,14 @@ export class Recipe implements IRecipe {
 
 type Data = Promise<RowDataPacket[]>;
 
+type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
+
 export interface IRecipe {
   pool: Pool;
   getAllPublicRecipesForElasticSearchBulkInsert(): any;
   getPublicRecipeForElasticSearchInsert(recipeId: number): Data;
-  viewRecipes(): Data;
-  viewRecipeById(recipeId: number): Data;
+  viewRecipes(authorId: number, ownerId: number): Data;
+  viewRecipeById(recipeId: number, authorId: number, ownerId: number): Data;
   createRecipe({
     recipeTypeId,
     cuisineId,
@@ -499,7 +498,7 @@ export interface IRecipe {
     equipmentImage,
     ingredientsImage,
     cookingImage
-  }: ICreatingRecipe): Data;
+  }: ICreatingRecipe): DataWithHeader;
   updateRecipe({
     recipeId,
     recipeTypeId,
@@ -542,7 +541,7 @@ export interface IRecipe {
   disownMyPublicUserRecipe(recipeId: number, authorId: number): Data;
 }
 
-interface ICreatingRecipe {
+export interface ICreatingRecipe {
   recipeTypeId: number;
   cuisineId: number;
   authorId: number;
@@ -556,6 +555,6 @@ interface ICreatingRecipe {
   cookingImage: string;
 }
 
-interface IUpdatingRecipe extends ICreatingRecipe {
+export interface IUpdatingRecipe extends ICreatingRecipe {
   recipeId: number;
 }
