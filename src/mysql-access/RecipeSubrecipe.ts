@@ -1,4 +1,4 @@
-import { Pool, RowDataPacket } from 'mysql2/promise';
+import { Pool, OkPacket, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
 export class RecipeSubrecipe implements IRecipeSubrecipe {
   pool: Pool;
@@ -138,6 +138,15 @@ export class RecipeSubrecipe implements IRecipeSubrecipe {
 
 type Data = Promise<RowDataPacket[]>;
 
+type DataWithExtra = Promise<
+  RowDataPacket[] |
+  RowDataPacket[][] |
+  OkPacket |
+  OkPacket[] |
+  ResultSetHeader |
+  undefined
+>;
+
 export interface IRecipeSubrecipe {
   pool: Pool;
   viewRecipeSubrecipesByRecipeId(recipeId: number): Data;
@@ -149,7 +158,7 @@ export interface IRecipeSubrecipe {
     recipeSubrecipes: number[],
     recipeSubrecipesPlaceholders: string,
     recipeId: number
-  ): Data;  // | finish
+  ): DataWithExtra;  // | finish
   deleteRecipeSubrecipes(recipeId: number): Data;
   deleteRecipeSubrecipesBySubrecipeId(subrecipeId: number): Data;
 }

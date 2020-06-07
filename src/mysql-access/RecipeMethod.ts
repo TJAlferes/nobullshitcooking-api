@@ -1,4 +1,4 @@
-import { Pool, RowDataPacket } from 'mysql2/promise';
+import { Pool, OkPacket, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
 export class RecipeMethod implements IRecipeMethod {
   pool: Pool;
@@ -112,6 +112,15 @@ export class RecipeMethod implements IRecipeMethod {
 
 type Data = Promise<RowDataPacket[]>;
 
+type DataWithExtra = Promise<
+  RowDataPacket[] |
+  RowDataPacket[][] |
+  OkPacket |
+  OkPacket[] |
+  ResultSetHeader |
+  undefined
+>;
+
 export interface IRecipeMethod {
   pool: Pool;
   viewRecipeMethodsByRecipeId(recipeId: number): Data;
@@ -123,7 +132,7 @@ export interface IRecipeMethod {
     recipeMethods: number[],
     recipeMethodsPlaceholders: string,
     recipeId: number
-  ): Data;  // | finish
+  ): DataWithExtra;  // | finish
   deleteRecipeMethods(recipeId: number): Data;
 }
 

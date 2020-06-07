@@ -41,11 +41,11 @@ export const staffSupplierController = {
 
     // TO DO: validate
 
-    const supplierToUpdateWith = {supplierName};
+    //const supplierToUpdateWith = {supplierName};
 
     const supplier = new Supplier(pool);
 
-    await supplier.updateSupplier(supplierToUpdateWith, supplierId);
+    await supplier.updateSupplier(supplierId, supplierName);
 
     res.send({message: 'Supplier updated.'});
   },

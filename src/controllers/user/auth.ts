@@ -108,19 +108,19 @@ export const userAuthController = {
       valid,
       feedback,
       userExists
-    } = await validLogin(bcrypt, user, {email, pass});
+    } = await validLogin({email, pass}, user);
 
     if (!valid) return res.send({message: feedback});
 
     req.session!.userInfo = {};
-    req.session!.userInfo.userId = userExists.user_id;
-    req.session!.userInfo.username = userExists.username;
-    req.session!.userInfo.avatar = userExists.avatar;
+    req.session!.userInfo.userId = userExists!.user_id;
+    req.session!.userInfo.username = userExists!.username;
+    req.session!.userInfo.avatar = userExists!.avatar;
 
     return res.json({
       message: 'Signed in.',
-      username: userExists.username,
-      avatar: userExists.avatar
+      username: userExists!.username,
+      avatar: userExists!.avatar
     });
   },
 

@@ -1,10 +1,17 @@
+import bcrypt from 'bcrypt';
+
+import { IUser } from '../../../mysql-access/User';
+
 export async function validLogin(
-  bcrypt,
-  user,
   {
     email,
     pass
-  }
+  }:
+  {
+    email: string;
+    pass: string;
+  },
+  user: IUser
 ) {
   // Problem: This would invalidate some older/alternative email types.
   if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {

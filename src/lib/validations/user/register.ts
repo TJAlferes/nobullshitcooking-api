@@ -1,10 +1,17 @@
+import { IUser } from '../../../mysql-access/User';
+
 export async function validRegister(
   {
     email,
     pass,
     username
+  }:
+  {
+    email: string;
+    pass: string;
+    username: string;
   },
-  user
+  user: IUser
 ) {
   if (username.length < 6) {
     return {
