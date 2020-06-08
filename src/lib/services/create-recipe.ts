@@ -1,5 +1,7 @@
 'use strict';
 
+import { assert } from 'superstruct';
+
 import { esClient } from '../connections/elasticsearchClient';
 import { pool } from '../connections/mysqlPoolConnection';
 import { RecipeSearch } from '../../elasticsearch-access/RecipeSearch';
@@ -55,10 +57,10 @@ export async function createRecipeService({
   if (requiredMethods.length) {
     let recipeMethodsToCreate: number[] = [];
 
-    requiredMethods.map(rM => validRecipeMethodEntity({
+    requiredMethods.map(rM => assert({
       recipeId: generatedId,
       methodId: rM.methodId
-    }));
+    }, validRecipeMethodEntity));
 
     requiredMethods.map(rM => {
       recipeMethodsToCreate.push(generatedId, rM.methodId)
@@ -78,11 +80,11 @@ export async function createRecipeService({
     let recipeEquipmentToCreate: number[] = [];
 
     requiredEquipment
-    .map(rE => validRecipeEquipmentEntity({
+    .map(rE => assert({
       recipeId: generatedId,
       equipmentId: rE.equipment,
       amount: rE.amount
-    }));
+    }, validRecipeEquipmentEntity));
 
     requiredEquipment.map(rE => {
       recipeEquipmentToCreate.push(generatedId, rE.equipment, rE.amount);
@@ -102,12 +104,12 @@ export async function createRecipeService({
     let recipeIngredientsToCreate: number[] = [];
 
     requiredIngredients
-    .map(rI => validRecipeIngredientEntity({
+    .map(rI => assert({
       recipeId: generatedId,
       ingredientId: rI.ingredient,
       amount: rI.amount,
       measurementId: rI.unit
-    }));
+    }, validRecipeIngredientEntity));
 
     requiredIngredients.map(rI => {
       recipeIngredientsToCreate
@@ -128,12 +130,12 @@ export async function createRecipeService({
     let recipeSubrecipesToCreate: number[] = [];
 
     requiredSubrecipes
-    .map(rS => validRecipeSubrecipeEntity({
+    .map(rS => assert({
       recipeId: generatedId,
       subrecipeId: rS.subrecipe,
       amount: rS.amount,
       measurementId: rS.unit
-    }));
+    }, validRecipeSubrecipeEntity));
 
     requiredSubrecipes.map(rS => {
       recipeSubrecipesToCreate

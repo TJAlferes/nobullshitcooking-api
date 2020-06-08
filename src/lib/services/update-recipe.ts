@@ -1,5 +1,7 @@
 'use strict';
 
+import { assert } from 'superstruct';
+
 import { esClient } from '../connections/elasticsearchClient';
 import { pool } from '../connections/mysqlPoolConnection';
 import { RecipeSearch } from '../../elasticsearch-access/RecipeSearch';
@@ -57,10 +59,10 @@ export async function updateRecipeService({
   let recipeMethodsPlaceholders = "none";
 
   if (requiredMethods.length) {
-    requiredMethods.map(rM => validRecipeMethodEntity({
+    requiredMethods.map(rM => assert({
       recipeId,
       methodId: rM.methodId
-    }));
+    }, validRecipeMethodEntity));
 
     requiredMethods.map(rM => {
       recipeMethodsToUpdateWith.push(recipeId, rM.methodId)
@@ -86,11 +88,11 @@ export async function updateRecipeService({
     recipeEquipmentToUpdateWith = [];
 
     requiredEquipment
-    .map(rE => validRecipeEquipmentEntity({
+    .map(rE => assert({
       recipeId,
       equipmentId: rE.equipment,
       amount: rE.amount
-    }));
+    }, validRecipeEquipmentEntity));
 
     requiredEquipment.map(rE => {
       recipeEquipmentToUpdateWith.push(recipeId, rE.equipment, rE.amount)
@@ -116,12 +118,12 @@ export async function updateRecipeService({
     recipeIngredientsToUpdateWith = [];
 
     requiredIngredients
-    .map(rI => validRecipeIngredientEntity({
+    .map(rI => assert({
       recipeId,
       ingredientId: rI.ingredient,
       amount: rI.amount,
       measurementId: rI.unit
-    }));
+    }, validRecipeIngredientEntity));
 
     requiredIngredients.map(rI => {
       recipeIngredientsToUpdateWith
@@ -148,12 +150,12 @@ export async function updateRecipeService({
     recipeSubrecipesToUpdateWith = [];
 
     requiredSubrecipes
-    .map(rS => validRecipeSubrecipeEntity({
+    .map(rS => assert({
       recipeId,
       subrecipeId: rS.subrecipe,
       amount: rS.amount,
       measurementId: rS.unit
-    }));
+    }, validRecipeSubrecipeEntity));
 
     requiredSubrecipes.map(rS => {
       recipeSubrecipesToUpdateWith
