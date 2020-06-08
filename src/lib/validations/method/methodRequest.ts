@@ -1,6 +1,6 @@
-import { struct } from 'superstruct';
+import { number, object, optional, string } from 'superstruct';
 
-export const validMethodRequest = struct({
-  methodId: 'number',
-  methodName: 'string?'
+export const validMethodRequest = object({
+  methodId: number(),
+  methodName: optional(string())
 });

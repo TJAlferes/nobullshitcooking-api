@@ -1,15 +1,9 @@
-import { struct } from 'superstruct';
+import { defaulted, object, string } from 'superstruct';
 
-export const validUserEntity = struct(
-  {
-    email: 'string',
-    pass: 'string',
-    username: 'string',
-    avatar: 'string?',
-    confirmationCode: 'string?'
-  },
-  {
-    avatar: 'nobsc-user-default',
-    confirmationCode: null
-  }
-);
+export const validUserEntity = object({
+  email: string(),
+  pass: string(),
+  username: string(),
+  avatar: defaulted(string(), 'nobsc-user-default'),
+  confirmationCode: defaulted(string(), null)
+});

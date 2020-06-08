@@ -1,14 +1,12 @@
-import { struct } from 'superstruct';
+import { defaulted, number, object, string } from 'superstruct';
 
-export const validPlanEntity = struct(
-  {
-    authorId: 'number',
-    ownerId: 'number',
-    planName: 'string',
-    planData: 'string'
-  },
-  {
-    planData: JSON.stringify({
+export const validPlanEntity = object({
+  authorId: number(),
+  ownerId: number(),
+  planName: string(),
+  planData: defaulted(
+    string(),
+    JSON.stringify({
       1: [],
       2: [],
       3: [],
@@ -38,5 +36,5 @@ export const validPlanEntity = struct(
       27: [],
       28: []
     })
-  }
-);
+  )
+});

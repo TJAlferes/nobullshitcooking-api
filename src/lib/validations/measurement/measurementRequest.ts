@@ -1,6 +1,6 @@
-import { struct } from 'superstruct';
+import { number, object, optional, string } from 'superstruct';
 
-export const validMeasurementRequest = struct({
-  measurementId: 'number',
-  measurementName: 'string?'
+export const validMeasurementRequest = object({
+  measurementId: number(),
+  measurementName: optional(string())
 });

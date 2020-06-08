@@ -1,6 +1,6 @@
-import { struct } from 'superstruct';
+import { number, object, optional, string } from 'superstruct';
 
-export const validEquipmentTypeRequest = struct({
-  equipmentTypeId: 'number',
-  equipmentTypeName: 'string?'
+export const validEquipmentTypeRequest = object({
+  equipmentTypeId: number(),
+  equipmentTypeName: optional(string())
 });

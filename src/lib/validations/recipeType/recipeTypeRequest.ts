@@ -1,6 +1,6 @@
-import { struct } from 'superstruct';
+import { number, object, optional, string } from 'superstruct';
 
-export const validRecipeTypeRequest = struct({
-  recipeTypeId: 'number',
-  recipeTypeName: 'string?'
+export const validRecipeTypeRequest = object({
+  recipeTypeId: number(),
+  recipeTypeName: optional(string())
 });

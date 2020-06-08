@@ -2,7 +2,6 @@
 
 import { createServer } from 'http';
 import express, { Request, Response, NextFunction } from 'express';
-
 import { middlewareInit}  from './middlewareInit';
 import { routesInit } from './routesInit';
 //import { bulkUp } from './search');

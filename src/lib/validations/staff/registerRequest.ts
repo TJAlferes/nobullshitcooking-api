@@ -1,7 +1,7 @@
-import { struct } from 'superstruct';
+import { object, string } from 'superstruct';
 
-export const validRegisterRequest = struct({
-  email: 'string',
-  pass: 'string',
-  staffname: 'string'
+export const validRegisterRequest = object({
+  email: string(),
+  pass: string(),
+  staffname: string()
 });

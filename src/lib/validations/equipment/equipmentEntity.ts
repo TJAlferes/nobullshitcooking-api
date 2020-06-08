@@ -1,15 +1,12 @@
-import { struct } from 'superstruct';
+import { defaulted, number, object, string } from 'superstruct';
 
-export const validEquipmentEntity = struct(
+export const validEquipmentEntity = object(
   {
-    equipmentTypeId: 'number',
-    authorId: 'number',
-    ownerId: 'number',
-    equipmentName: 'string',
-    equipmentDescription: 'string',
-    equipmentImage: 'string'
-  },
-  {
-    equipmentImage: 'nobsc-equipment-default'
+    equipmentTypeId: number(),
+    authorId: number(),
+    ownerId: number(),
+    equipmentName: string(),
+    equipmentDescription: string(),
+    equipmentImage: defaulted(string(), 'nobsc-equipment-default')
   }
 );

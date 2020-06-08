@@ -5,7 +5,7 @@ module.exports = {
   mode: 'development',
   target: 'node',
   externals: [webpackNodeExternals({whitelist: ['redis-parser', 'engine.io']})],
-  entry: './src/index.js',
+  entry: './src/index.ts',  // .js ?
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist')
@@ -26,8 +26,8 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        loader: 'babel-loader',
-        exclude: /node_modules/
+        exclude: /node_modules/,
+        loader: 'babel-loader'
       },
       {
         test: /\.ts(x?)$/,

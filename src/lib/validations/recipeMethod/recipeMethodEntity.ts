@@ -1,6 +1,6 @@
-import { struct } from 'superstruct';
+import { number, object } from 'superstruct';
 
-export const validRecipeMethodEntity = struct({
-  recipeId: 'number',
-  methodId: 'number',
+export const validRecipeMethodEntity = object({
+  recipeId: number(),
+  methodId: number()
 });

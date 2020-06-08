@@ -1,15 +1,10 @@
-import { struct } from 'superstruct';
+import { defaulted, number, object, string } from 'superstruct';
 
-export const validIngredientEntity = struct(
-  {
-    ingredientTypeId: 'number',
-    authorId: 'number',
-    ownerId: 'number',
-    ingredientName: 'string',
-    ingredientDescription: 'string',
-    ingredientImage: 'string'
-  },
-  {
-    ingredientImage: 'nobsc-ingredient-default'
-  }
-);
+export const validIngredientEntity = object({
+  ingredientTypeId: number(),
+  authorId: number(),
+  ownerId: number(),
+  ingredientName: string(),
+  ingredientDescription: string(),
+  ingredientImage: defaulted(string(), 'nobsc-ingredient-default')
+});
