@@ -109,8 +109,8 @@ interface ICreatingContent {
   contentTypeId: number;
   authorId: number;
   ownerId: number;
-  created: Date;
-  published: (Date|null);
+  created: string;
+  published: string | null;
   contentItems: IContentItem[];
 }
 
@@ -118,7 +118,7 @@ interface IUpdatingContent {
   contentId: number;
   ownerId: number;
   contentTypeId: number;
-  published: (Date|null);
+  published: string | null;
   contentItems: IContentItem[];
 }
 

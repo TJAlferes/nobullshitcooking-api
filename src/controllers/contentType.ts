@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { assert } from 'superstruct';
 
 import { pool } from '../lib/connections/mysqlPoolConnection';
 import {
@@ -18,7 +19,7 @@ export const contentTypeController = {
     // body instead of params?
     const contentTypeId = Number(req.params.contentTypeId);
 
-    validContentTypeRequest({contentTypeId});
+    assert({contentTypeId}, validContentTypeRequest);
 
     const contentType = new ContentType(pool);
     

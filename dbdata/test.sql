@@ -270,21 +270,21 @@ VALUES
 INSERT INTO nobsc_content_types
 (content_type_id, parent_id, content_type_name, content_type_path)
 VALUES
-(1, 0, "Page", ""),
-(2, 0, "Post"),
-(3, 1, "Guide"),
-(4, 1, "Promo"),
-(5, 1, "Site"),
-(6, 3, "Fitness"),
-(7, 3, "Food"),
-(8, 6, "Exercises"),
-(9, 6, "Principles"),
-(10, 7, "Recipes"),
-(11, 7, "Cuisines"),
-(12, 7, "Ingredients"),
-(13, 7, "Nutrition"),
-(14, 7, "Equipment"),
-(15, 7, "Methods");
+(1, 0, "Page", "/page"),
+(2, 0, "Post", "/post"),
+(3, 1, "Guide", "/page/guide"),
+(4, 1, "Promo", "/page/promo"),
+(5, 1, "Site", "/page/site"),
+(6, 3, "Fitness", "/page/guide/fitness"),
+(7, 3, "Food", "/page/guide/food"),
+(8, 6, "Exercises", "/page/guide/fitness/exercises"),
+(9, 6, "Principles", "/page/guide/fitness/principles"),
+(10, 7, "Recipes", "/page/guide/food/recipes"),
+(11, 7, "Cuisines", "/page/guide/food/cuisines"),
+(12, 7, "Ingredients", "page/guide/food/ingredients"),
+(13, 7, "Nutrition", "/page/guide/food/nutrition"),
+(14, 7, "Equipment", "/page/guide/food/equipment"),
+(15, 7, "Methods", "/page/guide/food/methods");
 
 INSERT INTO nobsc_recipe_types
 (recipe_type_id, recipe_type_name)
