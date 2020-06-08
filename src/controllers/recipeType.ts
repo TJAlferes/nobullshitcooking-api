@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { assert } from 'superstruct';
 
 import { pool } from '../lib/connections/mysqlPoolConnection';
 import {
@@ -17,7 +18,7 @@ export const recipeTypeController = {
   viewRecipeTypeById: async function(req: Request, res: Response) {
     const recipeTypeId = Number(req.params.recipeTypeId);
 
-    validRecipeTypeRequest({recipeTypeId});
+    assert({recipeTypeId}, validRecipeTypeRequest);
 
     const recipeType = new RecipeType(pool);
 

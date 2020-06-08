@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { assert } from 'superstruct';
 
 import { RecipeSearch } from '../../elasticsearch-access/RecipeSearch';
 import { esClient } from '../../lib/connections/elasticsearchClient';
@@ -103,7 +104,7 @@ export const userRecipeController = {
     ? req.session!.userInfo.userId
     : 1;
     
-    const recipeToCreate = validRecipeEntity({
+    const recipeToCreate = {
       recipeTypeId,
       cuisineId,
       authorId,
@@ -115,7 +116,9 @@ export const userRecipeController = {
       equipmentImage,
       ingredientsImage,
       cookingImage
-    });
+    };
+
+    assert(recipeToCreate, validRecipeEntity);
 
     await createRecipeService({
       ownerId,
@@ -154,7 +157,7 @@ export const userRecipeController = {
       return res.send({message: 'Invalid recipe ID!'});
     }
 
-    const recipeToUpdateWith = validRecipeEntity({
+    const recipeToUpdateWith = {
       recipeTypeId,
       cuisineId,
       authorId,
@@ -166,7 +169,9 @@ export const userRecipeController = {
       equipmentImage,
       ingredientsImage,
       cookingImage
-    });
+    };
+
+    assert(recipeToUpdateWith, validRecipeEntity);
 
     await updateRecipeService({
       recipeId,

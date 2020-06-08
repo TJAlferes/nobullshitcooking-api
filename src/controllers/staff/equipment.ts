@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { assert } from 'superstruct';
 
 import { EquipmentSearch } from '../../elasticsearch-access/EquipmentSearch';
 import { esClient } from '../../lib/connections/elasticsearchClient';
@@ -18,14 +19,16 @@ export const staffEquipmentController = {
     const authorId = 1;
     const ownerId = 1;
 
-    const equipmentToCreate = validEquipmentEntity({
+    const equipmentToCreate = {
       equipmentTypeId,
       authorId,
       ownerId,
       equipmentName,
       equipmentDescription,
       equipmentImage
-    });
+    };
+
+    assert(equipmentToCreate, validEquipmentEntity);
 
     const equipment = new Equipment(pool);
 
@@ -53,14 +56,16 @@ export const staffEquipmentController = {
     const authorId = 1;
     const ownerId = 1;
 
-    const equipmentToUpdateWith = validEquipmentEntity({
+    const equipmentToUpdateWith = {
       equipmentTypeId,
       authorId,
       ownerId,
       equipmentName,
       equipmentDescription,
       equipmentImage
-    });
+    };
+
+    assert(equipmentToUpdateWith, validEquipmentEntity);
 
     const equipment = new Equipment(pool);
 

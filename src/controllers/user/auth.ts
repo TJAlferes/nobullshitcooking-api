@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 //const crypto = require('crypto');
 import bcrypt from 'bcrypt';
+import { assert } from 'superstruct';
 import { v4 as uuidv4 } from 'uuid';
 
 import { pool } from '../../lib/connections/mysqlPoolConnection';
@@ -27,7 +28,7 @@ export const userAuthController = {
     const pass = req.body.userInfo.password;
     const username = req.body.userInfo.username;
 
-    validRegisterRequest({email, pass, username});  // TypeScript?
+    assert({email, pass, username}, validRegisterRequest);
 
     const user = new User(pool);
 
@@ -42,12 +43,14 @@ export const userAuthController = {
 
     const confirmationCode = uuidv4();  // JWT?
 
-    const userToCreate = validUserEntity({
+    const userToCreate = {
       email,
       pass: encryptedPassword,
       username,
       confirmationCode
-    });
+    };
+
+    assert(userToCreate, validUserEntity);
 
     await user.createUser(userToCreate);
 
@@ -61,7 +64,7 @@ export const userAuthController = {
     const pass = req.body.userInfo.password;
     const confirmationCode = req.body.userInfo.confirmationCode;
 
-    validVerifyRequest({email, pass, confirmationCode});
+    assert({email, pass, confirmationCode}, validVerifyRequest);
 
     const user = new User(pool);
 
@@ -81,7 +84,7 @@ export const userAuthController = {
     const email = req.body.userInfo.email;
     const pass = req.body.userInfo.password;
 
-    validLoginRequest({email, pass});
+    assert({email, pass}, validLoginRequest);
 
     const user = new User(pool);
 
@@ -100,7 +103,7 @@ export const userAuthController = {
     const email = req.body.userInfo.email;
     const pass = req.body.userInfo.password;
 
-    validLoginRequest({email, pass});
+    assert({email, pass}, validLoginRequest);
 
     const user = new User(pool);
 

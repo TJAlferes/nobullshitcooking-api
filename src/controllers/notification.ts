@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import uuidv4 = require('uuid/v4');
+//import { v4 as uuidv4 } from 'uuid';
 
 //const pool = require('../data-access/dbPoolConnection');
 //const User = require('../data-access/user/User');
@@ -8,13 +8,13 @@ import uuidv4 = require('uuid/v4');
 
 export const notificationController = {
   viewNotificationForUser: async function(req: Request, res: Response) {
-    const userId = req.session.userInfo.userId;
+    //const userId = req.session.userInfo.userId;
   },
   viewAllNotificationsForUser: async function(req: Request, res: Response) {
-    const userId = req.session.userInfo.userId;
+    //const userId = req.session.userInfo.userId;
   },
   markNotificationAsRead: async function(req: Request, res: Response) {
-    const userId = req.session.userInfo.userId;
+    //const userId = req.session.userInfo.userId;
   },
   createNotification: async function(req: Request, res: Response) {
     // if referenced in any way

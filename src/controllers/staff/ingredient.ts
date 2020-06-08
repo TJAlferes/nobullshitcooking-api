@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { assert } from 'superstruct';
 
 import { IngredientSearch } from '../../elasticsearch-access/IngredientSearch';
 import { pool } from '../../lib/connections/mysqlPoolConnection';
@@ -18,14 +19,16 @@ export const staffIngredientController = {
     const authorId = 1;
     const ownerId = 1;
 
-    const ingredientToCreate = validIngredientEntity({
+    const ingredientToCreate = {
       ingredientTypeId,
       authorId,
       ownerId,
       ingredientName,
       ingredientDescription,
       ingredientImage
-    });
+    };
+
+    assert(ingredientToCreate, validIngredientEntity);
 
     const ingredient = new Ingredient(pool);
 
@@ -53,14 +56,16 @@ export const staffIngredientController = {
     const authorId = 1;
     const ownerId = 1;
 
-    const ingredientToUpdateWith = validIngredientEntity({
+    const ingredientToUpdateWith = {
       ingredientTypeId,
       authorId,
       ownerId,
       ingredientName,
       ingredientDescription,
       ingredientImage
-    });
+    };
+
+    assert(ingredientToUpdateWith, validIngredientEntity);
 
     const ingredient = new Ingredient(pool);
 

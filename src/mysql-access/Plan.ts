@@ -113,14 +113,15 @@ interface ICreatingPlan {
   authorId: number;
   ownerId: number;
   planName: string;
-  planData: IPlanData;
+  //planData: IPlanData;
+  planData: string;
 }
 
 interface IUpdatingPlan extends ICreatingPlan {
   planId: number;
 }
 
-interface IPlanData {
+/*interface IPlanData {
   1: IPlanRecipe[],
   2: IPlanRecipe[],
   3: IPlanRecipe[],
@@ -155,4 +156,4 @@ interface IPlanRecipe {
   key: string
   image: string
   text: string
-}
+}*/

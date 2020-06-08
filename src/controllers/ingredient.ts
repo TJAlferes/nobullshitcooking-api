@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { assert } from 'superstruct';
 
 import { pool } from '../lib/connections/mysqlPoolConnection';
 import {
@@ -22,7 +23,7 @@ export const ingredientController = {
     const authorId = 1;
     const ownerId = 1;
 
-    validIngredientRequest({ingredientId});
+    assert({ingredientId}, validIngredientRequest);
 
     const ingredient = new Ingredient(pool);
 

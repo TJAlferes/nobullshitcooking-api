@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { assert } from 'superstruct';
 
 import { pool } from '../../lib/connections/mysqlPoolConnection';
 import {
@@ -39,14 +40,16 @@ export const userEquipmentController = {
     const authorId = req.session!.userInfo.userId;
     const ownerId = req.session!.userInfo.userId;
 
-    const equipmentToCreate = validEquipmentEntity({
+    const equipmentToCreate = {
       equipmentTypeId,
       authorId,
       ownerId,
       equipmentName,
       equipmentDescription,
       equipmentImage
-    });
+    };
+
+    assert(equipmentToCreate, validEquipmentEntity);
 
     const equipment = new Equipment(pool);
 
@@ -64,14 +67,16 @@ export const userEquipmentController = {
     const authorId = req.session!.userInfo.userId;
     const ownerId = req.session!.userInfo.userId;
 
-    const equipmentToUpdateWith = validEquipmentEntity({
+    const equipmentToUpdateWith = {
       equipmentTypeId,
       authorId,
       ownerId,
       equipmentName,
       equipmentDescription,
       equipmentImage
-    });
+    };
+
+    assert(equipmentToUpdateWith, validEquipmentEntity);
 
     const equipment = new Equipment(pool);
 

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 //import crypto from 'crypto';
+import { assert } from 'superstruct';
 
 import { pool } from '../../lib/connections/mysqlPoolConnection';
 import { validLoginRequest } from '../../lib/validations/staff/loginRequest';
@@ -18,7 +19,7 @@ export const staffAuthController = {
     const pass = req.body.staffInfo.password;
     const staffname = req.body.staffInfo.staffname;
 
-    validRegisterRequest({email, pass, staffname});
+    assert({email, pass, staffname}, validRegisterRequest);
 
     if (staffname.length < 6) {
       return res.send({message: 'Staffname must be at least 6 characters.'});
@@ -52,11 +53,15 @@ export const staffAuthController = {
     if (emailExists.length) return res.send({message: 'Email already in use.'});
 
     const encryptedPassword = await bcrypt.hash(pass, SALT_ROUNDS);
-    const staffToCreate = validStaffEntity({
+
+    const staffToCreate = {
       email,
       pass: encryptedPassword,
       staffname
-    });
+    };
+
+    assert(staffToCreate, validStaffEntity);
+
     await staff.createStaff(staffToCreate);
 
     res.send({message: 'Staff account created.'});
@@ -66,7 +71,7 @@ export const staffAuthController = {
     const email = req.body.staffInfo.email;
     const pass = req.body.staffInfo.password;
 
-    validLoginRequest({email, pass});
+    assert({email, pass}, validLoginRequest);
 
     // Problem: This invalidates some older/alternative email types. Remove?
     if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {

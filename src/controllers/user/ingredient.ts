@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { assert } from 'superstruct';
 
 import { pool } from '../../lib/connections/mysqlPoolConnection';
 import {
@@ -39,14 +40,16 @@ export const userIngredientController = {
     const authorId = req.session!.userInfo.userId;
     const ownerId = req.session!.userInfo.userId;
 
-    const ingredientToCreate = validIngredientEntity({
+    const ingredientToCreate = {
       ingredientTypeId,
       authorId,
       ownerId,
       ingredientName,
       ingredientDescription,
       ingredientImage
-    });
+    };
+
+    assert(ingredientToCreate, validIngredientEntity);
 
     const ingredient = new Ingredient(pool);
 
@@ -64,14 +67,16 @@ export const userIngredientController = {
     const authorId = req.session!.userInfo.userId;
     const ownerId = req.session!.userInfo.userId;
 
-    const ingredientToUpdateWith = validIngredientEntity({
+    const ingredientToUpdateWith = {
       ingredientTypeId,
       authorId,
       ownerId,
       ingredientName,
       ingredientDescription,
       ingredientImage
-    });
+    };
+
+    assert(ingredientToUpdateWith, validIngredientEntity);
 
     const ingredient = new Ingredient(pool);
 

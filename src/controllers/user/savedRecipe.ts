@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { assert } from 'superstruct';
 
 import { pool } from '../../lib/connections/mysqlPoolConnection';
 import {
@@ -20,7 +21,7 @@ export const userSavedRecipeController = {
     const userId = req.session!.userInfo.userId;
     const recipeId = Number(req.body.recipeId);
 
-    validSavedRecipeEntity({userId, recipeId});
+    assert({userId, recipeId}, validSavedRecipeEntity);
 
     const savedRecipe = new SavedRecipe(pool);
 
@@ -32,7 +33,7 @@ export const userSavedRecipeController = {
     const userId = req.session!.userInfo.userId;
     const recipeId = Number(req.body.recipeId);
 
-    validSavedRecipeEntity({userId, recipeId});
+    assert({userId, recipeId}, validSavedRecipeEntity);
 
     const savedRecipe = new SavedRecipe(pool);
 

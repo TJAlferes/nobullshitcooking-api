@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { assert } from 'superstruct';
 
 import { pool } from '../../lib/connections/mysqlPoolConnection';
 import {
@@ -30,12 +31,14 @@ export const userFriendshipController = {
     const status1 = "pending-sent";
     const status2 = "pending-received";
     
-    const friendshipToCreate = validFriendshipEntity({
+    const friendshipToCreate = {
       userId,
       friendId,
       status1,
       status2
-    });
+    };
+
+    assert(friendshipToCreate, validFriendshipEntity);
 
     const friendship = new Friendship(pool);
 

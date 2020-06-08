@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { assert } from 'superstruct';
 
 import { pool } from '../lib/connections/mysqlPoolConnection';
 import { validCuisineRequest } from '../lib/validations/cuisine/cuisineRequest';
@@ -15,7 +16,7 @@ export const cuisineController = {
   viewCuisineById: async function(req: Request, res: Response) {
     const cuisineId = Number(req.params.cuisineId);
 
-    validCuisineRequest({cuisineId});
+    assert({cuisineId}, validCuisineRequest);
 
     const cuisine = new Cuisine(pool);
 
@@ -26,7 +27,7 @@ export const cuisineController = {
   viewCuisineDetailById: async function(req: Request, res: Response) {
     const cuisineId = Number(req.params.cuisineId);
 
-    validCuisineRequest({cuisineId});
+    assert({cuisineId}, validCuisineRequest);
 
     const cuisine = new Cuisine(pool);
 

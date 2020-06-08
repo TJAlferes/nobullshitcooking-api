@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { assert } from 'superstruct';
 
 import { pool } from '../../lib/connections/mysqlPoolConnection';
 import { validPlanEntity } from '../../lib/validations/plan/planEntity';
@@ -31,12 +32,14 @@ export const userPlanController = {
     const authorId = req.session!.userInfo.userId;
     const ownerId = req.session!.userInfo.userId;
 
-    const planToCreate = validPlanEntity({
+    const planToCreate = {
       authorId,
       ownerId,
       planName,
       planData
-    });
+    };
+
+    assert(planToCreate, validPlanEntity);
 
     const plan = new Plan(pool);
 
@@ -52,12 +55,14 @@ export const userPlanController = {
     const authorId = req.session!.userInfo.userId;
     const ownerId = req.session!.userInfo.userId;
 
-    const planToUpdateWith = validPlanEntity({
+    const planToUpdateWith = {
       authorId,
       ownerId,
       planName,
       planData
-    });
+    };
+
+    assert(planToUpdateWith, validPlanEntity);
 
     const plan = new Plan(pool);
 

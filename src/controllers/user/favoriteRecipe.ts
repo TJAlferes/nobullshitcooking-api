@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { assert } from 'superstruct';
 
 import { pool } from '../../lib/connections/mysqlPoolConnection';
 import {
@@ -20,7 +21,7 @@ export const userFavoriteRecipeController = {
     const userId = req.session!.userInfo.userId;
     const recipeId = Number(req.body.recipeId);
 
-    validFavoriteRecipeEntity({userId, recipeId});
+    assert({userId, recipeId}, validFavoriteRecipeEntity);
 
     const favoriteRecipe = new FavoriteRecipe(pool);
 
@@ -32,7 +33,7 @@ export const userFavoriteRecipeController = {
     const userId = req.session!.userInfo.userId;
     const recipeId = Number(req.body.recipeId);
 
-    validFavoriteRecipeEntity({userId, recipeId});
+    assert({userId, recipeId}, validFavoriteRecipeEntity);
 
     const favoriteRecipe = new FavoriteRecipe(pool);
 
