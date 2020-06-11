@@ -2,36 +2,6 @@
 
 USE nobsc;
 
-CREATE TABLE `nobsc_staff` (
-  `staff_id` int unsigned NOT NULL AUTO_INCREMENT,
-  `email` varchar(60) UNIQUE NOT NULL,
-  `pass` char(60) NOT NULL,
-  `staffname` varchar(20) UNIQUE NOT NULL,
-  `avatar` varchar(255) NOT NULL DEFAULT 'nobsc-staff-default',
-  `role` varchar(20) NOT NULL DEFAULT 'staff',
-  PRIMARY KEY (`staff_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `nobsc_users` (
-  `user_id` int unsigned NOT NULL AUTO_INCREMENT,
-  `email` varchar(60) UNIQUE NOT NULL,
-  `pass` char(60) NOT NULL,
-  `username` varchar(20) UNIQUE NOT NULL,
-  `avatar` varchar(255) NOT NULL DEFAULT 'nobsc-user-default',
-  `confirmation_code` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-
-
-CREATE TABLE `nobsc_suppliers` (
-  `supplier_id` smallint unsigned NOT NULL DEFAULT '0',
-  `supplier_name` varchar(60) UNIQUE NOT NULL,
-  PRIMARY KEY (`supplier_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-
-
 CREATE TABLE `nobsc_content` (
   `content_id` int unsigned NOT NULL AUTO_INCREMENT,
   `content_type_id` smallint unsigned NOT NULL,
@@ -52,32 +22,6 @@ CREATE TABLE `nobsc_content_types` (
   PRIMARY KEY (`content_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-
-
-CREATE TABLE `nobsc_recipe_types` (
-  `recipe_type_id` tinyint unsigned NOT NULL DEFAULT '0',
-  `recipe_type_name` varchar(25) DEFAULT NULL,
-  PRIMARY KEY (`recipe_type_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `nobsc_ingredient_types` (
-  `ingredient_type_id` tinyint unsigned NOT NULL DEFAULT '0',
-  `ingredient_type_name` varchar(25) DEFAULT NULL,
-  PRIMARY KEY (`ingredient_type_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `nobsc_equipment_types` (
-  `equipment_type_id` tinyint unsigned NOT NULL DEFAULT '0',
-  `equipment_type_name` varchar(25) DEFAULT NULL,
-  PRIMARY KEY (`equipment_type_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `nobsc_methods` (
-  `method_id` tinyint unsigned NOT NULL DEFAULT '0',
-  `method_name` varchar(25) DEFAULT NULL,
-  PRIMARY KEY (`method_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 CREATE TABLE `nobsc_cuisines` (
   `cuisine_id` tinyint unsigned NOT NULL DEFAULT '0',
   `cuisine_name` varchar(40) NOT NULL DEFAULT '',
@@ -87,10 +31,116 @@ CREATE TABLE `nobsc_cuisines` (
   PRIMARY KEY (`cuisine_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE `nobsc_cuisine_equipment` (
+  `cuisine_id` tinyint unsigned NOT NULL,
+  `equipment_id` smallint unsigned NOT NULL,
+  FOREIGN KEY (`cuisine_id`) REFERENCES `nobsc_cuisines` (`cuisine_id`),
+  FOREIGN KEY (`equipment_id`) REFERENCES `nobsc_equipment` (`equipment_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `nobsc_cuisine_ingredients` (
+  `cuisine_id` tinyint unsigned NOT NULL,
+  `ingredient_id` smallint unsigned NOT NULL DEFAULT '0',
+  FOREIGN KEY (`cuisine_id`) REFERENCES `nobsc_cuisines` (`cuisine_id`),
+  FOREIGN KEY (`ingredient_id`) REFERENCES `nobsc_ingredients` (`ingredient_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `nobsc_cuisine_suppliers` (
+  `cuisine_id` tinyint unsigned NOT NULL,
+  `supplier_id` smallint unsigned NOT NULL,
+  FOREIGN KEY (`cuisine_id`) REFERENCES `nobsc_cuisines` (`cuisine_id`),
+  FOREIGN KEY (`supplier_id`) REFERENCES `nobsc_suppliers` (`supplier_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `nobsc_equipment` (
+  `equipment_id` smallint unsigned NOT NULL AUTO_INCREMENT,
+  `equipment_type_id` tinyint unsigned NOT NULL DEFAULT '0',
+  `author_id` int unsigned NOT NULL,
+  `owner_id` int unsigned NOT NULL,
+  `equipment_name` varchar(100) NOT NULL,
+  `equipment_description` text NOT NULL,
+  `equipment_image` varchar(100) NOT NULL DEFAULT 'nobsc-equipment-default',
+  PRIMARY KEY (`equipment_id`),
+  FOREIGN KEY (`equipment_type_id`) REFERENCES `nobsc_equipment_types` (`equipment_type_id`),
+  FOREIGN KEY (`author_id`) REFERENCES `nobsc_users` (`user_id`),
+  FOREIGN KEY (`owner_id`) REFERENCES `nobsc_users` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `nobsc_equipment_types` (
+  `equipment_type_id` tinyint unsigned NOT NULL DEFAULT '0',
+  `equipment_type_name` varchar(25) DEFAULT NULL,
+  PRIMARY KEY (`equipment_type_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `nobsc_favorite_recipes` (
+  `user_id` int unsigned NOT NULL,
+  `recipe_id` int unsigned NOT NULL,
+  FOREIGN KEY (`user_id`) REFERENCES `nobsc_users` (`user_id`),
+  FOREIGN KEY (`recipe_id`) REFERENCES `nobsc_recipes` (`recipe_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `nobsc_friendships` (
+  `user_id` int unsigned NOT NULL,
+  `friend_id` int unsigned NOT NULL,
+  `status` varchar(20) NOT NULL,
+  FOREIGN KEY (`user_id`) REFERENCES `nobsc_users` (`user_id`),
+  FOREIGN KEY (`friend_id`) REFERENCES `nobsc_users` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `nobsc_ingredients` (
+  `ingredient_id` smallint unsigned NOT NULL AUTO_INCREMENT,
+  `ingredient_type_id` tinyint unsigned NOT NULL DEFAULT '0',
+  `author_id` int unsigned NOT NULL,
+  `owner_id` int unsigned NOT NULL,
+  `ingredient_name` varchar(100) NOT NULL,
+  `ingredient_description` text NOT NULL,
+  `ingredient_image` varchar(100) NOT NULL DEFAULT 'nobsc-ingredient-default',
+  PRIMARY KEY (`ingredient_id`),
+  FOREIGN KEY (`ingredient_type_id`) REFERENCES `nobsc_ingredient_types` (`ingredient_type_id`),
+  FOREIGN KEY (`owner_id`) REFERENCES `nobsc_users` (`user_id`),
+  FOREIGN KEY (`author_id`) REFERENCES `nobsc_users` (`user_id`) 
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `nobsc_ingredient_types` (
+  `ingredient_type_id` tinyint unsigned NOT NULL DEFAULT '0',
+  `ingredient_type_name` varchar(25) DEFAULT NULL,
+  PRIMARY KEY (`ingredient_type_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE `nobsc_measurements` (
   `measurement_id` tinyint unsigned NOT NULL DEFAULT '0',
   `measurement_name` varchar(25) DEFAULT NULL,
   PRIMARY KEY (`measurement_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `nobsc_methods` (
+  `method_id` tinyint unsigned NOT NULL DEFAULT '0',
+  `method_name` varchar(25) DEFAULT NULL,
+  PRIMARY KEY (`method_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `nobsc_notifications` (
+  `notification_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `sender_id` int unsigned NOT NULL,
+  `receiver_id` int unsigned NOT NULL,
+  `read` tinyint NOT NULL DEFAULT '0',
+  `type` varchar(45) NOT NULL,
+  `note` varchar(255) NOT NULL,
+  `created_on` date NOT NULL,
+  PRIMARY KEY (`notification_id`),
+  FOREIGN KEY (`sender_id`) REFERENCES `nobsc_users` (`user_id`),
+  FOREIGN KEY (`receiver_id`) REFERENCES `nobsc_users` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `nobsc_plans` (
+  `plan_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `author_id` int unsigned NOT NULL,
+  `owner_id` int unsigned NOT NULL,
+  `plan_name` varchar(100) NOT NULL DEFAULT '',
+  `plan_data` json DEFAULT NULL,
+  PRIMARY KEY (`plan_id`),
+  FOREIGN KEY (`author_id`) REFERENCES `nobsc_users` (`user_id`),
+  FOREIGN KEY (`owner_id`) REFERENCES `nobsc_users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `nobsc_recipes` (
@@ -113,42 +163,12 @@ CREATE TABLE `nobsc_recipes` (
   FOREIGN KEY (`owner_id`) REFERENCES `nobsc_users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `nobsc_ingredients` (
-  `ingredient_id` smallint unsigned NOT NULL AUTO_INCREMENT,
-  `ingredient_type_id` tinyint unsigned NOT NULL DEFAULT '0',
-  `author_id` int unsigned NOT NULL,
-  `owner_id` int unsigned NOT NULL,
-  `ingredient_name` varchar(100) NOT NULL,
-  `ingredient_description` text NOT NULL,
-  `ingredient_image` varchar(100) NOT NULL DEFAULT 'nobsc-ingredient-default',
-  PRIMARY KEY (`ingredient_id`),
-  FOREIGN KEY (`ingredient_type_id`) REFERENCES `nobsc_ingredient_types` (`ingredient_type_id`),
-  FOREIGN KEY (`owner_id`) REFERENCES `nobsc_users` (`user_id`),
-  FOREIGN KEY (`author_id`) REFERENCES `nobsc_users` (`user_id`) 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `nobsc_equipment` (
-  `equipment_id` smallint unsigned NOT NULL AUTO_INCREMENT,
-  `equipment_type_id` tinyint unsigned NOT NULL DEFAULT '0',
-  `author_id` int unsigned NOT NULL,
-  `owner_id` int unsigned NOT NULL,
-  `equipment_name` varchar(100) NOT NULL,
-  `equipment_description` text NOT NULL,
-  `equipment_image` varchar(100) NOT NULL DEFAULT 'nobsc-equipment-default',
-  PRIMARY KEY (`equipment_id`),
-  FOREIGN KEY (`equipment_type_id`) REFERENCES `nobsc_equipment_types` (`equipment_type_id`),
-  FOREIGN KEY (`author_id`) REFERENCES `nobsc_users` (`user_id`),
-  FOREIGN KEY (`owner_id`) REFERENCES `nobsc_users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `nobsc_recipe_subrecipes` (
+CREATE TABLE `nobsc_recipe_equipment` (
   `recipe_id` int unsigned NOT NULL,
-  `subrecipe_id` int unsigned NOT NULL,
-  `amount` decimal(5,2) NOT NULL,
-  `measurement_id` tinyint unsigned NOT NULL,
+  `equipment_id` smallint unsigned NOT NULL,
+  `amount` tinyint unsigned NOT NULL,
   FOREIGN KEY (`recipe_id`) REFERENCES `nobsc_recipes` (`recipe_id`),
-  FOREIGN KEY (`subrecipe_id`) REFERENCES `nobsc_recipes` (`recipe_id`),
-  FOREIGN KEY (`measurement_id`) REFERENCES `nobsc_measurements` (`measurement_id`)
+  FOREIGN KEY (`equipment_id`) REFERENCES `nobsc_equipment` (`equipment_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `nobsc_recipe_ingredients` (
@@ -161,14 +181,6 @@ CREATE TABLE `nobsc_recipe_ingredients` (
   FOREIGN KEY (`measurement_id`) REFERENCES `nobsc_measurements` (`measurement_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `nobsc_recipe_equipment` (
-  `recipe_id` int unsigned NOT NULL,
-  `equipment_id` smallint unsigned NOT NULL,
-  `amount` tinyint unsigned NOT NULL,
-  FOREIGN KEY (`recipe_id`) REFERENCES `nobsc_recipes` (`recipe_id`),
-  FOREIGN KEY (`equipment_id`) REFERENCES `nobsc_equipment` (`equipment_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 CREATE TABLE `nobsc_recipe_methods` (
   `recipe_id` int unsigned NOT NULL,
   `method_id` tinyint unsigned NOT NULL,
@@ -176,11 +188,20 @@ CREATE TABLE `nobsc_recipe_methods` (
   FOREIGN KEY (`method_id`) REFERENCES `nobsc_methods` (`method_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `nobsc_favorite_recipes` (
-  `user_id` int unsigned NOT NULL,
+CREATE TABLE `nobsc_recipe_subrecipes` (
   `recipe_id` int unsigned NOT NULL,
-  FOREIGN KEY (`user_id`) REFERENCES `nobsc_users` (`user_id`),
-  FOREIGN KEY (`recipe_id`) REFERENCES `nobsc_recipes` (`recipe_id`)
+  `subrecipe_id` int unsigned NOT NULL,
+  `amount` decimal(5,2) NOT NULL,
+  `measurement_id` tinyint unsigned NOT NULL,
+  FOREIGN KEY (`recipe_id`) REFERENCES `nobsc_recipes` (`recipe_id`),
+  FOREIGN KEY (`subrecipe_id`) REFERENCES `nobsc_recipes` (`recipe_id`),
+  FOREIGN KEY (`measurement_id`) REFERENCES `nobsc_measurements` (`measurement_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `nobsc_recipe_types` (
+  `recipe_type_id` tinyint unsigned NOT NULL DEFAULT '0',
+  `recipe_type_name` varchar(25) DEFAULT NULL,
+  PRIMARY KEY (`recipe_type_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `nobsc_saved_recipes` (
@@ -190,82 +211,38 @@ CREATE TABLE `nobsc_saved_recipes` (
   FOREIGN KEY (`recipe_id`) REFERENCES `nobsc_recipes` (`recipe_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `nobsc_plans` (
-  `plan_id` int unsigned NOT NULL AUTO_INCREMENT,
-  `author_id` int unsigned NOT NULL,
-  `owner_id` int unsigned NOT NULL,
-  `plan_name` varchar(100) NOT NULL DEFAULT '',
-  `plan_data` json DEFAULT NULL,
-  PRIMARY KEY (`plan_id`),
-  FOREIGN KEY (`author_id`) REFERENCES `nobsc_users` (`user_id`),
-  FOREIGN KEY (`owner_id`) REFERENCES `nobsc_users` (`user_id`)
+CREATE TABLE `nobsc_staff` (
+  `staff_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `email` varchar(60) UNIQUE NOT NULL,
+  `pass` char(60) NOT NULL,
+  `staffname` varchar(20) UNIQUE NOT NULL,
+  `avatar` varchar(255) NOT NULL DEFAULT 'nobsc-staff-default',
+  `role` varchar(20) NOT NULL DEFAULT 'staff',
+  PRIMARY KEY (`staff_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-
-
-CREATE TABLE `nobsc_cuisine_suppliers` (
-  `cuisine_id` tinyint unsigned NOT NULL,
-  `supplier_id` smallint unsigned NOT NULL,
-  FOREIGN KEY (`cuisine_id`) REFERENCES `nobsc_cuisines` (`cuisine_id`),
-  FOREIGN KEY (`supplier_id`) REFERENCES `nobsc_suppliers` (`supplier_id`)
+CREATE TABLE `nobsc_suppliers` (
+  `supplier_id` smallint unsigned NOT NULL DEFAULT '0',
+  `supplier_name` varchar(60) UNIQUE NOT NULL,
+  PRIMARY KEY (`supplier_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `nobsc_cuisine_equipment` (
-  `cuisine_id` tinyint unsigned NOT NULL,
-  `equipment_id` smallint unsigned NOT NULL,
-  FOREIGN KEY (`cuisine_id`) REFERENCES `nobsc_cuisines` (`cuisine_id`),
-  FOREIGN KEY (`equipment_id`) REFERENCES `nobsc_equipment` (`equipment_id`)
+CREATE TABLE `nobsc_users` (
+  `user_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `email` varchar(60) UNIQUE NOT NULL,
+  `pass` char(60) NOT NULL,
+  `username` varchar(20) UNIQUE NOT NULL,
+  `avatar` varchar(255) NOT NULL DEFAULT 'nobsc-user-default',
+  `confirmation_code` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `nobsc_cuisine_ingredients` (
-  `cuisine_id` tinyint unsigned NOT NULL,
-  `ingredient_id` smallint unsigned NOT NULL DEFAULT '0',
-  FOREIGN KEY (`cuisine_id`) REFERENCES `nobsc_cuisines` (`cuisine_id`),
-  FOREIGN KEY (`ingredient_id`) REFERENCES `nobsc_ingredients` (`ingredient_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-
-
-CREATE TABLE `nobsc_friendships` (
-  `user_id` int unsigned NOT NULL,
-  `friend_id` int unsigned NOT NULL,
-  `status` varchar(20) NOT NULL,
-  FOREIGN KEY (`user_id`) REFERENCES `nobsc_users` (`user_id`),
-  FOREIGN KEY (`friend_id`) REFERENCES `nobsc_users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `nobsc_notifications` (
-  `notification_id` int unsigned NOT NULL AUTO_INCREMENT,
-  `sender_id` int unsigned NOT NULL,
-  `receiver_id` int unsigned NOT NULL,
-  `read` tinyint NOT NULL DEFAULT '0',
-  `type` varchar(45) NOT NULL,
-  `note` varchar(255) NOT NULL,
-  `created_on` date NOT NULL,
-  PRIMARY KEY (`notification_id`),
-  FOREIGN KEY (`sender_id`) REFERENCES `nobsc_users` (`user_id`),
-  FOREIGN KEY (`receiver_id`) REFERENCES `nobsc_users` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-
-
-INSERT INTO nobsc_staff
-(email, pass, staffname)
-VALUES
-("tjalferes@tjalferes.com", "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "T. J. Alferes");
-
-INSERT INTO nobsc_users
-(email, pass, username)
-VALUES
-("tjalferes@tjalferes.com", "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "NOBSC"),
-("tjalferes@gmail.com", "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "Unknown");
 
 
 
 INSERT INTO nobsc_content
 (content_id, content_type_id, author_id, owner_id, created, published, content_items)
 VALUES
-(1, 2, 1, 1, "4-14-2020", NULL, "{}")
+(1, 2, 1, 1, "4-14-2020", NULL, "[]")
 
 INSERT INTO nobsc_content_types
 (content_type_id, parent_id, content_type_name, content_type_path)
@@ -285,81 +262,6 @@ VALUES
 (13, 7, "Nutrition", "/page/guide/food/nutrition"),
 (14, 7, "Equipment", "/page/guide/food/equipment"),
 (15, 7, "Methods", "/page/guide/food/methods");
-
-INSERT INTO nobsc_recipe_types
-(recipe_type_id, recipe_type_name)
-VALUES
-(1, "Drink"),
-(2, "Appetizer"),
-(3, "Main"),
-(4, "Side"),
-(5, "Dessert"),
-(6, "Soup"),
-(7, "Salad"),
-(8, "Stew"),
-(9, "Casserole"),
-(10, "Sauce"),
-(11, "Dressing"),
-(12, "Condiment");
-
-INSERT INTO nobsc_ingredient_types
-(ingredient_type_id, ingredient_type_name)
-VALUES
-(1, "Fish"),
-(2, "Shellfish"),
-(3, "Beef"),
-(4, "Pork"),
-(5, "Poultry"),
-(6, "Egg"),
-(7, "Dairy"),
-(8, "Oil"),
-(9, "Grain"),
-(10, "Bean"),
-(11, "Vegetable"),
-(12, "Fruit"),
-(13, "Nut"),
-(14, "Seed"),
-(15, "Spice"),
-(16, "Herb"),
-(17, "Acid"),
-(18, "Product");
-
-INSERT INTO nobsc_equipment_types
-(equipment_type_id, equipment_type_name)
-VALUES
-(1, "Cleaning"),
-(2, "Preparing"),
-(3, "Cooking"),
-(4, "Dining"),
-(5, "Storage");
-
-INSERT INTO nobsc_methods
-(method_id, method_name)
-VALUES
-(1, "No-Cook"),
-(2, "Chill"),
-(3, "Freeze"),
-(4, "Microwave"),
-(5, "Toast"),
-(6, "Steam"),
-(7, "Poach"),
-(8, "Simmer"),
-(9, "Boil"),
-(10, "Blanch"),
-(11, "Stew"),
-(12, "Braise"),
-(13, "Bake"),
-(14, "Roast"),
-(15, "Broil"),
-(16, "Saute"),
-(17, "Pan-Fry"),
-(18, "Shallow-Fry"),
-(19, "Deep-Fry"),
-(20, "Stir-Fry"),
-(21, "Glaze"),
-(22, "BBQ"),
-(23, "Grill"),
-(24, "Smoke");
 
 INSERT INTO nobsc_cuisines
 (cuisine_id, cuisine_name, cuisine_nation, cuisine_wiki, cuisine_intro)
@@ -581,22 +483,78 @@ VALUES
 (196, "Zimbabwean", "Zimbabwe", "Zimbabwe#Cuisine", "");
 --(197, "NA") ?
 
-
-INSERT INTO nobsc_measurements
-(measurement_id, measurement_name)
+INSERT INTO nobsc_equipment
+(equipment_type_id, author_id, owner_id, equipment_name, equipment_description, equipment_image)
 VALUES
-(1, "teaspoon"),
-(2, "Tablespoon"),
-(3, "cup"),
-(4, "ounce"),
-(5, "pound"),
-(6, "milliliter"),
-(7, "liter"),
-(8, "gram"),
-(9, "kilogram"),
-(10, "NA");
+(2, 1, 1, "Chef''s Knife", "It works.", "nobsc-chefs-knife"),
+(2, 1, 1, "Cutting Board", "It works.", "nobsc-cutting-board"),
+(2, 1, 1, "Y Peeler", "It works.", "nobsc-y-peeler"),
+(3, 1, 1, "Wooden Spoon", "It works.", "nobsc-wooden-spoon"),
+(2, 1, 1, "Serated Knife", "It works.", "nobsc-serated-knife"),
+(2, 1, 1, "Rubber Spatula", "It works.", "nobsc-rubber-spatula"),
+(2, 1, 1, "Whisk", "It works.", "nobsc-whisk"),
+(2, 1, 1, "Pepper Mill", "It works.", "nobsc-pepper-mill"),
+(2, 1, 1, "Can Opener", "It works.", "nobsc-can-opener"),
+(2, 1, 1, "Side Peeler", "It works.", "nobsc-side-peeler"),
 
+(2, 1, 1, "Box Grater", "It works.", "nobsc-box-grater"),
+(2, 1, 1, "Small Mixing Bowl", "It works.", "nobsc-small-mixing-bowl"),
+(2, 1, 1, "Medium Mixing Bowl", "It works.", "nobsc-medium-mixing-bowl"),
+(2, 1, 1, "Large Mixing Bowl", "It works.", "nobsc-large-mixing-bowl"),
+(2, 1, 1, "Salad Spinner", "It works.", "nobsc-salad-spinner"),
+(2, 1, 1, "Dry Measuring Cups", "It works.", "nobsc-dry-measuring-cups"),
+(2, 1, 1, "Liquid Measuring Cups", "It works.", "nobsc-liquid-measuring-cups"),
+(2, 1, 1, "Measuring Spoons", "It works.", "nobsc-measuring-spoons"),
+(2, 1, 1, "Measuring Pitcher", "It works.", "nobsc-measuring-pitcher"),
+(2, 1, 1, "Digital Scale", "It works.", "nobsc-digital-scale"),
 
+(2, 1, 1, "Handheld Mixer", "It works.", "nobsc-handheld-mixer"),
+(2, 1, 1, "Blender", "It works.", "nobsc-blender"),
+(2, 1, 1, "Immersion Blender", "It works.", "nobsc-immersion-blender"),
+(2, 1, 1, "Parchment Paper", "It works.", "nobsc-parchment-paper"),
+(2, 1, 1, "Plastic Wrap", "It works.", "nobsc-plastic-wrap"),
+(2, 1, 1, "Aluminum Foil", "It works.", "nobsc-aluminum-foil"),
+(2, 1, 1, "Ceramic Stone", "It works.", "nobsc-ceramic-stone"),
+(2, 1, 1, "Cheesecloth", "It works.", "nobsc-cheesecloth"),
+(3, 1, 1, "Coffee Maker", "It works.", "nobsc-coffee-maker"),
+(3, 1, 1, "Tea Pot", "It works.", "nobsc-tea-pot"),
+
+(3, 1, 1, "Small Stainless Steel Skillet", "It works.", "nobsc-small-stainless-steel-skillet"),
+(3, 1, 1, "Large Stainless Steel Skillet", "It works.", "nobsc-large-stainless-steel-skillet"),
+(3, 1, 1, "Stainless Steel Lidded Saute Pan", "It works.", "nobsc-stainless-steel-lidded-saute-pan"),
+(3, 1, 1, "Dutch Oven", "It works.", "nobsc-dutch-oven"),
+(3, 1, 1, "Small Cast-Iron Skillet", "It works.", "nobsc-small-cast-iron-skillet"),
+(3, 1, 1, "Large Cast-Iron Skillet", "It works.", "nobsc-large-cast-iron-skillet"),
+(3, 1, 1, "Small Sauce Pan", "It works.", "nobsc-small-sauce-pan"),
+(3, 1, 1, "Medium Sauce Pan", "It works.", "nobsc-medium-sauce-pan"),
+(3, 1, 1, "Medium Stock Pot", "It works.", "nobsc-medium-stock-pot"),
+(3, 1, 1, "Large Stock Pot", "It works.", "nobsc-large-stock-pot"),
+
+(3, 1, 1, "Glass Baking Dish", "It works.", "nobsc-glass-baking-dish"),
+(3, 1, 1, "Sturdy Baking Sheet", "It works.", "nobsc-sturdy-baking-dish"),
+(3, 1, 1, "Small Gratin Dish", "It works.", "nobsc-small-gratin-dish"),
+(3, 1, 1, "Large Gratin Dish", "It works.", "nobsc-large-gratin-dish"),
+(3, 1, 1, "Oven Mitts", "It works.", "nobsc-oven-mitts"),
+(3, 1, 1, "Splatter Screen", "It works.", "nobsc-splatter-screen"),
+(3, 1, 1, "Colander", "It works.", "nobsc-colander"),
+(3, 1, 1, "Mesh Strainer", "It works.", "nobsc-mesh-strainer"),
+(3, 1, 1, "Tongs", "It works.", "nobsc-tongs"),
+(3, 1, 1, "Slotted Spoon", "It works.", "nobsc-slotted-spoon"),
+
+(3, 1, 1, "Serving Spoon", "It works.", "nobsc-serving-spoon"),
+(3, 1, 1, "Spider", "It works.", "nobsc-spider"),
+(3, 1, 1, "Sturdy Spatula", "It works.", "nobsc-sturdy-spatula"),
+(3, 1, 1, "Fish Spatula", "It works.", "nobsc-fish-spatula"),
+(3, 1, 1, "Ladle", "It works.", "nobsc-ladle");
+
+INSERT INTO nobsc_equipment_types
+(equipment_type_id, equipment_type_name)
+VALUES
+(1, "Cleaning"),
+(2, "Preparing"),
+(3, "Cooking"),
+(4, "Dining"),
+(5, "Storage");
 
 INSERT INTO nobsc_ingredients
 (ingredient_type_id, author_id, owner_id, ingredient_name, ingredient_description, ingredient_image)
@@ -915,69 +873,69 @@ VALUES
 (18, 1, 1, "Tobasco Sauce", "Tasty.", "nobsc-tobasco-sauce"),
 (7, 1, 1, "Butter", "Tasty.", "nobsc-butter");
 
-INSERT INTO nobsc_equipment
-(equipment_type_id, author_id, owner_id, equipment_name, equipment_description, equipment_image)
+INSERT INTO nobsc_ingredient_types
+(ingredient_type_id, ingredient_type_name)
 VALUES
-(2, 1, 1, "Chef''s Knife", "It works.", "nobsc-chefs-knife"),
-(2, 1, 1, "Cutting Board", "It works.", "nobsc-cutting-board"),
-(2, 1, 1, "Y Peeler", "It works.", "nobsc-y-peeler"),
-(3, 1, 1, "Wooden Spoon", "It works.", "nobsc-wooden-spoon"),
-(2, 1, 1, "Serated Knife", "It works.", "nobsc-serated-knife"),
-(2, 1, 1, "Rubber Spatula", "It works.", "nobsc-rubber-spatula"),
-(2, 1, 1, "Whisk", "It works.", "nobsc-whisk"),
-(2, 1, 1, "Pepper Mill", "It works.", "nobsc-pepper-mill"),
-(2, 1, 1, "Can Opener", "It works.", "nobsc-can-opener"),
-(2, 1, 1, "Side Peeler", "It works.", "nobsc-side-peeler"),
+(1, "Fish"),
+(2, "Shellfish"),
+(3, "Beef"),
+(4, "Pork"),
+(5, "Poultry"),
+(6, "Egg"),
+(7, "Dairy"),
+(8, "Oil"),
+(9, "Grain"),
+(10, "Bean"),
+(11, "Vegetable"),
+(12, "Fruit"),
+(13, "Nut"),
+(14, "Seed"),
+(15, "Spice"),
+(16, "Herb"),
+(17, "Acid"),
+(18, "Product");
 
-(2, 1, 1, "Box Grater", "It works.", "nobsc-box-grater"),
-(2, 1, 1, "Small Mixing Bowl", "It works.", "nobsc-small-mixing-bowl"),
-(2, 1, 1, "Medium Mixing Bowl", "It works.", "nobsc-medium-mixing-bowl"),
-(2, 1, 1, "Large Mixing Bowl", "It works.", "nobsc-large-mixing-bowl"),
-(2, 1, 1, "Salad Spinner", "It works.", "nobsc-salad-spinner"),
-(2, 1, 1, "Dry Measuring Cups", "It works.", "nobsc-dry-measuring-cups"),
-(2, 1, 1, "Liquid Measuring Cups", "It works.", "nobsc-liquid-measuring-cups"),
-(2, 1, 1, "Measuring Spoons", "It works.", "nobsc-measuring-spoons"),
-(2, 1, 1, "Measuring Pitcher", "It works.", "nobsc-measuring-pitcher"),
-(2, 1, 1, "Digital Scale", "It works.", "nobsc-digital-scale"),
+INSERT INTO nobsc_measurements
+(measurement_id, measurement_name)
+VALUES
+(1, "teaspoon"),
+(2, "Tablespoon"),
+(3, "cup"),
+(4, "ounce"),
+(5, "pound"),
+(6, "milliliter"),
+(7, "liter"),
+(8, "gram"),
+(9, "kilogram"),
+(10, "NA");
 
-(2, 1, 1, "Handheld Mixer", "It works.", "nobsc-handheld-mixer"),
-(2, 1, 1, "Blender", "It works.", "nobsc-blender"),
-(2, 1, 1, "Immersion Blender", "It works.", "nobsc-immersion-blender"),
-(2, 1, 1, "Parchment Paper", "It works.", "nobsc-parchment-paper"),
-(2, 1, 1, "Plastic Wrap", "It works.", "nobsc-plastic-wrap"),
-(2, 1, 1, "Aluminum Foil", "It works.", "nobsc-aluminum-foil"),
-(2, 1, 1, "Ceramic Stone", "It works.", "nobsc-ceramic-stone"),
-(2, 1, 1, "Cheesecloth", "It works.", "nobsc-cheesecloth"),
-(3, 1, 1, "Coffee Maker", "It works.", "nobsc-coffee-maker"),
-(3, 1, 1, "Tea Pot", "It works.", "nobsc-tea-pot"),
-
-(3, 1, 1, "Small Stainless Steel Skillet", "It works.", "nobsc-small-stainless-steel-skillet"),
-(3, 1, 1, "Large Stainless Steel Skillet", "It works.", "nobsc-large-stainless-steel-skillet"),
-(3, 1, 1, "Stainless Steel Lidded Saute Pan", "It works.", "nobsc-stainless-steel-lidded-saute-pan"),
-(3, 1, 1, "Dutch Oven", "It works.", "nobsc-dutch-oven"),
-(3, 1, 1, "Small Cast-Iron Skillet", "It works.", "nobsc-small-cast-iron-skillet"),
-(3, 1, 1, "Large Cast-Iron Skillet", "It works.", "nobsc-large-cast-iron-skillet"),
-(3, 1, 1, "Small Sauce Pan", "It works.", "nobsc-small-sauce-pan"),
-(3, 1, 1, "Medium Sauce Pan", "It works.", "nobsc-medium-sauce-pan"),
-(3, 1, 1, "Medium Stock Pot", "It works.", "nobsc-medium-stock-pot"),
-(3, 1, 1, "Large Stock Pot", "It works.", "nobsc-large-stock-pot"),
-
-(3, 1, 1, "Glass Baking Dish", "It works.", "nobsc-glass-baking-dish"),
-(3, 1, 1, "Sturdy Baking Sheet", "It works.", "nobsc-sturdy-baking-dish"),
-(3, 1, 1, "Small Gratin Dish", "It works.", "nobsc-small-gratin-dish"),
-(3, 1, 1, "Large Gratin Dish", "It works.", "nobsc-large-gratin-dish"),
-(3, 1, 1, "Oven Mitts", "It works.", "nobsc-oven-mitts"),
-(3, 1, 1, "Splatter Screen", "It works.", "nobsc-splatter-screen"),
-(3, 1, 1, "Colander", "It works.", "nobsc-colander"),
-(3, 1, 1, "Mesh Strainer", "It works.", "nobsc-mesh-strainer"),
-(3, 1, 1, "Tongs", "It works.", "nobsc-tongs"),
-(3, 1, 1, "Slotted Spoon", "It works.", "nobsc-slotted-spoon"),
-
-(3, 1, 1, "Serving Spoon", "It works.", "nobsc-serving-spoon"),
-(3, 1, 1, "Spider", "It works.", "nobsc-spider"),
-(3, 1, 1, "Sturdy Spatula", "It works.", "nobsc-sturdy-spatula"),
-(3, 1, 1, "Fish Spatula", "It works.", "nobsc-fish-spatula"),
-(3, 1, 1, "Ladle", "It works.", "nobsc-ladle");
+INSERT INTO nobsc_methods
+(method_id, method_name)
+VALUES
+(1, "No-Cook"),
+(2, "Chill"),
+(3, "Freeze"),
+(4, "Microwave"),
+(5, "Toast"),
+(6, "Steam"),
+(7, "Poach"),
+(8, "Simmer"),
+(9, "Boil"),
+(10, "Blanch"),
+(11, "Stew"),
+(12, "Braise"),
+(13, "Bake"),
+(14, "Roast"),
+(15, "Broil"),
+(16, "Saute"),
+(17, "Pan-Fry"),
+(18, "Shallow-Fry"),
+(19, "Deep-Fry"),
+(20, "Stir-Fry"),
+(21, "Glaze"),
+(22, "BBQ"),
+(23, "Grill"),
+(24, "Smoke");
 
 INSERT INTO nobsc_recipes
 (recipe_type_id, cuisine_id, author_id, owner_id, title, description, directions)
@@ -995,22 +953,6 @@ VALUES
 (11, 11, 1, 1, "Carrot Ginger Dressing", "Tasty", "Blend carrots and..."),
 (12, 12, 1, 1, "Some Kind Of Chutney", "Not Bad", "Mix...");
 
-INSERT INTO nobsc_recipe_ingredients
-(recipe_id, ingredient_id, amount, measurement_id)
-VALUES
-(1, 116, 4, 1),
-(2, 209, 2, 2),
-(3, 153, 1, 3),
-(4, 159, 1, 4),
-(5, 165, 7, 5),
-(6, 176, 1, 6),
-(7, 142, 3, 7),
-(8, 230, 1, 8),
-(9, 202, 9, 9),
-(10, 100, 20, 10),
-(11, 122, 10, 1),
-(12, 138, 13, 2);
-
 INSERT INTO nobsc_recipe_equipment
 (recipe_id, equipment_id, amount)
 VALUES
@@ -1027,6 +969,22 @@ VALUES
 (11, 1, 1),
 (12, 1, 1);
 
+INSERT INTO nobsc_recipe_ingredients
+(recipe_id, ingredient_id, amount, measurement_id)
+VALUES
+(1, 116, 4, 1),
+(2, 209, 2, 2),
+(3, 153, 1, 3),
+(4, 159, 1, 4),
+(5, 165, 7, 5),
+(6, 176, 1, 6),
+(7, 142, 3, 7),
+(8, 230, 1, 8),
+(9, 202, 9, 9),
+(10, 100, 20, 10),
+(11, 122, 10, 1),
+(12, 138, 13, 2);
+
 INSERT INTO nobsc_recipe_methods
 (recipe_id, method_id)
 VALUES
@@ -1042,3 +1000,35 @@ VALUES
 (10, 1),
 (11, 12),
 (12, 13);
+
+INSERT INTO nobsc_recipe_types
+(recipe_type_id, recipe_type_name)
+VALUES
+(1, "Drink"),
+(2, "Appetizer"),
+(3, "Main"),
+(4, "Side"),
+(5, "Dessert"),
+(6, "Soup"),
+(7, "Salad"),
+(8, "Stew"),
+(9, "Casserole"),
+(10, "Sauce"),
+(11, "Dressing"),
+(12, "Condiment");
+
+INSERT INTO nobsc_staff (email, pass, staffname) VALUES (
+  "tjalferes@tjalferes.com",
+  "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u",
+  "T. J. Alferes"
+);
+
+INSERT INTO nobsc_users (email, pass, username) VALUES (
+  "tjalferes@tjalferes.com",
+  "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u",
+  "NOBSC"
+), (
+  "tjalferes@gmail.com",
+  "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u",
+  "Unknown"
+);

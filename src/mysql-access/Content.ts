@@ -11,7 +11,8 @@ export class Content implements IContent {
     this.deleteContent = this.deleteContent.bind(this);
   }
 
-  async viewContentById(contentId: number) {  // also make ByDate, ByTitle, ByAuthor, ByDateTitle, etc.
+  // also make ByDate, ByTitle, ByAuthor, ByDateTitle, etc. ?
+  async viewContentById(contentId: number) {
     const sql = `
       SELECT content_type_id, content_items
       FROM nobsc_content
@@ -119,7 +120,8 @@ interface IUpdatingContent {
   ownerId: number;
   contentTypeId: number;
   published: string | null;
-  contentItems: IContentItem[];
+  contentItems: any[];
+  //contentItems: IContentItem[];
 }
 
 // change to match Slate values

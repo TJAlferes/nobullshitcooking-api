@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 import { router as staffAuthRouter } from './auth';
+import { router as staffContentRouter } from './content';
 import { router as staffCuisineEquipmentRouter } from './cuisineEquipment';
 import { router as staffCuisineIngredientRouter } from './cuisineIngredient';
 import { router as staffCuisineSupplierRouter } from './cuisineSupplier';
@@ -12,6 +13,7 @@ import { router as staffSupplierRouter } from './supplier';
 export const router = Router();
 
 router.use('/auth', staffAuthRouter);
+router.use('/content', staffContentRouter);
 router.use('/cusine-equipment', staffCuisineEquipmentRouter);
 router.use('/cusine-ingredient', staffCuisineIngredientRouter);
 router.use('/cusine-supplier', staffCuisineSupplierRouter);
