@@ -30,6 +30,8 @@ export class Ingredient implements IIngredient {
         i.ingredient_type_id,
         i.owner_id,
         t.ingredient_type_name,
+        i.ingredient_brand,
+        i.ingredient_variety,
         i.ingredient_name,
         i.ingredient_description,
         i.ingredient_image
@@ -63,6 +65,8 @@ export class Ingredient implements IIngredient {
         i.ingredient_type_id,
         i.owner_id,
         t.ingredient_type_name,
+        i.ingredient_brand,
+        i.ingredient_variety,
         i.ingredient_name,
         i.ingredient_description,
         i.ingredient_image
@@ -89,6 +93,8 @@ export class Ingredient implements IIngredient {
         i.ingredient_type_id AS ingredient_type_id,
         i.owner_id AS owner_id,
         t.ingredient_type_name AS ingredient_type_name,
+        i.ingredient_brand AS ingredient_brand,
+        i.ingredient_variety AS ingredient_variety,
         i.ingredient_name AS ingredient_name,
         i.ingredient_description AS ingredient_description,
         i.ingredient_image AS ingredient_image
@@ -112,7 +118,9 @@ export class Ingredient implements IIngredient {
     const sql = `
       SELECT
         i.ingredient_id AS ingredient_id,
-        t.ingredient_type_name AS ingredient_type_name
+        t.ingredient_type_name AS ingredient_type_name,
+        i.ingredient_brand AS ingredient_brand,
+        i.ingredient_variety AS ingredient_variety,
         i.ingredient_name AS ingredient_name,
         i.ingredient_description AS ingredient_description,
         i.ingredient_image AS ingredient_image
@@ -131,6 +139,8 @@ export class Ingredient implements IIngredient {
     ingredientTypeId,
     authorId,
     ownerId,
+    ingredientBrand,
+    ingredientVariety,
     ingredientName,
     ingredientDescription,
     ingredientImage
@@ -140,6 +150,8 @@ export class Ingredient implements IIngredient {
         ingredient_type_id,
         author_id,
         owner_id,
+        ingredient_brand,
+        ingredient_variety,
         ingredient_name,
         ingredient_description,
         ingredient_image
@@ -150,6 +162,8 @@ export class Ingredient implements IIngredient {
       ingredientTypeId,
       authorId,
       ownerId,
+      ingredientBrand,
+      ingredientVariety,
       ingredientName,
       ingredientDescription,
       ingredientImage
@@ -162,6 +176,8 @@ export class Ingredient implements IIngredient {
     ingredientTypeId,
     authorId,
     ownerId,
+    ingredientBrand,
+    ingredientVariety,
     ingredientName,
     ingredientDescription,
     ingredientImage
@@ -170,6 +186,8 @@ export class Ingredient implements IIngredient {
       UPDATE nobsc_ingredients
       SET
         ingredient_type_id = ?,
+        ingredient_brand = ?,
+        ingredient_variety = ?,
         ingredient_name = ?,
         ingredient_description = ?,
         ingredient_image = ?
@@ -179,6 +197,8 @@ export class Ingredient implements IIngredient {
     const [ updatedIngredient ] = await this.pool
     .execute<RowDataPacket[]>(sql, [
       ingredientTypeId,
+      ingredientBrand,
+      ingredientVariety,
       ingredientName,
       ingredientDescription,
       ingredientImage,
@@ -203,6 +223,8 @@ export class Ingredient implements IIngredient {
     ingredientTypeId,
     authorId,
     ownerId,
+    ingredientBrand,
+    ingredientVariety,
     ingredientName,
     ingredientDescription,
     ingredientImage
@@ -212,6 +234,8 @@ export class Ingredient implements IIngredient {
         ingredient_type_id,
         author_id,
         owner_id,
+        ingredient_brand,
+        ingredient_variety,
         ingredient_name,
         ingredient_description,
         ingredient_image
@@ -222,6 +246,8 @@ export class Ingredient implements IIngredient {
       ingredientTypeId,
       authorId,
       ownerId,
+      ingredientBrand,
+      ingredientVariety,
       ingredientName,
       ingredientDescription,
       ingredientImage
@@ -234,6 +260,8 @@ export class Ingredient implements IIngredient {
     ingredientTypeId,
     authorId,
     ownerId,
+    ingredientBrand,
+    ingredientVariety,
     ingredientName,
     ingredientDescription,
     ingredientImage
@@ -244,6 +272,8 @@ export class Ingredient implements IIngredient {
         ingredient_type_id = ?,
         author_id = ?,
         owner_id = ?,
+        ingredient_brand = ?,
+        ingredient_variety =?,
         ingredient_name = ?,
         ingredient_description = ?,
         ingredient_image = ?
@@ -255,6 +285,8 @@ export class Ingredient implements IIngredient {
       ingredientTypeId,
       authorId,
       ownerId,
+      ingredientBrand,
+      ingredientVariety,
       ingredientName,
       ingredientDescription,
       ingredientImage,
@@ -295,6 +327,8 @@ export interface IIngredient {
     ingredientTypeId,
     authorId,
     ownerId,
+    ingredientBrand,
+    ingredientVariety,
     ingredientName,
     ingredientDescription,
     ingredientImage
@@ -304,6 +338,8 @@ export interface IIngredient {
     ingredientTypeId,
     authorId,
     ownerId,
+    ingredientBrand,
+    ingredientVariety,
     ingredientName,
     ingredientDescription,
     ingredientImage
@@ -313,6 +349,8 @@ export interface IIngredient {
     ingredientTypeId,
     authorId,
     ownerId,
+    ingredientBrand,
+    ingredientVariety,
     ingredientName,
     ingredientDescription,
     ingredientImage
@@ -322,6 +360,8 @@ export interface IIngredient {
     ingredientTypeId,
     authorId,
     ownerId,
+    ingredientBrand,
+    ingredientVariety,
     ingredientName,
     ingredientDescription,
     ingredientImage
@@ -333,6 +373,8 @@ interface ICreatingIngredient {
   ingredientTypeId: number;
   authorId: number;
   ownerId: number;
+  ingredientBrand: string;
+  ingredientVariety: string;
   ingredientName: string;
   ingredientDescription: string;
   ingredientImage: string;

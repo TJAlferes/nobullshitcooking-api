@@ -33,6 +33,12 @@ export const userIngredientController = {
   },
   createMyPrivateUserIngredient: async function(req: Request, res: Response) {
     const ingredientTypeId = Number(req.body.ingredientInfo.ingredientTypeId);
+    const ingredientBrand = req.body.ingredientInfo.ingredientBrand
+      ? req.body.ingredientInfo.ingredientBrand
+      : "";
+    const ingredientVariety = req.body.ingredientInfo.ingredientVariety
+      ? req.body.ingredientInfo.ingredientVariety
+      : "";
     const ingredientName = req.body.ingredientInfo.ingredientName;
     const ingredientDescription = req.body.ingredientInfo.ingredientDescription;
     const ingredientImage = req.body.ingredientInfo.ingredientImage;
@@ -44,6 +50,8 @@ export const userIngredientController = {
       ingredientTypeId,
       authorId,
       ownerId,
+      ingredientBrand,
+      ingredientVariety,
       ingredientName,
       ingredientDescription,
       ingredientImage
@@ -60,6 +68,12 @@ export const userIngredientController = {
   updateMyPrivateUserIngredient: async function(req: Request, res: Response) {
     const ingredientId = Number(req.body.ingredientInfo.ingredientId);
     const ingredientTypeId = Number(req.body.ingredientInfo.ingredientTypeId);
+    const ingredientBrand = req.body.ingredientInfo.ingredientBrand
+      ? req.body.ingredientInfo.ingredientBrand
+      : "";
+    const ingredientVariety = req.body.ingredientInfo.ingredientVariety
+      ? req.body.ingredientInfo.ingredientVariety
+      : "";
     const ingredientName = req.body.ingredientInfo.ingredientName;
     const ingredientDescription = req.body.ingredientInfo.ingredientDescription;
     const ingredientImage = req.body.ingredientInfo.ingredientImage;
@@ -71,6 +85,8 @@ export const userIngredientController = {
       ingredientTypeId,
       authorId,
       ownerId,
+      ingredientBrand,
+      ingredientVariety,
       ingredientName,
       ingredientDescription,
       ingredientImage

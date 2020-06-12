@@ -29,6 +29,8 @@ router.post(
   userIsAuth,
   [
     body('ingredientTypeId').not().isEmpty().trim().escape(),
+    body('ingredientBrand').not().isEmpty().trim().escape(),
+    body('ingredientVariety').not().isEmpty().trim().escape(),
     body('ingredientName').not().isEmpty().trim().escape(),
     body('ingredientDescription').not().isEmpty().trim().escape(),
     body('ingredientImage').not().isEmpty().trim().escape()
@@ -42,6 +44,8 @@ router.put(
   [
     body('ingredientId').not().isEmpty().trim().escape(),
     body('ingredientTypeId').not().isEmpty().trim().escape(),
+    body('ingredientBrand').not().isEmpty().trim().escape(),
+    body('ingredientVariety').not().isEmpty().trim().escape(),
     body('ingredientName').not().isEmpty().trim().escape(),
     body('ingredientDescription').not().isEmpty().trim().escape(),
     body('ingredientImage').not().isEmpty().trim().escape()
