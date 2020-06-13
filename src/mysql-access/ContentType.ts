@@ -14,7 +14,7 @@ export class ContentType implements IContentType {
 
   async viewContentTypes() {
     const sql = `
-      SELECT content_type_id, content_type_name
+      SELECT content_type_id, parent_id, content_type_name, content_type_path
       FROM nobsc_content_types
     `;
     const [ allContentTypes ] = await this.pool.execute<RowDataPacket[]>(sql);
@@ -23,7 +23,7 @@ export class ContentType implements IContentType {
 
   async viewContentTypeById(contentTypeId: number) {
     const sql = `
-      SELECT content_type_id, content_type_name
+      SELECT content_type_id, parent_id, content_type_name, content_type_path
       FROM nobsc_content_types
       WHERE content_type_id = ?
     `;
