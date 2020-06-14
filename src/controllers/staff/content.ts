@@ -30,7 +30,9 @@ export const staffContentController = {
 
     const content = new Content(pool);
 
-    content.createContent(contentToCreate);
+    await content.createContent(contentToCreate);
+
+    res.send({message: 'Content created.'});
   },
   updateContent: async function(req: Request, res: Response) {
     const contentId = Number(req.body.contentInfo.contentId);
@@ -53,8 +55,10 @@ export const staffContentController = {
 
     const content = new Content(pool);
 
-    const updatedContent = content
+    await content
     .updateContent({contentId, ...contentToUpdateWith});
+
+    res.send({message: 'Content updated.'});
   },
   deleteContent: async function(req: Request, res: Response) {
     const contentId = Number(req.body.contentId);

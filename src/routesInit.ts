@@ -3,6 +3,10 @@ import { Application } from 'express';
 //const expressGraphQL = require('express-graphql');  // move also
 
 import {
+  staffRoutes,
+  userRoutes,
+  contentRoutes,
+  contentTypeRoutes,
   equipmentRoutes,
   equipmentTypeRoutes,
   ingredientRoutes,
@@ -16,8 +20,6 @@ import {
   methodRoutes,
   measurementRoutes,
   favoriteRecipeRoutes,
-  staffRoutes,
-  userRoutes,
   searchRoutes
 } from './routes';
 
@@ -25,6 +27,10 @@ export function routesInit(app: Application) {
   app.get('/', (req, res) => {
     res.send(`No Bullshit Cooking Backend API.`);
   });
+  app.use('/staff', staffRoutes);
+  app.use('/user', userRoutes);
+  app.use('/content', contentRoutes);
+  app.use('/content-type', contentTypeRoutes);
   app.use('/equipment', equipmentRoutes);
   app.use('/equipment-type', equipmentTypeRoutes);
   app.use('/ingredient', ingredientRoutes);
@@ -38,8 +44,6 @@ export function routesInit(app: Application) {
   app.use('/method', methodRoutes);
   app.use('/measurement', measurementRoutes);
   app.use('/favorite-recipe', favoriteRecipeRoutes);
-  app.use('/staff', staffRoutes);
-  app.use('/user', userRoutes);
   app.use('/search', searchRoutes);
   //app.use('/graphql', expressGraphQL({schema, rootValue, graphiql: true}));  // move also
 }

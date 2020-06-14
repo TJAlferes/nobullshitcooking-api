@@ -82,8 +82,8 @@ CREATE TABLE `nobsc_content` (
   `content_type_id` smallint unsigned NOT NULL,
   `author_id` int unsigned NOT NULL,
   `owner_id` int unsigned NOT NULL,
-  `created` date NOT NULL,
-  `published` date,
+  `created` char(10) NOT NULL,
+  `published` char(10),
   `content_items` json DEFAULT NULL,
   PRIMARY KEY (`content_id`),
   FOREIGN KEY (`content_type_id`) REFERENCES `nobsc_content_types` (`content_type_id`)
@@ -282,7 +282,7 @@ VALUES
 INSERT INTO nobsc_content
 (content_type_id, author_id, owner_id, created, published, content_items)
 VALUES
-(2, 1, 1, "4-14-2020", NULL, "[]");
+(2, 1, 1, "2020-04-14", NULL, "[]");
 
 INSERT INTO nobsc_cuisines
 (cuisine_id, cuisine_name, cuisine_nation, cuisine_wiki, cuisine_intro)
