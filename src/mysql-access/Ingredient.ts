@@ -98,10 +98,8 @@ export class Ingredient implements IIngredient {
         i.ingredient_name AS ingredient_name,
         i.ingredient_description AS ingredient_description,
         i.ingredient_image AS ingredient_image
-      FROM nobsc_ingredients
-      INNER JOIN
-        nobsc_ingredient_types t ON
-        i.ingredient_type_id = t.ingredient_type_id
+      FROM nobsc_ingredients i
+      INNER JOIN nobsc_ingredient_types t ON i.ingredient_type_id = t.ingredient_type_id
       WHERE i.author_id = ? AND i.owner_id = ?
       ORDER BY ingredient_name ASC
     `;
