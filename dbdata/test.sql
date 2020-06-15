@@ -274,7 +274,7 @@ VALUES
 (9, 6, "Principles", "/page/guide/fitness/principles"),
 (10, 7, "Recipes", "/page/guide/food/recipes"),
 (11, 7, "Cuisines", "/page/guide/food/cuisines"),
-(12, 7, "Ingredients", "page/guide/food/ingredients"),
+(12, 7, "Ingredients", "/page/guide/food/ingredients"),
 (13, 7, "Nutrition", "/page/guide/food/nutrition"),
 (14, 7, "Equipment", "/page/guide/food/equipment"),
 (15, 7, "Methods", "/page/guide/food/methods");
