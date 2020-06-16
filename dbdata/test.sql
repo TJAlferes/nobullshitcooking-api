@@ -776,8 +776,12 @@ VALUES
 
 (4, 1, 1, NULL,                  "Bacon",                                    "Tasty.", "nobsc-bacon"),
 
+(5, 1, 1, "Bone In",             "Chicken Breasts",                          "Tasty.", "nobsc-raw-chicken-wings"),
+(5, 1, 1, "Boneless",            "Chicken Breasts",                          "Tasty.", "nobsc-raw-chicken-wings"),
 (5, 1, 1, NULL,                  "Chicken Breasts",                          "Tasty.", "nobsc-raw-chicken-wings"),
 (5, 1, 1, NULL,                  "Chicken Tenderloins",                      "Tasty.", "nobsc-raw-chicken-wings"),
+(5, 1, 1, "Bone In",             "Chicken Thighs",                           "Tasty.", "nobsc-raw-chicken-wings"),
+(5, 1, 1, "Boneless",            "Chicken Thighs",                           "Tasty.", "nobsc-raw-chicken-wings"),
 (5, 1, 1, NULL,                  "Chicken Thighs",                           "Tasty.", "nobsc-raw-chicken-wings"),
 (5, 1, 1, NULL,                  "Chicken Wings",                            "Tasty.", "nobsc-raw-chicken-wings"),
 
@@ -791,6 +795,8 @@ VALUES
 
 (8, 1, 1, NULL,                  "Coconut",                                  "Tasty.", "nobsc-coconut"),
 
+(9, 1, 1, "Corn",                "Starch",                                   "Tasty.", "nobsc-eggs"),
+(9, 1, 1, "Potato",              "Starch",                                   "Tasty.", "nobsc-eggs"),
 (9, 1, 1, "All-Purpose",         "Flour",                                    "Tasty.", "nobsc-eggs"),
 
 (10, 1, 1, "Black Turtle",       "Beans",                                    "Tasty.", "nobsc-black-turtle-beans"),
