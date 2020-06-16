@@ -8,6 +8,15 @@ import { pool } from '../lib/connections/mysqlPoolConnection';
 import { Content } from '../mysql-access/Content';
 
 export const contentController = {
+  getContentLinksByTypeName: async function(req: Request, res: Response) {
+    const contentTypeName = req.params.contentTypeName;
+
+    const content = new Content(pool);
+
+    const rows = await content.getContentLinksByTypeName(contentTypeName);
+
+    res.send(rows);
+  },
   viewContentById: async function(req: Request, res: Response) {
     const contentId = Number(req.params.contentId);
 

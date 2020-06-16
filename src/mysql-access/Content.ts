@@ -5,10 +5,28 @@ export class Content implements IContent {
 
   constructor(pool: Pool) {
     this.pool = pool;
+    this.getContentLinksByTypeName = this.getContentLinksByTypeName.bind(this);
     this.viewContentById = this.viewContentById.bind(this);
     this.createContent = this.createContent.bind(this);
     this.updateContent = this.updateContent.bind(this);
     this.deleteContent = this.deleteContent.bind(this);
+  }
+
+  async getContentLinksByTypeName(contentTypeName: string) {
+    const sql = `
+      SELECT
+        c.content_id,
+        c.content_type_id,
+        t.content_type_name,
+        c.published,
+        c.title
+      FROM nobsc_content c
+      INNER JOIN nobsc_content_types t ON c.content_type_id = t.content_type_id
+      WHERE t.content_type_name = ? AND c.published IS NOT NULL
+    `;
+    const [ contentLinks ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [contentTypeName]);
+    return contentLinks;
   }
 
   // also make ByDate, ByTitle, ByAuthor, ByDateTitle, etc. ?
@@ -87,6 +105,7 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IContent {
   pool: Pool;
+  getContentLinksByTypeName(contentTypeName: string): Data;
   viewContentById(contentId: number): Data;
   createContent({
     contentTypeId,

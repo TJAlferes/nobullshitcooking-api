@@ -11,6 +11,12 @@ export const router = Router();
 // for /content/...
 
 router.get(
+  '/links/:contentTypeName',
+  [param('contentTypeName').not().isEmpty().trim().escape()],
+  catchExceptions(contentController.getContentLinksByTypeName)
+);
+
+router.get(
   '/:contentId',
   [param('contentId').not().isEmpty().trim().escape()],
   catchExceptions(contentController.viewContentById)
