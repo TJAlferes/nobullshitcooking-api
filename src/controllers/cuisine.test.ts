@@ -1,35 +1,34 @@
-const sinon = require('sinon');
-
-const pool = require('../lib/connections/mysqlPoolConnection');
-const Cuisine = require('../mysql-access/Cuisine');
-const validCuisineRequest = require('../lib/validations/cuisine/cuisineRequest');
-
-const cuisineController = require('./cuisine');
+import { pool } from '../lib/connections/mysqlPoolConnection';
+import { validCuisineRequest } from '../lib/validations/cuisine/cuisineRequest';
+import { Cuisine } from '../mysql-access/Cuisine';
+import { cuisineController } from './cuisine';
 
 const cuisine = new Cuisine(pool);
 
-let cuisineStub = sinon
+const cuisineStub = jest.fn();
+
+/*let cuisineStub = sinon
 .stub(cuisine, 'viewCuisineById')
 .returns(Promise.resolve([]));
 
 beforeEach(() => {
   cuisineStub.reset();
-});
+});*/
 
-describe('the cuisine controller', () => {
-  describe('the viewAllCuisines method', () => {
+describe('cuisine controller', () => {
+  describe('viewAllCuisines method', () => {
     it('should ', async () => {
-      const actual = ;
-      const expected = ;
-      expected(actual).toEqual(expected);
+      //const actual = ;
+      //const expected = ;
+      //expected(actual).toEqual(expected);
     });
   });
-  describe('the viewCuisineById method', () => {
-    it('should throw an error if accessing the database fails', async () => {
+  describe('viewCuisineById method', () => {
+    it('throws an error if accessing the database fails', async () => {
       //const cuisine = new Cuisine(pool);
       //sinon.stub(cuisine, 'viewCuisineById');
 
-      sinon.stub(validCuisineRequest);
+      //sinon.stub(validCuisineRequest);
 
       const req = {
         params: {

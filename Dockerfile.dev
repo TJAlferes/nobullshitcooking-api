@@ -1,13 +1,13 @@
 #1
 
-FROM mysql:8.0.17
+FROM mysql:8.0.19
 
 #ADD ./dbdata/ /docker-entrypoint-initdb.d/
 COPY ./dbdata/test.sql /dbdata/test.sql
 
 #2
 
-FROM node:12.16.1
+FROM node:12.17.0
 
 EXPOSE 3003
 
