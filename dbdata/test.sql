@@ -1053,7 +1053,9 @@ VALUES
 (17, 1, 1, "Balsamic",           "Vinegar",                                  "Tasty.", "nobsc-balsamic-vinegar"),
 (17, 1, 1, "Rice",               "Vinegar",                                  "Tasty.", "nobsc-balsamic-vinegar"),
 
-(18, 1, 1, NULL,                 "Fish Sauce",                               "Tasty.", "nobsc-tobasco-sauce");
+(18, 1, 1, NULL,                 "Fish Sauce",                               "Tasty.", "nobsc-tobasco-sauce"),
+(18, 1, 1, "Dark",               "Soy Sauce",                                "Tasty.", "nobsc-tobasco-sauce"),
+(18, 1, 1, "Light",              "Soy Sauce",                                "Tasty.", "nobsc-tobasco-sauce");
 
 INSERT INTO nobsc_ingredients
 (ingredient_type_id, author_id, owner_id, ingredient_brand, ingredient_name, ingredient_description, ingredient_image)
