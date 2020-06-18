@@ -13,7 +13,7 @@ export const equipmentTypeController = {
 
     const rows = await equipmentType.viewEquipmentTypes();
 
-    res.send(rows);
+    return res.send(rows);
   },
   viewEquipmentTypeById: async function(req: Request, res: Response) {
     const equipmentTypeId = Number(req.params.equipmentTypeId);
@@ -24,6 +24,6 @@ export const equipmentTypeController = {
 
     const [ row ] = await equipmentType.viewEquipmentTypeById(equipmentTypeId);
     
-    res.send(row);
+    return res.send(row);
   }
 };

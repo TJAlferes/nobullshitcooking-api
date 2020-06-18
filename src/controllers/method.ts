@@ -11,7 +11,7 @@ export const methodController = {
 
     const rows = await method.viewMethods();
 
-    res.send(rows);
+    return res.send(rows);
   },
   viewMethodById: async function(req: Request, res: Response) {
     const methodId = Number(req.params.methodId);
@@ -22,6 +22,6 @@ export const methodController = {
 
     const [ row ] = await method.viewMethodById(methodId);
     
-    res.send(row);
+    return res.send(row);
   }
 };

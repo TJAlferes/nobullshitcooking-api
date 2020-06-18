@@ -16,7 +16,7 @@ export const equipmentController = {
 
     const rows = await equipment.viewEquipment(authorId, ownerId);
 
-    res.send(rows);
+    return res.send(rows);
   },
   viewEquipmentById: async function(req: Request, res: Response) {
     const equipmentId = Number(req.params.equipmentId);
@@ -30,6 +30,6 @@ export const equipmentController = {
     const [ row ] = await equipment
     .viewEquipmentById(equipmentId, authorId, ownerId);
 
-    res.send(row);
+    return res.send(row);
   }
 };

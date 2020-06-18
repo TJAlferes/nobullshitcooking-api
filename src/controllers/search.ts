@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 
 import { AllSearch } from '../elasticsearch-access/AllSearch';
-import { RecipeSearch } from '../elasticsearch-access/RecipeSearch';
-import { IngredientSearch } from '../elasticsearch-access/IngredientSearch';
 import { EquipmentSearch } from '../elasticsearch-access/EquipmentSearch';
+import { IngredientSearch } from '../elasticsearch-access/IngredientSearch';
+import { RecipeSearch } from '../elasticsearch-access/RecipeSearch';
 import { esClient } from '../lib/connections/elasticsearchClient';
 
 export const searchController = {

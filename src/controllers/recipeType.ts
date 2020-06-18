@@ -13,7 +13,7 @@ export const recipeTypeController = {
 
     const rows = await recipeType.viewRecipeTypes();
 
-    res.send(rows);
+    return res.send(rows);
   },
   viewRecipeTypeById: async function(req: Request, res: Response) {
     const recipeTypeId = Number(req.params.recipeTypeId);
@@ -24,6 +24,6 @@ export const recipeTypeController = {
 
     const [ row ] = await recipeType.viewRecipeTypeById(recipeTypeId);
     
-    res.send(row);
+    return res.send(row);
   }
 };

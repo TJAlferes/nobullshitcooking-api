@@ -35,7 +35,7 @@ describe('content controller', () => {
       expect(MockedContent).toHaveBeenCalledTimes(1);
     });
 
-    it('uses res.send', async () => {
+    it('sends data', async () => {
       await contentController
       .getContentLinksByTypeName(<Request>req, <Response>res);
       expect(res.send).toBeCalledWith([rows]);
@@ -64,7 +64,7 @@ describe('content controller', () => {
       expect(MockedContent).toHaveBeenCalledTimes(1);
     });
 
-    it('uses res.send', async () => {
+    it('sends data', async () => {
       await contentController.viewContentById(<Request>req, <Response>res);
       expect(res.send).toBeCalledWith(rows);
     });

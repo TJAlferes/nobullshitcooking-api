@@ -16,7 +16,7 @@ export const recipeController = {
 
     const rows = await recipe.viewRecipes(authorId, ownerId);
 
-    res.send(rows);
+    return res.send(rows);
   },
   viewRecipeDetail: async function(req: Request, res: Response) {
     const recipeId = Number(req.params.recipeId);
@@ -27,9 +27,10 @@ export const recipeController = {
 
     const recipe = new Recipe(pool);
 
+    // inconsistent naming... please fix...
     const recipeDetail = await recipe
     .viewRecipeById(recipeId, authorId, ownerId);
 
-    res.send(recipeDetail);
+    return res.send(recipeDetail);
   }
 };

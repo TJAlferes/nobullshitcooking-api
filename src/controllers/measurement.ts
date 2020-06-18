@@ -13,7 +13,7 @@ export const measurementController = {
 
     const rows = await measurement.viewMeasurements();
 
-    res.send(rows);
+    return res.send(rows);
   },
   viewMeasurementById: async function(req: Request, res: Response) {
     const measurementId = Number(req.params.measurementId);
@@ -24,6 +24,6 @@ export const measurementController = {
 
     const [ row ] = await measurement.viewMeasurementById(measurementId);
     
-    res.send(row);
+    return res.send(row);
   }
 };

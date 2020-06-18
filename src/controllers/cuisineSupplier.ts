@@ -9,9 +9,9 @@ export const cuisineSupplierController = {
 
     const cuisineSupplier = new CuisineSupplier(pool);
 
-    const suppliers = await cuisineSupplier
+    const rows = await cuisineSupplier
     .viewCuisineSuppliersByCuisineId(cuisineId);
 
-    res.send({suppliers});
+    return res.send(rows);
   }
 };

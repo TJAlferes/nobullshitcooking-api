@@ -33,7 +33,7 @@ describe('contentType controller', () => {
       expect(MockedContentType).toHaveBeenCalledTimes(1);
     });
 
-    it('uses res.send', async () => {
+    it('sends data', async () => {
       await contentTypeController.viewContentTypes(<Request>{}, <Response>res);
       expect(res.send).toBeCalledWith([rows]);
     });
@@ -63,7 +63,7 @@ describe('contentType controller', () => {
       expect(MockedContentType).toHaveBeenCalledTimes(1);
     });
 
-    it('uses res.send', async () => {
+    it('sends data', async () => {
       await contentTypeController
       .viewContentTypeById(<Request>req, <Response>res);
       expect(res.send).toBeCalledWith(rows);

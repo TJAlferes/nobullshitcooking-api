@@ -12,9 +12,9 @@ export const cuisineIngredientController = {
 
     const cuisineIngredient = new CuisineIngredient(pool);
 
-    const ingredients = await cuisineIngredient
+    const rows = await cuisineIngredient
     .viewCuisineIngredientsByCuisineId(cuisineId);
 
-    res.send({ingredients});
+    return res.send(rows);
   }
 };

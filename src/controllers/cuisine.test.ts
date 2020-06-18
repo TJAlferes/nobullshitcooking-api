@@ -34,7 +34,7 @@ describe('cuisine controller', () => {
       expect(MockedCuisine).toHaveBeenCalledTimes(1);
     });
 
-    it('uses res.send', async () => {
+    it('sends data', async () => {
       await cuisineController.viewCuisines(<Request>{}, <Response>res);
       expect(res.send).toBeCalledWith([rows]);
     });
@@ -62,7 +62,7 @@ describe('cuisine controller', () => {
       expect(MockedCuisine).toHaveBeenCalledTimes(1);
     });
 
-    it('uses res.send', async () => {
+    it('sends data', async () => {
       await cuisineController.viewCuisineById(<Request>req, <Response>res);
       expect(res.send).toBeCalledWith(rows);
     });
@@ -92,7 +92,7 @@ describe('cuisine controller', () => {
       expect(MockedCuisine).toHaveBeenCalledTimes(1);
     });
 
-    it('uses res.send', async () => {
+    it('sends data', async () => {
       await cuisineController
       .viewCuisineDetailById(<Request>req, <Response>res);
       expect(res.send).toBeCalledWith([rows]);

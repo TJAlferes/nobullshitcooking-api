@@ -16,7 +16,7 @@ export const ingredientController = {
 
     const rows = await ingredient.viewIngredients(authorId, ownerId);
 
-    res.send(rows);
+    return res.send(rows);
   },
   viewIngredientById: async function(req: Request, res: Response) {
     const ingredientId = Number(req.params.ingredientId);
@@ -30,6 +30,6 @@ export const ingredientController = {
     const [ row ] = await ingredient
     .viewIngredientById(ingredientId, authorId, ownerId);
 
-    res.send(row);
+    return res.send(row);
   }
 };
