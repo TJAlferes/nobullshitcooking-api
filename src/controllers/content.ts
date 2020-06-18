@@ -15,7 +15,7 @@ export const contentController = {
 
     const rows = await content.getContentLinksByTypeName(contentTypeName);
 
-    res.send(rows);
+    return res.send(rows);
   },
   viewContentById: async function(req: Request, res: Response) {
     const contentId = Number(req.params.contentId);
@@ -26,6 +26,6 @@ export const contentController = {
 
     const [ row ] = await content.viewContentById(contentId);
 
-    res.send(row);
+    return res.send(row);
   }
 };

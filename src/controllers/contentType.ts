@@ -13,7 +13,7 @@ export const contentTypeController = {
 
     const rows = await contentType.viewContentTypes();
 
-    res.send(rows);
+    return res.send(rows);
   },
   viewContentTypeById: async function(req: Request, res: Response) {
     // body instead of params?
@@ -25,6 +25,6 @@ export const contentTypeController = {
     
     const [ row ] = await contentType.viewContentTypeById(contentTypeId);
 
-    res.send(row);
+    return res.send(row);
   }
 };
