@@ -1,46 +1,82 @@
-import { pool } from '../lib/connections/mysqlPoolConnection';
-import { validCuisineRequest } from '../lib/validations/cuisine/cuisineRequest';
+import { Request, Response } from 'express';
+import { assert } from 'superstruct';
+import { mocked } from 'ts-jest/utils';
+
 import { Cuisine } from '../mysql-access/Cuisine';
 import { cuisineController } from './cuisine';
 
-const cuisine = new Cuisine(pool);
+const rows: any = [{cuisine_id: 1, cuisine_name: "Name"}];
 
-const cuisineStub = jest.fn();
+jest.mock('superstruct');
 
-/*let cuisineStub = sinon
-.stub(cuisine, 'viewCuisineById')
-.returns(Promise.resolve([]));
+jest.mock('../mysql-access/Cuisine', () => ({
+  Cuisine: jest.fn().mockImplementation(() => {
+    const rows: any = [{cuisine_id: 1, cuisine_name: "Name"}];
+    return {
+      viewCuisines: jest.fn().mockResolvedValue([rows]),
+      viewCuisineById: jest.fn().mockResolvedValue([rows]),
+      viewCuisineDetailById: jest.fn().mockResolvedValue([rows])
+    };
+  })
+}));
 
-beforeEach(() => {
-  cuisineStub.reset();
-});*/
+afterEach(() => {
+  jest.clearAllMocks();
+});
 
 describe('cuisine controller', () => {
-  describe('viewAllCuisines method', () => {
-    it('should ', async () => {
-      //const actual = ;
-      //const expected = ;
-      //expected(actual).toEqual(expected);
+  describe('viewCuisines method', () => {
+    it('works', async () => {
+      const res: Partial<Response> = {
+        send: jest.fn().mockResolvedValue([rows])
+      };
+
+      const actual = await cuisineController
+      .viewCuisines(<Request>{}, <Response>res);
+
+      expect(actual).toEqual([rows]);
+
+      const MockedCuisine = mocked(Cuisine, true);
+
+      expect(MockedCuisine).toHaveBeenCalledTimes(1);
     });
   });
   describe('viewCuisineById method', () => {
-    it('throws an error if accessing the database fails', async () => {
-      //const cuisine = new Cuisine(pool);
-      //sinon.stub(cuisine, 'viewCuisineById');
+    it('works', async () => {
+      const req: Partial<Request> = {params: {cuisineId: "1"}};
+      const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
-      //sinon.stub(validCuisineRequest);
+      const actual = await cuisineController
+      .viewCuisineById(<Request>req, <Response>res);
 
-      const req = {
-        params: {
-          cuisineId: 1
-        }
-      };
+      expect(actual).toEqual(rows);
 
-      const result = await cuisineController.viewCuisineById(req, {});  // bind()?
+      const MockedAssert = mocked(assert, true);
 
-      const actual = result;
-      const expected = ;
-      expected(actual).toEqual(expected);
+      expect(MockedAssert).toHaveBeenCalledTimes(1);
+
+      const MockedCuisine = mocked(Cuisine, true);
+
+      expect(MockedCuisine).toHaveBeenCalledTimes(1);
+    });
+  });
+  describe('viewCuisineDetailById method', () => {
+    it('works', async () => {
+      const req: Partial<Request> = {params: {cuisineId: "1"}};
+      const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
+
+      const actual = await cuisineController
+      .viewCuisineDetailById(<Request>req, <Response>res);
+
+      expect(actual).toEqual(rows);
+
+      const MockedAssert = mocked(assert, true);
+
+      expect(MockedAssert).toHaveBeenCalledTimes(1);
+
+      const MockedCuisine = mocked(Cuisine, true);
+
+      expect(MockedCuisine).toHaveBeenCalledTimes(1);
     });
   });
 });

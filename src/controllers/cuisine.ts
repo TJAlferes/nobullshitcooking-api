@@ -11,7 +11,7 @@ export const cuisineController = {
 
     const rows = await cuisine.viewCuisines();
 
-    res.send(rows);
+    return res.send(rows);
   },
   viewCuisineById: async function(req: Request, res: Response) {
     const cuisineId = Number(req.params.cuisineId);
@@ -22,7 +22,7 @@ export const cuisineController = {
 
     const [ row ] = await cuisine.viewCuisineById(cuisineId);
     
-    res.send(row);
+    return res.send(row);
   },
   viewCuisineDetailById: async function(req: Request, res: Response) {
     const cuisineId = Number(req.params.cuisineId);
@@ -33,6 +33,6 @@ export const cuisineController = {
 
     const detail = await cuisine.viewCuisineDetailById(cuisineId);
 
-    res.send(detail);
+    return res.send(detail);
   }
 };
