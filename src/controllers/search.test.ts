@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+/*import { Request, Response } from 'express';
 import { assert } from 'superstruct';
 import { mocked } from 'ts-jest/utils';
 
@@ -9,4 +9,4 @@ import { searchController } from './search';
 
 describe('search controller', () => {
 
-});
+});*/

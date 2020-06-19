@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-//const crypto = require('crypto');
 import bcrypt from 'bcrypt';
 import { assert } from 'superstruct';
 import { v4 as uuidv4 } from 'uuid';
@@ -16,7 +15,8 @@ import {
   validVerify,
   validResend,
   validLoginRequest,
-  validLogin
+  validLogin,
+  validUpdatingUser
 } from '../../lib/validations/user/index';
 import { User } from '../../mysql-access/User';
 
@@ -41,7 +41,7 @@ export const userAuthController = {
 
     const encryptedPassword = await bcrypt.hash(pass, SALT_ROUNDS);
 
-    const confirmationCode = uuidv4();  // JWT?
+    const confirmationCode = uuidv4();
 
     const userToCreate = {
       email,
@@ -56,9 +56,8 @@ export const userAuthController = {
 
     emailConfirmationCode(email, confirmationCode);
 
-    res.send({message: 'User account created.'});
+    return res.send({message: 'User account created.'});
   },
-
   verify: async function(req: Request, res: Response) {
     const email = req.body.userInfo.email;
     const pass = req.body.userInfo.password;
@@ -77,9 +76,8 @@ export const userAuthController = {
 
     //user.verifyUser(email);  // change from uuid to null
 
-    res.send('User account verified.');
+    return res.send('User account verified.');
   },
-
   resendConfirmationCode: async function (req: Request, res: Response) {
     const email = req.body.userInfo.email;
     const pass = req.body.userInfo.password;
@@ -92,13 +90,12 @@ export const userAuthController = {
 
     if (!valid) return res.send({message: feedback});
 
-    const confirmationCode = uuidv4();  // use JWT instead?
+    const confirmationCode = uuidv4();
 
     emailConfirmationCode(email, confirmationCode);
 
-    res.send({message: 'Confirmation code re-sent.'});
+    return res.send({message: 'Confirmation code re-sent.'});
   },
-
   login: async function(req: Request, res: Response) {
     const email = req.body.userInfo.email;
     const pass = req.body.userInfo.password;
@@ -126,37 +123,35 @@ export const userAuthController = {
       avatar: userExists!.avatar
     });
   },
-
   logout: async function(req: Request, res: Response) {
     req.session!.destroy(function() {});
-    res.end();
+    return res.end();
   },
+  updateUser: async function(req: Request, res: Response) {
+    const email = req.body.userInfo.email;
+    const pass = req.body.userInfo.password;
+    const username = req.body.userInfo.username;
+    const avatar = req.body.userInfo.avatar;
 
-  setAvatar: async function(req: Request, res: Response) {
-    const avatar = req.body.avatar;
+    const userId = req.session!.userInfo.userId;
+
+    const userToUpdateWith = {email, pass, username, avatar};
+
+    assert(userToUpdateWith, validUpdatingUser);
+
+    const user = new User(pool);
+
+    await user.updateUser({userId, ...userToUpdateWith});
+    
+    return res.send({message: 'Account updated.'});
+  },
+  deleteUser: async function(req: Request, res: Response) {
     const userId = req.session!.userInfo.userId;
 
     const user = new User(pool);
 
-    await user.setAvatar(avatar, userId);
-    
-    res.send({message: 'Avatar set.'});
-  },
+    await user.deleteUser(userId);
 
-  updateUsername: async function(req: Request, res: Response) {
-    // TO DO: implement this! write a test first!
-    // use res.status().json(); instead of res.send(); ?
-  },
-
-  updateEmail: async function(req: Request, res: Response) {
-    // TO DO: implement this! write a test first!
-  },
-
-  updatePassword: async function(req: Request, res: Response) {
-    // TO DO: implement this! write a test first!
-  },
-
-  deleteAccount: async function(req: Request, res: Response) {
-    // TO DO: implement this! write a test first!
+    return res.send({message: 'Account deleted.'});
   }
 };

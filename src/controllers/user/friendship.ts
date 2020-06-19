@@ -16,14 +16,14 @@ export const userFriendshipController = {
 
     const rows = await friendship.viewAllMyFriendships(userId);
 
-    res.send(rows);
+    return res.send(rows);
   },
   createFriendship: async function(req: Request, res: Response) {
     const friendName = req.body.friendName;
 
     const user = new User(pool);
 
-    const friendExists = await user.getUserIdByUsername(friendName);
+    const friendExists = await user.getUserIdByName(friendName);
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
     const friendId = friendExists[0].user_id;
@@ -63,14 +63,14 @@ export const userFriendshipController = {
 
     await friendship.createFriendship(friendshipToCreate);
 
-    res.send({message: 'Friendship request sent.'});
+    return res.send({message: 'Friendship request sent.'});
   },
   acceptFriendship: async function(req: Request, res: Response) {
     const friendName = req.body.friendName;
 
     const user = new User(pool);
 
-    const friendExists = await user.getUserIdByUsername(friendName);
+    const friendExists = await user.getUserIdByName(friendName);
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
     const friendId = friendExists[0].user_id;
@@ -80,14 +80,14 @@ export const userFriendshipController = {
 
     await friendship.acceptFriendship(userId, friendId);
 
-    res.send({message: 'Friendship request accepted.'});
+    return res.send({message: 'Friendship request accepted.'});
   },
   rejectFriendship: async function(req: Request, res: Response) {
     const friendName = req.body.friendName;
 
     const user = new User(pool);
 
-    const friendExists = await user.getUserIdByUsername(friendName);
+    const friendExists = await user.getUserIdByName(friendName);
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
     const friendId = friendExists[0].user_id;
@@ -97,14 +97,14 @@ export const userFriendshipController = {
 
     await friendship.rejectFriendship(userId, friendId);
 
-    res.send({message: 'Friendship request rejected.'});
+    return res.send({message: 'Friendship request rejected.'});
   },
   deleteFriendship: async function(req: Request, res: Response) {
     const friendName = req.body.friendName;
 
     const user = new User(pool);
 
-    const friendExists = await user.getUserIdByUsername(friendName);
+    const friendExists = await user.getUserIdByName(friendName);
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
     const friendId = friendExists[0].user_id;
@@ -114,14 +114,14 @@ export const userFriendshipController = {
 
     await friendship.deleteFriendship(userId, friendId);
 
-    res.send({message: 'No longer friends. Maybe again later.'});
+    return res.send({message: 'No longer friends. Maybe again later.'});
   },
   blockUser: async function(req: Request, res: Response) {
     const friendName = req.body.friendName;
 
     const user = new User(pool);
 
-    const friendExists = await user.getUserIdByUsername(friendName);
+    const friendExists = await user.getUserIdByName(friendName);
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
     const friendId = friendExists[0].user_id;
@@ -131,14 +131,14 @@ export const userFriendshipController = {
 
     await friendship.blockUser(userId, friendId);
 
-    res.send({message: 'User blocked.'});
+    return res.send({message: 'User blocked.'});
   },
   unblockUser: async function(req: Request, res: Response) {
     const friendName = req.body.friendName;
 
     const user = new User(pool);
 
-    const friendExists = await user.getUserIdByUsername(friendName);
+    const friendExists = await user.getUserIdByName(friendName);
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
     const friendId = friendExists[0].user_id;
@@ -148,6 +148,6 @@ export const userFriendshipController = {
     
     await friendship.unblockUser(userId, friendId);
 
-    res.send({message: 'User unblocked.'});
+    return res.send({message: 'User unblocked.'});
   }
 };

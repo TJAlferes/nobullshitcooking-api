@@ -21,8 +21,7 @@ export async function socketConnection(socket: Socket) {
   const userId = socket.request.userInfo.userId;
   const username = socket.request.userInfo.username;
   const avatar = socket.request.userInfo.avatar;
-
-  // move these up?
+  
   const nobscUser = new NOBSCUser(pool);
   const nobscFriendship = new NOBSCFriendship(pool);
   const messengerUser = new MessengerUser(pubClient);

@@ -1,32 +1,53 @@
-const httpMocks = require('node-mocks-http');
+//const httpMocks = require('node-mocks-http');
 //const request = require('supertest');
+import { Request, Response } from 'express';
+import { assert } from 'superstruct';
+import { mocked } from 'ts-jest/utils';
 
-//const app = require('../../app');
+import { User } from '../../mysql-access/User';
+import { userAuthController } from './auth';
 
-const userAuthController = require('./auth');
+const rows: any = [{id: 1, name: "Name"}];
 
-describe('userAuthController', () => {
-  let req;
-  let res;
+jest.mock('superstruct');
 
-  // move into inner describes?
-  beforeEach(() => {
-    req = httpMocks.createRequest();
-    res = httpMocks.createResponse();
-  });
+jest.mock('../../mysql-access/User', () => ({
+  User: jest.fn().mockImplementation(() => {
+    const rows: any = [{id: 1, name: "Name"}];
+    return {
+      getUserByEmail: jest.fn().mockResolvedValue([rows]),
+      getUserByName: jest.fn().mockResolvedValue([rows]),
+      getUserIdByName: jest.fn().mockResolvedValue([rows]),
+      viewUserById: jest.fn().mockResolvedValue([rows]),
+      createUser: jest.fn().mockResolvedValue([rows]),
+      updateUser: jest.fn().mockResolvedValue([rows]),
+      deleteUser: jest.fn().mockResolvedValue([rows])
+    };
+  })
+}));
 
-  describe('updateUsername', () => {
-    /*it('should integrate', () => {
-      return request(app).put('/user/auth/update/username').expect(200);
-    });*/
+afterEach(() => {
+  jest.clearAllMocks();
+});
 
-    it('should send a response', async () => {
-      req.body.userInfo = {
-        username
-      };
-      await userAuthController.updateUsername(req, res);
-      //expect(res.send()).toBeCalledTimes(1);  // only works with jest.fn()
+describe('user auth controller', () => {
+  describe('register method', () => {});
 
-    });
-  });
+  describe('verify method', () => {});
+
+  describe('resendConfirmationCode method', () => {});
+
+  describe('login method', () => {});
+
+  describe('logout method', () => {});
+
+  describe('setAvatar method', () => {});
+
+  describe('updateUsername method', () => {});
+
+  describe('updateEmail method', () => {});
+
+  describe('updatePassword method', () => {});
+
+  describe('deleteAccount method', () => {});
 });

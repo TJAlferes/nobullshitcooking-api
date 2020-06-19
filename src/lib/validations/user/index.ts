@@ -1,6 +1,7 @@
 export { validRegisterRequest } from './registerRequest';
 export { validRegister } from './register';
 export { validUserEntity } from './userEntity';
+export { validUpdatingUser } from './updatingUser';
 export { validVerifyRequest } from './verifyRequest';
 export { validVerify } from './verify';
 export { validResend } from './resend';

@@ -5,18 +5,17 @@ export class User implements IUser {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.getUserByEmail = this.getUserByEmail.bind(this);
-    this.getUserByName = this.getUserByName.bind(this);
-    // why both? ^ V
-    this.getUserIdByUsername = this.getUserIdByUsername.bind(this);
-    this.viewAllUsers = this.viewAllUsers.bind(this);
+    this.getUserByEmail = this.getUserByEmail.bind(this);  // sensitive
+    this.getUserByName = this.getUserByName.bind(this);  // sensitive
+    this.getUserIdByName = this.getUserIdByName.bind(this);
+    //this.viewUsers = this.viewUsers.bind(this);
     this.viewUserById = this.viewUserById.bind(this);
     this.createUser = this.createUser.bind(this);
-    this.setAvatar = this.setAvatar.bind(this);
     this.updateUser = this.updateUser.bind(this);
     this.deleteUser = this.deleteUser.bind(this);
   }
 
+  // sensitive
   async getUserByEmail(email: string) {
     const sql = `
       SELECT user_id, email, pass, username, avatar, confirmation_code
@@ -28,6 +27,7 @@ export class User implements IUser {
     return userByEmail;
   }
 
+  // sensitive
   async getUserByName(username: string) {
     const sql = `
       SELECT user_id, email, pass, username
@@ -39,9 +39,9 @@ export class User implements IUser {
     return userByName;
   }
 
-  async getUserIdByUsername(username: string) {
+  async getUserIdByName(username: string) {
     const sql = `
-      SELECT user_id, avatar
+      SELECT user_id
       FROM nobsc_users
       WHERE username = ?
     `;
@@ -50,7 +50,7 @@ export class User implements IUser {
     return userId;
   }
 
-  async viewAllUsers(starting: number, display: number) {
+  /*async viewUsers(starting: number, display: number) {
     const sql = `
       SELECT username, avatar
       FROM nobsc_users
@@ -60,7 +60,7 @@ export class User implements IUser {
     const [ allUsers ] = await this.pool
     .execute<RowDataPacket[]>(sql, [starting, display]);
     return allUsers;
-  }
+  }*/
 
   async viewUserById(userId: number) {
     const sql = `
@@ -72,26 +72,14 @@ export class User implements IUser {
     return user;
   }
 
-  async createUser({ email, pass, username }: ICreatingUser) {
+  async createUser({ email, pass, username, confirmationCode }: ICreatingUser) {
     const sql = `
-      INSERT INTO nobsc_users (email, pass, username)
-      VALUES (?, ?, ?)
+      INSERT INTO nobsc_users (email, pass, username, confirmation_code)
+      VALUES (?, ?, ?, ?)
     `;
     const [ createdUser ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [email, pass, username]);
+    .execute<RowDataPacket[]>(sql, [email, pass, username, confirmationCode]);
     return createdUser;
-  }
-
-  async setAvatar(avatar: string, userId: number) {
-    const sql = `
-      UPDATE nobsc_users
-      SET avatar = ?
-      WHERE user_id = ?
-      LIMIT 1
-    `;
-    const [ updatedUser ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [avatar, userId]);
-    return updatedUser;
   }
 
   async updateUser({
@@ -131,11 +119,10 @@ export interface IUser {
   pool: Pool;
   getUserByEmail(email: string): Data;
   getUserByName(username: string): Data;
-  getUserIdByUsername(username: string): Data;
-  viewAllUsers(starting: number, display: number): Data;
+  getUserIdByName(username: string): Data;
+  //viewUsers(starting: number, display: number): Data;
   viewUserById(userId: number): Data;
-  createUser({ email, pass, username }: ICreatingUser): Data;
-  setAvatar(avatar: string, userId: number): Data;
+  createUser({ email, pass, username, confirmationCode }: ICreatingUser): Data;
   updateUser({
     userId,
     email,
@@ -150,6 +137,7 @@ interface ICreatingUser {
   email: string;
   pass: string;
   username: string;
+  confirmationCode: string;
 }
 
 interface IUpdatingUser {
