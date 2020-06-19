@@ -17,8 +17,8 @@ jest.mock('../../mysql-access/User', () => ({
     return {
       getUserByEmail: jest.fn().mockResolvedValue([rows]),
       getUserByName: jest.fn().mockResolvedValue([rows]),
-      getUserIdByName: jest.fn().mockResolvedValue([rows]),
       viewUserById: jest.fn().mockResolvedValue([rows]),
+      viewUserByName: jest.fn().mockResolvedValue([rows]),
       createUser: jest.fn().mockResolvedValue([rows]),
       updateUser: jest.fn().mockResolvedValue([rows]),
       deleteUser: jest.fn().mockResolvedValue([rows])
