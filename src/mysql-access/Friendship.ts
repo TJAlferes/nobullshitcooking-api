@@ -7,12 +7,12 @@ export class Friendship implements IFriendship {
     this.pool = pool;
     this.getFriendshipByFriendId = this.getFriendshipByFriendId.bind(this);
     this.checkIfBlockedBy = this.checkIfBlockedBy.bind(this);
-    this.viewAllMyFriendships = this.viewAllMyFriendships.bind(this);
-    this.viewAllMyAcceptedFriendships =
-      this.viewAllMyAcceptedFriendships.bind(this);
-    this.viewAllMyPendingFriendships =
-      this.viewAllMyPendingFriendships.bind(this);
-    this.viewAllMyBlockedUsers = this.viewAllMyBlockedUsers.bind(this);
+    this.viewMyFriendships = this.viewMyFriendships.bind(this);
+    this.viewMyAcceptedFriendships =
+      this.viewMyAcceptedFriendships.bind(this);
+    this.viewMyPendingFriendships =
+      this.viewMyPendingFriendships.bind(this);
+    this.viewMyBlockedUsers = this.viewMyBlockedUsers.bind(this);
     this.createFriendship = this.createFriendship.bind(this);
     this.acceptFriendship = this.acceptFriendship.bind(this);
     this.rejectFriendship = this.rejectFriendship.bind(this);
@@ -56,7 +56,7 @@ export class Friendship implements IFriendship {
     return blockedBy;
   }
 
-  async viewAllMyFriendships(userId: number) {
+  async viewMyFriendships(userId: number) {
     const sql = `
       SELECT
         u.user_id AS user_id,
@@ -74,7 +74,7 @@ export class Friendship implements IFriendship {
     return friendships;
   }
 
-  async viewAllMyAcceptedFriendships(userId: number) {
+  async viewMyAcceptedFriendships(userId: number) {
     const sql = `
       SELECT
         u.user_id AS user_id,
@@ -90,7 +90,7 @@ export class Friendship implements IFriendship {
     return acceptedFriendships;
   }
 
-  async viewAllMyPendingFriendships(userId: number) {
+  async viewMyPendingFriendships(userId: number) {
     const sql = `
       SELECT
         u.user_id AS user_id,
@@ -106,7 +106,7 @@ export class Friendship implements IFriendship {
     return pendingFriendships;
   }
 
-  async viewAllMyBlockedUsers(userId: number) {
+  async viewMyBlockedUsers(userId: number) {
     const sql = `
       SELECT
         u.user_id AS user_id,
@@ -220,10 +220,10 @@ export interface IFriendship {
   pool: Pool;
   getFriendshipByFriendId(userId: number, friendId: number): Data;
   checkIfBlockedBy(userId: number, friendId: number): Data;
-  viewAllMyFriendships(userId: number): Data;
-  viewAllMyAcceptedFriendships(userId: number): Data;
-  viewAllMyPendingFriendships(userId: number): Data;
-  viewAllMyBlockedUsers(userId: number): Data;
+  viewMyFriendships(userId: number): Data;
+  viewMyAcceptedFriendships(userId: number): Data;
+  viewMyPendingFriendships(userId: number): Data;
+  viewMyBlockedUsers(userId: number): Data;
   createFriendship({
     userId,
     friendId,

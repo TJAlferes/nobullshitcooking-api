@@ -9,12 +9,12 @@ import { Friendship } from '../../mysql-access/Friendship';
 import { User } from '../../mysql-access/User';
 
 export const userFriendshipController = {
-  viewAllMyFriendships: async function(req: Request, res: Response) {
+  viewMyFriendships: async function(req: Request, res: Response) {
     const userId = req.session!.userInfo.userId;
 
     const friendship = new Friendship(pool);
 
-    const rows = await friendship.viewAllMyFriendships(userId);
+    const rows = await friendship.viewMyFriendships(userId);
 
     return res.send(rows);
   },
@@ -23,7 +23,7 @@ export const userFriendshipController = {
 
     const user = new User(pool);
 
-    const friendExists = await user.getUserIdByName(friendName);
+    const friendExists = await user.viewUserByName(friendName);
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
     const friendId = friendExists[0].user_id;
@@ -70,7 +70,7 @@ export const userFriendshipController = {
 
     const user = new User(pool);
 
-    const friendExists = await user.getUserIdByName(friendName);
+    const friendExists = await user.viewUserByName(friendName);
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
     const friendId = friendExists[0].user_id;
@@ -87,7 +87,7 @@ export const userFriendshipController = {
 
     const user = new User(pool);
 
-    const friendExists = await user.getUserIdByName(friendName);
+    const friendExists = await user.viewUserByName(friendName);
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
     const friendId = friendExists[0].user_id;
@@ -104,7 +104,7 @@ export const userFriendshipController = {
 
     const user = new User(pool);
 
-    const friendExists = await user.getUserIdByName(friendName);
+    const friendExists = await user.viewUserByName(friendName);
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
     const friendId = friendExists[0].user_id;
@@ -121,7 +121,7 @@ export const userFriendshipController = {
 
     const user = new User(pool);
 
-    const friendExists = await user.getUserIdByName(friendName);
+    const friendExists = await user.viewUserByName(friendName);
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
     const friendId = friendExists[0].user_id;
@@ -138,7 +138,7 @@ export const userFriendshipController = {
 
     const user = new User(pool);
 
-    const friendExists = await user.getUserIdByName(friendName);
+    const friendExists = await user.viewUserByName(friendName);
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
     const friendId = friendExists[0].user_id;
