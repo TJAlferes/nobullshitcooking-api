@@ -6,19 +6,16 @@ import { Friendship } from '../../mysql-access/Friendship';
 import { User } from '../../mysql-access/User';
 import { userFriendshipController } from './friendship';
 
-const rows: any = [{id: 1, name: "Name"}];  // del?
-
 jest.mock('superstruct');
-
 jest.mock('../../mysql-access/Friendship', () => {
   const originalModule = jest.requireActual('../../mysql-access/Friendship');
   return {
     ...originalModule,
     Friendship: jest.fn().mockImplementation(() => ({
-      getFriendshipByFriendId:  jest.fn(),
-      checkIfBlockedBy:  jest.fn(),
+      getFriendshipByFriendId:  mockGetFriendshipByFriendId,
+      checkIfBlockedBy:  mockCheckIfBlockedBy,
       viewMyFriendships: mockViewMyFriendships,
-      createFriendship: jest.fn(),
+      createFriendship: mockCreateFriendship,
       acceptFriendship: jest.fn(),
       rejectFriendship: jest.fn(),
       deleteFriendship: jest.fn(),
@@ -27,15 +24,20 @@ jest.mock('../../mysql-access/Friendship', () => {
     }))
   };
 });
+let mockGetFriendshipByFriendId = jest.fn();
+let mockCheckIfBlockedBy = jest.fn();
 let mockViewMyFriendships = jest.fn();
-
-jest.mock('../../mysql-access/User', () => ({
-  User: jest.fn().mockImplementation(() => {
-    //const rows: any = [{user_id: 42, avatar: "NameXYZ"}];
-    const rows: any = [];
-    return {viewUserByName: jest.fn().mockResolvedValue([rows])};
-  })
-}));
+let mockCreateFriendship = jest.fn();
+jest.mock('../../mysql-access/User', () => {
+  const originalModule = jest.requireActual('../../mysql-access/User');
+  return {
+    ...originalModule,
+    User: jest.fn().mockImplementation(() => ({
+      viewUserByName: mockViewUserByName
+    }))
+  };
+});
+let mockViewUserByName = jest.fn();
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -45,21 +47,11 @@ describe('user friendship controller', () => {
   const session = {...<Express.Session>{}, userInfo: {userId: 1}};
 
   describe('viewMyFriendships method', () => {
+    const rows = [{id: 1, name: "Name"}];
     const req: Partial<Request> = {session};
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue([rows])};
 
     it('uses Friendship mysql access', async () => {
-      const rows: any = [{id: 1, name: "Name"}];
-      mockViewMyFriendships = jest.fn().mockResolvedValue([rows]);
-      jest.doMock('../../mysql-access/Friendship', () => {
-        const originalModule = jest.requireActual('../../mysql-access/Friendship');
-        return {
-          ...originalModule,
-          Friendship: jest.fn().mockImplementation(() => ({
-            viewMyFriendships: mockViewMyFriendships
-          }))
-        };
-      });
       mockViewMyFriendships = jest.fn().mockResolvedValue([rows]);
       await userFriendshipController
       .viewMyFriendships(<Request>req, <Response>res);
@@ -67,102 +59,76 @@ describe('user friendship controller', () => {
       expect(MockedFriendship).toHaveBeenCalledTimes(1);
     });
 
-    /*it('sends data', async () => {
-      jest.doMock('../../mysql-access/Friendship', () => ({
-        Friendship: jest.fn().mockImplementation(() => {
-          const rows: any = [{id: 1, name: "Name"}];
-          return {viewMyFriendships: jest.fn().mockResolvedValue([rows])};
-        })
-      }));
+    it('sends data', async () => {
+      mockViewMyFriendships = jest.fn().mockResolvedValue([rows]);
       await userFriendshipController
       .viewMyFriendships(<Request>req, <Response>res);
       expect(res.send).toBeCalledWith([rows]);
     });
 
     it('returns correctly', async () => {
-      jest.doMock('../../mysql-access/Friendship', () => ({
-        Friendship: jest.fn().mockImplementation(() => {
-          const rows: any = [{id: 1, name: "Name"}];
-          return {viewMyFriendships: jest.fn().mockResolvedValue([rows])};
-        })
-      }));
+      mockViewMyFriendships = jest.fn().mockResolvedValue([rows]);
       const actual = await userFriendshipController
       .viewMyFriendships(<Request>req, <Response>res);
       expect(actual).toEqual([rows]);
-    });*/
+    });
   });
 
   describe('createFriendship method', () => {
 
-    /*describe('when desired friend does not exist', () => {
+    describe('when desired friend does not exist', () => {
       const req: Partial<Request> = {session, body: {friendName: "Name"}};
       const res: Partial<Response> = {
         send: jest.fn().mockResolvedValue({message: 'User not found.'})
       };
 
       it('sends data', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([[]]);
         await userFriendshipController
         .createFriendship(<Request>req, <Response>res);
         expect(res.send).toBeCalledWith({message: 'User not found.'});
       });
   
       it('returns correctly', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([[]]);
         const actual = await userFriendshipController
         .createFriendship(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'User not found.'});
       });
-    });*/
+    });
 
-    /*describe('when blocked by desired friend', () => {
-      jest.mock('../../mysql-access/Friendship', () => ({
-        Friendship: jest.fn().mockImplementation(() => {
-          const rows: any = [{user_id: 1, friend_id: 42}];
-          return {checkIfBlockedBy:  jest.fn().mockResolvedValue([rows])};
-        })
-      }));
-
-      jest.mock('../../mysql-access/User', () => ({
-        User: jest.fn().mockImplementation(() => {
-          const rows: any = [{user_id: 42, avatar: "NameXYZ"}];
-          return {viewUserByName: jest.fn().mockResolvedValue([rows])};
-        })
-      }));
-
+    describe('when blocked by desired friend', () => {
       const req: Partial<Request> = {session, body: {friendName: "Name"}};
       const res: Partial<Response> = {
         send: jest.fn().mockResolvedValue({message: 'User not found.'})
       };
 
       it('sends data', async () => {
+        mockCheckIfBlockedBy = jest.fn().mockResolvedValue(
+          [[{user_id: 1, friend_id: 42}]]
+        );
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
         await userFriendshipController
         .createFriendship(<Request>req, <Response>res);
         expect(res.send).toBeCalledWith({message: 'User not found.'});
       });
   
       it('returns correctly', async () => {
+        mockCheckIfBlockedBy = jest.fn().mockResolvedValue(
+          [[{user_id: 1, friend_id: 42}]]
+        );
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
         const actual = await userFriendshipController
         .createFriendship(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'User not found.'});
       });
-    });*/
+    });
 
-    /*describe('when friendship does not already exist', () => {
-      jest.mock('../../mysql-access/Friendship', () => ({
-        Friendship: jest.fn().mockImplementation(() => ({
-          checkIfBlockedBy:  jest.fn().mockResolvedValue([[]]),
-          getFriendshipByFriendId: jest.fn().mockResolvedValue([[]]),
-          createFriendship: jest.fn().mockResolvedValue([
-            [{user_id: 1, friendId: 42, status: "pending-sent"}]
-          ])
-        }))
-      }));
-      jest.mock('../../mysql-access/User', () => ({
-        User: jest.fn().mockImplementation(() => {
-          const rows: any = [{user_id: 42, avatar: "NameXYZ"}];
-          return {viewUserByName: jest.fn().mockResolvedValue([rows])};
-        })
-      }));
-
+    describe('when friendship does not already exist', () => {
       const req: Partial<Request> = {session, body: {friendName: "Name"}};
       const res: Partial<Response> = {
         send: jest.fn().mockResolvedValue({
@@ -171,6 +137,14 @@ describe('user friendship controller', () => {
       };
 
       it('sends data', async () => {
+        mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
+        mockGetFriendshipByFriendId = jest.fn().mockResolvedValue([[]]);
+        mockCreateFriendship = jest.fn().mockResolvedValue([
+          [{user_id: 1, friendId: 42, status: "pending-sent"}]
+        ]);
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
         await userFriendshipController
         .createFriendship(<Request>req, <Response>res);
         expect(res.send)
@@ -178,29 +152,21 @@ describe('user friendship controller', () => {
       });
   
       it('returns correctly', async () => {
+        mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
+        mockGetFriendshipByFriendId = jest.fn().mockResolvedValue([[]]);
+        mockCreateFriendship = jest.fn().mockResolvedValue([
+          [{user_id: 1, friendId: 42, status: "pending-sent"}]
+        ]);
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
         const actual = await userFriendshipController
         .createFriendship(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'Friendship request sent.'});
       });
-    });*/
+    });
 
-    /*describe('when status is pending-sent', () => {
-      jest.mock('../../mysql-access/Friendship', () => ({
-        Friendship: jest.fn().mockImplementation(() => ({
-          checkIfBlockedBy:  jest.fn().mockResolvedValue([[]]),
-          getFriendshipByFriendId: jest.fn().mockResolvedValue([
-            [{user_id: 1, friend_id: 42, status: "pending-sent"}]
-          ])
-        }))
-      }));
-
-      jest.mock('../../mysql-access/User', () => ({
-        User: jest.fn().mockImplementation(() => {
-          const rows: any = [{user_id: 42, avatar: "NameXYZ"}];
-          return {viewUserByName: jest.fn().mockResolvedValue([rows])};
-        })
-      }));
-
+    describe('when status is pending-sent', () => {
       const req: Partial<Request> = {session, body: {friendName: "Name"}};
       const res: Partial<Response> = {
         send: jest.fn().mockResolvedValue({
@@ -209,6 +175,13 @@ describe('user friendship controller', () => {
       };
 
       it('sends data', async () => {
+        mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
+        mockGetFriendshipByFriendId =  jest.fn().mockResolvedValue([
+          [{user_id: 1, friend_id: 42, status: "pending-sent"}]
+        ]);
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
         await userFriendshipController
         .createFriendship(<Request>req, <Response>res);
         expect(res.send).toBeCalledWith({
@@ -217,6 +190,13 @@ describe('user friendship controller', () => {
       });
   
       it('returns correctly', async () => {
+        mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
+        mockGetFriendshipByFriendId = jest.fn().mockResolvedValue([
+          [{user_id: 1, friend_id: 42, status: "pending-sent"}]
+        ]);
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
         const actual = await userFriendshipController
         .createFriendship(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'Already sent.'});
@@ -224,22 +204,6 @@ describe('user friendship controller', () => {
     });
 
     describe('when status is pending-received', () => {
-      jest.mock('../../mysql-access/Friendship', () => ({
-        Friendship: jest.fn().mockImplementation(() => ({
-          checkIfBlockedBy:  jest.fn().mockResolvedValue([[]]),
-          getFriendshipByFriendId: jest.fn().mockResolvedValue([
-            [{user_id: 1, friend_id: 42, status: "accepted"}]
-          ])
-        }))
-      }));
-
-      jest.mock('../../mysql-access/User', () => ({
-        User: jest.fn().mockImplementation(() => {
-          const rows: any = [{user_id: 42, avatar: "NameXYZ"}];
-          return {viewUserByName: jest.fn().mockResolvedValue([rows])};
-        })
-      }));
-
       const req: Partial<Request> = {session, body: {friendName: "Name"}};
       const res: Partial<Response> = {
         send: jest.fn().mockResolvedValue({
@@ -248,6 +212,13 @@ describe('user friendship controller', () => {
       };
 
       it('sends data', async () => {
+        mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
+        mockGetFriendshipByFriendId =  jest.fn().mockResolvedValue([
+          [{user_id: 1, friend_id: 42, status: "pending-received"}]
+        ]);
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
         await userFriendshipController
         .createFriendship(<Request>req, <Response>res);
         expect(res.send).toBeCalledWith({
@@ -256,6 +227,13 @@ describe('user friendship controller', () => {
       });
   
       it('returns correctly', async () => {
+        mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
+        mockGetFriendshipByFriendId =  jest.fn().mockResolvedValue([
+          [{user_id: 1, friend_id: 42, status: "pending-received"}]
+        ]);
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
         const actual = await userFriendshipController
         .createFriendship(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'Already received.'});
@@ -263,22 +241,6 @@ describe('user friendship controller', () => {
     });
 
     describe('when status is accepted', () => {
-      jest.mock('../../mysql-access/Friendship', () => ({
-        Friendship: jest.fn().mockImplementation(() => ({
-          checkIfBlockedBy:  jest.fn().mockResolvedValue([[]]),
-          getFriendshipByFriendId: jest.fn().mockResolvedValue([
-            [{user_id: 1, friend_id: 42, status: "accepted"}]
-          ])
-        }))
-      }));
-
-      jest.mock('../../mysql-access/User', () => ({
-        User: jest.fn().mockImplementation(() => {
-          const rows: any = [{user_id: 42, avatar: "NameXYZ"}];
-          return {viewUserByName: jest.fn().mockResolvedValue([rows])};
-        })
-      }));
-
       const req: Partial<Request> = {session, body: {friendName: "Name"}};
       const res: Partial<Response> = {
         send: jest.fn().mockResolvedValue({
@@ -287,6 +249,13 @@ describe('user friendship controller', () => {
       };
 
       it('sends data', async () => {
+        mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
+        mockGetFriendshipByFriendId =  jest.fn().mockResolvedValue([
+          [{user_id: 1, friend_id: 42, status: "accepted"}]
+        ]);
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
         await userFriendshipController
         .createFriendship(<Request>req, <Response>res);
         expect(res.send).toBeCalledWith({
@@ -295,6 +264,13 @@ describe('user friendship controller', () => {
       });
   
       it('returns correctly', async () => {
+        mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
+        mockGetFriendshipByFriendId =  jest.fn().mockResolvedValue([
+          [{user_id: 1, friend_id: 42, status: "accepted"}]
+        ]);
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
         const actual = await userFriendshipController
         .createFriendship(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'Already friends.'});
@@ -302,22 +278,6 @@ describe('user friendship controller', () => {
     });
 
     describe('when status is blocked', () => {
-      jest.mock('../../mysql-access/Friendship', () => ({
-        Friendship: jest.fn().mockImplementation(() => ({
-          checkIfBlockedBy:  jest.fn().mockResolvedValue([[]]),
-          getFriendshipByFriendId: jest.fn().mockResolvedValue([
-            [{user_id: 1, friend_id: 42, status: "accepted"}]
-          ])
-        }))
-      }));
-
-      jest.mock('../../mysql-access/User', () => ({
-        User: jest.fn().mockImplementation(() => {
-          const rows: any = [{user_id: 42, avatar: "NameXYZ"}];
-          return {viewUserByName: jest.fn().mockResolvedValue([rows])};
-        })
-      }));
-
       const req: Partial<Request> = {session, body: {friendName: "Name"}};
       const res: Partial<Response> = {
         send: jest.fn().mockResolvedValue({
@@ -326,6 +286,13 @@ describe('user friendship controller', () => {
       };
 
       it('sends data', async () => {
+        mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
+        mockGetFriendshipByFriendId =  jest.fn().mockResolvedValue([
+          [{user_id: 1, friend_id: 42, status: "blocked"}]
+        ]);
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
         await userFriendshipController
         .createFriendship(<Request>req, <Response>res);
         expect(res.send).toBeCalledWith({
@@ -334,15 +301,24 @@ describe('user friendship controller', () => {
       });
 
       it('returns correctly', async () => {
+        mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
+        mockGetFriendshipByFriendId =  jest.fn().mockResolvedValue([
+          [{user_id: 1, friend_id: 42, status: "blocked"}]
+        ]);
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
         const actual = await userFriendshipController
         .createFriendship(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'User blocked. First unblock.'});
       });
-    });*/
+    });
 
   });
 
-  describe('acceptFriendship method', () => {});
+  describe('acceptFriendship method', () => {
+    
+  });
 
   describe('rejectFriendship method', () => {});
 
