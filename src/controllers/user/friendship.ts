@@ -23,7 +23,8 @@ export const userFriendshipController = {
 
     const user = new User(pool);
 
-    const friendExists = await user.viewUserByName(friendName);
+    const [ friendExists ] = await user.viewUserByName(friendName);
+    console.log('friendExists', friendExists);
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
     const friendId = friendExists[0].user_id;
@@ -42,28 +43,40 @@ export const userFriendshipController = {
 
     const friendship = new Friendship(pool);
 
-    const blockedBy = await friendship.checkIfBlockedBy(userId, friendId);
+    const [ blockedBy ] = await friendship.checkIfBlockedBy(userId, friendId);
+    console.log('blockedBy', blockedBy);
     if (blockedBy.length) return res.send({message: 'User not found.'});
 
-    const friendshipExists = await friendship
+    const [ friendshipExists ] = await friendship
     .getFriendshipByFriendId(userId, friendId);
-    if (!friendshipExists.length) return res.send({message: 'User not found.'});
-    if (friendshipExists[0].status === "pending-sent") {
+
+    if (!friendshipExists.length) {
+      await friendship.createFriendship(friendshipToCreate);
+      //return res.send({message: 'User not found.'});
+      return res.send({message: 'Friendship request sent.'});
+    }
+
+    const { status } = friendshipExists[0];
+
+    if (status === "pending-sent") {
       return res.send({message: 'Already sent.'});
     }
-    if (friendshipExists[0].status === "pending-received") {
+
+    if (status === "pending-received") {
       return res.send({message: 'Already received.'});
     }
-    if (friendshipExists[0].status === "accepted") {
+
+    if (status === "accepted") {
       return res.send({message: 'Already friends.'});
     }
-    if (friendshipExists[0].status === "blocked") {
+
+    if (status === "blocked") {
       return res.send({message: 'User blocked. First unblock.'});
     }
 
-    await friendship.createFriendship(friendshipToCreate);
+    //await friendship.createFriendship(friendshipToCreate);
 
-    return res.send({message: 'Friendship request sent.'});
+    //return res.send({message: 'Friendship request sent.'});
   },
   acceptFriendship: async function(req: Request, res: Response) {
     const friendName = req.body.friendName;
