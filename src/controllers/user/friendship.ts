@@ -24,35 +24,33 @@ export const userFriendshipController = {
     const user = new User(pool);
 
     const [ friendExists ] = await user.viewUserByName(friendName);
-    console.log('friendExists', friendExists);
+    
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
     const friendId = friendExists[0].user_id;
     const userId = req.session!.userInfo.userId;
-    const status1 = "pending-sent";
-    const status2 = "pending-received";
-    
-    const friendshipToCreate = {
-      userId,
-      friendId,
-      status1,
-      status2
-    };
-
-    assert(friendshipToCreate, validFriendshipEntity);
 
     const friendship = new Friendship(pool);
 
     const [ blockedBy ] = await friendship.checkIfBlockedBy(userId, friendId);
-    console.log('blockedBy', blockedBy);
+    
     if (blockedBy.length) return res.send({message: 'User not found.'});
 
     const [ friendshipExists ] = await friendship
     .getFriendshipByFriendId(userId, friendId);
 
     if (!friendshipExists.length) {
+      const friendshipToCreate = {
+        userId,
+        friendId,
+        status1: "pending-sent",
+        status2: "pending-received"
+      };
+  
+      assert(friendshipToCreate, validFriendshipEntity);
+
       await friendship.createFriendship(friendshipToCreate);
-      //return res.send({message: 'User not found.'});
+
       return res.send({message: 'Friendship request sent.'});
     }
 
@@ -73,10 +71,6 @@ export const userFriendshipController = {
     if (status === "blocked") {
       return res.send({message: 'User blocked. First unblock.'});
     }
-
-    //await friendship.createFriendship(friendshipToCreate);
-
-    //return res.send({message: 'Friendship request sent.'});
   },
   acceptFriendship: async function(req: Request, res: Response) {
     const friendName = req.body.friendName;
