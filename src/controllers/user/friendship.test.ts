@@ -317,16 +317,264 @@ describe('user friendship controller', () => {
   });
 
   describe('acceptFriendship method', () => {
-    
+
+    describe('when desired friend does not exist', () => {
+      const req: Partial<Request> = {session, body: {friendName: "Name"}};
+      const res: Partial<Response> = {
+        send: jest.fn().mockResolvedValue({message: 'User not found.'})
+      };
+
+      it('sends data', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([[]]);
+        await userFriendshipController
+        .acceptFriendship(<Request>req, <Response>res);
+        expect(res.send).toBeCalledWith({message: 'User not found.'});
+      });
+  
+      it('returns correctly', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([[]]);
+        const actual = await userFriendshipController
+        .acceptFriendship(<Request>req, <Response>res);
+        expect(actual).toEqual({message: 'User not found.'});
+      });
+    });
+
+    describe('when desired friend exists', () => {
+      const req: Partial<Request> = {session, body: {friendName: "Name"}};
+      const res: Partial<Response> = {
+        send: jest.fn().mockResolvedValue({
+          message: 'Friendship request accepted.'
+        })
+      };
+
+      it('sends data', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
+        await userFriendshipController
+        .acceptFriendship(<Request>req, <Response>res);
+        expect(res.send)
+        .toBeCalledWith({message: 'Friendship request accepted.'});
+      });
+  
+      it('returns correctly', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
+        const actual = await userFriendshipController
+        .acceptFriendship(<Request>req, <Response>res);
+        expect(actual).toEqual({message: 'Friendship request accepted.'});
+      });
+    });
+
   });
 
-  describe('rejectFriendship method', () => {});
+  describe('rejectFriendship method', () => {
 
-  describe('deleteFriendship method', () => {});
+    describe('when desired friend does not exist', () => {
+      const req: Partial<Request> = {session, body: {friendName: "Name"}};
+      const res: Partial<Response> = {
+        send: jest.fn().mockResolvedValue({message: 'User not found.'})
+      };
 
-  describe('blockUser method', () => {});
+      it('sends data', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([[]]);
+        await userFriendshipController
+        .rejectFriendship(<Request>req, <Response>res);
+        expect(res.send).toBeCalledWith({message: 'User not found.'});
+      });
+  
+      it('returns correctly', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([[]]);
+        const actual = await userFriendshipController
+        .rejectFriendship(<Request>req, <Response>res);
+        expect(actual).toEqual({message: 'User not found.'});
+      });
+    });
 
-  describe('unblockUser method', () => {});
+    describe('when desired friend exists', () => {
+      const req: Partial<Request> = {session, body: {friendName: "Name"}};
+      const res: Partial<Response> = {
+        send: jest.fn().mockResolvedValue({
+          message: 'Friendship request rejected.'
+        })
+      };
+
+      it('sends data', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
+        await userFriendshipController
+        .rejectFriendship(<Request>req, <Response>res);
+        expect(res.send)
+        .toBeCalledWith({message: 'Friendship request rejected.'});
+      });
+  
+      it('returns correctly', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
+        const actual = await userFriendshipController
+        .rejectFriendship(<Request>req, <Response>res);
+        expect(actual).toEqual({message: 'Friendship request rejected.'});
+      });
+    });
+
+  });
+
+  describe('deleteFriendship method', () => {
+
+    describe('when desired friend does not exist', () => {
+      const req: Partial<Request> = {session, body: {friendName: "Name"}};
+      const res: Partial<Response> = {
+        send: jest.fn().mockResolvedValue({message: 'User not found.'})
+      };
+
+      it('sends data', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([[]]);
+        await userFriendshipController
+        .deleteFriendship(<Request>req, <Response>res);
+        expect(res.send).toBeCalledWith({message: 'User not found.'});
+      });
+  
+      it('returns correctly', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([[]]);
+        const actual = await userFriendshipController
+        .deleteFriendship(<Request>req, <Response>res);
+        expect(actual).toEqual({message: 'User not found.'});
+      });
+    });
+
+    describe('when desired friend exists', () => {
+      const req: Partial<Request> = {session, body: {friendName: "Name"}};
+      const res: Partial<Response> = {
+        send: jest.fn().mockResolvedValue({
+          message: 'No longer friends. Maybe again later.'
+        })
+      };
+
+      it('sends data', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
+        await userFriendshipController
+        .deleteFriendship(<Request>req, <Response>res);
+        expect(res.send)
+        .toBeCalledWith({message: 'No longer friends. Maybe again later.'});
+      });
+  
+      it('returns correctly', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
+        const actual = await userFriendshipController
+        .deleteFriendship(<Request>req, <Response>res);
+        expect(actual)
+        .toEqual({message: 'No longer friends. Maybe again later.'});
+      });
+    });
+
+  });
+
+  describe('blockUser method', () => {
+
+    describe('when desired friend does not exist', () => {
+      const req: Partial<Request> = {session, body: {friendName: "Name"}};
+      const res: Partial<Response> = {
+        send: jest.fn().mockResolvedValue({message: 'User not found.'})
+      };
+
+      it('sends data', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([[]]);
+        await userFriendshipController
+        .blockUser(<Request>req, <Response>res);
+        expect(res.send).toBeCalledWith({message: 'User not found.'});
+      });
+  
+      it('returns correctly', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([[]]);
+        const actual = await userFriendshipController
+        .blockUser(<Request>req, <Response>res);
+        expect(actual).toEqual({message: 'User not found.'});
+      });
+    });
+
+    describe('when desired friend exists', () => {
+      const req: Partial<Request> = {session, body: {friendName: "Name"}};
+      const res: Partial<Response> = {
+        send: jest.fn().mockResolvedValue({message: 'User blocked.'})
+      };
+
+      it('sends data', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
+        await userFriendshipController
+        .blockUser(<Request>req, <Response>res);
+        expect(res.send).toBeCalledWith({message: 'User blocked.'});
+      });
+  
+      it('returns correctly', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
+        const actual = await userFriendshipController
+        .blockUser(<Request>req, <Response>res);
+        expect(actual).toEqual({message: 'User blocked.'});
+      });
+    });
+
+  });
+
+  describe('unblockUser method', () => {
+
+    describe('when desired friend does not exist', () => {
+      const req: Partial<Request> = {session, body: {friendName: "Name"}};
+      const res: Partial<Response> = {
+        send: jest.fn().mockResolvedValue({message: 'User not found.'})
+      };
+
+      it('sends data', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([[]]);
+        await userFriendshipController
+        .unblockUser(<Request>req, <Response>res);
+        expect(res.send).toBeCalledWith({message: 'User not found.'});
+      });
+  
+      it('returns correctly', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([[]]);
+        const actual = await userFriendshipController
+        .unblockUser(<Request>req, <Response>res);
+        expect(actual).toEqual({message: 'User not found.'});
+      });
+    });
+
+    describe('when desired friend exists', () => {
+      const req: Partial<Request> = {session, body: {friendName: "Name"}};
+      const res: Partial<Response> = {
+        send: jest.fn().mockResolvedValue({message: 'User unblocked.'})
+      };
+
+      it('sends data', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
+        await userFriendshipController
+        .unblockUser(<Request>req, <Response>res);
+        expect(res.send).toBeCalledWith({message: 'User unblocked.'});
+      });
+  
+      it('returns correctly', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
+        const actual = await userFriendshipController
+        .unblockUser(<Request>req, <Response>res);
+        expect(actual).toEqual({message: 'User unblocked.'});
+      });
+    });
+
+  });
 });
 
 
