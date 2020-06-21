@@ -15,7 +15,7 @@ jest.mock('../../mysql-access/Friendship', () => {
       getFriendshipByFriendId:  mockGetFriendshipByFriendId,
       checkIfBlockedBy:  mockCheckIfBlockedBy,
       viewMyFriendships: mockViewMyFriendships,
-      createFriendship: mockCreateFriendship,
+      createFriendship: jest.fn(),
       acceptFriendship: jest.fn(),
       rejectFriendship: jest.fn(),
       deleteFriendship: jest.fn(),
@@ -27,7 +27,6 @@ jest.mock('../../mysql-access/Friendship', () => {
 let mockGetFriendshipByFriendId = jest.fn();
 let mockCheckIfBlockedBy = jest.fn();
 let mockViewMyFriendships = jest.fn();
-let mockCreateFriendship = jest.fn();
 jest.mock('../../mysql-access/User', () => {
   const originalModule = jest.requireActual('../../mysql-access/User');
   return {
@@ -136,12 +135,21 @@ describe('user friendship controller', () => {
         })
       };
 
+      it('uses validation', async () => {
+        mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
+        mockGetFriendshipByFriendId = jest.fn().mockResolvedValue([[]]);
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
+        await userFriendshipController
+        .createFriendship(<Request>req, <Response>res);
+        const MockedAssert = mocked(assert, true);
+        expect(MockedAssert).toHaveBeenCalledTimes(1);
+      });
+
       it('sends data', async () => {
         mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
         mockGetFriendshipByFriendId = jest.fn().mockResolvedValue([[]]);
-        mockCreateFriendship = jest.fn().mockResolvedValue([
-          [{user_id: 1, friendId: 42, status: "pending-sent"}]
-        ]);
         mockViewUserByName = jest.fn().mockResolvedValue([
           [{user_id: 42, avatar: "NameXYZ"}]
         ]);
@@ -154,9 +162,6 @@ describe('user friendship controller', () => {
       it('returns correctly', async () => {
         mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
         mockGetFriendshipByFriendId = jest.fn().mockResolvedValue([[]]);
-        mockCreateFriendship = jest.fn().mockResolvedValue([
-          [{user_id: 1, friendId: 42, status: "pending-sent"}]
-        ]);
         mockViewUserByName = jest.fn().mockResolvedValue([
           [{user_id: 42, avatar: "NameXYZ"}]
         ]);
@@ -347,6 +352,16 @@ describe('user friendship controller', () => {
         })
       };
 
+      it('uses Friendship mysql access', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
+        await userFriendshipController
+        .acceptFriendship(<Request>req, <Response>res);
+        const MockedFriendship = mocked(Friendship, true);
+        expect(MockedFriendship).toHaveBeenCalledTimes(1);
+      });
+
       it('sends data', async () => {
         mockViewUserByName = jest.fn().mockResolvedValue([
           [{user_id: 42, avatar: "NameXYZ"}]
@@ -399,6 +414,16 @@ describe('user friendship controller', () => {
           message: 'Friendship request rejected.'
         })
       };
+
+      it('uses Friendship mysql access', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
+        await userFriendshipController
+        .rejectFriendship(<Request>req, <Response>res);
+        const MockedFriendship = mocked(Friendship, true);
+        expect(MockedFriendship).toHaveBeenCalledTimes(1);
+      });
 
       it('sends data', async () => {
         mockViewUserByName = jest.fn().mockResolvedValue([
@@ -453,6 +478,16 @@ describe('user friendship controller', () => {
         })
       };
 
+      it('uses Friendship mysql access', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
+        await userFriendshipController
+        .deleteFriendship(<Request>req, <Response>res);
+        const MockedFriendship = mocked(Friendship, true);
+        expect(MockedFriendship).toHaveBeenCalledTimes(1);
+      });
+
       it('sends data', async () => {
         mockViewUserByName = jest.fn().mockResolvedValue([
           [{user_id: 42, avatar: "NameXYZ"}]
@@ -505,6 +540,16 @@ describe('user friendship controller', () => {
         send: jest.fn().mockResolvedValue({message: 'User blocked.'})
       };
 
+      it('uses Friendship mysql access', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
+        await userFriendshipController
+        .blockUser(<Request>req, <Response>res);
+        const MockedFriendship = mocked(Friendship, true);
+        expect(MockedFriendship).toHaveBeenCalledTimes(1);
+      });
+
       it('sends data', async () => {
         mockViewUserByName = jest.fn().mockResolvedValue([
           [{user_id: 42, avatar: "NameXYZ"}]
@@ -555,6 +600,16 @@ describe('user friendship controller', () => {
         send: jest.fn().mockResolvedValue({message: 'User unblocked.'})
       };
 
+      it('uses Friendship mysql access', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
+        await userFriendshipController
+        .unblockUser(<Request>req, <Response>res);
+        const MockedFriendship = mocked(Friendship, true);
+        expect(MockedFriendship).toHaveBeenCalledTimes(1);
+      });
+
       it('sends data', async () => {
         mockViewUserByName = jest.fn().mockResolvedValue([
           [{user_id: 42, avatar: "NameXYZ"}]
@@ -576,28 +631,3 @@ describe('user friendship controller', () => {
 
   });
 });
-
-
-
-/*
-it('uses validation', async () => {
-  await userFriendshipController
-  .createFriendship(<Request>req, <Response>res);
-  const MockedAssert = mocked(assert, true);
-  expect(MockedAssert).toHaveBeenCalledTimes(1);
-});
-
-it('uses Friendship mysql access', async () => {
-  await userFriendshipController
-  .createFriendship(<Request>req, <Response>res);
-  const MockedFriendship = mocked(Friendship, true);
-  expect(MockedFriendship).toHaveBeenCalledTimes(1);
-});
-
-it('uses User mysql access', async () => {
-  await userFriendshipController
-  .createFriendship(<Request>req, <Response>res);
-  const MockedUser = mocked(User, true);
-  expect(MockedUser).toHaveBeenCalledTimes(1);
-});
-*/
