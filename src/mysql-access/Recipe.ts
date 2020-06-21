@@ -17,7 +17,10 @@ export class Recipe implements IRecipe {
     this.getInfoToEditMyUserRecipe = this.getInfoToEditMyUserRecipe.bind(this);
     this.updateMyUserRecipe = this.updateMyUserRecipe.bind(this);
     this.deleteMyPrivateUserRecipe = this.deleteMyPrivateUserRecipe.bind(this);
-    this.disownMyPublicUserRecipe = this.disownMyPublicUserRecipe.bind(this);
+    this.deleteAllMyPrivateUserRecipes =
+      this.deleteAllMyPrivateUserRecipes.bind(this);
+    this.disownAllMyPublicUserRecipes =
+      this.disownAllMyPublicUserRecipes.bind(this);
   }
 
   async getAllPublicRecipesForElasticSearchBulkInsert() {
@@ -458,6 +461,15 @@ export class Recipe implements IRecipe {
     return deletedPrivateUserRecipe;
   }
 
+  async deleteAllMyPrivateUserRecipes(authorId: number, ownerId: number) {
+    const sql = `
+      DELETE
+      FROM nobsc_recipes
+      WHERE author_id = ? AND owner_id = ?
+    `;
+    await this.pool.execute<RowDataPacket[]>(sql, [authorId, ownerId]);
+  }
+
   async disownMyPublicUserRecipe(recipeId: number, authorId: number) {
     const newAuthorId = 2;
     const sql = `
@@ -473,6 +485,16 @@ export class Recipe implements IRecipe {
       authorId
     ]);
     return disownedPublicUserRecipe;
+  }
+
+  async disownAllMyPublicUserRecipes(authorId: number) {
+    const newAuthorId = 2;
+    const sql = `
+      UPDATE nobsc_recipes
+      SET author_id = ?
+      WHERE author_id = ? AND owner_id = 1
+    `;
+    await this.pool.execute<RowDataPacket[]>(sql, [newAuthorId, authorId]);
   }
 }
 
@@ -539,6 +561,8 @@ export interface IRecipe {
     ownerId: number
   ): Data;
   disownMyPublicUserRecipe(recipeId: number, authorId: number): Data;
+  deleteAllMyPrivateUserRecipes(authorId: number, ownerId: number): void;
+  disownAllMyPublicUserRecipes(authorId: number): void;
 }
 
 export interface ICreatingRecipe {

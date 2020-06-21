@@ -20,6 +20,8 @@ export class Ingredient implements IIngredient {
       this.updateMyPrivateUserIngredient.bind(this);
     this.deleteMyPrivateUserIngredient =
       this.deleteMyPrivateUserIngredient.bind(this);
+    this.deleteAllMyPrivateUserIngredients =
+      this.deleteAllMyPrivateUserIngredients.bind(this);
   }
 
   async getAllPublicIngredientsForElasticSearchBulkInsert() {
@@ -305,6 +307,15 @@ export class Ingredient implements IIngredient {
     .execute<RowDataPacket[]>(sql, [ownerId, ingredientId]);
     return deletedPrivateUserIngredient;
   }
+
+  async deleteAllMyPrivateUserIngredients(ownerId: number) {
+    const sql = `
+      DELETE
+      FROM nobsc_ingredients
+      WHERE owner_id = ?
+    `;
+    await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
+  }
 }
 
 type Data = Promise<RowDataPacket[]>;
@@ -365,6 +376,7 @@ export interface IIngredient {
     ingredientImage
   }: IUpdatingIngredient): Data;
   deleteMyPrivateUserIngredient(ingredientId: number, ownerId: number): Data;
+  deleteAllMyPrivateUserIngredients(ownerId: number): void;
 }
 
 interface ICreatingIngredient {

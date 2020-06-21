@@ -18,6 +18,15 @@ import {
   validLogin,
   validUpdatingUser
 } from '../../lib/validations/user/index';
+import { Content } from '../../mysql-access/Content';
+import { Equipment } from '../../mysql-access/Equipment';
+import { Ingredient } from '../../mysql-access/Ingredient';
+import { FavoriteRecipe } from '../../mysql-access/FavoriteRecipe';
+import { Friendship } from '../../mysql-access/Friendship';
+//import { Notification } from '../../mysql-access/Notification';
+import { Plan } from '../../mysql-access/Plan';
+import { Recipe } from '../../mysql-access/Recipe';
+import { SavedRecipe } from '../../mysql-access/SavedRecipe';
 import { User } from '../../mysql-access/User';
 
 const SALT_ROUNDS = 10;
@@ -148,7 +157,40 @@ export const userAuthController = {
   deleteUser: async function(req: Request, res: Response) {
     const userId = req.session!.userInfo.userId;
 
+    const content = new Content(pool);
+    const equipment = new Equipment(pool);
+    const favoriteRecipe = new FavoriteRecipe(pool);
+    const friendship = new Friendship(pool);
+    const ingredient = new Ingredient(pool);
+    //const notification = new Notification(pool);
+    const plan = new Plan(pool);
+    const recipe = new Recipe(pool);
+    const savedRecipe = new SavedRecipe(pool);
     const user = new User(pool);
+
+    // deletes must be in this order, due to foreign key constraints
+
+    await Promise.all([
+      content.deleteAllMyContent(userId),  // move out and up?
+      friendship.deleteMyFriendships(userId),
+      plan.deleteAllMyPrivatePlans(userId),
+      favoriteRecipe.deleteAllMyFavoriteRecipes(userId),
+      savedRecipe.deleteAllMySavedRecipes(userId)
+    ]);
+
+    /*?*/
+    await recipe.disownAllMyPublicUserRecipes(userId);
+    /*await recipeMethod.deleteRecipeMethods(recipeId);
+    await recipeEquipment.deleteRecipeEquipment(recipeId);
+    await recipeIngredient.deleteRecipeIngredients(recipeId);
+    await recipeSubrecipe.deleteRecipeSubrecipes(recipeId);
+    await recipeSubrecipe.deleteRecipeSubrecipesBySubrecipeId(recipeId);*/
+    await recipe.deleteAllMyPrivateUserRecipes(userId, userId);
+
+    await Promise.all([
+      equipment.deleteAllMyPrivateUserEquipment(userId),
+      ingredient.deleteAllMyPrivateUserIngredients(userId)
+    ]);
 
     await user.deleteUser(userId);
 

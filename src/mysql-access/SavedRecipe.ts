@@ -9,6 +9,7 @@ export class SavedRecipe implements ISavedRecipe {
     this.viewMySavedRecipes = this.viewMySavedRecipes.bind(this);
     this.createMySavedRecipe = this.createMySavedRecipe.bind(this);
     this.deleteMySavedRecipe = this.deleteMySavedRecipe.bind(this);
+    this.deleteAllMySavedRecipes = this.deleteAllMySavedRecipes.bind(this);
   }
 
   async deleteAllSavesOfRecipe(recipeId: number) {
@@ -63,6 +64,15 @@ export class SavedRecipe implements ISavedRecipe {
     .execute<RowDataPacket[]>(sql, [userId, recipeId]);
     return unsavedRecipe;
   }
+
+  async deleteAllMySavedRecipes(userId: number) {
+    const sql = `
+      DELETE
+      FROM nobsc_saved_recipes
+      WHERE user_id = ?
+    `;
+    await this.pool.execute<RowDataPacket[]>(sql, [userId]);
+  }
 }
 
 type Data = Promise<RowDataPacket[]>;
@@ -73,4 +83,5 @@ export interface ISavedRecipe {
   viewMySavedRecipes(userId: number): Data;
   createMySavedRecipe(userId: number, recipeId: number): Data;
   deleteMySavedRecipe(userId: number, recipeId: number): Data;
+  deleteAllMySavedRecipes(userId: number): void;
 }

@@ -19,6 +19,7 @@ export class Friendship implements IFriendship {
     this.deleteFriendship = this.deleteFriendship.bind(this);
     this.blockUser = this.blockUser.bind(this);
     this.unblockUser = this.unblockUser.bind(this);
+    this.deleteMyFriendships = this.deleteMyFriendships.bind(this);
   }
 
   /*
@@ -212,6 +213,21 @@ export class Friendship implements IFriendship {
     .execute<RowDataPacket[]>(sql, [userId, friendId]);
     return unblockedUser;
   }
+
+  async deleteMyFriendships(userId: number) {
+    const sql1 = `
+      DELETE
+      FROM nobsc_friendships
+      WHERE user_id = ?
+    `;
+    const sql2 = `
+      DELETE
+      FROM nobsc_friendships
+      WHERE friend_id = ?
+    `;
+    await this.pool.execute<RowDataPacket[]>(sql1, [userId]);
+    await this.pool.execute<RowDataPacket[]>(sql2, [userId]);
+  }
 }
 
 type Data = Promise<RowDataPacket[]>;
@@ -235,6 +251,7 @@ export interface IFriendship {
   deleteFriendship(userId: number, friendId: number): Data;
   blockUser(userId: number, friendId: number): Data;
   unblockUser(userId: number, friendId: number): Data;
+  deleteMyFriendships(userId: number): void;
 }
 
 interface ICreatingFriendship {

@@ -9,6 +9,7 @@ postcss.*.js
 
 Dockerfile
 Dockerfile.dev
+Dockerfile.test
 docker-compose.yml
 .dockerignore
 /**/__tests__/

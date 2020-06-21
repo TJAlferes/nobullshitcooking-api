@@ -20,6 +20,8 @@ export class Equipment implements IEquipment {
       this.updateMyPrivateUserEquipment.bind(this);
     this.deleteMyPrivateUserEquipment =
       this.deleteMyPrivateUserEquipment.bind(this);
+    this.deleteAllMyPrivateUserEquipment =
+      this.deleteAllMyPrivateUserEquipment.bind(this);
   }
 
   async getAllPublicEquipmentForElasticSearchBulkInsert() {
@@ -276,6 +278,15 @@ export class Equipment implements IEquipment {
     .execute<RowDataPacket[]>(sql, [ownerId, equipmentId]);
     return deletedPrivateUserEquipment;
   }
+
+  async deleteAllMyPrivateUserEquipment(ownerId: number) {
+    const sql = `
+      DELETE
+      FROM nobsc_equipment
+      WHERE owner_id = ?
+    `;
+    await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
+  }
 }
 
 type Data = Promise<RowDataPacket[]>;
@@ -328,6 +339,7 @@ export interface IEquipment {
     equipmentImage
   }: IUpdatingEquipment): Data;
   deleteMyPrivateUserEquipment(equipmentId: number, ownerId: number): Data;
+  deleteAllMyPrivateUserEquipment(ownerId: number): void;
 }
 
 interface ICreatingEquipment {

@@ -10,6 +10,7 @@ export class Content implements IContent {
     this.createContent = this.createContent.bind(this);
     this.updateContent = this.updateContent.bind(this);
     this.deleteContent = this.deleteContent.bind(this);
+    this.deleteAllMyContent = this.deleteAllMyContent.bind(this);
   }
 
   async getContentLinksByTypeName(contentTypeName: string) {
@@ -92,12 +93,21 @@ export class Content implements IContent {
     const sql = `
       DELETE
       FROM nobsc_content
-      WHERE owner_id = ? AND ingredient_id = ?
+      WHERE owner_id = ? AND content_id = ?
       LIMIT 1
     `;
     const [ deletedContent ] = await this.pool
     .execute<RowDataPacket[]>(sql, [ownerId, contentId]);
     return deletedContent;
+  }
+
+  async deleteAllMyContent(ownerId: number) {
+    const sql = `
+      DELETE
+      FROM nobsc_content
+      WHERE owner_id = ?
+    `;
+    await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
   }
 }
 
@@ -123,6 +133,7 @@ export interface IContent {
     contentItems
   }: IUpdatingContent): Data;
   deleteContent(ownerId: number, contentId: number): Data;
+  deleteAllMyContent(ownerId: number): void;
 }
 
 interface ICreatingContent {

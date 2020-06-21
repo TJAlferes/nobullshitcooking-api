@@ -10,6 +10,7 @@ export class Plan implements IPlan {
     this.createMyPrivatePlan = this.createMyPrivatePlan.bind(this);
     this.updateMyPrivatePlan = this.updateMyPrivatePlan.bind(this);
     this.deleteMyPrivatePlan = this.deleteMyPrivatePlan.bind(this);
+    this.deleteAllMyPrivatePlans = this.deleteAllMyPrivatePlans.bind(this);
   }
   
   async viewAllMyPrivatePlans(ownerId: number) {
@@ -85,6 +86,15 @@ export class Plan implements IPlan {
     .execute<RowDataPacket[]>(sql, [ownerId, planId]);
     return deletedPlan;
   }
+
+  async deleteAllMyPrivatePlans(ownerId: number) {
+    const sql = `
+      DELETE
+      FROM nobsc_plans
+      WHERE owner_id = ?
+    `;
+    await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
+  }
 }
 
 type Data = Promise<RowDataPacket[]>;
@@ -107,6 +117,7 @@ export interface IPlan {
     planData
   }: IUpdatingPlan): Data;
   deleteMyPrivatePlan(planId: number, ownerId: number): Data;
+  deleteAllMyPrivatePlans(ownerId: number): void;
 }
 
 interface ICreatingPlan {

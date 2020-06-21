@@ -11,6 +11,8 @@ export class FavoriteRecipe implements IFavoriteRecipe {
     this.viewMyFavoriteRecipes = this.viewMyFavoriteRecipes.bind(this);
     this.createMyFavoriteRecipe = this.createMyFavoriteRecipe.bind(this);
     this.deleteMyFavoriteRecipe = this.deleteMyFavoriteRecipe.bind(this);
+    this.deleteAllMyFavoriteRecipes =
+      this.deleteAllMyFavoriteRecipes.bind(this);
   }
 
   /*async viewMostFavorited(limit) {
@@ -83,6 +85,15 @@ export class FavoriteRecipe implements IFavoriteRecipe {
     .execute<RowDataPacket[]>(sql, [userId, recipeId]);
     return unfavoritedRecipe;
   }
+
+  async deleteAllMyFavoriteRecipes(userId: number) {
+    const sql = `
+      DELETE
+      FROM nobsc_favorite_recipes
+      WHERE user_id = ?
+    `;
+    await this.pool.execute<RowDataPacket[]>(sql, [userId]);
+  }
 }
 
 type Data = Promise<RowDataPacket[]>;
@@ -94,4 +105,5 @@ export interface IFavoriteRecipe {
   viewMyFavoriteRecipes(userId: number): Data;
   createMyFavoriteRecipe(userId: number, recipeId: number): Data;
   deleteMyFavoriteRecipe(userId: number, recipeId: number): Data;
+  deleteAllMyFavoriteRecipes(userId: number): void;
 }

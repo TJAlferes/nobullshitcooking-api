@@ -87,7 +87,9 @@ CREATE TABLE `nobsc_content` (
   `title` varchar(100) NOT NULL,
   `content_items` json DEFAULT NULL,
   PRIMARY KEY (`content_id`),
-  FOREIGN KEY (`content_type_id`) REFERENCES `nobsc_content_types` (`content_type_id`)
+  FOREIGN KEY (`content_type_id`) REFERENCES `nobsc_content_types` (`content_type_id`),
+  FOREIGN KEY (`author_id`) REFERENCES `nobsc_users` (`user_id`),
+  FOREIGN KEY (`owner_id`) REFERENCES `nobsc_users` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `nobsc_equipment` (
