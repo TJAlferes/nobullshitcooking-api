@@ -17,7 +17,7 @@ export const userEquipmentController = {
 
     const rows = await equipment.viewEquipment(authorId, ownerId);
 
-    res.send(rows);
+    return res.send(rows);
   },
   viewMyPrivateUserEquipment: async function(req: Request, res: Response) {
     const equipmentId = Number(req.body.equipmentId);
@@ -29,7 +29,7 @@ export const userEquipmentController = {
     const [ row ] = await equipment
     .viewEquipmentById(equipmentId, authorId, ownerId);
 
-    res.send(row);
+    return res.send(row);
   },
   createMyPrivateUserEquipment: async function(req: Request, res: Response) {
     const equipmentTypeId = Number(req.body.equipmentInfo.equipmentTypeId);
@@ -55,7 +55,7 @@ export const userEquipmentController = {
 
     await equipment.createMyPrivateUserEquipment(equipmentToCreate);
 
-    res.send({message: 'Equipment created.'});
+    return res.send({message: 'Equipment created.'});
   },
   updateMyPrivateUserEquipment: async function(req: Request, res: Response) {
     const equipmentId = Number(req.body.equipmentInfo.equipmentId);
@@ -85,7 +85,7 @@ export const userEquipmentController = {
       ...equipmentToUpdateWith
     });
 
-    res.send({message: 'Equipment updated.'});
+    return res.send({message: 'Equipment updated.'});
   },
   deleteMyPrivateUserEquipment: async function(req: Request, res: Response) {
     const equipmentId = Number(req.body.equipmentId);
@@ -97,6 +97,6 @@ export const userEquipmentController = {
     await recipeEquipment.deleteRecipeEquipmentByEquipmentId(equipmentId);
     await equipment.deleteMyPrivateUserEquipment(equipmentId, ownerId);
 
-    res.send({message: 'Equipment deleted.'});
+    return res.send({message: 'Equipment deleted.'});
   }
 };

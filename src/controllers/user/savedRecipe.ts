@@ -15,7 +15,7 @@ export const userSavedRecipeController = {
 
     const rows = await savedRecipe.viewMySavedRecipes(userId);
 
-    res.send(rows);
+    return res.send(rows);
   },
   createMySavedRecipe: async function(req: Request, res: Response) {
     const userId = req.session!.userInfo.userId;
@@ -27,7 +27,7 @@ export const userSavedRecipeController = {
 
     await savedRecipe.createMySavedRecipe(userId, recipeId);
     
-    res.send({message: 'Saved.'});
+    return res.send({message: 'Saved.'});
   },
   deleteMySavedRecipe: async function(req: Request, res: Response) {
     const userId = req.session!.userInfo.userId;
@@ -39,6 +39,6 @@ export const userSavedRecipeController = {
 
     await savedRecipe.deleteMySavedRecipe(userId, recipeId);
     
-    res.send({message: 'Unsaved.'});
+    return res.send({message: 'Unsaved.'});
   }
 };

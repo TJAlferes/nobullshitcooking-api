@@ -15,7 +15,7 @@ export const userFavoriteRecipeController = {
 
     const rows = await favoriteRecipe.viewMyFavoriteRecipes(userId);
 
-    res.send(rows);
+    return res.send(rows);
   },
   createMyFavoriteRecipe: async function(req: Request, res: Response) {
     const userId = req.session!.userInfo.userId;
@@ -27,7 +27,7 @@ export const userFavoriteRecipeController = {
 
     await favoriteRecipe.createMyFavoriteRecipe(userId, recipeId);
 
-    res.send({message: 'Favorited.'});
+    return res.send({message: 'Favorited.'});
   },
   deleteMyFavoriteRecipe: async function(req: Request, res: Response) {
     const userId = req.session!.userInfo.userId;
@@ -39,6 +39,6 @@ export const userFavoriteRecipeController = {
 
     await favoriteRecipe.deleteMyFavoriteRecipe(userId, recipeId);
     
-    res.send({message: 'Unfavorited.'});
+    return res.send({message: 'Unfavorited.'});
   }
 };

@@ -13,7 +13,7 @@ export const userPlanController = {
 
     const myPlans = await plan.viewAllMyPrivatePlans(ownerId);
 
-    res.send(myPlans);
+    return res.send(myPlans);
   },
   viewMyPrivatePlan: async function(req: Request, res: Response) {
     const planId = Number(req.body.planId);
@@ -23,7 +23,7 @@ export const userPlanController = {
 
     const [ myPlan ] = await plan.viewMyPrivatePlan(planId, ownerId);
 
-    res.send(myPlan);
+    return res.send(myPlan);
   },
   createMyPrivatePlan: async function(req: Request, res: Response) {
     const planName = req.body.planInfo.planName;
@@ -45,7 +45,7 @@ export const userPlanController = {
 
     await plan.createMyPrivatePlan(planToCreate);
 
-    res.send({message: 'Plan created.'});
+    return res.send({message: 'Plan created.'});
   },
   updateMyPrivatePlan: async function(req: Request, res: Response) {
     const planId = Number(req.body.planInfo.planId);
@@ -68,7 +68,7 @@ export const userPlanController = {
 
     await plan.updateMyPrivatePlan({planId, ...planToUpdateWith});
 
-    res.send({message: 'Plan updated.'});
+    return res.send({message: 'Plan updated.'});
   },
   deleteMyPrivatePlan: async function(req: Request, res: Response) {
     const planId = Number(req.body.planId);
@@ -78,6 +78,6 @@ export const userPlanController = {
 
     await plan.deleteMyPrivatePlan(planId, ownerId);
 
-    res.send({message: 'Plan deleted.'});
+    return res.send({message: 'Plan deleted.'});
   }
 };

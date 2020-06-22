@@ -17,7 +17,7 @@ export const userIngredientController = {
 
     const rows = await ingredient.viewIngredients(authorId, ownerId);
 
-    res.send(rows);
+    return res.send(rows);
   },
   viewMyPrivateUserIngredient: async function(req: Request, res: Response) {
     const ingredientId = Number(req.body.ingredientId);
@@ -29,7 +29,7 @@ export const userIngredientController = {
     const [ row ] = await ingredient
     .viewIngredientById(ingredientId, authorId, ownerId);
 
-    res.send(row);
+    return res.send(row);
   },
   createMyPrivateUserIngredient: async function(req: Request, res: Response) {
     const ingredientTypeId = Number(req.body.ingredientInfo.ingredientTypeId);
@@ -63,7 +63,7 @@ export const userIngredientController = {
 
     await ingredient.createMyPrivateUserIngredient(ingredientToCreate);
 
-    res.send({message: 'Ingredient created.'});
+    return res.send({message: 'Ingredient created.'});
   },
   updateMyPrivateUserIngredient: async function(req: Request, res: Response) {
     const ingredientId = Number(req.body.ingredientInfo.ingredientId);
@@ -101,7 +101,7 @@ export const userIngredientController = {
       ...ingredientToUpdateWith
     });
 
-    res.send({message: 'Ingredient updated.'});
+    return res.send({message: 'Ingredient updated.'});
   },
   deleteMyPrivateUserIngredient: async function(req: Request, res: Response) {
     const ingredientId = Number(req.body.ingredientId);
@@ -113,6 +113,6 @@ export const userIngredientController = {
     await recipeIngredient.deleteRecipeIngredientsByIngredientId(ingredientId);
     await ingredient.deleteMyPrivateUserIngredient(ingredientId, ownerId);
 
-    res.send({message: 'Ingredient deleted.'});
+    return res.send({message: 'Ingredient deleted.'});
   }
 };

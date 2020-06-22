@@ -151,6 +151,7 @@ export const userAuthController = {
 
     await user.updateUser({userId, ...userToUpdateWith});
     
+    // shouldn't it send the updated values back? const [ updatedUser ] = await
     return res.send({message: 'Account updated.'});
   },
   deleteUser: async function(req: Request, res: Response) {
@@ -171,7 +172,7 @@ export const userAuthController = {
 
     await Promise.all([
       content.deleteAllMyContent(userId),  // move out and up?
-      friendship.deleteMyFriendships(userId),
+      friendship.deleteAllMyFriendships(userId),
       plan.deleteAllMyPrivatePlans(userId),
       favoriteRecipe.deleteAllMyFavoriteRecipes(userId),
       savedRecipe.deleteAllMySavedRecipes(userId)

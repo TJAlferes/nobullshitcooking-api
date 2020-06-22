@@ -20,11 +20,13 @@ import { User } from '../../mysql-access/User';
 import { userAuthController } from './auth';
 
 jest.mock('superstruct');
+
 jest.mock('../../lib/services/email-confirmation-code', () => {
   const originalModule = jest
   .requireActual('../../lib/services/email-confirmation-code');
   return {...originalModule, emailConfirmationCode: jest.fn()};
 });
+
 jest.mock('../../mysql-access/User', () => {
   const originalModule = jest.requireActual('../../mysql-access/User');
   return {
@@ -32,19 +34,96 @@ jest.mock('../../mysql-access/User', () => {
     User: jest.fn().mockImplementation(() => ({
       getUserByEmail: mockGetUserByEmail,
       getUserByName: mockGetUserByName,
-      createUser: mockCreateUser,
-      verifyUser: mockVerifyUser,
-      updateUser: mockUpdateUser,
-      deleteUser: mockDeleteUser
+      createUser: jest.fn(),
+      verifyUser: jest.fn(),
+      updateUser: jest.fn(),
+      deleteUser: jest.fn()
     }))
   };
 });
 let mockGetUserByEmail = jest.fn();
 let mockGetUserByName = jest.fn();
-let mockCreateUser = jest.fn();
-let mockVerifyUser = jest.fn();
-let mockUpdateUser = jest.fn();
-let mockDeleteUser = jest.fn();
+
+jest.mock('../../mysql-access/Content', () => {
+  const originalModule = jest.requireActual('../../mysql-access/Content');
+  return {
+    ...originalModule,
+    Content: jest.fn().mockImplementation(() => ({
+      deleteAllMyContent: jest.fn()
+    }))
+  };
+});
+
+jest.mock('../../mysql-access/Friendship', () => {
+  const originalModule = jest.requireActual('../../mysql-access/Friendship');
+  return {
+    ...originalModule,
+    Friendship: jest.fn().mockImplementation(() => ({
+      deleteAllMyFriendships: jest.fn()
+    }))
+  };
+});
+
+jest.mock('../../mysql-access/Plan', () => {
+  const originalModule = jest.requireActual('../../mysql-access/Plan');
+  return {
+    ...originalModule,
+    Plan: jest.fn().mockImplementation(() => ({
+      deleteAllMyPrivatePlans: jest.fn()
+    }))
+  };
+});
+
+jest.mock('../../mysql-access/FavoriteRecipe', () => {
+  const originalModule = jest.requireActual('../../mysql-access/FavoriteRecipe');
+  return {
+    ...originalModule,
+    FavoriteRecipe: jest.fn().mockImplementation(() => ({
+      deleteAllMyFavoriteRecipes: jest.fn()
+    }))
+  };
+});
+
+jest.mock('../../mysql-access/SavedRecipe', () => {
+  const originalModule = jest.requireActual('../../mysql-access/SavedRecipe');
+  return {
+    ...originalModule,
+    SavedRecipe: jest.fn().mockImplementation(() => ({
+      deleteAllMySavedRecipes: jest.fn()
+    }))
+  };
+});
+
+jest.mock('../../mysql-access/Recipe', () => {
+  const originalModule = jest.requireActual('../../mysql-access/Recipe');
+  return {
+    ...originalModule,
+    Recipe: jest.fn().mockImplementation(() => ({
+      disownAllMyPublicUserRecipes: jest.fn(),
+      deleteAllMyPrivateUserRecipes: jest.fn()
+    }))
+  };
+});
+
+jest.mock('../../mysql-access/Equipment', () => {
+  const originalModule = jest.requireActual('../../mysql-access/Equipment');
+  return {
+    ...originalModule,
+    Equipment: jest.fn().mockImplementation(() => ({
+      deleteAllMyPrivateUserEquipment: jest.fn()
+    }))
+  };
+});
+
+jest.mock('../../mysql-access/Ingredient', () => {
+  const originalModule = jest.requireActual('../../mysql-access/Ingredient');
+  return {
+    ...originalModule,
+    Ingredient: jest.fn().mockImplementation(() => ({
+      deleteAllMyPrivateUserIngredients: jest.fn()
+    }))
+  };
+});
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -946,16 +1025,63 @@ describe('user auth controller', () => {
   });
 
   describe('logout method', () => {
-    
+    // figure this out
   });
 
-  describe('setAvatar method', () => {});
+  describe('updateUser method', () => {
+    const req: Partial<Request> = {
+      session: {...<Express.Session>{}, userInfo: {userId: 150}},
+      body: {
+        userInfo: {
+          email: "person@person.com",
+          password: "Password99$",
+          username: "NameIsGood",
+          avatar: "NameIsGood"
+        }
+      }
+    };
+    const res: Partial<Response> = {
+      send: jest.fn().mockResolvedValue({message: 'Account updated.'})
+    };
 
-  describe('updateUsername method', () => {});
+    it('uses validation', async () => {
+      await userAuthController.updateUser(<Request>req, <Response>res);
+      const MockedAssert = mocked(assert, true);
+      expect(MockedAssert).toHaveBeenCalledTimes(1);
+    });
 
-  describe('updateEmail method', () => {});
+    it('sends data', async () => {
+      await userAuthController.updateUser(<Request>req, <Response>res);
+      expect(res.send).toBeCalledWith({message: 'Account updated.'});
+    });
 
-  describe('updatePassword method', () => {});
+    it('returns correctly', async () => {
+      const actual = await userAuthController
+      .updateUser(<Request>req, <Response>res);
+      expect(actual).toEqual({message: 'Account updated.'});
+    });
+  });
 
-  describe('deleteAccount method', () => {});
+  describe('deleteUser method', () => {
+    const req: Partial<Request> = {
+      session: {...<Express.Session>{}, userInfo: {userId: 150}}
+    };
+    const res: Partial<Response> = {
+      send: jest.fn().mockResolvedValue({message: 'Account deleted.'})
+    };
+
+    // figure out how to test if the deletes are called in the correct order
+    // (would you have to make it a generator function?)
+
+    it('sends data', async () => {
+      await userAuthController.deleteUser(<Request>req, <Response>res);
+      expect(res.send).toBeCalledWith({message: 'Account deleted.'});
+    });
+
+    it('returns correctly', async () => {
+      const actual = await userAuthController
+      .deleteUser(<Request>req, <Response>res);
+      expect(actual).toEqual({message: 'Account deleted.'});
+    });
+  });
 });

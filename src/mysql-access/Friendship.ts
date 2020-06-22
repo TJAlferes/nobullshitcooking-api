@@ -19,7 +19,7 @@ export class Friendship implements IFriendship {
     this.deleteFriendship = this.deleteFriendship.bind(this);
     this.blockUser = this.blockUser.bind(this);
     this.unblockUser = this.unblockUser.bind(this);
-    this.deleteMyFriendships = this.deleteMyFriendships.bind(this);
+    this.deleteAllMyFriendships = this.deleteAllMyFriendships.bind(this);
   }
 
   /*
@@ -214,7 +214,7 @@ export class Friendship implements IFriendship {
     return unblockedUser;
   }
 
-  async deleteMyFriendships(userId: number) {
+  async deleteAllMyFriendships(userId: number) {
     const sql1 = `
       DELETE
       FROM nobsc_friendships
@@ -251,7 +251,7 @@ export interface IFriendship {
   deleteFriendship(userId: number, friendId: number): Data;
   blockUser(userId: number, friendId: number): Data;
   unblockUser(userId: number, friendId: number): Data;
-  deleteMyFriendships(userId: number): void;
+  deleteAllMyFriendships(userId: number): void;
 }
 
 interface ICreatingFriendship {
