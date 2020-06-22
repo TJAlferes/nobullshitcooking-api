@@ -22,25 +22,21 @@ export async function validResend(
 
   if (pass.length > 54) return {valid: false, feedback: 'Invalid password.'};
 
-  const userExists = await user.getUserByEmail(email);
+  const [ emailExists ] = await user.getUserByEmail(email);
 
   //if (userExists && crypto.timingSafeEqual(userExists[0].email, email))
 
-  if (!userExists.length) {
-    return {valid: false, feedback: 'Incorrect email or password.'};
-  }
-  
-  if (userExists[0].email !== email) {
+  if (!emailExists.length) {
     return {valid: false, feedback: 'Incorrect email or password.'};
   }
 
-  const isCorrectPassword = await bcrypt.compare(pass, userExists[0].pass);
+  const isCorrectPassword = await bcrypt.compare(pass, emailExists[0].pass);
 
   if (!isCorrectPassword) {
     return {valid: false, feedback: 'Incorrect email or password.'};
   }
 
-  const alreadyConfirmed = userExists[0].confirmation_code === null;
+  const alreadyConfirmed = emailExists[0].confirmation_code === null;
 
   if (alreadyConfirmed) return {valid: false, feedback: 'Already verified.'};
 

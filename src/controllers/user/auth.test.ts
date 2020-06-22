@@ -51,13 +51,11 @@ afterEach(() => {
 });
 
 describe('user auth controller', () => {
-  const session = {...<Express.Session>{}, userInfo: {userId: 1}};
 
   describe('register method', () => {
 
     describe('when username is shorter than 6 chars', () => {
       const req: Partial<Request> = {
-        session,
         body: {
           userInfo: {
             email: "person@person.com",
@@ -90,7 +88,6 @@ describe('user auth controller', () => {
 
     describe('when username is longer than 20 chars', () => {
       const req: Partial<Request> = {
-        session,
         body: {
           userInfo: {
             email: "person@person.com",
@@ -126,7 +123,6 @@ describe('user auth controller', () => {
 
     describe('when password is shorter than 6 chars', () => {
       const req: Partial<Request> = {
-        session,
         body: {
           userInfo: {
             email: "person@person.com",
@@ -159,7 +155,6 @@ describe('user auth controller', () => {
 
     describe('when password is longer than 54 chars', () => {
       const req: Partial<Request> = {
-        session,
         body: {
           userInfo: {
             email: "person@person.com",
@@ -192,7 +187,6 @@ describe('user auth controller', () => {
 
     describe('when username already taken', () => {
       const req: Partial<Request> = {
-        session,
         body: {
           userInfo: {
             email: "person@person.com",
@@ -221,7 +215,6 @@ describe('user auth controller', () => {
 
     describe('when email already in use', () => {
       const req: Partial<Request> = {
-        session,
         body: {
           userInfo: {
             email: "person@person.com",
@@ -252,7 +245,6 @@ describe('user auth controller', () => {
 
     describe('when ok', () => {
       const req: Partial<Request> = {
-        session,
         body: {
           userInfo: {
             email: "person@person.com",
@@ -298,7 +290,6 @@ describe('user auth controller', () => {
 
     describe('when password is shorter than 6 chars', () => {
       const req: Partial<Request> = {
-        session,
         body: {
           userInfo: {
             email: "person@person.com",
@@ -325,7 +316,6 @@ describe('user auth controller', () => {
 
     describe('when password is longer than 54 chars', () => {
       const req: Partial<Request> = {
-        session,
         body: {
           userInfo: {
             email: "person@person.com",
@@ -352,7 +342,6 @@ describe('user auth controller', () => {
 
     describe('when email does not exist', () => {
       const req: Partial<Request> = {
-        session,
         body: {
           userInfo: {
             email: "person@person.com",
@@ -387,7 +376,6 @@ describe('user auth controller', () => {
 
     describe('when password is incorrect', () => {
       const req: Partial<Request> = {
-        session,
         body: {
           userInfo: {
             email: "person@person.com",
@@ -430,7 +418,6 @@ describe('user auth controller', () => {
 
     describe('when the sent confirmation code is incorrect', () => {
       const req: Partial<Request> = {
-        session,
         body: {
           userInfo: {
             email: "person@person.com",
@@ -473,7 +460,6 @@ describe('user auth controller', () => {
 
     describe('when ok', () => {
       const req: Partial<Request> = {
-        session,
         body: {
           userInfo: {
             email: "person@person.com",
@@ -510,11 +496,458 @@ describe('user auth controller', () => {
 
   });
 
-  describe('resendConfirmationCode method', () => {});
+  describe('resendConfirmationCode method', () => {
 
-  describe('login method', () => {});
+    // TO DO: unit test email regex
+    //describe('when email', () => {});
 
-  describe('logout method', () => {});
+    describe('when password is shorter than 6 chars', () => {
+      const req: Partial<Request> = {
+        body: {
+          userInfo: {
+            email: "person@person.com",
+            password: "Pa99$",
+            onfirmationCode: "123XYZ"
+          }
+        }
+      };
+      const res: Partial<Response> = {
+        send: jest.fn().mockResolvedValue({message: 'Invalid password.'})
+      };
+
+      it('sends data', async () => {
+        await userAuthController
+        .resendConfirmationCode(<Request>req, <Response>res);
+        expect(res.send).toBeCalledWith({message: 'Invalid password.'});
+      });
+  
+      it('returns correctly', async () => {
+        const actual = await userAuthController
+        .resendConfirmationCode(<Request>req, <Response>res);
+        expect(actual).toEqual({message: 'Invalid password.'});
+      });
+    });
+
+    describe('when password is longer than 54 chars', () => {
+      const req: Partial<Request> = {
+        body: {
+          userInfo: {
+            email: "person@person.com",
+            password: "PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$",
+            onfirmationCode: "123XYZ"
+          }
+        }
+      };
+      const res: Partial<Response> = {
+        send: jest.fn().mockResolvedValue({message: 'Invalid password.'})
+      };
+
+      it('sends data', async () => {
+        await userAuthController
+        .resendConfirmationCode(<Request>req, <Response>res);
+        expect(res.send).toBeCalledWith({message: 'Invalid password.'});
+      });
+  
+      it('returns correctly', async () => {
+        const actual = await userAuthController
+        .resendConfirmationCode(<Request>req, <Response>res);
+        expect(actual).toEqual({message: 'Invalid password.'});
+      });
+    });
+
+    describe('when email does not exist', () => {
+      const req: Partial<Request> = {
+        body: {
+          userInfo: {
+            email: "person@person.com",
+            password: "Password99$",
+            confirmationCode: "123XYZ"
+          }
+        }
+      };
+      const res: Partial<Response> = {
+        send: jest.fn().mockResolvedValue({
+          message: 'Incorrect email or password.'
+        })
+      };
+
+      it('sends data', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[]]);
+        await userAuthController
+        .resendConfirmationCode(<Request>req, <Response>res);
+        expect(res.send).toBeCalledWith({
+          message: 'Incorrect email or password.'
+        });
+      });
+  
+      it('returns correctly', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[]]);
+        const actual = await userAuthController
+        .resendConfirmationCode(<Request>req, <Response>res);
+        expect(actual).toEqual({
+          message: 'Incorrect email or password.'
+        });
+      });
+    });
+
+    describe('when password is incorrect', () => {
+      const req: Partial<Request> = {
+        body: {
+          userInfo: {
+            email: "person@person.com",
+            password: "WrongPassword99$",
+            confirmationCode: "123XYZ"
+          }
+        }
+      };
+      const res: Partial<Response> = {
+        send: jest.fn().mockResolvedValue({
+          message: 'Incorrect email or password.'
+        })
+      };
+
+      it('sends data', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[{
+          user_id: 150,
+          pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
+          confirmation_code: "123XYZ"
+        }]]);
+        await userAuthController
+        .resendConfirmationCode(<Request>req, <Response>res);
+        expect(res.send).toBeCalledWith({
+          message: 'Incorrect email or password.'
+        });
+      });
+
+      it('returns correctly', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[{
+          user_id: 150,
+          pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
+          confirmation_code: "123XYZ"
+        }]]);
+        const actual = await userAuthController
+        .resendConfirmationCode(<Request>req, <Response>res);
+        expect(actual).toEqual({
+          message: 'Incorrect email or password.'
+        });
+      });
+    });
+
+    describe('when account is already verified', () => {
+      const req: Partial<Request> = {
+        body: {
+          userInfo: {
+            email: "person@person.com",
+            password: "Password99$",
+            confirmationCode: "123XYZ"
+          }
+        }
+      };
+      const res: Partial<Response> = {
+        send: jest.fn().mockResolvedValue({message: 'Already verified.'})
+      };
+
+      it('sends data', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[{
+          user_id: 150,
+          pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
+          confirmation_code: null
+        }]]);
+        await userAuthController
+        .resendConfirmationCode(<Request>req, <Response>res);
+        expect(res.send).toBeCalledWith({message: 'Already verified.'});
+      });
+
+      it('returns correctly', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[{
+          user_id: 150,
+          pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
+          confirmation_code: null
+        }]]);
+        const actual = await userAuthController
+        .resendConfirmationCode(<Request>req, <Response>res);
+        expect(actual).toEqual({message: 'Already verified.'});
+      });
+    });
+
+    describe('when ok', () => {
+      const req: Partial<Request> = {
+        body: {
+          userInfo: {
+            email: "person@person.com",
+            password: "Password99$",
+            confirmationCode: "123XYZ"
+          }
+        }
+      };
+      const res: Partial<Response> = {
+        send: jest.fn().mockResolvedValue({message: 'Confirmation code re-sent.'})
+      };
+
+      it('uses emailConfirmationCode', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[{
+          user_id: 150,
+          pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
+          confirmation_code: "123XYZ"
+        }]]);
+        await userAuthController
+        .resendConfirmationCode(<Request>req, <Response>res);
+        const MockedEmailConfirmationCode = mocked(emailConfirmationCode, true);
+        expect(MockedEmailConfirmationCode).toHaveBeenCalledTimes(1);
+      });
+
+      it('sends data', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[{
+          user_id: 150,
+          pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
+          confirmation_code: "123XYZ"
+        }]]);
+        await userAuthController
+        .resendConfirmationCode(<Request>req, <Response>res);
+        expect(res.send).toBeCalledWith({message: 'Confirmation code re-sent.'});
+      });
+  
+      it('returns correctly', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[{
+          user_id: 150,
+          pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
+          confirmation_code: "123XYZ"
+        }]]);
+        const actual = await userAuthController
+        .resendConfirmationCode(<Request>req, <Response>res);
+        expect(actual).toEqual({message: 'Confirmation code re-sent.'});
+      });
+    });
+
+  });
+
+  describe('login method', () => {
+    // TO DO: unit test email regex
+    //describe('when email', () => {});
+
+    describe('when password is shorter than 6 chars', () => {
+      const req: Partial<Request> = {
+        body: {
+          userInfo: {email: "person@person.com", password: "Pa99$"}
+        }
+      };
+      const res: Partial<Response> = {
+        send: jest.fn().mockResolvedValue({message: 'Invalid password.'})
+      };
+
+      it('sends data', async () => {
+        await userAuthController.login(<Request>req, <Response>res);
+        expect(res.send).toBeCalledWith({message: 'Invalid password.'});
+      });
+  
+      it('returns correctly', async () => {
+        const actual = await userAuthController
+        .login(<Request>req, <Response>res);
+        expect(actual).toEqual({message: 'Invalid password.'});
+      });
+    });
+
+    describe('when password is longer than 54 chars', () => {
+      const req: Partial<Request> = {
+        body: {
+          userInfo: {
+            email: "person@person.com",
+            password: "PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$"
+          }
+        }
+      };
+      const res: Partial<Response> = {
+        send: jest.fn().mockResolvedValue({message: 'Invalid password.'})
+      };
+
+      it('sends data', async () => {
+        await userAuthController.login(<Request>req, <Response>res);
+        expect(res.send).toBeCalledWith({message: 'Invalid password.'});
+      });
+  
+      it('returns correctly', async () => {
+        const actual = await userAuthController
+        .login(<Request>req, <Response>res);
+        expect(actual).toEqual({message: 'Invalid password.'});
+      });
+    });
+
+    describe('when email does not exist', () => {
+      const req: Partial<Request> = {
+        body: {
+          userInfo: {email: "person@person.com", password: "Password99$"}
+        }
+      };
+      const res: Partial<Response> = {
+        send: jest.fn().mockResolvedValue({
+          message: 'Incorrect email or password.'
+        })
+      };
+
+      it('sends data', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[]]);
+        await userAuthController.login(<Request>req, <Response>res);
+        expect(res.send).toBeCalledWith({
+          message: 'Incorrect email or password.'
+        });
+      });
+  
+      it('returns correctly', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[]]);
+        const actual = await userAuthController
+        .login(<Request>req, <Response>res);
+        expect(actual).toEqual({
+          message: 'Incorrect email or password.'
+        });
+      });
+    });
+
+    describe('when password is incorrect', () => {
+      const req: Partial<Request> = {
+        body: {
+          userInfo: {email: "person@person.com", password: "WrongPassword99$"}
+        }
+      };
+      const res: Partial<Response> = {
+        send: jest.fn().mockResolvedValue({
+          message: 'Incorrect email or password.'
+        })
+      };
+
+      it('sends data', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[{
+          user_id: 150,
+          pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
+          confirmation_code: "123XYZ"
+        }]]);
+        await userAuthController.login(<Request>req, <Response>res);
+        expect(res.send).toBeCalledWith({
+          message: 'Incorrect email or password.'
+        });
+      });
+
+      it('returns correctly', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[{
+          user_id: 150,
+          pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
+          confirmation_code: "123XYZ"
+        }]]);
+        const actual = await userAuthController
+        .login(<Request>req, <Response>res);
+        expect(actual).toEqual({
+          message: 'Incorrect email or password.'
+        });
+      });
+    });
+
+    describe('when account is not yet verified', () => {
+      const req: Partial<Request> = {
+        body: {
+          userInfo: {email: "person@person.com", password: "Password99$"}
+        }
+      };
+      const res: Partial<Response> = {
+        send: jest.fn().mockResolvedValue({
+          message: 'Please check your email for your confirmation code.'
+        })
+      };
+
+      it('sends data', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[{
+          user_id: 150,
+          pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
+          confirmation_code: "123XYZ"
+        }]]);
+        await userAuthController.login(<Request>req, <Response>res);
+        expect(res.send).toBeCalledWith({
+          message: 'Please check your email for your confirmation code.'
+        });
+      });
+
+      it('returns correctly', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[{
+          user_id: 150,
+          pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
+          confirmation_code: "123XYZ"
+        }]]);
+        const actual = await userAuthController
+        .login(<Request>req, <Response>res);
+        expect(actual).toEqual({
+          message: 'Please check your email for your confirmation code.'
+        });
+      });
+    });
+
+    describe ('when ok', () => {
+      const req: Partial<Request> = {
+        session: {...<Express.Session>{}},
+        body: {
+          userInfo: {email: "person@person.com", password: "Password99$"}
+        }
+      };
+      const res: Partial<Response> = {
+        json: jest.fn().mockResolvedValue({
+          message: 'Signed in.',
+          username: "NameIsGood",
+          avatar: "NameIsGood"
+        })
+      };
+
+      it('attaches userInfo object to session object', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[{
+          user_id: 150,
+          pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
+          username: "NameIsGood",
+          avatar: "NameIsGood",
+          confirmation_code: null
+        }]]);
+        await userAuthController.login(<Request>req, <Response>res);
+        expect(req.session!.userInfo).toEqual({
+          userId: 150,
+          username: "NameIsGood",
+          avatar: "NameIsGood"
+        });
+      });
+
+      it('sends data', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[{
+          user_id: 150,
+          pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
+          username: "NameIsGood",
+          avatar: "NameIsGood",
+          confirmation_code: null
+        }]]);
+        await userAuthController.login(<Request>req, <Response>res);
+        expect(res.json).toBeCalledWith({
+          message: 'Signed in.',
+          username: "NameIsGood",
+          avatar: "NameIsGood"
+        });
+      });
+
+      it('returns correctly', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[{
+          user_id: 150,
+          pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
+          username: "NameIsGood",
+          avatar: "NameIsGood",
+          confirmation_code: null
+        }]]);
+        const actual = await userAuthController
+        .login(<Request>req, <Response>res);
+        expect(actual).toEqual({
+          message: 'Signed in.',
+          username: "NameIsGood",
+          avatar: "NameIsGood"
+        });
+      });
+    });
+
+  });
+
+  describe('logout method', () => {
+    
+  });
 
   describe('setAvatar method', () => {});
 
