@@ -76,16 +76,15 @@ export const userAuthController = {
 
     const user = new User(pool);
 
-    const {
-      valid,
-      feedback
-    } = await validVerify({email, confirmationCode}, user);
+    const isValidVerify = await validVerify({email, pass, confirmationCode}, user);
 
-    if (!valid) return res.send({message: feedback});
+    if (!isValidVerify.valid) {
+      return res.send({message: isValidVerify.feedback});
+    }
 
-    //user.verifyUser(email);  // change from uuid to null
+    user.verifyUser(email);
 
-    return res.send('User account verified.');
+    return res.send({message: 'User account verified.'});
   },
   resendConfirmationCode: async function (req: Request, res: Response) {
     const email = req.body.userInfo.email;
@@ -168,7 +167,7 @@ export const userAuthController = {
     const savedRecipe = new SavedRecipe(pool);
     const user = new User(pool);
 
-    // deletes must be in this order, due to foreign key constraints
+    // due to foreign key constraints, deletes must be in this order
 
     await Promise.all([
       content.deleteAllMyContent(userId),  // move out and up?

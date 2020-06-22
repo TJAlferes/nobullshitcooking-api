@@ -1,23 +1,42 @@
+import bcrypt from 'bcrypt';
+
 import { IUser } from '../../../mysql-access/User';
 
 export async function validVerify(
   {
     email,
+    pass,
     confirmationCode
   }:
   {
     email: string;
+    pass: string;
     confirmationCode: string;
   },
   user: IUser
 ) {
-  const emailExists = await user.getUserByEmail(email);
+  // Problem: This would invalidate some older/alternative email types.
+  if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
+    return {valid: false, feedback: 'Invalid email.'};
+  }
+
+  if (pass.length < 6) return {valid: false, feedback: 'Invalid password.'};
+
+  if (pass.length > 54) return {valid: false, feedback: 'Invalid password.'};
+
+  const [ emailExists ] = await user.getUserByEmail(email);
 
   if (!emailExists.length) {
     return {
       valid: false,
       feedback: 'An issue occurred, please double check your info and try again.'
     };
+  }
+
+  const isCorrectPassword = await bcrypt.compare(pass, emailExists[0].pass);
+
+  if (!isCorrectPassword) {
+    return {valid: false, feedback: 'Incorrect email or password.'};
   }
   
   if (emailExists[0].confirmation_code !== confirmationCode) {

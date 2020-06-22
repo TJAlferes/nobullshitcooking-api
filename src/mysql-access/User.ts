@@ -11,6 +11,7 @@ export class User implements IUser {
     this.viewUserById = this.viewUserById.bind(this);
     this.viewUserByName = this.viewUserByName.bind(this);
     this.createUser = this.createUser.bind(this);
+    this.verifyUser = this.verifyUser.bind(this);
     this.updateUser = this.updateUser.bind(this);
     this.deleteUser = this.deleteUser.bind(this);
   }
@@ -81,6 +82,18 @@ export class User implements IUser {
     return createdUser;
   }
 
+  async verifyUser(email: string) {
+    const sql = `
+      UPDATE nobsc_users
+      SET confirmation_code = NULL
+      WHERE email = ?
+      LIMIT 1
+    `;
+    const [ verifiedUser ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [email]);
+    return verifiedUser;
+  }
+
   async updateUser({
     userId,
     email,
@@ -122,6 +135,7 @@ export interface IUser {
   viewUserById(userId: number): Data;
   viewUserByName(username: string): Data;
   createUser({ email, pass, username, confirmationCode }: ICreatingUser): Data;
+  verifyUser(email: string): Data;
   updateUser({
     userId,
     email,

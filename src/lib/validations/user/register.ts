@@ -43,14 +43,14 @@ export async function validRegister(
     };
   }
 
-  const userExists = await user.getUserByName(username);
+  const [ userExists ] = await user.getUserByName(username);
 
   if (userExists.length) {
     return {valid: false, feedback: 'Username already taken.'};
   }
 
-  const emailExists = await user.getUserByEmail(email);
-  
+  const [ emailExists ] = await user.getUserByEmail(email);
+
   if (emailExists.length) {
     return {valid: false, feedback: 'Email already in use.'};
   }

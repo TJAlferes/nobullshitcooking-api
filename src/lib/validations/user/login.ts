@@ -22,15 +22,11 @@ export async function validLogin(
 
   if (pass.length > 54) return {valid: false, feedback: 'Invalid password.'};
 
-  const userExists = await user.getUserByEmail(email);
+  const [ userExists ] = await user.getUserByEmail(email);
 
   //if (userExists && crypto.timingSafeEqual(userExists[0].email, email))
 
   if (!userExists.length) {
-    return {valid: false, feedback: 'Incorrect email or password.'};
-  }
-  
-  if (userExists[0].email !== email) {
     return {valid: false, feedback: 'Incorrect email or password.'};
   }
 
