@@ -76,6 +76,8 @@ export async function createRecipeService({
     );
   }
 
+  // first check if the equipment exists?
+
   if (requiredEquipment.length) {
     let recipeEquipmentToCreate: number[] = [];
 
@@ -99,6 +101,8 @@ export async function createRecipeService({
       recipeEquipmentPlaceholders
     );
   }
+
+  // first check if the ingredients exists?
 
   if (requiredIngredients.length) {
     let recipeIngredientsToCreate: number[] = [];
@@ -125,6 +129,8 @@ export async function createRecipeService({
       recipeIngredientsPlaceholders
     );
   }
+
+  // first check if the subrecipes exists?
 
   if (requiredSubrecipes.length) {
     let recipeSubrecipesToCreate: number[] = [];

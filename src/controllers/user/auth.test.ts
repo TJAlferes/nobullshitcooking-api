@@ -7,16 +7,6 @@ import { mocked } from 'ts-jest/utils';
 import {
   emailConfirmationCode
 } from '../../lib/services/email-confirmation-code';
-import { Content } from '../../mysql-access/Content';
-import { Equipment } from '../../mysql-access/Equipment';
-import { Ingredient } from '../../mysql-access/Ingredient';
-import { FavoriteRecipe } from '../../mysql-access/FavoriteRecipe';
-import { Friendship } from '../../mysql-access/Friendship';
-//import { Notification } from '../../mysql-access/Notification';
-import { Plan } from '../../mysql-access/Plan';
-import { Recipe } from '../../mysql-access/Recipe';
-import { SavedRecipe } from '../../mysql-access/SavedRecipe';
-import { User } from '../../mysql-access/User';
 import { userAuthController } from './auth';
 
 jest.mock('superstruct');
@@ -34,96 +24,109 @@ jest.mock('../../mysql-access/User', () => {
     User: jest.fn().mockImplementation(() => ({
       getUserByEmail: mockGetUserByEmail,
       getUserByName: mockGetUserByName,
-      createUser: jest.fn(),
-      verifyUser: jest.fn(),
-      updateUser: jest.fn(),
-      deleteUser: jest.fn()
+      createUser: mockCreateUser,
+      verifyUser: mockVerifyUser,
+      updateUser: mockUpdateUser,
+      deleteUser: mockDeleteUser
     }))
   };
 });
 let mockGetUserByEmail = jest.fn();
 let mockGetUserByName = jest.fn();
+let mockCreateUser = jest.fn();
+let mockVerifyUser = jest.fn();
+let mockUpdateUser = jest.fn();
+let mockDeleteUser = jest.fn();
 
 jest.mock('../../mysql-access/Content', () => {
   const originalModule = jest.requireActual('../../mysql-access/Content');
   return {
     ...originalModule,
     Content: jest.fn().mockImplementation(() => ({
-      deleteAllMyContent: jest.fn()
+      deleteAllMyContent: mockDeleteAllMyContent
     }))
   };
 });
+let mockDeleteAllMyContent = jest.fn();
 
 jest.mock('../../mysql-access/Friendship', () => {
   const originalModule = jest.requireActual('../../mysql-access/Friendship');
   return {
     ...originalModule,
     Friendship: jest.fn().mockImplementation(() => ({
-      deleteAllMyFriendships: jest.fn()
+      deleteAllMyFriendships: mockDeleteAllMyFriendships
     }))
   };
 });
+let mockDeleteAllMyFriendships = jest.fn();
 
 jest.mock('../../mysql-access/Plan', () => {
   const originalModule = jest.requireActual('../../mysql-access/Plan');
   return {
     ...originalModule,
     Plan: jest.fn().mockImplementation(() => ({
-      deleteAllMyPrivatePlans: jest.fn()
+      deleteAllMyPrivatePlans: mockDeleteAllMyPrivatePlans
     }))
   };
 });
+let mockDeleteAllMyPrivatePlans = jest.fn();
 
 jest.mock('../../mysql-access/FavoriteRecipe', () => {
   const originalModule = jest.requireActual('../../mysql-access/FavoriteRecipe');
   return {
     ...originalModule,
     FavoriteRecipe: jest.fn().mockImplementation(() => ({
-      deleteAllMyFavoriteRecipes: jest.fn()
+      deleteAllMyFavoriteRecipes: mockDeleteAllMyFavoriteRecipes
     }))
   };
 });
+let mockDeleteAllMyFavoriteRecipes = jest.fn();
 
 jest.mock('../../mysql-access/SavedRecipe', () => {
   const originalModule = jest.requireActual('../../mysql-access/SavedRecipe');
   return {
     ...originalModule,
     SavedRecipe: jest.fn().mockImplementation(() => ({
-      deleteAllMySavedRecipes: jest.fn()
+      deleteAllMySavedRecipes: mockDeleteAllMySavedRecipes
     }))
   };
 });
+let mockDeleteAllMySavedRecipes = jest.fn();
 
 jest.mock('../../mysql-access/Recipe', () => {
   const originalModule = jest.requireActual('../../mysql-access/Recipe');
   return {
     ...originalModule,
     Recipe: jest.fn().mockImplementation(() => ({
-      disownAllMyPublicUserRecipes: jest.fn(),
-      deleteAllMyPrivateUserRecipes: jest.fn()
+      disownAllMyPublicUserRecipes: mockDisownAllMyPublicUserRecipes,
+      deleteAllMyPrivateUserRecipes: mockDeleteAllMyPrivateUserRecipes
     }))
   };
 });
+let mockDisownAllMyPublicUserRecipes = jest.fn();
+let mockDeleteAllMyPrivateUserRecipes = jest.fn();
 
 jest.mock('../../mysql-access/Equipment', () => {
   const originalModule = jest.requireActual('../../mysql-access/Equipment');
   return {
     ...originalModule,
     Equipment: jest.fn().mockImplementation(() => ({
-      deleteAllMyPrivateUserEquipment: jest.fn()
+      deleteAllMyPrivateUserEquipment: mockDeleteAllMyPrivateUserEquipment
     }))
   };
 });
+let mockDeleteAllMyPrivateUserEquipment = jest.fn();
 
 jest.mock('../../mysql-access/Ingredient', () => {
   const originalModule = jest.requireActual('../../mysql-access/Ingredient');
   return {
     ...originalModule,
     Ingredient: jest.fn().mockImplementation(() => ({
-      deleteAllMyPrivateUserIngredients: jest.fn()
+      deleteAllMyPrivateUserIngredients: mockDeleteAllMyPrivateUserIngredients
     }))
   };
 });
+let mockDeleteAllMyPrivateUserIngredients = jest.fn();
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -1025,7 +1028,25 @@ describe('user auth controller', () => {
   });
 
   describe('logout method', () => {
-    // figure this out
+    const mockDestroy = jest.fn();
+    const req: Partial<Request> = {
+      session: {
+        ...<Express.Session>{},
+        destroy: mockDestroy,
+        userInfo: {userId: 150}
+      }
+    };
+    const res: Partial<Response> = {end: jest.fn()};
+    
+    it('uses destroy', async () => {
+      await userAuthController.logout(<Request>req, <Response>res);
+      expect(mockDestroy).toBeCalledTimes(1);
+    });
+
+    it('uses res.end', async () => {
+      await userAuthController.logout(<Request>req, <Response>res);
+      expect(res.end).toBeCalledTimes(1);
+    });
   });
 
   describe('updateUser method', () => {
@@ -1050,6 +1071,17 @@ describe('user auth controller', () => {
       expect(MockedAssert).toHaveBeenCalledTimes(1);
     });
 
+    it ('uses updateUser correctly', async () => {
+      await userAuthController.updateUser(<Request>req, <Response>res);
+      expect(mockUpdateUser).toBeCalledWith({
+        userId: 150,
+        email: "person@person.com",
+        pass: "Password99$",
+        username: "NameIsGood",
+        avatar: "NameIsGood"
+      });
+    });
+
     it('sends data', async () => {
       await userAuthController.updateUser(<Request>req, <Response>res);
       expect(res.send).toBeCalledWith({message: 'Account updated.'});
@@ -1072,6 +1104,56 @@ describe('user auth controller', () => {
 
     // figure out how to test if the deletes are called in the correct order
     // (would you have to make it a generator function?)
+
+    it('uses deleteAllMyContent correctly', async () => {
+      await userAuthController.deleteUser(<Request>req, <Response>res);
+      expect(mockDeleteAllMyContent).toBeCalledWith(150);
+    });
+
+    it('uses deleteAllMyFriendships correctly', async () => {
+      await userAuthController.deleteUser(<Request>req, <Response>res);
+      expect(mockDeleteAllMyFriendships).toBeCalledWith(150);
+    });
+
+    it('uses deleteAllMyPrivatePlans correctly', async () => {
+      await userAuthController.deleteUser(<Request>req, <Response>res);
+      expect(mockDeleteAllMyPrivatePlans).toBeCalledWith(150);
+    });
+
+    it('uses deleteAllMyFavoriteRecipes correctly', async () => {
+      await userAuthController.deleteUser(<Request>req, <Response>res);
+      expect(mockDeleteAllMyFavoriteRecipes).toBeCalledWith(150);
+    });
+
+    it('uses deleteAllMySavedRecipes correctly', async () => {
+      await userAuthController.deleteUser(<Request>req, <Response>res);
+      expect(mockDeleteAllMySavedRecipes).toBeCalledWith(150);
+    });
+
+    it('uses disownAllMyPublicUserRecipes correctly', async () => {
+      await userAuthController.deleteUser(<Request>req, <Response>res);
+      expect(mockDisownAllMyPublicUserRecipes).toBeCalledWith(150);
+    });
+
+    it('uses deleteAllMyPrivateUserRecipes correctly', async () => {
+      await userAuthController.deleteUser(<Request>req, <Response>res);
+      expect(mockDeleteAllMyPrivateUserRecipes).toBeCalledWith(150, 150);
+    });
+
+    it('uses deleteAllMyPrivateUserEquipment correctly', async () => {
+      await userAuthController.deleteUser(<Request>req, <Response>res);
+      expect(mockDeleteAllMyPrivateUserEquipment).toBeCalledWith(150);
+    });
+
+    it('uses deleteAllMyPrivateUserIngredients correctly', async () => {
+      await userAuthController.deleteUser(<Request>req, <Response>res);
+      expect(mockDeleteAllMyPrivateUserIngredients).toBeCalledWith(150);
+    });
+
+    it('uses deleteUser correctly', async () => {
+      await userAuthController.deleteUser(<Request>req, <Response>res);
+      expect(mockDeleteUser).toBeCalledWith(150);
+    });
 
     it('sends data', async () => {
       await userAuthController.deleteUser(<Request>req, <Response>res);

@@ -2,11 +2,10 @@ import { Request, Response } from 'express';
 import { assert } from 'superstruct';
 import { mocked } from 'ts-jest/utils';
 
-import { Friendship } from '../../mysql-access/Friendship';
-import { User } from '../../mysql-access/User';
 import { userFriendshipController } from './friendship';
 
 jest.mock('superstruct');
+
 jest.mock('../../mysql-access/Friendship', () => {
   const originalModule = jest.requireActual('../../mysql-access/Friendship');
   return {
@@ -15,18 +14,25 @@ jest.mock('../../mysql-access/Friendship', () => {
       getFriendshipByFriendId:  mockGetFriendshipByFriendId,
       checkIfBlockedBy:  mockCheckIfBlockedBy,
       viewMyFriendships: mockViewMyFriendships,
-      createFriendship: jest.fn(),
-      acceptFriendship: jest.fn(),
-      rejectFriendship: jest.fn(),
-      deleteFriendship: jest.fn(),
-      blockUser: jest.fn(),
-      unblockUser: jest.fn()
+      createFriendship: mockCreateFriendship,
+      acceptFriendship: mockAcceptFriendship,
+      rejectFriendship: mockRejectFriendship,
+      deleteFriendship: mockDeleteFriendship,
+      blockUser: mockBlockUser,
+      unblockUser: mockUnblockUser
     }))
   };
 });
 let mockGetFriendshipByFriendId = jest.fn();
 let mockCheckIfBlockedBy = jest.fn();
 let mockViewMyFriendships = jest.fn();
+let mockCreateFriendship = jest.fn();
+let mockAcceptFriendship = jest.fn();
+let mockRejectFriendship = jest.fn();
+let mockDeleteFriendship = jest.fn();
+let mockBlockUser = jest.fn();
+let mockUnblockUser = jest.fn();
+
 jest.mock('../../mysql-access/User', () => {
   const originalModule = jest.requireActual('../../mysql-access/User');
   return {
@@ -43,19 +49,18 @@ afterEach(() => {
 });
 
 describe('user friendship controller', () => {
-  const session = {...<Express.Session>{}, userInfo: {userId: 1}};
+  const session = {...<Express.Session>{}, userInfo: {userId: 150}};
 
   describe('viewMyFriendships method', () => {
     const rows = [{id: 1, name: "Name"}];
     const req: Partial<Request> = {session};
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue([rows])};
 
-    it('uses Friendship mysql access', async () => {
+    it('uses viewMyFriendships correctly', async () => {
       mockViewMyFriendships = jest.fn().mockResolvedValue([rows]);
       await userFriendshipController
       .viewMyFriendships(<Request>req, <Response>res);
-      const MockedFriendship = mocked(Friendship, true);
-      expect(MockedFriendship).toHaveBeenCalledTimes(1);
+      expect(mockViewMyFriendships).toHaveBeenCalledWith(150);
     });
 
     it('sends data', async () => {
@@ -81,6 +86,13 @@ describe('user friendship controller', () => {
         send: jest.fn().mockResolvedValue({message: 'User not found.'})
       };
 
+      it('uses viewUserByName correctly', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([[]]);
+        await userFriendshipController
+        .createFriendship(<Request>req, <Response>res);
+        expect(mockViewUserByName).toBeCalledWith("Name");
+      });
+
       it('sends data', async () => {
         mockViewUserByName = jest.fn().mockResolvedValue([[]]);
         await userFriendshipController
@@ -102,9 +114,21 @@ describe('user friendship controller', () => {
         send: jest.fn().mockResolvedValue({message: 'User not found.'})
       };
 
+      it('uses checkIfBlockedBy correctly', async () => {
+        mockCheckIfBlockedBy = jest.fn().mockResolvedValue(
+          [[{user_id: 150, friend_id: 42}]]
+        );
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
+        await userFriendshipController
+        .createFriendship(<Request>req, <Response>res);
+        expect(mockCheckIfBlockedBy).toBeCalledWith(150, 42);
+      });
+
       it('sends data', async () => {
         mockCheckIfBlockedBy = jest.fn().mockResolvedValue(
-          [[{user_id: 1, friend_id: 42}]]
+          [[{user_id: 150, friend_id: 42}]]
         );
         mockViewUserByName = jest.fn().mockResolvedValue([
           [{user_id: 42, avatar: "NameXYZ"}]
@@ -116,7 +140,7 @@ describe('user friendship controller', () => {
   
       it('returns correctly', async () => {
         mockCheckIfBlockedBy = jest.fn().mockResolvedValue(
-          [[{user_id: 1, friend_id: 42}]]
+          [[{user_id: 150, friend_id: 42}]]
         );
         mockViewUserByName = jest.fn().mockResolvedValue([
           [{user_id: 42, avatar: "NameXYZ"}]
@@ -135,6 +159,17 @@ describe('user friendship controller', () => {
         })
       };
 
+      it ('uses getFriendshipByFriendId correctly', async () => {
+        mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
+        mockGetFriendshipByFriendId = jest.fn().mockResolvedValue([[]]);
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
+        await userFriendshipController
+        .createFriendship(<Request>req, <Response>res);
+        expect(mockGetFriendshipByFriendId).toBeCalledWith(150, 42);
+      });
+
       it('uses validation', async () => {
         mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
         mockGetFriendshipByFriendId = jest.fn().mockResolvedValue([[]]);
@@ -145,6 +180,17 @@ describe('user friendship controller', () => {
         .createFriendship(<Request>req, <Response>res);
         const MockedAssert = mocked(assert, true);
         expect(MockedAssert).toHaveBeenCalledTimes(1);
+      });
+
+      it('uses createFriendship correctly', async () => {
+        mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
+        mockGetFriendshipByFriendId = jest.fn().mockResolvedValue([[]]);
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
+        await userFriendshipController
+        .createFriendship(<Request>req, <Response>res);
+        expect(mockCreateFriendship).toHaveBeenCalledTimes(1);
       });
 
       it('sends data', async () => {
@@ -182,7 +228,7 @@ describe('user friendship controller', () => {
       it('sends data', async () => {
         mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
         mockGetFriendshipByFriendId =  jest.fn().mockResolvedValue([
-          [{user_id: 1, friend_id: 42, status: "pending-sent"}]
+          [{user_id: 150, friend_id: 42, status: "pending-sent"}]
         ]);
         mockViewUserByName = jest.fn().mockResolvedValue([
           [{user_id: 42, avatar: "NameXYZ"}]
@@ -197,7 +243,7 @@ describe('user friendship controller', () => {
       it('returns correctly', async () => {
         mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
         mockGetFriendshipByFriendId = jest.fn().mockResolvedValue([
-          [{user_id: 1, friend_id: 42, status: "pending-sent"}]
+          [{user_id: 150, friend_id: 42, status: "pending-sent"}]
         ]);
         mockViewUserByName = jest.fn().mockResolvedValue([
           [{user_id: 42, avatar: "NameXYZ"}]
@@ -219,7 +265,7 @@ describe('user friendship controller', () => {
       it('sends data', async () => {
         mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
         mockGetFriendshipByFriendId =  jest.fn().mockResolvedValue([
-          [{user_id: 1, friend_id: 42, status: "pending-received"}]
+          [{user_id: 150, friend_id: 42, status: "pending-received"}]
         ]);
         mockViewUserByName = jest.fn().mockResolvedValue([
           [{user_id: 42, avatar: "NameXYZ"}]
@@ -234,7 +280,7 @@ describe('user friendship controller', () => {
       it('returns correctly', async () => {
         mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
         mockGetFriendshipByFriendId =  jest.fn().mockResolvedValue([
-          [{user_id: 1, friend_id: 42, status: "pending-received"}]
+          [{user_id: 150, friend_id: 42, status: "pending-received"}]
         ]);
         mockViewUserByName = jest.fn().mockResolvedValue([
           [{user_id: 42, avatar: "NameXYZ"}]
@@ -256,7 +302,7 @@ describe('user friendship controller', () => {
       it('sends data', async () => {
         mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
         mockGetFriendshipByFriendId =  jest.fn().mockResolvedValue([
-          [{user_id: 1, friend_id: 42, status: "accepted"}]
+          [{user_id: 150, friend_id: 42, status: "accepted"}]
         ]);
         mockViewUserByName = jest.fn().mockResolvedValue([
           [{user_id: 42, avatar: "NameXYZ"}]
@@ -271,7 +317,7 @@ describe('user friendship controller', () => {
       it('returns correctly', async () => {
         mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
         mockGetFriendshipByFriendId =  jest.fn().mockResolvedValue([
-          [{user_id: 1, friend_id: 42, status: "accepted"}]
+          [{user_id: 150, friend_id: 42, status: "accepted"}]
         ]);
         mockViewUserByName = jest.fn().mockResolvedValue([
           [{user_id: 42, avatar: "NameXYZ"}]
@@ -293,7 +339,7 @@ describe('user friendship controller', () => {
       it('sends data', async () => {
         mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
         mockGetFriendshipByFriendId =  jest.fn().mockResolvedValue([
-          [{user_id: 1, friend_id: 42, status: "blocked"}]
+          [{user_id: 150, friend_id: 42, status: "blocked"}]
         ]);
         mockViewUserByName = jest.fn().mockResolvedValue([
           [{user_id: 42, avatar: "NameXYZ"}]
@@ -308,7 +354,7 @@ describe('user friendship controller', () => {
       it('returns correctly', async () => {
         mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
         mockGetFriendshipByFriendId =  jest.fn().mockResolvedValue([
-          [{user_id: 1, friend_id: 42, status: "blocked"}]
+          [{user_id: 150, friend_id: 42, status: "blocked"}]
         ]);
         mockViewUserByName = jest.fn().mockResolvedValue([
           [{user_id: 42, avatar: "NameXYZ"}]
@@ -328,6 +374,13 @@ describe('user friendship controller', () => {
       const res: Partial<Response> = {
         send: jest.fn().mockResolvedValue({message: 'User not found.'})
       };
+
+      it('uses viewUserByName correctly', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([[]]);
+        await userFriendshipController
+        .acceptFriendship(<Request>req, <Response>res);
+        expect(mockViewUserByName).toBeCalledWith("Name");
+      });
 
       it('sends data', async () => {
         mockViewUserByName = jest.fn().mockResolvedValue([[]]);
@@ -352,14 +405,22 @@ describe('user friendship controller', () => {
         })
       };
 
-      it('uses Friendship mysql access', async () => {
+      it('uses viewUserByName correctly', async () => {
         mockViewUserByName = jest.fn().mockResolvedValue([
           [{user_id: 42, avatar: "NameXYZ"}]
         ]);
         await userFriendshipController
         .acceptFriendship(<Request>req, <Response>res);
-        const MockedFriendship = mocked(Friendship, true);
-        expect(MockedFriendship).toHaveBeenCalledTimes(1);
+        expect(mockViewUserByName).toBeCalledWith("Name");
+      });
+
+      it('uses acceptFriendship correctly', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
+        await userFriendshipController
+        .acceptFriendship(<Request>req, <Response>res);
+        expect(mockAcceptFriendship).toBeCalledWith(150, 42);
       });
 
       it('sends data', async () => {
@@ -392,6 +453,13 @@ describe('user friendship controller', () => {
         send: jest.fn().mockResolvedValue({message: 'User not found.'})
       };
 
+      it('uses viewUserByName correctly', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([[]]);
+        await userFriendshipController
+        .rejectFriendship(<Request>req, <Response>res);
+        expect(mockViewUserByName).toBeCalledWith("Name");
+      });
+
       it('sends data', async () => {
         mockViewUserByName = jest.fn().mockResolvedValue([[]]);
         await userFriendshipController
@@ -415,14 +483,22 @@ describe('user friendship controller', () => {
         })
       };
 
-      it('uses Friendship mysql access', async () => {
+      it('uses viewUserByName correctly', async () => {
         mockViewUserByName = jest.fn().mockResolvedValue([
           [{user_id: 42, avatar: "NameXYZ"}]
         ]);
         await userFriendshipController
         .rejectFriendship(<Request>req, <Response>res);
-        const MockedFriendship = mocked(Friendship, true);
-        expect(MockedFriendship).toHaveBeenCalledTimes(1);
+        expect(mockViewUserByName).toBeCalledWith("Name");
+      });
+
+      it('uses rejectFriendship correctly', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
+        await userFriendshipController
+        .rejectFriendship(<Request>req, <Response>res);
+        expect(mockRejectFriendship).toBeCalledWith(150, 42);
       });
 
       it('sends data', async () => {
@@ -455,6 +531,13 @@ describe('user friendship controller', () => {
         send: jest.fn().mockResolvedValue({message: 'User not found.'})
       };
 
+      it('uses viewUserByName correctly', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([[]]);
+        await userFriendshipController
+        .deleteFriendship(<Request>req, <Response>res);
+        expect(mockViewUserByName).toBeCalledWith("Name");
+      });
+
       it('sends data', async () => {
         mockViewUserByName = jest.fn().mockResolvedValue([[]]);
         await userFriendshipController
@@ -478,14 +561,22 @@ describe('user friendship controller', () => {
         })
       };
 
-      it('uses Friendship mysql access', async () => {
+      it('uses viewUserByName correctly', async () => {
         mockViewUserByName = jest.fn().mockResolvedValue([
           [{user_id: 42, avatar: "NameXYZ"}]
         ]);
         await userFriendshipController
         .deleteFriendship(<Request>req, <Response>res);
-        const MockedFriendship = mocked(Friendship, true);
-        expect(MockedFriendship).toHaveBeenCalledTimes(1);
+        expect(mockViewUserByName).toBeCalledWith("Name");
+      });
+
+      it('uses deleteFriendship correctly', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
+        await userFriendshipController
+        .deleteFriendship(<Request>req, <Response>res);
+        expect(mockDeleteFriendship).toBeCalledWith(150, 42);
       });
 
       it('sends data', async () => {
@@ -519,6 +610,13 @@ describe('user friendship controller', () => {
         send: jest.fn().mockResolvedValue({message: 'User not found.'})
       };
 
+      it('uses viewUserByName correctly', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([[]]);
+        await userFriendshipController
+        .blockUser(<Request>req, <Response>res);
+        expect(mockViewUserByName).toBeCalledWith("Name");
+      });
+
       it('sends data', async () => {
         mockViewUserByName = jest.fn().mockResolvedValue([[]]);
         await userFriendshipController
@@ -540,14 +638,22 @@ describe('user friendship controller', () => {
         send: jest.fn().mockResolvedValue({message: 'User blocked.'})
       };
 
-      it('uses Friendship mysql access', async () => {
+      it('uses viewUserByName correctly', async () => {
         mockViewUserByName = jest.fn().mockResolvedValue([
           [{user_id: 42, avatar: "NameXYZ"}]
         ]);
         await userFriendshipController
         .blockUser(<Request>req, <Response>res);
-        const MockedFriendship = mocked(Friendship, true);
-        expect(MockedFriendship).toHaveBeenCalledTimes(1);
+        expect(mockViewUserByName).toBeCalledWith("Name");
+      });
+
+      it('uses blockUser correctly', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
+        await userFriendshipController
+        .blockUser(<Request>req, <Response>res);
+        expect(mockBlockUser).toBeCalledWith(150, 42);
       });
 
       it('sends data', async () => {
@@ -579,6 +685,13 @@ describe('user friendship controller', () => {
         send: jest.fn().mockResolvedValue({message: 'User not found.'})
       };
 
+      it('uses viewUserByName correctly', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([[]]);
+        await userFriendshipController
+        .unblockUser(<Request>req, <Response>res);
+        expect(mockViewUserByName).toBeCalledWith("Name");
+      });
+
       it('sends data', async () => {
         mockViewUserByName = jest.fn().mockResolvedValue([[]]);
         await userFriendshipController
@@ -600,14 +713,22 @@ describe('user friendship controller', () => {
         send: jest.fn().mockResolvedValue({message: 'User unblocked.'})
       };
 
-      it('uses Friendship mysql access', async () => {
+      it('uses viewUserByName correctly', async () => {
         mockViewUserByName = jest.fn().mockResolvedValue([
           [{user_id: 42, avatar: "NameXYZ"}]
         ]);
         await userFriendshipController
         .unblockUser(<Request>req, <Response>res);
-        const MockedFriendship = mocked(Friendship, true);
-        expect(MockedFriendship).toHaveBeenCalledTimes(1);
+        expect(mockViewUserByName).toBeCalledWith("Name");
+      });
+
+      it('uses unblockUser correctly', async () => {
+        mockViewUserByName = jest.fn().mockResolvedValue([
+          [{user_id: 42, avatar: "NameXYZ"}]
+        ]);
+        await userFriendshipController
+        .unblockUser(<Request>req, <Response>res);
+        expect(mockUnblockUser).toBeCalledWith(150, 42);
       });
 
       it('sends data', async () => {

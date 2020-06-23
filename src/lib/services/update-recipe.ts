@@ -53,8 +53,6 @@ export async function updateRecipeService({
 
   await recipe.updateMyUserRecipe({recipeId, ...recipeToUpdateWith});
 
-  //
-
   let recipeMethodsToUpdateWith: number[] = [];
   let recipeMethodsPlaceholders = "none";
 
@@ -79,7 +77,7 @@ export async function updateRecipeService({
     recipeId
   );
 
-  //
+  // first check if the equipment exists?
 
   let recipeEquipmentToUpdateWith: number[] = [];
   let recipeEquipmentPlaceholders = "none";
@@ -109,7 +107,7 @@ export async function updateRecipeService({
     recipeId
   );
 
-  //
+  // first check if the ingredients exists?
 
   let recipeIngredientsToUpdateWith: number[] = [];
   let recipeIngredientsPlaceholders = "none";
@@ -141,7 +139,7 @@ export async function updateRecipeService({
     recipeId
   );
 
-  //
+  // first check if the subrecipes exists?
 
   let recipeSubrecipesToUpdateWith: number[] = [];
   let recipeSubrecipesPlaceholders = "none";
