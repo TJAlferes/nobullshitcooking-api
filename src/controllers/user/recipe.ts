@@ -66,7 +66,7 @@ export const userRecipeController = {
 
     const recipe = new Recipe(pool);
 
-    const row = await recipe
+    const [ row ] = await recipe
     .getInfoToEditMyUserRecipe(recipeId, authorId, ownerId);
 
     return res.send(row);
@@ -78,7 +78,7 @@ export const userRecipeController = {
 
     const recipe = new Recipe(pool);
 
-    const row = await recipe
+    const [ row ] = await recipe
     .getInfoToEditMyUserRecipe(recipeId, authorId, ownerId);
 
     return res.send(row);

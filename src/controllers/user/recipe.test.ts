@@ -44,7 +44,9 @@ let mockViewRecipes = jest.fn().mockResolvedValue(
   [[{recipe_id: 383}, {recipe_id: 5432}]]
 );
 let mockViewRecipeById = jest.fn().mockResolvedValue([[{recipe_id: 5432}]]);
-let mockGetInfoToEditMyUserRecipe = jest.fn();
+let mockGetInfoToEditMyUserRecipe = jest.fn().mockResolvedValue(
+  [[{recipe_id: 5432}]]
+);
 //
 //
 let mockDisownMyPublicUserRecipe = jest.fn();
@@ -209,19 +211,53 @@ describe('user recipe controller', () => {
   describe('getInfoToEditMyPrivateUserRecipe method', () => {
     const req: Partial<Request> = {session, body: {recipeId: 5432}};
     const res: Partial<Response> = {
-      send: jest.fn().mockResolvedValue({message: 'Recipe deleted.'})
+      send: jest.fn().mockResolvedValue([{recipe_id: 5432}])
     };
 
+    it('uses getInfoToEditMyUserRecipe correctly', async () => {
+      await userRecipeController
+      .getInfoToEditMyPrivateUserRecipe(<Request>req, <Response>res);
+      expect(mockGetInfoToEditMyUserRecipe)
+      .toHaveBeenCalledWith(5432, 150, 150);
+    });
 
+    it('sends data', async () => {
+      await userRecipeController
+      .getInfoToEditMyPrivateUserRecipe(<Request>req, <Response>res);
+      expect(res.send).toBeCalledWith([{recipe_id: 5432}]);
+    });
+
+    it('returns correctly', async () => {
+      const actual = await userRecipeController
+      .getInfoToEditMyPrivateUserRecipe(<Request>req, <Response>res);
+      expect(actual).toEqual([{recipe_id: 5432}]);
+    });
   });
 
   describe('getInfoToEditMyPublicUserRecipe method', () => {
     const req: Partial<Request> = {session, body: {recipeId: 5432}};
     const res: Partial<Response> = {
-      send: jest.fn().mockResolvedValue({message: 'Recipe deleted.'})
+      send: jest.fn().mockResolvedValue([{recipe_id: 5432}])
     };
 
+    it('uses getInfoToEditMyUserRecipe correctly', async () => {
+      await userRecipeController
+      .getInfoToEditMyPublicUserRecipe(<Request>req, <Response>res);
+      expect(mockGetInfoToEditMyUserRecipe)
+      .toHaveBeenCalledWith(5432, 150, 1);
+    });
 
+    it('sends data', async () => {
+      await userRecipeController
+      .getInfoToEditMyPublicUserRecipe(<Request>req, <Response>res);
+      expect(res.send).toBeCalledWith([{recipe_id: 5432}]);
+    });
+
+    it('returns correctly', async () => {
+      const actual = await userRecipeController
+      .getInfoToEditMyPublicUserRecipe(<Request>req, <Response>res);
+      expect(actual).toEqual([{recipe_id: 5432}]);
+    });
   });
 
   describe ('createRecipe method', () => {
