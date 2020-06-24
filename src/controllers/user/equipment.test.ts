@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
 import { assert } from 'superstruct';
-import { mocked } from 'ts-jest/utils';
 
+import {
+  validEquipmentEntity
+} from '../../lib/validations/equipment/equipmentEntity';
 import { userEquipmentController } from './equipment';
 
 jest.mock('superstruct');
@@ -62,7 +64,7 @@ describe('user equipment controller', () => {
       expect(mockViewEquipment).toHaveBeenCalledWith(150, 150);
     });
 
-    it('sends data', async () => {
+    it('sends data corectly', async () => {
       await userEquipmentController
       .viewAllMyPrivateUserEquipment(<Request>req, <Response>res);
       expect(res.send)
@@ -88,7 +90,7 @@ describe('user equipment controller', () => {
       expect(mockViewEquipmentById).toHaveBeenCalledWith(5432, 150, 150);
     });
 
-    it('sends data', async () => {
+    it('sends data correctly', async () => {
       await userEquipmentController
       .viewMyPrivateUserEquipment(<Request>req, <Response>res);
       expect(res.send).toBeCalledWith([{equipment_id: 5432}]);
@@ -117,6 +119,22 @@ describe('user equipment controller', () => {
       send: jest.fn().mockResolvedValue({message: 'Equipment created.'})
     };
 
+    it('uses assert correctly', async () => {
+      await userEquipmentController
+      .createMyPrivateUserEquipment(<Request>req, <Response>res);
+      expect(assert).toHaveBeenCalledWith(
+        {
+          equipmentTypeId: 2,
+          authorId: 150,
+          ownerId: 150,
+          equipmentName: "My Equipment",
+          equipmentDescription: "It works.",
+          equipmentImage: "nobsc-equipment-default"
+        },
+        validEquipmentEntity
+      );
+    });
+
     it('uses createMyPrivateUserEquipment correctly', async () => {
       await userEquipmentController
       .createMyPrivateUserEquipment(<Request>req, <Response>res);
@@ -131,7 +149,7 @@ describe('user equipment controller', () => {
       });
     });
 
-    it('sends data', async () => {
+    it('sends data correctly', async () => {
       await userEquipmentController
       .createMyPrivateUserEquipment(<Request>req, <Response>res);
       expect(res.send).toBeCalledWith({message: 'Equipment created.'});
@@ -161,6 +179,22 @@ describe('user equipment controller', () => {
       send: jest.fn().mockResolvedValue({message: 'Equipment updated.'})
     };
 
+    it('uses validation correctly', async () => {
+      await userEquipmentController
+      .updateMyPrivateUserEquipment(<Request>req, <Response>res);
+      expect(assert).toHaveBeenCalledWith(
+        {
+          equipmentTypeId: 2,
+          authorId: 150,
+          ownerId: 150,
+          equipmentName: "My Equipment",
+          equipmentDescription: "It works.",
+          equipmentImage: "nobsc-equipment-default"
+        },
+        validEquipmentEntity
+      );
+    });
+
     it('uses updateMyPrivateUserEquipment correctly', async () => {
       await userEquipmentController
       .updateMyPrivateUserEquipment(<Request>req, <Response>res);
@@ -176,7 +210,7 @@ describe('user equipment controller', () => {
       });
     });
 
-    it('sends data', async () => {
+    it('sends data correctly', async () => {
       await userEquipmentController
       .updateMyPrivateUserEquipment(<Request>req, <Response>res);
       expect(res.send).toBeCalledWith({message: 'Equipment updated.'});
@@ -209,7 +243,7 @@ describe('user equipment controller', () => {
       .toHaveBeenCalledWith(5432, 150);
     });
 
-    it('sends data', async () => {
+    it('sends data correctly', async () => {
       await userEquipmentController
       .deleteMyPrivateUserEquipment(<Request>req, <Response>res);
       expect(res.send).toBeCalledWith({message: 'Equipment deleted.'});
