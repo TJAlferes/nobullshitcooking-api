@@ -52,7 +52,7 @@ export const staffIngredientController = {
 
     await ingredientSearch.saveIngredient(ingredientForInsert[0]);
 
-    res.send({message: 'Ingredient created.'});
+    return res.send({message: 'Ingredient created.'});
   },
   updateIngredient: async function(req: Request, res: Response) {
     const ingredientId = Number(req.body.ingredientInfo.ingredientId);
@@ -94,7 +94,7 @@ export const staffIngredientController = {
 
     await ingredientSearch.saveIngredient(ingredientForInsert[0]);
 
-    res.send({message: 'Ingredient updated.'});
+    return res.send({message: 'Ingredient updated.'});
   },
   deleteIngredient: async function(req: Request, res: Response) {
     const ingredientId = Number(req.body.ingredientId);
@@ -105,6 +105,6 @@ export const staffIngredientController = {
     await ingredient.deleteIngredient(ingredientId);
     await ingredientSearch.deleteIngredient(String(ingredientId));
 
-    res.send({message: 'Ingredient deleted.'});
+    return res.send({message: 'Ingredient deleted.'});
   }
 };

@@ -12,7 +12,7 @@ export const staffCuisineEquipmentController = {
 
     await cuisineEquipment.createCuisineEquipment(cuisineId, equipmentId);
 
-    res.send({message: 'Cuisine equipment created.'});
+    return res.send({message: 'Cuisine equipment created.'});
   },
 
   deleteCuisineEquipment: async function(req: Request, res: Response) {
@@ -23,6 +23,6 @@ export const staffCuisineEquipmentController = {
 
     await cuisineEquipment.deleteCuisineEquipment(cuisineId, equipmentId);
 
-    res.send({message: 'Cuisine equipment deleted.'});
+    return res.send({message: 'Cuisine equipment deleted.'});
   }
 };

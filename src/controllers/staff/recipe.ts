@@ -59,7 +59,7 @@ export const staffRecipeController = {
       requiredSubrecipes
     });
 
-    res.send({message: 'Recipe created.'});
+    return res.send({message: 'Recipe created.'});
   },
   updateRecipe: async function(req: Request, res: Response) {
     const recipeId = Number(req.body.recipeInfo.recipeId);
@@ -110,7 +110,7 @@ export const staffRecipeController = {
       requiredSubrecipes
     });
 
-    res.send({message: 'Recipe updated.'});
+    return res.send({message: 'Recipe updated.'});
   },
   deleteRecipe: async function(req: Request, res: Response) {
     const recipeId = Number(req.body.recipeId);
@@ -137,6 +137,6 @@ export const staffRecipeController = {
 
     await recipeSearch.deleteRecipe(String(recipeId));
 
-    res.send({message: 'Recipe deleted.'});
+    return res.send({message: 'Recipe deleted.'});
   }
 };

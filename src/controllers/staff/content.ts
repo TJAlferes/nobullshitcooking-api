@@ -32,7 +32,7 @@ export const staffContentController = {
 
     await content.createContent(contentToCreate);
 
-    res.send({message: 'Content created.'});
+    return res.send({message: 'Content created.'});
   },
   updateContent: async function(req: Request, res: Response) {
     const contentId = Number(req.body.contentInfo.contentId);
@@ -58,7 +58,7 @@ export const staffContentController = {
     await content
     .updateContent({contentId, ...contentToUpdateWith});
 
-    res.send({message: 'Content updated.'});
+    return res.send({message: 'Content updated.'});
   },
   deleteContent: async function(req: Request, res: Response) {
     const contentId = Number(req.body.contentId);
@@ -69,6 +69,6 @@ export const staffContentController = {
 
     await content.deleteContent(ownerId, contentId);
 
-    res.send({message: 'Content deleted.'});
+    return res.send({message: 'Content deleted.'});
   }
 };

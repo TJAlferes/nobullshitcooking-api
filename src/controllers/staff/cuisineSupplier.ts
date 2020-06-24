@@ -12,7 +12,7 @@ export const staffCuisineSupplierController = {
 
     await cuisineSupplier.createCuisineSupplier(cuisineId, supplierId);
 
-    res.send({message: 'Cuisine supplier created.'});
+    return res.send({message: 'Cuisine supplier created.'});
   },
 
   deleteCuisineSupplier: async function(req: Request, res: Response) {
@@ -23,6 +23,6 @@ export const staffCuisineSupplierController = {
 
     await cuisineSupplier.deleteCuisineSupplier(cuisineId, supplierId);
 
-    res.send({message: 'Cuisine supplier deleted.'});
+    return res.send({message: 'Cuisine supplier deleted.'});
   }
 };

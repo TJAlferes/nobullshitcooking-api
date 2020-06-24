@@ -10,7 +10,7 @@ export const staffSupplierController = {
 
     const allFoundSuppliers = await supplier.viewAllSuppliers();
 
-    res.send({suppliers: allFoundSuppliers});
+    return res.send({suppliers: allFoundSuppliers});
   },
 
   viewSupplierById: async function (req: Request, res: Response) {
@@ -20,7 +20,7 @@ export const staffSupplierController = {
 
     const foundSupplier = await supplier.viewSupplierById(supplierId);
 
-    res.send({supplier: foundSupplier});
+    return res.send({supplier: foundSupplier});
   },
 
   createSupplier: async function (req: Request, res: Response) {
@@ -32,7 +32,7 @@ export const staffSupplierController = {
 
     await supplier.createSupplier(supplierName);
 
-    res.send({message: 'Supplier created.'});
+    return res.send({message: 'Supplier created.'});
   },
 
   updateSupplier: async function (req: Request, res: Response) {
@@ -47,7 +47,7 @@ export const staffSupplierController = {
 
     await supplier.updateSupplier(supplierId, supplierName);
 
-    res.send({message: 'Supplier updated.'});
+    return res.send({message: 'Supplier updated.'});
   },
   
   deleteSupplier: async function (req: Request, res: Response) {
@@ -61,6 +61,6 @@ export const staffSupplierController = {
 
     await supplier.deleteSupplier(supplierId);
     
-    res.send({message: 'Supplier deleted.'});
+    return res.send({message: 'Supplier deleted.'});
   }
 };

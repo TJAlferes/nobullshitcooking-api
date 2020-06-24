@@ -44,7 +44,7 @@ export const staffEquipmentController = {
 
     await equipmentSearch.saveEquipment(equipmentForInsert[0]);
 
-    res.send({message: 'Equipment created.'});
+    return res.send({message: 'Equipment created.'});
   },
   updateEquipment: async function(req: Request, res: Response) {
     const equipmentId = Number(req.body.equipmentInfo.equipmentId);
@@ -78,7 +78,7 @@ export const staffEquipmentController = {
 
     await equipmentSearch.saveEquipment(equipmentForInsert[0]);
 
-    res.send({message: 'Equipment updated.'});
+    return res.send({message: 'Equipment updated.'});
   },
   deleteEquipment: async function(req: Request, res: Response) {
     const equipmentId = Number(req.body.equipmentId);
@@ -89,6 +89,6 @@ export const staffEquipmentController = {
     await equipment.deleteEquipment(equipmentId);
     await equipmentSearch.deleteEquipment(String(equipmentId));
 
-    res.send({message: 'Equipment deleted.'});
+    return res.send({message: 'Equipment deleted.'});
   }
 };
