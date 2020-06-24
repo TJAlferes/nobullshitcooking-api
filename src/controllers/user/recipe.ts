@@ -170,8 +170,7 @@ export const userRecipeController = {
       ingredientsImage,
       cookingImage
     };
-
-    // why are the requireds not validated here?
+    
     assert(recipeToUpdateWith, validRecipeEntity);
 
     await updateRecipeService({

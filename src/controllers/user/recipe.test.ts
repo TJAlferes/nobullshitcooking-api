@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
 import { assert } from 'superstruct';
-//import { mocked } from 'ts-jest/utils';
 
-//
+import { validRecipeEntity } from '../../lib/validations/recipe/recipeEntity';
 import { userRecipeController } from './recipe';
 
 jest.mock('superstruct');
@@ -138,7 +137,7 @@ describe('user recipe controller', () => {
       expect(mockViewRecipes).toHaveBeenCalledWith(150, 150);
     });
 
-    it('sends data', async () => {
+    it('sends data correctly', async () => {
       await userRecipeController
       .viewAllMyPrivateUserRecipes(<Request>req, <Response>res);
       expect(res.send).toBeCalledWith([[{recipe_id: 383}, {recipe_id: 5432}]]);
@@ -163,7 +162,7 @@ describe('user recipe controller', () => {
       expect(mockViewRecipes).toHaveBeenCalledWith(150, 1);
     });
 
-    it('sends data', async () => {
+    it('sends data correctly', async () => {
       await userRecipeController
       .viewAllMyPublicUserRecipes(<Request>req, <Response>res);
       expect(res.send).toBeCalledWith([[{recipe_id: 383}, {recipe_id: 5432}]]);
@@ -188,7 +187,7 @@ describe('user recipe controller', () => {
       expect(mockViewRecipeById).toHaveBeenCalledWith(5432, 150, 150);
     });
 
-    it('sends data', async () => {
+    it('sends data correctly', async () => {
       await userRecipeController
       .viewMyPrivateUserRecipe(<Request>req, <Response>res);
       expect(res.send).toBeCalledWith([{recipe_id: 5432}]);
@@ -213,7 +212,7 @@ describe('user recipe controller', () => {
       expect(mockViewRecipeById).toHaveBeenCalledWith(5432, 150, 1);
     });
 
-    it('sends data', async () => {
+    it('sends data correctly', async () => {
       await userRecipeController
       .viewMyPublicUserRecipe(<Request>req, <Response>res);
       expect(res.send).toBeCalledWith([{recipe_id: 5432}]);
@@ -239,7 +238,7 @@ describe('user recipe controller', () => {
       .toHaveBeenCalledWith(5432, 150, 150);
     });
 
-    it('sends data', async () => {
+    it('sends data correctly', async () => {
       await userRecipeController
       .getInfoToEditMyPrivateUserRecipe(<Request>req, <Response>res);
       expect(res.send).toBeCalledWith([{recipe_id: 5432}]);
@@ -265,7 +264,7 @@ describe('user recipe controller', () => {
       .toHaveBeenCalledWith(5432, 150, 1);
     });
 
-    it('sends data', async () => {
+    it('sends data correctly', async () => {
       await userRecipeController
       .getInfoToEditMyPublicUserRecipe(<Request>req, <Response>res);
       expect(res.send).toBeCalledWith([{recipe_id: 5432}]);
@@ -310,6 +309,26 @@ describe('user recipe controller', () => {
       send: jest.fn().mockResolvedValue({message: 'Recipe created.'})
     };
 
+    it('uses assert correctly', async () => {
+      await userRecipeController.createRecipe(<Request>req, <Response>res);
+      expect(assert).toBeCalledWith(
+        {
+          recipeTypeId: 2,
+          cuisineId: 2,
+          authorId: 150,
+          ownerId: 1,
+          title: "My Recipe",
+          description: "Tasty.",
+          directions: "Do this, then that.",
+          recipeImage: "nobsc-recipe-default",
+          equipmentImage: "nobsc-recipe-equipment-default",
+          ingredientsImage: "nobsc-recipe-ingredients-default",
+          cookingImage: "nobsc-recipe-cooking-default"
+        },
+        validRecipeEntity
+      );
+    });
+
     it('uses createRecipe correctly', async () => {
       await userRecipeController.createRecipe(<Request>req, <Response>res);
       expect(mockCreateRecipe).toBeCalledWith({
@@ -324,7 +343,7 @@ describe('user recipe controller', () => {
         equipmentImage: "nobsc-recipe-equipment-default",
         ingredientsImage: "nobsc-recipe-ingredients-default",
         cookingImage: "nobsc-recipe-cooking-default"
-      })
+      });
     });
 
     it('uses createRecipeMethods correctly', async () => {
@@ -382,7 +401,7 @@ describe('user recipe controller', () => {
       expect(mockSaveRecipe).toHaveBeenCalledWith({recipe_id: 5432});
     });
 
-    it('sends data', async () => {
+    it('sends data correctly', async () => {
       mockGetPublicRecipeForElasticSearchInsert =
         jest.fn().mockResolvedValue([[{recipe_id: 5432}]]);
       await userRecipeController.createRecipe(<Request>req, <Response>res);
@@ -430,6 +449,27 @@ describe('user recipe controller', () => {
     const res: Partial<Response> = {
       send: jest.fn().mockResolvedValue({message: 'Recipe updated.'})
     };
+
+    it('uses assert correctly', async () => {
+      await userRecipeController
+      .updateMyUserRecipe(<Request>req, <Response>res);
+      expect(assert).toBeCalledWith(
+        {
+          recipeTypeId: 2,
+          cuisineId: 2,
+          authorId: 150,
+          ownerId: 1,
+          title: "My Recipe",
+          description: "Tasty.",
+          directions: "Do this, then that.",
+          recipeImage: "nobsc-recipe-default",
+          equipmentImage: "nobsc-recipe-equipment-default",
+          ingredientsImage: "nobsc-recipe-ingredients-default",
+          cookingImage: "nobsc-recipe-cooking-default"
+        },
+        validRecipeEntity
+      );
+    });
 
     it ('uses updateMyUserRecipe correctly', async () => {
       mockGetPublicRecipeForElasticSearchInsert =
@@ -516,7 +556,7 @@ describe('user recipe controller', () => {
       expect(mockSaveRecipe).toHaveBeenCalledWith({recipe_id: 5432});
     });
 
-    it('sends data', async () => {
+    it('sends data correctly', async () => {
       mockGetPublicRecipeForElasticSearchInsert =
         jest.fn().mockResolvedValue([[{recipe_id: 5432}]]);
       await userRecipeController
@@ -577,7 +617,7 @@ describe('user recipe controller', () => {
       .toHaveBeenCalledWith(5432, 150, 150);
     });
 
-    it('sends data', async () => {
+    it('sends data correctly', async () => {
       await userRecipeController
       .deleteMyPrivateUserRecipe(<Request>req, <Response>res);
       expect(res.send).toBeCalledWith({message: 'Recipe deleted.'});
@@ -620,7 +660,7 @@ describe('user recipe controller', () => {
       expect(mockSaveRecipe).toHaveBeenCalledWith({recipe_id: 5432});
     });
 
-    it('sends data', async () => {
+    it('sends data correctly', async () => {
       mockGetPublicRecipeForElasticSearchInsert =
         jest.fn().mockResolvedValue([[{recipe_id: 5432}]]);
       await userRecipeController
