@@ -2,14 +2,38 @@
 //const request = require('supertest');
 import { Request, Response } from 'express';
 import { assert } from 'superstruct';
+import bcrypt from 'bcrypt';
+import * as uuid from 'uuid'
+import { v4 as uuidv4 } from 'uuid';
 import { mocked } from 'ts-jest/utils';
 
 import {
   emailConfirmationCode
 } from '../../lib/services/email-confirmation-code';
+import {
+  validRegisterRequest,
+  validRegister,
+  validUserEntity,
+  validVerifyRequest,
+  validVerify,
+  validResend,
+  validLoginRequest,
+  validLogin,
+  validUpdatingUser
+} from '../../lib/validations/user/index';
 import { userAuthController } from './auth';
 
+jest.mock('bcrypt');
+const mockBcrypt = bcrypt as jest.Mocked<typeof bcrypt>;
+mockBcrypt.hash.mockResolvedValue(
+  "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u"
+);
+
 jest.mock('superstruct');
+
+jest.mock('uuid');
+const mockUUID = uuid as jest.Mocked<typeof uuid>;
+mockUUID.v4.mockReturnValue("123XYZ");
 
 jest.mock('../../lib/services/email-confirmation-code', () => {
   const originalModule = jest
@@ -152,7 +176,19 @@ describe('user auth controller', () => {
         })
       };
 
-      it('sends data', async () => {
+      it('uses assert on request correctly', async () => {
+        await userAuthController.register(<Request>req, <Response>res);
+        expect(assert).toBeCalledWith(
+          {
+            email: "person@person.com",
+            pass: "Password99$",
+            username: "Name"
+          },
+          validRegisterRequest
+        );
+      });
+
+      it('sends data correctly', async () => {
         await userAuthController.register(<Request>req, <Response>res);
         expect(res.send).toBeCalledWith({
           message: 'Username must be at least 6 characters.'
@@ -184,7 +220,19 @@ describe('user auth controller', () => {
         })
       };
 
-      it('sends data', async () => {
+      it('uses assert on request correctly', async () => {
+        await userAuthController.register(<Request>req, <Response>res);
+        expect(assert).toBeCalledWith(
+          {
+            email: "person@person.com",
+            pass: "Password99$",
+            username: "NameLongerThanTwentyCharacters"
+          },
+          validRegisterRequest
+        );
+      });
+
+      it('sends data correctly', async () => {
         await userAuthController.register(<Request>req, <Response>res);
         expect(res.send).toBeCalledWith({
           message: 'Username must be no more than 20 characters.'
@@ -219,7 +267,19 @@ describe('user auth controller', () => {
         })
       };
 
-      it('sends data', async () => {
+      it('uses assert on request correctly', async () => {
+        await userAuthController.register(<Request>req, <Response>res);
+        expect(assert).toBeCalledWith(
+          {
+            email: "person@person.com",
+            pass: "Pa99$",
+            username: "NameIsGood"
+          },
+          validRegisterRequest
+        );
+      });
+
+      it('sends data correctly', async () => {
         await userAuthController.register(<Request>req, <Response>res);
         expect(res.send).toBeCalledWith({
           message: 'Password must be at least 6 characters.'
@@ -251,7 +311,19 @@ describe('user auth controller', () => {
         })
       };
 
-      it('sends data', async () => {
+      it('uses assert on request correctly', async () => {
+        await userAuthController.register(<Request>req, <Response>res);
+        expect(assert).toBeCalledWith(
+          {
+            email: "person@person.com",
+            pass: "PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$",
+            username: "NameIsGood"
+          },
+          validRegisterRequest
+        );
+      });
+
+      it('sends data correctly', async () => {
         await userAuthController.register(<Request>req, <Response>res);
         expect(res.send).toBeCalledWith({
           message: 'Password must be no more than 54 characters.'
@@ -281,7 +353,20 @@ describe('user auth controller', () => {
         send: jest.fn().mockResolvedValue({message: 'Username already taken.'})
       };
 
-      it('sends data', async () => {
+      it('uses assert on request correctly', async () => {
+        mockGetUserByName = jest.fn().mockResolvedValue([[{user_id: 150}]]);
+        await userAuthController.register(<Request>req, <Response>res);
+        expect(assert).toBeCalledWith(
+          {
+            email: "person@person.com",
+            pass: "Password99$",
+            username: "NameIsGood"
+          },
+          validRegisterRequest
+        );
+      });
+
+      it('sends data correctly', async () => {
         mockGetUserByName = jest.fn().mockResolvedValue([[{user_id: 150}]]);
         await userAuthController.register(<Request>req, <Response>res);
         expect(res.send).toBeCalledWith({message: 'Username already taken.'});
@@ -309,7 +394,21 @@ describe('user auth controller', () => {
         send: jest.fn().mockResolvedValue({message: 'Email already in use.'})
       };
 
-      it('sends data', async () => {
+      it('uses assert on request correctly', async () => {
+        mockGetUserByName = jest.fn().mockResolvedValue([[]]);
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[{user_id: 150}]]);
+        await userAuthController.register(<Request>req, <Response>res);
+        expect(assert).toBeCalledWith(
+          {
+            email: "person@person.com",
+            pass: "Password99$",
+            username: "NameIsGood"
+          },
+          validRegisterRequest
+        );
+      });
+
+      it('sends data correctly', async () => {
         mockGetUserByName = jest.fn().mockResolvedValue([[]]);
         mockGetUserByEmail = jest.fn().mockResolvedValue([[{user_id: 150}]]);
         await userAuthController.register(<Request>req, <Response>res);
@@ -339,15 +438,70 @@ describe('user auth controller', () => {
         send: jest.fn().mockResolvedValue({message: 'User account created.'})
       };
 
+      it('uses assert on request correctly', async () => {
+        mockGetUserByName = jest.fn().mockResolvedValue([[]]);
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[]]);
+        await userAuthController.register(<Request>req, <Response>res);
+        expect(assert).toBeCalledWith(
+          {
+            email: "person@person.com",
+            pass: "Password99$",
+            username: "NameIsGood"
+          },
+          validRegisterRequest
+        );
+      });
+
+      it('uses bcrypt.hash correctly', async () => {
+        mockGetUserByName = jest.fn().mockResolvedValue([[]]);
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[]]);
+        await userAuthController.register(<Request>req, <Response>res);
+        expect(bcrypt.hash).toBeCalledWith("Password99$", 10);
+      });
+
+      it('uses uuidv4 correctly', async () => {
+        mockGetUserByName = jest.fn().mockResolvedValue([[]]);
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[]]);
+        await userAuthController.register(<Request>req, <Response>res);
+        expect(uuidv4).toBeCalledTimes(1);
+      });
+
+      it('uses assert on entity correctly', async () => {
+        mockGetUserByName = jest.fn().mockResolvedValue([[]]);
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[]]);
+        await userAuthController.register(<Request>req, <Response>res);
+        expect(assert).toBeCalledWith(
+          {
+            email: "person@person.com",
+            pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
+            username: "NameIsGood",
+            confirmationCode: "123XYZ"
+          },
+          validUserEntity
+        );
+      });
+
+      it('uses createUser correctly', async () => {
+        mockGetUserByName = jest.fn().mockResolvedValue([[]]);
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[]]);
+        await userAuthController.register(<Request>req, <Response>res);
+        expect(mockCreateUser).toBeCalledWith({
+          email: "person@person.com",
+          pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
+          username: "NameIsGood",
+          confirmationCode: "123XYZ"
+        });
+      });
+
       it('uses emailConfirmationCode', async () => {
         mockGetUserByName = jest.fn().mockResolvedValue([[]]);
         mockGetUserByEmail = jest.fn().mockResolvedValue([[]]);
         await userAuthController.register(<Request>req, <Response>res);
-        const MockedEmailConfirmationCode = mocked(emailConfirmationCode, true);
-        expect(MockedEmailConfirmationCode).toHaveBeenCalledTimes(1);
+        expect(emailConfirmationCode)
+        .toHaveBeenCalledWith("person@person.com", "123XYZ");
       });
 
-      it('sends data', async () => {
+      it('sends data correctly', async () => {
         mockGetUserByName = jest.fn().mockResolvedValue([[]]);
         mockGetUserByEmail = jest.fn().mockResolvedValue([[]]);
         await userAuthController.register(<Request>req, <Response>res);
@@ -376,7 +530,7 @@ describe('user auth controller', () => {
           userInfo: {
             email: "person@person.com",
             password: "Pa99$",
-            onfirmationCode: "123XYZ"
+            confirmationCode: "123XYZ"
           }
         }
       };
@@ -384,7 +538,19 @@ describe('user auth controller', () => {
         send: jest.fn().mockResolvedValue({message: 'Invalid password.'})
       };
 
-      it('sends data', async () => {
+      it('uses assert on request correctly', async () => {
+        await userAuthController.verify(<Request>req, <Response>res);
+        expect(assert).toBeCalledWith(
+          {
+            email: "person@person.com",
+            pass: "Pa99$",
+            confirmationCode: "123XYZ"
+          },
+          validVerifyRequest
+        );
+      });
+
+      it('sends data correctly', async () => {
         await userAuthController.verify(<Request>req, <Response>res);
         expect(res.send).toBeCalledWith({message: 'Invalid password.'});
       });
@@ -402,7 +568,7 @@ describe('user auth controller', () => {
           userInfo: {
             email: "person@person.com",
             password: "PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$",
-            onfirmationCode: "123XYZ"
+            confirmationCode: "123XYZ"
           }
         }
       };
@@ -410,7 +576,19 @@ describe('user auth controller', () => {
         send: jest.fn().mockResolvedValue({message: 'Invalid password.'})
       };
 
-      it('sends data', async () => {
+      it('uses assert on request correctly', async () => {
+        await userAuthController.verify(<Request>req, <Response>res);
+        expect(assert).toBeCalledWith(
+          {
+            email: "person@person.com",
+            pass: "PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$",
+            confirmationCode: "123XYZ"
+          },
+          validVerifyRequest
+        );
+      });
+
+      it('sends data correctly', async () => {
         await userAuthController.verify(<Request>req, <Response>res);
         expect(res.send).toBeCalledWith({message: 'Invalid password.'});
       });
@@ -438,7 +616,20 @@ describe('user auth controller', () => {
         })
       };
 
-      it('sends data', async () => {
+      it('uses assert on request correctly', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[]]);
+        await userAuthController.verify(<Request>req, <Response>res);
+        expect(assert).toBeCalledWith(
+          {
+            email: "person@person.com",
+            pass: "Password99$",
+            confirmationCode: "123XYZ"
+          },
+          validVerifyRequest
+        );
+      });
+
+      it('sends data correctly', async () => {
         mockGetUserByEmail = jest.fn().mockResolvedValue([[]]);
         await userAuthController.verify(<Request>req, <Response>res);
         expect(res.send).toBeCalledWith({
@@ -472,7 +663,24 @@ describe('user auth controller', () => {
         })
       };
 
-      it('sends data', async () => {
+      it('uses assert on request correctly', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[{
+          user_id: 150,
+          pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
+          confirmation_code: "123XYZ"
+        }]]);
+        await userAuthController.verify(<Request>req, <Response>res);
+        expect(assert).toBeCalledWith(
+          {
+            email: "person@person.com",
+            pass: "WrongPassword99$",
+            confirmationCode: "123XYZ"
+          },
+          validVerifyRequest
+        );
+      });
+
+      it('sends data correctly', async () => {
         mockGetUserByEmail = jest.fn().mockResolvedValue([[{
           user_id: 150,
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
@@ -514,12 +722,31 @@ describe('user auth controller', () => {
         })
       };
 
-      it('sends data', async () => {
+      it('uses assert on request correctly', async () => {
         mockGetUserByEmail = jest.fn().mockResolvedValue([[{
           user_id: 150,
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           confirmation_code: "123XYZ"
         }]]);
+        mockBcrypt.compare.mockResolvedValueOnce(true);
+        await userAuthController.verify(<Request>req, <Response>res);
+        expect(assert).toBeCalledWith(
+          {
+            email: "person@person.com",
+            pass: "Password99$",
+            confirmationCode: "456ABC"
+          },
+          validVerifyRequest
+        );
+      });
+
+      it('sends data correctly', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[{
+          user_id: 150,
+          pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
+          confirmation_code: "123XYZ"
+        }]]);
+        mockBcrypt.compare.mockResolvedValueOnce(true);
         await userAuthController.verify(<Request>req, <Response>res);
         expect(res.send).toBeCalledWith({
           message: 'An issue occurred, please double check your info and try again.'
@@ -532,6 +759,7 @@ describe('user auth controller', () => {
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           confirmation_code: "123XYZ"
         }]]);
+        mockBcrypt.compare.mockResolvedValueOnce(true);
         const actual = await userAuthController
         .verify(<Request>req, <Response>res);
         expect(actual).toEqual({
@@ -554,12 +782,42 @@ describe('user auth controller', () => {
         send: jest.fn().mockResolvedValue({message: 'User account verified.'})
       };
 
-      it('sends data', async () => {
+      it('uses assert on request correctly', async () => {
         mockGetUserByEmail = jest.fn().mockResolvedValue([[{
           user_id: 150,
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           confirmation_code: "123XYZ"
         }]]);
+        mockBcrypt.compare.mockResolvedValueOnce(true);
+        await userAuthController.verify(<Request>req, <Response>res);
+        expect(assert).toBeCalledWith(
+          {
+            email: "person@person.com",
+            pass: "Password99$",
+            confirmationCode: "123XYZ"
+          },
+          validVerifyRequest
+        );
+      });
+
+      it ('uses verifyUser correctly', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[{
+          user_id: 150,
+          pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
+          confirmation_code: "123XYZ"
+        }]]);
+        mockBcrypt.compare.mockResolvedValueOnce(true);
+        await userAuthController.verify(<Request>req, <Response>res);
+        expect(mockVerifyUser).toBeCalledWith("person@person.com");
+      });
+
+      it('sends data correctly', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[{
+          user_id: 150,
+          pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
+          confirmation_code: "123XYZ"
+        }]]);
+        mockBcrypt.compare.mockResolvedValueOnce(true);
         await userAuthController.verify(<Request>req, <Response>res);
         expect(res.send).toBeCalledWith({message: 'User account verified.'});
       });
@@ -570,6 +828,7 @@ describe('user auth controller', () => {
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           confirmation_code: "123XYZ"
         }]]);
+        mockBcrypt.compare.mockResolvedValueOnce(true);
         const actual = await userAuthController
         .verify(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'User account verified.'});
@@ -589,7 +848,7 @@ describe('user auth controller', () => {
           userInfo: {
             email: "person@person.com",
             password: "Pa99$",
-            onfirmationCode: "123XYZ"
+            confirmationCode: "123XYZ"
           }
         }
       };
@@ -597,7 +856,16 @@ describe('user auth controller', () => {
         send: jest.fn().mockResolvedValue({message: 'Invalid password.'})
       };
 
-      it('sends data', async () => {
+      it('uses assert on request correctly', async () => {
+        await userAuthController
+        .resendConfirmationCode(<Request>req, <Response>res);
+        expect(assert).toHaveBeenCalledWith(
+          {email: "person@person.com", pass: "Pa99$"},
+          validLoginRequest
+        );
+      });
+
+      it('sends data correctly', async () => {
         await userAuthController
         .resendConfirmationCode(<Request>req, <Response>res);
         expect(res.send).toBeCalledWith({message: 'Invalid password.'});
@@ -616,7 +884,7 @@ describe('user auth controller', () => {
           userInfo: {
             email: "person@person.com",
             password: "PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$",
-            onfirmationCode: "123XYZ"
+            confirmationCode: "123XYZ"
           }
         }
       };
@@ -624,7 +892,19 @@ describe('user auth controller', () => {
         send: jest.fn().mockResolvedValue({message: 'Invalid password.'})
       };
 
-      it('sends data', async () => {
+      it('uses assert on request correctly', async () => {
+        await userAuthController
+        .resendConfirmationCode(<Request>req, <Response>res);
+        expect(assert).toHaveBeenCalledWith(
+          {
+            email: "person@person.com",
+            pass: "PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$",
+          },
+          validLoginRequest
+        );
+      });
+
+      it('sends data correctly', async () => {
         await userAuthController
         .resendConfirmationCode(<Request>req, <Response>res);
         expect(res.send).toBeCalledWith({message: 'Invalid password.'});
@@ -653,7 +933,17 @@ describe('user auth controller', () => {
         })
       };
 
-      it('sends data', async () => {
+      it('uses assert on request correctly', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[]]);
+        await userAuthController
+        .resendConfirmationCode(<Request>req, <Response>res);
+        expect(assert).toHaveBeenCalledWith(
+          {email: "person@person.com", pass: "Password99$"},
+          validLoginRequest
+        );
+      });
+
+      it('sends data correctly', async () => {
         mockGetUserByEmail = jest.fn().mockResolvedValue([[]]);
         await userAuthController
         .resendConfirmationCode(<Request>req, <Response>res);
@@ -688,7 +978,21 @@ describe('user auth controller', () => {
         })
       };
 
-      it('sends data', async () => {
+      it('uses assert on request correctly', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[{
+          user_id: 150,
+          pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
+          confirmation_code: "123XYZ"
+        }]]);
+        await userAuthController
+        .resendConfirmationCode(<Request>req, <Response>res);
+        expect(assert).toHaveBeenCalledWith(
+          {email: "person@person.com", pass: "WrongPassword99$"},
+          validLoginRequest
+        );
+      });
+
+      it('sends data correctly', async () => {
         mockGetUserByEmail = jest.fn().mockResolvedValue([[{
           user_id: 150,
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
@@ -729,12 +1033,28 @@ describe('user auth controller', () => {
         send: jest.fn().mockResolvedValue({message: 'Already verified.'})
       };
 
-      it('sends data', async () => {
+      it('uses assert on request correctly', async () => {
         mockGetUserByEmail = jest.fn().mockResolvedValue([[{
           user_id: 150,
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           confirmation_code: null
         }]]);
+        mockBcrypt.compare.mockResolvedValueOnce(true);
+        await userAuthController
+        .resendConfirmationCode(<Request>req, <Response>res);
+        expect(assert).toHaveBeenCalledWith(
+          {email: "person@person.com", pass: "Password99$"},
+          validLoginRequest
+        );
+      });
+
+      it('sends data correctly', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[{
+          user_id: 150,
+          pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
+          confirmation_code: null
+        }]]);
+        mockBcrypt.compare.mockResolvedValueOnce(true);
         await userAuthController
         .resendConfirmationCode(<Request>req, <Response>res);
         expect(res.send).toBeCalledWith({message: 'Already verified.'});
@@ -746,6 +1066,7 @@ describe('user auth controller', () => {
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           confirmation_code: null
         }]]);
+        mockBcrypt.compare.mockResolvedValueOnce(true);
         const actual = await userAuthController
         .resendConfirmationCode(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'Already verified.'});
@@ -766,24 +1087,41 @@ describe('user auth controller', () => {
         send: jest.fn().mockResolvedValue({message: 'Confirmation code re-sent.'})
       };
 
+      it('uses assert on request correctly', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[{
+          user_id: 150,
+          pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
+          confirmation_code: "123XYZ"
+        }]]);
+        mockBcrypt.compare.mockResolvedValueOnce(true);
+        await userAuthController
+        .resendConfirmationCode(<Request>req, <Response>res);
+        expect(assert).toHaveBeenCalledWith(
+          {email: "person@person.com", pass: "Password99$"},
+          validLoginRequest
+        );
+      });
+
       it('uses emailConfirmationCode', async () => {
         mockGetUserByEmail = jest.fn().mockResolvedValue([[{
           user_id: 150,
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           confirmation_code: "123XYZ"
         }]]);
+        mockBcrypt.compare.mockResolvedValueOnce(true);
         await userAuthController
         .resendConfirmationCode(<Request>req, <Response>res);
-        const MockedEmailConfirmationCode = mocked(emailConfirmationCode, true);
-        expect(MockedEmailConfirmationCode).toHaveBeenCalledTimes(1);
+        expect(emailConfirmationCode)
+        .toHaveBeenCalledWith("person@person.com", "123XYZ");
       });
 
-      it('sends data', async () => {
+      it('sends data correctly', async () => {
         mockGetUserByEmail = jest.fn().mockResolvedValue([[{
           user_id: 150,
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           confirmation_code: "123XYZ"
         }]]);
+        mockBcrypt.compare.mockResolvedValueOnce(true);
         await userAuthController
         .resendConfirmationCode(<Request>req, <Response>res);
         expect(res.send).toBeCalledWith({message: 'Confirmation code re-sent.'});
@@ -795,6 +1133,7 @@ describe('user auth controller', () => {
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           confirmation_code: "123XYZ"
         }]]);
+        mockBcrypt.compare.mockResolvedValueOnce(true);
         const actual = await userAuthController
         .resendConfirmationCode(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'Confirmation code re-sent.'});
@@ -817,7 +1156,15 @@ describe('user auth controller', () => {
         send: jest.fn().mockResolvedValue({message: 'Invalid password.'})
       };
 
-      it('sends data', async () => {
+      it('uses assert on request correctly', async () => {
+        await userAuthController.login(<Request>req, <Response>res);
+        expect(assert).toHaveBeenCalledWith(
+          {email: "person@person.com", pass: "Pa99$"},
+          validLoginRequest
+        );
+      });
+
+      it('sends data correctly', async () => {
         await userAuthController.login(<Request>req, <Response>res);
         expect(res.send).toBeCalledWith({message: 'Invalid password.'});
       });
@@ -842,7 +1189,18 @@ describe('user auth controller', () => {
         send: jest.fn().mockResolvedValue({message: 'Invalid password.'})
       };
 
-      it('sends data', async () => {
+      it('uses assert on request correctly', async () => {
+        await userAuthController.login(<Request>req, <Response>res);
+        expect(assert).toHaveBeenCalledWith(
+          {
+            email: "person@person.com",
+            pass: "PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$",
+          },
+          validLoginRequest
+        );
+      });
+
+      it('sends data correctly', async () => {
         await userAuthController.login(<Request>req, <Response>res);
         expect(res.send).toBeCalledWith({message: 'Invalid password.'});
       });
@@ -866,7 +1224,15 @@ describe('user auth controller', () => {
         })
       };
 
-      it('sends data', async () => {
+      it('uses assert on request correctly', async () => {
+        await userAuthController.login(<Request>req, <Response>res);
+        expect(assert).toHaveBeenCalledWith(
+          {email: "person@person.com", pass: "Password99$"},
+          validLoginRequest
+        );
+      });
+
+      it('sends data correctly', async () => {
         mockGetUserByEmail = jest.fn().mockResolvedValue([[]]);
         await userAuthController.login(<Request>req, <Response>res);
         expect(res.send).toBeCalledWith({
@@ -896,7 +1262,15 @@ describe('user auth controller', () => {
         })
       };
 
-      it('sends data', async () => {
+      it('uses assert on request correctly', async () => {
+        await userAuthController.login(<Request>req, <Response>res);
+        expect(assert).toHaveBeenCalledWith(
+          {email: "person@person.com", pass: "WrongPassword99$"},
+          validLoginRequest
+        );
+      });
+
+      it('sends data correctly', async () => {
         mockGetUserByEmail = jest.fn().mockResolvedValue([[{
           user_id: 150,
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
@@ -934,12 +1308,21 @@ describe('user auth controller', () => {
         })
       };
 
-      it('sends data', async () => {
+      it('uses assert on request correctly', async () => {
+        await userAuthController.login(<Request>req, <Response>res);
+        expect(assert).toHaveBeenCalledWith(
+          {email: "person@person.com", pass: "Password99$"},
+          validLoginRequest
+        );
+      });
+
+      it('sends data correctly', async () => {
         mockGetUserByEmail = jest.fn().mockResolvedValue([[{
           user_id: 150,
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           confirmation_code: "123XYZ"
         }]]);
+        mockBcrypt.compare.mockResolvedValueOnce(true);
         await userAuthController.login(<Request>req, <Response>res);
         expect(res.send).toBeCalledWith({
           message: 'Please check your email for your confirmation code.'
@@ -952,6 +1335,7 @@ describe('user auth controller', () => {
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           confirmation_code: "123XYZ"
         }]]);
+        mockBcrypt.compare.mockResolvedValueOnce(true);
         const actual = await userAuthController
         .login(<Request>req, <Response>res);
         expect(actual).toEqual({
@@ -972,8 +1356,24 @@ describe('user auth controller', () => {
           message: 'Signed in.',
           username: "NameIsGood",
           avatar: "NameIsGood"
-        })
+        }),
+        send: jest.fn()
       };
+
+      it('uses assert on request correctly', async () => {
+        mockGetUserByEmail = jest.fn().mockResolvedValue([[{
+          user_id: 150,
+          pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
+          username: "NameIsGood",
+          avatar: "NameIsGood",
+          confirmation_code: null
+        }]]);
+        await userAuthController.login(<Request>req, <Response>res);
+        expect(assert).toHaveBeenCalledWith(
+          {email: "person@person.com", pass: "Password99$"},
+          validLoginRequest
+        );
+      });
 
       it('attaches userInfo object to session object', async () => {
         mockGetUserByEmail = jest.fn().mockResolvedValue([[{
@@ -983,6 +1383,7 @@ describe('user auth controller', () => {
           avatar: "NameIsGood",
           confirmation_code: null
         }]]);
+        mockBcrypt.compare.mockResolvedValueOnce(true);
         await userAuthController.login(<Request>req, <Response>res);
         expect(req.session!.userInfo).toEqual({
           userId: 150,
@@ -991,7 +1392,7 @@ describe('user auth controller', () => {
         });
       });
 
-      it('sends data', async () => {
+      it('sends data correctly', async () => {
         mockGetUserByEmail = jest.fn().mockResolvedValue([[{
           user_id: 150,
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
@@ -999,6 +1400,7 @@ describe('user auth controller', () => {
           avatar: "NameIsGood",
           confirmation_code: null
         }]]);
+        mockBcrypt.compare.mockResolvedValueOnce(true);
         await userAuthController.login(<Request>req, <Response>res);
         expect(res.json).toBeCalledWith({
           message: 'Signed in.',
@@ -1015,6 +1417,7 @@ describe('user auth controller', () => {
           avatar: "NameIsGood",
           confirmation_code: null
         }]]);
+        mockBcrypt.compare.mockResolvedValueOnce(true);
         const actual = await userAuthController
         .login(<Request>req, <Response>res);
         expect(actual).toEqual({
@@ -1065,10 +1468,17 @@ describe('user auth controller', () => {
       send: jest.fn().mockResolvedValue({message: 'Account updated.'})
     };
 
-    it('uses validation', async () => {
+    it('uses assert correctly', async () => {
       await userAuthController.updateUser(<Request>req, <Response>res);
-      const MockedAssert = mocked(assert, true);
-      expect(MockedAssert).toHaveBeenCalledTimes(1);
+      expect(assert).toHaveBeenCalledWith(
+        {
+          email: "person@person.com",
+          pass: "Password99$",
+          username: "NameIsGood",
+          avatar: "NameIsGood"
+        },
+        validUpdatingUser
+      );
     });
 
     it ('uses updateUser correctly', async () => {
@@ -1082,7 +1492,7 @@ describe('user auth controller', () => {
       });
     });
 
-    it('sends data', async () => {
+    it('sends data correctly', async () => {
       await userAuthController.updateUser(<Request>req, <Response>res);
       expect(res.send).toBeCalledWith({message: 'Account updated.'});
     });
@@ -1155,7 +1565,7 @@ describe('user auth controller', () => {
       expect(mockDeleteUser).toBeCalledWith(150);
     });
 
-    it('sends data', async () => {
+    it('sends data correctly', async () => {
       await userAuthController.deleteUser(<Request>req, <Response>res);
       expect(res.send).toBeCalledWith({message: 'Account deleted.'});
     });
