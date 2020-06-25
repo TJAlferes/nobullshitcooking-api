@@ -24,18 +24,22 @@ export const staffAuthController = {
     if (staffname.length < 6) {
       return res.send({message: 'Staffname must be at least 6 characters.'});
     }
+
     if (staffname.length > 20) {
       return res.send({
         message: 'Staffname must be no more than 20 characters.'
       });
     }
+
     // Problem: This invalidates some older/alternative email types. Remove?
     if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
       return res.send({message: 'Invalid email.'});
     }
+
     if (pass.length < 6) {
       return res.send({message: 'Password must be at least 6 characters.'});
     }
+    
     if (pass.length > 54) {
       return res.send({
         message: 'Password must be no more than 54 characters.'
@@ -44,13 +48,17 @@ export const staffAuthController = {
 
     const staff = new Staff(pool);
 
-    const staffExists = await staff.getStaffByName(staffname);
+    const [ staffExists ] = await staff.getStaffByName(staffname);
+
     if (staffExists.length) {
       return res.send({message: 'Staffname already taken.'});
     }
 
-    const emailExists = await staff.getStaffByEmail(email);
-    if (emailExists.length) return res.send({message: 'Email already in use.'});
+    const [ emailExists ] = await staff.getStaffByEmail(email);
+
+    if (emailExists.length) {
+      return res.send({message: 'Email already in use.'});
+    }
 
     const encryptedPassword = await bcrypt.hash(pass, SALT_ROUNDS);
 
@@ -64,9 +72,8 @@ export const staffAuthController = {
 
     await staff.createStaff(staffToCreate);
 
-    res.send({message: 'Staff account created.'});
+    return res.send({message: 'Staff account created.'});
   },
-  
   login: async function(req: Request, res: Response) {
     const email = req.body.staffInfo.email;
     const pass = req.body.staffInfo.password;
@@ -77,34 +84,45 @@ export const staffAuthController = {
     if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
       return res.send({message: 'Invalid email.'});
     }
+
     if (pass.length < 6) return res.send({message: 'Invalid password.'});
+
     if (pass.length > 54) return res.send({message: 'Invalid password.'});
 
     const staff = new Staff(pool);
 
-    const staffExists = await staff.getStaffByEmail(email);
-    //crypto.timingSafeEqual
-    if (staffExists && staffExists[0].email == email) {
-      const isCorrectPassword = await bcrypt.compare(pass, staffExists[0].pass);
-      
-      if (isCorrectPassword) {
-        const staffId = staffExists[0].staff_id;
-        const staffname = staffExists[0].staffname;
-        const avatar = staffExists[0].avatar;
+    const [ staffExists ] = await staff.getStaffByEmail(email);
 
-        req.session!.staffInfo = {};
-        req.session!.staffInfo.staffId = staffId;
-        req.session!.staffInfo.staffname = staffname;
-
-        return res.json({message: 'Signed in.', staffname, avatar});
-      }
+    if (!staffExists) {
+      return res.send({message: 'Incorrect email or password.'});
     }
 
-    res.send({message: 'Incorrect email or password.'});
-  },
+    //crypto.timingSafeEqual
 
+    const isCorrectPassword = await bcrypt.compare(pass, staffExists[0].pass);
+      
+    if (isCorrectPassword) {
+      return res.send({message: 'Incorrect email or password.'});
+    }
+
+    const staffId = staffExists[0].staff_id;
+    const staffname = staffExists[0].staffname;
+    const avatar = staffExists[0].avatar;
+
+    req.session!.staffInfo = {};
+    req.session!.staffInfo.staffId = staffId;
+    req.session!.staffInfo.staffname = staffname;
+
+    return res.json({message: 'Signed in.', staffname, avatar});
+  },
   logout: async function(req: Request, res: Response) {
     req.session!.destroy(function() {});
-    res.end();
-  }
+    return res.end();
+  },
+  /*updateStaff: async function(req: Request, res: Response) {
+    // finish
+  },
+  deleteStaff: async function(req: Request, res: Response) {
+    // finish
+  }*/
 };

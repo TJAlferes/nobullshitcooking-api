@@ -5,7 +5,6 @@ import { assert } from 'superstruct';
 import bcrypt from 'bcrypt';
 import * as uuid from 'uuid'
 import { v4 as uuidv4 } from 'uuid';
-import { mocked } from 'ts-jest/utils';
 
 import {
   emailConfirmationCode
