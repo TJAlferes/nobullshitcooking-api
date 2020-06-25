@@ -19,6 +19,7 @@
         "babelConfig": true
       }
     },
+    "globalSetup": "./global-setup.js",
     "preset": "ts-jest/presets/js-with-babel",
     "transform": {
       "^.+\\.[t]sx?$": "ts-jest",

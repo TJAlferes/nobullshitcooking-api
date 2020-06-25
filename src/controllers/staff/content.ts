@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { assert } from 'superstruct';
+import { assert, coerce } from 'superstruct';
 
 import { pool } from '../../lib/connections/mysqlPoolConnection';
 import {
@@ -26,7 +26,11 @@ export const staffContentController = {
       contentItems
     };
 
-    assert({contentToCreate}, validContentEntity);
+    // you need to understand coerce and defaulted better
+    assert(
+      coerce({contentToCreate}, validContentEntity),
+      validContentEntity
+    );
 
     const content = new Content(pool);
 
@@ -37,6 +41,7 @@ export const staffContentController = {
   updateContent: async function(req: Request, res: Response) {
     const contentId = Number(req.body.contentInfo.contentId);
     const contentTypeId = Number(req.body.contentInfo.contentTypeId);
+    const created = req.body.contentInfo.created;
     const published = req.body.contentInfo.published;
     const contentItems = req.body.contentInfo.contentItems;
 
@@ -47,11 +52,16 @@ export const staffContentController = {
       contentTypeId,
       authorId,
       ownerId,
+      created,
       published,
       contentItems
     }
 
-    //assert({contentToUpdateWith}, validContentEntity);
+    // you need to understand coerce and defaulted better
+    assert(
+      coerce({contentToUpdateWith}, validContentEntity),
+      validContentEntity
+    );
 
     const content = new Content(pool);
 
