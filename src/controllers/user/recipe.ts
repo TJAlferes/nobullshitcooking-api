@@ -175,6 +175,7 @@ export const userRecipeController = {
 
     await updateRecipeService({
       recipeId,
+      authorId,
       ownerId,
       recipeToUpdateWith,
       requiredMethods,
@@ -196,11 +197,14 @@ export const userRecipeController = {
     const recipeSubrecipe = new RecipeSubrecipe(pool);
     const recipe = new Recipe(pool);
 
-    await recipeEquipment.deleteRecipeEquipment(recipeId);
-    await recipeIngredient.deleteRecipeIngredients(recipeId);
-    await recipeMethod.deleteRecipeMethods(recipeId);
-    await recipeSubrecipe.deleteRecipeSubrecipes(recipeId);
-    await recipeSubrecipe.deleteRecipeSubrecipesBySubrecipeId(recipeId);
+    await Promise.all([
+      recipeEquipment.deleteRecipeEquipment(recipeId),
+      recipeIngredient.deleteRecipeIngredients(recipeId),
+      recipeMethod.deleteRecipeMethods(recipeId),
+      recipeSubrecipe.deleteRecipeSubrecipes(recipeId),
+      recipeSubrecipe.deleteRecipeSubrecipesBySubrecipeId(recipeId)
+    ]);
+
     await recipe.deleteMyPrivateUserRecipe(recipeId, authorId, ownerId);
 
     return res.send({message: 'Recipe deleted.'});

@@ -37,6 +37,7 @@ import {
 
 export async function updateRecipeService({
   recipeId,
+  authorId,
   ownerId,
   recipeToUpdateWith,
   requiredMethods,
@@ -51,7 +52,13 @@ export async function updateRecipeService({
   const recipeSubrecipe = new RecipeSubrecipe(pool);
   const recipeSearch = new RecipeSearch(esClient);
 
-  await recipe.updateMyUserRecipe({recipeId, ...recipeToUpdateWith});
+  if (authorId == 1 && ownerId === 1) {
+    // if staff
+    await recipe.updateRecipe({recipeId, ...recipeToUpdateWith});
+  } else {
+    // if user
+    await recipe.updateMyUserRecipe({recipeId, ...recipeToUpdateWith});
+  }
 
   let recipeMethodsToUpdateWith: number[] = [];
   let recipeMethodsPlaceholders = "none";
@@ -172,6 +179,7 @@ export async function updateRecipeService({
   );
 
   if (ownerId === 1) {
+    // if public
     const [ recipeInfoForElasticSearch ] = await recipe
     .getPublicRecipeForElasticSearchInsert(recipeId);
 
@@ -181,6 +189,7 @@ export async function updateRecipeService({
 
 interface UpdateRecipeService {
   recipeId: number;
+  authorId: number;
   ownerId: number;
   recipeToUpdateWith: ICreatingRecipe;
   requiredEquipment: IMakeRecipeEquipment[];

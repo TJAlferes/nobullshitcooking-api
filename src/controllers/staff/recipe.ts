@@ -102,6 +102,7 @@ export const staffRecipeController = {
 
     await updateRecipeService({
       recipeId,
+      authorId,
       ownerId,
       recipeToUpdateWith,
       requiredMethods,
@@ -126,13 +127,17 @@ export const staffRecipeController = {
 
     const recipeSearch = new RecipeSearch(esClient);
 
-    await favoriteRecipe.deleteAllFavoritesOfRecipe(recipeId);
-    await savedRecipe.deleteAllSavesOfRecipe(recipeId);
-    await recipeMethod.deleteRecipeMethods(recipeId);
-    await recipeEquipment.deleteRecipeEquipment(recipeId);
-    await recipeIngredient.deleteRecipeIngredients(recipeId);
-    await recipeSubrecipe.deleteRecipeSubrecipes(recipeId);
-    await recipeSubrecipe.deleteRecipeSubrecipesBySubrecipeId(recipeId);  // is that right?
+    // what about plans???
+    await Promise.all([
+      favoriteRecipe.deleteAllFavoritesOfRecipe(recipeId),
+      savedRecipe.deleteAllSavesOfRecipe(recipeId),
+      recipeMethod.deleteRecipeMethods(recipeId),
+      recipeEquipment.deleteRecipeEquipment(recipeId),
+      recipeIngredient.deleteRecipeIngredients(recipeId),
+      recipeSubrecipe.deleteRecipeSubrecipes(recipeId),
+      recipeSubrecipe.deleteRecipeSubrecipesBySubrecipeId(recipeId)
+    ]);
+
     await recipe.deleteRecipe(recipeId);
 
     await recipeSearch.deleteRecipe(String(recipeId));
