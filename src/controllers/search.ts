@@ -25,22 +25,22 @@ export const searchController = {
 
     return res.json({found});
   },
-  autocompletePublicRecipes: async function(req: Request, res: Response) {
+  autocompletePublicEquipment: async function(req: Request, res: Response) {
     const searchTerm = req.body.searchTerm;
 
-    const recipeSearch = new RecipeSearch(esClient);
+    const equipmentSearch = new EquipmentSearch(esClient);
 
-    const found = await recipeSearch.autoRecipes(searchTerm);
+    const found = await equipmentSearch.autoEquipment(searchTerm);
 
     return res.json({found});
   },
-  findPublicRecipes: async function(req: Request, res: Response) {
+  findPublicEquipment: async function(req: Request, res: Response) {
     const body = req.body.body;  // security?
 
-    const recipeSearch = new RecipeSearch(esClient);
+    const equipmentSearch = new EquipmentSearch(esClient);
 
-    const found = await recipeSearch.findRecipes(body);
-
+    const found = await equipmentSearch.findEquipment(body);
+    
     return res.json({found});
   },
   autocompletePublicIngredients: async function(req: Request, res: Response) {
@@ -61,22 +61,22 @@ export const searchController = {
 
     return res.json({found});
   },
-  autocompletePublicEquipment: async function(req: Request, res: Response) {
+  autocompletePublicRecipes: async function(req: Request, res: Response) {
     const searchTerm = req.body.searchTerm;
 
-    const equipmentSearch = new EquipmentSearch(esClient);
+    const recipeSearch = new RecipeSearch(esClient);
 
-    const found = await equipmentSearch.autoEquipment(searchTerm);
+    const found = await recipeSearch.autoRecipes(searchTerm);
 
     return res.json({found});
   },
-  findPublicEquipment: async function(req: Request, res: Response) {
+  findPublicRecipes: async function(req: Request, res: Response) {
     const body = req.body.body;  // security?
 
-    const equipmentSearch = new EquipmentSearch(esClient);
+    const recipeSearch = new RecipeSearch(esClient);
 
-    const found = await equipmentSearch.findEquipment(body);
-    
+    const found = await recipeSearch.findRecipes(body);
+
     return res.json({found});
   }
 };
