@@ -1,10 +1,6 @@
 import { Request, Response } from 'express';
-import { assert } from 'superstruct';
 
 import { pool } from '../lib/connections/mysqlPoolConnection';
-import {
-  validMeasurementRequest
-} from '../lib/validations/measurement/measurementRequest';
 import { Measurement } from '../mysql-access/Measurement';
 
 export const measurementController = {
@@ -17,8 +13,6 @@ export const measurementController = {
   },
   viewMeasurementById: async function(req: Request, res: Response) {
     const measurementId = Number(req.params.measurementId);
-
-    assert({measurementId}, validMeasurementRequest);
 
     const measurement = new Measurement(pool);
 

@@ -1,10 +1,6 @@
 import { Request, Response } from 'express';
-import { assert } from 'superstruct';
 
 import { pool } from '../lib/connections/mysqlPoolConnection';
-import {
-  validIngredientRequest
-} from '../lib/validations/ingredient/ingredientRequest';
 import { Ingredient } from '../mysql-access/Ingredient';
 
 export const ingredientController = {
@@ -22,8 +18,6 @@ export const ingredientController = {
     const ingredientId = Number(req.params.ingredientId);
     const authorId = 1;
     const ownerId = 1;
-
-    assert({ingredientId}, validIngredientRequest);
 
     const ingredient = new Ingredient(pool);
 

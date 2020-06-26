@@ -1,23 +1,17 @@
 import { Request, Response } from 'express';
-import { assert } from 'superstruct';
-import { mocked } from 'ts-jest/utils';
 
-import { EquipmentType } from '../mysql-access/EquipmentType';
 import { equipmentTypeController } from './equipmentType';
 
 const rows: any = [{id: 1, name: "Name"}];
 
-jest.mock('superstruct');
-
 jest.mock('../mysql-access/EquipmentType', () => ({
-  EquipmentType: jest.fn().mockImplementation(() => {
-    const rows: any = [{id: 1, name: "Name"}];
-    return {
-      viewEquipmentTypes: jest.fn().mockResolvedValue([rows]),
-      viewEquipmentTypeById: jest.fn().mockResolvedValue([rows])
-    };
-  })
+  EquipmentType: jest.fn().mockImplementation(() => ({
+    viewEquipmentTypes: mockViewEquipmentTypes,
+    viewEquipmentTypeById: mockViewEquipmentTypeById
+  }))
 }));
+let mockViewEquipmentTypes = jest.fn().mockResolvedValue([rows]);
+let mockViewEquipmentTypeById = jest.fn().mockResolvedValue([rows]);
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -27,14 +21,13 @@ describe('equipmentType controller', () => {
   describe('viewEquipmentTypes method', () => {
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue([rows])};
 
-    it('uses EquipmentType mysql access', async () => {
+    it('uses viewEquipmentTypes correctly', async () => {
       await equipmentTypeController
       .viewEquipmentTypes(<Request>{}, <Response>res);
-      const MockedEquipmentType = mocked(EquipmentType, true);
-      expect(MockedEquipmentType).toHaveBeenCalledTimes(1);
+      expect(mockViewEquipmentTypes).toHaveBeenCalledTimes(1);
     });
 
-    it('sends data', async () => {
+    it('sends data correctly', async () => {
       await equipmentTypeController
       .viewEquipmentTypes(<Request>{}, <Response>res);
       expect(res.send).toBeCalledWith([rows]);
@@ -51,21 +44,13 @@ describe('equipmentType controller', () => {
     const req: Partial<Request> = {params: {equipmentTypeId: "1"}};
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
-    it('uses validation', async () => {
+    it('uses viewEquipmentTypeById correctly', async () => {
       await equipmentTypeController
       .viewEquipmentTypeById(<Request>req, <Response>res);
-      const MockedAssert = mocked(assert, true);
-      expect(MockedAssert).toHaveBeenCalledTimes(1);
+      expect(mockViewEquipmentTypeById).toHaveBeenCalledWith(1);
     });
 
-    it('uses EquipmentType mysql access', async () => {
-      await equipmentTypeController
-      .viewEquipmentTypeById(<Request>req, <Response>res);
-      const MockedEquipmentType = mocked(EquipmentType, true);
-      expect(MockedEquipmentType).toHaveBeenCalledTimes(1);
-    });
-
-    it('sends data', async () => {
+    it('sends data correctly', async () => {
       await equipmentTypeController
       .viewEquipmentTypeById(<Request>req, <Response>res);
       expect(res.send).toBeCalledWith(rows);

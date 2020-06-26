@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
-import { assert } from 'superstruct';
 
 import { pool } from '../lib/connections/mysqlPoolConnection';
-import { validCuisineRequest } from '../lib/validations/cuisine/cuisineRequest';
 import { Cuisine } from '../mysql-access/Cuisine';
 
 export const cuisineController = {
@@ -16,8 +14,6 @@ export const cuisineController = {
   viewCuisineById: async function(req: Request, res: Response) {
     const cuisineId = Number(req.params.cuisineId);
 
-    assert({cuisineId}, validCuisineRequest);
-
     const cuisine = new Cuisine(pool);
 
     const [ row ] = await cuisine.viewCuisineById(cuisineId);
@@ -26,8 +22,6 @@ export const cuisineController = {
   },
   viewCuisineDetailById: async function(req: Request, res: Response) {
     const cuisineId = Number(req.params.cuisineId);
-
-    assert({cuisineId}, validCuisineRequest);
 
     const cuisine = new Cuisine(pool);
 

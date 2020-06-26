@@ -1,23 +1,17 @@
 import { Request, Response } from 'express';
-import { assert } from 'superstruct';
-import { mocked } from 'ts-jest/utils';
 
-import { IngredientType } from '../mysql-access/IngredientType';
 import { ingredientTypeController } from './ingredientType';
 
 const rows: any = [{id: 1, name: "Name"}];
 
-jest.mock('superstruct');
-
 jest.mock('../mysql-access/IngredientType', () => ({
-  IngredientType: jest.fn().mockImplementation(() => {
-    const rows: any = [{id: 1, name: "Name"}];
-    return {
-      viewIngredientTypes: jest.fn().mockResolvedValue([rows]),
-      viewIngredientTypeById: jest.fn().mockResolvedValue([rows])
-    };
-  })
+  IngredientType: jest.fn().mockImplementation(() => ({
+    viewIngredientTypes: mockViewIngredientTypes,
+    viewIngredientTypeById: mockViewIngredientTypeById
+  }))
 }));
+let mockViewIngredientTypes = jest.fn().mockResolvedValue([rows]);
+let mockViewIngredientTypeById = jest.fn().mockResolvedValue([rows]);
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -27,14 +21,15 @@ describe('ingredientType controller', () => {
   describe('viewIngredientTypes method', () => {
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue([rows])};
 
-    it('uses IngredientType mysql access', async () => {
-      await ingredientTypeController.viewIngredientTypes(<Request>{}, <Response>res);
-      const MockedIngredientType = mocked(IngredientType, true);
-      expect(MockedIngredientType).toHaveBeenCalledTimes(1);
+    it('uses viewIngredientTypes correctly', async () => {
+      await ingredientTypeController
+      .viewIngredientTypes(<Request>{}, <Response>res);
+      expect(mockViewIngredientTypes).toHaveBeenCalledTimes(1);
     });
 
-    it('sends data', async () => {
-      await ingredientTypeController.viewIngredientTypes(<Request>{}, <Response>res);
+    it('sends data correctly', async () => {
+      await ingredientTypeController
+      .viewIngredientTypes(<Request>{}, <Response>res);
       expect(res.send).toBeCalledWith([rows]);
     });
 
@@ -46,24 +41,16 @@ describe('ingredientType controller', () => {
   });
   
   describe('viewIngredientTypeById method', () => {
-    const req: Partial<Request> = {params: {ingredientId: "1"}};
+    const req: Partial<Request> = {params: {ingredientTypeId: "1"}};
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
-    it('uses validation', async () => {
+    it('uses viewIngredientTypeId correctly', async () => {
       await ingredientTypeController
       .viewIngredientTypeById(<Request>req, <Response>res);
-      const MockedAssert = mocked(assert, true);
-      expect(MockedAssert).toHaveBeenCalledTimes(1);
+      expect(mockViewIngredientTypeById).toHaveBeenCalledWith(1);
     });
 
-    it('uses IngredientType mysql access', async () => {
-      await ingredientTypeController
-      .viewIngredientTypeById(<Request>req, <Response>res);
-      const MockedIngredientType = mocked(IngredientType, true);
-      expect(MockedIngredientType).toHaveBeenCalledTimes(1);
-    });
-
-    it('sends data', async () => {
+    it('sends data correctly', async () => {
       await ingredientTypeController
       .viewIngredientTypeById(<Request>req, <Response>res);
       expect(res.send).toBeCalledWith(rows);

@@ -1,10 +1,6 @@
 import { Request, Response } from 'express';
-import { assert } from 'superstruct';
 
 import { pool } from '../lib/connections/mysqlPoolConnection';
-import {
-  validEquipmentTypeRequest
-} from '../lib/validations/equipmentType/equipmentTypeRequest';
 import { EquipmentType } from '../mysql-access/EquipmentType';
 
 export const equipmentTypeController = {
@@ -17,8 +13,6 @@ export const equipmentTypeController = {
   },
   viewEquipmentTypeById: async function(req: Request, res: Response) {
     const equipmentTypeId = Number(req.params.equipmentTypeId);
-
-    assert({equipmentTypeId}, validEquipmentTypeRequest);
 
     const equipmentType = new EquipmentType(pool);
 

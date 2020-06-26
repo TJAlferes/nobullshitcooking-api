@@ -1,10 +1,6 @@
 import { Request, Response } from 'express';
-import { assert } from 'superstruct';
 
 import { pool } from '../lib/connections/mysqlPoolConnection';
-import {
-  validEquipmentRequest
-} from '../lib/validations/equipment/equipmentRequest';
 import { Equipment } from '../mysql-access/Equipment';
 
 export const equipmentController = {
@@ -22,8 +18,6 @@ export const equipmentController = {
     const equipmentId = Number(req.params.equipmentId);
     const authorId = 1;
     const ownerId = 1;
-
-    assert({equipmentId}, validEquipmentRequest);
 
     const equipment = new Equipment(pool);
 

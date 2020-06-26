@@ -2,37 +2,34 @@
 //const request = require('supertest');
 import { Request, Response } from 'express';
 import { assert } from 'superstruct';
-import { mocked } from 'ts-jest/utils';
 
-import { FavoriteRecipe } from '../mysql-access/FavoriteRecipe';
-import { Recipe } from '../mysql-access/Recipe';
-import { User } from '../mysql-access/User';
 import { profileController } from './profile';
+import { validProfileRequest } from '../lib/validations/profile/profileRequest';
 
 const rows: any = [{id: 1, name: "Name"}];
 
 jest.mock('superstruct');
 
 jest.mock('../mysql-access/FavoriteRecipe', () => ({
-  FavoriteRecipe: jest.fn().mockImplementation(() => {
-    const rows: any = [{id: 1, name: "Name"}];
-    return {viewMyFavoriteRecipes: jest.fn().mockResolvedValue([rows])};
-  })
+  FavoriteRecipe: jest.fn().mockImplementation(() => ({
+    viewMyFavoriteRecipes: mockViewMyFavoriteRecipes
+  }))
 }));
+let mockViewMyFavoriteRecipes = jest.fn().mockResolvedValue([rows]);
 
 jest.mock('../mysql-access/Recipe', () => ({
-  Recipe: jest.fn().mockImplementation(() => {
-    const rows: any = [{id: 1, name: "Name"}];
-    return {viewRecipes: jest.fn().mockResolvedValue([rows])};
-  })
+  Recipe: jest.fn().mockImplementation(() => ({viewRecipes: mockViewRecipes}))
 }));
+let mockViewRecipes = jest.fn().mockResolvedValue([rows]);
 
 jest.mock('../mysql-access/User', () => ({
-  User: jest.fn().mockImplementation(() => {
-    const rows: any = [{user_id: 1, avatar: "Name23"}];
-    return {viewUserByName: jest.fn().mockResolvedValue([rows])};
-  })
+  User: jest.fn().mockImplementation(() => ({
+    viewUserByName: mockViewUserByName
+  }))
 }));
+let mockViewUserByName = jest.fn().mockResolvedValue(
+  [[{user_id: 1, avatar: "Name23"}]]
+);
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -50,36 +47,32 @@ describe('profile controller', () => {
       })
     };
 
-    it('uses validation', async () => {
+    it('uses assert correctly', async () => {
       await profileController.viewProfile(<Request>req, <Response>res);
-      const MockedAssert = mocked(assert, true);
-      expect(MockedAssert).toHaveBeenCalledTimes(1);
+      expect(assert)
+      .toHaveBeenCalledWith({username: "Name"}, validProfileRequest);
     });
 
-    it('uses User mysql access', async () => {
+    it('uses viewUserByName correctly', async () => {
       await profileController.viewProfile(<Request>req, <Response>res);
-      const MockedUser = mocked(User, true);
-      expect(MockedUser).toHaveBeenCalledTimes(1);
+      expect(mockViewUserByName).toHaveBeenCalledTimes(1);
     });
 
-    it('uses Recipe mysql access', async () => {
+    it('uses viewRecipes correctly', async () => {
       await profileController.viewProfile(<Request>req, <Response>res);
-      const MockedRecipe = mocked(Recipe, true);
-      expect(MockedRecipe).toHaveBeenCalledTimes(1);
+      expect(mockViewRecipes).toHaveBeenCalledTimes(1);
     });
 
-    it('uses FavoriteRecipe mysql access', async () => {
+    it('uses viewMyFavoriteRecipes correctly', async () => {
       await profileController.viewProfile(<Request>req, <Response>res);
-      const MockedFavoriteRecipe = mocked(FavoriteRecipe, true);
-      expect(MockedFavoriteRecipe).toHaveBeenCalledTimes(1);
+      expect(mockViewMyFavoriteRecipes).toHaveBeenCalledTimes(1);
     });
 
-    it('sends data', async () => {
-      const avatar = "Name23";
+    it('sends data correctly', async () => {
       await profileController.viewProfile(<Request>req, <Response>res);
       expect(res.send).toBeCalledWith({
         message: 'Success.',
-        avatar,
+        avatar: "Name23",
         publicRecipes: [rows],
         favoriteRecipes: [rows]
       });

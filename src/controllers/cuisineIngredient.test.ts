@@ -1,22 +1,15 @@
 import { Request, Response } from 'express';
-//import { assert } from 'superstruct';
-import { mocked } from 'ts-jest/utils';
 
-import { CuisineIngredient } from '../mysql-access/CuisineIngredient';
 import { cuisineIngredientController } from './cuisineIngredient';
 
 const rows: any = [{id: 1, name: "Name"}];
 
-//jest.mock('superstruct');
-
 jest.mock('../mysql-access/CuisineIngredient', () => ({
-  CuisineIngredient: jest.fn().mockImplementation(() => {
-    const rows: any = [{id: 1, name: "Name"}];
-    return {
-      viewCuisineIngredientsByCuisineId: jest.fn().mockResolvedValue([rows]),
-    };
-  })
+  CuisineIngredient: jest.fn().mockImplementation(() => ({
+    viewCuisineIngredientsByCuisineId: mockViewCuisineIngredientsByCuisineId
+  }))
 }));
+let mockViewCuisineIngredientsByCuisineId = jest.fn().mockResolvedValue([rows]);
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -27,21 +20,13 @@ describe('cuisineIngredient controller', () => {
     const req: Partial<Request> = {params: {cuisineId: "1"}};
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue([rows])};
 
-    /*it('uses validation', async () => {
+    it('uses viewCuisineIngredientsByCuisineId correctly', async () => {
       await cuisineIngredientController
       .viewCuisineIngredientsByCuisineId(<Request>req, <Response>res);
-      const MockedAssert = mocked(assert, true);
-      expect(MockedAssert).toHaveBeenCalledTimes(1);
-    });*/
-
-    it('uses CuisineIngredient mysql access', async () => {
-      await cuisineIngredientController
-      .viewCuisineIngredientsByCuisineId(<Request>req, <Response>res);
-      const MockedCuisineIngredient = mocked(CuisineIngredient, true);
-      expect(MockedCuisineIngredient).toHaveBeenCalledTimes(1);
+      expect(mockViewCuisineIngredientsByCuisineId).toHaveBeenCalledWith(1);
     });
 
-    it('sends data', async () => {
+    it('sends data correctly', async () => {
       await cuisineIngredientController
       .viewCuisineIngredientsByCuisineId(<Request>req, <Response>res);
       expect(res.send).toBeCalledWith([rows]);

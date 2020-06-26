@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
-import { assert } from 'superstruct';
 
 import { pool } from '../lib/connections/mysqlPoolConnection';
-import { validMethodRequest } from '../lib/validations/method/methodRequest';
 import { Method } from '../mysql-access/Method';
 
 export const methodController = {
@@ -15,8 +13,6 @@ export const methodController = {
   },
   viewMethodById: async function(req: Request, res: Response) {
     const methodId = Number(req.params.methodId);
-
-    assert({methodId}, validMethodRequest);
 
     const method = new Method(pool);
 
