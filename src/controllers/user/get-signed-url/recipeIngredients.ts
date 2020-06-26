@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';  // do in React instead?
 import S3 from 'aws-sdk/clients/s3';
 import { Request, Response } from 'express';
 
-import { S3Params } from './types';
+import { getSignedUrlPromise } from '../../../lib/utils/getSignedUrlPromise';
 
 const AWS_NOBSC_USER_RECIPE_INGREDIENTS_S3_BUCKET: string =
 process.env.AWS_NOBSC_USER_RECIPE_INGREDIENTS_S3_BUCKET!;
@@ -17,15 +17,7 @@ export async function getSignedUrlRecipeIngredients(req: Request, res: Response)
     secretAccessKey: process.env.AWS_NOBSC_USER_RECIPE_INGREDIENTS_SECRET_ACCESS_KEY
   });
 
-  const getSignedUrlPromise = (operation: string, params: S3Params) => {
-    return new Promise((resolve, reject) => {
-      s3.getSignedUrl(operation, params, (err, data) => {
-        err ? reject(err) : resolve(data);
-      });
-    });
-  };
-
-  const signatureFullSize = await getSignedUrlPromise('putObject', {
+  const signatureFullSize = await getSignedUrlPromise(s3, 'putObject', {
     Bucket: AWS_NOBSC_USER_RECIPE_INGREDIENTS_S3_BUCKET,
     Key: fileNameFullSize,
     ContentType: fileType,
