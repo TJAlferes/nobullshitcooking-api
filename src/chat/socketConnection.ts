@@ -55,14 +55,14 @@ export async function socketConnection(socket: Socket) {
   // Messages
 
   socket.on('AddChat', function(chatMessageText: string) {
-    addChat(
+    addChat({
       socket,
       messengerChat,
       chatMessageText,
       userId,
       username,
       avatar
-    );
+    });
   });
 
   socket.on('AddWhisper', function(whisperText: string, to: string) {

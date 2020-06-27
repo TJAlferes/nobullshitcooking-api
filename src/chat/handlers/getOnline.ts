@@ -13,7 +13,7 @@ export async function getOnline(
   avatar: string
 ) {
   const acceptedFriends = await nobscFriendship
-  .viewAllMyAcceptedFriendships(userId);
+  .viewMyAcceptedFriendships(userId);
 
   if (!acceptedFriends.length) return;
 
