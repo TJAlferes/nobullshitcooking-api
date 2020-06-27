@@ -3,14 +3,14 @@ import { Socket } from 'socket.io';
 import { IMessengerRoom } from '../../redis-access/MessengerRoom';
 import { ChatUser } from '../entities/ChatUser';
 
-export async function addRoom(
-  socket: Socket,
-  messengerRoom: IMessengerRoom,
-  userId: number,
-  username: string,
-  avatar: string,
-  room: string
-) {
+export async function addRoom({
+  socket,
+  messengerRoom,
+  userId,
+  username,
+  avatar,
+  room
+}: IAddRoom) {
   if (room === '') return;
   const currentRooms = socket.rooms;
 
@@ -28,7 +28,7 @@ export async function addRoom(
 
   socket.join(room);
 
-  await messengerRoom.addRoom(room);
+  await messengerRoom.addRoom(room);  // ???
   await messengerRoom.addUserToRoom(userId, room);
 
   socket.broadcast.to(room)
@@ -37,4 +37,13 @@ export async function addRoom(
   const users = await messengerRoom.getUsersInRoom(room);
 
   socket.emit('GetUser', users, room);
+}
+
+interface IAddRoom {
+  socket: Socket;
+  messengerRoom: IMessengerRoom;
+  userId: number;
+  username: string;
+  avatar: string;
+  room: string;
 }
