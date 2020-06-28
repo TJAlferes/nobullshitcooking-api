@@ -3,33 +3,34 @@ import { Socket } from 'socket.io';
 import { IFriendship } from '../../mysql-access/Friendship';
 import { IUser } from '../../mysql-access/User';
 import { IMessengerUser } from '../../redis-access/MessengerUser';
-import { ChatUser  } from '../entities/ChatUser';
-import { Whisper  } from '../entities/Whisper';
+import { ChatUser } from '../entities/ChatUser';
+import { Whisper } from '../entities/Whisper';
 
-export async function addWhisper(
-  socket: Socket,
-  nobscUser: IUser,
-  nobscFriendship: IFriendship,
-  messengerUser: IMessengerUser,
-  whisperText: string,
-  to: string,
-  userId: number,
-  username: string,
-  avatar: string
-) {
-  const userExists = await nobscUser.getUserIdByUsername(to);
+export async function addWhisper({
+  whisperText,
+  to,
+  userId,
+  username,
+  avatar,
+  socket,
+  messengerUser,
+  nobscFriendship,
+  nobscUser
+}: IAddWhisper) {
+  const [ userExists ] = await nobscUser.getUserByName(to);
 
   if (!userExists.length) {
+    console.log(socket.emit('FailedWhisper', 'User not found.'));
     return socket.emit('FailedWhisper', 'User not found.');
   }
 
 
 
-  const blockedUsers = await nobscFriendship
-  .viewAllMyBlockedUsers(userExists[0].user_id);
+  const [ blockedUsers ] = await nobscFriendship
+  .viewMyBlockedUsers(userExists[0].user_id);
 
   const blockedByUser = blockedUsers
-  .find(friend => friend.user_id === userId);
+  .find((friend: any) => friend.user_id === userId);
 
   if (blockedByUser) return socket.emit('FailedWhisper', 'User not found.');
 
@@ -50,4 +51,16 @@ export async function addWhisper(
 
   socket.broadcast.to(onlineUser).emit('AddWhisper', whisper);
   socket.emit('AddWhisper', whisper);
+}
+
+interface IAddWhisper {
+  whisperText: string;
+  to: string;
+  userId: number;
+  username: string;
+  avatar: string;
+  socket: Socket;
+  messengerUser: IMessengerUser;
+  nobscFriendship: IFriendship;
+  nobscUser: IUser;
 }

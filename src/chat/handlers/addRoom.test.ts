@@ -4,9 +4,6 @@ import { IMessengerRoom } from '../../redis-access/MessengerRoom';
 import { ChatUser } from '../entities/ChatUser';
 import { addRoom } from './addRoom';
 
-jest.mock('../entities/ChatUser');
-const mockChatUser = ChatUser as jest.Mocked<typeof ChatUser>;
-
 const mockAddRoom = jest.fn();
 const mockAddUserToRoom = jest.fn();
 const mockGetUsersInRoom = jest.fn().mockResolvedValue([]);
@@ -18,9 +15,12 @@ const mockMessengerRoom: Partial<IMessengerRoom> = {
   removeUserFromRoom: mockRemoveUserFromRoom,
 };
 
+jest.mock('../entities/ChatUser');
+const mockChatUser = ChatUser as jest.Mocked<typeof ChatUser>;
+
 const mockBroadcast: any = {
-  to: jest.fn((room: string) => mockBroadcast),
-  emit: jest.fn()
+  emit: jest.fn(),
+  to: jest.fn((room: string) => mockBroadcast)
 };
 
 const mockSocket: Partial<Socket> = {
@@ -32,13 +32,17 @@ const mockSocket: Partial<Socket> = {
 };
 
 const params = {
-  socket: <Socket>mockSocket,
-  messengerRoom: <IMessengerRoom>mockMessengerRoom,
+  room: "nextRoom",
   userId: 150,
   username: "Name",
   avatar: "Name123",
-  room: "nextRoom"
+  socket: <Socket>mockSocket,
+  messengerRoom: <IMessengerRoom>mockMessengerRoom
 };
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
 
 describe ('addRoom handler', () => {
   it('uses ChatUser correctly', async () => {

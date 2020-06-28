@@ -4,12 +4,12 @@ import { IMessengerRoom } from '../../redis-access/MessengerRoom';
 import { ChatUser } from '../entities/ChatUser';
 
 export async function addRoom({
-  socket,
-  messengerRoom,
+  room,
   userId,
   username,
   avatar,
-  room
+  socket,
+  messengerRoom
 }: IAddRoom) {
   if (room === '') return;
   const currentRooms = socket.rooms;
@@ -40,10 +40,10 @@ export async function addRoom({
 }
 
 interface IAddRoom {
-  socket: Socket;
-  messengerRoom: IMessengerRoom;
+  room: string;
   userId: number;
   username: string;
   avatar: string;
-  room: string;
+  socket: Socket;
+  messengerRoom: IMessengerRoom;
 }

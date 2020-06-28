@@ -5,12 +5,12 @@ import { ChatMessage } from '../entities/ChatMessage';
 import { ChatUser } from '../entities/ChatUser';
 
 export async function addChat({
-  socket,
-  messengerChat,
-  chatMessageText,
   userId,
   username,
-  avatar
+  avatar,
+  socket,
+  messengerChat,
+  chatMessageText
 }: IAddChat) {
   const room = Object.keys(socket.rooms).find(r => r !== socket.id);
   if (!room) return;
@@ -28,10 +28,10 @@ export async function addChat({
 }
 
 interface IAddChat {
-  socket: Socket;
-  messengerChat: IMessengerChat;
-  chatMessageText: string;
   userId: number;
   username: string;
   avatar: string;
+  socket: Socket;
+  messengerChat: IMessengerChat;
+  chatMessageText: string;
 }
