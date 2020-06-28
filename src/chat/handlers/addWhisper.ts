@@ -20,7 +20,6 @@ export async function addWhisper({
   const [ userExists ] = await nobscUser.getUserByName(to);
 
   if (!userExists.length) {
-    console.log(socket.emit('FailedWhisper', 'User not found.'));
     return socket.emit('FailedWhisper', 'User not found.');
   }
 

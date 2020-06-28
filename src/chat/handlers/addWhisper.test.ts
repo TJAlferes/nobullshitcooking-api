@@ -1,29 +1,28 @@
 import { Socket } from 'socket.io';
 
 import { pool } from '../../lib/connections/mysqlPoolConnection';
-import { IFriendship } from '../../mysql-access/Friendship';
+import { IFriendship, Friendship } from '../../mysql-access/Friendship';
 import { IUser, User } from '../../mysql-access/User';
 import { IMessengerUser } from '../../redis-access/MessengerUser';
 import { ChatUser } from '../entities/ChatUser';
 import { Whisper } from '../entities/Whisper';
 import { addWhisper } from './addWhisper';
 
-let mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[{user_id: 999}]]);
-const mockNobscFriendship: Partial<IFriendship> = {
-  viewMyBlockedUsers: mockViewMyBlockedUsers
-};
+jest.mock('../../mysql-access/Friendship', () => ({
+  Friendship: jest.fn().mockImplementation(() => ({
+    viewMyBlockedUsers: mockViewMyBlockedUsers
+  }))
+}));
+let mockViewMyBlockedUsers = jest.fn();
 
-let mockGetUserByName = jest.fn();
 jest.mock('../../mysql-access/User', () => ({
   User: jest.fn().mockImplementation(() => ({
     getUserByName: mockGetUserByName
   }))
 }));
+let mockGetUserByName = jest.fn();
 
-let mockGetUserSocketId = jest.fn().mockResolvedValue("123456789");
-const mockMessengerUser: Partial<IMessengerUser> = {
-  getUserSocketId: mockGetUserSocketId
-};
+let mockGetUserSocketId = jest.fn();
 
 jest.mock('../entities/ChatUser');
 const mockChatUser = ChatUser as jest.Mocked<typeof ChatUser>;
@@ -51,8 +50,8 @@ const params = {
   username: "Name",
   avatar: "Name123",
   socket: <Socket>mockSocket,
-  messengerUser: <IMessengerUser>mockMessengerUser,
-  nobscFriendship: <IFriendship>mockNobscFriendship,
+  //messengerUser: <IMessengerUser>mockMessengerUser,
+  //nobscFriendship: <IFriendship>mockNobscFriendship,
   //nobscUser: <IUser>mockNobscUser
 };
 
@@ -63,17 +62,33 @@ afterEach(() => {
 describe('addWhisper handler', () => {
 
   describe('when user being whispered does not exist', () => {
+    const mockMessengerUser: Partial<IMessengerUser> = {
+      getUserSocketId: mockGetUserSocketId
+    };
+
     it('uses getUserByName correctly', async () => {
       mockGetUserByName = jest.fn().mockResolvedValue([[]]);
+      const mockNobscFriendship = new Friendship(pool);
       const mockNobscUser = new User(pool);
-      await addWhisper({...params, nobscUser: <IUser>mockNobscUser});
+      await addWhisper({
+        ...params,
+        messengerUser: <IMessengerUser>mockMessengerUser,
+        nobscFriendship: <IFriendship>mockNobscFriendship,
+        nobscUser: <IUser>mockNobscUser
+      });
       expect(mockGetUserByName).toHaveBeenCalledWith("Buddy");
     });
 
     it('uses socket.emit', async () => {
       mockGetUserByName = jest.fn().mockResolvedValue([[]]);
+      const mockNobscFriendship = new Friendship(pool);
       const mockNobscUser = new User(pool);
-      await addWhisper({...params, nobscUser: <IUser>mockNobscUser});
+      await addWhisper({
+        ...params,
+        messengerUser: <IMessengerUser>mockMessengerUser,
+        nobscFriendship: <IFriendship>mockNobscFriendship,
+        nobscUser: <IUser>mockNobscUser
+      });
       expect(params.socket.emit)
       .toHaveBeenCalledWith('FailedWhisper', 'User not found.');
     });
@@ -81,9 +96,12 @@ describe('addWhisper handler', () => {
     // these may be wrong...
     it('returns correctly', async () => {
       mockGetUserByName = jest.fn().mockResolvedValue([[]]);
+      const mockNobscFriendship = new Friendship(pool);
       const mockNobscUser = new User(pool);
       const actual = await addWhisper({
         ...params,
+        messengerUser: <IMessengerUser>mockMessengerUser,
+        nobscFriendship: <IFriendship>mockNobscFriendship,
         nobscUser: <IUser>mockNobscUser
       });
       expect(actual).toEqual(true);
@@ -91,29 +109,48 @@ describe('addWhisper handler', () => {
   });
 
   describe('when user being whispered blocked you', () => {
+    const mockMessengerUser: Partial<IMessengerUser> = {
+      getUserSocketId: mockGetUserSocketId
+    };
+
     it('uses viewMyBlockedUsers correctly', async () => {
       mockGetUserByName = jest.fn().mockResolvedValue([[{user_id: 999}]]);
-      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[{user_id: 999}]]);
+      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[{user_id: 150}]]);
+      const mockNobscFriendship = new Friendship(pool);
       const mockNobscUser = new User(pool);
-      await addWhisper({...params, nobscUser: <IUser>mockNobscUser});
-      expect(mockViewMyBlockedUsers).toHaveBeenCalledWith("Buddy");
+      await addWhisper({
+        ...params,
+        messengerUser: <IMessengerUser>mockMessengerUser,
+        nobscFriendship: <IFriendship>mockNobscFriendship,
+        nobscUser: <IUser>mockNobscUser
+      });
+      expect(mockViewMyBlockedUsers).toHaveBeenCalledWith(999);
     });
 
     it('uses socket.emit', async () => {
       mockGetUserByName = jest.fn().mockResolvedValue([[{user_id: 999}]]);
-      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[{user_id: 999}]]);
+      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[{user_id: 150}]]);
+      const mockNobscFriendship = new Friendship(pool);
       const mockNobscUser = new User(pool);
-      await addWhisper({...params, nobscUser: <IUser>mockNobscUser});
+      await addWhisper({
+        ...params,
+        messengerUser: <IMessengerUser>mockMessengerUser,
+        nobscFriendship: <IFriendship>mockNobscFriendship,
+        nobscUser: <IUser>mockNobscUser
+      });
       expect(params.socket.emit)
       .toHaveBeenCalledWith('FailedWhisper', 'User not found.');
     });
 
     it('returns correctly', async () => {
       mockGetUserByName = jest.fn().mockResolvedValue([[{user_id: 999}]]);
-      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[{user_id: 999}]]);
+      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[{user_id: 150}]]);
+      const mockNobscFriendship = new Friendship(pool);
       const mockNobscUser = new User(pool);
       const actual = await addWhisper({
         ...params,
+        messengerUser: <IMessengerUser>mockMessengerUser,
+        nobscFriendship: <IFriendship>mockNobscFriendship,
         nobscUser: <IUser>mockNobscUser
       });
       expect(actual).toEqual(true);
@@ -123,30 +160,54 @@ describe('addWhisper handler', () => {
   describe('when user being whispered is offline', () => {
     it('uses getUserSocketId correctly', async () => {
       mockGetUserByName = jest.fn().mockResolvedValue([[{user_id: 999}]]);
-      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[{user_id: 999}]]);
+      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[]]);
       mockGetUserSocketId = jest.fn().mockResolvedValue(undefined);
+      const mockMessengerUser: Partial<IMessengerUser> = {
+        getUserSocketId: mockGetUserSocketId
+      };
+      const mockNobscFriendship = new Friendship(pool);
       const mockNobscUser = new User(pool);
-      await addWhisper({...params, nobscUser: <IUser>mockNobscUser});
-      expect(mockGetUserSocketId).toHaveBeenCalledWith("Buddy");
+      await addWhisper({
+        ...params,
+        messengerUser: <IMessengerUser>mockMessengerUser,
+        nobscFriendship: <IFriendship>mockNobscFriendship,
+        nobscUser: <IUser>mockNobscUser
+      });
+      expect(mockGetUserSocketId).toHaveBeenCalledWith(999);
     });
 
     it('uses socket.emit', async () => {
       mockGetUserByName = jest.fn().mockResolvedValue([[{user_id: 999}]]);
-      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[{user_id: 999}]]);
+      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[]]);
       mockGetUserSocketId = jest.fn().mockResolvedValue(undefined);
+      const mockMessengerUser: Partial<IMessengerUser> = {
+        getUserSocketId: mockGetUserSocketId
+      };
+      const mockNobscFriendship = new Friendship(pool);
       const mockNobscUser = new User(pool);
-      await addWhisper({...params, nobscUser: <IUser>mockNobscUser});
+      await addWhisper({
+        ...params,
+        messengerUser: <IMessengerUser>mockMessengerUser,
+        nobscFriendship: <IFriendship>mockNobscFriendship,
+        nobscUser: <IUser>mockNobscUser
+      });
       expect(params.socket.emit)
       .toHaveBeenCalledWith('FailedWhisper', 'User not found.');
     });
 
     it('returns correctly', async () => {
       mockGetUserByName = jest.fn().mockResolvedValue([[{user_id: 999}]]);
-      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[{user_id: 999}]]);
+      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[]]);
       mockGetUserSocketId = jest.fn().mockResolvedValue(undefined);
+      const mockMessengerUser: Partial<IMessengerUser> = {
+        getUserSocketId: mockGetUserSocketId
+      };
+      const mockNobscFriendship = new Friendship(pool);
       const mockNobscUser = new User(pool);
       const actual = await addWhisper({
         ...params,
+        messengerUser: <IMessengerUser>mockMessengerUser,
+        nobscFriendship: <IFriendship>mockNobscFriendship,
         nobscUser: <IUser>mockNobscUser
       });
       expect(actual).toEqual(true);
@@ -156,19 +217,37 @@ describe('addWhisper handler', () => {
   describe('when okay', () => {
     it('uses ChatUser correctly', async () => {
       mockGetUserByName = jest.fn().mockResolvedValue([[{user_id: 999}]]);
-      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[{user_id: 999}]]);
+      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[]]);
       mockGetUserSocketId = jest.fn().mockResolvedValue("123456789");
+      const mockMessengerUser: Partial<IMessengerUser> = {
+        getUserSocketId: mockGetUserSocketId
+      };
+      const mockNobscFriendship = new Friendship(pool);
       const mockNobscUser = new User(pool);
-      await addWhisper({...params, nobscUser: <IUser>mockNobscUser});
+      await addWhisper({
+        ...params,
+        messengerUser: <IMessengerUser>mockMessengerUser,
+        nobscFriendship: <IFriendship>mockNobscFriendship,
+        nobscUser: <IUser>mockNobscUser
+      });
       expect(mockChatUser).toHaveBeenCalledWith(150, "Name", "Name123");
     });
   
     it('uses Whisper correctly', async () => {
       mockGetUserByName = jest.fn().mockResolvedValue([[{user_id: 999}]]);
-      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[{user_id: 999}]]);
+      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[]]);
       mockGetUserSocketId = jest.fn().mockResolvedValue("123456789");
+      const mockMessengerUser: Partial<IMessengerUser> = {
+        getUserSocketId: mockGetUserSocketId
+      };
+      const mockNobscFriendship = new Friendship(pool);
       const mockNobscUser = new User(pool);
-      await addWhisper({...params, nobscUser: <IUser>mockNobscUser});
+      await addWhisper({
+        ...params,
+        messengerUser: <IMessengerUser>mockMessengerUser,
+        nobscFriendship: <IFriendship>mockNobscFriendship,
+        nobscUser: <IUser>mockNobscUser
+      });
       expect(mockWhisper).toHaveBeenCalledWith(
         "howdy",
         "Buddy",
@@ -178,20 +257,38 @@ describe('addWhisper handler', () => {
 
     it ('uses socket.broadcast.to correctly', async () => {
       mockGetUserByName = jest.fn().mockResolvedValue([[{user_id: 999}]]);
-      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[{user_id: 999}]]);
+      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[]]);
       mockGetUserSocketId = jest.fn().mockResolvedValue("123456789");
+      const mockMessengerUser: Partial<IMessengerUser> = {
+        getUserSocketId: mockGetUserSocketId
+      };
+      const mockNobscFriendship = new Friendship(pool);
       const mockNobscUser = new User(pool);
-      await addWhisper({...params, nobscUser: <IUser>mockNobscUser});
+      await addWhisper({
+        ...params,
+        messengerUser: <IMessengerUser>mockMessengerUser,
+        nobscFriendship: <IFriendship>mockNobscFriendship,
+        nobscUser: <IUser>mockNobscUser
+      });
       expect(params.socket.broadcast.to)
       .toHaveBeenCalledWith("123456789");
     });
 
     it ('uses socket.broadcast.to.emit correctly', async () => {
       mockGetUserByName = jest.fn().mockResolvedValue([[{user_id: 999}]]);
-      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[{user_id: 999}]]);
+      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[]]);
       mockGetUserSocketId = jest.fn().mockResolvedValue("123456789");
+      const mockMessengerUser: Partial<IMessengerUser> = {
+        getUserSocketId: mockGetUserSocketId
+      };
+      const mockNobscFriendship = new Friendship(pool);
       const mockNobscUser = new User(pool);
-      await addWhisper({...params, nobscUser: <IUser>mockNobscUser});
+      await addWhisper({
+        ...params,
+        messengerUser: <IMessengerUser>mockMessengerUser,
+        nobscFriendship: <IFriendship>mockNobscFriendship,
+        nobscUser: <IUser>mockNobscUser
+      });
       expect(params.socket.broadcast.emit)
       .toHaveBeenCalledWith(
         'AddWhisper',
@@ -205,10 +302,19 @@ describe('addWhisper handler', () => {
 
     it ('uses socket.emit with AddWhisper event correctly', async () => {
       mockGetUserByName = jest.fn().mockResolvedValue([[{user_id: 999}]]);
-      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[{user_id: 999}]]);
+      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[]]);
       mockGetUserSocketId = jest.fn().mockResolvedValue("123456789");
+      const mockMessengerUser: Partial<IMessengerUser> = {
+        getUserSocketId: mockGetUserSocketId
+      };
+      const mockNobscFriendship = new Friendship(pool);
       const mockNobscUser = new User(pool);
-      await addWhisper({...params, nobscUser: <IUser>mockNobscUser});
+      await addWhisper({
+        ...params,
+        messengerUser: <IMessengerUser>mockMessengerUser,
+        nobscFriendship: <IFriendship>mockNobscFriendship,
+        nobscUser: <IUser>mockNobscUser
+      });
       expect(params.socket.emit)
       .toHaveBeenCalledWith(
         'AddWhisper',
