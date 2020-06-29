@@ -5,16 +5,16 @@ import { IMessengerRoom } from '../../redis-access/MessengerRoom';
 import { IMessengerUser } from '../../redis-access/MessengerUser';
 import { ChatUser  } from '../entities/ChatUser';
 
-export async function disconnecting(
-  socket: Socket,
-  messengerRoom: IMessengerRoom,
-  messengerUser: IMessengerUser,
-  nobscFriendship: IFriendship,
-  userId: number,
-  username: string,
-  avatar: string,
-  reason: any
-) {
+export async function disconnecting({
+  reason,
+  userId,
+  username,
+  avatar,
+  socket,
+  messengerRoom,
+  messengerUser,
+  nobscFriendship,
+}: IDisconnecting) {
   const clonedSocket = {...socket};
   //console.log('disconnecting; reason: ', reason);
   
@@ -28,19 +28,30 @@ export async function disconnecting(
   }
 
   const acceptedFriends = await nobscFriendship
-  .viewAllMyAcceptedFriendships(userId);
+  .viewMyAcceptedFriendships(userId);
 
-  if (!acceptedFriends.length) return;
+  if (acceptedFriends.length) {
+    for (let acceptedFriend of acceptedFriends) {
+      const onlineFriend = await messengerUser
+      .getUserSocketId(acceptedFriend.user_id);
 
-  for (let acceptedFriend of acceptedFriends) {
-    const onlineFriend = await messengerUser
-    .getUserSocketId(acceptedFriend.user_id);
+      if (!onlineFriend) continue;
 
-    if (!onlineFriend) return;
-
-    socket.broadcast.to(onlineFriend)
-    .emit('ShowOffline', ChatUser(userId, username, avatar));
+      socket.broadcast.to(onlineFriend)
+      .emit('ShowOffline', ChatUser(userId, username, avatar));
+    }
   }
 
   await messengerUser.removeUser(userId);
+}
+
+interface IDisconnecting {
+  reason: any;
+  userId: number;
+  username: string;
+  avatar: string;
+  socket: Socket;
+  messengerRoom: IMessengerRoom;
+  messengerUser: IMessengerUser;
+  nobscFriendship: IFriendship;
 }

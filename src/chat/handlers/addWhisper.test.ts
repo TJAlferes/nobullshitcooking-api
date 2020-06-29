@@ -49,10 +49,7 @@ const params = {
   userId: 150,
   username: "Name",
   avatar: "Name123",
-  socket: <Socket>mockSocket,
-  //messengerUser: <IMessengerUser>mockMessengerUser,
-  //nobscFriendship: <IFriendship>mockNobscFriendship,
-  //nobscUser: <IUser>mockNobscUser
+  socket: <Socket>mockSocket
 };
 
 afterEach(() => {

@@ -16,7 +16,7 @@ const mockChatMessage = ChatMessage as jest.Mocked<typeof ChatMessage>;
 jest.mock('../entities/ChatUser');
 const mockChatUser = ChatUser as jest.Mocked<typeof ChatUser>;
 
-// BIG thanks to Guilherme De Jesus Rafael
+// big thanks to Guilherme De Jesus Rafael
 // https://stackoverflow.com/questions/56644690/how-to-mock-chained-function-calls-using-jest
 const mockBroadcast: any = {
   emit: jest.fn(),
