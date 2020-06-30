@@ -1,6 +1,6 @@
 //const socketConnection = require('./socketConnection');
 
-describe('the socketConnection handler', () => {
+describe('socketConnection handler', () => {
   it('needs finished tests', () => {
     expect(1).toEqual(1);
   });

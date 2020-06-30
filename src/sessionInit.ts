@@ -6,7 +6,6 @@ import expressSession, { SessionOptions } from 'express-session';
 import connectRedis from 'connect-redis';
 
 import { sessClient } from './lib/connections/redisConnection';
-
 import { socketInit } from './socketInit';
 
 export function sessionInit(app: Application, server: Server) {

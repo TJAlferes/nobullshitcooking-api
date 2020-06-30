@@ -14,8 +14,6 @@ beforeEach(async () => {
   
 });
 
-
-
 describe('the /user/auth/register endpoint', () => {
   it('should register a new user', async () => {
     await request(server)
@@ -29,8 +27,6 @@ describe('the /user/auth/register endpoint', () => {
     .post('/user/auth/register');
   });
 });
-
-
 
 describe('the /user/auth/login endpoint', () => {
   it('should log in an existing user', async () => {
@@ -53,8 +49,6 @@ describe('the /user/auth/login endpoint', () => {
     .expect(201);
   });
 });
-
-
 
 describe('the /user/auth/logout endpoint', () => {
   it('should log out an existing user', async () => {

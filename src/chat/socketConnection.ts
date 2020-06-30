@@ -38,69 +38,69 @@ export async function socketConnection(socket: Socket) {
   //the latter we may need really need
   // rename
   socket.on('GetOnline', function() {
-    getOnline(
-      socket,
-      nobscFriendship,
-      messengerUser,
+    getOnline({
       userId,
       username,
-      avatar
-    );
+      avatar,
+      socket,
+      messengerUser,
+      nobscFriendship
+    });
   });
 
   socket.on('GetUser', function(room: string) {
-    getUser(socket, messengerRoom, room);
+    getUser({room, socket, messengerRoom});
   });
 
   // Messages
 
   socket.on('AddChat', function(chatMessageText: string) {
     addChat({
-      socket,
-      messengerChat,
       chatMessageText,
       userId,
       username,
-      avatar
+      avatar,
+      socket,
+      messengerChat
     });
   });
 
   socket.on('AddWhisper', function(whisperText: string, to: string) {
-    addWhisper(
-      socket,
-      nobscUser,
-      nobscFriendship,
-      messengerUser,
+    addWhisper({
       whisperText,
       to,
       userId,
       username,
-      avatar
-    );
+      avatar,
+      socket,
+      messengerUser,
+      nobscFriendship,
+      nobscUser
+    });
   });
 
   // Rooms
 
   socket.on('AddRoom', function(room: string) {
-    addRoom(
-      socket,
-      messengerRoom,
+    addRoom({
+      room,
       userId,
       username,
       avatar,
-      room
-    );
+      socket,
+      messengerRoom
+    });
   });
 
   socket.on('RejoinRoom', function(room: string) {
-    rejoinRoom(
-      socket,
-      messengerRoom,
+    rejoinRoom({
+      room,
       userId,
       username,
       avatar,
-      room
-    );
+      socket,
+      messengerRoom
+    });
   });
 
   // SocketIO events
@@ -108,16 +108,16 @@ export async function socketConnection(socket: Socket) {
   socket.on('error', (error: Error) => console.log('error: ', error));
 
   socket.on('disconnecting', function(reason: any) {
-    disconnecting(
-      socket,
-      messengerRoom,
-      messengerUser,
-      nobscFriendship,
+    disconnecting({
+      reason,
       userId,
       username,
       avatar,
-      reason
-    );
+      socket,
+      messengerRoom,
+      messengerUser,
+      nobscFriendship
+    });
   });
 
   /*socket.on('disconnect', async function(reason) {

@@ -9,15 +9,6 @@ import { Server, Socket } from 'socket.io';
 import { pubClient } from '../lib/connections/redisConnection';
 import { MessengerUser } from '../redis-access/MessengerUser';
 
-export function sessionIdsAreEqual(socket: Socket) {
-  const parsedCookie = cookie.parse(socket.request.headers.cookie);
-  const sid = cookieParser.signedCookie(
-    parsedCookie['connect.sid'],
-    process.env.SESSION_SECRET!
-  );
-  return parsedCookie['connect.sid'] === sid ? false : sid;
-}
-
 export function addMessengerUser(
   socket: Socket,
   sid: string,
@@ -25,7 +16,9 @@ export function addMessengerUser(
 ) {
   socket.request.sid = sid;
   socket.request.userInfo = session.userInfo;
+
   const messengerUser = new MessengerUser(pubClient);
+
   messengerUser.addUser(
     session.userInfo.userId,
     session.userInfo.username,
@@ -33,6 +26,16 @@ export function addMessengerUser(
     sid,
     socket.id
   );
+}
+
+export function sessionIdsAreEqual(socket: Socket) {
+  const parsedCookie = cookie.parse(socket.request.headers.cookie); // ???
+  const sid = cookieParser.signedCookie(
+    parsedCookie['connect.sid'],
+    process.env.SESSION_SECRET!
+  );
+
+  return parsedCookie['connect.sid'] === sid ? false : sid;
 }
 
 export function useSocketAuth(io: Server, redisSession: RedisStore) {
@@ -45,7 +48,9 @@ export function useSocketAuth(io: Server, redisSession: RedisStore) {
       if (!session || !session.userInfo.userId) {
         return next(new Error('Not authenticated.'));
       }
+
       addMessengerUser(socket, sid, session);
+      
       return next();
     });
   }

@@ -1,104 +1,85 @@
-'use strict';
+import { Socket } from 'socket.io';
 
 import {
-  sessionIdsAreEqual,
   addMessengerUser,
-  useSocketAuth
+  sessionIdsAreEqual,
+  //useSocketAuth
 } from './socketAuth';
 
-describe('the sessionIdsAreEqual helper function', () => {
-  it('should have one parameter', () => {
-    const actual = sessionIdsAreEqual.length;
-    const expected = 1;
-    expect(actual).toEqual(expected);
-  });
-  it('should return true if session Ids are equal', () => {
-    const socket = {
-      request: {
-        headers: {
-          cookie: {
-            'connect.sid': '123456789'
-          }
-        }
-      }
+jest.mock('../redis-access/MessengerUser', () => ({
+  MessengerUser: jest.fn().mockImplementation(() => ({addUser: mockAddUser}))
+}));
+let mockAddUser = jest.fn();
+
+describe('addMessengerUser helper', () => {
+  it('copies sid to socket.request correctly', () => {
+    const socket: Partial<Socket> = {
+      id: '123456789',
+      request: {headers: {cookie: {'connect.sid': '123456789'}}}
     };
-    const actual = sessionIdsAreEqual(socket);
-    const expected = true;
-    expect(actual).toEqual(expected);
-  });
-  it('should return false if session Ids are not equal', () => {
-    const socket = {
-      request: {
-        headers: {
-          cookie: {}
-        }
-      }
+    const sid = '123456789';
+    const session: Partial<Express.SessionData> = {
+      userInfo: {userId: 150, username: "Name", avatar: "Name123"}
     };
-    const actual = sessionIdsAreEqual(socket);
-    const expected = false;
-    expect(actual).toEqual(expected);
+    addMessengerUser(<Socket>socket, sid, <Express.SessionData>session);
+    expect(socket.request.sid).toEqual('123456789');
+  });
+
+  it('copies session.userInfo to the socket.request', () => {
+    const socket: Partial<Socket> = {
+      id: '123456789',
+      request: {headers: {cookie: {'connect.sid': '123456789'}}}
+    };
+    const sid = '123456789';
+    const session: Partial<Express.SessionData> = {
+      userInfo: {userId: 150, username: "Name", avatar: "Name123"}
+    };
+    addMessengerUser(<Socket>socket, sid, <Express.SessionData>session);
+    expect(socket.request.userInfo)
+    .toEqual({userId: 150, username: "Name", avatar: "Name123"});
+  });
+
+  it ('uses addUser correctly', () => {
+    const socket: Partial<Socket> = {
+      id: '123456789',
+      request: {headers: {cookie: {'connect.sid': '123456789'}}}
+    };
+    const sid = '123456789';
+    const session: Partial<Express.SessionData> = {
+      userInfo: {userId: 150, username: "Name", avatar: "Name123"}
+    };
+    addMessengerUser(<Socket>socket, sid, <Express.SessionData>session);
+    expect(mockAddUser)
+    .toHaveBeenCalledWith(150, "Name", "Name123", '123456789', '123456789');
   });
 });
 
-describe('the addMessengerUser helper function', () => {
-  it('should have three parameters', () => {
-    const actual = addMessengerUser.length;
-    const expected = 3;
-    expect(actual).toEqual(expected);
+describe('sessionIdsAreEqual helper', () => {
+  it('returns false if session Ids are not equal', () => {
+    const socket: Partial<Socket> = {request: {headers: {cookie: {}}}};
+    const actual = sessionIdsAreEqual(<Socket>socket);
+    expect(actual).toEqual(false);
   });
-  it('should copy the sid to the socket.request', () => {
-    const socket = {
-      request: {
-        headers: {
-          cookie: {
-            'connect.sid': '123456789'
-          }
-        }
-      }
+
+  it('returns true if session Ids are equal', () => {
+    const socket: Partial<Socket> = {
+      request: {headers: {cookie: {'connect.sid': '123456789'}}}
     };
-    const sid;
-    const session;
-    addMessengerUser(socket, sid, session);
-    const actual = sock
-    expect(1).toEqual(1);
+    const actual = sessionIdsAreEqual(<Socket>socket);
+    expect(actual).toEqual(true);
   });
 });
 
-describe('the socketAuth middleware', () => {
-  it('should have one parameter', () => {
-    const actual = socketAuth.length;
-    const expected = 1;
-    expect(actual).toEqual(expected);
-  });
-  it('needs finished tests', () => {
-
-    expect(1).toEqual(1);
-  });
-});
-
-/*describe('the socketAuth middleware', () => {
+// find a way to make this unit testable
+/*describe('socketAuth middleware', () => {
+  const redisSessionStub = {get(something, callback) {}};
+  const nextStub = passed => passed;
   it(`
     should return Error 'Not authenticated.'
     when the compared session IDs don't match
   `, () => {
-    const redisSessionStub = {};
-    const socketStub = {
-      request: {
-        headers: {
-          cookie: {
-            'connect.sid': '123456789'
-          }
-        }
-      }
-    };
-    const nextStub = passed => passed;
 
-    const actual = socketAuth(redisSession);
-    const expected = ;
-    expected(actual).toEqual(expected);
   });
-
-
 
   it(`
     should return Error 'Not authenticated.'
@@ -107,50 +88,21 @@ describe('the socketAuth middleware', () => {
     
   });
 
-
-
   it('should copy the session.userInfo to the socket.request', () => {
-    const redisSessionStub = {
-      get(something, callback)
+    const session: Partial<Express.SessionData> = {
+      userInfo: {userId: 150, username: "Name", avatar: "Name123"}
     };
-    const sessionStub = {
-      userInfo: {
-        userId: 1,
-        username: 'Denise',
-        avatar: 'Denise'
-      }
+    const socket: Partial<Socket> = {
+      request: {headers: {cookie: {'connect.sid': '123456789'}}}
     };
-    let socketStub = {
-      request: {
-        headers: {
-          cookie: {
-            'connect.sid': '123456789'
-          }
-        }
-      }
-    };
-    const nextStub = passed => passed;
-
-    socketAuth(redisSessionStub);
-
+    useSocketAuth(io, redisSessionStub);
     expect(socketStub.request.userInfo).toEqual(sessionStub.userInfo);
   });
 
-
-
   it('should copy the sid to the socket.request', () => {
-    const redisSessionStub = {};
-    const socketStub = {
-      request: {
-        headers: {
-          cookie: {
-            'connect.sid': '123456789'
-          }
-        }
-      }
+    const socket: Partial<Socket> = {
+      request: {headers: {cookie: {'connect.sid': '123456789'}}}
     };
-    const nextStub = passed => passed;
-
-    socketAuth(redisSessionStub);
+    useSocketAuth(io, redisSessionStub);
   });
 });*/
