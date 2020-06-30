@@ -118,17 +118,17 @@ export const userAuthController = {
       userExists
     } = await validLogin({email, pass}, user);
 
-    if (!valid) return res.send({message: feedback});
-
+    if (!valid || !userExists) return res.send({message: feedback});
+    
     req.session!.userInfo = {};
-    req.session!.userInfo.userId = userExists!.user_id;
-    req.session!.userInfo.username = userExists!.username;
-    req.session!.userInfo.avatar = userExists!.avatar;
+    req.session!.userInfo.userId = userExists.user_id;
+    req.session!.userInfo.username = userExists.username;
+    req.session!.userInfo.avatar = userExists.avatar;
 
     return res.json({
       message: 'Signed in.',
-      username: userExists!.username,
-      avatar: userExists!.avatar
+      username: userExists.username,
+      avatar: userExists.avatar
     });
   },
   logout: async function(req: Request, res: Response) {

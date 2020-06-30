@@ -45,13 +45,13 @@ export async function validRegister(
 
   const [ userExists ] = await user.getUserByName(username);
 
-  if (userExists.length) {
+  if (userExists) {
     return {valid: false, feedback: 'Username already taken.'};
   }
 
   const [ emailExists ] = await user.getUserByEmail(email);
 
-  if (emailExists.length) {
+  if (emailExists) {
     return {valid: false, feedback: 'Email already in use.'};
   }
 

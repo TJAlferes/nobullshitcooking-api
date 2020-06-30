@@ -56,36 +56,19 @@ router.post(
 );
 
 router.post(
-  '/set-avatar',
+  '/update-account',
   userIsAuth,
-
-  catchExceptions(userAuthController.setAvatar)
-);
-
-router.post(
-  '/update/username',
-  userIsAuth,
-  [body('avatar').not().isEmpty().trim().escape()],
-  catchExceptions(userAuthController.updateUsername)
-);
-
-router.post(
-  '/update/email',
-  userIsAuth,
-
-  catchExceptions(userAuthController.updateEmail)
-);
-
-router.post(
-  '/update/password',
-  userIsAuth,
-
-  catchExceptions(userAuthController.updatePassword)
+  [
+    body('email').not().isEmpty().trim().escape(),
+    body('password').not().isEmpty().trim().escape(),
+    body('username').not().isEmpty().trim().escape(),
+    body('avatar').not().isEmpty().trim().escape()
+  ],
+  catchExceptions(userAuthController.updateUser)
 );
 
 router.post(
   '/delete-account',
   userIsAuth,
-
-  catchExceptions(userAuthController.deleteAccount)
+  catchExceptions(userAuthController.deleteUser)
 );

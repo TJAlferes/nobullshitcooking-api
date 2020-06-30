@@ -13,7 +13,7 @@ import { router as userFavoriteRecipeRouter } from './favoriteRecipe';
 import { router as userFriendshipRouter } from './friendship';
 import { router as userIngredientRouter } from './ingredient';
 import { router as userPlanRouter } from './plan';
-import { router as userProfileRouter } from './profile';
+//import { router as userProfileRouter } from './profile';
 import { router as userRecipeRouter } from './recipe';
 import { router as userSavedRecipeRouter } from './savedRecipe';
 
@@ -32,6 +32,6 @@ router.use('/favorite-recipe', userFavoriteRecipeRouter);
 router.use('/friendship', userFriendshipRouter);
 router.use('/ingredient', userIngredientRouter);
 router.use('/plan', userPlanRouter);
-router.use('/profile', userProfileRouter);
+//router.use('/profile', userProfileRouter);
 router.use('/recipe', userRecipeRouter);
 router.use('/saved-recipe', userSavedRecipeRouter);

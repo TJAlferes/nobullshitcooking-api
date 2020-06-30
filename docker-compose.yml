@@ -20,23 +20,23 @@ services:
     ports:
       - "3306:3306"
 
-  mysql-test:
-    image: mysql:8.0.19
-    volumes:
-      - mysql-test:/var/lib/mysql
-    command: mysqld --default-authentication-plugin=mysql_native_password
-    #command: --disable-partition-engine-check
-    #Note: This healthcheck test can return false positive, find a better one
-    healthcheck:
-      test: mysqladmin ping -h 127.0.0.1
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: pass
-      MYSQL_PASSWORD: pass
-      MYSQL_USER: root
-      MYSQL_DATABASE: nobsc
-    ports:
-      - "3306:3306"
+  #mysql-test:
+  #  image: mysql:8.0.19
+  #  volumes:
+  #    - mysql-test:/var/lib/mysql
+  #  command: mysqld --default-authentication-plugin=mysql_native_password
+  #  #command: --disable-partition-engine-check
+  #  #Note: This healthcheck test can return false positive, find a better one
+  #  healthcheck:
+  #    test: mysqladmin ping -h 127.0.0.1
+  #  restart: always
+  #  environment:
+  #    MYSQL_ROOT_PASSWORD: pass
+  #    MYSQL_PASSWORD: pass
+  #    MYSQL_USER: root
+  #    MYSQL_DATABASE: nobsc
+  #  ports:
+  #    - "3306:3306"
   
   elasticsearch-dev:
     image: elasticsearch:7.3.1
@@ -66,14 +66,14 @@ services:
     ports:
       - "6379:6379"
 
-  redis-test:
-    image: redis:5.0.5
-    healthcheck:
-      test: redis-cli ping
-    volumes:
-      - redis-test:/data
-    ports:
-      - "6379:6379"
+  #redis-test:
+  #  image: redis:5.0.5
+  #  healthcheck:
+  #    test: redis-cli ping
+  #  volumes:
+  #    - redis-test:/data
+  #  ports:
+  #    - "6379:6379"
 
   nobsc-api-dev:
     build:
@@ -97,31 +97,31 @@ services:
       - "3003:3003"
       - "9229:9229"
 
-  nobsc-api-test:
-    build:
-      context: .
-      dockerfile: Dockerfile.test
-    #command: node_modules/.bin/nodemon app/index.js
-    depends_on:
-      mysql-test:
-        condition: service_healthy
-      redis-test:
-        condition: service_healthy
-    #volumes:
-      #- ./src/:/api/src
-      #- /node/app/node_modules
-    env_file: .env
-    environment:
-      NODE_ENV: test
-      NODE_PATH: /api/node_modules
-      PORT: 3003
-    ports:
-      - "3003:3003"
-      - "9229:9229"
+  #nobsc-api-test:
+  #  build:
+  #    context: .
+  #    dockerfile: Dockerfile.test
+  #  #command: node_modules/.bin/nodemon app/index.js
+  #  depends_on:
+  #    mysql-test:
+  #      condition: service_healthy
+  #    redis-test:
+  #      condition: service_healthy
+  #  #volumes:
+  #    #- ./src/:/api/src
+  #    #- /node/app/node_modules
+  #  env_file: .env
+  #  environment:
+  #    NODE_ENV: test
+  #    NODE_PATH: /api/node_modules
+  #    PORT: 3003
+  #  ports:
+  #    - "3003:3003"
+  #    - "9229:9229"
 
 volumes:
   mysql-dev:
-  mysql-test:
+  #mysql-test:
   elasticsearch-dev:
   redis-dev:
-  redis-test:
+  #redis-test:

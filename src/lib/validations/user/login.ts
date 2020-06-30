@@ -23,20 +23,19 @@ export async function validLogin(
   if (pass.length > 54) return {valid: false, feedback: 'Invalid password.'};
 
   const [ userExists ] = await user.getUserByEmail(email);
-
-  //if (userExists && crypto.timingSafeEqual(userExists[0].email, email))
-
-  if (!userExists.length) {
+  
+  //crypto.timingSafeEqual()
+  if (!userExists) {
     return {valid: false, feedback: 'Incorrect email or password.'};
   }
-
-  const isCorrectPassword = await bcrypt.compare(pass, userExists[0].pass);
+  
+  const isCorrectPassword = await bcrypt.compare(pass, userExists.pass);
 
   if (!isCorrectPassword) {
     return {valid: false, feedback: 'Incorrect email or password.'};
   }
 
-  const notYetConfirmed = userExists[0].confirmation_code !== null;
+  const notYetConfirmed = userExists.confirmation_code !== null;
 
   if (notYetConfirmed) {
     return {
@@ -44,6 +43,6 @@ export async function validLogin(
       feedback: 'Please check your email for your confirmation code.'
     };
   }
-  
-  return {valid: true, feedback: 'Valid.', userExists: userExists[0]};
+
+  return {valid: true, feedback: 'Valid.', userExists};
 }

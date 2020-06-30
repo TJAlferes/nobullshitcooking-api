@@ -14,7 +14,7 @@ export const router = Router();
 router.post(
   '/',
   userIsAuth,
-  catchExceptions(userFriendshipController.viewAllMyFriendships)
+  catchExceptions(userFriendshipController.viewMyFriendships)
 );
 
 router.post(

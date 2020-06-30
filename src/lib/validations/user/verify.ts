@@ -25,21 +25,21 @@ export async function validVerify(
   if (pass.length > 54) return {valid: false, feedback: 'Invalid password.'};
 
   const [ emailExists ] = await user.getUserByEmail(email);
-
-  if (!emailExists.length) {
+  
+  if (!emailExists) {
     return {
       valid: false,
       feedback: 'An issue occurred, please double check your info and try again.'
     };
   }
 
-  const isCorrectPassword = await bcrypt.compare(pass, emailExists[0].pass);
+  const isCorrectPassword = await bcrypt.compare(pass, emailExists.pass);
 
   if (!isCorrectPassword) {
     return {valid: false, feedback: 'Incorrect email or password.'};
   }
   
-  if (emailExists[0].confirmation_code !== confirmationCode) {
+  if (emailExists.confirmation_code !== confirmationCode) {
     return {
       valid: false,
       feedback: 'An issue occurred, please double check your info and try again.'
