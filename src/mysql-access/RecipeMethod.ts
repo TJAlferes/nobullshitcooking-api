@@ -9,6 +9,8 @@ export class RecipeMethod implements IRecipeMethod {
       this.viewRecipeMethodsByRecipeId.bind(this);
     this.createRecipeMethods = this.createRecipeMethods.bind(this);
     this.updateRecipeMethods = this.updateRecipeMethods.bind(this);
+    this.deleteRecipeMethodsByRecipeIds =
+      this.deleteRecipeMethodsByRecipeIds.bind(this);
     this.deleteRecipeMethods = this.deleteRecipeMethods.bind(this);
   }
 
@@ -96,6 +98,19 @@ export class RecipeMethod implements IRecipeMethod {
     }
   }
 
+  async deleteRecipeMethodsByRecipeIds(recipeIds: number[]) {
+    const sql = `
+      DELETE
+      FROM nobsc_recipe_methods
+      WHERE recipe_id = ANY(?)
+    `;
+
+    const [ deletedRecipeMethods ] = await this.pool
+    .execute<RowDataPacket[]>(sql, recipeIds);
+
+    return deletedRecipeMethods;
+  }
+
   async deleteRecipeMethods(recipeId: number) {
     const sql = `
       DELETE
@@ -133,6 +148,7 @@ export interface IRecipeMethod {
     recipeMethodsPlaceholders: string,
     recipeId: number
   ): DataWithExtra;  // | finish
+  deleteRecipeMethodsByRecipeIds(recipeIds: number[]): Data;
   deleteRecipeMethods(recipeId: number): Data;
 }
 

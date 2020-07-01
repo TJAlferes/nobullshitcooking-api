@@ -9,6 +9,8 @@ export class RecipeEquipment implements IRecipeEquipment {
       this.viewRecipeEquipmentByRecipeId.bind(this);
     this.createRecipeEquipment = this.createRecipeEquipment.bind(this);
     this.updateRecipeEquipment = this.updateRecipeEquipment.bind(this);
+    this.deleteRecipeEquipmentByRecipeIds =
+      this.deleteRecipeEquipmentByRecipeIds.bind(this);
     this.deleteRecipeEquipment = this.deleteRecipeEquipment.bind(this);
     this.deleteRecipeEquipmentByEquipmentId =
       this.deleteRecipeEquipmentByEquipmentId.bind(this);
@@ -99,6 +101,19 @@ export class RecipeEquipment implements IRecipeEquipment {
     }
   }
 
+  async deleteRecipeEquipmentByRecipeIds(recipeIds: number[]) {
+    const sql = `
+      DELETE
+      FROM nobsc_recipe_equipment
+      WHERE recipe_id = ANY(?)
+    `;
+
+    const [ deletedRecipeEquipment ] = await this.pool
+    .execute<RowDataPacket[]>(sql, recipeIds);
+
+    return deletedRecipeEquipment;
+  }
+
   // TO DO: rename to deleteRecipeEquipmentByRecipeId
   async deleteRecipeEquipment(recipeId: number) {
     const sql = `
@@ -150,6 +165,7 @@ export interface IRecipeEquipment {
     recipeEquipmentPlaceholders: string,
     recipeId: number
   ): DataWithExtra;  // | finish
+  deleteRecipeEquipmentByRecipeIds(recipeIds: number[]): Data;
   deleteRecipeEquipment(recipeId: number): Data;
   deleteRecipeEquipmentByEquipmentId(equipmentId: number): Data;
 }

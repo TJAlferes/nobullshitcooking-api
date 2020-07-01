@@ -9,6 +9,8 @@ export class RecipeIngredient implements IRecipeIngredient {
       this.viewRecipeIngredientsByRecipeId.bind(this);
     this.createRecipeIngredients = this.createRecipeIngredients.bind(this);
     this.updateRecipeIngredients = this.updateRecipeIngredients.bind(this);
+    this.deleteRecipeIngredientsByRecipeIds =
+      this.deleteRecipeIngredientsByRecipeIds.bind(this);
     this.deleteRecipeIngredients = this.deleteRecipeIngredients.bind(this);
     this.deleteRecipeIngredientsByIngredientId =
       this.deleteRecipeIngredientsByIngredientId.bind(this);
@@ -102,6 +104,19 @@ export class RecipeIngredient implements IRecipeIngredient {
     }
   }
 
+  async deleteRecipeIngredientsByRecipeIds(recipeIds: number[]) {
+    const sql = `
+      DELETE
+      FROM nobsc_recipe_ingredients
+      WHERE recipe_id = ANY(?)
+    `;
+
+    const [ deletedRecipeIngredients ] = await this.pool
+    .execute<RowDataPacket[]>(sql, recipeIds);
+
+    return deletedRecipeIngredients;
+  }
+
   async deleteRecipeIngredients(recipeId: number) {
     const sql = `
       DELETE
@@ -152,6 +167,7 @@ export interface IRecipeIngredient {
     recipeIngredientsPlaceholders: string,
     recipeId: number
   ): DataWithExtra;  // | finish
+  deleteRecipeIngredientsByRecipeIds(recipeIds: number[]): Data;
   deleteRecipeIngredients(recipeId: number): Data;
   deleteRecipeIngredientsByIngredientId(ingredientId: number): Data;
 }

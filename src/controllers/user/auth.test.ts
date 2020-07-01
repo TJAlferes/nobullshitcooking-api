@@ -121,13 +121,66 @@ jest.mock('../../mysql-access/Recipe', () => {
   return {
     ...originalModule,
     Recipe: jest.fn().mockImplementation(() => ({
+      getAllMyPrivateUserRecipeIds: mockGetAllMyPrivateUserRecipeIds,
       disownAllMyPublicUserRecipes: mockDisownAllMyPublicUserRecipes,
       deleteAllMyPrivateUserRecipes: mockDeleteAllMyPrivateUserRecipes
     }))
   };
 });
+let mockGetAllMyPrivateUserRecipeIds = jest.fn()
+.mockResolvedValue([273, 837, 941]);
 let mockDisownAllMyPublicUserRecipes = jest.fn();
 let mockDeleteAllMyPrivateUserRecipes = jest.fn();
+
+jest.mock('../../mysql-access/RecipeEquipment', () => {
+  const originalModule = jest
+  .requireActual('../../mysql-access/RecipeEquipment');
+  return {
+    ...originalModule,
+    RecipeEquipment: jest.fn().mockImplementation(() => ({
+      deleteRecipeEquipmentByRecipeIds: mockDeleteRecipeEquipmentByRecipeIds
+    }))
+  };
+});
+let mockDeleteRecipeEquipmentByRecipeIds = jest.fn();
+
+jest.mock('../../mysql-access/RecipeIngredient', () => {
+  const originalModule = jest
+  .requireActual('../../mysql-access/RecipeIngredient');
+  return {
+    ...originalModule,
+    RecipeIngredient: jest.fn().mockImplementation(() => ({
+      deleteRecipeIngredientsByRecipeIds: mockDeleteRecipeIngredientsByRecipeIds
+    }))
+  };
+});
+let mockDeleteRecipeIngredientsByRecipeIds = jest.fn();
+
+jest.mock('../../mysql-access/RecipeMethod', () => {
+  const originalModule = jest
+  .requireActual('../../mysql-access/RecipeMethod');
+  return {
+    ...originalModule,
+    RecipeMethod: jest.fn().mockImplementation(() => ({
+      deleteRecipeMethodsByRecipeIds: mockDeleteRecipeMethodsByRecipeIds
+    }))
+  };
+});
+let mockDeleteRecipeMethodsByRecipeIds = jest.fn();
+
+jest.mock('../../mysql-access/RecipeSubrecipe', () => {
+  const originalModule = jest
+  .requireActual('../../mysql-access/RecipeSubrecipe');
+  return {
+    ...originalModule,
+    RecipeSubrecipe: jest.fn().mockImplementation(() => ({
+      deleteRecipeSubrecipesByRecipeIds: mockDeleteRecipeSubrecipesByRecipeIds,
+      deleteRecipeSubrecipesBySubrecipeIds: mockDeleteRecipeSubrecipesBySubrecipeIds
+    }))
+  };
+});
+let mockDeleteRecipeSubrecipesByRecipeIds = jest.fn();
+let mockDeleteRecipeSubrecipesBySubrecipeIds = jest.fn();
 
 jest.mock('../../mysql-access/Equipment', () => {
   const originalModule = jest.requireActual('../../mysql-access/Equipment');
@@ -1549,6 +1602,41 @@ describe('user auth controller', () => {
     it('uses disownAllMyPublicUserRecipes correctly', async () => {
       await userAuthController.deleteUser(<Request>req, <Response>res);
       expect(mockDisownAllMyPublicUserRecipes).toBeCalledWith(150);
+    });
+
+    it('uses getAllMyPrivateUserRecipeIds correctly', async () => {
+      await userAuthController.deleteUser(<Request>req, <Response>res);
+      expect(mockGetAllMyPrivateUserRecipeIds).toBeCalledWith(150);
+    });
+
+    it('uses deleteRecipeEquipmentByRecipeIds correctly', async () => {
+      await userAuthController.deleteUser(<Request>req, <Response>res);
+      expect(mockDeleteRecipeEquipmentByRecipeIds)
+      .toBeCalledWith([273, 837, 941]);
+    });
+
+    it('uses deleteRecipeIngredientsByRecipeIds correctly', async () => {
+      await userAuthController.deleteUser(<Request>req, <Response>res);
+      expect(mockDeleteRecipeIngredientsByRecipeIds)
+      .toBeCalledWith([273, 837, 941]);
+    });
+
+    it('uses deleteRecipeMethodsByRecipeIds correctly', async () => {
+      await userAuthController.deleteUser(<Request>req, <Response>res);
+      expect(mockDeleteRecipeMethodsByRecipeIds)
+      .toBeCalledWith([273, 837, 941]);
+    });
+
+    it('uses deleteRecipeSubrecipesByRecipeIds correctly', async () => {
+      await userAuthController.deleteUser(<Request>req, <Response>res);
+      expect(mockDeleteRecipeSubrecipesByRecipeIds)
+      .toBeCalledWith([273, 837, 941]);
+    });
+
+    it('uses deleteRecipeSubrecipesBySubrecipeIds correctly', async () => {
+      await userAuthController.deleteUser(<Request>req, <Response>res);
+      expect(mockDeleteRecipeSubrecipesBySubrecipeIds)
+      .toBeCalledWith([273, 837, 941]);
     });
 
     it('uses deleteAllMyPrivateUserRecipes correctly', async () => {

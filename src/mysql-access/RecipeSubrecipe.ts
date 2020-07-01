@@ -9,7 +9,11 @@ export class RecipeSubrecipe implements IRecipeSubrecipe {
       this.viewRecipeSubrecipesByRecipeId.bind(this);
     this.createRecipeSubrecipes = this.createRecipeSubrecipes.bind(this);
     this.updateRecipeSubrecipes = this.updateRecipeSubrecipes.bind(this);
+    this.deleteRecipeSubrecipesByRecipeIds =
+      this.deleteRecipeSubrecipesByRecipeIds.bind(this);
     this.deleteRecipeSubrecipes = this.deleteRecipeSubrecipes.bind(this);
+    this.deleteRecipeSubrecipesBySubrecipeIds =
+      this.deleteRecipeSubrecipesBySubrecipeIds.bind(this);
     this.deleteRecipeSubrecipesBySubrecipeId =
       this.deleteRecipeSubrecipesBySubrecipeId.bind(this);
   }
@@ -101,6 +105,19 @@ export class RecipeSubrecipe implements IRecipeSubrecipe {
     }
   }
 
+  async deleteRecipeSubrecipesByRecipeIds(recipeIds: number[]) {
+    const sql = `
+      DELETE
+      FROM nobsc_recipe_subrecipes
+      WHERE recipe_id = ANY(?)
+    `;
+
+    const [ deletedRecipeSubrecipes ] = await this.pool
+    .execute<RowDataPacket[]>(sql, recipeIds);
+
+    return deletedRecipeSubrecipes;
+  }
+
   async deleteRecipeSubrecipes(recipeId: number) {
     const sql = `
       DELETE
@@ -108,17 +125,22 @@ export class RecipeSubrecipe implements IRecipeSubrecipe {
       WHERE recipe_id = ?
     `;
 
-    /*const sql2 = `
-      DELETE
-      FROM nobsc_recipe_subrecipes
-      WHERE subrecipe_id = ?
-    `;*/
-
     const [ deletedRecipeSubrecipes ] = await this.pool
     .execute<RowDataPacket[]>(sql, [recipeId]);
 
-    //await this.pool.execute<RowDataPacket[]>(sql2, [recipeId]);
+    return deletedRecipeSubrecipes;
+  }
 
+  async deleteRecipeSubrecipesBySubrecipeIds(subrecipeIds: number[]) {
+    const sql = `
+      DELETE
+      FROM nobsc_recipe_subrecipes
+      WHERE subrecipe_id = ANY(?)
+    `;
+
+    const [ deletedRecipeSubrecipes ] = await this.pool
+    .execute<RowDataPacket[]>(sql, subrecipeIds);
+    
     return deletedRecipeSubrecipes;
   }
 
@@ -159,7 +181,9 @@ export interface IRecipeSubrecipe {
     recipeSubrecipesPlaceholders: string,
     recipeId: number
   ): DataWithExtra;  // | finish
+  deleteRecipeSubrecipesByRecipeIds(recipeIds: number[]): Data;
   deleteRecipeSubrecipes(recipeId: number): Data;
+  deleteRecipeSubrecipesBySubrecipeIds(subrecipeIds: number[]): Data;
   deleteRecipeSubrecipesBySubrecipeId(subrecipeId: number): Data;
 }
 

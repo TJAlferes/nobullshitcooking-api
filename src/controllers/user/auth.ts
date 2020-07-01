@@ -26,6 +26,10 @@ import { Friendship } from '../../mysql-access/Friendship';
 //import { Notification } from '../../mysql-access/Notification';
 import { Plan } from '../../mysql-access/Plan';
 import { Recipe } from '../../mysql-access/Recipe';
+import { RecipeEquipment } from '../../mysql-access/RecipeEquipment';
+import { RecipeIngredient } from '../../mysql-access/RecipeIngredient';
+import { RecipeMethod } from '../../mysql-access/RecipeMethod';
+import { RecipeSubrecipe } from '../../mysql-access/RecipeSubrecipe';
 import { SavedRecipe } from '../../mysql-access/SavedRecipe';
 import { User } from '../../mysql-access/User';
 
@@ -165,8 +169,16 @@ export const userAuthController = {
     //const notification = new Notification(pool);
     const plan = new Plan(pool);
     const recipe = new Recipe(pool);
+    const recipeEquipment = new RecipeEquipment(pool);
+    const recipeIngredient = new RecipeIngredient(pool);
+    const recipeMethod = new RecipeMethod(pool);
+    const recipeSubrecipe = new RecipeSubrecipe(pool);
     const savedRecipe = new SavedRecipe(pool);
     const user = new User(pool);
+
+    // while a user account being deleted is probably pretty rare,
+    // you are making sixteen database trips here...
+    // not horrible, but is there a way to lower that?
 
     // due to foreign key constraints, deletes must be in this order
 
@@ -180,11 +192,18 @@ export const userAuthController = {
 
     /*?*/
     await recipe.disownAllMyPublicUserRecipes(userId);
-    /*await recipeMethod.deleteRecipeMethods(recipeId);
-    await recipeEquipment.deleteRecipeEquipment(recipeId);
-    await recipeIngredient.deleteRecipeIngredients(recipeId);
-    await recipeSubrecipe.deleteRecipeSubrecipes(recipeId);
-    await recipeSubrecipe.deleteRecipeSubrecipesBySubrecipeId(recipeId);*/
+
+    const recipeIds = await recipe
+    .getAllMyPrivateUserRecipeIds(userId) as number[];
+
+    await Promise.all([
+      recipeEquipment.deleteRecipeEquipmentByRecipeIds(recipeIds),
+      recipeIngredient.deleteRecipeIngredientsByRecipeIds(recipeIds),
+      recipeMethod.deleteRecipeMethodsByRecipeIds(recipeIds),
+      recipeSubrecipe.deleteRecipeSubrecipesByRecipeIds(recipeIds),
+      recipeSubrecipe.deleteRecipeSubrecipesBySubrecipeIds(recipeIds)
+    ]);
+
     await recipe.deleteAllMyPrivateUserRecipes(userId, userId);
 
     await Promise.all([

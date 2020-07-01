@@ -14,6 +14,8 @@ export class Recipe implements IRecipe {
     this.createRecipe = this.createRecipe.bind(this);
     this.updateRecipe = this.updateRecipe.bind(this);
     this.deleteRecipe = this.deleteRecipe.bind(this);
+    this.getAllMyPrivateUserRecipeIds =
+      this.getAllMyPrivateUserRecipeIds.bind(this);
     this.getInfoToEditMyUserRecipe = this.getInfoToEditMyUserRecipe.bind(this);
     this.updateMyUserRecipe = this.updateMyUserRecipe.bind(this);
     this.deleteMyPrivateUserRecipe = this.deleteMyPrivateUserRecipe.bind(this);
@@ -496,6 +498,17 @@ export class Recipe implements IRecipe {
     `;
     await this.pool.execute<RowDataPacket[]>(sql, [newAuthorId, authorId]);
   }
+
+  async getAllMyPrivateUserRecipeIds(userId: number) {
+    const sql = `
+      SELECT recipe_id
+      FROM nobsc_recipes
+      WHERE author_id = ? AND owner_id = ?
+    `;
+    const [ recipes ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [userId, userId]);
+    return recipes.map(recipe => recipe.recipe_id);
+  }
 }
 
 type Data = Promise<RowDataPacket[]>;
@@ -563,6 +576,7 @@ export interface IRecipe {
   disownMyPublicUserRecipe(recipeId: number, authorId: number): Data;
   deleteAllMyPrivateUserRecipes(authorId: number, ownerId: number): void;
   disownAllMyPublicUserRecipes(authorId: number): void;
+  getAllMyPrivateUserRecipeIds(userId: number): Promise<number[]>;
 }
 
 export interface ICreatingRecipe {
