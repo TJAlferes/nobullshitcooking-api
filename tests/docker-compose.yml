@@ -48,7 +48,7 @@ services:
     volumes:
       - redis-test:/data
     ports:
-      - "6380:6380"
+      - "6379:6379"
   
   nobsc-api-test:
     build:

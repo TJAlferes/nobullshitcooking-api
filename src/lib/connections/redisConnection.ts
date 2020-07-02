@@ -5,25 +5,25 @@ import Redis from 'ioredis';
 export const pubClient = process.env.NODE_ENV === 'production'
   ? new Redis({host: process.env.ELASTICACHE_PROD_PRIMARY, port: 6379})
   : process.env.NODE_ENV === 'test'
-    ? new Redis({host: 'redis-test', port: 6380})
+    ? new Redis({host: 'redis-test', port: 6379, showFriendlyErrorStack: true})
     : new Redis({host: 'redis-dev', port: 6379});
 
 export const subClient = process.env.NODE_ENV === 'production'
   ? new Redis({host: process.env.ELASTICACHE_PROD_PRIMARY, port: 6379})
   : process.env.NODE_ENV === 'test'
-    ? new Redis({host: 'redis-test', port: 6380})
+    ? new Redis({host: 'redis-test', port: 6379, showFriendlyErrorStack: true})
     : new Redis({host: 'redis-dev', port: 6379});
 
 export const sessClient = process.env.NODE_ENV === 'production'
   ? new Redis({host: process.env.ELASTICACHE_PROD_PRIMARY, port: 6379})
   : process.env.NODE_ENV === 'test'
-    ? new Redis({host: 'redis-test', port: 6380})
+    ? new Redis({host: 'redis-test', port: 6379, showFriendlyErrorStack: true})
     : new Redis({host: 'redis-dev', port: 6379});
 
 export const workerClient = process.env.NODE_ENV === 'production'
   ? new Redis({host: process.env.ELASTICACHE_PROD_PRIMARY, port: 6379})
   : process.env.NODE_ENV === 'test'
-    ? new Redis({host: 'redis-test', port: 6380})
+    ? new Redis({host: 'redis-test', port: 6379, showFriendlyErrorStack: true})
     : new Redis({host: 'redis-dev', port: 6379});
 
 // set up proper retry logic

@@ -33,7 +33,7 @@ export function sessionInit(app: Application, server: Server) {
       httpOnly: true,
       secure: true
     };*/
-  } else if (app.get('env') === 'development') {
+  } else {
     sessionOptions.cookie = {
       sameSite: false,
       maxAge: 86400000,

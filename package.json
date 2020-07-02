@@ -6,7 +6,7 @@
   "scripts": {
     "dev-ts": "ts-node src/index.ts",
     "dev-webpack": "webpack-dev-server --config webpack.dev.js --mode development --open --hot --host 0.0.0.0",
-    "test": "jest --color",
+    "test": "jest --color --detectOpenHandles",
     "start": "node dist/index.js",
     "prod-start": "node build/bundle.js",
     "transpile": "babel app.js -o index.js",

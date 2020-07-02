@@ -14,7 +14,7 @@ WORKDIR /api
 COPY global-setup.js ./
 COPY package*.json ./
 COPY tsconfig.json ./
-RUN npm install && npm audit fix && npm cache clean --force
+RUN npm install && npm cache clean --force
 
 WORKDIR /api/src
 COPY ./src .

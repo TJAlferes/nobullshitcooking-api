@@ -8,39 +8,57 @@ const { server } = require('./app');
 
 // Avoid global seeds and fixtures, add data per test (per it)
 
-beforeEach(async () => {
+/*beforeEach(async () => {
   
+});*/
+
+// just make everything res.json instead of res.send? *** yeah probably
+
+describe('GET /', () => {
+  it('returns data correctly', async (done) => {
+    const { text } = await request(server).get('/');
+    expect(text).toEqual('No Bullshit Cooking Backend API.');
+    done();
+  });
 });
 
-describe('/content/links/:contentTypeName GET endpoint', () => {
+describe('GET /ingredient-type/1', () => {
+  it('returns data correctly', async (done) => {
+    const { body } = await request(server).get('/ingredient-type/1');
+    expect(body).toEqual({ingredient_type_id: 1, ingredient_type_name: "Fish"});
+    done();
+  });
+});
+
+/*describe('GET /content/links/:contentTypeName', () => {
   it('returns data correctly', async () => {
     await request(server).get('/content/links/recipe')
     .expect();
   });
 });
 
-describe('/content/:contentId GET endpoint', () => {
+describe('GET /content/:contentId', () => {
   it('returns data correctly', async () => {
     await request(server).get('/content/9')
     .expect();
   });
 });
 
-describe('/content-type GET endpoint', () => {
+describe('GET /content-type', () => {
   it('returns data correctly', async () => {
     await request(server).get('/content-type')
     .expect();
   });
 });
 
-describe('/content-type/:contentTypeId GET endpoint', () => {
+describe('GET /content-type/:contentTypeId', () => {
   it('returns data correctly', async () => {
     await request(server).get('/content-type/9')
     .expect();
   });
 });
 
-describe('/user/auth/register POST endpoint', () => {
+describe('POST /user/auth/register', () => {
   it('registers new user', async () => {
     await request(server)
     .post('/user/auth/register')
@@ -54,7 +72,7 @@ describe('/user/auth/register POST endpoint', () => {
   });
 });
 
-describe('/user/auth/login POST endpoint', () => {
+describe('POST /user/auth/login', () => {
   it('logs in existing user', async () => {
     await request(server)
     .post('/user/auth/login')
@@ -76,7 +94,7 @@ describe('/user/auth/login POST endpoint', () => {
   });
 });
 
-describe('/user/auth/logout POST endpoint', () => {
+describe('POST /user/auth/logout', () => {
   it('logs out existing user', async () => {
     await request(server)
     .post('/user/auth/logout');
@@ -86,4 +104,4 @@ describe('/user/auth/logout POST endpoint', () => {
     await request(server)
     .post('/user/auth/logout');
   });
-});
+});*/
