@@ -5,7 +5,7 @@
 require('regenerator-runtime/runtime');
 require('dotenv').config();
 
-import { app, server } from './app';
+const { app, server } = require('./app');
 
 let PORT: number;
 
@@ -13,8 +13,12 @@ if (app.get('env') === 'production') {
   PORT = Number(process.env.PORT) || 8081;
   server
   .listen(PORT, '127.0.0.1', () => console.log('Listening on port ' + PORT));
-} else {
-  PORT = Number(process.env.PORT) || 3003;
+} else if (app.get('env') === 'test') {
+  PORT = Number(process.env.TEST_PORT) || 3004;
+  server
+  .listen(PORT, '0.0.0.0', () => console.log('Listening on port ' + PORT));
+} else if (app.get('env') === 'development') {
+  PORT = Number(process.env.DEV_PORT) || 3003;
   server
   .listen(PORT, '0.0.0.0', () => console.log('Listening on port ' + PORT));
 }

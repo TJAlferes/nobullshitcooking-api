@@ -1,11 +1,9 @@
 import request from 'supertest';
 
-import { server } from './app';
-import { pool } from './lib/connections/mysqlPoolConnection';
-import { User } from './mysql-access/User';
+const { server } = require('./app');
 
-const user = new User(pool);  // DO NOT use this, make a separate test DB
-
+// Make sure this only touches test DBs
+// Make sure this never touches dev DBs
 // Make sure this NEVER touches prod DBs
 
 // Avoid global seeds and fixtures, add data per test (per it)
@@ -14,35 +12,63 @@ beforeEach(async () => {
   
 });
 
-describe('the /user/auth/register endpoint', () => {
-  it('should register a new user', async () => {
+describe('/content/links/:contentTypeName GET endpoint', () => {
+  it('returns data correctly', async () => {
+    await request(server).get('/content/links/recipe')
+    .expect();
+  });
+});
+
+describe('/content/:contentId GET endpoint', () => {
+  it('returns data correctly', async () => {
+    await request(server).get('/content/9')
+    .expect();
+  });
+});
+
+describe('/content-type GET endpoint', () => {
+  it('returns data correctly', async () => {
+    await request(server).get('/content-type')
+    .expect();
+  });
+});
+
+describe('/content-type/:contentTypeId GET endpoint', () => {
+  it('returns data correctly', async () => {
+    await request(server).get('/content-type/9')
+    .expect();
+  });
+});
+
+describe('/user/auth/register POST endpoint', () => {
+  it('registers new user', async () => {
     await request(server)
     .post('/user/auth/register')
     .send({email: "newuser@site.com", password: "secret", username: "newuser"})
     .expect(201);
   });
 
-  it('should not register an already registered user', async () => {
+  it('does not register already registered user', async () => {
     await request(server)
     .post('/user/auth/register');
   });
 });
 
-describe('the /user/auth/login endpoint', () => {
-  it('should log in an existing user', async () => {
+describe('/user/auth/login POST endpoint', () => {
+  it('logs in existing user', async () => {
     await request(server)
     .post('/user/auth/login')
     .send({email: "user@site.com", password: "secret"})
     .expect(201);
   });
 
-  it('should not log in an already logged in user', async () => {
+  it('does not log in already logged in user', async () => {
     await request(server)
     .post('/user/auth/login')
     .send({email: "loggedinuser@site.com", password: "secret"})
   });
 
-  it('should not log in a non-existing user', async () => {
+  it('does not log in non-existing user', async () => {
     await request(server)
     .post('/user/auth/login')
     .send({email: "nonuser@site.com", password: "secret"})
@@ -50,13 +76,13 @@ describe('the /user/auth/login endpoint', () => {
   });
 });
 
-describe('the /user/auth/logout endpoint', () => {
-  it('should log out an existing user', async () => {
+describe('/user/auth/logout POST endpoint', () => {
+  it('logs out existing user', async () => {
     await request(server)
     .post('/user/auth/logout');
   });
 
-  it('should not log out a non-existing user', async () => {
+  it('does not log out non-existing user', async () => {
     await request(server)
     .post('/user/auth/logout');
   });
