@@ -233,16 +233,10 @@ describe('GET /recipe/1', () => {
       equipment_image: "nobsc-recipe-equipment-default",
       ingredients_image: "nobsc-recipe-ingredients-default",
       cooking_image: "nobsc-recipe-cooking-default",
-      method_names: [{method_name: "Steam"}],
-      equipment_names: [{amount: 1, equipment_name: "Ceramic Stone"}],
-      ingredient_names: [
-        {
-          amount: 4.00,
-          measurement_name: "teaspoon",
-          ingredient_name: "Chicken Breasts"
-        }
-      ],
-      subrecipe_titles: null
+      required_methods: "[{\"method_name\": \"Steam\"}]",
+      required_equipment: "[{\"amount\": 1, \"equipment_name\": \"Ceramic Stone\"}]",
+      required_ingredients: "[{\"amount\": 4.00, \"ingredient_name\": \"Chicken Breasts\", \"measurement_name\": \"teaspoon\"}]",
+      required_subrecipes: null
     });
     done();
   });

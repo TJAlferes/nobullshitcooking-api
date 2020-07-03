@@ -160,6 +160,8 @@ export class Recipe implements IRecipe {
   }
 
   async viewRecipeById(recipeId: number, authorId: number, ownerId: number) {
+    // not sure I like this formatting...
+    // see if this can be done with joins instead of concats
     const sql = `
       SELECT
       r.recipe_id,
@@ -181,7 +183,7 @@ export class Recipe implements IRecipe {
         FROM nobsc_methods m
         INNER JOIN nobsc_recipe_methods rm ON rm.method_id = m.method_id
         WHERE rm.recipe_id = r.recipe_id
-      ) method_names,
+      ) required_methods,
       (
         SELECT CONCAT('[', GROUP_CONCAT(JSON_OBJECT(
           'amount', re.amount,
@@ -190,7 +192,7 @@ export class Recipe implements IRecipe {
         FROM nobsc_equipment e
         INNER JOIN nobsc_recipe_equipment re ON re.equipment_id = e.equipment_id
         WHERE re.recipe_id = r.recipe_id
-      ) equipment_names,
+      ) required_equipment,
       (
         SELECT CONCAT('[', GROUP_CONCAT(JSON_OBJECT(
           'amount', ri.amount,
@@ -202,7 +204,7 @@ export class Recipe implements IRecipe {
         ON ri.ingredient_id = i.ingredient_id
         INNER JOIN nobsc_measurements m ON m.measurement_id = ri.measurement_id
         WHERE ri.recipe_id = r.recipe_id
-      ) ingredient_names,
+      ) required_ingredients,
       (
         SELECT CONCAT('[', GROUP_CONCAT(JSON_OBJECT(
           'amount', rs.amount,
@@ -213,7 +215,7 @@ export class Recipe implements IRecipe {
         INNER JOIN nobsc_recipe_subrecipes rs ON rs.subrecipe_id = r.recipe_id
         INNER JOIN nobsc_measurements m ON m.measurement_id = rs.measurement_id
         WHERE rs.recipe_id = r.recipe_id
-      ) subrecipe_titles
+      ) required_subrecipes
       FROM nobsc_recipes r
       INNER JOIN nobsc_users u ON u.user_id = r.author_id
       INNER JOIN nobsc_recipe_types rt ON rt.recipe_type_id = r.recipe_type_id
@@ -222,7 +224,6 @@ export class Recipe implements IRecipe {
     `;
     const [ recipe ] = await this.pool
     .execute<RowDataPacket[]>(sql, [recipeId, authorId, ownerId]);
-    console.log('in access', recipe);
     return recipe;
   }
 
