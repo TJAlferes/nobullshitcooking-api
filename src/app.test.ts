@@ -10,15 +10,15 @@ const { server } = require('./app');
 
 //beforeEach(async () => {});
 
-describe('GET /', () => {
+/*describe('GET /', () => {
   it('returns data correctly', async (done) => {
     const { text } = await request(server).get('/');
     expect(text).toEqual('No Bullshit Cooking Backend API.');
     done();
   });
-});
+});*/
 
-describe('GET /content/links/:contentTypeName', () => {
+/*describe('GET /content/links/:contentTypeName', () => {
   it('returns data correctly', async (done) => {
     const { body } = await request(server).get('/content/links/exercises');
     expect(body).toEqual([
@@ -72,31 +72,7 @@ describe('GET /content/links/:contentTypeName', () => {
 describe('GET /content/:contentId', () => {
   it('returns data correctly', async (done) => {
     const { body } = await request(server).get('/content/1');
-    expect(body).toEqual({content_type_id: 8,content_items: "[]"});  // ?
-    done();
-  });
-});
-
-describe('GET /content-type', () => {
-  it('returns data correctly', async (done) => {
-    const { body } = await request(server).get('/content-type');
-    expect(body).toEqual([
-      {content_type_id: 1,  parent_id: 0, content_type_name: "Page",        content_type_path: "/page"},
-      {content_type_id: 2,  parent_id: 0, content_type_name: "Post",        content_type_path: "/post"},
-      {content_type_id: 3,  parent_id: 1, content_type_name: "Guide",       content_type_path: "/page/guide"},
-      {content_type_id: 4,  parent_id: 1, content_type_name: "Promo",       content_type_path: "/page/promo"},
-      {content_type_id: 5,  parent_id: 1, content_type_name: "Site",        content_type_path: "/page/site"},
-      {content_type_id: 6,  parent_id: 3, content_type_name: "Fitness",     content_type_path: "/page/guide/fitness"},
-      {content_type_id: 7,  parent_id: 3, content_type_name: "Food",        content_type_path: "/page/guide/food"},
-      {content_type_id: 8,  parent_id: 6, content_type_name: "Exercises",   content_type_path: "/page/guide/fitness/exercises"},
-      {content_type_id: 9,  parent_id: 6, content_type_name: "Principles",  content_type_path: "/page/guide/fitness/principles"},
-      {content_type_id: 10, parent_id: 7, content_type_name: "Recipes",     content_type_path: "/page/guide/food/recipes"},
-      {content_type_id: 11, parent_id: 7, content_type_name: "Cuisines",    content_type_path: "/page/guide/food/cuisines"},
-      {content_type_id: 12, parent_id: 7, content_type_name: "Ingredients", content_type_path: "/page/guide/food/ingredients"},
-      {content_type_id: 13, parent_id: 7, content_type_name: "Nutrition",   content_type_path: "/page/guide/food/nutrition"},
-      {content_type_id: 14, parent_id: 7, content_type_name: "Equipment",   content_type_path: "/page/guide/food/equipment"},
-      {content_type_id: 15, parent_id: 7, content_type_name: "Methods",     content_type_path: "/page/guide/food/methods"}
-    ]);
+    expect(body).toEqual({content_type_id: 8, content_items: "[]"});  // ?
     done();
   });
 });
@@ -114,31 +90,83 @@ describe('GET /content-type/:contentTypeId', () => {
   });
 });
 
-describe('GET /equipment/1', () => {
+describe('GET /cuisine/1', () => {
   it('returns data correctly', async (done) => {
-    const { body } = await request(server).get('/equipment/1');
+    const { body } = await request(server).get('/cuisine/1');
     expect(body).toEqual({
-      equipment_id: 1,
-      equipment_name: "Pan"
+      cuisine_id: 1,
+      cuisine_name: "Afghan",
+      cuisine_nation: "Afghanistan"
     });
     done();
   });
 });
 
-describe('GET /equipment-type/1', () => {
+describe('GET /cuisine-equipment/1', () => {
   it('returns data correctly', async (done) => {
-    const { body } = await request(server).get('/equipment-type/1');
-    expect(body).toEqual({equipment_type_id: 1, equipment_type_name: "Pan"});
+    const { body } = await request(server).get('/cuisine-equipment/1');
+    expect(body).toEqual({
+      equipment_id: 3,
+      equipment_name: "Cutting Board"
+    });
     done();
   });
 });
+
+describe('GET /cuisine-ingredient/1', () => {
+  it('returns data correctly', async (done) => {
+    const { body } = await request(server).get('/cuisine-ingredient/1');
+    expect(body).toEqual({
+      ingredient_id: 10,
+      ingredient_name: "Chuck Seven Bone Roast"
+    });
+    done();
+  });
+});*/
+
+/*describe('GET /cuisine-supplier/1', () => {
+  it('returns data correctly', async (done) => {
+    const { body } = await request(server).get('/cuisine-supplier/1');
+    expect(body).toEqual({supplier_name: "Blah"});
+    done();
+  });
+});*/
+
+/*describe('GET /equipment/1', () => {
+  it('returns data correctly', async (done) => {
+    const { body } = await request(server).get('/equipment/1');
+    expect(body).toEqual({
+      equipment_id: 3,
+      equipment_name: "Cutting Board"
+    });
+    done();
+  });
+});*/
+
+/*describe('GET /equipment-type/1', () => {
+  it('returns data correctly', async (done) => {
+    const { body } = await request(server).get('/equipment-type/1');
+    expect(body).toEqual({
+      equipment_type_id: 1,
+      equipment_type_name: "Cleaning"
+    });
+    done();
+  });
+});
+
+// favorite-recipe
 
 describe('GET /ingredient/1', () => {
   it('returns data correctly', async (done) => {
     const { body } = await request(server).get('/ingredient/1');
     expect(body).toEqual({
       ingredient_id: 1,
-      ingredient_name: "Fish"
+      ingredient_type_name: "Fish",
+      ingredient_brand: null,
+      ingredient_variety: null,
+      ingredient_name: "Tuna",
+      ingredient_description: "Tasty.",
+      ingredient_image: "nobsc-tuna"
     });
     done();
   });
@@ -152,11 +180,87 @@ describe('GET /ingredient-type/1', () => {
   });
 });
 
+describe('GET /measurement/1', () => {
+  it('returns data correctly', async (done) => {
+    const { body } = await request(server).get('/measurement/1');
+    expect(body).toEqual({measurement_id: 1, measurement_name: "teaspoon"});
+    done();
+  });
+});
+
+describe('GET /method/1', () => {
+  it('returns data correctly', async (done) => {
+    const { body } = await request(server).get('/method/1');
+    expect(body).toEqual({method_id: 1, method_name: "No-Cook"});
+    done();
+  });
+});*/
+
+/*describe('GET /profile/nobody', () => {
+  it('returns data correctly', async (done) => {
+    const { body } = await request(server).get('/profile/nobody');
+    expect(body).toEqual({message: 'User does not exist.'});
+    done();
+  });
+});
+
+describe('GET /profile/testman', () => {
+  it('returns data correctly', async (done) => {
+    const { body } = await request(server).get('/profile/testman');
+    expect(body).toEqual({
+      message: 'Success.',
+      avatar: 'nobsc-user-default',
+      publicRecipes: [],
+      favoriteRecipes: []
+    });
+    done();
+  });
+});*/
+
+describe('GET /recipe/1', () => {
+  it('returns data correctly', async (done) => {
+    const { body } = await request(server).get('/recipe/1');
+    expect(body).toEqual({
+      recipe_id: 1,
+      author: "NOBSC",
+      author_avatar: "nobsc-user-default",
+      recipe_type_name: "Drink",
+      cuisine_name: "Afghan",
+      title: "Borscht",
+      description: "Excellent",
+      directions: "Chop beets and onions...",
+      recipe_image: "nobsc-recipe-default",
+      equipment_image: "nobsc-recipe-equipment-default",
+      ingredients_image: "nobsc-recipe-ingredients-default",
+      cooking_image: "nobsc-recipe-cooking-default",
+      method_names: [{method_name: "Steam"}],
+      equipment_names: [{amount: 1, equipment_name: "Ceramic Stone"}],
+      ingredient_names: [
+        {
+          amount: 4.00,
+          measurement_name: "teaspoon",
+          ingredient_name: "Chicken Breasts"
+        }
+      ],
+      subrecipe_titles: null
+    });
+    done();
+  });
+});
+
+describe('GET /recipe-type/1', () => {
+  it('returns data correctly', async (done) => {
+    const { body } = await request(server).get('/recipe-type/1');
+    expect(body).toEqual({recipe_type_id: 1, recipe_type_name: "Drink"});
+    done();
+  });
+});
+
 // ===========================================================================
 // USER ROUTES
 // ===========================================================================
 
-describe('POST /user/auth/register', () => {
+/*describe('POST /user/auth/register', () => {
   it('registers new user', async () => {
     await request(server)
     .post('/user/auth/register')
@@ -202,7 +306,7 @@ describe('POST /user/auth/logout', () => {
     await request(server)
     .post('/user/auth/logout');
   });
-});
+});*/
 
 // ===========================================================================
 // STAFF ROUTES

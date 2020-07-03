@@ -222,6 +222,7 @@ export class Recipe implements IRecipe {
     `;
     const [ recipe ] = await this.pool
     .execute<RowDataPacket[]>(sql, [recipeId, authorId, ownerId]);
+    console.log('in access', recipe);
     return recipe;
   }
 

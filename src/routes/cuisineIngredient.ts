@@ -8,7 +8,7 @@ export const router = Router();
 // for /cuisine-ingredient/...
 
 router.get(
-  '/',
+  '/:cuisineId',
   catchExceptions(
     cuisineIngredientController.viewCuisineIngredientsByCuisineId
   )

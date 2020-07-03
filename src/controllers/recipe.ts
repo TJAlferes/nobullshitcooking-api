@@ -28,9 +28,9 @@ export const recipeController = {
     const recipe = new Recipe(pool);
 
     // inconsistent naming... please fix...
-    const recipeDetail = await recipe
+    const [ recipeDetail ] = await recipe
     .viewRecipeById(recipeId, authorId, ownerId);
-
+    console.log('in controller', recipeDetail);
     return res.send(recipeDetail);
   }
 };
