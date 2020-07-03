@@ -17,9 +17,11 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
+// fix
+
 describe('content controller', () => {
   describe('getContentLinksByTypeName method', () => {
-    const req: Partial<Request> = {params: {contentTypeName: "Name"}};
+    const req: Partial<Request> = {params: {contentTypeName: "name"}};
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue([rows])};
 
     it('uses getContentLinksByTypeName correctly', async () => {
