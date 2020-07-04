@@ -8,7 +8,7 @@ COPY ./dbdata/test.sql /dbdata/test.sql
 
 FROM node:12.17.0
 
-EXPOSE 3004
+EXPOSE 3003
 
 WORKDIR /api
 COPY global-setup.js ./

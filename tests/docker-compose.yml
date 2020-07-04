@@ -18,7 +18,7 @@ services:
       MYSQL_USER: root
       MYSQL_DATABASE: nobsc
     ports:
-      - "3307:3307"
+      - "3306:3306"
   
   elasticsearch-test:
     image: elasticsearch:7.3.1
@@ -65,10 +65,10 @@ services:
     environment:
       NODE_ENV: test
       NODE_PATH: /api/node_modules
-      PORT: 3004
+      PORT: 3003
     ports:
-      - "3004:3004"
-      - "9230:9230"
+      - "3003:3003"
+      - "9229:9229"
 
 volumes:
   mysql-test:
