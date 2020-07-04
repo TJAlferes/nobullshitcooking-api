@@ -15,8 +15,8 @@ export class Cuisine implements ICuisine {
       SELECT cuisine_id, cuisine_name, cuisine_nation
       FROM nobsc_cuisines
     `;
-    const [ allCuisines ] = await this.pool.execute<RowDataPacket[]>(sql);
-    return allCuisines;
+    const [ cuisines ] = await this.pool.execute<RowDataPacket[]>(sql);
+    return cuisines;
   }
 
   async viewCuisineById(cuisineId: number) {

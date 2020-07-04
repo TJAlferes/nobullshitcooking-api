@@ -14,8 +14,8 @@ export class Measurement implements IMeasurement {
       SELECT measurement_id, measurement_name
       FROM nobsc_measurements
     `;
-    const [ allMeasurements ] = await this.pool.execute<RowDataPacket[]>(sql);
-    return allMeasurements;
+    const [ measurements ] = await this.pool.execute<RowDataPacket[]>(sql);
+    return measurements;
   }
 
   async viewMeasurementById(measurementId: number) {

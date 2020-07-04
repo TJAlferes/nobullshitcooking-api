@@ -14,9 +14,9 @@ export class IngredientType implements IIngredientType {
       SELECT ingredient_type_id, ingredient_type_name
       FROM nobsc_ingredient_types
     `;
-    const [ allIngredientTypes ] = await this.pool
+    const [ ingredientTypes ] = await this.pool
     .execute<RowDataPacket[]>(sql);
-    return allIngredientTypes;
+    return ingredientTypes;
   }
 
   async viewIngredientTypeById(ingredientTypeId: number) {

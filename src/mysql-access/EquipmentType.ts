@@ -14,8 +14,8 @@ export class EquipmentType implements IEquipmentType {
       SELECT equipment_type_id, equipment_type_name
       FROM nobsc_equipment_types
     `;
-    const [ allEquipmentTypes ] = await this.pool.execute<RowDataPacket[]>(sql);
-    return allEquipmentTypes;
+    const [ equipmentTypes ] = await this.pool.execute<RowDataPacket[]>(sql);
+    return equipmentTypes;
   }
 
   async viewEquipmentTypeById(equipmentTypeId: number) {

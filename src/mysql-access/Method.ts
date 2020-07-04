@@ -14,8 +14,8 @@ export class Method implements IMethod {
       SELECT method_id, method_name
       FROM nobsc_methods
     `;
-    const [ allMethods ] = await this.pool.execute<RowDataPacket[]>(sql);
-    return allMethods;
+    const [ methods ] = await this.pool.execute<RowDataPacket[]>(sql);
+    return methods;
   }
 
   async viewMethodById(methodId: number) {

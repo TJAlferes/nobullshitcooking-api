@@ -6,6 +6,7 @@ export { router as cuisineRoutes } from './cuisine';
 export { router as cuisineEquipmentRoutes } from './cuisineEquipment';
 export { router as cuisineIngredientRoutes } from './cuisineIngredient';
 export { router as cuisineSupplierRoutes } from './cuisineSupplier';
+export { router as dataInitRoutes } from './dataInit';
 export { router as equipmentRoutes } from './equipment';
 export { router as equipmentTypeRoutes } from './equipmentType';
 export { router as favoriteRecipeRoutes } from './favoriteRecipe';

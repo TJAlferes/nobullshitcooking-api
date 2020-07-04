@@ -14,8 +14,8 @@ export class RecipeType implements IRecipeType {
       SELECT recipe_type_id, recipe_type_name
       FROM nobsc_recipe_types
     `;
-    const [ allRecipeTypes ] = await this.pool.execute<RowDataPacket[]>(sql);
-    return allRecipeTypes;
+    const [ recipeTypes ] = await this.pool.execute<RowDataPacket[]>(sql);
+    return recipeTypes;
   }
 
   async viewRecipeTypeById(recipeTypeId: number) {

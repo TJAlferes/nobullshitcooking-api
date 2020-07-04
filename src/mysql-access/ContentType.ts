@@ -17,8 +17,8 @@ export class ContentType implements IContentType {
       SELECT content_type_id, parent_id, content_type_name, content_type_path
       FROM nobsc_content_types
     `;
-    const [ allContentTypes ] = await this.pool.execute<RowDataPacket[]>(sql);
-    return allContentTypes;
+    const [ contentTypes ] = await this.pool.execute<RowDataPacket[]>(sql);
+    return contentTypes;
   }
 
   async viewContentTypeById(contentTypeId: number) {
