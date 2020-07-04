@@ -171,6 +171,8 @@ export class Recipe implements IRecipe {
       c.cuisine_name,
       r.title,
       r.description,
+      r.active_time,
+      r.total_time,
       r.directions,
       r.recipe_image,
       r.equipment_image,
@@ -234,6 +236,8 @@ export class Recipe implements IRecipe {
     ownerId,
     title,
     description,
+    activeTime,
+    totalTime,
     directions,
     recipeImage,
     equipmentImage,
@@ -248,13 +252,15 @@ export class Recipe implements IRecipe {
         owner_id,
         title,
         description,
+        active_time,
+        total_time,
         directions,
         recipe_image,
         equipment_image,
         ingredients_image,
         cooking_image
       ) VALUES (
-        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
       )
     `;
     const [ createdRecipe ] = await this.pool
@@ -265,6 +271,8 @@ export class Recipe implements IRecipe {
       ownerId,
       title,
       description,
+      activeTime,
+      totalTime,
       directions,
       recipeImage,
       equipmentImage,
@@ -282,6 +290,8 @@ export class Recipe implements IRecipe {
     ownerId,
     title,
     description,
+    activeTime,
+    totalTime,
     directions,
     recipeImage,
     equipmentImage,
@@ -297,6 +307,8 @@ export class Recipe implements IRecipe {
         owner_id = ?,
         title = ?,
         description = ?,
+        active_time = ?,
+        total_time = ?,
         directions = ?,
         recipe_image = ?,
         equipment_image = ?,
@@ -312,6 +324,8 @@ export class Recipe implements IRecipe {
       ownerId,
       title,
       description,
+      activeTime,
+      totalTime,
       directions,
       recipeImage,
       equipmentImage,
@@ -342,6 +356,8 @@ export class Recipe implements IRecipe {
     r.owner_id,
     r.title,
     r.description,
+    r.active_time,
+    r.total_time,
     r.directions,
     r.recipe_image,
     r.equipment_image,
@@ -407,6 +423,8 @@ export class Recipe implements IRecipe {
     ownerId,
     title,
     description,
+    activeTime,
+    totalTime,
     directions,
     recipeImage,
     equipmentImage,
@@ -420,6 +438,8 @@ export class Recipe implements IRecipe {
         cuisine_id = ?,
         title = ?,
         description = ?,
+        active_time = ?,
+        total_time = ?,
         directions = ?,
         recipe_image = ?,
         equipment_image = ?,
@@ -433,6 +453,8 @@ export class Recipe implements IRecipe {
       cuisineId,
       title,
       description,
+      activeTime,
+      totalTime,
       directions,
       recipeImage,
       equipmentImage,
@@ -530,6 +552,8 @@ export interface IRecipe {
     ownerId,
     title,
     description,
+    activeTime,
+    totalTime,
     directions,
     recipeImage,
     equipmentImage,
@@ -544,6 +568,8 @@ export interface IRecipe {
     ownerId,
     title,
     description,
+    activeTime,
+    totalTime,
     directions,
     recipeImage,
     equipmentImage,
@@ -564,6 +590,8 @@ export interface IRecipe {
     ownerId,
     title,
     description,
+    activeTime,
+    totalTime,
     directions,
     recipeImage,
     equipmentImage,
@@ -588,6 +616,8 @@ export interface ICreatingRecipe {
   ownerId: number;
   title: string;
   description: string;
+  activeTime: string;
+  totalTime: string;
   directions: string;
   recipeImage: string;
   equipmentImage: string;

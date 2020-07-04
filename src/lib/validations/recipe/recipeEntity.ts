@@ -7,6 +7,8 @@ export const validRecipeEntity = object({
   ownerId: number(),
   title: string(),
   description: string(),
+  activeTime: string(),
+  totalTime: string(),
   directions: string(),
   recipeImage: defaulted(string(), 'nobsc-recipe-default'),
   equipmentImage: defaulted(string(), 'nobsc-recipe-equipment-default'),

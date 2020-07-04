@@ -228,6 +228,8 @@ describe('GET /recipe/1', () => {
       cuisine_name: "Afghan",
       title: "Borscht",
       description: "Excellent",
+      active_time: "0:30:00",
+      total_time: "4:00:00",
       directions: "Chop beets and onions...",
       recipe_image: "nobsc-recipe-default",
       equipment_image: "nobsc-recipe-equipment-default",

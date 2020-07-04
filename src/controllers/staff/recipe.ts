@@ -21,6 +21,8 @@ export const staffRecipeController = {
     const cuisineId = Number(req.body.recipeInfo.cuisineId);
     const title = req.body.recipeInfo.title;
     const description = req.body.recipeInfo.description;
+    const activeTime = req.body.recipeInfo.activeTime;
+    const totalTime = req.body.recipeInfo.totalTime;
     const directions = req.body.recipeInfo.directions;
     const requiredMethods = req.body.recipeInfo.requiredMethods;
     const requiredEquipment = req.body.recipeInfo.requiredEquipment;
@@ -41,6 +43,8 @@ export const staffRecipeController = {
       ownerId,
       title,
       description,
+      activeTime,
+      totalTime,
       directions,
       recipeImage,
       equipmentImage,
@@ -67,6 +71,8 @@ export const staffRecipeController = {
     const cuisineId = Number(req.body.recipeInfo.cuisineId);
     const title = req.body.recipeInfo.title;
     const description = req.body.recipeInfo.description;
+    const activeTime = req.body.recipeInfo.activeTime;
+    const totalTime = req.body.recipeInfo.totalTime;
     const directions = req.body.recipeInfo.directions;
     const requiredMethods = req.body.recipeInfo.requiredMethods;
     const requiredEquipment = req.body.recipeInfo.requiredEquipment;
@@ -91,6 +97,8 @@ export const staffRecipeController = {
       ownerId,
       title,
       description,
+      activeTime,
+      totalTime,
       directions,
       recipeImage,
       equipmentImage,

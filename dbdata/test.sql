@@ -176,6 +176,8 @@ CREATE TABLE `nobsc_recipes` (
   `owner_id` int unsigned NOT NULL,
   `title` varchar(100) NOT NULL DEFAULT '',
   `description` varchar(150) NOT NULL DEFAULT '',
+  `active_time` time NOT NULL,
+  `total_time` time NOT NULL,
   `directions` text NOT NULL,
   `recipe_image` varchar(100) NOT NULL DEFAULT 'nobsc-recipe-default',
   `equipment_image` varchar(100) NOT NULL DEFAULT 'nobsc-recipe-equipment-default',
@@ -1127,20 +1129,20 @@ VALUES
 (12, "Condiment");
 
 INSERT INTO nobsc_recipes
-(recipe_type_id, cuisine_id, author_id, owner_id, title, description, directions)
+(recipe_type_id, cuisine_id, author_id, owner_id, title, description, active_time, total_time, directions)
 VALUES
-(1,  1,  1, 1, "Borscht",                            "Excellent",        "Chop beets and onions..."),
-(2,  2,  1, 1, "Soft Buttery Pretzle",               "Melting goodness", "Set oven to 400 F. Mix dough..."),
-(3,  3,  1, 1, "Grilled Chicken and Seasoned Rice",  "Yum",              "Marinate chicken in a..."),
-(4,  4,  1, 1, "Mixed Root Vegetables",              "Satisfying",       "Chop vegetables into about 2 inch by 2 inch pieces..."),
-(5,  5,  1, 1, "Coffee Vanilla Icecream Cake",       "Special",          "Set oven to 275 F. Mix dough..."),
-(6,  6,  1, 1, "Fish Carrot and Potato Soup",        "Nice.",            "Heat stock..."),
-(7,  7,  1, 1, "Possibly Greek Salad",               "Who Knows",        "Mix olive oil and red wine vinegar in bowl..."),
-(8,  8,  1, 1, "Irish Guinness Beef Stew",           "Calming",          "Sear well just one side of the beef pieces..."),
-(9,  9,  1, 1, "Northern Chinese Seafood Casserole", "Excellent",        "Heat stock..."),
-(10, 10, 1, 1, "Sweet Coconut Lime Sauce",           "Interesting",      "Mix..."),
-(11, 11, 1, 1, "Carrot Ginger Dressing",             "Tasty",            "Blend carrots and..."),
-(12, 12, 1, 1, "Some Kind Of Chutney",               "Not Bad",          "Mix...");
+(1,  1,  1, 1, "Borscht",                            "Excellent",        "00:30:00", "04:00:00", "Chop beets and onions..."),
+(2,  2,  1, 1, "Soft Buttery Pretzle",               "Melting goodness", "00:20:00", "01:20:00", "Set oven to 400 F. Mix dough..."),
+(3,  3,  1, 1, "Grilled Chicken and Seasoned Rice",  "Yum",              "01:00:00", "02:00:00", "Marinate chicken in a..."),
+(4,  4,  1, 1, "Mixed Root Vegetables",              "Satisfying",       "00:15:00", "01:00:00", "Chop vegetables into about 2 inch by 2 inch pieces..."),
+(5,  5,  1, 1, "Coffee Vanilla Icecream Cake",       "Special",          "00:30:00", "01:00:00", "Set oven to 275 F. Mix dough..."),
+(6,  6,  1, 1, "Fish Carrot and Potato Soup",        "Nice.",            "00:45:00", "01:00:00", "Heat stock..."),
+(7,  7,  1, 1, "Possibly Greek Salad",               "Who Knows",        "00:08:00", "00:08:00", "Mix olive oil and red wine vinegar in bowl..."),
+(8,  8,  1, 1, "Irish Guinness Beef Stew",           "Calming",          "00:45:00", "04:00:00", "Sear well just one side of the beef pieces..."),
+(9,  9,  1, 1, "Northern Chinese Seafood Casserole", "Excellent",        "00:45:00", "01:30:00", "Heat stock..."),
+(10, 10, 1, 1, "Sweet Coconut Lime Sauce",           "Interesting",      "00:20:00", "00:20:00", "Mix..."),
+(11, 11, 1, 1, "Carrot Ginger Dressing",             "Tasty",            "00:20:00", "00:20:00", "Blend carrots and..."),
+(12, 12, 1, 1, "Some Kind Of Chutney",               "Not Bad",          "00:30:00", "01:00:00", "Mix...");
 
 INSERT INTO nobsc_recipe_equipment
 (recipe_id, equipment_id, amount)
