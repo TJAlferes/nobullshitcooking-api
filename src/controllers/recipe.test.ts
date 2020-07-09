@@ -46,7 +46,7 @@ describe('recipe controller', () => {
   
   describe('viewRecipeDetail method', () => {
     const req: Partial<Request> = {params: {recipeId: "1"}};
-    const res: Partial<Response> = {send: jest.fn().mockResolvedValue([rows])};
+    const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
     it('uses assert correctly', async () => {
       await recipeController
@@ -64,13 +64,13 @@ describe('recipe controller', () => {
     it('sends data correctly', async () => {
       await recipeController
       .viewRecipeDetail(<Request>req, <Response>res);
-      expect(res.send).toBeCalledWith([rows]);
+      expect(res.send).toBeCalledWith(rows);
     });
 
     it('returns correctly', async () => {
       const actual = await recipeController
       .viewRecipeDetail(<Request>req, <Response>res);
-      expect(actual).toEqual([rows]);
+      expect(actual).toEqual(rows);
     });
   });
 });

@@ -28,8 +28,6 @@ export async function socketConnection(socket: Socket) {
   const messengerRoom = new MessengerRoom(pubClient, subClient);
   const messengerChat = new MessengerChat(pubClient);
 
-  // async?
-
   // Users
 
   //the one thing left to do here is
@@ -37,8 +35,8 @@ export async function socketConnection(socket: Socket) {
   //the former we should definitely implement,
   //the latter we may need really need
   // rename
-  socket.on('GetOnline', function() {
-    getOnline({
+  socket.on('GetOnline', async function() {
+    await getOnline({
       userId,
       username,
       avatar,
@@ -48,14 +46,14 @@ export async function socketConnection(socket: Socket) {
     });
   });
 
-  socket.on('GetUser', function(room: string) {
-    getUser({room, socket, messengerRoom});
+  socket.on('GetUser', async function(room: string) {
+    await getUser({room, socket, messengerRoom});
   });
 
   // Messages
 
-  socket.on('AddChat', function(chatMessageText: string) {
-    addChat({
+  socket.on('AddChat', async function(chatMessageText: string) {
+    await addChat({
       chatMessageText,
       userId,
       username,
@@ -65,8 +63,8 @@ export async function socketConnection(socket: Socket) {
     });
   });
 
-  socket.on('AddWhisper', function(whisperText: string, to: string) {
-    addWhisper({
+  socket.on('AddWhisper', async function(whisperText: string, to: string) {
+    await addWhisper({
       whisperText,
       to,
       userId,
@@ -81,8 +79,8 @@ export async function socketConnection(socket: Socket) {
 
   // Rooms
 
-  socket.on('AddRoom', function(room: string) {
-    addRoom({
+  socket.on('AddRoom', async function(room: string) {
+    await addRoom({
       room,
       userId,
       username,
@@ -92,8 +90,8 @@ export async function socketConnection(socket: Socket) {
     });
   });
 
-  socket.on('RejoinRoom', function(room: string) {
-    rejoinRoom({
+  socket.on('RejoinRoom', async function(room: string) {
+    await rejoinRoom({
       room,
       userId,
       username,
@@ -107,8 +105,8 @@ export async function socketConnection(socket: Socket) {
 
   socket.on('error', (error: Error) => console.log('error: ', error));
 
-  socket.on('disconnecting', function(reason: any) {
-    disconnecting({
+  socket.on('disconnecting', async function(reason: any) {
+    await disconnecting({
       reason,
       userId,
       username,
@@ -120,7 +118,7 @@ export async function socketConnection(socket: Socket) {
     });
   });
 
-  /*socket.on('disconnect', async function(reason) {
+  /*socket.on('disconnect', function(reason) {
     console.log('disconnect; reason: ', reason);
   });*/
 }
