@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 import { router as userGetSignedUrlAvatarRouter } from './get-signed-url/avatar';
+import { router as userGetSignedUrlContentRouter } from './get-signed-url/content';
 import { router as userGetSignedUrlEquipmentRouter } from './get-signed-url/equipment';
 import { router as userGetSignedUrlIngredientRouter } from './get-signed-url/ingredient';
 import { router as userGetSignedUrlRecipeRouter } from './get-signed-url/recipe';
@@ -20,6 +21,7 @@ import { router as userSavedRecipeRouter } from './savedRecipe';
 export const router = Router();
 
 router.use('/get-signed-url/avatar', userGetSignedUrlAvatarRouter);
+router.use('/get-signed-url/content', userGetSignedUrlContentRouter);
 router.use('/get-signed-url/equipment', userGetSignedUrlEquipmentRouter);
 router.use('/get-signed-url/ingredient', userGetSignedUrlIngredientRouter);
 router.use('/get-signed-url/recipe', userGetSignedUrlRecipeRouter);
