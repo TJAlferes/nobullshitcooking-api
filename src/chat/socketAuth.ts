@@ -9,7 +9,7 @@ import { Server, Socket } from 'socket.io';
 import { pubClient } from '../lib/connections/redisConnection';
 import { MessengerUser } from '../redis-access/MessengerUser';
 
-export function addMessengerUser(
+export async function addMessengerUser(
   socket: Socket,
   sid: string,
   session: Express.SessionData
@@ -19,7 +19,7 @@ export function addMessengerUser(
 
   const messengerUser = new MessengerUser(pubClient);
 
-  messengerUser.addUser(
+  await messengerUser.addUser(
     session.userInfo.userId,
     session.userInfo.username,
     session.userInfo.avatar,
@@ -44,12 +44,12 @@ export function useSocketAuth(io: Server, redisSession: RedisStore) {
 
     if (sid === false) return next(new Error('Not authenticated.'));
 
-    redisSession.get(sid, function(err, session) {
+    redisSession.get(sid, async function(err, session) {
       if (!session || !session.userInfo.userId) {
         return next(new Error('Not authenticated.'));
       }
 
-      addMessengerUser(socket, sid, session);
+      await addMessengerUser(socket, sid, session);
       
       return next();
     });

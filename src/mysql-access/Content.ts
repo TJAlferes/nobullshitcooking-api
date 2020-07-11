@@ -48,12 +48,19 @@ export class Content implements IContent {
     ownerId,
     created,
     published,
+    title,
     contentItems
   }: ICreatingContent) {
     const sql = `
-      INSERT INTO nobsc_content
-      (content_type_id, author_id, owner_id, created, published, content_items)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO nobsc_content (
+        content_type_id,
+        author_id,
+        owner_id,
+        created,
+        published,
+        title,
+        content_items
+      ) VALUES (?, ?, ?, ?, ?, ?)
     `;
     const [ createdContent ] = await this.pool.execute<RowDataPacket[]>(sql, [
       contentTypeId,
@@ -61,6 +68,7 @@ export class Content implements IContent {
       ownerId,
       created,
       published,
+      title,
       contentItems
     ]);
     return createdContent;
@@ -71,17 +79,19 @@ export class Content implements IContent {
     ownerId,
     contentTypeId,
     published,
+    title,
     contentItems
   }: IUpdatingContent) {
     const sql = `
       UPDATE nobsc_content
-      SET content_type_id = ?, published = ?, content_items = ?
+      SET content_type_id = ?, published = ?, title = ?, content_items = ?
       WHERE owner_id = ? AND content_id = ?
       LIMIT 1
     `;
     const [ updatedContent ] = await this.pool.execute<RowDataPacket[]>(sql, [
       contentTypeId,
       published,
+      title,
       contentItems,
       ownerId,
       contentId
@@ -123,6 +133,7 @@ export interface IContent {
     ownerId,
     created,
     published,
+    title,
     contentItems
   }: ICreatingContent): Data;
   updateContent({
@@ -130,6 +141,7 @@ export interface IContent {
     ownerId,
     contentTypeId,
     published,
+    title,
     contentItems
   }: IUpdatingContent): Data;
   deleteContent(ownerId: number, contentId: number): Data;
@@ -142,7 +154,9 @@ interface ICreatingContent {
   ownerId: number;
   created: string;
   published: string | null;
-  contentItems: IContentItem[];
+  title: string;
+  contentItems: any[];
+  //contentItems: IContentItem[];
 }
 
 interface IUpdatingContent {
@@ -150,15 +164,16 @@ interface IUpdatingContent {
   ownerId: number;
   contentTypeId: number;
   published: string | null;
+  title: string;
   contentItems: any[];
   //contentItems: IContentItem[];
 }
 
 // change to match Slate values
-interface IContentItem {
+/*interface IContentItem {
   index: number
   key: string
   element: string
   attributes: (object|null)
   children: (IContentItem|string|number|null)
-}
+}*/

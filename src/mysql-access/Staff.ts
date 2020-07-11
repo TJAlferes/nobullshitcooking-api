@@ -16,7 +16,7 @@ export class Staff implements IStaff {
 
   async getStaffByEmail(email: string) {
     const sql = `
-      SELECT staff_id, email, pass, staffname
+      SELECT staff_id, email, pass, staffname, avatar
       FROM nobsc_staff
       WHERE email = ?
     `;
@@ -27,7 +27,7 @@ export class Staff implements IStaff {
 
   async getStaffByName(staffname: string) {
     const sql = `
-      SELECT staff_id, email, pass, staffname
+      SELECT staff_id, email, pass, staffname, avatar
       FROM nobsc_staff
       WHERE staffname = ?
     `;

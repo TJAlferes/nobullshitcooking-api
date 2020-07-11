@@ -1,23 +1,19 @@
 import { Socket } from 'socket.io';
 
-import {
-  addMessengerUser,
-  sessionIdsAreEqual,
-  //useSocketAuth
-} from './socketAuth';
+import { addMessengerUser, sessionIdsAreEqual } from './socketAuth';
+
+jest.mock('../lib/connections/redisConnection', () => ({pubClient: jest.fn()}));
 
 jest.mock('../redis-access/MessengerUser', () => ({
   MessengerUser: jest.fn().mockImplementation(() => ({addUser: mockAddUser}))
 }));
 let mockAddUser = jest.fn();
 
-describe('socketAuth', () => {
-  it('needs finished tests', () => {
-    expect(1).toEqual(1);
-  });
+afterEach(() => {
+  jest.clearAllMocks();
 });
 
-/*describe('addMessengerUser helper', () => {
+describe('addMessengerUser helper', () => {
   it('copies sid to socket.request correctly', async () => {
     const socket: Partial<Socket> = {
       id: '123456789',
@@ -58,7 +54,7 @@ describe('socketAuth', () => {
     expect(mockAddUser)
     .toHaveBeenCalledWith(150, "Name", "Name123", '123456789', '123456789');
   });
-});*/
+});
 
 /*describe('sessionIdsAreEqual helper', () => {
   it('returns false if session Ids are not equal', () => {

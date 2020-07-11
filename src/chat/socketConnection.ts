@@ -30,10 +30,11 @@ export async function socketConnection(socket: Socket) {
 
   // Users
 
-  //the one thing left to do here is
-  //no longer appear online for blocked users and deleted friends during that same session,
-  //the former we should definitely implement,
-  //the latter we may need really need
+  // TO DO:
+  // no longer appear online
+  // for users blocked and friends deleted
+  // during that same session
+  
   // rename
   socket.on('GetOnline', async function() {
     await getOnline({

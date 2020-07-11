@@ -50,13 +50,13 @@ export const staffAuthController = {
 
     const [ staffExists ] = await staff.getStaffByName(staffname);
 
-    if (staffExists.length) {
+    if (staffExists) {
       return res.send({message: 'Staffname already taken.'});
     }
 
     const [ emailExists ] = await staff.getStaffByEmail(email);
 
-    if (emailExists.length) {
+    if (emailExists) {
       return res.send({message: 'Email already in use.'});
     }
 
@@ -99,21 +99,22 @@ export const staffAuthController = {
 
     //crypto.timingSafeEqual
 
-    const isCorrectPassword = await bcrypt.compare(pass, staffExists[0].pass);
-      
+    const isCorrectPassword = await bcrypt.compare(pass, staffExists.pass);
+
     if (isCorrectPassword) {
       return res.send({message: 'Incorrect email or password.'});
     }
 
-    const staffId = staffExists[0].staff_id;
-    const staffname = staffExists[0].staffname;
-    const avatar = staffExists[0].avatar;
-
     req.session!.staffInfo = {};
-    req.session!.staffInfo.staffId = staffId;
-    req.session!.staffInfo.staffname = staffname;
+    req.session!.staffInfo.staffId = staffExists.staff_id;
+    req.session!.staffInfo.staffname = staffExists.staffname;
+    req.session!.staffInfo.avatar = staffExists.avatar;
 
-    return res.json({message: 'Signed in.', staffname, avatar});
+    return res.json({
+      message: 'Signed in.',
+      staffname: staffExists.staffname,
+      avatar: staffExists.avatar
+    });
   },
   logout: async function(req: Request, res: Response) {
     req.session!.destroy(function() {});

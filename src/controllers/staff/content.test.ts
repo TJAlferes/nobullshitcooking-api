@@ -2,8 +2,11 @@ import { Request, Response } from 'express';
 import { assert, coerce } from 'superstruct';
 
 import {
-  validContentEntity
-} from '../../lib/validations/content/contentEntity';
+  validCreatingContentEntity
+} from '../../lib/validations/content/creatingContentEntity';
+import {
+  validEditingContentEntity
+} from '../../lib/validations/content/editingContentEntity';
 import { staffContentController } from './content';
 
 jest.mock('superstruct');
@@ -49,6 +52,7 @@ describe('staff content controller', () => {
         contentInfo: {
           contentTypeId: 7,
           published: null,
+          title: "Some Title",
           contentItems: "[]"
         }
       }
@@ -66,9 +70,10 @@ describe('staff content controller', () => {
           ownerId: 1,
           created: ((mockDate).toISOString()).split("T")[0],
           published: null,
+          title: "Some Title",
           contentItems: "[]"
-        }, validContentEntity),
-        validContentEntity
+        }, validCreatingContentEntity),
+        validCreatingContentEntity
       );
     });
 
@@ -80,6 +85,7 @@ describe('staff content controller', () => {
         ownerId: 1,
         created: ((mockDate).toISOString()).split("T")[0],
         published: null,
+        title: "Some Title",
         contentItems: "[]"
       });
     });
@@ -103,8 +109,8 @@ describe('staff content controller', () => {
         contentInfo: {
           contentId: 35,
           contentTypeId: 7,
-          created: ((mockDate).toISOString()).split("T")[0],
           published: null,
+          title: "Some Title",
           contentItems: "[]"
         }
       }
@@ -118,13 +124,12 @@ describe('staff content controller', () => {
       expect(assert).toHaveBeenCalledWith(
         coerce({
           contentTypeId: 7,
-          authorId: 1,
           ownerId: 1,
-          created: ((mockDate).toISOString()).split("T")[0],
           published: null,
+          title: "Some Title",
           contentItems: "[]"
-        }, validContentEntity),
-        validContentEntity
+        }, validEditingContentEntity),
+        validEditingContentEntity
       );
     });
 
@@ -133,10 +138,9 @@ describe('staff content controller', () => {
       expect(mockUpdateContent).toHaveBeenCalledWith({
         contentId: 35,
         contentTypeId: 7,
-        authorId: 1,
         ownerId: 1,
-        created: ((mockDate).toISOString()).split("T")[0],
         published: null,
+        title: "Some Title",
         contentItems: "[]"
       });
     });

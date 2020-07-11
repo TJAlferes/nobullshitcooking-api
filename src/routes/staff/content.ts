@@ -17,6 +17,7 @@ router.post(
   [
     body('contentTypeId').not().isEmpty().trim().escape(),
     body('published').not().isEmpty().trim().escape(),
+    body('title').not().isEmpty().trim().escape(),
     body('contentItems').not().isEmpty().trim().escape()
   ],
   catchExceptions(staffContentController.createContent)
@@ -29,6 +30,7 @@ router.put(
     body('contentId').not().isEmpty().trim().escape(),
     body('contentTypeId').not().isEmpty().trim().escape(),
     body('published').not().isEmpty().trim().escape(),
+    body('title').not().isEmpty().trim().escape(),
     body('contentItems').not().isEmpty().trim().escape()
   ],
   catchExceptions(staffContentController.updateContent)

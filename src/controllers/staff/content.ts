@@ -3,14 +3,18 @@ import { assert, coerce } from 'superstruct';
 
 import { pool } from '../../lib/connections/mysqlPoolConnection';
 import {
-  validContentEntity
-} from '../../lib/validations/content/contentEntity';
+  validCreatingContentEntity
+} from '../../lib/validations/content/creatingContentEntity';
+import {
+  validEditingContentEntity
+} from '../../lib/validations/content/editingContentEntity';
 import { Content } from '../../mysql-access/Content';
 
 export const staffContentController = {
   createContent: async function(req: Request, res: Response) {
     const contentTypeId = Number(req.body.contentInfo.contentTypeId);
     const published = req.body.contentInfo.published;
+    const title = req.body.contentInfo.title;
     const contentItems = req.body.contentInfo.contentItems;
 
     const authorId = 1;
@@ -23,13 +27,14 @@ export const staffContentController = {
       ownerId,
       created,
       published,
+      title,
       contentItems
     };
 
     // you need to understand coerce and defaulted better
     assert(
-      coerce({contentToCreate}, validContentEntity),
-      validContentEntity
+      coerce({contentToCreate}, validCreatingContentEntity),
+      validCreatingContentEntity
     );
 
     const content = new Content(pool);
@@ -41,26 +46,24 @@ export const staffContentController = {
   updateContent: async function(req: Request, res: Response) {
     const contentId = Number(req.body.contentInfo.contentId);
     const contentTypeId = Number(req.body.contentInfo.contentTypeId);
-    const created = req.body.contentInfo.created;
     const published = req.body.contentInfo.published;
+    const title = req.body.contentInfo.title;
     const contentItems = req.body.contentInfo.contentItems;
 
-    const authorId = 1;
     const ownerId = 1;
 
     const contentToUpdateWith = {
       contentTypeId,
-      authorId,
       ownerId,
-      created,
       published,
+      title,
       contentItems
-    }
+    };
 
     // you need to understand coerce and defaulted better
     assert(
-      coerce({contentToUpdateWith}, validContentEntity),
-      validContentEntity
+      coerce({contentToUpdateWith}, validEditingContentEntity),
+      validEditingContentEntity
     );
 
     const content = new Content(pool);
