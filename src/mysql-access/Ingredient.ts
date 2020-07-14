@@ -28,7 +28,7 @@ export class Ingredient implements IIngredient {
     const ownerId = 1;
     const sql1 = `
       SELECT
-        CAST(i.ingredient_id AS CHAR),
+        CAST(i.ingredient_id AS CHAR) AS ingredient_id,
         i.ingredient_type_id,
         i.owner_id,
         t.ingredient_type_name,
@@ -39,8 +39,8 @@ export class Ingredient implements IIngredient {
         i.ingredient_image
       FROM nobsc_ingredients i
       INNER JOIN
-        nobsc_ingredient_types it ON
-        it.ingredient_type_id = i.ingredient_type_id
+        nobsc_ingredient_types t ON
+        t.ingredient_type_id = i.ingredient_type_id
       WHERE i.owner_id = ?
     `;
     const [ ingredientsForBulkInsert ] = await this.pool
@@ -49,9 +49,8 @@ export class Ingredient implements IIngredient {
 
     // allows the sequence of awaits we want
     for (let ingredient of ingredientsForBulkInsert) {
-      const { ingredient_id } = ingredient;
       final.push(
-        {index: {_index: 'ingredients', _id: ingredient_id}},
+        {index: {_index: 'ingredients', _id: ingredient.ingredient_id}},
         ingredient
       );
     }
@@ -63,7 +62,7 @@ export class Ingredient implements IIngredient {
     const ownerId = 1;
     const sql = `
       SELECT
-        CAST(i.ingredient_id AS CHAR),
+        CAST(i.ingredient_id AS CHAR) AS ingredient_id,
         i.ingredient_type_id,
         i.owner_id,
         t.ingredient_type_name,
@@ -74,8 +73,8 @@ export class Ingredient implements IIngredient {
         i.ingredient_image
       FROM nobsc_ingredients i
       INNER JOIN
-        nobsc_ingredient_types it ON
-        it.ingredient_type_id = e.ingredient_type_id
+        nobsc_ingredient_types t ON
+        t.ingredient_type_id = i.ingredient_type_id
       WHERE i.ingredient_id = ? i.owner_id = ?
     `;
     const [ ingredientForInsert ] = await this.pool

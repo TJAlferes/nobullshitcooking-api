@@ -28,17 +28,17 @@ export class Equipment implements IEquipment {
     const ownerId = 1;
     const sql1 = `
       SELECT
-        CAST(e.equipment_id AS CHAR),
+        CAST(e.equipment_id AS CHAR) AS equipment_id,
         e.equipment_type_id,
         e.owner_id,
-        et.equipment_type_name,
+        t.equipment_type_name,
         e.equipment_name,
         e.equipment_description,
         e.equipment_image
       FROM nobsc_equipment e
       INNER JOIN
-        nobsc_equipment_types et ON
-        et.equipment_type_id = e.equipment_type_id
+        nobsc_equipment_types t ON
+        t.equipment_type_id = e.equipment_type_id
       WHERE e.owner_id = ?
     `;
     const [ equipmentForBulkInsert ] = await this.pool
@@ -47,9 +47,8 @@ export class Equipment implements IEquipment {
 
     // allows the sequence of awaits we want
     for (let equipment of equipmentForBulkInsert) {
-      const { equipment_id } = equipment;
       final.push(
-        {index: {_index: 'equipment', _id: equipment_id}},
+        {index: {_index: 'equipment', _id: equipment.equipment_id}},
         equipment
       );
     }
@@ -61,17 +60,17 @@ export class Equipment implements IEquipment {
     const ownerId = 1;
     const sql = `
       SELECT
-        CAST(e.equipment_id AS CHAR),
+        CAST(e.equipment_id AS CHAR) AS equipment_id,
         e.equipment_type_id,
         e.owner_id,
-        et.equipment_type_name,
+        t.equipment_type_name,
         e.equipment_name,
         e.equipment_description,
         e.equipment_image
       FROM nobsc_equipment e
       INNER JOIN
-        nobsc_equipment_types et ON
-        et.equipment_type_id = e.equipment_type_id
+        nobsc_equipment_types t ON
+        t.equipment_type_id = e.equipment_type_id
       WHERE e.equipment_id = ? e.owner_id = ?
     `;
     const [ equipmentForInsert ] = await this.pool

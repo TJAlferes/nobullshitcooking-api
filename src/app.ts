@@ -4,7 +4,7 @@ import { createServer } from 'http';
 import express, { Request, Response, NextFunction } from 'express';
 import { middlewareInit}  from './middlewareInit';
 import { routesInit } from './routesInit';
-//import { bulkUp } from './search');
+import { bulkUp } from './search';
 
 const app = express();
 const server = createServer(app);
@@ -29,13 +29,13 @@ if (app.get('env') === 'production') {
 }
 
 // move this, and create startup conditional
-/*try {
+try {
   setTimeout(() => {
     console.log('Now running bulkUp.');
     bulkUp();
   }, 60000);  // at the 1 minute mark
 } catch(err) {
   console.log(err);
-}*/
+}
 
 module.exports = {app, server};

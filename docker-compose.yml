@@ -21,7 +21,7 @@ services:
       - "3306:3306"
   
   elasticsearch-dev:
-    image: elasticsearch:7.3.1
+    image: elasticsearch:7.8.0
     depends_on:
       mysql-dev:
         condition: service_healthy
@@ -33,6 +33,7 @@ services:
       #- node.name=elasticsearch-dev
     ports:
       - "9200:9200"
+      - "9300:9300"
   
   #kibana-dev:
     #image: kibana:7.3.1
