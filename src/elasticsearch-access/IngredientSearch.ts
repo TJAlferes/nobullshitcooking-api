@@ -27,14 +27,14 @@ export class IngredientSearch implements IIngredientSearch {
         highlight: {
           fragment_size: 200,  // less?
           number_of_fragments: 1,
-          fields: {ingredientName: {}}
+          fields: {ingredient_name: {}}
         },
         query: {
           bool: {
             must: [
               {
                 match: {
-                  ingredientName: {query: searchTerm, operator: "and"}
+                  ingredient_name: {query: searchTerm, operator: "and"}
                 }
               }
             ],

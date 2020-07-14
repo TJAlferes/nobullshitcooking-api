@@ -27,14 +27,14 @@ export class EquipmentSearch implements IEquipmentSearch {
         highlight: {
           fragment_size: 200,  // less?
           number_of_fragments: 1,
-          fields: {equipmentName: {}}
+          fields: {equipment_name: {}}
         },
         query: {
           bool: {
             must: [
               {
                 match: {
-                  equipmentName: {query: searchTerm, operator: "and"}
+                  equipment_name: {query: searchTerm, operator: "and"}
                 }
               }
             ],
