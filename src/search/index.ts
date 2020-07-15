@@ -86,7 +86,11 @@ export async function bulkUp() {
         properties: {
           ingredient_id: {type: 'integer'},
           ingredient_type_name: {type: 'keyword'},
-          ingredient_brand: {type: 'keyword'},
+          ingredient_brand: {
+            type: 'text',
+            analyzer: 'autocomplete',
+            search_analyzer: 'autocomplete_search'
+          },
           ingredient_variety: {
             type: 'text',
             analyzer: 'autocomplete',

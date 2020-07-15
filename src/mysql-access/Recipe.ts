@@ -152,64 +152,60 @@ export class Recipe implements IRecipe {
   }
 
   async viewRecipeById(recipeId: number, authorId: number, ownerId: number) {
-    // not sure I like this formatting...
-    // see if this can be done with joins instead of concats
     const sql = `
       SELECT
-      r.recipe_id,
-      u.username AS author,
-      u.avatar AS author_avatar,
-      rt.recipe_type_name,
-      c.cuisine_name,
-      r.title,
-      r.description,
-      r.active_time,
-      r.total_time,
-      r.directions,
-      r.recipe_image,
-      r.equipment_image,
-      r.ingredients_image,
-      r.cooking_image,
-      (
-        SELECT JSON_ARRAYAGG(JSON_OBJECT(
-          'method_name', m.method_name
-        )),
-        FROM nobsc_methods m
-        INNER JOIN nobsc_recipe_methods rm ON rm.method_id = m.method_id
-        WHERE rm.recipe_id = r.recipe_id
-      ) required_methods,
-      (
-        SELECT JSON_ARRAYAGG((JSON_OBJECT(
-          'amount', re.amount,
-          'equipment_name', e.equipment_name
-        )),
-        FROM nobsc_equipment e
-        INNER JOIN nobsc_recipe_equipment re ON re.equipment_id = e.equipment_id
-        WHERE re.recipe_id = r.recipe_id
-      ) required_equipment,
-      (
-        SELECT JSON_ARRAYAGG((JSON_OBJECT(
-          'amount', ri.amount,
-          'measurement_name', m.measurement_name,
-          'ingredient_name', i.ingredient_name
-        )),
-        FROM nobsc_ingredients i
-        INNER JOIN nobsc_recipe_ingredients ri
-        ON ri.ingredient_id = i.ingredient_id
-        INNER JOIN nobsc_measurements m ON m.measurement_id = ri.measurement_id
-        WHERE ri.recipe_id = r.recipe_id
-      ) required_ingredients,
-      (
-        SELECT JSON_ARRAYAGG((JSON_OBJECT(
-          'amount', rs.amount,
-          'measurement_name', m.measurement_name,
-          'subrecipe_title', r.title
-        )),
-        FROM nobsc_recipes r
-        INNER JOIN nobsc_recipe_subrecipes rs ON rs.subrecipe_id = r.recipe_id
-        INNER JOIN nobsc_measurements m ON m.measurement_id = rs.measurement_id
-        WHERE rs.recipe_id = r.recipe_id
-      ) required_subrecipes
+        r.recipe_id,
+        u.username AS author,
+        u.avatar AS author_avatar,
+        rt.recipe_type_name,
+        c.cuisine_name,
+        r.title,
+        r.description,
+        r.active_time,
+        r.total_time,
+        r.directions,
+        r.recipe_image,
+        r.equipment_image,
+        r.ingredients_image,
+        r.cooking_image,
+        (
+          SELECT JSON_ARRAYAGG(JSON_OBJECT('method_name', m.method_name))
+          FROM nobsc_methods m
+          INNER JOIN nobsc_recipe_methods rm ON rm.method_id = m.method_id
+          WHERE rm.recipe_id = r.recipe_id
+        ) required_methods,
+        (
+          SELECT JSON_ARRAYAGG(JSON_OBJECT(
+            'amount', re.amount,
+            'equipment_name', e.equipment_name
+          ))
+          FROM nobsc_equipment e
+          INNER JOIN nobsc_recipe_equipment re ON re.equipment_id = e.equipment_id
+          WHERE re.recipe_id = r.recipe_id
+        ) required_equipment,
+        (
+          SELECT JSON_ARRAYAGG(JSON_OBJECT(
+            'amount', ri.amount,
+            'measurement_name', m.measurement_name,
+            'ingredient_name', i.ingredient_name
+          ))
+          FROM nobsc_ingredients i
+          INNER JOIN nobsc_recipe_ingredients ri
+          ON ri.ingredient_id = i.ingredient_id
+          INNER JOIN nobsc_measurements m ON m.measurement_id = ri.measurement_id
+          WHERE ri.recipe_id = r.recipe_id
+        ) required_ingredients,
+        (
+          SELECT JSON_ARRAYAGG(JSON_OBJECT(
+            'amount', rs.amount,
+            'measurement_name', m.measurement_name,
+            'subrecipe_title', r.title
+          ))
+          FROM nobsc_recipes r
+          INNER JOIN nobsc_recipe_subrecipes rs ON rs.subrecipe_id = r.recipe_id
+          INNER JOIN nobsc_measurements m ON m.measurement_id = rs.measurement_id
+          WHERE rs.recipe_id = r.recipe_id
+        ) required_subrecipes
       FROM nobsc_recipes r
       INNER JOIN nobsc_users u ON u.user_id = r.author_id
       INNER JOIN nobsc_recipe_types rt ON rt.recipe_type_id = r.recipe_type_id
@@ -356,9 +352,7 @@ export class Recipe implements IRecipe {
     r.ingredients_image,
     r.cooking_image,
     (
-      SELECT JSON_ARRAYAGG(JSON_OBJECT(
-        'method_id', rm.method_id
-      )),
+      SELECT JSON_ARRAYAGG(JSON_OBJECT('method_id', rm.method_id))
       FROM nobsc_recipe_methods rm
       WHERE rm.recipe_id = r.recipe_id
     ) required_methods,
@@ -367,7 +361,7 @@ export class Recipe implements IRecipe {
         'amount', re.amount,
         'equipment_type_id', e.equipment_type_id,
         'equipment_id', re.equipment_id
-      )),
+      ))
       FROM nobsc_equipment e
       INNER JOIN nobsc_recipe_equipment re ON re.equipment_id = e.equipment_id
       WHERE re.recipe_id = r.recipe_id
@@ -378,7 +372,7 @@ export class Recipe implements IRecipe {
         'measurement_id', ri.measurement_id,
         'ingredient_type_id', i.ingredient_type_id,
         'ingredient_id', ri.ingredient_id
-      )),
+      ))
       FROM nobsc_ingredients i
       INNER JOIN nobsc_recipe_ingredients ri
       ON ri.ingredient_id = i.ingredient_id
@@ -391,7 +385,7 @@ export class Recipe implements IRecipe {
         'recipe_type_id', r.recipe_type_id,
         'cuisine_id', r.cuisine_id,
         'subrecipe_id', rs.subrecipe_id
-      )),
+      ))
       FROM nobsc_recipes r
       INNER JOIN nobsc_recipe_subrecipes rs ON rs.subrecipe_id = r.recipe_id
       WHERE rs.recipe_id = r.recipe_id

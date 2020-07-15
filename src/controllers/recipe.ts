@@ -23,7 +23,8 @@ export const recipeController = {
     const authorId = 1;
     const ownerId = 1;
 
-    assert({recipeId}, validRecipeRequest);
+    // defaulted?
+    //assert({recipeId}, validRecipeRequest);
 
     const recipe = new Recipe(pool);
 

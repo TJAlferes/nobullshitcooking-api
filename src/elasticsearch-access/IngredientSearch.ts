@@ -33,8 +33,17 @@ export class IngredientSearch implements IIngredientSearch {
           bool: {
             must: [
               {
-                match: {
+                /*match: {
                   ingredient_name: {query: searchTerm, operator: "and"}
+                },*/
+                multi_match: {
+                  fields: [
+                    "ingredient_brand",
+                    "ingredient_variety",
+                    "ingredient_name"
+                  ],
+                  type: "cross_fields",
+                  query: searchTerm
                 }
               }
             ],
