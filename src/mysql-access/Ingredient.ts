@@ -46,15 +46,20 @@ export class Ingredient implements IIngredient {
     const [ ingredientsForBulkInsert ] = await this.pool
     .execute<RowDataPacket[]>(sql1, [ownerId]);
     let final = [];
-
-    // allows the sequence of awaits we want
     for (let ingredient of ingredientsForBulkInsert) {
+      const {
+        ingredient_brand,
+        ingredient_variety,
+        ingredient_name
+      } = ingredient;
+      const brand = ingredient_brand ? ingredient_brand + " " : "";
+      const variety = ingredient_variety ? ingredient_variety + " " : "";
+      const ingredient_fullname = brand + variety + ingredient_name;
       final.push(
         {index: {_index: 'ingredients', _id: ingredient.ingredient_id}},
-        ingredient
+        {...ingredient, ingredient_fullname}
       );
     }
-
     return final;
   }
 
@@ -79,12 +84,26 @@ export class Ingredient implements IIngredient {
     `;
     const [ ingredientForInsert ] = await this.pool
     .execute<RowDataPacket[]>(sql, [ingredientId, ownerId]);
-    /*const { ingredient_id } = ingredientForInsert;
-    return [
-      {index: {_index: 'ingredient', _id: ingredient_id}},
-      ingredientForInsert
-    ];*/
-    return ingredientForInsert;
+    const {
+      ingredient_id,
+      ingredient_type_name,
+      ingredient_brand,
+      ingredient_variety,
+      ingredient_name,
+      ingredient_image
+    } = ingredientForInsert[0];
+    const brand = ingredient_brand ? ingredient_brand + " " : "";
+    const variety = ingredient_variety ? ingredient_variety + " " : "";
+    const ingredient_fullname = brand + variety + ingredient_name;
+    return {
+      ingredient_id,
+      ingredient_type_name,
+      ingredient_fullname,
+      ingredient_brand,
+      ingredient_variety,
+      ingredient_name,
+      ingredient_image
+    };
   }
 
   async viewIngredients(authorId: number, ownerId: number) {
@@ -324,7 +343,7 @@ type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
 export interface IIngredient {
   pool: Pool;
   getAllPublicIngredientsForElasticSearchBulkInsert(): any;  // finish
-  getIngredientForElasticSearchInsert(ingredientId: number): Data;
+  getIngredientForElasticSearchInsert(ingredientId: number): any;  // finish
   viewIngredients(authorId: number, ownerId: number): Data;
   viewIngredientById(
     ingredientId: number,

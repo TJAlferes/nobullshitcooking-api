@@ -45,12 +45,12 @@ export const staffIngredientController = {
 
     const generatedId = createdIngredient.insertId;
 
-    const [ ingredientForInsert ] = await ingredient
+    const ingredientForInsert = await ingredient
     .getIngredientForElasticSearchInsert(generatedId);
     
     const ingredientSearch = new IngredientSearch(esClient);
 
-    await ingredientSearch.saveIngredient(ingredientForInsert[0]);
+    await ingredientSearch.saveIngredient(ingredientForInsert);
 
     return res.send({message: 'Ingredient created.'});
   },
@@ -87,12 +87,12 @@ export const staffIngredientController = {
 
     await ingredient.updateIngredient({ingredientId, ...ingredientToUpdateWith});
 
-    const [ ingredientForInsert ] = await ingredient
+    const ingredientForInsert = await ingredient
     .getIngredientForElasticSearchInsert(ingredientId);
 
     const ingredientSearch = new IngredientSearch(esClient);
 
-    await ingredientSearch.saveIngredient(ingredientForInsert[0]);
+    await ingredientSearch.saveIngredient(ingredientForInsert);
 
     return res.send({message: 'Ingredient updated.'});
   },

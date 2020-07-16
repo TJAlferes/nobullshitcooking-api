@@ -27,16 +27,16 @@ export class IngredientSearch implements IIngredientSearch {
         highlight: {
           fragment_size: 200,  // less?
           number_of_fragments: 1,
-          fields: {ingredient_name: {}}
+          fields: {ingredient_fullname: {}}
         },
         query: {
           bool: {
             must: [
               {
-                /*match: {
-                  ingredient_name: {query: searchTerm, operator: "and"}
-                },*/
-                multi_match: {
+                match: {
+                  ingredient_fullname: {query: searchTerm, operator: "and"}
+                }
+                /*multi_match: {
                   fields: [
                     "ingredient_brand",
                     "ingredient_variety",
@@ -44,7 +44,7 @@ export class IngredientSearch implements IIngredientSearch {
                   ],
                   type: "cross_fields",
                   query: searchTerm
-                }
+                }*/
               }
             ],
           }
@@ -60,6 +60,9 @@ export class IngredientSearch implements IIngredientSearch {
   async saveIngredient({
     ingredient_id,
     ingredient_type_name,
+    ingredient_fullname,
+    ingredient_brand,
+    ingredient_variety,
     ingredient_name,
     ingredient_image
   }: ISavingIngredient) {
@@ -69,6 +72,9 @@ export class IngredientSearch implements IIngredientSearch {
       body: {
         ingredient_id,
         ingredient_type_name,
+        ingredient_fullname,
+        ingredient_brand,
+        ingredient_variety,
         ingredient_name,
         ingredient_image
       }
@@ -95,6 +101,9 @@ interface IIngredientSearch {
   saveIngredient({
     ingredient_id,
     ingredient_type_name,
+    ingredient_fullname,
+    ingredient_brand,
+    ingredient_variety,
     ingredient_name,
     ingredient_image
   }: ISavingIngredient): void;
@@ -104,6 +113,9 @@ interface IIngredientSearch {
 interface ISavingIngredient {
   ingredient_id: string;
   ingredient_type_name: string;
+  ingredient_fullname: string;
+  ingredient_brand: string;
+  ingredient_variety: string;
   ingredient_name: string;
   ingredient_image: string;
 }
