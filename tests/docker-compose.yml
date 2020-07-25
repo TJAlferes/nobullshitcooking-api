@@ -43,7 +43,7 @@ services:
       #- "5602:5602"
   
   redis-test:
-    image: redis:5.0.5
+    image: redis:latest
     healthcheck:
       test: redis-cli ping
     volumes:
