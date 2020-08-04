@@ -1,12 +1,5 @@
 import { IChatUser } from './ChatUser';
 
-export interface IChatMessage {
-  chatMessageId: string
-  chatMessageText: string
-  room: string
-  user: IChatUser
-}
-
 export function ChatMessage(
   chatMessageText: string,
   room: string,
@@ -19,3 +12,10 @@ export function ChatMessage(
     user
   };
 };
+
+export interface IChatMessage {
+  chatMessageId: string;
+  chatMessageText: string;
+  room: string;
+  user: IChatUser;
+}

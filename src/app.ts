@@ -1,7 +1,8 @@
 'use strict';
 
-import { createServer } from 'http';
 import express, { Request, Response, NextFunction } from 'express';
+import { createServer } from 'http';
+
 import { middlewareInit}  from './middlewareInit';
 import { routesInit } from './routesInit';
 //import { bulkUp } from './search';
@@ -18,9 +19,7 @@ process.on('unhandledRejection', (reason, promise: Promise<any>) => {
 
 if (app.get('env') === 'production') {
   app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
-    res
-    .status(500)
-    .json({error: error.message || 'something went wrong'});
+    res.status(500).json({error: error.message || 'something went wrong'});
   });
 } else {
   app.use((error: Error, req: Request, res: Response, next: NextFunction) => {

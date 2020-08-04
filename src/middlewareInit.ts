@@ -1,12 +1,12 @@
-import { Server } from 'http';
+import compression from 'compression';
+import cors from 'cors';
+//import csurf from 'csurf');  // no longer needed?
 import express, { Application } from 'express';
 //import expressPinoLogger from 'express-pino-logger');
 import expressRateLimit from 'express-rate-limit';  // Use rate-limiter-flexible instead? https://github.com/animir/node-rate-limiter-flexible
-import cors from 'cors';
 import helmet from 'helmet';
 //import hpp from 'hpp');
-//import csurf from 'csurf');  // no longer needed?
-import compression from 'compression';
+import { Server } from 'http';
 
 import { sessionInit } from './sessionInit';
 

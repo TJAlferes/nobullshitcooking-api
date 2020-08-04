@@ -1,9 +1,9 @@
 'use strict';
 
-import { Server } from 'http';
+import connectRedis from 'connect-redis';
 import { Application } from 'express';
 import expressSession, { SessionOptions } from 'express-session';
-import connectRedis from 'connect-redis';
+import { Server } from 'http';
 
 import { sessClient } from './lib/connections/redisConnection';
 import { socketInit } from './socketInit';
@@ -13,11 +13,11 @@ export function sessionInit(app: Application, server: Server) {
   const redisSession = new RedisStore({client: sessClient});
 
   const sessionOptions: SessionOptions = {
-    store: redisSession,
     name: "connect.sid",
-    secret: process.env.SESSION_SECRET || "secret",
     resave: true,
     saveUninitialized: true,
+    secret: process.env.SESSION_SECRET || "secret",
+    store: redisSession,
     unset: "destroy"
   };
 
@@ -35,9 +35,9 @@ export function sessionInit(app: Application, server: Server) {
     };*/
   } else {
     sessionOptions.cookie = {
-      sameSite: false,
-      maxAge: 86400000,
       httpOnly: false,
+      maxAge: 86400000,
+      sameSite: false,
       secure: false
     };
   }

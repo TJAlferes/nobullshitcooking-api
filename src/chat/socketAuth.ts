@@ -1,9 +1,9 @@
 'use strict';
 
-import { NextFunction } from 'express';
-import { RedisStore } from 'connect-redis';
 import cookie from 'cookie';
 import cookieParser from 'cookie-parser';
+import { RedisStore } from 'connect-redis';
+import { NextFunction } from 'express';
 import { Server, Socket } from 'socket.io';
 
 import { pubClient } from '../lib/connections/redisConnection';
@@ -29,7 +29,7 @@ export async function addMessengerUser(
 }
 
 export function sessionIdsAreEqual(socket: Socket) {
-  const parsedCookie = cookie.parse(socket.request.headers.cookie); // ???
+  const parsedCookie = cookie.parse(socket.request.headers.cookie);  // ???
   const sid = cookieParser.signedCookie(
     parsedCookie['connect.sid'],
     process.env.SESSION_SECRET!

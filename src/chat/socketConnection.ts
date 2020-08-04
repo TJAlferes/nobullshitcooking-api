@@ -18,9 +18,7 @@ import { getUser } from './handlers/getUser';
 import { rejoinRoom } from './handlers/rejoinRoom';
 
 export async function socketConnection(socket: Socket) {
-  const userId = socket.request.userInfo.userId;
-  const username = socket.request.userInfo.username;
-  const avatar = socket.request.userInfo.avatar;
+  const { userId, username, avatar } = socket.request.userInfo;
   
   const nobscUser = new NOBSCUser(pool);
   const nobscFriendship = new NOBSCFriendship(pool);
