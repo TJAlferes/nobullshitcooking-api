@@ -5,285 +5,240 @@ export class Equipment implements IEquipment {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.getAllPublicEquipmentForElasticSearchBulkInsert =
-      this.getAllPublicEquipmentForElasticSearchBulkInsert.bind(this);
-    this.getEquipmentForElasticSearchInsert =
-      this.getEquipmentForElasticSearchInsert.bind(this);
-    this.viewEquipment = this.viewEquipment.bind(this);
-    this.viewEquipmentById = this.viewEquipmentById.bind(this);
-    this.createEquipment = this.createEquipment.bind(this);
-    this.updateEquipment = this.updateEquipment.bind(this);
-    this.deleteEquipment = this.deleteEquipment.bind(this);
-    this.createMyPrivateUserEquipment =
-      this.createMyPrivateUserEquipment.bind(this);
-    this.updateMyPrivateUserEquipment =
-      this.updateMyPrivateUserEquipment.bind(this);
-    this.deleteMyPrivateUserEquipment =
-      this.deleteMyPrivateUserEquipment.bind(this);
-    this.deleteAllMyPrivateUserEquipment =
-      this.deleteAllMyPrivateUserEquipment.bind(this);
+    this.getAllForElasticSearch = this.getAllForElasticSearch.bind(this);
+    this.getForElasticSearch = this.getForElasticSearch.bind(this);
+    this.view = this.view.bind(this);
+    this.viewById = this.viewById.bind(this);
+    this.create = this.create.bind(this);
+    this.update = this.update.bind(this);
+    this.delete = this.delete.bind(this);
+    this.createPrivate = this.createPrivate.bind(this);
+    this.updatePrivate = this.updatePrivate.bind(this);
+    this.deletePrivate = this.deletePrivate.bind(this);
+    this.deleteAllPrivateByOwnerId = this.deleteAllPrivateByOwnerId.bind(this);
   }
 
-  async getAllPublicEquipmentForElasticSearchBulkInsert() {
-    const ownerId = 1;
+  async getAllForElasticSearch() {
+    const ownerId = 1;  // only public equipment goes into ElasticSearch
     const sql1 = `
       SELECT
-        CAST(e.equipment_id AS CHAR) AS equipment_id,
+        CAST(e.id AS CHAR) AS equipment_id,
         e.equipment_type_id,
         e.owner_id,
-        t.equipment_type_name,
-        e.equipment_name,
-        e.equipment_description,
-        e.equipment_image
-      FROM nobsc_equipment e
-      INNER JOIN
-        nobsc_equipment_types t ON
-        t.equipment_type_id = e.equipment_type_id
+        t.name AS equipment_type_name,
+        e.name,
+        e.description,
+        e.image
+      FROM equipment e
+      INNER JOIN equipment_types t ON t.id = e.equipment_type_id
       WHERE e.owner_id = ?
     `;
-    const [ equipmentForBulkInsert ] = await this.pool
-    .execute<RowDataPacket[]>(sql1, [ownerId]);
+
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql1, [ownerId]);
+
     let final = [];
 
     // allows the sequence of awaits we want
-    for (let equipment of equipmentForBulkInsert) {
-      final.push(
-        {index: {_index: 'equipment', _id: equipment.equipment_id}},
-        equipment
-      );
+    for (let row of rows) {
+      final.push({index: {_index: 'equipment', _id: row.id}}, row);
     }
 
     return final;
   }
   
-  async getEquipmentForElasticSearchInsert(equipmentId: number) {
-    const ownerId = 1;
+  async getForElasticSearch(id: number) {
+    const ownerId = 1;  // only public equipment goes into ElasticSearch
     const sql = `
       SELECT
-        CAST(e.equipment_id AS CHAR) AS equipment_id,
+        CAST(e.id AS CHAR) AS equipment_id,
         e.equipment_type_id,
         e.owner_id,
-        t.equipment_type_name,
-        e.equipment_name,
-        e.equipment_description,
-        e.equipment_image
-      FROM nobsc_equipment e
-      INNER JOIN
-        nobsc_equipment_types t ON
-        t.equipment_type_id = e.equipment_type_id
-      WHERE e.equipment_id = ? e.owner_id = ?
+        t.name AS equipment_type_name,
+        e.name,
+        e.description,
+        e.image
+      FROM equipment e
+      INNER JOIN equipment_types t ON t.id = e.equipment_type_id
+      WHERE e.id = ? e.owner_id = ?
     `;
-    const [ equipmentForInsert ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [equipmentId, ownerId]);
-    /*const { equipment_id } = equipmentForInsert;
-    return [
-      {index: {_index: 'equipment', _id: equipment_id}},
-      equipmentForInsert
-    ];*/
-    return equipmentForInsert;
+    const [ row ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [id, ownerId]);
+    return row;
   }
 
-  async viewEquipment(authorId: number, ownerId: number) {
+  async view(authorId: number, ownerId: number) {
     const sql = `
       SELECT
-        e.equipment_id,
+        e.id,
         e.equipment_type_id,
         e.owner_id,
         t.equipment_type_name,
-        e.equipment_name,
-        e.equipment_description,
-        e.equipment_image
-      FROM nobsc_equipment e
-      INNER JOIN
-        nobsc_equipment_types t ON
-        e.equipment_type_id = t.equipment_type_id
+        e.name,
+        e.description,
+        e.image
+      FROM equipment e
+      INNER JOIN equipment_types t ON e.equipment_type_id = t.id
       WHERE e.author_id = ? AND e.owner_id = ?
-      ORDER BY equipment_name ASC
+      ORDER BY e.name ASC
     `;
-    const [ equipment ] = await this.pool
+    const [ rows ] = await this.pool
     .execute<RowDataPacket[]>(sql, [authorId, ownerId]);
-    return equipment;
+    return rows;
   }
 
-  async viewEquipmentById(
-    equipmentId: number,
-    authorId: number,
-    ownerId: number
-  ) {
+  async viewById(id: number, authorId: number, ownerId: number) {
     const sql = `
       SELECT
-        e.equipment_id,
+        e.id,
         e.equipment_type_id,
         e.owner_id,
         t.equipment_type_name,
-        e.equipment_name,
-        e.equipment_description,
-        e.equipment_image
-      FROM nobsc_equipment e
-      INNER JOIN
-        nobsc_equipment_types t
-        ON e.equipment_type_id = t.equipment_type_id
-      WHERE e.equipment_id = ? AND e.author_id = ? AND e.owner_id = ?
+        e.name,
+        e.description,
+        e.image
+      FROM equipment e
+      INNER JOIN equipment_types t ON e.equipment_type_id = t.id
+      WHERE e.id = ? AND e.author_id = ? AND e.owner_id = ?
     `;
-    const [ equipment ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [equipmentId, authorId, ownerId]);
-    return equipment;
+    const [ row ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [id, authorId, ownerId]);
+    return row;
   }
 
-  async createEquipment({
+  async create({
     equipmentTypeId,
     authorId,
     ownerId,
-    equipmentName,
-    equipmentDescription,
-    equipmentImage
+    name,
+    description,
+    image
   }: ICreatingEquipment) {
     const sql = `
-      INSERT INTO nobsc_equipment (
+      INSERT INTO equipment (
         equipment_type_id,
         author_id,
         owner_id,
-        equipment_name,
-        equipment_description,
-        equipment_image
+        name,
+        description,
+        image
       ) VALUES (?, ?, ?, ?, ?, ?)
     `;
-    const [ createdEquipment ] = await this.pool
+    const [ row ] = await this.pool
     .execute<RowDataPacket[] & ResultSetHeader>(sql, [
       equipmentTypeId,
       authorId,
       ownerId,
-      equipmentName,
-      equipmentDescription,
-      equipmentImage
+      name,
+      description,
+      image
     ]);
-    return createdEquipment;
+    return row;
   }
 
-  async updateEquipment({
-    equipmentId,
+  async update({
+    id,
     equipmentTypeId,
     authorId,
     ownerId,
-    equipmentName,
-    equipmentDescription,
-    equipmentImage
+    name,
+    description,
+    image
   }: IUpdatingEquipment) {
     const sql = `
-      UPDATE nobsc_equipment
-      SET
-        equipment_type_id = ?,
-        equipment_name = ?,
-        equipment_description = ?,
-        equipment_image = ?
-      WHERE equipment_id = ?
+      UPDATE equipment
+      SET equipment_type_id = ?, name = ?, description = ?, image = ?
+      WHERE id = ?
       LIMIT 1
     `;
-    const [ updatedEquipment ] = await this.pool.execute<RowDataPacket[]>(sql, [
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [
       equipmentTypeId,
-      equipmentName,
-      equipmentDescription,
-      equipmentImage,
-      equipmentId
+      name,
+      description,
+      image,
+      id
     ]);
-    return updatedEquipment;
+    return row;
   }
 
-  async deleteEquipment(equipmentId: number) {
-    const sql = `
-      DELETE
-      FROM nobsc_equipment
-      WHERE equipment_id = ?
-      LIMIT 1
-    `;
-    const [ deletedEquipment ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [equipmentId]);
-    return deletedEquipment;
+  async delete(id: number) {
+    const sql = `DELETE FROM equipment WHERE id = ? LIMIT 1`;
+    const [ row ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [id]);
+    return row;
   }
 
-  async createMyPrivateUserEquipment({
+  async createPrivate({
     equipmentTypeId,
     authorId,
     ownerId,
-    equipmentName,
-    equipmentDescription,
-    equipmentImage
+    name,
+    description,
+    image
   }: ICreatingEquipment) {
     const sql = `
-      INSERT INTO nobsc_equipment (
+      INSERT INTO equipment (
         equipment_type_id,
         author_id,
         owner_id,
-        equipment_name,
-        equipment_description,
-        equipment_image
+        name,
+        description,
+        image
       ) VALUES (?, ?, ?, ?, ?, ?)
     `;
-    const [ createdPrivateUserEquipment ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [
       equipmentTypeId,
       authorId,
       ownerId,
-      equipmentName,
-      equipmentDescription,
-      equipmentImage
+      name,
+      description,
+      image
     ]);
-    return createdPrivateUserEquipment;
+    return row;
   }
 
-  async updateMyPrivateUserEquipment({
-    equipmentId,
+  async updatePrivate({
+    id,
     equipmentTypeId,
     authorId,
     ownerId,
-    equipmentName,
-    equipmentDescription,
-    equipmentImage
+    name,
+    description,
+    image
   }: IUpdatingEquipment) {
     const sql = `
-      UPDATE nobsc_equipment
+      UPDATE equipment
       SET
         equipment_type_id = ?,
         author_id = ?,
         owner_id = ?,
-        equipment_name = ?,
-        equipment_description = ?,
-        equipment_image = ?
-      WHERE owner_id = ? AND equipment_id = ?
+        name = ?,
+        description = ?,
+        image = ?
+      WHERE owner_id = ? AND id = ?
       LIMIT 1
     `;
-    const [ updatedPrivateUserEquipment ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [
       equipmentTypeId,
       authorId,
       ownerId,
-      equipmentName,
-      equipmentDescription,
-      equipmentImage,
+      name,
+      description,
+      image,
       ownerId,
-      equipmentId
+      id
     ]);
-    return updatedPrivateUserEquipment;
+    return row;
   }
 
-  async deleteMyPrivateUserEquipment(equipmentId: number, ownerId: number) {
-    const sql = `
-      DELETE
-      FROM nobsc_equipment
-      WHERE owner_id = ? AND equipment_id = ?
-      LIMIT 1
-    `;
-    const [ deletedPrivateUserEquipment ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [ownerId, equipmentId]);
-    return deletedPrivateUserEquipment;
+  async deletePrivate(id: number, ownerId: number) {
+    const sql = `DELETE FROM equipment WHERE owner_id = ? AND id = ? LIMIT 1`;
+    const [ row ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [ownerId, id]);
+    return row;
   }
 
-  async deleteAllMyPrivateUserEquipment(ownerId: number) {
-    const sql = `
-      DELETE
-      FROM nobsc_equipment
-      WHERE owner_id = ?
-    `;
+  async deleteAllPrivateByOwnerId(ownerId: number) {
+    const sql = `DELETE FROM equipment WHERE owner_id = ?`;
     await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
   }
 }
@@ -294,62 +249,58 @@ type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
 
 export interface IEquipment {
   pool: Pool;
-  getAllPublicEquipmentForElasticSearchBulkInsert(): any;  // finish
-  getEquipmentForElasticSearchInsert(equipmentId: number): Data;
-  viewEquipment(authorId: number, ownerId: number): Data;
-  viewEquipmentById(
-    equipmentId: number,
-    authorId: number,
-    ownerId: number
-  ): Data;
-  createEquipment({
+  getAllForElasticSearch(): any;  // finish
+  getForElasticSearch(id: number): Data;
+  view(authorId: number, ownerId: number): Data;
+  viewById(id: number, authorId: number, ownerId: number): Data;
+  create({
     equipmentTypeId,
     authorId,
     ownerId,
-    equipmentName,
-    equipmentDescription,
-    equipmentImage
+    name,
+    description,
+    image
   }: ICreatingEquipment): DataWithHeader;
-  updateEquipment({
-    equipmentId,
+  update({
+    id,
     equipmentTypeId,
     authorId,
     ownerId,
-    equipmentName,
-    equipmentDescription,
-    equipmentImage
+    name,
+    description,
+    image
   }: IUpdatingEquipment): Data;
-  deleteEquipment(equipmentId: number): Data;
-  createMyPrivateUserEquipment({
+  delete(id: number): Data;
+  createPrivate({
     equipmentTypeId,
     authorId,
     ownerId,
-    equipmentName,
-    equipmentDescription,
-    equipmentImage
+    name,
+    description,
+    image
   }: ICreatingEquipment): Data;
-  updateMyPrivateUserEquipment({
-    equipmentId,
+  updatePrivate({
+    id,
     equipmentTypeId,
     authorId,
     ownerId,
-    equipmentName,
-    equipmentDescription,
-    equipmentImage
+    name,
+    description,
+    image
   }: IUpdatingEquipment): Data;
-  deleteMyPrivateUserEquipment(equipmentId: number, ownerId: number): Data;
-  deleteAllMyPrivateUserEquipment(ownerId: number): void;
+  deletePrivate(id: number, ownerId: number): Data;
+  deleteAllPrivateByOwnerId(ownerId: number): void;
 }
 
 interface ICreatingEquipment {
   equipmentTypeId: number;
   authorId: number;
   ownerId: number;
-  equipmentName: string;
-  equipmentDescription: string;
-  equipmentImage: string;
+  name: string;
+  description: string;
+  image: string;
 }
 
 interface IUpdatingEquipment extends ICreatingEquipment {
-  equipmentId: number;
+  id: number;
 }

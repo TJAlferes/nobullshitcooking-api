@@ -5,50 +5,40 @@ export class CuisineIngredient implements ICuisineIngredient {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewCuisineIngredientsByCuisineId = this.viewCuisineIngredientsByCuisineId.bind(this);
-    this.createCuisineIngredient = this.createCuisineIngredient.bind(this);
-    this.deleteCuisineIngredient = this.deleteCuisineIngredient.bind(this);
+    this.viewByCuisineId = this.viewByCuisineId.bind(this);
+    this.create = this.create.bind(this);
+    this.delete = this.delete.bind(this);
   }
 
-  async viewCuisineIngredientsByCuisineId(cuisineId: number) {
+  async viewByCuisineId(cuisineId: number) {
     const sql = `
-      SELECT i.ingredient_id, i.ingredient_name
-      FROM nobsc_cuisine_ingredients ci
-      INNER JOIN nobsc_ingredients i ON i.ingredient_id = ci.ingredient_id
+      SELECT i.id AS ingredient_id, i.name AS ingredient_name
+      FROM cuisine_ingredients ci
+      INNER JOIN ingredients i ON i.id = ci.ingredient_id
       WHERE ci.cuisine_id = ?
       GROUP BY i.ingredient_type_id
-      ORDER BY i.ingredient_name ASC
+      ORDER BY i.name ASC
     `;
-
-    const [ cuisineEquipment ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [cuisineId]);
-
-    return cuisineEquipment;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [cuisineId]);
+    return rows;
   }
 
-  async createCuisineIngredient(cuisineId: number, ingredientId: number) {
+  async create(cuisineId: number, ingredientId: number) {
     const sql = `
-      INSERT INTO nobsc_cuisine_ingredients (cuisine_id, ingredient_id)
-      VALUES (?, ?)
+      INSERT INTO cuisine_ingredients (cuisine_id, ingredient_id) VALUES (?, ?)
     `;
-
-    const [ createdCuisineIngredient ] = await this.pool
+    const [ row ] = await this.pool
     .execute<RowDataPacket[]>(sql, [cuisineId, ingredientId]);
-
-    return createdCuisineIngredient;
+    return row;
   }
 
-  async deleteCuisineIngredient(cuisineId: number, ingredientId: number) {
+  async delete(cuisineId: number, ingredientId: number) {
     const sql = `
-      DELETE
-      FROM nobsc_cuisine_ingredients
-      WHERE cuisineId = ? AND ingredient_id = ?
+      DELETE FROM cuisine_ingredients WHERE cuisineId = ? AND ingredient_id = ?
     `;
-    
-    const [ deletedCuisineIngredient ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [cuisineId, ingredientId]);
-
-    return deletedCuisineIngredient;
+    const [ row ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [cuisineId, ingredientId]);
+    return row;
   }
 }
 
@@ -56,7 +46,7 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface ICuisineIngredient {
   pool: Pool;
-  viewCuisineIngredientsByCuisineId(cuisineId: number): Data;
-  createCuisineIngredient(cuisineId: number, ingredientId: number): Data;
-  deleteCuisineIngredient(cuisineId: number, ingredientId: number): Data;
+  viewByCuisineId(cuisineId: number): Data;
+  create(cuisineId: number, ingredientId: number): Data;
+  delete(cuisineId: number, ingredientId: number): Data;
 }
