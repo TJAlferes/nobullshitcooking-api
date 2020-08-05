@@ -5,66 +5,58 @@ export class Cuisine implements ICuisine {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewCuisines = this.viewCuisines.bind(this);
-    this.viewCuisineById = this.viewCuisineById.bind(this);
-    this.viewCuisineDetailById = this.viewCuisineDetailById.bind(this);
+    this.view = this.view.bind(this);
+    this.viewById = this.viewById.bind(this);
+    this.viewDetailById = this.viewDetailById.bind(this);
   }
 
-  async viewCuisines() {
-    const sql = `
-      SELECT cuisine_id, cuisine_name, cuisine_nation
-      FROM nobsc_cuisines
-    `;
-    const [ cuisines ] = await this.pool.execute<RowDataPacket[]>(sql);
-    return cuisines;
+  async view() {
+    const sql = `SELECT id, name, nation FROM cuisines`;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql);
+    return rows;
   }
 
-  async viewCuisineById(cuisineId: number) {
-    const sql = `
-      SELECT cuisine_id, cuisine_name, cuisine_nation
-      FROM nobsc_cuisines
-      WHERE cuisine_id = ?
-    `;
-    const [ cuisine ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [cuisineId]);
-    return cuisine;
+  async viewById(id: number) {
+    const sql = `SELECT id, name, nation FROM cuisines WHERE id = ?`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
+    return row;
   }
 
-  // TO DO: fix this...
-  async viewCuisineDetailById(cuisineId: number) {
+  // TO DO: fix this... see Recipe for JSON functions
+  async viewDetailById(id: number) {
     const ownerId = 1;
     const sql = `
       SELECT
-      c.cuisine_id,
-      c.cuisine_name,
-      c.cuisine_nation,
-      c.cuisine_wiki,
-      c.cuisine_intro,
+      c.id,
+      c.name,
+      c.nation,
+      c.wiki,
+      c.intro,
       (
         SELECT s.supplier_id AS supplierId, s.supplier_name AS supplierName
-        FROM nobsc_suppliers s
+        FROM suppliers s
         INNER JOIN
-          nobsc_cuisine_suppliers cs ON
+          cuisine_suppliers cs ON
           cs.supplier_id = s.supplier_id
-        WHERE cs.cuisine_id = c.cuisine_id
+        WHERE cs.cuisine_id = c.id
       ) cuisine_suppliers,
       (
         SELECT e.equipment_id AS equipmentId, e.equipment_name AS equipmentName
-        FROM nobsc_equipment e
+        FROM equipment e
         INNER JOIN
-          nobsc_cuisine_equipment ce ON
+          cuisine_equipment ce ON
           ce.equipment_id = e.equipment_id
-        WHERE ce.cuisine_id = c.cuisine_id
+        WHERE ce.cuisine_id = c.id
       ) cuisine_equipment,
       (
         SELECT
           i.ingredient_id AS ingredientId,
           i.ingredient_name AS ingredientName
-        FROM nobsc_ingredients i
+        FROM ingredients i
         INNER JOIN
-          nobsc_cuisine_ingredients ci ON
+          cuisine_ingredients ci ON
           ci.ingredient_id = i.ingredient_id
-        WHERE ci.cuisine_id = c.cuisine_id
+        WHERE ci.cuisine_id = c.id
       ) cuisine_ingredients,
       (
         SELECT
@@ -72,14 +64,14 @@ export class Cuisine implements ICuisine {
           r.title AS title,
           r.recipe_image AS recipeImage
         FROM nobsc_recipes r
-        WHERE r.owner_id = ? AND r.cuisine_id = c.cuisine_id
+        WHERE r.owner_id = ? AND r.cuisine_id = c.id
       ) official_recipes
-      FROM nobsc_cuisines c
-      WHERE c.cuisine_id = ?
+      FROM cuisines c
+      WHERE c.id = ?
     `;
-    const [ cuisineDetail ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [ownerId, cuisineId]);
-    return cuisineDetail;
+    const [ row ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [ownerId, id]);
+    return row;
   }
 }
 
@@ -87,7 +79,7 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface ICuisine {
   pool: Pool;
-  viewCuisines(): Data;
-  viewCuisineById(cuisineId: number): Data;
-  viewCuisineDetailById(cuisineId: number): Data;
+  view(): Data;
+  viewById(id: number): Data;
+  viewDetailById(id: number): Data;
 }

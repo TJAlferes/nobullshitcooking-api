@@ -5,87 +5,52 @@ export class ContentType implements IContentType {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewContentTypes = this.viewContentTypes.bind(this);
-    this.viewContentTypeById = this.viewContentTypeById.bind(this);
-    this.createContentType = this.createContentType.bind(this);
-    this.updateContentType = this.updateContentType.bind(this);
-    this.deleteContentType = this.deleteContentType.bind(this);
+    this.view = this.view.bind(this);
+    this.viewById = this.viewById.bind(this);
+    this.create = this.create.bind(this);
+    this.update = this.update.bind(this);
+    this.delete = this.delete.bind(this);
   }
 
-  async viewContentTypes() {
+  async view() {
+    const sql = `SELECT id, parent_id, name, path FROM nobsc_content_types`;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql);
+    return rows;
+  }
+
+  async viewById(id: number) {
     const sql = `
-      SELECT content_type_id, parent_id, content_type_name, content_type_path
-      FROM nobsc_content_types
+      SELECT id, parent_id, name, path FROM content_types WHERE id = ?
     `;
-    const [ contentTypes ] = await this.pool.execute<RowDataPacket[]>(sql);
-    return contentTypes;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
+    return row;
   }
 
-  async viewContentTypeById(contentTypeId: number) {
+  async create({ parentId, name, path }: ICreatingContentType) {
     const sql = `
-      SELECT content_type_id, parent_id, content_type_name, content_type_path
-      FROM nobsc_content_types
-      WHERE content_type_id = ?
+      INSERT INTO content_types (parent_id, name, path) VALUES (?, ?, ?)
     `;
-    const [ contentType ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [contentTypeId]);
-    return contentType;
+    const [ row ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [parentId, name, path]);
+    return row;
   }
 
-  async createContentType({
-    parentId,
-    contentTypeName,
-    contentTypePath
-  }: ICreatingContentType) {
+  async update({ id, parentId, name, path }: IUpdatingContentType) {
     const sql = `
-      INSERT INTO nobsc_content_types
-      (parent_id, content_type_name, content_type_path)
-      VALUES (?, ?, ?)
-    `;
-    const [ createdContentType ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [
-      parentId,
-      contentTypeName,
-      contentTypePath
-    ]);
-    return createdContentType;
-  }
-
-  async updateContentType({
-    contentTypeId,
-    parentId,
-    contentTypeName,
-    contentTypePath
-  }: IUpdatingContentType) {
-    const sql = `
-      UPDATE nobsc_content_types
-      SET
-        parent_id = ?,
-        content_type_name = ?,
-        content_type_path = ?
-      WHERE content_type_id = ?
+      UPDATE content_types
+      SET parent_id = ?, name = ?, path = ?
+      WHERE id = ?
       LIMIT 1
     `;
-    const [ updatedContentType ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [
-      contentTypeId,
-      parentId,
-      contentTypeName,
-      contentTypePath
-    ]);
-    return updatedContentType;
+    const [ row ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [parentId, name, path, id]);
+    return row;
   }
 
-  async deleteContentType(contentTypeId: number) {
-    const sql = `
-      DELETE
-      FROM nobsc_content_types
-      WHERE content_type_id = ?
-      LIMIT 1
-    `;
-    const [ deletedContentType ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [contentTypeId]);
-    return deletedContentType;
+  async delete(id: number) {
+    const sql = `DELETE FROM content_types WHERE id = ? LIMIT 1`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
+    return row;
   }
 }
 
@@ -93,28 +58,19 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IContentType {
   pool: Pool;
-  viewContentTypes(): Data;
-  viewContentTypeById(contentTypeId: number): Data;
-  createContentType({
-    parentId,
-    contentTypeName,
-    contentTypePath
-  }: ICreatingContentType): Data;
-  updateContentType({
-    contentTypeId,
-    parentId,
-    contentTypeName,
-    contentTypePath
-  }: IUpdatingContentType): Data;
-  deleteContentType(contentTypeId: number): Data;
+  view(): Data;
+  viewById(id: number): Data;
+  create({parentId, name, path}: ICreatingContentType): Data;
+  update({id, parentId, name, path}: IUpdatingContentType): Data;
+  delete(id: number): Data;
 }
 
 interface ICreatingContentType {
   parentId: number;
-  contentTypeName: string;
-  contentTypePath: string;
+  name: string;
+  path: string;
 }
 
 interface IUpdatingContentType extends ICreatingContentType {
-  contentTypeId: number;
+  id: number;
 }
