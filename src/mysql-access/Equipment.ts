@@ -86,13 +86,13 @@ export class Equipment implements IEquipment {
   async viewEquipment(authorId: number, ownerId: number) {
     const sql = `
       SELECT
-        e.equipment_id AS equipment_id,
-        e.equipment_type_id AS equipment_type_id,
-        e.owner_id AS owner_id,
-        t.equipment_type_name AS equipment_type_name,
-        e.equipment_name AS equipment_name,
-        e.equipment_description AS equipment_description,
-        e.equipment_image AS equipment_image
+        e.equipment_id,
+        e.equipment_type_id,
+        e.owner_id,
+        t.equipment_type_name,
+        e.equipment_name,
+        e.equipment_description,
+        e.equipment_image
       FROM nobsc_equipment e
       INNER JOIN
         nobsc_equipment_types t ON
@@ -112,13 +112,13 @@ export class Equipment implements IEquipment {
   ) {
     const sql = `
       SELECT
-        e.equipment_id AS equipment_id,
-        e.equipment_type_id AS equipment_type_id,
-        e.owner_id AS owner_id,
-        t.equipment_type_name AS equipment_type_name,
-        e.equipment_name AS equipment_name,
-        e.equipment_description AS equipment_description,
-        e.equipment_image AS equipment_image
+        e.equipment_id,
+        e.equipment_type_id,
+        e.owner_id,
+        t.equipment_type_name,
+        e.equipment_name,
+        e.equipment_description,
+        e.equipment_image
       FROM nobsc_equipment e
       INNER JOIN
         nobsc_equipment_types t

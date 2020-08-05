@@ -124,47 +124,9 @@ interface ICreatingPlan {
   authorId: number;
   ownerId: number;
   planName: string;
-  //planData: IPlanData;
   planData: string;
 }
 
 interface IUpdatingPlan extends ICreatingPlan {
   planId: number;
 }
-
-/*interface IPlanData {
-  1: IPlanRecipe[],
-  2: IPlanRecipe[],
-  3: IPlanRecipe[],
-  4: IPlanRecipe[],
-  5: IPlanRecipe[],
-  6: IPlanRecipe[],
-  7: IPlanRecipe[],
-  8: IPlanRecipe[],
-  9: IPlanRecipe[],
-  10: IPlanRecipe[],
-  11: IPlanRecipe[],
-  12: IPlanRecipe[],
-  13: IPlanRecipe[],
-  14: IPlanRecipe[],
-  15: IPlanRecipe[],
-  16: IPlanRecipe[],
-  17: IPlanRecipe[],
-  18: IPlanRecipe[],
-  19: IPlanRecipe[],
-  20: IPlanRecipe[],
-  21: IPlanRecipe[],
-  22: IPlanRecipe[],
-  23: IPlanRecipe[],
-  24: IPlanRecipe[],
-  25: IPlanRecipe[],
-  26: IPlanRecipe[],
-  27: IPlanRecipe[],
-  28: IPlanRecipe[]
-}
-
-interface IPlanRecipe {
-  key: string
-  image: string
-  text: string
-}*/

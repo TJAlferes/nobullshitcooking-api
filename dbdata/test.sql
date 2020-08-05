@@ -85,6 +85,7 @@ CREATE TABLE `nobsc_content` (
   `created` char(10) NOT NULL,
   `published` char(10),
   `title` varchar(100) NOT NULL,
+  `content_image` varchar(100) NOT NULL DEFAULT 'nobsc-content-default',
   `content_items` json DEFAULT NULL,
   PRIMARY KEY (`content_id`),
   FOREIGN KEY (`content_type_id`) REFERENCES `nobsc_content_types` (`content_type_id`),

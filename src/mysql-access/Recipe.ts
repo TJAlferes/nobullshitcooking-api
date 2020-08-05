@@ -613,4 +613,5 @@ export interface ICreatingRecipe {
 
 export interface IUpdatingRecipe extends ICreatingRecipe {
   recipeId: number;
+  //  what about prevImage ?
 }

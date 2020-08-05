@@ -6,6 +6,7 @@ export class Content implements IContent {
   constructor(pool: Pool) {
     this.pool = pool;
     this.getContentLinksByTypeName = this.getContentLinksByTypeName.bind(this);
+    this.viewContent = this.viewContent.bind(this);
     this.viewContentById = this.viewContentById.bind(this);
     this.createContent = this.createContent.bind(this);
     this.updateContent = this.updateContent.bind(this);
@@ -14,6 +15,7 @@ export class Content implements IContent {
   }
 
   async getContentLinksByTypeName(contentTypeName: string) {
+    const authorId = 1;
     const sql = `
       SELECT
         c.content_id,
@@ -23,14 +25,29 @@ export class Content implements IContent {
         c.title
       FROM nobsc_content c
       INNER JOIN nobsc_content_types t ON c.content_type_id = t.content_type_id
-      WHERE t.content_type_name = ? AND c.published IS NOT NULL
+      WHERE
+        c.author_id = ? AND
+        t.content_type_name = ? AND
+        c.published IS NOT NULL
     `;
     const [ contentLinks ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [contentTypeName]);
+    .execute<RowDataPacket[]>(sql, [authorId, contentTypeName]);
     return contentLinks;
   }
 
-  // also make ByDate, ByTitle, ByAuthor, ByDateTitle, etc. ?
+  async viewContent(authorId: number) {
+    const sql = `
+      SELECT
+
+      FROM nobsc_content
+      WHERE author_id = ?
+    `;
+    const [ content ] = await this.pool
+    .execute<RowDataPacket[]>(sql, [authorId]);
+    return content;
+  }
+
+  // TO DO: also make ByDate, ByAuthor, etc.
   async viewContentById(contentId: number) {
     const sql = `
       SELECT content_type_id, content_items
@@ -126,7 +143,8 @@ type Data = Promise<RowDataPacket[]>;
 export interface IContent {
   pool: Pool;
   getContentLinksByTypeName(contentTypeName: string): Data;
-  viewContentById(contentId: number): Data;
+  viewContent(authorId: number): Data;
+  viewContentById(contentId: number, authorId: number): Data;
   createContent({
     contentTypeId,
     authorId,
@@ -156,7 +174,6 @@ interface ICreatingContent {
   published: string | null;
   title: string;
   contentItems: any[];
-  //contentItems: IContentItem[];
 }
 
 interface IUpdatingContent {
@@ -166,14 +183,4 @@ interface IUpdatingContent {
   published: string | null;
   title: string;
   contentItems: any[];
-  //contentItems: IContentItem[];
 }
-
-// change to match Slate values
-/*interface IContentItem {
-  index: number
-  key: string
-  element: string
-  attributes: (object|null)
-  children: (IContentItem|string|number|null)
-}*/

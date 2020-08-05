@@ -26,12 +26,12 @@ export class SavedRecipe implements ISavedRecipe {
   async viewMySavedRecipes(userId: number) {
     const sql = `
       SELECT 
-        s.recipe_id AS recipe_id,
-        r.title AS title,
-        r.recipe_image AS recipe_image,
-        r.owner_id AS owner_id,
-        r.recipe_type_id AS recipe_type_id,
-        r.cuisine_id AS cuisine_id
+        s.recipe_id,
+        r.title,
+        r.recipe_image,
+        r.owner_id,
+        r.recipe_type_id,
+        r.cuisine_id
       FROM nobsc_saved_recipes s
       INNER JOIN nobsc_recipes r ON r.recipe_id = s.recipe_id
       WHERE user_id = ?

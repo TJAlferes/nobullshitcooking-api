@@ -109,15 +109,15 @@ export class Ingredient implements IIngredient {
   async viewIngredients(authorId: number, ownerId: number) {
     const sql = `
       SELECT
-        i.ingredient_id AS ingredient_id,
-        i.ingredient_type_id AS ingredient_type_id,
-        i.owner_id AS owner_id,
-        t.ingredient_type_name AS ingredient_type_name,
-        i.ingredient_brand AS ingredient_brand,
-        i.ingredient_variety AS ingredient_variety,
-        i.ingredient_name AS ingredient_name,
-        i.ingredient_description AS ingredient_description,
-        i.ingredient_image AS ingredient_image
+        i.ingredient_id,
+        i.ingredient_type_id,
+        i.owner_id,
+        t.ingredient_type_name,
+        i.ingredient_brand,
+        i.ingredient_variety,
+        i.ingredient_name,
+        i.ingredient_description,
+        i.ingredient_image
       FROM nobsc_ingredients i
       INNER JOIN nobsc_ingredient_types t ON i.ingredient_type_id = t.ingredient_type_id
       WHERE i.author_id = ? AND i.owner_id = ?
@@ -135,13 +135,13 @@ export class Ingredient implements IIngredient {
   ) {
     const sql = `
       SELECT
-        i.ingredient_id AS ingredient_id,
-        t.ingredient_type_name AS ingredient_type_name,
-        i.ingredient_brand AS ingredient_brand,
-        i.ingredient_variety AS ingredient_variety,
-        i.ingredient_name AS ingredient_name,
-        i.ingredient_description AS ingredient_description,
-        i.ingredient_image AS ingredient_image
+        i.ingredient_id,
+        t.ingredient_type_name,
+        i.ingredient_brand,
+        i.ingredient_variety,
+        i.ingredient_name,
+        i.ingredient_description,
+        i.ingredient_image
       FROM nobsc_ingredients i
       INNER JOIN
         nobsc_ingredient_types t ON

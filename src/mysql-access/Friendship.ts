@@ -60,10 +60,10 @@ export class Friendship implements IFriendship {
   async viewMyFriendships(userId: number) {
     const sql = `
       SELECT
-        u.user_id AS user_id,
-        u.username AS username,
-        u.avatar AS avatar,
-        f.status AS status
+        u.user_id,
+        u.username,
+        u.avatar,
+        f.status
       FROM nobsc_users u
       INNER JOIN nobsc_friendships f ON u.user_id = f.friend_id
       WHERE
@@ -78,10 +78,10 @@ export class Friendship implements IFriendship {
   async viewMyAcceptedFriendships(userId: number) {
     const sql = `
       SELECT
-        u.user_id AS user_id,
-        u.username AS username,
-        u.avatar AS avatar,
-        f.status AS status
+        u.user_id,
+        u.username,
+        u.avatar,
+        f.status
       FROM nobsc_users u
       INNER JOIN nobsc_friendships f ON u.user_id = f.friend_id
       WHERE f.user_id = ? AND f.status = "accepted"
@@ -94,10 +94,10 @@ export class Friendship implements IFriendship {
   async viewMyPendingFriendships(userId: number) {
     const sql = `
       SELECT
-        u.user_id AS user_id,
-        u.username AS username,
-        u.avatar AS avatar,
-        f.status AS status
+        u.user_id,
+        u.username,
+        u.avatar,
+        f.status
       FROM nobsc_users u
       INNER JOIN nobsc_friendships f ON u.user_id = f.friend_id
       WHERE f.user_id = ? AND f.status = "pending-received"
@@ -110,10 +110,10 @@ export class Friendship implements IFriendship {
   async viewMyBlockedUsers(userId: number) {
     const sql = `
       SELECT
-        u.user_id AS user_id,
-        u.username AS username,
-        u.avatar AS avatar,
-        f.status AS status
+        u.user_id,
+        u.username,
+        u.avatar,
+        f.status
       FROM nobsc_users u
       INNER JOIN nobsc_friendships f ON u.user_id = f.friend_id
       WHERE f.user_id = ? AND f.status = "blocked"

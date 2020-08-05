@@ -30,6 +30,7 @@ export class Cuisine implements ICuisine {
     return cuisine;
   }
 
+  // TO DO: fix this...
   async viewCuisineDetailById(cuisineId: number) {
     const ownerId = 1;
     const sql = `

@@ -9,6 +9,11 @@ export const router = Router();
 // for /content/...
 
 router.get(
+  '/',
+  catchExceptions(contentController.viewContent)
+);
+
+router.get(
   '/links/:contentTypeName',
   [param('contentTypeName').not().isEmpty().trim().escape()],
   catchExceptions(contentController.getContentLinksByTypeName)

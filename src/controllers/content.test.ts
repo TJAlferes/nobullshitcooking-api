@@ -6,12 +6,14 @@ const rows: any = [{id: 1, name: "Name"}];
 
 jest.mock('../mysql-access/Content', () => ({
   Content: jest.fn().mockImplementation(() => ({
-    getContentLinksByTypeName: mockGetContentLinksByTypeName,
-    viewContentById: mockViewContentById
+    viewContent: mockViewContent,
+    viewContentById: mockViewContentById,
+    getContentLinksByTypeName: mockGetContentLinksByTypeName
   }))
 }));
-let mockGetContentLinksByTypeName = jest.fn().mockResolvedValue([rows]);
+let mockViewContent = jest.fn().mockResolvedValue([rows]);
 let mockViewContentById = jest.fn().mockResolvedValue([rows]);
+let mockGetContentLinksByTypeName = jest.fn().mockResolvedValue([rows]);
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -20,26 +22,23 @@ afterEach(() => {
 // fix
 
 describe('content controller', () => {
-  describe('getContentLinksByTypeName method', () => {
-    const req: Partial<Request> = {params: {contentTypeName: "name"}};
-    const res: Partial<Response> = {send: jest.fn().mockResolvedValue([rows])};
+  describe('viewContent method', () => {
+    const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
-    it('uses getContentLinksByTypeName correctly', async () => {
-      await contentController
-      .getContentLinksByTypeName(<Request>req, <Response>res);
-      expect(mockGetContentLinksByTypeName).toHaveBeenCalledWith("Name");
+    it('uses viewContent correctly', async () => {
+      await contentController.viewContent(<Request>{}, <Response>res);
+      expect(mockViewContent).toHaveBeenCalledWith(1);
     });
 
-    it('sends data', async () => {
-      await contentController
-      .getContentLinksByTypeName(<Request>req, <Response>res);
-      expect(res.send).toBeCalledWith([rows]);
+    it('sends data correctly', async () => {
+      await contentController.viewContent(<Request>{}, <Response>res);
+      expect(res.send).toBeCalledWith(rows);
     });
 
     it('returns correctly', async () => {
       const actual = await contentController
-      .getContentLinksByTypeName(<Request>req, <Response>res);
-      expect(actual).toEqual([rows]);
+      .viewContent(<Request>{}, <Response>res);
+      expect(actual).toEqual(rows);
     });
   });
   
@@ -61,6 +60,29 @@ describe('content controller', () => {
       const actual = await contentController
       .viewContentById(<Request>req, <Response>res);
       expect(actual).toEqual(rows);
+    });
+  });
+
+  describe('getContentLinksByTypeName method', () => {
+    const req: Partial<Request> = {params: {contentTypeName: "name"}};
+    const res: Partial<Response> = {send: jest.fn().mockResolvedValue([rows])};
+
+    it('uses getContentLinksByTypeName correctly', async () => {
+      await contentController
+      .getContentLinksByTypeName(<Request>req, <Response>res);
+      expect(mockGetContentLinksByTypeName).toHaveBeenCalledWith("Name");
+    });
+
+    it('sends data', async () => {
+      await contentController
+      .getContentLinksByTypeName(<Request>req, <Response>res);
+      expect(res.send).toBeCalledWith([rows]);
+    });
+
+    it('returns correctly', async () => {
+      const actual = await contentController
+      .getContentLinksByTypeName(<Request>req, <Response>res);
+      expect(actual).toEqual([rows]);
     });
   });
 });
