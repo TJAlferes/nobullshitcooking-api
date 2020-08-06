@@ -5,93 +5,78 @@ export class FavoriteRecipe implements IFavoriteRecipe {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    //this.viewMostFavorited = this.viewMostFavorited.bind(this);
-    this.deleteAllFavoritesOfRecipe =
-      this.deleteAllFavoritesOfRecipe.bind(this);
-    this.viewMyFavoriteRecipes = this.viewMyFavoriteRecipes.bind(this);
-    this.createMyFavoriteRecipe = this.createMyFavoriteRecipe.bind(this);
-    this.deleteMyFavoriteRecipe = this.deleteMyFavoriteRecipe.bind(this);
-    this.deleteAllMyFavoriteRecipes =
-      this.deleteAllMyFavoriteRecipes.bind(this);
+    this.viewByUserId = this.viewByUserId.bind(this);
+    //this.viewMost = this.viewMost.bind(this);
+    this.create = this.create.bind(this);
+    this.delete = this.delete.bind(this);
+    this.deleteAllByRecipeId = this.deleteAllByRecipeId.bind(this);
+    this.deleteAllByUserId = this.deleteAllByUserId.bind(this);
   }
 
-  /*async viewMostFavorited(limit) {
+  async viewByUserId(userId: number) {
+    const sql = `
+      SELECT 
+        f.recipe_id,
+        r.title,
+        r.image,
+        r.owner_id,
+        r.recipe_type_id,
+        r.cuisine_id
+      FROM favorite_recipes f
+      INNER JOIN recipes r ON r.id = f.recipe_id
+      WHERE f.user_id = ?
+      ORDER BY r.title
+    `;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [userId]);
+    return rows;
+  }
+
+  /*async viewMost(limit: number) {
     //const sql = `
     //  SELECT recipe_id
-    //  FROM nobsc_favorite_recipes
+    //  FROM favorite_recipes
     //  ORDER BY COUNT(user_id) DESC
     //  LIMIT ?
     //`;
     const sql = `
       SELECT recipe_id, COUNT(recipe_id) AS tally
-      FROM nobsc_favorite_recipes
+      FROM favorite_recipes
       GROUP BY recipe_id
       ORDER BY tally DESC
       LIMIT ?
     `;
-    const [ mostFavorited ] = this.pool.execute(sql, [limit]);
-    return mostFavorited;
+    const [ rows ] = this.pool.execute(sql, [limit]);
+    return rows;
   }*/
 
-  async deleteAllFavoritesOfRecipe(recipeId: number) {
+  async create(userId: number, recipeId: number) {
+    await this.delete(userId, recipeId);
+
     const sql = `
-      DELETE
-      FROM nobsc_favorite_recipes
-      WHERE recipe_id = ?
+      INSERT INTO favorite_recipes (user_id, recipe_id) VALUES (?, ?)
     `;
-    const [ unfavoritedRecipes ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [recipeId]);
-    return unfavoritedRecipes;
+    const [ row ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [userId, recipeId]);
+    return row;
   }
 
-  async viewMyFavoriteRecipes(userId: number) {
+  async delete(userId: number, recipeId: number) {
     const sql = `
-      SELECT 
-        f.recipe_id,
-        r.title,
-        r.recipe_image,
-        r.owner_id,
-        r.recipe_type_id,
-        r.cuisine_id
-      FROM nobsc_favorite_recipes f
-      INNER JOIN nobsc_recipes r ON r.recipe_id = f.recipe_id
-      WHERE f.user_id = ?
-      ORDER BY title
+      DELETE FROM favorite_recipes WHERE user_id = ? AND recipe_id = ? LIMIT 1
     `;
-    const [ favoriteRecipes ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [userId]);
-    return favoriteRecipes;
+    const [ row ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [userId, recipeId]);
+    return row;
   }
 
-  async createMyFavoriteRecipe(userId: number, recipeId: number) {
-    await this.deleteMyFavoriteRecipe(userId, recipeId);
-    const sql = `
-      INSERT INTO nobsc_favorite_recipes (user_id, recipe_id)
-      VALUES (?, ?)
-    `;
-    const [ favoritedRecipe ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [userId, recipeId]);
-    return favoritedRecipe;
+  async deleteAllByRecipeId(recipeId: number) {
+    const sql = `DELETE FROM favorite_recipes WHERE recipe_id = ?`;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [recipeId]);
+    return rows;
   }
 
-  async deleteMyFavoriteRecipe(userId: number, recipeId: number) {
-    const sql = `
-      DELETE
-      FROM nobsc_favorite_recipes
-      WHERE user_id = ? AND recipe_id = ?
-      LIMIT 1
-    `;
-    const [ unfavoritedRecipe ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [userId, recipeId]);
-    return unfavoritedRecipe;
-  }
-
-  async deleteAllMyFavoriteRecipes(userId: number) {
-    const sql = `
-      DELETE
-      FROM nobsc_favorite_recipes
-      WHERE user_id = ?
-    `;
+  async deleteAllByUserId(userId: number) {
+    const sql = `DELETE FROM favorite_recipes WHERE user_id = ?`;
     await this.pool.execute<RowDataPacket[]>(sql, [userId]);
   }
 }
@@ -100,10 +85,10 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IFavoriteRecipe {
   pool: Pool;
-  //viewMostFavorited(): Data;
-  deleteAllFavoritesOfRecipe(recipeId: number): Data;
-  viewMyFavoriteRecipes(userId: number): Data;
-  createMyFavoriteRecipe(userId: number, recipeId: number): Data;
-  deleteMyFavoriteRecipe(userId: number, recipeId: number): Data;
-  deleteAllMyFavoriteRecipes(userId: number): void;
+  //viewMost(): Data;
+  viewByUserId(userId: number): Data;
+  create(userId: number, recipeId: number): Data;
+  delete(userId: number, recipeId: number): Data;
+  deleteAllByRecipeId(recipeId: number): Data;
+  deleteAllByUserId(userId: number): void;
 }

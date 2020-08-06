@@ -5,28 +5,20 @@ export class EquipmentType implements IEquipmentType {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewEquipmentTypes = this.viewEquipmentTypes.bind(this);
-    this.viewEquipmentTypeById = this.viewEquipmentTypeById.bind(this);
+    this.view = this.view.bind(this);
+    this.viewById = this.viewById.bind(this);
   }
 
-  async viewEquipmentTypes() {
-    const sql = `
-      SELECT equipment_type_id, equipment_type_name
-      FROM nobsc_equipment_types
-    `;
-    const [ equipmentTypes ] = await this.pool.execute<RowDataPacket[]>(sql);
-    return equipmentTypes;
+  async view() {
+    const sql = `SELECT id, name FROM equipment_types`;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql);
+    return rows;
   }
 
-  async viewEquipmentTypeById(equipmentTypeId: number) {
-    const sql = `
-      SELECT equipment_type_id, equipment_type_name
-      FROM nobsc_equipment_types
-      WHERE equipment_type_id = ?
-    `;
-    const [ equipmentType ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [equipmentTypeId]);
-    return equipmentType;
+  async viewById(id: number) {
+    const sql = `SELECT id, name FROM equipment_types WHERE id = ?`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
+    return row;
   }
 }
 
@@ -34,6 +26,6 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IEquipmentType {
   pool: Pool;
-  viewEquipmentTypes(): Data;
-  viewEquipmentTypeById(equipmentTypeId: number): Data;
+  view(): Data;
+  viewById(id: number): Data;
 }

@@ -5,22 +5,21 @@ export class User implements IUser {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.getUserByEmail = this.getUserByEmail.bind(this);  // sensitive
-    this.getUserByName = this.getUserByName.bind(this);  // sensitive
-    //this.viewUsers = this.viewUsers.bind(this);
-    this.viewUserById = this.viewUserById.bind(this);
-    this.viewUserByName = this.viewUserByName.bind(this);
-    this.createUser = this.createUser.bind(this);
-    this.verifyUser = this.verifyUser.bind(this);
-    this.updateUser = this.updateUser.bind(this);
-    this.deleteUser = this.deleteUser.bind(this);
+    this.getByEmail = this.getByEmail.bind(this);  // sensitive
+    this.getByName = this.getByName.bind(this);  // sensitive
+    this.viewById = this.viewById.bind(this);
+    this.viewByName = this.viewByName.bind(this);
+    this.create = this.create.bind(this);
+    this.verify = this.verify.bind(this);
+    this.update = this.update.bind(this);
+    this.delete = this.delete.bind(this);
   }
 
   // sensitive
-  async getUserByEmail(email: string) {
+  async getByEmail(email: string) {
     const sql = `
-      SELECT user_id, email, pass, username, avatar, confirmation_code
-      FROM nobsc_users
+      SELECT id, email, pass, username, avatar, confirmation_code
+      FROM users
       WHERE email = ?
     `;
     const [ userByEmail ] = await this.pool
@@ -29,99 +28,67 @@ export class User implements IUser {
   }
 
   // sensitive
-  async getUserByName(username: string) {
+  async getByName(username: string) {
     const sql = `
-      SELECT user_id, email, pass, username
-      FROM nobsc_users
-      WHERE username = ?
+      SELECT id, email, pass, username FROM users WHERE username = ?
     `;
-    const [ userByName ] = await this.pool
+    const [ row ] = await this.pool
     .execute<RowDataPacket[]>(sql, [username]);
-    return userByName;
+    return row;
   }
 
-  /*async viewUsers(starting: number, display: number) {
-    const sql = `
-      SELECT username, avatar
-      FROM nobsc_users
-      ORDER BY username ASC
-      LIMIT ?, ?
-    `;
-    const [ allUsers ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [starting, display]);
-    return allUsers;
-  }*/
-
-  async viewUserById(userId: number) {
-    const sql = `
-      SELECT username, avatar
-      FROM nobsc_users
-      WHERE user_id = ?
-    `;
-    const [ user ] = await this.pool.execute<RowDataPacket[]>(sql, [userId]);
-    return user;
+  async viewById(id: number) {
+    const sql = `SELECT username, avatar FROM users WHERE user_id = ?`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
+    return row;
   }
 
-  async viewUserByName(username: string) {
-    const sql = `
-      SELECT user_id, avatar
-      FROM nobsc_users
-      WHERE username = ?
-    `;
-    const [ user ] = await this.pool.execute<RowDataPacket[]>(sql, [username]);
-    return user;
+  async viewByName(username: string) {
+    const sql = `SELECT id, avatar FROM users WHERE username = ?`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [username]);
+    return row;
   }
 
-  async createUser({ email, pass, username, confirmationCode }: ICreatingUser) {
+  async create({ email, pass, username, confirmationCode }: ICreatingUser) {
     const sql = `
-      INSERT INTO nobsc_users (email, pass, username, confirmation_code)
+      INSERT INTO users (email, pass, username, confirmation_code)
       VALUES (?, ?, ?, ?)
     `;
-    const [ createdUser ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [email, pass, username, confirmationCode]);
-    return createdUser;
+    const [ row ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [email, pass, username, confirmationCode]);
+    return row;
   }
 
-  async verifyUser(email: string) {
+  async verify(email: string) {
     const sql = `
-      UPDATE nobsc_users
-      SET confirmation_code = NULL
-      WHERE email = ?
-      LIMIT 1
+      UPDATE users SET confirmation_code = NULL WHERE email = ? LIMIT 1
     `;
-    const [ verifiedUser ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [email]);
-    return verifiedUser;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [email]);
+    return row;
   }
 
-  async updateUser({
-    userId,
+  async update({
+    id,
     email,
     pass,
     username,
     avatar
   }: IUpdatingUser) {
     const sql = `
-      UPDATE nobsc_users
+      UPDATE users
       SET email = ?, pass = ?, username = ?, avatar = ?
-      WHERE user_id = ?
+      WHERE id = ?
       LIMIT 1
     `;
-    const [ updatedUser ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [email, pass, username, avatar, userId]);
-    return updatedUser;
+    const [ row ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [email, pass, username, avatar, id]);
+    return row;
   }
 
-  async deleteUser(userId: number) {
-    const sql = `
-      DELETE
-      FROM nobsc_users
-      WHERE user_id = ?
-      LIMIT 1
-    `;
-    const [ deletedUser ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [userId]);
-    return deletedUser;
+  async delete(id: number) {
+    const sql = `DELETE FROM users WHERE id = ? LIMIT 1`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
+    return row;
   }
 }
 
@@ -129,21 +96,14 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IUser {
   pool: Pool;
-  getUserByEmail(email: string): Data;
-  getUserByName(username: string): Data;
-  //viewUsers(starting: number, display: number): Data;
-  viewUserById(userId: number): Data;
-  viewUserByName(username: string): Data;
-  createUser({ email, pass, username, confirmationCode }: ICreatingUser): Data;
-  verifyUser(email: string): Data;
-  updateUser({
-    userId,
-    email,
-    pass,
-    username,
-    avatar
-  }: IUpdatingUser): Data;
-  deleteUser(userId: number): Data;
+  getByEmail(email: string): Data;
+  getByName(username: string): Data;
+  viewById(id: number): Data;
+  viewByName(username: string): Data;
+  create({email, pass, username, confirmationCode}: ICreatingUser): Data;
+  verify(email: string): Data;
+  update({id, email, pass, username, avatar}: IUpdatingUser): Data;
+  delete(userId: number): Data;
 }
 
 interface ICreatingUser {
@@ -154,7 +114,7 @@ interface ICreatingUser {
 }
 
 interface IUpdatingUser {
-  userId: number;
+  id: number;
   email: string;
   pass: string;
   username: string;

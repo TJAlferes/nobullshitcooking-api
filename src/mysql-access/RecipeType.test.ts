@@ -22,13 +22,13 @@ describe('RecipeType', () => {
   const recipeType = new RecipeType(pool);
 
   it('1', async () => {
-    const results = await recipeType.viewRecipeTypes();
+    const results = await recipeType.view();
     expect(pool.execute).toBeCalledTimes(1);
     expect(results).toEqual([{"key": "value"}]);
   });
 
   it('2', async () => {
-    const [ result ] = await recipeType.viewRecipeTypeById(1);
+    const [ result ] = await recipeType.viewById(1);
     expect(pool.execute).toBeCalledTimes(1);
     expect(result).toEqual({"key": "value"});
   });

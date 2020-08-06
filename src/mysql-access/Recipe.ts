@@ -5,160 +5,143 @@ export class Recipe implements IRecipe {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.getAllPublicRecipesForElasticSearchBulkInsert =
-      this.getAllPublicRecipesForElasticSearchBulkInsert.bind(this);
-    this.getPublicRecipeForElasticSearchInsert =
-      this.getPublicRecipeForElasticSearchInsert.bind(this);
-    this.viewRecipes = this.viewRecipes.bind(this);
-    this.viewRecipeById = this.viewRecipeById.bind(this);
-    this.createRecipe = this.createRecipe.bind(this);
-    this.updateRecipe = this.updateRecipe.bind(this);
-    this.deleteRecipe = this.deleteRecipe.bind(this);
-    this.getAllMyPrivateUserRecipeIds =
-      this.getAllMyPrivateUserRecipeIds.bind(this);
-    this.getInfoToEditMyUserRecipe = this.getInfoToEditMyUserRecipe.bind(this);
-    this.updateMyUserRecipe = this.updateMyUserRecipe.bind(this);
-    this.deleteMyPrivateUserRecipe = this.deleteMyPrivateUserRecipe.bind(this);
-    this.deleteAllMyPrivateUserRecipes =
-      this.deleteAllMyPrivateUserRecipes.bind(this);
-    this.disownAllMyPublicUserRecipes =
-      this.disownAllMyPublicUserRecipes.bind(this);
+    this.getAllForElasticSearch = this.getAllForElasticSearch.bind(this);
+    this.getForElasticSearch = this.getForElasticSearch.bind(this);
+    this.view = this.view.bind(this);
+    this.viewById = this.viewById.bind(this);
+    this.create = this.create.bind(this);
+    this.update = this.update.bind(this);
+    this.deleteById = this.deleteById.bind(this);
+    this.getInfoToEditPrivate = this.getInfoToEditPrivate.bind(this);
+    this.updatePrivate = this.updatePrivate.bind(this);
+    this.deletePrivate = this.deletePrivate.bind(this);
+    this.deletePrivateById = this.deletePrivateById.bind(this);
+    this.disown = this.disown.bind(this);
+    this.disownById = this.disownById.bind(this);
+    this.getAllPrivateIdsByUserId = this.getAllPrivateIdsByUserId.bind(this);
   }
 
-  async getAllPublicRecipesForElasticSearchBulkInsert() {
+  async getAllForElasticSearch() {
     const ownerId = 1;
     const sql = `
       SELECT
-        CAST(r.recipe_id AS CHAR) AS recipe_id,
+        CAST(r.id AS CHAR) AS id,
         u.username AS author,
-        rt.recipe_type_name,
-        c.cuisine_name,
+        rt.name AS recipe_type_name,
+        c.name AS cuisine_name,
         r.title,
         r.description,
         r.directions,
         r.recipe_image,
         (
-          SELECT JSON_ARRAYAGG(m.method_name)
-          FROM nobsc_methods m
-          INNER JOIN nobsc_recipe_methods rm ON rm.method_id = m.method_id
-          WHERE rm.recipe_id = r.recipe_id
+          SELECT JSON_ARRAYAGG(m.name AS method_name)
+          FROM methods m
+          INNER JOIN recipe_methods rm ON rm.method_id = m.id
+          WHERE rm.recipe_id = r.id
         ) method_names,
         (
-          SELECT JSON_ARRAYAGG(e.equipment_name)
-          FROM nobsc_equipment e
-          INNER JOIN nobsc_recipe_equipment re
-          ON re.equipment_id = e.equipment_id
-          WHERE re.recipe_id = r.recipe_id
+          SELECT JSON_ARRAYAGG(e.name AS equipment_name)
+          FROM equipment e
+          INNER JOIN recipe_equipment re ON re.equipment_id = e.id
+          WHERE re.recipe_id = r.id
         ) equipment_names,
         (
-          SELECT JSON_ARRAYAGG(i.ingredient_name)
-          FROM nobsc_ingredients i
-          INNER JOIN nobsc_recipe_ingredients ri
-          ON ri.ingredient_id = i.ingredient_id
-          WHERE ri.recipe_id = r.recipe_id
+          SELECT JSON_ARRAYAGG(i.name AS ingredient_name)
+          FROM ingredients i
+          INNER JOIN recipe_ingredients ri ON ri.ingredient_id = i.id
+          WHERE ri.recipe_id = r.id
         ) ingredient_names,
         (
           SELECT JSON_ARRAYAGG(r.title)
-          FROM nobsc_recipes r
-          INNER JOIN nobsc_recipe_subrecipes rs
-          ON rs.subrecipe_id = r.recipe_id
-          WHERE rs.recipe_id = r.recipe_id
+          FROM recipes r
+          INNER JOIN recipe_subrecipes rs ON rs.subrecipe_id = r.id
+          WHERE rs.recipe_id = r.id
         ) subrecipe_titles
-      FROM nobsc_recipes r
-      INNER JOIN nobsc_users u ON u.user_id = r.author_id
-      INNER JOIN nobsc_recipe_types rt ON rt.recipe_type_id = r.recipe_type_id
-      INNER JOIN nobsc_cuisines c ON c.cuisine_id = r.cuisine_id
+      FROM recipes r
+      INNER JOIN users u ON u.id = r.author_id
+      INNER JOIN recipe_types rt ON rt.id = r.recipe_type_id
+      INNER JOIN cuisines c ON c.id = r.cuisine_id
       WHERE r.owner_id = ?
     `;
-    const [ recipes ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [ownerId]);
+
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
+
     let final = [];
 
-    for (let recipe of recipes) {
-      final.push(
-        {index: {_index: 'recipes', _id: recipe.recipe_id}},
-        {...recipe}
-      );
+    for (let row of rows) {
+      final.push({index: {_index: 'recipes', _id: row.recipe_id}}, {...row});
     }
 
     return final;
   }
 
-  async getPublicRecipeForElasticSearchInsert(recipeId: number) {
+  async getForElasticSearch(id: number) {
     const ownerId = 1;
     const sql = `
       SELECT
-        CAST(r.recipe_id AS CHAR) AS recipe_id,
+        CAST(r.id AS CHAR) AS id,
         u.username AS author,
-        rt.recipe_type_name,
-        c.cuisine_name,
+        rt.name AS recipe_type_name,
+        c.name AS cuisine_name,
         r.title,
         r.description,
         r.directions,
         r.recipe_image,
         (
-          SELECT JSON_ARRAYAGG(m.method_name)
-          FROM nobsc_methods m
-          INNER JOIN nobsc_recipe_methods rm ON rm.method_id = m.method_id
-          WHERE rm.recipe_id = r.recipe_id
+          SELECT JSON_ARRAYAGG(m.name AS method_name)
+          FROM methods m
+          INNER JOIN recipe_methods rm ON rm.method_id = m.id
+          WHERE rm.recipe_id = r.id
         ) method_names,
         (
-          SELECT JSON_ARRAYAGG(e.equipment_name)
-          FROM nobsc_equipment e
-          INNER JOIN nobsc_recipe_equipment re
-          ON re.equipment_id = e.equipment_id
-          WHERE re.recipe_id = r.recipe_id
+          SELECT JSON_ARRAYAGG(e.name AS equipment_name)
+          FROM equipment e
+          INNER JOIN recipe_equipment re ON re.equipment_id = e.id
+          WHERE re.recipe_id = r.id
         ) equipment_names,
         (
-          SELECT JSON_ARRAYAGG(i.ingredient_name)
-          FROM nobsc_ingredients i
-          INNER JOIN nobsc_recipe_ingredients ri
-          ON ri.ingredient_id = i.ingredient_id
-          WHERE ri.recipe_id = r.recipe_id
+          SELECT JSON_ARRAYAGG(i.name AS ingredient_name)
+          FROM ingredients i
+          INNER JOIN recipe_ingredients ri ON ri.ingredient_id = i.id
+          WHERE ri.recipe_id = r.id
         ) ingredient_names,
         (
           SELECT JSON_ARRAYAGG(r.title)
-          FROM nobsc_recipes r
-          INNER JOIN nobsc_recipe_subrecipes rs ON rs.subrecipe_id = r.recipe_id
-          WHERE rs.recipe_id = r.recipe_id
+          FROM recipes r
+          INNER JOIN recipe_subrecipes rs ON rs.subrecipe_id = r.id
+          WHERE rs.recipe_id = r.id
         ) subrecipe_titles
-      FROM nobsc_recipes r
-      INNER JOIN nobsc_users u ON u.user_id = r.author_id
-      INNER JOIN nobsc_recipe_types rt ON rt.recipe_type_id = r.recipe_type_id
-      INNER JOIN nobsc_cuisines c ON c.cuisine_id = r.cuisine_id
-      WHERE r.recipe_id = ? AND r.owner_id = ?
+      FROM recipes r
+      INNER JOIN users u ON u.id = r.author_id
+      INNER JOIN recipe_types rt ON rt.id = r.recipe_type_id
+      INNER JOIN cuisines c ON c.id = r.cuisine_id
+      WHERE r.id = ? AND r.owner_id = ?
     `;
-    const [ recipe ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [recipeId, ownerId]);
-    return recipe;
+    const [ row ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [id, ownerId]);
+    return row;
   }
 
-  async viewRecipes(authorId: number, ownerId: number) {
+  async view(authorId: number, ownerId: number) {
     const sql = `
-      SELECT
-        recipe_id,
-        recipe_type_id,
-        cuisine_id,
-        title,
-        recipe_image,
-        owner_id
-      FROM nobsc_recipes
+      SELECT id, recipe_type_id, cuisine_id, title, recipe_image, owner_id
+      FROM recipes
       WHERE author_id = ? AND owner_id = ?
       ORDER BY title ASC
     `;
-    const [ recipes ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [authorId, ownerId]);
-    return recipes;
+    const [ rows ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [authorId, ownerId]);
+    return rows;
   }
 
-  async viewRecipeById(recipeId: number, authorId: number, ownerId: number) {
+  async viewById(id: number, authorId: number, ownerId: number) {
     const sql = `
       SELECT
-        r.recipe_id,
+        r.id,
         u.username AS author,
         u.avatar AS author_avatar,
-        rt.recipe_type_name,
-        c.cuisine_name,
+        rt.name AS .recipe_type_name,
+        c.name AS cuisine_name,
         r.title,
         r.description,
         r.active_time,
@@ -169,55 +152,55 @@ export class Recipe implements IRecipe {
         r.ingredients_image,
         r.cooking_image,
         (
-          SELECT JSON_ARRAYAGG(JSON_OBJECT('method_name', m.method_name))
-          FROM nobsc_methods m
-          INNER JOIN nobsc_recipe_methods rm ON rm.method_id = m.method_id
-          WHERE rm.recipe_id = r.recipe_id
+          SELECT JSON_ARRAYAGG(JSON_OBJECT('method_name', m.name))
+          FROM methods m
+          INNER JOIN recipe_methods rm ON rm.method_id = m.id
+          WHERE rm.recipe_id = r.id
         ) required_methods,
         (
           SELECT JSON_ARRAYAGG(JSON_OBJECT(
             'amount', re.amount,
-            'equipment_name', e.equipment_name
+            'equipment_name', e.name
           ))
-          FROM nobsc_equipment e
-          INNER JOIN nobsc_recipe_equipment re ON re.equipment_id = e.equipment_id
-          WHERE re.recipe_id = r.recipe_id
+          FROM equipment e
+          INNER JOIN recipe_equipment re ON re.equipment_id = e.id
+          WHERE re.recipe_id = r.id
         ) required_equipment,
         (
           SELECT JSON_ARRAYAGG(JSON_OBJECT(
             'amount', ri.amount,
-            'measurement_name', m.measurement_name,
-            'ingredient_name', i.ingredient_name
+            'measurement_name', m.name,
+            'ingredient_name', i.name
           ))
-          FROM nobsc_ingredients i
-          INNER JOIN nobsc_recipe_ingredients ri
-          ON ri.ingredient_id = i.ingredient_id
-          INNER JOIN nobsc_measurements m ON m.measurement_id = ri.measurement_id
-          WHERE ri.recipe_id = r.recipe_id
+          FROM ingredients i
+          INNER JOIN recipe_ingredients ri
+          ON ri.ingredient_id = i.id
+          INNER JOIN measurements m ON m.id = ri.measurement_id
+          WHERE ri.recipe_id = r.id
         ) required_ingredients,
         (
           SELECT JSON_ARRAYAGG(JSON_OBJECT(
             'amount', rs.amount,
-            'measurement_name', m.measurement_name,
+            'measurement_name', m.name,
             'subrecipe_title', r.title
           ))
-          FROM nobsc_recipes r
-          INNER JOIN nobsc_recipe_subrecipes rs ON rs.subrecipe_id = r.recipe_id
-          INNER JOIN nobsc_measurements m ON m.measurement_id = rs.measurement_id
-          WHERE rs.recipe_id = r.recipe_id
+          FROM recipes r
+          INNER JOIN recipe_subrecipes rs ON rs.subrecipe_id = r.id
+          INNER JOIN measurements m ON m.id = rs.measurement_id
+          WHERE rs.recipe_id = r.id
         ) required_subrecipes
-      FROM nobsc_recipes r
-      INNER JOIN nobsc_users u ON u.user_id = r.author_id
-      INNER JOIN nobsc_recipe_types rt ON rt.recipe_type_id = r.recipe_type_id
-      INNER JOIN nobsc_cuisines c ON c.cuisine_id = r.cuisine_id
-      WHERE r.recipe_id = ? AND r.author_id = ? AND r.owner_id = ?
+      FROM recipes r
+      INNER JOIN users u ON u.id = r.author_id
+      INNER JOIN recipe_types rt ON rt.id = r.recipe_type_id
+      INNER JOIN cuisines c ON c.id = r.cuisine_id
+      WHERE r.id = ? AND r.author_id = ? AND r.owner_id = ?
     `;
-    const [ recipe ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [recipeId, authorId, ownerId]);
-    return recipe;
+    const [ row ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [id, authorId, ownerId]);
+    return row;
   }
 
-  async createRecipe({
+  async create({
     recipeTypeId,
     cuisineId,
     authorId,
@@ -233,7 +216,7 @@ export class Recipe implements IRecipe {
     cookingImage
   }: ICreatingRecipe) {
     const sql = `
-      INSERT INTO nobsc_recipes (
+      INSERT INTO recipes (
         recipe_type_id,
         cuisine_id,
         author_id,
@@ -251,27 +234,27 @@ export class Recipe implements IRecipe {
         ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
       )
     `;
-    const [ createdRecipe ] = await this.pool
-    .execute<RowDataPacket[] & ResultSetHeader>(sql, [
-      recipeTypeId,
-      cuisineId,
-      authorId,
-      ownerId,
-      title,
-      description,
-      activeTime,
-      totalTime,
-      directions,
-      recipeImage,
-      equipmentImage,
-      ingredientsImage,
-      cookingImage
-    ]);
-    return createdRecipe;
+    const [ row ] = await this.pool
+      .execute<RowDataPacket[] & ResultSetHeader>(sql, [
+        recipeTypeId,
+        cuisineId,
+        authorId,
+        ownerId,
+        title,
+        description,
+        activeTime,
+        totalTime,
+        directions,
+        recipeImage,
+        equipmentImage,
+        ingredientsImage,
+        cookingImage
+      ]);
+    return row;
   }
   
-  async updateRecipe({
-    recipeId,
+  async update({
+    id,
     recipeTypeId,
     cuisineId,
     authorId,
@@ -287,7 +270,7 @@ export class Recipe implements IRecipe {
     cookingImage
   }: IUpdatingRecipe) {
     const sql = `
-      UPDATE nobsc_recipes
+      UPDATE recipes
       SET
         recipe_type_id = ?,
         cuisine_id = ?,
@@ -302,10 +285,10 @@ export class Recipe implements IRecipe {
         equipment_image = ?,
         ingredients_image = ?,
         cooking_image = ?
-      WHERE recipe_id = ?
+      WHERE id = ?
       LIMIT 1
     `;
-    const [ updatedRecipe ] = await this.pool.execute<RowDataPacket[]>(sql, [
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [
       recipeTypeId,
       cuisineId,
       authorId,
@@ -319,26 +302,21 @@ export class Recipe implements IRecipe {
       equipmentImage,
       ingredientsImage,
       cookingImage,
-      recipeId
+      id
     ]);
-    return updatedRecipe;
+    return row;
   }
   
-  async deleteRecipe(recipeId: number) {
-    const sql = `DELETE FROM nobsc_recipes WHERE recipe_id = ? LIMIT 1`;
-    const [ deletedRecipe ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [recipeId]);
-    return deletedRecipe;
+  async deleteById(id: number) {
+    const sql = `DELETE FROM recipes WHERE id = ? LIMIT 1`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
+    return row;
   }
 
-  async getInfoToEditMyUserRecipe(
-    recipeId: number,
-    authorId: number,
-    ownerId: number
-  ) {
+  async getInfoToEditPrivate(id: number, authorId: number, ownerId: number) {
     const sql = `
     SELECT
-    r.recipe_id,
+    r.id,
     r.recipe_type_id,
     r.cuisine_id,
     r.owner_id,
@@ -353,8 +331,8 @@ export class Recipe implements IRecipe {
     r.cooking_image,
     (
       SELECT JSON_ARRAYAGG(JSON_OBJECT('method_id', rm.method_id))
-      FROM nobsc_recipe_methods rm
-      WHERE rm.recipe_id = r.recipe_id
+      FROM recipe_methods rm
+      WHERE rm.recipe_id = r.id
     ) required_methods,
     (
       SELECT JSON_ARRAYAGG(JSON_OBJECT(
@@ -362,9 +340,9 @@ export class Recipe implements IRecipe {
         'equipment_type_id', e.equipment_type_id,
         'equipment_id', re.equipment_id
       ))
-      FROM nobsc_equipment e
-      INNER JOIN nobsc_recipe_equipment re ON re.equipment_id = e.equipment_id
-      WHERE re.recipe_id = r.recipe_id
+      FROM equipment e
+      INNER JOIN recipe_equipment re ON re.equipment_id = e.equipment_id
+      WHERE re.recipe_id = r.id
     ) required_equipment,
     (
       SELECT JSON_ARRAYAGG(JSON_OBJECT(
@@ -373,10 +351,9 @@ export class Recipe implements IRecipe {
         'ingredient_type_id', i.ingredient_type_id,
         'ingredient_id', ri.ingredient_id
       ))
-      FROM nobsc_ingredients i
-      INNER JOIN nobsc_recipe_ingredients ri
-      ON ri.ingredient_id = i.ingredient_id
-      WHERE ri.recipe_id = r.recipe_id
+      FROM ingredients i
+      INNER JOIN recipe_ingredients ri ON ri.ingredient_id = i.id
+      WHERE ri.recipe_id = r.id
     ) required_ingredients,
     (
       SELECT JSON_ARRAYAGG(JSON_OBJECT(
@@ -386,23 +363,23 @@ export class Recipe implements IRecipe {
         'cuisine_id', r.cuisine_id,
         'subrecipe_id', rs.subrecipe_id
       ))
-      FROM nobsc_recipes r
-      INNER JOIN nobsc_recipe_subrecipes rs ON rs.subrecipe_id = r.recipe_id
+      FROM recipes r
+      INNER JOIN recipe_subrecipes rs ON rs.subrecipe_id = r.id
       WHERE rs.recipe_id = r.recipe_id
     ) required_subrecipes
-    FROM nobsc_recipes r
-    INNER JOIN nobsc_users u ON u.user_id = r.author_id
-    INNER JOIN nobsc_recipe_types rt ON rt.recipe_type_id = r.recipe_type_id
-    INNER JOIN nobsc_cuisines c ON c.cuisine_id = r.cuisine_id
-    WHERE r.recipe_id = ? AND r.author_id = ? AND r.owner_id = ?;
+    FROM recipes r
+    INNER JOIN users u ON u.id = r.author_id
+    INNER JOIN recipe_types rt ON rt.id = r.recipe_type_id
+    INNER JOIN cuisines c ON c.id = r.cuisine_id
+    WHERE r.id = ? AND r.author_id = ? AND r.owner_id = ?;
     `;
-    const [ recipe ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [recipeId, authorId, ownerId]);
-    return recipe;
+    const [ row ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [id, authorId, ownerId]);
+    return row;
   }
 
-  async updateMyUserRecipe({
-    recipeId,
+  async updatePrivate({
+    id,
     recipeTypeId,
     cuisineId,
     authorId,
@@ -418,7 +395,7 @@ export class Recipe implements IRecipe {
     cookingImage
   }: IUpdatingRecipe) {
     const sql = `
-      UPDATE nobsc_recipes
+      UPDATE recipes
       SET
         recipe_type_id = ?,
         cuisine_id = ?,
@@ -431,10 +408,10 @@ export class Recipe implements IRecipe {
         equipment_image = ?,
         ingredients_image = ?,
         cooking_image = ?
-      WHERE recipe_id = ? AND author_id = ? AND owner_id = ?
+      WHERE id = ? AND author_id = ? AND owner_id = ?
       LIMIT 1
     `;
-    const [ updatedRecipe ] = await this.pool.execute<RowDataPacket[]>(sql, [
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [
       recipeTypeId,
       cuisineId,
       title,
@@ -446,78 +423,56 @@ export class Recipe implements IRecipe {
       equipmentImage,
       ingredientsImage,
       cookingImage,
-      recipeId,
+      id,
       authorId,
       ownerId
     ]);
-    return updatedRecipe;
+    return row;
   }
 
-  async deleteMyPrivateUserRecipe(
-    recipeId: number,
-    authorId: number,
-    ownerId: number
-  ) {
+  async deletePrivate(authorId: number, ownerId: number) {
+    const sql = `DELETE FROM recipes WHERE author_id = ? AND owner_id = ?`;
+    await this.pool.execute<RowDataPacket[]>(sql, [authorId, ownerId]);
+  }
+  
+  async deletePrivateById(id: number, authorId: number, ownerId: number) {
     const sql = `
       DELETE
-      FROM nobsc_recipes
+      FROM recipes
       WHERE recipe_id = ? AND author_id = ? AND owner_id = ?
       LIMIT 1
     `;
-    const [ deletedPrivateUserRecipe ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [
-      recipeId,
-      authorId,
-      ownerId
-    ]);
-    return deletedPrivateUserRecipe;
+    const [ row ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [id, authorId, ownerId]);
+    return row;
   }
 
-  async deleteAllMyPrivateUserRecipes(authorId: number, ownerId: number) {
-    const sql = `
-      DELETE
-      FROM nobsc_recipes
-      WHERE author_id = ? AND owner_id = ?
-    `;
-    await this.pool.execute<RowDataPacket[]>(sql, [authorId, ownerId]);
-  }
-
-  async disownMyPublicUserRecipe(recipeId: number, authorId: number) {
+  async disown(authorId: number) {
     const newAuthorId = 2;
     const sql = `
-      UPDATE nobsc_recipes
-      SET author_id = ?
-      WHERE recipe_id = ? AND author_id = ? AND owner_id = 1
-      LIMIT 1
-    `;
-    const [ disownedPublicUserRecipe ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [
-      newAuthorId,
-      recipeId,
-      authorId
-    ]);
-    return disownedPublicUserRecipe;
-  }
-
-  async disownAllMyPublicUserRecipes(authorId: number) {
-    const newAuthorId = 2;
-    const sql = `
-      UPDATE nobsc_recipes
-      SET author_id = ?
-      WHERE author_id = ? AND owner_id = 1
+      UPDATE recipes SET author_id = ? WHERE author_id = ? AND owner_id = 1
     `;
     await this.pool.execute<RowDataPacket[]>(sql, [newAuthorId, authorId]);
   }
 
-  async getAllMyPrivateUserRecipeIds(userId: number) {
+  async disownById(id: number, authorId: number) {
+    const newAuthorId = 2;
     const sql = `
-      SELECT recipe_id
-      FROM nobsc_recipes
-      WHERE author_id = ? AND owner_id = ?
+      UPDATE recipes
+      SET author_id = ?
+      WHERE id = ? AND author_id = ? AND owner_id = 1
+      LIMIT 1
     `;
-    const [ recipes ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [userId, userId]);
-    return recipes.map(recipe => recipe.recipe_id);
+    const [ row ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [newAuthorId, id, authorId]);
+    return row;
+  }
+
+  async getAllPrivateIdsByUserId(userId: number) {
+    const sql = `SELECT id FROM recipes WHERE author_id = ? AND owner_id = ?`;
+    const [ rows ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [userId, userId]);
+    return rows.map(r => r.id);
   }
 }
 
@@ -527,11 +482,11 @@ type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
 
 export interface IRecipe {
   pool: Pool;
-  getAllPublicRecipesForElasticSearchBulkInsert(): any;
-  getPublicRecipeForElasticSearchInsert(recipeId: number): Data;
-  viewRecipes(authorId: number, ownerId: number): Data;
-  viewRecipeById(recipeId: number, authorId: number, ownerId: number): Data;
-  createRecipe({
+  getAllForElasticSearch(): any;
+  getForElasticSearch(id: number): Data;
+  view(authorId: number, ownerId: number): Data;
+  viewById(id: number, authorId: number, ownerId: number): Data;
+  create({
     recipeTypeId,
     cuisineId,
     authorId,
@@ -546,8 +501,8 @@ export interface IRecipe {
     ingredientsImage,
     cookingImage
   }: ICreatingRecipe): DataWithHeader;
-  updateRecipe({
-    recipeId,
+  update({
+    id,
     recipeTypeId,
     cuisineId,
     authorId,
@@ -562,14 +517,10 @@ export interface IRecipe {
     ingredientsImage,
     cookingImage
   }: IUpdatingRecipe): Data;
-  deleteRecipe(recipeId: number): Data;
-  getInfoToEditMyUserRecipe(
-    recipeId: number,
-    authorId: number,
-    ownerId: number
-  ): Data;
-  updateMyUserRecipe({
-    recipeId,
+  deleteById(id: number): Data;
+  getInfoToEditPrivate(id: number, authorId: number, ownerId: number): Data;
+  updatePrivate({
+    id,
     recipeTypeId,
     cuisineId,
     authorId,
@@ -584,15 +535,11 @@ export interface IRecipe {
     ingredientsImage,
     cookingImage
   }: IUpdatingRecipe): Data;
-  deleteMyPrivateUserRecipe(
-    recipeId: number,
-    authorId: number,
-    ownerId: number
-  ): Data;
-  disownMyPublicUserRecipe(recipeId: number, authorId: number): Data;
-  deleteAllMyPrivateUserRecipes(authorId: number, ownerId: number): void;
-  disownAllMyPublicUserRecipes(authorId: number): void;
-  getAllMyPrivateUserRecipeIds(userId: number): Promise<number[]>;
+  deletePrivate(authorId: number, ownerId: number): void;
+  deletePrivateById(id: number, authorId: number, ownerId: number): Data;
+  disown(authorId: number): void;
+  disownById(id: number, authorId: number): Data;
+  getAllPrivateIdsByUserId(userId: number): Promise<number[]>;
 }
 
 export interface ICreatingRecipe {
@@ -612,6 +559,6 @@ export interface ICreatingRecipe {
 }
 
 export interface IUpdatingRecipe extends ICreatingRecipe {
-  recipeId: number;
+  id: number;
   //  what about prevImage ?
 }

@@ -5,140 +5,88 @@ export class RecipeEquipment implements IRecipeEquipment {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewRecipeEquipmentByRecipeId =
-      this.viewRecipeEquipmentByRecipeId.bind(this);
-    this.createRecipeEquipment = this.createRecipeEquipment.bind(this);
-    this.updateRecipeEquipment = this.updateRecipeEquipment.bind(this);
-    this.deleteRecipeEquipmentByRecipeIds =
-      this.deleteRecipeEquipmentByRecipeIds.bind(this);
-    this.deleteRecipeEquipment = this.deleteRecipeEquipment.bind(this);
-    this.deleteRecipeEquipmentByEquipmentId =
-      this.deleteRecipeEquipmentByEquipmentId.bind(this);
+    this.viewByRecipeId = this.viewByRecipeId.bind(this);
+    this.create = this.create.bind(this);
+    this.update = this.update.bind(this);
+    this.deleteByRecipeIds = this.deleteByRecipeIds.bind(this);
+    this.deleteByRecipeId = this.deleteByRecipeId.bind(this);
+    this.deleteByEquipmentId = this.deleteByEquipmentId.bind(this);
   }
 
-  async viewRecipeEquipmentByRecipeId(recipeId: number) {
+  async viewByRecipeId(recipeId: number) {
     const sql = `
-      SELECT re.amount, e.equipment_name
-      FROM nobsc_recipe_equipment re
-      INNER JOIN nobsc_equipment e ON e.equipment_id = re.equipment_id
+      SELECT re.amount, e.name AS equipment_name
+      FROM recipe_equipment re
+      INNER JOIN equipment e ON e.id = re.equipment_id
       WHERE re.recipe_id = ?
       ORDER BY e.equipment_type_id
     `;
-
-    const [ recipeEquipment ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [recipeId]);
-
-    return recipeEquipment;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [recipeId]);
+    return rows;
   }
 
-  async createRecipeEquipment(
-    recipeEquipment: number[],
-    recipeEquipmentPlaceholders: string
-  ) {
+  async create(recipeEquipment: number[], placeholders: string) {
     const sql = `
-      INSERT INTO nobsc_recipe_equipment (recipe_id, equipment_id, amount)
-      VALUES ${recipeEquipmentPlaceholders} 
+      INSERT INTO recipe_equipment (recipe_id, equipment_id, amount)
+      VALUES ${placeholders} 
     `;
-
-    const [ createdRecipeEquipment ] = await this.pool
-    .execute<RowDataPacket[]>(sql, recipeEquipment);
-
-    return createdRecipeEquipment;
+    const [ row ] = await this.pool
+      .execute<RowDataPacket[]>(sql, recipeEquipment);
+    return row;
   }
 
   // finish
-  async updateRecipeEquipment(
+  async update(
     recipeEquipment: number[],
-    recipeEquipmentPlaceholders: string,
+    placeholders: string,
     recipeId: number
   ) {
-    const sql1 = `
-      DELETE
-      FROM nobsc_recipe_equipment
-      WHERE recipe_id = ?
-    `;
-
+    const sql1 = `DELETE FROM recipe_equipment WHERE recipe_id = ?`;
     const sql2 = (recipeEquipment.length)
     ? `
-      INSERT INTO nobsc_recipe_equipment (recipe_id, equipment_id, amount)
-      VALUES ${recipeEquipmentPlaceholders} 
+      INSERT INTO recipe_equipment (recipe_id, equipment_id, amount)
+      VALUES ${placeholders} 
     `
     : "none";
-
     const connection = await this.pool.getConnection();
 
     await connection.beginTransaction();
 
     try {
-
       await connection.query(sql1, [recipeId]);
 
       if (sql2 !== "none") {
-
-        const [ updatedRecipeEquipment ] = await connection
-        .query(sql2, recipeEquipment);
-        
+        const [ row ] = await connection.query(sql2, recipeEquipment);
         await connection.commit();
-
-        return updatedRecipeEquipment;
-
+        return row;
       } else {
-
         await connection.commit();
-
       }
-
     } catch (err) {
-
       await connection.rollback();
-
       throw err;
-
     } finally {
-
       connection.release();
-
     }
   }
 
-  async deleteRecipeEquipmentByRecipeIds(recipeIds: number[]) {
-    const sql = `
-      DELETE
-      FROM nobsc_recipe_equipment
-      WHERE recipe_id = ANY(?)
-    `;
-
-    const [ deletedRecipeEquipment ] = await this.pool
-    .execute<RowDataPacket[]>(sql, recipeIds);
-
-    return deletedRecipeEquipment;
+  async deleteByEquipmentId(equipmentId: number) {
+    const sql = `DELETE FROM recipe_equipment WHERE equipment_id = ?`;
+    const [ rows ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [equipmentId]);
+    return rows;
   }
 
-  // TO DO: rename to deleteRecipeEquipmentByRecipeId
-  async deleteRecipeEquipment(recipeId: number) {
-    const sql = `
-      DELETE
-      FROM nobsc_recipe_equipment
-      WHERE recipe_id = ?
-    `;
-
-    const [ deletedRecipeEquipment ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [recipeId]);
-
-    return deletedRecipeEquipment;
+  async deleteByRecipeId(recipeId: number) {
+    const sql = `DELETE FROM recipe_equipment WHERE recipe_id = ?`;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [recipeId]);
+    return rows;
   }
 
-  async deleteRecipeEquipmentByEquipmentId(equipmentId: number) {
-    const sql = `
-      DELETE
-      FROM nobsc_recipe_equipment
-      WHERE equipment_id = ?
-    `;
-
-    const [ deletedRecipeEquipment ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [equipmentId]);
-
-    return deletedRecipeEquipment;
+  async deleteByRecipeIds(recipeIds: number[]) {
+    const sql = `DELETE FROM recipe_equipment WHERE recipe_id = ANY(?)`;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, recipeIds);
+    return rows;
   }
 }
 
@@ -155,19 +103,16 @@ type DataWithExtra = Promise<
 
 export interface IRecipeEquipment {
   pool: Pool;
-  viewRecipeEquipmentByRecipeId(recipeId: number): Data;
-  createRecipeEquipment(
+  viewByRecipeId(recipeId: number): Data;
+  create(recipeEquipment: number[], placeholders: string): Data;
+  update(
     recipeEquipment: number[],
-    recipeEquipmentPlaceholders: string
-  ): Data;
-  updateRecipeEquipment(
-    recipeEquipment: number[],
-    recipeEquipmentPlaceholders: string,
+    placeholders: string,
     recipeId: number
   ): DataWithExtra;  // | finish
-  deleteRecipeEquipmentByRecipeIds(recipeIds: number[]): Data;
-  deleteRecipeEquipment(recipeId: number): Data;
-  deleteRecipeEquipmentByEquipmentId(equipmentId: number): Data;
+  deleteByEquipmentId(equipmentId: number): Data;
+  deleteByRecipeId(recipeId: number): Data;
+  deleteByRecipeIds(recipeIds: number[]): Data;
 }
 
 export interface IMakeRecipeEquipment {

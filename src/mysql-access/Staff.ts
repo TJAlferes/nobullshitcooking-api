@@ -5,97 +5,75 @@ export class Staff implements IStaff {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.getStaffByEmail = this.getStaffByEmail.bind(this);
-    this.getStaffByName = this.getStaffByName.bind(this);
-    this.viewAllStaff = this.viewAllStaff.bind(this);
-    this.viewStaffById = this.viewStaffById.bind(this);
-    this.createStaff = this.createStaff.bind(this);
-    this.updateStaff = this.updateStaff.bind(this);
-    this.deleteStaff = this.deleteStaff.bind(this);
+    this.getByEmail = this.getByEmail.bind(this);
+    this.getByName = this.getByName.bind(this);
+    this.view = this.view.bind(this);
+    this.viewById = this.viewById.bind(this);
+    this.create = this.create.bind(this);
+    this.update = this.update.bind(this);
+    this.delete = this.delete.bind(this);
   }
 
-  async getStaffByEmail(email: string) {
+  async getByEmail(email: string) {
     const sql = `
       SELECT staff_id, email, pass, staffname, avatar
-      FROM nobsc_staff
+      FROM staff
       WHERE email = ?
     `;
-    const [ staffByEmail ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [email]);
-    return staffByEmail;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [email]);
+    return row;
   }
 
-  async getStaffByName(staffname: string) {
+  async getByName(staffname: string) {
     const sql = `
       SELECT staff_id, email, pass, staffname, avatar
-      FROM nobsc_staff
+      FROM staff
       WHERE staffname = ?
     `;
-    const [ staffByName ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [staffname]);
-    return staffByName;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [staffname]);
+    return row;
   }
 
-  async viewAllStaff(starting: number, display: number) {
+  async view(starting: number, display: number) {
     const sql = `
-      SELECT staffname, avatar
-      FROM nobsc_staff
-      ORDER BY staffname ASC
-      LIMIT ?, ?
+      SELECT staffname, avatar FROM staff ORDER BY staffname ASC LIMIT ?, ?
     `;
-    const [ allStaff ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [starting, display]);
-    return allStaff;
+    const [ rows ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [starting, display]);
+    return rows;
   }
 
-  async viewStaffById(staffId: number) {
-    const sql = `
-      SELECT staffname, avatar
-      FROM nobsc_staff
-      WHERE staff_id = ?
-    `;
-    const [ staff ] = await this.pool.execute<RowDataPacket[]>(sql, [staffId]);
-    return staff;
+  async viewById(id: number) {
+    const sql = `SELECT staffname, avatar FROM staff WHERE staff_id = ?`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
+    return row;
   }
 
-  async createStaff({ email, pass, staffname }: ICreatingStaff) {
+  async create({ email, pass, staffname }: ICreatingStaff) {
     const sql = `
-      INSERT INTO nobsc_staff (email, pass, staffname)
-      VALUES (?, ?, ?)
+      INSERT INTO staff (email, pass, staffname) VALUES (?, ?, ?)
     `;
-    const [ createdStaff ] = await this.pool
+    const [ row ] = await this.pool
     .execute<RowDataPacket[]>(sql, [email, pass, staffname]);
-    return createdStaff;
+    return row;
   }
 
-  async updateStaff({
-    staffId,
-    email,
-    pass,
-    staffname,
-    avatar
-  }: IUpdatingStaff) {
+  async update({ id, email, pass, staffname, avatar }: IUpdatingStaff) {
     const sql = `
-      UPDATE nobsc_staff
+      UPDATE staff
       SET email = ?, pass = ?, staffname = ?, avatar = ?
-      WHERE staff_id = ?
+      WHERE id = ?
       LIMIT 1
     `;
-    const [ updatedStaff ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [email, pass, staffname, avatar, staffId]);
-    return updatedStaff;
+    const [ row ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [email, pass, staffname, avatar, id]);
+    return row;
   }
 
-  async deleteStaff(staffId: number) {
-    const sql = `
-      DELETE
-      FROM nobsc_staff
-      WHERE staff_id = ?
-      LIMIT 1
-    `;
-    const [ deletedStaff ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [staffId]);
-    return deletedStaff;
+  async delete(id: number) {
+    const sql = `DELETE FROM staff WHERE id = ? LIMIT 1`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
+    return row;
   }
 }
 
@@ -103,21 +81,13 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IStaff {
   pool: Pool;
-  getStaffByEmail(email: string): Data;
-  getStaffByName(staffname: string): Data;
-  //getStaffIdByStaffname(staffname: string): Data;
-  viewAllStaff(starting: number, display: number): Data;
-  viewStaffById(staffId: number): Data;
-  createStaff({ email, pass, staffname }: ICreatingStaff): Data;
-  //setAvatar(avatar: string, staffId: number): Data;
-  updateStaff({
-    staffId,
-    email,
-    pass,
-    staffname,
-    avatar
-  }: IUpdatingStaff): Data;
-  deleteStaff(userId: number): Data;
+  getByEmail(email: string): Data;
+  getByName(staffname: string): Data;
+  view(starting: number, display: number): Data;
+  viewById(id: number): Data;
+  create({email, pass, staffname}: ICreatingStaff): Data;
+  update({id, email, pass, staffname, avatar}: IUpdatingStaff): Data;
+  delete(id: number): Data;
 }
 
 interface ICreatingStaff {
@@ -126,10 +96,7 @@ interface ICreatingStaff {
   staffname: string;
 }
 
-interface IUpdatingStaff {
-  staffId: number;
-  email: string;
-  pass: string;
-  staffname: string;
+interface IUpdatingStaff extends ICreatingStaff {
+  id: number;
   avatar: string;
 }

@@ -5,72 +5,57 @@ export class SavedRecipe implements ISavedRecipe {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.deleteAllSavesOfRecipe = this.deleteAllSavesOfRecipe.bind(this);
-    this.viewMySavedRecipes = this.viewMySavedRecipes.bind(this);
-    this.createMySavedRecipe = this.createMySavedRecipe.bind(this);
-    this.deleteMySavedRecipe = this.deleteMySavedRecipe.bind(this);
-    this.deleteAllMySavedRecipes = this.deleteAllMySavedRecipes.bind(this);
+    this.viewByUserId = this.viewByUserId.bind(this);
+    this.create = this.create.bind(this);
+    this.delete = this.delete.bind(this);
+    this.deleteAllByRecipeId = this.deleteAllByRecipeId.bind(this);
+    this.deleteAllByUserId = this.deleteAllByUserId.bind(this);
   }
 
-  async deleteAllSavesOfRecipe(recipeId: number) {
-    const sql = `
-      DELETE
-      FROM nobsc_saved_recipes
-      WHERE recipe_id = ?
-    `;
-    const [ unsavedRecipes ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [recipeId]);
-    return unsavedRecipes;
-  }
-
-  async viewMySavedRecipes(userId: number) {
+  async viewByUserId(userId: number) {
     const sql = `
       SELECT 
         s.recipe_id,
         r.title,
-        r.recipe_image,
+        r.image,
         r.owner_id,
         r.recipe_type_id,
         r.cuisine_id
-      FROM nobsc_saved_recipes s
-      INNER JOIN nobsc_recipes r ON r.recipe_id = s.recipe_id
+      FROM saved_recipes s
+      INNER JOIN recipes r ON r.id = s.recipe_id
       WHERE user_id = ?
       ORDER BY title
     `;
-    const [ savedRecipes ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [userId]);
-    return savedRecipes;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [userId]);
+    return rows;
   }
 
-  async createMySavedRecipe(userId: number, recipeId: number) {
-    await this.deleteMySavedRecipe(userId, recipeId);
-    const sql = `
-      INSERT INTO nobsc_saved_recipes (user_id, recipe_id)
-      VALUES (?, ?)
-    `;
-    const [ savedRecipe ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [userId, recipeId]);
-    return savedRecipe;
+  async create(userId: number, recipeId: number) {
+    await this.delete(userId, recipeId);
+
+    const sql = `INSERT INTO saved_recipes (user_id, recipe_id) VALUES (?, ?)`;
+    const [ row ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [userId, recipeId]);
+    return row;
   }
 
-  async deleteMySavedRecipe(userId: number, recipeId: number) {
+  async delete(userId: number, recipeId: number) {
     const sql = `
-      DELETE
-      FROM nobsc_saved_recipes
-      WHERE user_id = ? AND recipe_id = ?
-      LIMIT 1
+      DELETE FROM saved_recipes WHERE user_id = ? AND recipe_id = ? LIMIT 1
     `;
-    const [ unsavedRecipe ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [userId, recipeId]);
-    return unsavedRecipe;
+    const [ row ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [userId, recipeId]);
+    return row;
   }
 
-  async deleteAllMySavedRecipes(userId: number) {
-    const sql = `
-      DELETE
-      FROM nobsc_saved_recipes
-      WHERE user_id = ?
-    `;
+  async deleteAllByRecipeId(recipeId: number) {
+    const sql = `DELETE FROM saved_recipes WHERE recipe_id = ?`;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [recipeId]);
+    return rows;
+  }
+
+  async deleteAllByUserId(userId: number) {
+    const sql = `DELETE FROM saved_recipes WHERE user_id = ?`;
     await this.pool.execute<RowDataPacket[]>(sql, [userId]);
   }
 }
@@ -79,9 +64,9 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface ISavedRecipe {
   pool: Pool;
-  deleteAllSavesOfRecipe(recipeId: number): Data;
-  viewMySavedRecipes(userId: number): Data;
-  createMySavedRecipe(userId: number, recipeId: number): Data;
-  deleteMySavedRecipe(userId: number, recipeId: number): Data;
-  deleteAllMySavedRecipes(userId: number): void;
+  viewByUserId(userId: number): Data;
+  create(userId: number, recipeId: number): Data;
+  delete(userId: number, recipeId: number): Data;
+  deleteAllByRecipeId(recipeId: number): Data;
+  deleteAllByUserId(userId: number): void;
 }

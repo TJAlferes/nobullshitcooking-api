@@ -5,28 +5,20 @@ export class Measurement implements IMeasurement {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewMeasurements = this.viewMeasurements.bind(this);
-    this.viewMeasurementById = this.viewMeasurementById.bind(this);
+    this.view = this.view.bind(this);
+    this.viewById = this.viewById.bind(this);
   }
 
-  async viewMeasurements() {
-    const sql = `
-      SELECT measurement_id, measurement_name
-      FROM nobsc_measurements
-    `;
-    const [ measurements ] = await this.pool.execute<RowDataPacket[]>(sql);
-    return measurements;
+  async view() {
+    const sql = `SELECT id, name FROM measurements`;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql);
+    return rows;
   }
 
-  async viewMeasurementById(measurementId: number) {
-    const sql = `
-      SELECT measurement_id, measurement_name
-      FROM nobsc_measurements
-      WHERE measurement_id = ?
-    `;
-    const [ measurement ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [measurementId]);
-    return measurement;
+  async viewById(id: number) {
+    const sql = `SELECT id, name FROM measurements WHERE id = ?`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
+    return row;
   }
 }
 
@@ -34,6 +26,6 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IMeasurement {
   pool: Pool;
-  viewMeasurements(): Data;
-  viewMeasurementById(measurementId: number): Data;
+  view(): Data;
+  viewById(id: number): Data;
 }

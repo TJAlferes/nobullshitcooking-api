@@ -35,6 +35,7 @@ export class Content implements IContent {
     return rows;
   }
 
+  // TO DO: finish
   async view(authorId: number) {
     const sql = `
       SELECT

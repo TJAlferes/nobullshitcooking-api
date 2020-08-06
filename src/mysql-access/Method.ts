@@ -5,27 +5,19 @@ export class Method implements IMethod {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewMethods = this.viewMethods.bind(this);
-    this.viewMethodById = this.viewMethodById.bind(this);
+    this.view = this.view.bind(this);
+    this.viewById = this.viewById.bind(this);
   }
 
-  async viewMethods() {
-    const sql = `
-      SELECT method_id, method_name
-      FROM nobsc_methods
-    `;
+  async view() {
+    const sql = `SELECT id, name FROM methods`;
     const [ methods ] = await this.pool.execute<RowDataPacket[]>(sql);
     return methods;
   }
 
-  async viewMethodById(methodId: number) {
-    const sql = `
-      SELECT method_id, method_name
-      FROM nobsc_methods
-      WHERE method_id = ?
-    `;
-    const [ method ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [methodId]);
+  async viewById(id: number) {
+    const sql = `SELECT id, name FROM methods WHERE id = ?`;
+    const [ method ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
     return method;
   }
 }
@@ -34,6 +26,6 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IMethod {
   pool: Pool;
-  viewMethods(): Data;
-  viewMethodById(methodId: number): Data;
+  view(): Data;
+  viewById(id: number): Data;
 }

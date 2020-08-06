@@ -5,73 +5,50 @@ export class Supplier implements ISupplier {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewAllSuppliers = this.viewAllSuppliers.bind(this);
-    this.viewSupplierById = this.viewSupplierById.bind(this);
-    this.createSupplier = this.createSupplier.bind(this);
-    this.updateSupplier = this.updateSupplier.bind(this);
-    this.deleteSupplier = this.deleteSupplier.bind(this);
+    this.view = this.view.bind(this);
+    this.viewById = this.viewById.bind(this);
+    this.create = this.create.bind(this);
+    this.update = this.update.bind(this);
+    this.delete = this.delete.bind(this);
   }
 
-  async viewAllSuppliers() {
-    const sql = `SELECT supplier_id, supplier_name FROM nobsc_suppliers`;
-    const [ suppliers ] = await this.pool.execute<RowDataPacket[]>(sql);
-    return suppliers;
+  async view() {
+    const sql = `SELECT id, name FROM suppliers`;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql);
+    return rows;
   }
 
-  async viewSupplierById(supplierId: number) {
-    const sql = `
-      SELECT supplier_id, supplier_name
-      FROM nobsc_suppliers
-      WHERE supplier_id = ?
-    `;
-    const [ supplier ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [supplierId]);
-    return supplier;
+  async viewById(id: number) {
+    const sql = `SELECT id, name FROM suppliers WHERE id = ?`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
+    return row;
   }
 
-  async createSupplier(supplierName: string) {
-    const sql = `
-      INSERT INTO nobsc_suppliers (supplier_name)
-      VALUES (?)
-    `;
-    const [ createdSupplier ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [supplierName]);
-    return createdSupplier;
+  async create(name: string) {
+    const sql = `INSERT INTO suppliers (name) VALUES (?)`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [name]);
+    return row;
   }
 
-  async updateSupplier(supplierId: number, supplierName: string) {
-    const sql = `
-      UPDATE nobsc_suppliers
-      SET supplier_name = ?
-      WHERE supplier_id = ?
-      LIMIT 1
-    `;
-    const [ updatedSupplier ] = await this.pool.execute<RowDataPacket[]>(sql, [
-      supplierName,
-      supplierId
-    ]);
-    return updatedSupplier;
+  async update(id: number, name: string) {
+    const sql = `UPDATE suppliers SET name = ? WHERE id = ? LIMIT 1`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [name, id]);
+    return row;
   }
 
-  async deleteSupplier(supplierId: number) {
-    const sql = `
-      DELETE
-      FROM nobsc_suppliers
-      WHERE supplier_id = ?
-      LIMIT 1
-    `;
-    const [ deletedSupplier ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [supplierId]);
-    return deletedSupplier;
+  async delete(id: number) {
+    const sql = `DELETE FROM suppliers WHERE id = ? LIMIT 1`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
+    return row;
   }
 }
 
 type Data = Promise<RowDataPacket[]>;
 
 export interface ISupplier {
-  viewAllSuppliers(): Data;
-  viewSupplierById(supplierId: number): Data;
-  createSupplier(supplierName: string): Data;
-  updateSupplier(supplierId: number, supplierName: string): Data;
-  deleteSupplier(supplierId: number): Data;
+  view(): Data;
+  viewById(id: number): Data;
+  create(name: string): Data;
+  update(id: number, name: string): Data;
+  delete(id: number): Data;
 }

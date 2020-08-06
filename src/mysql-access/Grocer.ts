@@ -5,87 +5,52 @@ export class Grocer implements IGrocer {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewAllMyPrivateUserGrocers =
-      this.viewAllMyPrivateUserGrocers.bind(this);
-    this.createMyPrivateUserGrocer = this.createMyPrivateUserGrocer.bind(this);
-    this.updateMyPrivateUserGrocer = this.updateMyPrivateUserGrocer.bind(this);
-    this.deleteMyPrivateUserGrocer = this.deleteMyPrivateUserGrocer.bind(this);
+    this.view = this.view.bind(this);
+    this.create = this.create.bind(this);
+    this.update = this.update.bind(this);
+    this.delete = this.delete.bind(this);
   }
 
-  async viewAllMyPrivateUserGrocers(ownerId: number) {
+  async view(ownerId: number) {
     const sql = `
-      SELECT grocer_id, grocer_name, grocer_address, grocer_notes
-      FROM nobsc_grocers
+      SELECT id, name, address, notes
+      FROM grocers
       WHERE owner_id = ?
-      ORDER BY grocer_name ASC
+      ORDER BY name ASC
     `;
-    const [ allMyPrivateUserGrocers ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [ownerId]);
-    return allMyPrivateUserGrocers;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
+    return rows;
   }
 
-  async createMyPrivateUserGrocer({
-    ownerId,
-    grocerName,
-    grocerAddress,
-    grocerNotes
-  }: ICreatingGrocer) {
+  async create({ ownerId, name, address, notes }: ICreatingGrocer) {
     const sql = `
-      INSERT INTO nobsc_grocers
+      INSERT INTO grocers
       (owner_id, grocer_name, grocer_address, grocer_notes)
       VALUES
       (?, ?, ?, ?)
     `;
-    const [ createdPrivateUserGrocer ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [
-      ownerId,
-      grocerName,
-      grocerAddress,
-      grocerNotes
-    ]);
-    return createdPrivateUserGrocer;
+    const [ row ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [ownerId, name, address, notes]);
+    return row;
   }
 
-  async updateMyPrivateUserGrocer({
-    grocerId,
-    ownerId,
-    grocerName,
-    grocerAddress,
-    grocerNotes
-  }: IUpdatingGrocer) {
+  async update({ id, ownerId, name, address, notes }: IUpdatingGrocer) {
     const sql = `
-      UPDATE nobsc_grocers
-      SET
-        grocer_name = ?,
-        grocer_address = ?,
-        grocer_notes = ?
-      WHERE grocer_id = ? AND owner_id = ?
+      UPDATE grocers
+      SET name = ?, address = ?, notes = ?
+      WHERE id = ? AND owner_id = ?
       LIMIT 1
     `;
-    const [ updatedPrivateUserGrocer ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [
-      grocerName,
-      grocerAddress,
-      grocerNotes,
-      ownerId,
-      grocerId
-    ]);
-    return updatedPrivateUserGrocer;
+    const [ row ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [name, address, notes, ownerId, id]);
+    return row;
   }
 
-  async deleteMyPrivateUserGrocer(grocerId: number, ownerId: number) {
-    const sql = `
-      DELETE
-      FROM nobsc_grocers
-      WHERE owner_id = ? AND grocer_id = ?
-      LIMIT 1
-    `;
-    const [ deletedPrivateUserGrocer ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [
-      ownerId,
-      grocerId
-    ]);
-    return deletedPrivateUserGrocer;
+  async delete(id: number, ownerId: number) {
+    const sql = `DELETE FROM grocers WHERE owner_id = ? AND id = ? LIMIT 1`;
+    const [ row ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [ownerId, id]);
+    return row;
   }
 }
 
@@ -93,30 +58,19 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IGrocer {
   pool: Pool;
-  viewAllMyPrivateUserGrocers(ownerId: number): Data;
-  createMyPrivateUserGrocer({
-    ownerId,
-    grocerName,
-    grocerAddress,
-    grocerNotes
-  }: ICreatingGrocer): Data;
-  updateMyPrivateUserGrocer({
-    grocerId,
-    ownerId,
-    grocerName,
-    grocerAddress,
-    grocerNotes
-  }: IUpdatingGrocer): Data;
-  deleteMyPrivateUserGrocer(grocerId: number, ownerId: number): Data;
+  view(ownerId: number): Data;
+  create({ownerId, name, address, notes}: ICreatingGrocer): Data;
+  update({id, ownerId, name, address, notes}: IUpdatingGrocer): Data;
+  delete(id: number, ownerId: number): Data;
 }
 
 interface ICreatingGrocer {
   ownerId: number;
-  grocerName: string;
-  grocerAddress: string;
-  grocerNotes: string;
+  name: string;
+  address: string;
+  notes: string;
 }
 
 interface IUpdatingGrocer extends ICreatingGrocer {
-  grocerId: number;
+  id: number;
 }

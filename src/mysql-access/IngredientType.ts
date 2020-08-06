@@ -5,29 +5,20 @@ export class IngredientType implements IIngredientType {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewIngredientTypes = this.viewIngredientTypes.bind(this);
-    this.viewIngredientTypeById = this.viewIngredientTypeById.bind(this);
+    this.view = this.view.bind(this);
+    this.viewById = this.viewById.bind(this);
   }
 
-  async viewIngredientTypes() {
-    const sql = `
-      SELECT ingredient_type_id, ingredient_type_name
-      FROM nobsc_ingredient_types
-    `;
-    const [ ingredientTypes ] = await this.pool
-    .execute<RowDataPacket[]>(sql);
-    return ingredientTypes;
+  async view() {
+    const sql = `SELECT id, name FROM ingredient_types`;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql);
+    return rows;
   }
 
-  async viewIngredientTypeById(ingredientTypeId: number) {
-    const sql = `
-      SELECT ingredient_type_id, ingredient_type_name
-      FROM nobsc_ingredient_types
-      WHERE ingredient_type_id = ?
-    `;
-    const [ ingredientType ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [ingredientTypeId]);
-    return ingredientType;
+  async viewById(id: number) {
+    const sql = `SELECT id, name FROM ingredient_types WHERE id = ?`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
+    return row;
   }
 }
 
@@ -35,6 +26,6 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IIngredientType {
   pool: Pool;
-  viewIngredientTypes(): Data;
-  viewIngredientTypeById(ingredientTypeId: number): Data;
+  view(): Data;
+  viewById(id: number): Data;
 }

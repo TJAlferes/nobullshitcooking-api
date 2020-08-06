@@ -3,6 +3,7 @@ import { Pool, RowDataPacket, ResultSetHeader } from 'mysql2/promise';
 export class Equipment implements IEquipment {
   pool: Pool;
 
+  // TO DO: improve these names, and see if you can further DRY
   constructor(pool: Pool) {
     this.pool = pool;
     this.getAllForElasticSearch = this.getAllForElasticSearch.bind(this);
@@ -14,8 +15,8 @@ export class Equipment implements IEquipment {
     this.delete = this.delete.bind(this);
     this.createPrivate = this.createPrivate.bind(this);
     this.updatePrivate = this.updatePrivate.bind(this);
-    this.deletePrivate = this.deletePrivate.bind(this);
-    this.deleteAllPrivateByOwnerId = this.deleteAllPrivateByOwnerId.bind(this);
+    this.deleteByOwnerId = this.deleteByOwnerId.bind(this);
+    this.deleteAllByOwnerId = this.deleteAllByOwnerId.bind(this);
   }
 
   async getAllForElasticSearch() {
@@ -72,7 +73,7 @@ export class Equipment implements IEquipment {
         e.id,
         e.equipment_type_id,
         e.owner_id,
-        t.equipment_type_name,
+        t.name AS equipment_type_name,
         e.name,
         e.description,
         e.image
@@ -92,7 +93,7 @@ export class Equipment implements IEquipment {
         e.id,
         e.equipment_type_id,
         e.owner_id,
-        t.equipment_type_name,
+        t.name AS equipment_type_name,
         e.name,
         e.description,
         e.image
@@ -162,8 +163,7 @@ export class Equipment implements IEquipment {
 
   async delete(id: number) {
     const sql = `DELETE FROM equipment WHERE id = ? LIMIT 1`;
-    const [ row ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [id]);
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
     return row;
   }
 
@@ -230,14 +230,14 @@ export class Equipment implements IEquipment {
     return row;
   }
 
-  async deletePrivate(id: number, ownerId: number) {
+  async deleteByOwnerId(id: number, ownerId: number) {
     const sql = `DELETE FROM equipment WHERE owner_id = ? AND id = ? LIMIT 1`;
     const [ row ] = await this.pool
       .execute<RowDataPacket[]>(sql, [ownerId, id]);
     return row;
   }
 
-  async deleteAllPrivateByOwnerId(ownerId: number) {
+  async deleteAllByOwnerId(ownerId: number) {
     const sql = `DELETE FROM equipment WHERE owner_id = ?`;
     await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
   }
@@ -288,8 +288,8 @@ export interface IEquipment {
     description,
     image
   }: IUpdatingEquipment): Data;
-  deletePrivate(id: number, ownerId: number): Data;
-  deleteAllPrivateByOwnerId(ownerId: number): void;
+  deleteByOwnerId(id: number, ownerId: number): Data;
+  deleteAllByOwnerId(ownerId: number): void;
 }
 
 interface ICreatingEquipment {

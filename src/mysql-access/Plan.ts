@@ -5,94 +5,56 @@ export class Plan implements IPlan {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewAllMyPrivatePlans = this.viewAllMyPrivatePlans.bind(this);
-    this.viewMyPrivatePlan = this.viewMyPrivatePlan.bind(this);
-    this.createMyPrivatePlan = this.createMyPrivatePlan.bind(this);
-    this.updateMyPrivatePlan = this.updateMyPrivatePlan.bind(this);
-    this.deleteMyPrivatePlan = this.deleteMyPrivatePlan.bind(this);
-    this.deleteAllMyPrivatePlans = this.deleteAllMyPrivatePlans.bind(this);
+    this.viewAllByOwnerId = this.viewAllByOwnerId.bind(this);
+    this.viewByOwnerId = this.viewByOwnerId.bind(this);
+    this.create = this.create.bind(this);
+    this.update = this.update.bind(this);
+    this.deleteByOwnerId = this.deleteByOwnerId.bind(this);
+    this.deleteAllByOwnerId = this.deleteAllByOwnerId.bind(this);
   }
   
-  async viewAllMyPrivatePlans(ownerId: number) {
-    const sql = `
-      SELECT plan_id, plan_name, plan_data
-      FROM nobsc_plans
-      WHERE owner_id = ?
-    `;
-    const [ plans ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
-    return plans;
+  async viewAllByOwnerId(ownerId: number) {
+    const sql = `SELECT id, name, data FROM plans WHERE owner_id = ?`;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
+    return rows;
   }
 
-  async viewMyPrivatePlan(planId: number, ownerId: number) {
+  async viewByOwnerId(id: number, ownerId: number) {
     const sql = `
-      SELECT plan_id, plan_name, plan_data
-      FROM nobsc_plans
-      WHERE owner_id = ? AND plan_id = ?
+      SELECT id, name, data FROM plans WHERE owner_id = ? AND id = ?
     `;
-    const [ plan ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [ownerId, planId]);
-    return plan;
+    const [ row ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [ownerId, id]);
+    return row;
   }
 
-  async createMyPrivatePlan({
-    authorId,
-    ownerId,
-    planName,
-    planData
-  }: ICreatingPlan) {
+  async create({ authorId, ownerId, name, data }: ICreatingPlan) {
     const sql = `
-      INSERT INTO nobsc_plans (author_id, owner_id, plan_name, plan_data)
-      VALUES (?, ?, ?, ?)
+      INSERT INTO plans (id, owner_id, name, data) VALUES (?, ?, ?, ?)
     `;
-    const [ createdPlan ] = await this.pool.execute<RowDataPacket[]>(sql, [
-      authorId,
-      ownerId,
-      planName,
-      planData
-    ]);
-    return createdPlan;
+    const [ row ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [authorId, ownerId, name, data]);
+    return row;
   }
 
-  async updateMyPrivatePlan({
-    planId,
-    authorId,
-    ownerId,
-    planName,
-    planData
-  }: IUpdatingPlan) {
+  async update({ id, authorId, ownerId, name, data }: IUpdatingPlan) {
     const sql = `
-      UPDATE nobsc_plans
-      SET plan_name = ?, plan_data = ?
-      WHERE owner_id = ? AND plan_id = ?
-      LIMIT 1
+      UPDATE plans SET name = ?, data = ? WHERE owner_id = ? AND id = ? LIMIT 1
     `;
-    const [ updatedPlan ] = await this.pool.execute<RowDataPacket[]>(sql, [
-      planName,
-      planData,
-      ownerId,
-      planId
-    ]);
-    return updatedPlan;
+    const [ row ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [name, data, ownerId, id]);
+    return row;
   }
 
-  async deleteMyPrivatePlan(planId: number, ownerId: number) {
-    const sql = `
-      DELETE
-      FROM nobsc_plans
-      WHERE owner_id = ? AND plan_id = ?
-      LIMIT 1
-    `;
-    const [ deletedPlan ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [ownerId, planId]);
-    return deletedPlan;
+  async deleteByOwnerId(id: number, ownerId: number) {
+    const sql = `DELETE FROM plans WHERE owner_id = ? AND id = ? LIMIT 1`;
+    const [ row ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [ownerId, id]);
+    return row;
   }
 
-  async deleteAllMyPrivatePlans(ownerId: number) {
-    const sql = `
-      DELETE
-      FROM nobsc_plans
-      WHERE owner_id = ?
-    `;
+  async deleteAllByOwnerId(ownerId: number) {
+    const sql = `DELETE FROM plans WHERE owner_id = ?`;
     await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
   }
 }
@@ -101,32 +63,21 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IPlan {
   pool: Pool;
-  viewAllMyPrivatePlans(ownerId: number): Data;
-  viewMyPrivatePlan(planId: number, ownerId: number): Data;
-  createMyPrivatePlan({
-    authorId,
-    ownerId,
-    planName,
-    planData
-  }: ICreatingPlan): Data;
-  updateMyPrivatePlan({
-    planId,
-    authorId,
-    ownerId,
-    planName,
-    planData
-  }: IUpdatingPlan): Data;
-  deleteMyPrivatePlan(planId: number, ownerId: number): Data;
-  deleteAllMyPrivatePlans(ownerId: number): void;
+  viewAllByOwnerId(ownerId: number): Data;
+  viewByOwnerId(planId: number, ownerId: number): Data;
+  create({authorId, ownerId, name, data}: ICreatingPlan): Data;
+  update({id, authorId, ownerId, name, data}: IUpdatingPlan): Data;
+  deleteByOwnerId(id: number, ownerId: number): Data;
+  deleteAllByOwnerId(ownerId: number): void;
 }
 
 interface ICreatingPlan {
   authorId: number;
   ownerId: number;
-  planName: string;
-  planData: string;
+  name: string;
+  data: string;
 }
 
 interface IUpdatingPlan extends ICreatingPlan {
-  planId: number;
+  id: number;
 }

@@ -5,28 +5,20 @@ export class RecipeType implements IRecipeType {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewRecipeTypes = this.viewRecipeTypes.bind(this);
-    this.viewRecipeTypeById = this.viewRecipeTypeById.bind(this);
+    this.view = this.view.bind(this);
+    this.viewById = this.viewById.bind(this);
   }
 
-  async viewRecipeTypes() {
-    const sql = `
-      SELECT recipe_type_id, recipe_type_name
-      FROM nobsc_recipe_types
-    `;
-    const [ recipeTypes ] = await this.pool.execute<RowDataPacket[]>(sql);
-    return recipeTypes;
+  async view() {
+    const sql = `SELECT id, name FROM recipe_types`;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql);
+    return rows;
   }
 
-  async viewRecipeTypeById(recipeTypeId: number) {
-    const sql = `
-      SELECT recipe_type_id, recipe_type_name
-      FROM nobsc_recipe_types
-      WHERE recipe_type_id = ?
-    `;
-    const [ recipeType ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [recipeTypeId]);
-    return recipeType;
+  async viewById(id: number) {
+    const sql = `SELECT id, name FROM recipe_types WHERE id = ?`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
+    return row;
   }
 }
 
@@ -34,6 +26,6 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IRecipeType {
   pool: Pool;
-  viewRecipeTypes(): Data;
-  viewRecipeTypeById(recipeTypeId: number): Data;
+  view(): Data;
+  viewById(id: number): Data;
 }
