@@ -5,43 +5,37 @@ export class IngredientSearch implements IIngredientSearch {
 
   constructor(esClient: Client) {
     this.client = esClient;
-    this.findIngredients = this.findIngredients.bind(this);
-    this.autoIngredients = this.autoIngredients.bind(this);
-    this.saveIngredient = this.saveIngredient.bind(this);
-    this.deleteIngredient = this.deleteIngredient.bind(this);
+    this.find = this.find.bind(this);
+    this.auto = this.auto.bind(this);
+    this.save = this.save.bind(this);
+    this.delete = this.delete.bind(this);
   }
 
   // deep pagination can kill performance, set upper bounds 
-  async findIngredients(searchBody: any) {
-    const { body } = await this.client.search({
-      index: "ingredients",
-      body: searchBody
-    });
+  async find(searchBody: any) {
+    const { body } =
+      await this.client.search({index: "ingredients", body: searchBody});
     return body;
   }
 
-  async autoIngredients(searchTerm: string) {
+  async auto(searchTerm: string) {
     const { body } = await this.client.search({
       index: "ingredients",
       body: {
         highlight: {
           fragment_size: 200,  // less?
           number_of_fragments: 1,
-          fields: {ingredient_fullname: {}}
+          fields: {fullname: {}}
         },
         query: {
           bool: {
             must: [
               {
                 match: {
-                  ingredient_fullname: {query: searchTerm, operator: "and"}
+                  fullname: {query: searchTerm, operator: "and"}
                 }
                 /*multi_match: {
-                  fields: [
-                    "ingredient_brand",
-                    "ingredient_variety",
-                    "ingredient_name"
-                  ],
+                  fields: ["brand", "variety", "name"],
                   type: "cross_fields",
                   query: searchTerm
                 }*/
@@ -57,38 +51,28 @@ export class IngredientSearch implements IIngredientSearch {
   }
 
   // (staff only)
-  async saveIngredient({
-    ingredient_id,
+  async save({
+    id,
     ingredient_type_name,
-    ingredient_fullname,
-    ingredient_brand,
-    ingredient_variety,
-    ingredient_name,
-    ingredient_image
+    fullname,
+    brand,
+    variety,
+    name,
+    image
   }: ISavingIngredient) {
     const savedIngredient = await this.client.index({
       index: 'ingredients',
-      id: ingredient_id,
-      body: {
-        ingredient_id,
-        ingredient_type_name,
-        ingredient_fullname,
-        ingredient_brand,
-        ingredient_variety,
-        ingredient_name,
-        ingredient_image
-      }
+      id,
+      body: {id, ingredient_type_name, fullname, brand, variety, name, image}
     });
     await this.client.indices.refresh({index: 'ingredients'});
     return savedIngredient;
   }
 
   // (staff only)
-  async deleteIngredient(ingredientId: string) {
-    const deletedIngredient = await this.client.delete(
-      {index: 'ingredients', id: ingredientId},
-      {ignore: [404]}
-    );
+  async delete(id: string) {
+    const deletedIngredient =
+      await this.client.delete({index: 'ingredients', id}, {ignore: [404]});
     await this.client.indices.refresh({index: 'ingredients'});
     return deletedIngredient;
   }
@@ -96,26 +80,26 @@ export class IngredientSearch implements IIngredientSearch {
 
 interface IIngredientSearch {
   client: Client;
-  findIngredients(searchBody: any): any;  // finish
-  autoIngredients(searchTerm: string): any;  // finish
-  saveIngredient({
-    ingredient_id,
+  find(searchBody: any): any;  // finish
+  auto(searchTerm: string): any;  // finish
+  save({
+    id,
     ingredient_type_name,
-    ingredient_fullname,
-    ingredient_brand,
-    ingredient_variety,
-    ingredient_name,
-    ingredient_image
+    fullname,
+    brand,
+    variety,
+    name,
+    image
   }: ISavingIngredient): void;
-  deleteIngredient(ingredientId: string): void;
+  delete(id: string): void;
 }
 
 interface ISavingIngredient {
-  ingredient_id: string;
+  id: string;
   ingredient_type_name: string;
-  ingredient_fullname: string;
-  ingredient_brand: string;
-  ingredient_variety: string;
-  ingredient_name: string;
-  ingredient_image: string;
+  fullname: string;
+  brand: string;
+  variety: string;
+  name: string;
+  image: string;
 }

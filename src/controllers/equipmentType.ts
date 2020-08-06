@@ -4,19 +4,19 @@ import { pool } from '../lib/connections/mysqlPoolConnection';
 import { EquipmentType } from '../mysql-access/EquipmentType';
 
 export const equipmentTypeController = {
-  viewEquipmentTypes: async function(req: Request, res: Response) {
+  view: async function(req: Request, res: Response) {
     const equipmentType = new EquipmentType(pool);
 
-    const rows = await equipmentType.viewEquipmentTypes();
+    const rows = await equipmentType.view();
 
     return res.send(rows);
   },
-  viewEquipmentTypeById: async function(req: Request, res: Response) {
-    const equipmentTypeId = Number(req.params.equipmentTypeId);
+  viewById: async function(req: Request, res: Response) {
+    const id = Number(req.params.id);
 
     const equipmentType = new EquipmentType(pool);
 
-    const [ row ] = await equipmentType.viewEquipmentTypeById(equipmentTypeId);
+    const [ row ] = await equipmentType.viewById(id);
     
     return res.send(row);
   }

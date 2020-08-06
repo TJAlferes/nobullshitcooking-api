@@ -4,31 +4,30 @@ import { pool } from '../lib/connections/mysqlPoolConnection';
 import { Content } from '../mysql-access/Content';
 
 export const contentController = {
-  viewContent: async function(req: Request, res: Response) {
+  view: async function(req: Request, res: Response) {
     const content = new Content(pool);
 
-    const rows = await content.viewContent();
+    const rows = await content.view();
 
     return res.send(rows);
   },
-  viewContentById: async function(req: Request, res: Response) {
-    const contentId = Number(req.params.contentId);
+  viewById: async function(req: Request, res: Response) {
+    const id = Number(req.params.id);
 
     const content = new Content(pool);
 
-    const [ row ] = await content.viewContentById(contentId);
+    const [ row ] = await content.viewById(id);
 
     return res.send(row);
   },
-  getContentLinksByTypeName: async function(req: Request, res: Response) {
-    const contentTypeName = req.params.contentTypeName;
+  getLinksByContentTypeName: async function(req: Request, res: Response) {
+    const name = req.params.name;
 
-    const capitalized =
-    contentTypeName.charAt(0).toUpperCase() + contentTypeName.slice(1);
+    const capitalized = name.charAt(0).toUpperCase() + name.slice(1);
 
     const content = new Content(pool);
 
-    const rows = await content.getContentLinksByTypeName(capitalized);
+    const rows = await content.getLinksByContentTypeName(capitalized);
 
     return res.send(rows);
   }

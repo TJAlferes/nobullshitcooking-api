@@ -4,16 +4,12 @@ import { pool } from '../lib/connections/mysqlPoolConnection';
 import { CuisineIngredient } from '../mysql-access/CuisineIngredient';
 
 export const cuisineIngredientController = {
-  viewCuisineIngredientsByCuisineId: async function(
-    req: Request,
-    res: Response
-  ) {
-    const cuisineId = Number(req.params.cuisineId);
+  viewByCuisineId: async function(req: Request, res: Response) {
+    const id = Number(req.params.id);
 
     const cuisineIngredient = new CuisineIngredient(pool);
 
-    const rows = await cuisineIngredient
-    .viewCuisineIngredientsByCuisineId(cuisineId);
+    const rows = await cuisineIngredient.viewByCuisineId(id);
 
     return res.send(rows);
   }

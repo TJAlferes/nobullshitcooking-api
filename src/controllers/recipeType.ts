@@ -8,21 +8,21 @@ import {
 import { RecipeType } from '../mysql-access/RecipeType';
 
 export const recipeTypeController = {
-  viewRecipeTypes: async function(req: Request, res: Response) {
+  view: async function(req: Request, res: Response) {
     const recipeType = new RecipeType(pool);
 
-    const rows = await recipeType.viewRecipeTypes();
+    const rows = await recipeType.view();
 
     return res.send(rows);
   },
-  viewRecipeTypeById: async function(req: Request, res: Response) {
-    const recipeTypeId = Number(req.params.recipeTypeId);
+  viewById: async function(req: Request, res: Response) {
+    const id = Number(req.params.id);
 
-    assert({recipeTypeId}, validRecipeTypeRequest);
+    assert({id}, validRecipeTypeRequest);
 
     const recipeType = new RecipeType(pool);
 
-    const [ row ] = await recipeType.viewRecipeTypeById(recipeTypeId);
+    const [ row ] = await recipeType.viewById(id);
     
     return res.send(row);
   }

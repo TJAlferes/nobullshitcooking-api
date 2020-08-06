@@ -4,28 +4,28 @@ import { pool } from '../lib/connections/mysqlPoolConnection';
 import { Cuisine } from '../mysql-access/Cuisine';
 
 export const cuisineController = {
-  viewCuisines: async function(req: Request, res: Response) {
+  view: async function(req: Request, res: Response) {
     const cuisine = new Cuisine(pool);
 
-    const rows = await cuisine.viewCuisines();
+    const rows = await cuisine.view();
 
     return res.send(rows);
   },
-  viewCuisineById: async function(req: Request, res: Response) {
-    const cuisineId = Number(req.params.cuisineId);
+  viewById: async function(req: Request, res: Response) {
+    const id = Number(req.params.id);
 
     const cuisine = new Cuisine(pool);
 
-    const [ row ] = await cuisine.viewCuisineById(cuisineId);
+    const [ row ] = await cuisine.viewById(id);
     
     return res.send(row);
   },
-  viewCuisineDetailById: async function(req: Request, res: Response) {
-    const cuisineId = Number(req.params.cuisineId);
+  viewDetailById: async function(req: Request, res: Response) {
+    const id = Number(req.params.id);
 
     const cuisine = new Cuisine(pool);
 
-    const detail = await cuisine.viewCuisineDetailById(cuisineId);
+    const detail = await cuisine.viewDetailById(id);
 
     return res.send(detail);
   }

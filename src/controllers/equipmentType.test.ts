@@ -6,59 +6,55 @@ const rows: any = [{id: 1, name: "Name"}];
 
 jest.mock('../mysql-access/EquipmentType', () => ({
   EquipmentType: jest.fn().mockImplementation(() => ({
-    viewEquipmentTypes: mockViewEquipmentTypes,
-    viewEquipmentTypeById: mockViewEquipmentTypeById
+    view: mockView,
+    viewById: mockViewById
   }))
 }));
-let mockViewEquipmentTypes = jest.fn().mockResolvedValue([rows]);
-let mockViewEquipmentTypeById = jest.fn().mockResolvedValue([rows]);
+let mockView = jest.fn().mockResolvedValue([rows]);
+let mockViewById = jest.fn().mockResolvedValue([rows]);
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 describe('equipmentType controller', () => {
-  describe('viewEquipmentTypes method', () => {
+  describe('view method', () => {
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue([rows])};
 
-    it('uses viewEquipmentTypes correctly', async () => {
-      await equipmentTypeController
-      .viewEquipmentTypes(<Request>{}, <Response>res);
-      expect(mockViewEquipmentTypes).toHaveBeenCalledTimes(1);
+    it('uses view correctly', async () => {
+      await equipmentTypeController.view(<Request>{}, <Response>res);
+      expect(mockView).toHaveBeenCalledTimes(1);
     });
 
     it('sends data correctly', async () => {
-      await equipmentTypeController
-      .viewEquipmentTypes(<Request>{}, <Response>res);
-      expect(res.send).toBeCalledWith([rows]);
+      await equipmentTypeController.view(<Request>{}, <Response>res);
+      expect(res.send).toHaveBeenCalledWith([rows]);
     });
 
     it('returns correctly', async () => {
-      const actual = await equipmentTypeController
-      .viewEquipmentTypes(<Request>{}, <Response>res);
+      const actual =
+        await equipmentTypeController.view(<Request>{}, <Response>res);
       expect(actual).toEqual([rows]);
     });
   });
   
-  describe('viewEquipmentTypeById method', () => {
-    const req: Partial<Request> = {params: {equipmentTypeId: "1"}};
+  describe('viewById method', () => {
+    const req: Partial<Request> = {params: {id: "1"}};
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
-    it('uses viewEquipmentTypeById correctly', async () => {
-      await equipmentTypeController
-      .viewEquipmentTypeById(<Request>req, <Response>res);
-      expect(mockViewEquipmentTypeById).toHaveBeenCalledWith(1);
+    it('uses viewById correctly', async () => {
+      await equipmentTypeController.viewById(<Request>req, <Response>res);
+      expect(mockViewById).toHaveBeenCalledWith(1);
     });
 
     it('sends data correctly', async () => {
-      await equipmentTypeController
-      .viewEquipmentTypeById(<Request>req, <Response>res);
-      expect(res.send).toBeCalledWith(rows);
+      await equipmentTypeController.viewById(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith(rows);
     });
 
     it('returns correctly', async () => {
-      const actual = await equipmentTypeController
-      .viewEquipmentTypeById(<Request>req, <Response>res);
+      const actual =
+        await equipmentTypeController.viewById(<Request>req, <Response>res);
       expect(actual).toEqual(rows);
     });
   });

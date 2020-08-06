@@ -8,15 +8,14 @@ import { Recipe } from '../mysql-access/Recipe';
 import { User } from '../mysql-access/User';
 
 export const profileController = {
-  viewProfile: async function(req: Request, res: Response) {
+  view: async function(req: Request, res: Response) {
     const username = req.params.username;
 
     assert({username}, validProfileRequest);
 
     const user = new User(pool);
 
-    const [ userExists ] = await user.viewUserByName(username);
-
+    const [ userExists ] = await user.viewByName(username);
     if (!userExists.length) return res.send({message: 'User does not exist.'});
     
     const id = userExists[0].user_id;
@@ -24,11 +23,11 @@ export const profileController = {
     
     const recipe = new Recipe(pool);
 
-    const publicRecipes = await recipe.viewRecipes(id, 1);
+    const publicRecipes = await recipe.view(id, 1);
 
     const favoriteRecipe = new FavoriteRecipe(pool);
     
-    const favoriteRecipes = await favoriteRecipe.viewMyFavoriteRecipes(id);
+    const favoriteRecipes = await favoriteRecipe.viewByUserId(id);
 
     return res.send({
       message: 'Success.',

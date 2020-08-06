@@ -40,16 +40,16 @@ export const dataInitController = {
       officialRecipes,
       recipeTypes
     ] = await Promise.all([
-      contentType.viewContentTypes(),
-      cuisine.viewCuisines(),
-      equipment.viewEquipment(authorId, ownerId),
-      equipmentType.viewEquipmentTypes(),
-      ingredient.viewIngredients(authorId, ownerId),
-      ingredientType.viewIngredientTypes(),
-      measurement.viewMeasurements(),
-      method.viewMethods(),
-      recipe.viewRecipes(authorId, ownerId),
-      recipeType.viewRecipeTypes()
+      contentType.view(),
+      cuisine.view(),
+      equipment.view(authorId, ownerId),
+      equipmentType.view(),
+      ingredient.view(authorId, ownerId),
+      ingredientType.view(),
+      measurement.view(),
+      method.view(),
+      recipe.view(authorId, ownerId),
+      recipeType.view()
     ]);
 
     return res.send({

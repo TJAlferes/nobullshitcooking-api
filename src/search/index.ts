@@ -9,147 +9,152 @@ export async function bulkUp() {
   const ingredient = new Ingredient(pool);
   const equipment = new Equipment(pool);
   
-  const bulkRecipes = await recipe
-    .getAllPublicRecipesForElasticSearchBulkInsert();
-  const bulkIngredients = await ingredient
-    .getAllPublicIngredientsForElasticSearchBulkInsert();
-  const bulkEquipment = await equipment
-    .getAllPublicEquipmentForElasticSearchBulkInsert();
+  const [ bulkRecipes, bulkIngredients, bulkEquipment ] = await Promise.all([
+    recipe.getAllForElasticSearch(),
+    ingredient.getAllForElasticSearch(),
+    equipment.getAllForElasticSearch()
+  ]);
 
   // delete
-  await esClient.indices.delete({index: "recipes"});
-  await esClient.indices.delete({index: "ingredients"});
-  await esClient.indices.delete({index: "equipment"});
+  await Promise.all([
+    esClient.indices.delete({index: "recipes"}),
+    esClient.indices.delete({index: "ingredients"}),
+    esClient.indices.delete({index: "equipment"})
+  ]);
 
   // create
-  await esClient.indices.create({
-    index: "recipes",
-    body: {
-      settings: {
-        analysis: {
-          analyzer: {
-            autocomplete: {tokenizer: "autocomplete", filter: ["lowercase"]},
-            autocomplete_search: {tokenizer: "lowercase"}
-          },
-          tokenizer: {
-            autocomplete: {
-              type: "edge_ngram",
-              min_gram: 2,
-              max_gram: 10,
-              token_chars: ["letter"]
+  await Promise.all([
+    esClient.indices.create({
+      index: "recipes",
+      body: {
+        settings: {
+          analysis: {
+            analyzer: {
+              autocomplete: {tokenizer: "autocomplete", filter: ["lowercase"]},
+              autocomplete_search: {tokenizer: "lowercase"}
+            },
+            tokenizer: {
+              autocomplete: {
+                type: "edge_ngram",
+                min_gram: 2,
+                max_gram: 10,
+                token_chars: ["letter"]
+              }
             }
           }
-        }
-      },
-      mappings: {
-        properties: {
-          recipe_id: {type: 'integer'},
-          author: {type: 'keyword'},
-          recipe_type_name: {type: 'keyword'},
-          cuisine_name: {type: 'keyword'},
-          title: {
-            type: 'text',
-            analyzer: 'autocomplete',
-            search_analyzer: 'autocomplete_search'
-          },
-          description: {type: 'text'},
-          directions: {type: 'text'},
-          method_names: {type: 'keyword'},
-          equipment_names: {type: 'keyword'},
-          ingredient_names: {type: 'keyword'},
-          subrecipe_titles: {type: 'keyword'}
-        }
-      }
-    }
-  });
-
-  await esClient.indices.create({
-    index: "ingredients",
-    body: {
-      settings: {
-        analysis: {
-          analyzer: {
-            autocomplete: {tokenizer: "autocomplete", filter: ["lowercase"]},
-            autocomplete_search: {tokenizer: "lowercase"}
-          },
-          tokenizer: {
-            autocomplete: {
-              type: "edge_ngram",
-              min_gram: 2,
-              max_gram: 10,
-              token_chars: ["letter"]
-            }
-          }
-        }
-      },
-      mappings: {
-        properties: {
-          ingredient_id: {type: 'integer'},
-          ingredient_type_name: {type: 'keyword'},
-          ingredient_fullname: {
-            type: 'text',
-            analyzer: 'autocomplete',
-            search_analyzer: 'autocomplete_search'
+        },
+        mappings: {
+          properties: {
+            id: {type: 'integer'},
+            author: {type: 'keyword'},
+            recipe_type_name: {type: 'keyword'},
+            cuisine_name: {type: 'keyword'},
+            title: {
+              type: 'text',
+              analyzer: 'autocomplete',
+              search_analyzer: 'autocomplete_search'
+            },
+            description: {type: 'text'},
+            directions: {type: 'text'},
+            method_names: {type: 'keyword'},
+            equipment_names: {type: 'keyword'},
+            ingredient_names: {type: 'keyword'},
+            subrecipe_titles: {type: 'keyword'}
           }
         }
       }
-    }
-  });
-
-  await esClient.indices.create({
-    index: "equipment",
-    body: {
-      settings: {
-        analysis: {
-          analyzer: {
-            autocomplete: {tokenizer: "autocomplete", filter: ["lowercase"]},
-            autocomplete_search: {tokenizer: "lowercase"}
-          },
-          tokenizer: {
-            autocomplete: {
-              type: "edge_ngram",
-              min_gram: 2,
-              max_gram: 10,
-              token_chars: ["letter"]
+    }),
+    esClient.indices.create({
+      index: "ingredients",
+      body: {
+        settings: {
+          analysis: {
+            analyzer: {
+              autocomplete: {tokenizer: "autocomplete", filter: ["lowercase"]},
+              autocomplete_search: {tokenizer: "lowercase"}
+            },
+            tokenizer: {
+              autocomplete: {
+                type: "edge_ngram",
+                min_gram: 2,
+                max_gram: 10,
+                token_chars: ["letter"]
+              }
+            }
+          }
+        },
+        mappings: {
+          properties: {
+            id: {type: 'integer'},
+            ingredient_type_name: {type: 'keyword'},
+            fullname: {
+              type: 'text',
+              analyzer: 'autocomplete',
+              search_analyzer: 'autocomplete_search'
             }
           }
         }
-      },
-      mappings: {
-        properties: {
-          equipment_id: {type: 'integer'},
-          equipment_type_name: {type: 'keyword'},
-          equipment_name: {
-            type: 'text',
-            analyzer: 'autocomplete',
-            search_analyzer: 'autocomplete_search'
+      }
+    }),
+    esClient.indices.create({
+      index: "equipment",
+      body: {
+        settings: {
+          analysis: {
+            analyzer: {
+              autocomplete: {tokenizer: "autocomplete", filter: ["lowercase"]},
+              autocomplete_search: {tokenizer: "lowercase"}
+            },
+            tokenizer: {
+              autocomplete: {
+                type: "edge_ngram",
+                min_gram: 2,
+                max_gram: 10,
+                token_chars: ["letter"]
+              }
+            }
+          }
+        },
+        mappings: {
+          properties: {
+            id: {type: 'integer'},
+            equipment_type_name: {type: 'keyword'},
+            name: {
+              type: 'text',
+              analyzer: 'autocomplete',
+              search_analyzer: 'autocomplete_search'
+            }
           }
         }
       }
-    }
-  });
+    })
+  ]);
 
   // bulk insert
-  await esClient.bulk({
-    index: "recipes",
-    body: bulkRecipes,
-    refresh: "true"
-  });
-  await esClient.bulk({
-    index: "ingredients",
-    body: bulkIngredients,
-    refresh: "true"
-  });
-  await esClient.bulk({
-    index: "equipment",
-    body: bulkEquipment,
-    refresh: "true"
-  });
+  await Promise.all([
+    esClient.bulk({
+      index: "recipes",
+      body: bulkRecipes,
+      refresh: "true"
+    }),
+    esClient.bulk({
+      index: "ingredients",
+      body: bulkIngredients,
+      refresh: "true"
+    }),
+    esClient.bulk({
+      index: "equipment",
+      body: bulkEquipment,
+      refresh: "true"
+    })
+  ]);
 
   // refresh
-  await esClient.indices.refresh({index: "recipes"});
-  await esClient.indices.refresh({index: "ingredients"});
-  await esClient.indices.refresh({index: "equipment"});
+  await Promise.all([
+    esClient.indices.refresh({index: "recipes"}),
+    esClient.indices.refresh({index: "ingredients"}),
+    esClient.indices.refresh({index: "equipment"})
+  ]);
 
   /*
   This should all be moved to some sort of (integration?) test file.

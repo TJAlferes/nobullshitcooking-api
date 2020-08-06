@@ -4,19 +4,19 @@ import { pool } from '../lib/connections/mysqlPoolConnection';
 import { Measurement } from '../mysql-access/Measurement';
 
 export const measurementController = {
-  viewMeasurements: async function(req: Request, res: Response) {
+  view: async function(req: Request, res: Response) {
     const measurement = new Measurement(pool);
 
-    const rows = await measurement.viewMeasurements();
+    const rows = await measurement.view();
 
     return res.send(rows);
   },
-  viewMeasurementById: async function(req: Request, res: Response) {
-    const measurementId = Number(req.params.measurementId);
+  viewById: async function(req: Request, res: Response) {
+    const id = Number(req.params.id);
 
     const measurement = new Measurement(pool);
 
-    const [ row ] = await measurement.viewMeasurementById(measurementId);
+    const [ row ] = await measurement.viewById(id);
     
     return res.send(row);
   }

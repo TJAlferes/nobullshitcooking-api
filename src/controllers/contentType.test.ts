@@ -6,57 +6,55 @@ const rows: any = [{id: 1, name: "Name"}];
 
 jest.mock('../mysql-access/ContentType', () => ({
   ContentType: jest.fn().mockImplementation(() => ({
-    viewContentTypes: mockViewContentTypes,
-    viewContentTypeById: mockViewContentTypeById
+    view: mockView,
+    viewById: mockViewById
   }))
 }));
-let mockViewContentTypes = jest.fn().mockResolvedValue([rows]);
-let mockViewContentTypeById = jest.fn().mockResolvedValue([rows]);
+let mockView = jest.fn().mockResolvedValue([rows]);
+let mockViewById = jest.fn().mockResolvedValue([rows]);
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 describe('contentType controller', () => {
-  describe('viewContentTypes method', () => {
+  describe('view method', () => {
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue([rows])};
 
-    it('uses viewContentTypes correctly', async () => {
-      await contentTypeController.viewContentTypes(<Request>{}, <Response>res);
-      expect(mockViewContentTypes).toHaveBeenCalledTimes(1);
+    it('uses view correctly', async () => {
+      await contentTypeController.view(<Request>{}, <Response>res);
+      expect(mockView).toHaveBeenCalledTimes(1);
     });
 
     it('sends data correctly', async () => {
-      await contentTypeController.viewContentTypes(<Request>{}, <Response>res);
-      expect(res.send).toBeCalledWith([rows]);
+      await contentTypeController.view(<Request>{}, <Response>res);
+      expect(res.send).toHaveBeenCalledWith([rows]);
     });
 
     it('returns correctly', async () => {
-      const actual = await contentTypeController
-      .viewContentTypes(<Request>{}, <Response>res);
+      const actual =
+        await contentTypeController.view(<Request>{}, <Response>res);
       expect(actual).toEqual([rows]);
     });
   });
   
-  describe('viewContentTypeById method', () => {
-    const req: Partial<Request> = {params: {contentTypeId: "1"}};
+  describe('viewById method', () => {
+    const req: Partial<Request> = {params: {id: "1"}};
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
-    it('uses viewContentTypeById correctly', async () => {
-      await contentTypeController
-      .viewContentTypeById(<Request>req, <Response>res);
-      expect(mockViewContentTypeById).toHaveBeenCalledWith(1);
+    it('uses viewById correctly', async () => {
+      await contentTypeController.viewById(<Request>req, <Response>res);
+      expect(mockViewById).toHaveBeenCalledWith(1);
     });
 
     it('sends data correctly', async () => {
-      await contentTypeController
-      .viewContentTypeById(<Request>req, <Response>res);
-      expect(res.send).toBeCalledWith(rows);
+      await contentTypeController.viewById(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith(rows);
     });
 
     it('returns correctly', async () => {
-      const actual = await contentTypeController
-      .viewContentTypeById(<Request>req, <Response>res);
+      const actual =
+        await contentTypeController.viewById(<Request>req, <Response>res);
       expect(actual).toEqual(rows);
     });
   });

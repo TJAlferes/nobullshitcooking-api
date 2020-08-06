@@ -6,35 +6,35 @@ const rows: any = [{id: 1, name: "Name"}];
 
 jest.mock('../mysql-access/CuisineEquipment', () => ({
   CuisineEquipment: jest.fn().mockImplementation(() => ({
-    viewCuisineEquipmentByCuisineId: mockViewCuisineEquipmentByCuisineId
+    viewByCuisineId: mockViewByCuisineId
   }))
 }));
-let mockViewCuisineEquipmentByCuisineId = jest.fn().mockResolvedValue([rows]);
+let mockViewByCuisineId = jest.fn().mockResolvedValue([rows]);
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 describe('cuisineEquipment controller', () => {
-  describe('viewCuisineEquipmentByCuisineId method', () => {
-    const req: Partial<Request> = {params: {cuisineId: "1"}};
+  describe('viewByCuisineId method', () => {
+    const req: Partial<Request> = {params: {id: "1"}};
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue([rows])};
 
-    it('uses viewCuisineEquipmentByCuisineId correctly', async () => {
+    it('uses viewByCuisineId correctly', async () => {
       await cuisineEquipmentController
-      .viewCuisineEquipmentByCuisineId(<Request>req, <Response>res);
-      expect(mockViewCuisineEquipmentByCuisineId).toHaveBeenCalledWith(1);
+        .viewByCuisineId(<Request>req, <Response>res);
+      expect(mockViewByCuisineId).toHaveBeenCalledWith(1);
     });
 
     it('sends data correctly', async () => {
       await cuisineEquipmentController
-      .viewCuisineEquipmentByCuisineId(<Request>req, <Response>res);
-      expect(res.send).toBeCalledWith([rows]);
+        .viewByCuisineId(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith([rows]);
     });
 
     it('returns correctly', async () => {
       const actual = await cuisineEquipmentController
-      .viewCuisineEquipmentByCuisineId(<Request>req, <Response>res);
+        .viewByCuisineId(<Request>req, <Response>res);
       expect(actual).toEqual([rows]);
     });
   });

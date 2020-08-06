@@ -5,36 +5,34 @@ export class EquipmentSearch implements IEquipmentSearch {
 
   constructor(esClient: Client) {
     this.client = esClient;
-    this.findEquipment = this.findEquipment.bind(this);
-    this.autoEquipment = this.autoEquipment.bind(this);
-    this.saveEquipment = this.saveEquipment.bind(this);
-    this.deleteEquipment = this.deleteEquipment.bind(this);
+    this.find = this.find.bind(this);
+    this.auto = this.auto.bind(this);
+    this.save = this.save.bind(this);
+    this.delete = this.delete.bind(this);
   }
 
   // deep pagination can kill performance, set upper bounds 
-  async findEquipment(searchBody: object) {
-    const { body } = await this.client.search({
-      index: "equipment",
-      body: searchBody
-    });
+  async find(searchBody: object) {
+    const { body } = await this.client
+      .search({index: "equipment", body: searchBody});
     return body;
   }
 
-  async autoEquipment(searchTerm: string) {
+  async auto(searchTerm: string) {
     const { body } = await this.client.search({
       index: "equipment",
       body: {
         highlight: {
           fragment_size: 200,  // less?
           number_of_fragments: 1,
-          fields: {equipment_name: {}}
+          fields: {name: {}}
         },
         query: {
           bool: {
             must: [
               {
                 match: {
-                  equipment_name: {query: searchTerm, operator: "and"}
+                  name: {query: searchTerm, operator: "and"}
                 }
               }
             ],
@@ -48,32 +46,20 @@ export class EquipmentSearch implements IEquipmentSearch {
   }
 
   // (staff only)
-  async saveEquipment({
-    equipment_id,
-    equipment_type_name,
-    equipment_name,
-    equipment_image
-  }: ISavingEquipment) {
+  async save({ id, equipment_type_name, name, image }: ISavingEquipment) {
     const savedEquipment = await this.client.index({
       index: 'equipment',
-      id: equipment_id,
-      body: {
-        equipment_id,
-        equipment_type_name,
-        equipment_name,
-        equipment_image
-      }
+      id,
+      body: {id, equipment_type_name, name, image}
     });
     await this.client.indices.refresh({index: 'equipment'});
     return savedEquipment;
   }
 
   // (staff only)
-  async deleteEquipment(equipmentId: string) {
-    const deletedEquipment = await this.client.delete(
-      {index: 'equipment', id: equipmentId},
-      {ignore: [404]}
-    );
+  async delete(id: string) {
+    const deletedEquipment =
+      await this.client.delete({index: 'equipment', id}, {ignore: [404]});
     await this.client.indices.refresh({index: 'equipment'});
     return deletedEquipment;
   }
@@ -81,20 +67,15 @@ export class EquipmentSearch implements IEquipmentSearch {
 
 interface IEquipmentSearch {
   client: Client;
-  findEquipment(searchBody: any): any;  // finish
-  autoEquipment(searchTerm: string): any;  // finish
-  saveEquipment({
-    equipment_id,
-    equipment_type_name,
-    equipment_name,
-    equipment_image
-  }: ISavingEquipment): void;
-  deleteEquipment(equipmentId: string): void;
+  find(searchBody: any): any;  // finish
+  auto(searchTerm: string): any;  // finish
+  save({id, equipment_type_name, name, image}: ISavingEquipment): void;
+  delete(id: string): void;
 }
 
 interface ISavingEquipment {
-  equipment_id: string;
+  id: string;
   equipment_type_name: string;
-  equipment_name: string;
-  equipment_image: string;
+  name: string;
+  image: string;
 }

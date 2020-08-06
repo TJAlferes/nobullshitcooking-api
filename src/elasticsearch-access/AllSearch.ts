@@ -1,23 +1,21 @@
-import { Client } from '@elastic/elasticsearch';
+/*import { Client } from '@elastic/elasticsearch';
 
 export class AllSearch implements IAllSearch {
   client: Client;
   constructor(esClient: Client) {
     this.client = esClient;
-    this.findAll = this.findAll.bind(this);
-    this.autoAll = this.autoAll.bind(this);
+    this.find = this.find.bind(this);
+    this.auto = this.auto.bind(this);
   }
 
   // deep pagination can kill performance, set upper bounds 
-  async findAll(searchBody: any) {
-    const { body } = await this.client.search({
-      index: "_all",
-      body: searchBody
-    });
+  async find(searchBody: any) {
+    const { body } =
+      await this.client.search({index: "_all", body: searchBody});
     return body;
   }
 
-  async autoAll(searchTerm: string) {
+  async auto(searchTerm: string) {
     const { body } = await this.client.search({
       index: "_all",
       body: {
@@ -30,7 +28,7 @@ export class AllSearch implements IAllSearch {
           bool: {
             should: [
               {match: {title: {query: searchTerm, operator: "and"}}},
-              {match: {ingredientName: {query: searchTerm, operator: "and"}}}
+              {match: {name: {query: searchTerm, operator: "and"}}}
             ]
           }
         }
@@ -44,6 +42,6 @@ export class AllSearch implements IAllSearch {
 
 interface IAllSearch {
   client: Client;
-  findAll(searchBody: any): any;  // finish
-  autoAll(searchTerm: string): any;  // finish
-}
+  find(searchBody: any): any;  // finish
+  auto(searchTerm: string): any;  // finish
+}*/

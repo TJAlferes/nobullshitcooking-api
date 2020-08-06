@@ -5,22 +5,20 @@ export class RecipeSearch implements IRecipeSearch {
 
   constructor(esClient: Client) {
     this.client = esClient;
-    this.findRecipes = this.findRecipes.bind(this);
-    this.autoRecipes = this.autoRecipes.bind(this);
-    this.saveRecipe = this.saveRecipe.bind(this);
-    this.deleteRecipe = this.deleteRecipe.bind(this);
+    this.find = this.find.bind(this);
+    this.auto = this.auto.bind(this);
+    this.save = this.save.bind(this);
+    this.delete = this.delete.bind(this);
   }
 
   // deep pagination can kill performance, set upper bounds 
-  async findRecipes(searchBody: any) {
-    const { body } = await this.client.search({
-      index: "recipes",
-      body: searchBody
-    });
+  async find(searchBody: any) {
+    const { body } =
+      await this.client.search({index: "recipes", body: searchBody});
     return body;
   }
 
-  async autoRecipes(searchTerm: string) {
+  async auto(searchTerm: string) {
     const { body } = await this.client.search({
       index: "recipes",
       body: {
@@ -50,8 +48,8 @@ export class RecipeSearch implements IRecipeSearch {
     return body;
   }
 
-  async saveRecipe({
-    recipe_id,
+  async save({
+    id,
     author,
     recipe_type_name,
     cuisine_name,
@@ -66,9 +64,9 @@ export class RecipeSearch implements IRecipeSearch {
   }: ISavingRecipe) {
     await this.client.index({
       index: 'recipes',
-      id: recipe_id,
+      id,
       body: {
-        recipe_id,
+        id,
         author,
         recipe_type_name,
         cuisine_name,
@@ -85,21 +83,18 @@ export class RecipeSearch implements IRecipeSearch {
     await this.client.indices.refresh({index: 'recipes'});
   }
 
-  async deleteRecipe(recipeId: string) {
-    await this.client.delete(
-      {index: 'recipes', id: recipeId},
-      {ignore: [404]}
-    );
+  async delete(id: string) {
+    await this.client.delete({index: 'recipes', id}, {ignore: [404]});
     await this.client.indices.refresh({index: 'recipes'});
   }
 }
 
 interface IRecipeSearch {
   client: Client;
-  findRecipes(searchBody: any): any;  // finish
-  autoRecipes(searchTerm: string): any;  // finish
-  saveRecipe({
-    recipe_id,
+  find(searchBody: any): any;  // finish
+  auto(searchTerm: string): any;  // finish
+  save({
+    id,
     author,
     recipe_type_name,
     cuisine_name,
@@ -112,11 +107,11 @@ interface IRecipeSearch {
     ingredient_names,
     subrecipe_titles
   }: ISavingRecipe): void;
-  deleteRecipe(recipeId: string): void;
+  delete(recipeId: string): void;
 }
 
 interface ISavingRecipe {
-  recipe_id: string;
+  id: string;
   author: string;
   recipe_type_name: string;
   cuisine_name: string;

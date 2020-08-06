@@ -2,18 +2,18 @@ import { Request, Response } from 'express';
 
 import { contentController } from './content';
 
-const rows: any = [{id: 1, name: "Name"}];
+const rows: any = [{id: 1, name: "Name"}];  // TO DO: use realistic data
 
 jest.mock('../mysql-access/Content', () => ({
   Content: jest.fn().mockImplementation(() => ({
-    viewContent: mockViewContent,
-    viewContentById: mockViewContentById,
-    getContentLinksByTypeName: mockGetContentLinksByTypeName
+    view: mockView,
+    viewById: mockViewById,
+    getContentLinksByTypeName: mockGetLinksByContentTypeName
   }))
 }));
-let mockViewContent = jest.fn().mockResolvedValue([rows]);
-let mockViewContentById = jest.fn().mockResolvedValue([rows]);
-let mockGetContentLinksByTypeName = jest.fn().mockResolvedValue([rows]);
+let mockView = jest.fn().mockResolvedValue([rows]);
+let mockViewById = jest.fn().mockResolvedValue([rows]);
+let mockGetLinksByContentTypeName = jest.fn().mockResolvedValue([rows]);
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -22,66 +22,65 @@ afterEach(() => {
 // fix
 
 describe('content controller', () => {
-  describe('viewContent method', () => {
+  describe('view method', () => {
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
-    it('uses viewContent correctly', async () => {
-      await contentController.viewContent(<Request>{}, <Response>res);
-      expect(mockViewContent).toHaveBeenCalledWith(1);
+    it('uses view correctly', async () => {
+      await contentController.view(<Request>{}, <Response>res);
+      expect(mockView).toHaveBeenCalledWith(1);
     });
 
     it('sends data correctly', async () => {
-      await contentController.viewContent(<Request>{}, <Response>res);
-      expect(res.send).toBeCalledWith(rows);
+      await contentController.view(<Request>{}, <Response>res);
+      expect(res.send).toHaveBeenCalledWith(rows);
     });
 
     it('returns correctly', async () => {
-      const actual = await contentController
-      .viewContent(<Request>{}, <Response>res);
+      const actual = await contentController.view(<Request>{}, <Response>res);
       expect(actual).toEqual(rows);
     });
   });
   
-  describe('viewContentById method', () => {
-    const req: Partial<Request> = {params: {contentId: "1"}};
+  describe('viewById method', () => {
+    const req: Partial<Request> = {params: {id: "1"}};
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
-    it('uses viewContentById correctly', async () => {
-      await contentController.viewContentById(<Request>req, <Response>res);
-      expect(mockViewContentById).toHaveBeenCalledWith(1);
+    it('uses viewById correctly', async () => {
+      await contentController.viewById(<Request>req, <Response>res);
+      expect(mockViewById).toHaveBeenCalledWith(1);
     });
 
     it('sends data correctly', async () => {
-      await contentController.viewContentById(<Request>req, <Response>res);
-      expect(res.send).toBeCalledWith(rows);
+      await contentController.viewById(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith(rows);
     });
 
     it('returns correctly', async () => {
-      const actual = await contentController
-      .viewContentById(<Request>req, <Response>res);
+      const actual =
+        await contentController.viewById(<Request>req, <Response>res);
       expect(actual).toEqual(rows);
     });
   });
 
-  describe('getContentLinksByTypeName method', () => {
-    const req: Partial<Request> = {params: {contentTypeName: "name"}};
+  describe('getLinksByContentTypeName method', () => {
+    const req: Partial<Request> = {params: {name: "name"}};
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue([rows])};
 
-    it('uses getContentLinksByTypeName correctly', async () => {
+    it('uses getLinksByContentTypeName correctly', async () => {
       await contentController
-      .getContentLinksByTypeName(<Request>req, <Response>res);
-      expect(mockGetContentLinksByTypeName).toHaveBeenCalledWith("Name");
+        .getLinksByContentTypeName(<Request>req, <Response>res);
+      expect(mockGetLinksByContentTypeName).toHaveBeenCalledWith("Name");
     });
 
     it('sends data', async () => {
       await contentController
-      .getContentLinksByTypeName(<Request>req, <Response>res);
-      expect(res.send).toBeCalledWith([rows]);
+        .getLinksByContentTypeName(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith([rows]);
     });
 
     it('returns correctly', async () => {
       const actual = await contentController
-      .getContentLinksByTypeName(<Request>req, <Response>res);
+        .getLinksByContentTypeName(<Request>req, <Response>res);
       expect(actual).toEqual([rows]);
     });
   });

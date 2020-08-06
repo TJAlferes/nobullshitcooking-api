@@ -6,59 +6,55 @@ const rows: any = [{id: 1, name: "Name"}];
 
 jest.mock('../mysql-access/IngredientType', () => ({
   IngredientType: jest.fn().mockImplementation(() => ({
-    viewIngredientTypes: mockViewIngredientTypes,
-    viewIngredientTypeById: mockViewIngredientTypeById
+    view: mockView,
+    viewById: mockViewById
   }))
 }));
-let mockViewIngredientTypes = jest.fn().mockResolvedValue([rows]);
-let mockViewIngredientTypeById = jest.fn().mockResolvedValue([rows]);
+let mockView = jest.fn().mockResolvedValue([rows]);
+let mockViewById = jest.fn().mockResolvedValue([rows]);
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 describe('ingredientType controller', () => {
-  describe('viewIngredientTypes method', () => {
+  describe('view method', () => {
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue([rows])};
 
     it('uses viewIngredientTypes correctly', async () => {
-      await ingredientTypeController
-      .viewIngredientTypes(<Request>{}, <Response>res);
-      expect(mockViewIngredientTypes).toHaveBeenCalledTimes(1);
+      await ingredientTypeController.view(<Request>{}, <Response>res);
+      expect(mockView).toHaveBeenCalledTimes(1);
     });
 
     it('sends data correctly', async () => {
-      await ingredientTypeController
-      .viewIngredientTypes(<Request>{}, <Response>res);
-      expect(res.send).toBeCalledWith([rows]);
+      await ingredientTypeController.view(<Request>{}, <Response>res);
+      expect(res.send).toHaveBeenCalledWith([rows]);
     });
 
     it('returns correctly', async () => {
-      const actual = await ingredientTypeController
-      .viewIngredientTypes(<Request>{}, <Response>res);
+      const actual =
+        await ingredientTypeController.view(<Request>{}, <Response>res);
       expect(actual).toEqual([rows]);
     });
   });
   
-  describe('viewIngredientTypeById method', () => {
-    const req: Partial<Request> = {params: {ingredientTypeId: "1"}};
+  describe('viewById method', () => {
+    const req: Partial<Request> = {params: {id: "1"}};
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
-    it('uses viewIngredientTypeId correctly', async () => {
-      await ingredientTypeController
-      .viewIngredientTypeById(<Request>req, <Response>res);
-      expect(mockViewIngredientTypeById).toHaveBeenCalledWith(1);
+    it('uses viewById correctly', async () => {
+      await ingredientTypeController.viewById(<Request>req, <Response>res);
+      expect(mockViewById).toHaveBeenCalledWith(1);
     });
 
     it('sends data correctly', async () => {
-      await ingredientTypeController
-      .viewIngredientTypeById(<Request>req, <Response>res);
-      expect(res.send).toBeCalledWith(rows);
+      await ingredientTypeController.viewById(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith(rows);
     });
 
     it('returns correctly', async () => {
-      const actual = await ingredientTypeController
-      .viewIngredientTypeById(<Request>req, <Response>res);
+      const actual =
+        await ingredientTypeController.viewById(<Request>req, <Response>res);
       expect(actual).toEqual(rows);
     });
   });

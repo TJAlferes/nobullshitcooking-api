@@ -8,18 +8,18 @@ import {
 import { Recipe } from '../mysql-access/Recipe';
 
 export const recipeController = {
-  viewRecipes: async function(req: Request, res: Response) {
+  view: async function(req: Request, res: Response) {
     const authorId = 1;
     const ownerId = 1;
 
     const recipe = new Recipe(pool);
 
-    const rows = await recipe.viewRecipes(authorId, ownerId);
+    const rows = await recipe.view(authorId, ownerId);
 
     return res.send(rows);
   },
-  viewRecipeDetail: async function(req: Request, res: Response) {
-    const recipeId = Number(req.params.recipeId);
+  viewById: async function(req: Request, res: Response) {
+    const id = Number(req.params.id);
     const authorId = 1;
     const ownerId = 1;
 
@@ -29,8 +29,7 @@ export const recipeController = {
     const recipe = new Recipe(pool);
 
     // inconsistent naming... please fix...
-    const [ row ] = await recipe
-    .viewRecipeById(recipeId, authorId, ownerId);
+    const [ row ] = await recipe.viewById(id, authorId, ownerId);
 
     return res.send(row);
   }

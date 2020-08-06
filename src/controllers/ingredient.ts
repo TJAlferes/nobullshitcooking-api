@@ -4,25 +4,24 @@ import { pool } from '../lib/connections/mysqlPoolConnection';
 import { Ingredient } from '../mysql-access/Ingredient';
 
 export const ingredientController = {
-  viewIngredients: async function (req: Request, res: Response) {
+  view: async function (req: Request, res: Response) {
     const authorId = 1;
     const ownerId = 1;
 
     const ingredient = new Ingredient(pool);
 
-    const rows = await ingredient.viewIngredients(authorId, ownerId);
+    const rows = await ingredient.view(authorId, ownerId);
 
     return res.send(rows);
   },
-  viewIngredientById: async function(req: Request, res: Response) {
-    const ingredientId = Number(req.params.ingredientId);
+  viewById: async function(req: Request, res: Response) {
+    const id = Number(req.params.id);
     const authorId = 1;
     const ownerId = 1;
 
     const ingredient = new Ingredient(pool);
 
-    const [ row ] = await ingredient
-    .viewIngredientById(ingredientId, authorId, ownerId);
+    const [ row ] = await ingredient.viewById(id, authorId, ownerId);
 
     return res.send(row);
   }

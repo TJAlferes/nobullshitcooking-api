@@ -12,22 +12,20 @@ jest.mock('superstruct');
 
 jest.mock('../mysql-access/FavoriteRecipe', () => ({
   FavoriteRecipe: jest.fn().mockImplementation(() => ({
-    viewMyFavoriteRecipes: mockViewMyFavoriteRecipes
+    viewByUserId: mockViewByUserId
   }))
 }));
-let mockViewMyFavoriteRecipes = jest.fn().mockResolvedValue([rows]);
+let mockViewByUserId = jest.fn().mockResolvedValue([rows]);
 
 jest.mock('../mysql-access/Recipe', () => ({
-  Recipe: jest.fn().mockImplementation(() => ({viewRecipes: mockViewRecipes}))
+  Recipe: jest.fn().mockImplementation(() => ({view: mockView}))
 }));
-let mockViewRecipes = jest.fn().mockResolvedValue([rows]);
+let mockView = jest.fn().mockResolvedValue([rows]);
 
 jest.mock('../mysql-access/User', () => ({
-  User: jest.fn().mockImplementation(() => ({
-    viewUserByName: mockViewUserByName
-  }))
+  User: jest.fn().mockImplementation(() => ({viewByName: mockViewByName}))
 }));
-let mockViewUserByName = jest.fn().mockResolvedValue(
+let mockViewByName = jest.fn().mockResolvedValue(
   [[{user_id: 1, avatar: "Name23"}]]
 );
 
@@ -36,7 +34,7 @@ afterEach(() => {
 });
 
 describe('profile controller', () => {
-  describe('viewProfile method', () => {
+  describe('view method', () => {
     const req: Partial<Request> = {params: {username: "Name"}};
     const res: Partial<Response> = {
       send: jest.fn().mockResolvedValue({
@@ -48,29 +46,29 @@ describe('profile controller', () => {
     };
 
     it('uses assert correctly', async () => {
-      await profileController.viewProfile(<Request>req, <Response>res);
+      await profileController.view(<Request>req, <Response>res);
       expect(assert)
-      .toHaveBeenCalledWith({username: "Name"}, validProfileRequest);
+        .toHaveBeenCalledWith({username: "Name"}, validProfileRequest);
     });
 
-    it('uses viewUserByName correctly', async () => {
-      await profileController.viewProfile(<Request>req, <Response>res);
-      expect(mockViewUserByName).toHaveBeenCalledTimes(1);
+    it('uses user.viewByName correctly', async () => {
+      await profileController.view(<Request>req, <Response>res);
+      expect(mockViewByName).toHaveBeenCalledTimes(1);
     });
 
-    it('uses viewRecipes correctly', async () => {
-      await profileController.viewProfile(<Request>req, <Response>res);
-      expect(mockViewRecipes).toHaveBeenCalledTimes(1);
+    it('uses recipe.view correctly', async () => {
+      await profileController.view(<Request>req, <Response>res);
+      expect(mockView).toHaveBeenCalledTimes(1);
     });
 
-    it('uses viewMyFavoriteRecipes correctly', async () => {
-      await profileController.viewProfile(<Request>req, <Response>res);
-      expect(mockViewMyFavoriteRecipes).toHaveBeenCalledTimes(1);
+    it('uses favoriteRecipe.viewByUserId correctly', async () => {
+      await profileController.view(<Request>req, <Response>res);
+      expect(mockViewByUserId).toHaveBeenCalledTimes(1);
     });
 
     it('sends data correctly', async () => {
-      await profileController.viewProfile(<Request>req, <Response>res);
-      expect(res.send).toBeCalledWith({
+      await profileController.view(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith({
         message: 'Success.',
         avatar: "Name23",
         publicRecipes: [rows],
@@ -79,8 +77,7 @@ describe('profile controller', () => {
     });
 
     it('returns correctly', async () => {
-      const actual = await profileController
-      .viewProfile(<Request>req, <Response>res);
+      const actual = await profileController.view(<Request>req, <Response>res);
       expect(actual).toEqual({
         message: 'Success.',
         avatar: "Name23",
