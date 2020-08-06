@@ -8,36 +8,36 @@ import {
 import { FavoriteRecipe } from '../../mysql-access/FavoriteRecipe';
 
 export const userFavoriteRecipeController = {
-  viewMyFavoriteRecipes: async function(req: Request, res: Response) {
-    const userId = req.session!.userInfo.userId;
+  viewByUserId: async function(req: Request, res: Response) {
+    const userId = req.session!.userInfo.id;
 
     const favoriteRecipe = new FavoriteRecipe(pool);
 
-    const rows = await favoriteRecipe.viewMyFavoriteRecipes(userId);
+    const rows = await favoriteRecipe.viewByUserId(userId);
 
     return res.send(rows);
   },
-  createMyFavoriteRecipe: async function(req: Request, res: Response) {
-    const userId = req.session!.userInfo.userId;
-    const recipeId = Number(req.body.recipeId);
+  create: async function(req: Request, res: Response) {
+    const recipeId = Number(req.body.id);
+    const userId = req.session!.userInfo.id;
 
     assert({userId, recipeId}, validFavoriteRecipeEntity);
 
     const favoriteRecipe = new FavoriteRecipe(pool);
 
-    await favoriteRecipe.createMyFavoriteRecipe(userId, recipeId);
+    await favoriteRecipe.create(userId, recipeId);
 
     return res.send({message: 'Favorited.'});
   },
-  deleteMyFavoriteRecipe: async function(req: Request, res: Response) {
-    const userId = req.session!.userInfo.userId;
-    const recipeId = Number(req.body.recipeId);
+  delete: async function(req: Request, res: Response) {
+    const recipeId = Number(req.body.id);
+    const userId = req.session!.userInfo.id;
 
     assert({userId, recipeId}, validFavoriteRecipeEntity);
 
     const favoriteRecipe = new FavoriteRecipe(pool);
 
-    await favoriteRecipe.deleteMyFavoriteRecipe(userId, recipeId);
+    await favoriteRecipe.delete(userId, recipeId);
     
     return res.send({message: 'Unfavorited.'});
   }

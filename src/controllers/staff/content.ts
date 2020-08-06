@@ -11,11 +11,9 @@ import {
 import { Content } from '../../mysql-access/Content';
 
 export const staffContentController = {
-  createContent: async function(req: Request, res: Response) {
+  create: async function(req: Request, res: Response) {
     const contentTypeId = Number(req.body.contentInfo.contentTypeId);
-    const published = req.body.contentInfo.published;
-    const title = req.body.contentInfo.title;
-    const contentItems = req.body.contentInfo.contentItems;
+    const { published, title, items } = req.body.contentInfo;
 
     const authorId = 1;
     const ownerId = 1;
@@ -28,7 +26,7 @@ export const staffContentController = {
       created,
       published,
       title,
-      contentItems
+      items
     };
 
     // you need to understand coerce and defaulted better
@@ -39,16 +37,14 @@ export const staffContentController = {
 
     const content = new Content(pool);
 
-    await content.createContent(contentToCreate);
+    await content.create(contentToCreate);
 
     return res.send({message: 'Content created.'});
   },
-  updateContent: async function(req: Request, res: Response) {
-    const contentId = Number(req.body.contentInfo.contentId);
+  update: async function(req: Request, res: Response) {
+    const id = Number(req.body.contentInfo.id);
     const contentTypeId = Number(req.body.contentInfo.contentTypeId);
-    const published = req.body.contentInfo.published;
-    const title = req.body.contentInfo.title;
-    const contentItems = req.body.contentInfo.contentItems;
+    const { published, title, items } = req.body.contentInfo;
 
     const ownerId = 1;
 
@@ -57,7 +53,7 @@ export const staffContentController = {
       ownerId,
       published,
       title,
-      contentItems
+      items
     };
 
     // you need to understand coerce and defaulted better
@@ -68,19 +64,18 @@ export const staffContentController = {
 
     const content = new Content(pool);
 
-    await content
-    .updateContent({contentId, ...contentToUpdateWith});
+    await content.update({id, ...contentToUpdateWith});
 
     return res.send({message: 'Content updated.'});
   },
-  deleteContent: async function(req: Request, res: Response) {
-    const contentId = Number(req.body.contentId);
+  delete: async function(req: Request, res: Response) {
+    const id = Number(req.body.id);
 
     const ownerId = 1;
 
     const content = new Content(pool);
 
-    await content.deleteContent(ownerId, contentId);
+    await content.delete(ownerId, id);
 
     return res.send({message: 'Content deleted.'});
   }

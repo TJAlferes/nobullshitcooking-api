@@ -23,18 +23,16 @@ jest.mock('../../mysql-access/Staff', () => {
   const originalModule = jest.requireActual('../../mysql-access/Staff');
   return {
     ...originalModule,
-    Staff: jest.fn().mockImplementation(() => {
-      return {
-        getStaffByEmail: mockGetStaffByEmail,
-        getStaffByName: mockGetStaffByName,
-        createStaff: mockCreateStaff
-      };
-    })
+    Staff: jest.fn().mockImplementation(() => ({
+      getByEmail: mockGetByEmail,
+      getByName: mockGetByName,
+      create: mockCreate
+    }))
   };
 });
-let mockGetStaffByEmail = jest.fn();
-let mockGetStaffByName = jest.fn();
-let mockCreateStaff = jest.fn();
+let mockGetByEmail = jest.fn();
+let mockGetByName = jest.fn();
+let mockCreate = jest.fn();
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -55,7 +53,7 @@ describe('staff auth controller', () => {
       session: {
         ...<Express.Session>{},
         destroy: mockDestroy,
-        staffInfo: {staffId: 15}
+        staffInfo: {id: 15}
       }
     };
     const res: Partial<Response> = {end: jest.fn()};

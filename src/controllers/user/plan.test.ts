@@ -11,192 +11,178 @@ jest.mock('../../mysql-access/Plan', () => {
   return {
     ...originalModule,
     Plan: jest.fn().mockImplementation(() => ({
-      viewAllMyPrivatePlans: mockViewAllMyPrivatePlans,
-      viewMyPrivatePlan: mockViewMyPrivatePlan,
-      createMyPrivatePlan: mockCreateMyPrivatePlan,
-      updateMyPrivatePlan: mockUpdateMyPrivatePlan,
-      deleteMyPrivatePlan: mockDeleteMyPrivatePlan
+      view: mockView,
+      viewById: mockView,
+      create: mockCreate,
+      update: mockUpdate,
+      deleteById: mockDeleteById
     }))
   };
 });
-let mockViewAllMyPrivatePlans = jest.fn().mockResolvedValue(
-  [[{plan_id: 383}, {plan_id: 5432}]]
+let mockView = jest.fn().mockResolvedValue(
+  [[{id: 383}, {id: 5432}]]
 );
-let mockViewMyPrivatePlan = jest.fn().mockResolvedValue([[{plan_id: 5432}]]);
-let mockCreateMyPrivatePlan = jest.fn();
-let mockUpdateMyPrivatePlan = jest.fn();
-let mockDeleteMyPrivatePlan = jest.fn();
+let mockViewById = jest.fn().mockResolvedValue([[{id: 5432}]]);
+let mockCreate = jest.fn();
+let mockUpdate = jest.fn();
+let mockDeleteById = jest.fn();
 
 describe('user plan controller', () => {
-  const session = {...<Express.Session>{}, userInfo: {userId: 150}};
+  const session = {...<Express.Session>{}, userInfo: {id: 150}};
 
-  describe('viewAllMyPrivatePlans method', () => {
+  describe('view method', () => {
     const req: Partial<Request> = {session};
     const res: Partial<Response> = {
-      send: jest.fn().mockResolvedValue([[{plan_id: 383}, {plan_id: 5432}]])
+      send: jest.fn().mockResolvedValue([[{id: 383}, {id: 5432}]])
     };
 
-    it('uses viewAllMyPrivatePlans correctly', async () => {
-      await userPlanController
-      .viewAllMyPrivatePlans(<Request>req, <Response>res);
-      expect(mockViewAllMyPrivatePlans).toHaveBeenCalledWith(150);
+    it('uses view correctly', async () => {
+      await userPlanController.view(<Request>req, <Response>res);
+      expect(mockView).toHaveBeenCalledWith(150);
     });
 
     it('sends data correctly', async () => {
-      await userPlanController
-      .viewAllMyPrivatePlans(<Request>req, <Response>res);
-      expect(res.send).toBeCalledWith([[{plan_id: 383}, {plan_id: 5432}]]);
+      await userPlanController.view(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith([[{id: 383}, {id: 5432}]]);
     });
 
     it('returns correctly', async () => {
-      const actual = await userPlanController
-      .viewAllMyPrivatePlans(<Request>req, <Response>res);
-      expect(actual).toEqual([[{plan_id: 383}, {plan_id: 5432}]]);
+      const actual = await userPlanController.view(<Request>req, <Response>res);
+      expect(actual).toEqual([[{id: 383}, {id: 5432}]]);
     });
   });
 
-  describe('viewMyPrivatePlan method', () => {
+  describe('viewById method', () => {
     const req: Partial<Request> = {session, body: {planId: 5432}};
     const res: Partial<Response> = {
-      send: jest.fn().mockResolvedValue([{plan_id: 5432}])
+      send: jest.fn().mockResolvedValue([{id: 5432}])
     };
 
-    it('uses viewMyPrivatePlan correctly', async () => {
-      await userPlanController.viewMyPrivatePlan(<Request>req, <Response>res);
-      expect(mockViewMyPrivatePlan).toHaveBeenCalledWith(5432, 150);
+    it('uses viewById correctly', async () => {
+      await userPlanController.viewById(<Request>req, <Response>res);
+      expect(mockViewById).toHaveBeenCalledWith(5432, 150);
     });
 
     it('sends data correctly', async () => {
-      await userPlanController.viewMyPrivatePlan(<Request>req, <Response>res);
-      expect(res.send).toBeCalledWith([{plan_id: 5432}]);
+      await userPlanController.viewById(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith([{id: 5432}]);
     });
 
     it('returns correctly', async () => {
       const actual = await userPlanController
-      .viewMyPrivatePlan(<Request>req, <Response>res);
-      expect(actual).toEqual([{plan_id: 5432}]);
+      .viewById(<Request>req, <Response>res);
+      expect(actual).toEqual([{id: 5432}]);
     });
   });
 
-  describe('createMyPrivatePlan method', () => {
+  describe('create method', () => {
     const req: Partial<Request> = {
       session,
-      body: {
-        planInfo: {
-          planName: "Name",
-          planData: "{some: data}"
-        }
-      }
+      body: {planInfo: {name: "Name", data: "{some: data}"}}
     };
     const res: Partial<Response> = {
       send: jest.fn().mockResolvedValue({message: 'Plan created.'})
     };
 
     it('uses assert correctly', async () => {
-      await userPlanController.createMyPrivatePlan(<Request>req, <Response>res);
-      expect(assert).toBeCalledWith(
+      await userPlanController.create(<Request>req, <Response>res);
+      expect(assert).toHaveBeenCalledWith(
         {
           authorId: 150,
           ownerId: 150,
-          planName: "Name",
-          planData: "{some: data}"
+          name: "Name",
+          data: "{some: data}"
         },
         validPlanEntity
       );
     });
 
-    it('uses createMyPrivatePlan correctly', async () => {
-      await userPlanController.createMyPrivatePlan(<Request>req, <Response>res);
-      expect(mockCreateMyPrivatePlan).toHaveBeenCalledWith({
+    it('uses create correctly', async () => {
+      await userPlanController.create(<Request>req, <Response>res);
+      expect(mockCreate).toHaveBeenCalledWith({
         authorId: 150,
         ownerId: 150,
-        planName: "Name",
-        planData: "{some: data}"
+        name: "Name",
+        data: "{some: data}"
       });
     });
 
     it('sends data correctly', async () => {
-      await userPlanController.createMyPrivatePlan(<Request>req, <Response>res);
-      expect(res.send).toBeCalledWith({message: 'Plan created.'});
+      await userPlanController.create(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith({message: 'Plan created.'});
     });
 
     it('returns correctly', async () => {
-      const actual = await userPlanController
-      .createMyPrivatePlan(<Request>req, <Response>res);
+      const actual =
+        await userPlanController.create(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Plan created.'});
     });
   });
 
-  describe('updateMyPrivatePlan method', () => {
+  describe('update method', () => {
     const req: Partial<Request> = {
       session,
-      body: {
-        planInfo: {
-          planId: 5432,
-          planName: "Name",
-          planData: "{some: data}"
-        }
-      }
+      body: {planInfo: {id: 5432, name: "Name", data: "{some: data}"}}
     };
     const res: Partial<Response> = {
       send: jest.fn().mockResolvedValue({message: 'Plan updated.'})
     };
 
     it('uses assert correctly', async () => {
-      await userPlanController.updateMyPrivatePlan(<Request>req, <Response>res);
-      expect(assert).toBeCalledWith(
+      await userPlanController.update(<Request>req, <Response>res);
+      expect(assert).toHaveBeenCalledWith(
         {
           authorId: 150,
           ownerId: 150,
-          planName: "Name",
-          planData: "{some: data}"
+          name: "Name",
+          data: "{some: data}"
         },
         validPlanEntity
       );
     });
 
-    it('uses updateMyPrivatePlan correctly', async () => {
-      await userPlanController.updateMyPrivatePlan(<Request>req, <Response>res);
-      expect(mockUpdateMyPrivatePlan).toHaveBeenCalledWith({
-        planId: 5432,
+    it('uses update correctly', async () => {
+      await userPlanController.update(<Request>req, <Response>res);
+      expect(mockUpdate).toHaveBeenCalledWith({
+        id: 5432,
         authorId: 150,
         ownerId: 150,
-        planName: "Name",
-        planData: "{some: data}"
+        name: "Name",
+        data: "{some: data}"
       });
     });
 
     it('sends data correctly', async () => {
-      await userPlanController.updateMyPrivatePlan(<Request>req, <Response>res);
-      expect(res.send).toBeCalledWith({message: 'Plan updated.'});
+      await userPlanController.update(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith({message: 'Plan updated.'});
     });
 
     it('returns correctly', async () => {
-      const actual = await userPlanController
-      .updateMyPrivatePlan(<Request>req, <Response>res);
+      const actual =
+        await userPlanController.update(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Plan updated.'});
     });
   });
 
-  describe('deleteMyPrivatePlan method', () => {
-    const req: Partial<Request> = {session, body: {planId: 5432}};
+  describe('deleteById method', () => {
+    const req: Partial<Request> = {session, body: {id: 5432}};
     const res: Partial<Response> = {
       send: jest.fn().mockResolvedValue({message: 'Plan deleted.'})
     };
 
-    it('uses deleteMyPrivatePlan correctly', async () => {
-      await userPlanController.deleteMyPrivatePlan(<Request>req, <Response>res);
-      expect(mockDeleteMyPrivatePlan).toHaveBeenCalledWith(5432, 150);
+    it('uses deleteById correctly', async () => {
+      await userPlanController.deleteById(<Request>req, <Response>res);
+      expect(mockDeleteById).toHaveBeenCalledWith(5432, 150);
     });
 
     it('sends data correctly', async () => {
-      await userPlanController.deleteMyPrivatePlan(<Request>req, <Response>res);
-      expect(res.send).toBeCalledWith({message: 'Plan deleted.'});
+      await userPlanController.deleteById(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith({message: 'Plan deleted.'});
     });
 
     it('returns correctly', async () => {
-      const actual = await userPlanController
-      .deleteMyPrivatePlan(<Request>req, <Response>res);
+      const actual =
+        await userPlanController.deleteById(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Plan deleted.'});
     });
   });

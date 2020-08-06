@@ -12,7 +12,7 @@ export class Recipe implements IRecipe {
     this.create = this.create.bind(this);
     this.update = this.update.bind(this);
     this.deleteById = this.deleteById.bind(this);
-    this.getInfoToEditPrivate = this.getInfoToEditPrivate.bind(this);
+    this.getInfoToEdit = this.getInfoToEdit.bind(this);
     this.updatePrivate = this.updatePrivate.bind(this);
     this.deletePrivate = this.deletePrivate.bind(this);
     this.deletePrivateById = this.deletePrivateById.bind(this);
@@ -313,7 +313,7 @@ export class Recipe implements IRecipe {
     return row;
   }
 
-  async getInfoToEditPrivate(id: number, authorId: number, ownerId: number) {
+  async getInfoToEdit(id: number, authorId: number, ownerId: number) {
     const sql = `
     SELECT
     r.id,
@@ -518,7 +518,7 @@ export interface IRecipe {
     cookingImage
   }: IUpdatingRecipe): Data;
   deleteById(id: number): Data;
-  getInfoToEditPrivate(id: number, authorId: number, ownerId: number): Data;
+  getInfoToEdit(id: number, authorId: number, ownerId: number): Data;
   updatePrivate({
     id,
     recipeTypeId,

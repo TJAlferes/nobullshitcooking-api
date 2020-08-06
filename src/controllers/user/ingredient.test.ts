@@ -13,107 +13,102 @@ jest.mock('../../mysql-access/Ingredient', () => {
   return {
     ...originalModule,
     Ingredient: jest.fn().mockImplementation(() => ({
-      viewIngredients: mockViewIngredients,
-      viewIngredientById: mockViewIngredientById,
-      createMyPrivateUserIngredient: mockCreateMyPrivateUserIngredient,
-      updateMyPrivateUserIngredient: mockUpdateMyPrivateUserIngredient,
-      deleteMyPrivateUserIngredient: mockDeleteMyPrivateUserIngredient
+      view: mockView,
+      viewById: mockViewById,
+      create: mockCreate,
+      update: mockUpdate,
+      delete: mockDelete
     }))
   };
 });
-let mockViewIngredients = jest.fn().mockResolvedValue(
-  [[{ingredient_id: 383}, {ingredient_id: 5432}]]
+let mockView = jest.fn().mockResolvedValue(
+  [[{id: 383}, {id: 5432}]]
 );
-let mockViewIngredientById = jest.fn().mockResolvedValue(
-  [[{ingredient_id: 5432}]]
+let mockViewById = jest.fn().mockResolvedValue(
+  [[{id: 5432}]]
 );
-let mockCreateMyPrivateUserIngredient = jest.fn();
-let mockUpdateMyPrivateUserIngredient = jest.fn();
-let mockDeleteMyPrivateUserIngredient = jest.fn();
+let mockCreate = jest.fn();
+let mockUpdate = jest.fn();
+let mockDelete = jest.fn();
 
 jest.mock('../../mysql-access/RecipeIngredient', () => {
-  const originalModule = jest
-  .requireActual('../../mysql-access/RecipeIngredient');
+  const originalModule =
+    jest.requireActual('../../mysql-access/RecipeIngredient');
   return {
     ...originalModule,
     RecipeIngredient: jest.fn().mockImplementation(() => ({
-      deleteRecipeIngredientsByIngredientId: mockDeleteRecipeIngredientsByIngredientId
+      deleteByIngredientId: mockDeleteByIngredientId
     }))
   };
 });
-let mockDeleteRecipeIngredientsByIngredientId = jest.fn();
+let mockDeleteByIngredientId = jest.fn();
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 describe('user ingredient controller', () => {
-  const session = {...<Express.Session>{}, userInfo: {userId: 150}};
+  const session = {...<Express.Session>{}, userInfo: {id: 150}};
 
-  describe('viewAllMyPrivateUserIngredients method', () => {
+  describe('view method', () => {
     const req: Partial<Request> = {session};
     const res: Partial<Response> = {
       send: jest.fn().mockResolvedValue(
-        [[{ingredient_id: 383}, {ingredient_id: 5432}]]
+        [[{id: 383}, {id: 5432}]]
       )
     };
 
-    it('uses viewIngredients correctly', async () => {
-      await userIngredientController
-      .viewAllMyPrivateUserIngredients(<Request>req, <Response>res);
-      expect(mockViewIngredients).toHaveBeenCalledWith(150, 150);
+    it('uses view correctly', async () => {
+      await userIngredientController.view(<Request>req, <Response>res);
+      expect(mockView).toHaveBeenCalledWith(150, 150);
     });
 
     it('sends data correctly', async () => {
-      await userIngredientController
-      .viewAllMyPrivateUserIngredients(<Request>req, <Response>res);
-      expect(res.send)
-      .toBeCalledWith([[{ingredient_id: 383}, {ingredient_id: 5432}]]);
+      await userIngredientController.view(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith([[{id: 383}, {id: 5432}]]);
     });
 
     it('returns correctly', async () => {
-      const actual = await userIngredientController
-      .viewAllMyPrivateUserIngredients(<Request>req, <Response>res);
-      expect(actual).toEqual([[{ingredient_id: 383}, {ingredient_id: 5432}]]);
+      const actual =
+        await userIngredientController.view(<Request>req, <Response>res);
+      expect(actual).toEqual([[{id: 383}, {id: 5432}]]);
     });
   });
 
-  describe('viewMyPrivateUserIngredient method', () => {
-    const req: Partial<Request> = {session, body: {ingredientId: 5432}};
+  describe('viewById method', () => {
+    const req: Partial<Request> = {session, body: {id: 5432}};
     const res: Partial<Response> = {
-      send: jest.fn().mockResolvedValue([{ingredient_id: 5432}])
+      send: jest.fn().mockResolvedValue([{id: 5432}])
     };
 
-    it('uses viewIngredientById correctly', async () => {
-      await userIngredientController
-      .viewMyPrivateUserIngredient(<Request>req, <Response>res);
-      expect(mockViewIngredientById).toHaveBeenCalledWith(5432, 150, 150);
+    it('uses viewById correctly', async () => {
+      await userIngredientController.viewById(<Request>req, <Response>res);
+      expect(mockViewById).toHaveBeenCalledWith(5432, 150, 150);
     });
 
     it('sends data correctly', async () => {
-      await userIngredientController
-      .viewMyPrivateUserIngredient(<Request>req, <Response>res);
-      expect(res.send).toBeCalledWith([{ingredient_id: 5432}]);
+      await userIngredientController.viewById(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith([{id: 5432}]);
     });
 
     it('returns correctly', async () => {
-      const actual = await userIngredientController
-      .viewMyPrivateUserIngredient(<Request>req, <Response>res);
-      expect(actual).toEqual([{ingredient_id: 5432}]);
+      const actual =
+        await userIngredientController.viewById(<Request>req, <Response>res);
+      expect(actual).toEqual([{id: 5432}]);
     });
   });
 
-  describe('createMyPrivateUserIngredient method', () => {
+  describe('create method', () => {
     const req: Partial<Request> = {
       session,
       body: {
         ingredientInfo: {
           ingredientTypeId: 2,
-          ingredientBrand: "Some Brand",
-          ingredientVariety: "Some Variety",
-          ingredientName: "My Ingredient",
-          ingredientDescription: "It works.",
-          ingredientImage: "nobsc-ingredient-default"
+          brand: "Some Brand",
+          variety: "Some Variety",
+          name: "My Ingredient",
+          description: "It works.",
+          image: "nobsc-ingredient-default"
         }
       }
     };
@@ -122,64 +117,60 @@ describe('user ingredient controller', () => {
     };
 
     it('uses assert correctly', async () => {
-      await userIngredientController
-      .createMyPrivateUserIngredient(<Request>req, <Response>res);
+      await userIngredientController.create(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith(
         {
           ingredientTypeId: 2,
           authorId: 150,
           ownerId: 150,
-          ingredientBrand: "Some Brand",
-          ingredientVariety: "Some Variety",
-          ingredientName: "My Ingredient",
-          ingredientDescription: "It works.",
-          ingredientImage: "nobsc-ingredient-default"
+          brand: "Some Brand",
+          variety: "Some Variety",
+          name: "My Ingredient",
+          description: "It works.",
+          image: "nobsc-ingredient-default"
         },
         validIngredientEntity
       );
     });
 
-    it('uses createMyPrivateUserIngredient correctly', async () => {
-      await userIngredientController
-      .createMyPrivateUserIngredient(<Request>req, <Response>res);
-      expect(mockCreateMyPrivateUserIngredient)
-      .toHaveBeenCalledWith({
+    it('uses create correctly', async () => {
+      await userIngredientController.create(<Request>req, <Response>res);
+      expect(mockCreate).toHaveBeenCalledWith({
         ingredientTypeId: 2,
         authorId: 150,
         ownerId: 150,
-        ingredientBrand: "Some Brand",
-        ingredientVariety: "Some Variety",
-        ingredientName: "My Ingredient",
-        ingredientDescription: "It works.",
-        ingredientImage: "nobsc-ingredient-default"
+        brand: "Some Brand",
+        variety: "Some Variety",
+        name: "My Ingredient",
+        description: "It works.",
+        image: "nobsc-ingredient-default"
       });
     });
 
     it('sends data correctly', async () => {
-      await userIngredientController
-      .createMyPrivateUserIngredient(<Request>req, <Response>res);
-      expect(res.send).toBeCalledWith({message: 'Ingredient created.'});
+      await userIngredientController.create(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith({message: 'Ingredient created.'});
     });
 
     it('returns correctly', async () => {
-      const actual = await userIngredientController
-      .createMyPrivateUserIngredient(<Request>req, <Response>res);
+      const actual =
+        await userIngredientController.create(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Ingredient created.'});
     });
   });
 
-  describe('updateMyPrivateUserIngredient method', () => {
+  describe('update method', () => {
     const req: Partial<Request> = {
       session,
       body: {
         ingredientInfo: {
-          ingredientId: 5432,
+          id: 5432,
           ingredientTypeId: 2,
-          ingredientBrand: "Some Brand",
-          ingredientVariety: "Some Variety",
-          ingredientName: "My Ingredient",
-          ingredientDescription: "It works.",
-          ingredientImage: "nobsc-ingredient-default"
+          brand: "Some Brand",
+          variety: "Some Variety",
+          name: "My Ingredient",
+          description: "It works.",
+          image: "nobsc-ingredient-default"
         }
       }
     };
@@ -188,82 +179,73 @@ describe('user ingredient controller', () => {
     };
 
     it('uses assert correctly', async () => {
-      await userIngredientController
-      .updateMyPrivateUserIngredient(<Request>req, <Response>res);
+      await userIngredientController.update(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith(
         {
           ingredientTypeId: 2,
           authorId: 150,
           ownerId: 150,
-          ingredientBrand: "Some Brand",
-          ingredientVariety: "Some Variety",
-          ingredientName: "My Ingredient",
-          ingredientDescription: "It works.",
-          ingredientImage: "nobsc-ingredient-default"
+          brand: "Some Brand",
+          variety: "Some Variety",
+          name: "My Ingredient",
+          description: "It works.",
+          image: "nobsc-ingredient-default"
         },
         validIngredientEntity
       );
     });
 
-    it('uses updateMyPrivateUserIngredient correctly', async () => {
-      await userIngredientController
-      .updateMyPrivateUserIngredient(<Request>req, <Response>res);
-      expect(mockUpdateMyPrivateUserIngredient)
-      .toHaveBeenCalledWith({
-        ingredientId: 5432,
+    it('uses update correctly', async () => {
+      await userIngredientController.update(<Request>req, <Response>res);
+      expect(mockUpdate).toHaveBeenCalledWith({
+        id: 5432,
         ingredientTypeId: 2,
         authorId: 150,
         ownerId: 150,
-        ingredientBrand: "Some Brand",
-        ingredientVariety: "Some Variety",
-        ingredientName: "My Ingredient",
-        ingredientDescription: "It works.",
-        ingredientImage: "nobsc-ingredient-default"
+        brand: "Some Brand",
+        variety: "Some Variety",
+        name: "My Ingredient",
+        description: "It works.",
+        image: "nobsc-ingredient-default"
       });
     });
 
     it('sends data correctly', async () => {
-      await userIngredientController
-      .updateMyPrivateUserIngredient(<Request>req, <Response>res);
-      expect(res.send).toBeCalledWith({message: 'Ingredient updated.'});
+      await userIngredientController.update(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith({message: 'Ingredient updated.'});
     });
 
     it('returns correctly', async () => {
-      const actual = await userIngredientController
-      .updateMyPrivateUserIngredient(<Request>req, <Response>res);
+      const actual =
+        await userIngredientController.update(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Ingredient updated.'});
     });
   });
 
-  describe('deleteMyPrivateUserIngredient method', () => {
-    const req: Partial<Request> = {session, body: {ingredientId: 5432}};
+  describe('delete method', () => {
+    const req: Partial<Request> = {session, body: {id: 5432}};
     const res: Partial<Response> = {
       send: jest.fn().mockResolvedValue({message: 'Ingredient deleted.'})
     };
 
-    it('uses deleteRecipeIngredientByIngredientId correctly', async () => {
-      await userIngredientController
-      .deleteMyPrivateUserIngredient(<Request>req, <Response>res);
-      expect(mockDeleteRecipeIngredientsByIngredientId)
-      .toHaveBeenCalledWith(5432);
+    it('uses deleteByIngredientId correctly', async () => {
+      await userIngredientController.delete(<Request>req, <Response>res);
+      expect(mockDeleteByIngredientId).toHaveBeenCalledWith(5432);
     });
 
-    it('uses deleteRecipeIngredient correctly', async () => {
-      await userIngredientController
-      .deleteMyPrivateUserIngredient(<Request>req, <Response>res);
-      expect(mockDeleteMyPrivateUserIngredient)
-      .toHaveBeenCalledWith(5432, 150);
+    it('uses delete correctly', async () => {
+      await userIngredientController.delete(<Request>req, <Response>res);
+      expect(mockDelete).toHaveBeenCalledWith(5432, 150);
     });
 
     it('sends data correctly', async () => {
-      await userIngredientController
-      .deleteMyPrivateUserIngredient(<Request>req, <Response>res);
-      expect(res.send).toBeCalledWith({message: 'Ingredient deleted.'});
+      await userIngredientController.delete(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith({message: 'Ingredient deleted.'});
     });
 
     it('returns correctly', async () => {
-      const actual = await userIngredientController
-      .deleteMyPrivateUserIngredient(<Request>req, <Response>res);
+      const actual =
+        await userIngredientController.delete(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Ingredient deleted.'});
     });
   });

@@ -15,9 +15,7 @@ const SALT_ROUNDS = 10;
 
 export const staffAuthController = {
   register: async function(req: Request, res: Response) {
-    const email = req.body.staffInfo.email;
-    const pass = req.body.staffInfo.password;
-    const staffname = req.body.staffInfo.staffname;
+    const { email, password: pass, staffname } = req.body.staffInfo;
 
     assert({email, pass, staffname}, validRegisterRequest);
 
@@ -48,35 +46,28 @@ export const staffAuthController = {
 
     const staff = new Staff(pool);
 
-    const [ staffExists ] = await staff.getStaffByName(staffname);
-
+    const [ staffExists ] = await staff.getByName(staffname);
     if (staffExists) {
       return res.send({message: 'Staffname already taken.'});
     }
 
-    const [ emailExists ] = await staff.getStaffByEmail(email);
-
+    const [ emailExists ] = await staff.getByEmail(email);
     if (emailExists) {
       return res.send({message: 'Email already in use.'});
     }
 
     const encryptedPassword = await bcrypt.hash(pass, SALT_ROUNDS);
 
-    const staffToCreate = {
-      email,
-      pass: encryptedPassword,
-      staffname
-    };
+    const staffToCreate = {email, pass: encryptedPassword, staffname};
 
     assert(staffToCreate, validStaffEntity);
 
-    await staff.createStaff(staffToCreate);
+    await staff.create(staffToCreate);
 
     return res.send({message: 'Staff account created.'});
   },
   login: async function(req: Request, res: Response) {
-    const email = req.body.staffInfo.email;
-    const pass = req.body.staffInfo.password;
+    const { email, password: pass } = req.body.staffInfo;
 
     assert({email, pass}, validLoginRequest);
 
@@ -91,8 +82,7 @@ export const staffAuthController = {
 
     const staff = new Staff(pool);
 
-    const [ staffExists ] = await staff.getStaffByEmail(email);
-
+    const [ staffExists ] = await staff.getByEmail(email);
     if (!staffExists) {
       return res.send({message: 'Incorrect email or password.'});
     }
@@ -100,13 +90,12 @@ export const staffAuthController = {
     //crypto.timingSafeEqual
 
     const isCorrectPassword = await bcrypt.compare(pass, staffExists.pass);
-
     if (isCorrectPassword) {
       return res.send({message: 'Incorrect email or password.'});
     }
 
     req.session!.staffInfo = {};
-    req.session!.staffInfo.staffId = staffExists.staff_id;
+    req.session!.staffInfo.id = staffExists.id;
     req.session!.staffInfo.staffname = staffExists.staffname;
     req.session!.staffInfo.avatar = staffExists.avatar;
 

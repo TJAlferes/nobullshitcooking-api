@@ -16,22 +16,24 @@ import { FavoriteRecipe } from '../../mysql-access/FavoriteRecipe';
 import { SavedRecipe } from '../../mysql-access/SavedRecipe';
 
 export const staffRecipeController = {
-  createRecipe: async function(req: Request, res: Response) {
+  create: async function(req: Request, res: Response) {
     const recipeTypeId = Number(req.body.recipeInfo.recipeTypeId);
     const cuisineId = Number(req.body.recipeInfo.cuisineId);
-    const title = req.body.recipeInfo.title;
-    const description = req.body.recipeInfo.description;
-    const activeTime = req.body.recipeInfo.activeTime;
-    const totalTime = req.body.recipeInfo.totalTime;
-    const directions = req.body.recipeInfo.directions;
-    const requiredMethods = req.body.recipeInfo.requiredMethods;
-    const requiredEquipment = req.body.recipeInfo.requiredEquipment;
-    const requiredIngredients = req.body.recipeInfo.requiredIngredients;
-    const requiredSubrecipes = req.body.recipeInfo.requiredSubrecipes;
-    const recipeImage = req.body.recipeInfo.recipeImage;
-    const equipmentImage = req.body.recipeInfo.recipeEquipmentImage;
-    const ingredientsImage = req.body.recipeInfo.recipeIngredientsImage;
-    const cookingImage = req.body.recipeInfo.recipeCookingImage;
+    const {
+      title,
+      description,
+      activeTime,
+      totalTime,
+      directions,
+      requiredMethods,
+      requiredEquipment,
+      requiredIngredients,
+      requiredSubrecipes,
+      recipeImage,
+      equipmentImage,
+      ingredientsImage,
+      cookingImage
+    } = req.body.recipeInfo;
 
     const authorId = 1;
     const ownerId = 1;
@@ -65,28 +67,30 @@ export const staffRecipeController = {
 
     return res.send({message: 'Recipe created.'});
   },
-  updateRecipe: async function(req: Request, res: Response) {
-    const recipeId = Number(req.body.recipeInfo.recipeId);
+  update: async function(req: Request, res: Response) {
+    const id = Number(req.body.recipeInfo.id);
     const recipeTypeId = Number(req.body.recipeInfo.recipeTypeId);
     const cuisineId = Number(req.body.recipeInfo.cuisineId);
-    const title = req.body.recipeInfo.title;
-    const description = req.body.recipeInfo.description;
-    const activeTime = req.body.recipeInfo.activeTime;
-    const totalTime = req.body.recipeInfo.totalTime;
-    const directions = req.body.recipeInfo.directions;
-    const requiredMethods = req.body.recipeInfo.requiredMethods;
-    const requiredEquipment = req.body.recipeInfo.requiredEquipment;
-    const requiredIngredients = req.body.recipeInfo.requiredIngredients;
-    const requiredSubrecipes = req.body.recipeInfo.requiredSubrecipes;
-    const recipeImage = req.body.recipeInfo.recipeImage;
-    const equipmentImage = req.body.recipeInfo.recipeEquipmentImage;
-    const ingredientsImage = req.body.recipeInfo.recipeIngredientsImage;
-    const cookingImage = req.body.recipeInfo.recipeCookingImage;
+    const {
+      title,
+      description,
+      activeTime,
+      totalTime,
+      directions,
+      requiredMethods,
+      requiredEquipment,
+      requiredIngredients,
+      requiredSubrecipes,
+      recipeImage,
+      equipmentImage,
+      ingredientsImage,
+      cookingImage
+    } = req.body.recipeInfo;
 
     const authorId = 1;
     const ownerId = 1;
 
-    if (typeof recipeId === "undefined") {
+    if (typeof id === "undefined") {
       return res.send({message: 'Invalid recipe ID!'});
     }
 
@@ -109,7 +113,7 @@ export const staffRecipeController = {
     assert(recipeToUpdateWith, validRecipeEntity);
 
     await updateRecipeService({
-      recipeId,
+      id,
       authorId,
       ownerId,
       recipeToUpdateWith,
@@ -121,8 +125,8 @@ export const staffRecipeController = {
 
     return res.send({message: 'Recipe updated.'});
   },
-  deleteRecipe: async function(req: Request, res: Response) {
-    const recipeId = Number(req.body.recipeId);
+  delete: async function(req: Request, res: Response) {
+    const id = Number(req.body.id);
 
     // transaction(s)?:
     const favoriteRecipe = new FavoriteRecipe(pool);
@@ -137,18 +141,18 @@ export const staffRecipeController = {
 
     // what about plans???
     await Promise.all([
-      favoriteRecipe.deleteAllFavoritesOfRecipe(recipeId),
-      savedRecipe.deleteAllSavesOfRecipe(recipeId),
-      recipeMethod.deleteRecipeMethods(recipeId),
-      recipeEquipment.deleteRecipeEquipment(recipeId),
-      recipeIngredient.deleteRecipeIngredients(recipeId),
-      recipeSubrecipe.deleteRecipeSubrecipes(recipeId),
-      recipeSubrecipe.deleteRecipeSubrecipesBySubrecipeId(recipeId)
+      favoriteRecipe.deleteAllByRecipeId(id),
+      savedRecipe.deleteAllByRecipeId(id),
+      recipeMethod.deleteByRecipeId(id),
+      recipeEquipment.deleteByRecipeId(id),
+      recipeIngredient.deleteByRecipeId(id),
+      recipeSubrecipe.deleteByRecipeId(id),
+      recipeSubrecipe.deleteBySubrecipeId(id)
     ]);
 
-    await recipe.deleteRecipe(recipeId);
+    await recipe.deleteById(id);
 
-    await recipeSearch.deleteRecipe(String(recipeId));
+    await recipeSearch.delete(String(id));
 
     return res.send({message: 'Recipe deleted.'});
   }

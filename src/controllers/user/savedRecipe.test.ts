@@ -9,120 +9,108 @@ import { userSavedRecipeController } from './savedRecipe';
 jest.mock('superstruct');
 
 jest.mock('../../mysql-access/SavedRecipe', () => {
-  const originalModule = jest
-  .requireActual('../../mysql-access/SavedRecipe');
+  const originalModule = jest.requireActual('../../mysql-access/SavedRecipe');
   return {
     ...originalModule,
     SavedRecipe: jest.fn().mockImplementation(() => ({
-      viewMySavedRecipes: mockViewMySavedRecipes,
-      createMySavedRecipe: mockCreateMySavedRecipe,
-      deleteMySavedRecipe: mockDeleteMySavedRecipe
+      viewByUserId: mockViewByUserId,
+      create: mockCreate,
+      delete: mockDelete
     }))
   };
 });
-let mockViewMySavedRecipes = jest.fn().mockResolvedValue(
-  [[{recipe_id: 383}, {recipe_id: 5432}]]
+let mockViewByUserId = jest.fn().mockResolvedValue(
+  [[{id: 383}, {id: 5432}]]
 );
-let mockCreateMySavedRecipe = jest.fn();
-let mockDeleteMySavedRecipe = jest.fn();
+let mockCreate = jest.fn();
+let mockDelete = jest.fn();
 
 describe('user saved recipes controller', () => {
-  const session = {...<Express.Session>{}, userInfo: {userId: 150}};
+  const session = {...<Express.Session>{}, userInfo: {id: 150}};
 
-  describe('viewMySavedRecipes method', () => {
+  describe('viewByUserId method', () => {
     const req: Partial<Request> = {session};
     const res: Partial<Response> = {
       send: jest.fn().mockResolvedValue(
-        [[{recipe_id: 383}, {recipe_id: 5432}]]
+        [[{id: 383}, {id: 5432}]]
       )
     };
 
-    it('uses viewMySavedRecipes correctly', async () => {
-      await userSavedRecipeController
-      .viewMySavedRecipes(<Request>req, <Response>res);
-      expect(mockViewMySavedRecipes).toHaveBeenCalledWith(150);
+    it('uses viewByUserId correctly', async () => {
+      await userSavedRecipeController.viewByUserId(<Request>req, <Response>res);
+      expect(mockViewByUserId).toHaveBeenCalledWith(150);
     });
 
     it('sends data correctly', async () => {
-      await userSavedRecipeController
-      .viewMySavedRecipes(<Request>req, <Response>res);
-      expect(res.send)
-      .toBeCalledWith([[{recipe_id: 383}, {recipe_id: 5432}]]);
+      await userSavedRecipeController.viewByUserId(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith([[{id: 383}, {id: 5432}]]);
     });
 
     it('returns correctly', async () => {
       const actual = await userSavedRecipeController
-      .viewMySavedRecipes(<Request>req, <Response>res);
-      expect(actual).toEqual([[{recipe_id: 383}, {recipe_id: 5432}]]);
+        .viewByUserId(<Request>req, <Response>res);
+      expect(actual).toEqual([[{id: 383}, {id: 5432}]]);
     });
   });
 
-  describe ('createMySavedRecipe method', () => {
-    const req: Partial<Request> = {session, body: {recipeId: 5432}};
+  describe ('create method', () => {
+    const req: Partial<Request> = {session, body: {id: 5432}};
     const res: Partial<Response> = {
       send: jest.fn().mockResolvedValue({message: 'Saved.'})
     };
 
     it('uses assert correctly', async () => {
-      await userSavedRecipeController
-      .createMySavedRecipe(<Request>req, <Response>res);
+      await userSavedRecipeController.create(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith(
         {userId: 150, recipeId: 5432},
         validSavedRecipeEntity
       );
     });
 
-    it('uses createMySavedRecipe correctly', async () => {
-      await userSavedRecipeController
-      .createMySavedRecipe(<Request>req, <Response>res);
-      expect(mockCreateMySavedRecipe).toHaveBeenCalledWith(150, 5432);
+    it('uses create correctly', async () => {
+      await userSavedRecipeController.create(<Request>req, <Response>res);
+      expect(mockCreate).toHaveBeenCalledWith(150, 5432);
     });
 
     it('sends data correctly', async () => {
-      await userSavedRecipeController
-      .createMySavedRecipe(<Request>req, <Response>res);
-      expect(res.send)
-      .toBeCalledWith({message: 'Saved.'});
+      await userSavedRecipeController.create(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith({message: 'Saved.'});
     });
 
     it('returns correctly', async () => {
-      const actual = await userSavedRecipeController
-      .createMySavedRecipe(<Request>req, <Response>res);
+      const actual =
+        await userSavedRecipeController.create(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Saved.'});
     });
   });
 
-  describe ('deleteMySavedRecipe method', () => {
-    const req: Partial<Request> = {session, body: {recipeId: 5432}};
+  describe ('delete method', () => {
+    const req: Partial<Request> = {session, body: {id: 5432}};
     const res: Partial<Response> = {
       send: jest.fn().mockResolvedValue({message: 'Unsaved.'})
     };
 
     it('uses assert correctly', async () => {
-      await userSavedRecipeController
-      .deleteMySavedRecipe(<Request>req, <Response>res);
+      await userSavedRecipeController.delete(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith(
         {userId: 150, recipeId: 5432},
         validSavedRecipeEntity
       );
     });
 
-    it('uses deleteMySavedRecipe correctly', async () => {
-      await userSavedRecipeController
-      .deleteMySavedRecipe(<Request>req, <Response>res);
-      expect(mockDeleteMySavedRecipe).toHaveBeenCalledWith(150, 5432);
+    it('uses delete correctly', async () => {
+      await userSavedRecipeController.delete(<Request>req, <Response>res);
+      expect(mockDelete).toHaveBeenCalledWith(150, 5432);
     });
 
     it('sends data correctly', async () => {
-      await userSavedRecipeController
-      .deleteMySavedRecipe(<Request>req, <Response>res);
-      expect(res.send)
-      .toBeCalledWith({message: 'Unsaved.'});
+      await userSavedRecipeController.delete(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith({message: 'Unsaved.'});
     });
 
     it('returns correctly', async () => {
-      const actual = await userSavedRecipeController
-      .deleteMySavedRecipe(<Request>req, <Response>res);
+      const actual =
+        await userSavedRecipeController.delete(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Unsaved.'});
     });
   });

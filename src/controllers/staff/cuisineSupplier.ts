@@ -4,24 +4,23 @@ import { pool } from '../../lib/connections/mysqlPoolConnection';
 import { CuisineSupplier } from '../../mysql-access/CuisineSupplier';
 
 export const staffCuisineSupplierController = {
-  createCuisineSupplier: async function(req: Request, res: Response) {
+  create: async function(req: Request, res: Response) {
     const cuisineId = Number(req.body.cuisineId);
     const supplierId = Number(req.body.supplierId);
 
     const cuisineSupplier = new CuisineSupplier(pool);
 
-    await cuisineSupplier.createCuisineSupplier(cuisineId, supplierId);
+    await cuisineSupplier.create(cuisineId, supplierId);
 
     return res.send({message: 'Cuisine supplier created.'});
   },
-
-  deleteCuisineSupplier: async function(req: Request, res: Response) {
+  delete: async function(req: Request, res: Response) {
     const cuisineId = Number(req.body.cuisineId);
     const supplierId = Number(req.body.supplierId);
 
     const cuisineSupplier = new CuisineSupplier(pool);
 
-    await cuisineSupplier.deleteCuisineSupplier(cuisineId, supplierId);
+    await cuisineSupplier.delete(cuisineId, supplierId);
 
     return res.send({message: 'Cuisine supplier deleted.'});
   }

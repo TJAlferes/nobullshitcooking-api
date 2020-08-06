@@ -5,39 +5,36 @@ import { CuisineSupplier } from '../../mysql-access/CuisineSupplier';
 import { Supplier } from '../../mysql-access/Supplier';
 
 export const staffSupplierController = {
-  viewAllSuppliers: async function (req: Request, res: Response) {
+  view: async function (req: Request, res: Response) {
     const supplier = new Supplier(pool);
 
-    const allFoundSuppliers = await supplier.viewAllSuppliers();
+    const rows = await supplier.view();
 
-    return res.send({suppliers: allFoundSuppliers});
+    return res.send({suppliers: rows});
   },
-
-  viewSupplierById: async function (req: Request, res: Response) {
-    const supplierId = Number(req.body.supplierInfo.supplierId);
+  viewById: async function (req: Request, res: Response) {
+    const id = Number(req.body.supplierInfo.id);
 
     const supplier = new Supplier(pool);
 
-    const foundSupplier = await supplier.viewSupplierById(supplierId);
+    const row = await supplier.viewById(id);
 
-    return res.send({supplier: foundSupplier});
+    return res.send({supplier: row});
   },
-
-  createSupplier: async function (req: Request, res: Response) {
-    const supplierName = req.body.supplierInfo.supplierName;
+  create: async function (req: Request, res: Response) {
+    const { name } = req.body.supplierInfo;
 
     // TO DO: validate
     
     const supplier = new Supplier(pool);
 
-    await supplier.createSupplier(supplierName);
+    await supplier.create(name);
 
     return res.send({message: 'Supplier created.'});
   },
-
-  updateSupplier: async function (req: Request, res: Response) {
-    const supplierId = Number(req.body.supplierInfo.supplierId);
-    const supplierName = req.body.supplierInfo.supplierName;
+  update: async function (req: Request, res: Response) {
+    const id = Number(req.body.supplierInfo.id);
+    const { name } = req.body.supplierInfo;
 
     // TO DO: validate
 
@@ -45,21 +42,18 @@ export const staffSupplierController = {
 
     const supplier = new Supplier(pool);
 
-    await supplier.updateSupplier(supplierId, supplierName);
+    await supplier.update(id, name);
 
     return res.send({message: 'Supplier updated.'});
   },
-  
-  deleteSupplier: async function (req: Request, res: Response) {
+  delete: async function (req: Request, res: Response) {
     const supplierId = Number(req.body.supplierInfo.supplierId);
 
     const cuisineSupplier = new CuisineSupplier(pool);
-
-    await cuisineSupplier.deleteCuisineSuppliersBySupplierId(supplierId);
-
     const supplier = new Supplier(pool);
 
-    await supplier.deleteSupplier(supplierId);
+    await cuisineSupplier.deleteBySupplierId(supplierId);
+    await supplier.delete(supplierId);
     
     return res.send({message: 'Supplier deleted.'});
   }

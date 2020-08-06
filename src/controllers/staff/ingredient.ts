@@ -10,17 +10,13 @@ import {
 import { Ingredient } from '../../mysql-access/Ingredient';
 
 export const staffIngredientController = {
-  createIngredient: async function(req: Request, res: Response) {
+  create: async function(req: Request, res: Response) {
     const ingredientTypeId = Number(req.body.ingredientInfo.ingredientTypeId);
-    const ingredientBrand = req.body.ingredientInfo.ingredientBrand
-      ? req.body.ingredientInfo.ingredientBrand
-      : "";
-    const ingredientVariety = req.body.ingredientInfo.ingredientVariety
-      ? req.body.ingredientInfo.ingredientVariety
-      : "";
-    const ingredientName = req.body.ingredientInfo.ingredientName;
-    const ingredientDescription = req.body.ingredientInfo.ingredientDescription;
-    const ingredientImage = req.body.ingredientInfo.ingredientImage;
+    const brand = req.body.ingredientInfo.brand
+      ? req.body.ingredientInfo.brand : "";
+    const variety = req.body.ingredientInfo.variety
+      ? req.body.ingredientInfo.variety : "";
+    const { name, description, image } = req.body.ingredientInfo;
 
     const authorId = 1;
     const ownerId = 1;
@@ -29,43 +25,38 @@ export const staffIngredientController = {
       ingredientTypeId,
       authorId,
       ownerId,
-      ingredientBrand,
-      ingredientVariety,
-      ingredientName,
-      ingredientDescription,
-      ingredientImage
+      brand,
+      variety,
+      name,
+      description,
+      image
     };
 
     assert(ingredientToCreate, validIngredientEntity);
 
     const ingredient = new Ingredient(pool);
 
-    const createdIngredient = await ingredient
-    .createIngredient(ingredientToCreate);
+    const createdIngredient = await ingredient.create(ingredientToCreate);
 
     const generatedId = createdIngredient.insertId;
 
-    const ingredientForInsert = await ingredient
-    .getIngredientForElasticSearchInsert(generatedId);
+    const ingredientForInsert =
+      await ingredient.getForElasticSearch(generatedId);
     
     const ingredientSearch = new IngredientSearch(esClient);
 
-    await ingredientSearch.saveIngredient(ingredientForInsert);
+    await ingredientSearch.save(ingredientForInsert);
 
     return res.send({message: 'Ingredient created.'});
   },
-  updateIngredient: async function(req: Request, res: Response) {
-    const ingredientId = Number(req.body.ingredientInfo.ingredientId);
+  update: async function(req: Request, res: Response) {
+    const id = Number(req.body.ingredientInfo.id);
     const ingredientTypeId = Number(req.body.ingredientInfo.ingredientTypeId);
-    const ingredientBrand = req.body.ingredientInfo.ingredientBrand
-      ? req.body.ingredientInfo.ingredientBrand
-      : "";
-    const ingredientVariety = req.body.ingredientInfo.ingredientVariety
-      ? req.body.ingredientInfo.ingredientVariety
-      : "";
-    const ingredientName = req.body.ingredientInfo.ingredientName;
-    const ingredientDescription = req.body.ingredientInfo.ingredientDescription;
-    const ingredientImage = req.body.ingredientInfo.ingredientImage;
+    const brand = req.body.ingredientInfo.brand
+      ? req.body.ingredientInfo.brand : "";
+    const variety = req.body.ingredientInfo.variety
+      ? req.body.ingredientInfo.variety : "";
+    const { name, description, image } = req.body.ingredientInfo;
 
     const authorId = 1;
     const ownerId = 1;
@@ -74,36 +65,35 @@ export const staffIngredientController = {
       ingredientTypeId,
       authorId,
       ownerId,
-      ingredientBrand,
-      ingredientVariety,
-      ingredientName,
-      ingredientDescription,
-      ingredientImage
+      brand,
+      variety,
+      name,
+      description,
+      image
     };
 
     assert(ingredientToUpdateWith, validIngredientEntity);
 
     const ingredient = new Ingredient(pool);
 
-    await ingredient.updateIngredient({ingredientId, ...ingredientToUpdateWith});
+    await ingredient.update({id, ...ingredientToUpdateWith});
 
-    const ingredientForInsert = await ingredient
-    .getIngredientForElasticSearchInsert(ingredientId);
+    const ingredientForInsert = await ingredient.getForElasticSearch(id);
 
     const ingredientSearch = new IngredientSearch(esClient);
 
-    await ingredientSearch.saveIngredient(ingredientForInsert);
+    await ingredientSearch.save(ingredientForInsert);
 
     return res.send({message: 'Ingredient updated.'});
   },
-  deleteIngredient: async function(req: Request, res: Response) {
-    const ingredientId = Number(req.body.ingredientId);
+  delete: async function(req: Request, res: Response) {
+    const id = Number(req.body.id);
 
     const ingredient = new Ingredient(pool);
     const ingredientSearch = new IngredientSearch(esClient);
 
-    await ingredient.deleteIngredient(ingredientId);
-    await ingredientSearch.deleteIngredient(String(ingredientId));
+    await ingredient.delete(id);
+    await ingredientSearch.delete(String(id));
 
     return res.send({message: 'Ingredient deleted.'});
   }

@@ -65,41 +65,37 @@ export const userAuthController = {
 
     assert(userToCreate, validUserEntity);
 
-    await user.createUser(userToCreate);
+    await user.create(userToCreate);
 
     emailConfirmationCode(email, confirmationCode);
 
     return res.send({message: 'User account created.'});
   },
   verify: async function(req: Request, res: Response) {
-    const email = req.body.userInfo.email;
-    const pass = req.body.userInfo.password;
-    const confirmationCode = req.body.userInfo.confirmationCode;
+    const { email, pass, confirmationCode } = req.body.userInfo;
 
     assert({email, pass, confirmationCode}, validVerifyRequest);
 
     const user = new User(pool);
 
-    const isValidVerify = await validVerify({email, pass, confirmationCode}, user);
-
+    const isValidVerify =
+      await validVerify({email, pass, confirmationCode}, user);
     if (!isValidVerify.valid) {
       return res.send({message: isValidVerify.feedback});
     }
 
-    user.verifyUser(email);
+    user.verify(email);
 
     return res.send({message: 'User account verified.'});
   },
   resendConfirmationCode: async function (req: Request, res: Response) {
-    const email = req.body.userInfo.email;
-    const pass = req.body.userInfo.password;
+    const { email, password: pass } = req.body.userInfo;
 
     assert({email, pass}, validLoginRequest);
 
     const user = new User(pool);
 
     const { valid, feedback } = await validResend({email, pass}, user);
-
     if (!valid) return res.send({message: feedback});
 
     const confirmationCode = uuidv4();
@@ -109,8 +105,7 @@ export const userAuthController = {
     return res.send({message: 'Confirmation code re-sent.'});
   },
   login: async function(req: Request, res: Response) {
-    const email = req.body.userInfo.email;
-    const pass = req.body.userInfo.password;
+    const { email, password: pass } = req.body.userInfo;
 
     assert({email, pass}, validLoginRequest);
 
@@ -121,11 +116,10 @@ export const userAuthController = {
       feedback,
       userExists
     } = await validLogin({email, pass}, user);
-
     if (!valid || !userExists) return res.send({message: feedback});
     
     req.session!.userInfo = {};
-    req.session!.userInfo.userId = userExists.user_id;
+    req.session!.userInfo.id = userExists.id;
     req.session!.userInfo.username = userExists.username;
     req.session!.userInfo.avatar = userExists.avatar;
 
@@ -139,13 +133,10 @@ export const userAuthController = {
     req.session!.destroy(function() {});
     return res.end();
   },
-  updateUser: async function(req: Request, res: Response) {
-    const email = req.body.userInfo.email;
-    const pass = req.body.userInfo.password;
-    const username = req.body.userInfo.username;
-    const avatar = req.body.userInfo.avatar;
+  update: async function(req: Request, res: Response) {
+    const { email, password: pass, username, avatar } = req.body.userInfo;
 
-    const userId = req.session!.userInfo.userId;
+    const id = req.session!.userInfo.id;
 
     const userToUpdateWith = {email, pass, username, avatar};
 
@@ -153,13 +144,13 @@ export const userAuthController = {
 
     const user = new User(pool);
 
-    await user.updateUser({userId, ...userToUpdateWith});
+    await user.update({id, ...userToUpdateWith});
     
     // shouldn't it send the updated values back? const [ updatedUser ] = await
     return res.send({message: 'Account updated.'});
   },
-  deleteUser: async function(req: Request, res: Response) {
-    const userId = req.session!.userInfo.userId;
+  delete: async function(req: Request, res: Response) {
+    const userId = req.session!.userInfo.id;
 
     const content = new Content(pool);
     const equipment = new Equipment(pool);
@@ -176,42 +167,38 @@ export const userAuthController = {
     const savedRecipe = new SavedRecipe(pool);
     const user = new User(pool);
 
-    // while a user account being deleted is probably pretty rare,
-    // you are making sixteen database trips here...
-    // not horrible, but is there a way to lower that?
-
-    // due to foreign key constraints, deletes must be in this order
+    // NOTE: Due to foreign key constraints, deletes must be in this order:
 
     await Promise.all([
-      content.deleteAllMyContent(userId),  // move out and up?
-      friendship.deleteAllMyFriendships(userId),
-      plan.deleteAllMyPrivatePlans(userId),
-      favoriteRecipe.deleteAllMyFavoriteRecipes(userId),
-      savedRecipe.deleteAllMySavedRecipes(userId)
+      content.deleteAllByOwnerId(userId),  // move out and up?
+      friendship.deleteAllByUserId(userId),
+      plan.deleteAllByOwnerId(userId),
+      favoriteRecipe.deleteAllByUserId(userId),
+      savedRecipe.deleteAllByUserId(userId)
     ]);
 
     /*?*/
-    await recipe.disownAllMyPublicUserRecipes(userId);
+    await recipe.disown(userId);
 
-    const recipeIds = await recipe
-    .getAllMyPrivateUserRecipeIds(userId) as number[];
-
-    await Promise.all([
-      recipeEquipment.deleteRecipeEquipmentByRecipeIds(recipeIds),
-      recipeIngredient.deleteRecipeIngredientsByRecipeIds(recipeIds),
-      recipeMethod.deleteRecipeMethodsByRecipeIds(recipeIds),
-      recipeSubrecipe.deleteRecipeSubrecipesByRecipeIds(recipeIds),
-      recipeSubrecipe.deleteRecipeSubrecipesBySubrecipeIds(recipeIds)
-    ]);
-
-    await recipe.deleteAllMyPrivateUserRecipes(userId, userId);
+    const recipeIds =
+      await recipe.getAllPrivateIdsByUserId(userId) as number[];
 
     await Promise.all([
-      equipment.deleteAllMyPrivateUserEquipment(userId),
-      ingredient.deleteAllMyPrivateUserIngredients(userId)
+      recipeEquipment.deleteByRecipeIds(recipeIds),
+      recipeIngredient.deleteByRecipeIds(recipeIds),
+      recipeMethod.deleteByRecipeIds(recipeIds),
+      recipeSubrecipe.deleteByRecipeIds(recipeIds),
+      recipeSubrecipe.deleteBySubrecipeIds(recipeIds)
     ]);
 
-    await user.deleteUser(userId);
+    await recipe.deletePrivate(userId, userId);
+
+    await Promise.all([
+      equipment.deleteAllByOwnerId(userId),
+      ingredient.deleteAllByOwnerId(userId)
+    ]);
+
+    await user.delete(userId);
 
     return res.send({message: 'Account deleted.'});
   }

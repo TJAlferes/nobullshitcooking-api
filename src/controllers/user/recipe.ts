@@ -14,97 +14,92 @@ import { RecipeMethod } from '../../mysql-access/RecipeMethod';
 import { RecipeSubrecipe } from '../../mysql-access/RecipeSubrecipe';
 
 export const userRecipeController = {
-  viewAllMyPrivateUserRecipes: async function(req: Request, res: Response) {
-    const authorId = req.session!.userInfo.userId;
-    const ownerId = req.session!.userInfo.userId;
+  viewPrivate: async function(req: Request, res: Response) {
+    const authorId = req.session!.userInfo.id;
+    const ownerId = req.session!.userInfo.id;
 
     const recipe = new Recipe(pool);
 
-    const rows = await recipe.viewRecipes(authorId, ownerId);
+    const rows = await recipe.view(authorId, ownerId);
 
     return res.send(rows);
   },
-  viewAllMyPublicUserRecipes: async function(req: Request, res: Response) {
-    const authorId = req.session!.userInfo.userId;
+  viewPublic: async function(req: Request, res: Response) {
+    const authorId = req.session!.userInfo.id;
     const ownerId = 1;
 
     const recipe = new Recipe(pool);
 
-    const rows = await recipe.viewRecipes(authorId, ownerId);
+    const rows = await recipe.view(authorId, ownerId);
 
     return res.send(rows);
   },
-  viewMyPrivateUserRecipe: async function(req: Request, res: Response) {
-    const recipeId = Number(req.body.recipeId);
-    const authorId = req.session!.userInfo.userId;
-    const ownerId = req.session!.userInfo.userId;
+  viewPrivateById: async function(req: Request, res: Response) {
+    const id = Number(req.body.id);
+    const authorId = req.session!.userInfo.id;
+    const ownerId = req.session!.userInfo.id;
 
     const recipe = new Recipe(pool);
 
-    const [ row ] = await recipe.viewRecipeById(recipeId, authorId, ownerId);
+    const [ row ] = await recipe.viewById(id, authorId, ownerId);
 
     return res.send(row);
   },
-  viewMyPublicUserRecipe: async function(req: Request, res: Response) {
-    const recipeId = Number(req.body.recipeId);
-    const authorId = req.session!.userInfo.userId;
+  viewPublicById: async function(req: Request, res: Response) {
+    const id = Number(req.body.id);
+    const authorId = req.session!.userInfo.id;
     const ownerId = 1;
 
     const recipe = new Recipe(pool);
 
-    const [ row ] = await recipe.viewRecipeById(recipeId, authorId, ownerId);
+    const [ row ] = await recipe.viewById(id, authorId, ownerId);
 
     return res.send(row);
   },
-  getInfoToEditMyPrivateUserRecipe: async function(
-    req: Request,
-    res: Response
-  ) {
-    const recipeId = Number(req.body.recipeId);
-    const authorId = req.session!.userInfo.userId;
-    const ownerId = req.session!.userInfo.userId;
+  getInfoToEditPrivate: async function(req: Request, res: Response) {
+    const id = Number(req.body.id);
+    const authorId = req.session!.userInfo.id;
+    const ownerId = req.session!.userInfo.id;
 
     const recipe = new Recipe(pool);
 
-    const [ row ] = await recipe
-    .getInfoToEditMyUserRecipe(recipeId, authorId, ownerId);
+    const [ row ] = await recipe.getInfoToEdit(id, authorId, ownerId);
 
     return res.send(row);
   },
-  getInfoToEditMyPublicUserRecipe: async function(req: Request, res: Response) {
-    const recipeId = Number(req.body.recipeId);
-    const authorId = req.session!.userInfo.userId;
+  getInfoToEditPublic: async function(req: Request, res: Response) {
+    const id = Number(req.body.id);
+    const authorId = req.session!.userInfo.id;
     const ownerId = 1;
 
     const recipe = new Recipe(pool);
 
-    const [ row ] = await recipe
-    .getInfoToEditMyUserRecipe(recipeId, authorId, ownerId);
+    const [ row ] = await recipe.getInfoToEdit(id, authorId, ownerId);
 
     return res.send(row);
   },
-  createRecipe: async function(req: Request, res: Response) {
+  create: async function(req: Request, res: Response) {
     const recipeTypeId = Number(req.body.recipeInfo.recipeTypeId);
     const cuisineId = Number(req.body.recipeInfo.cuisineId);
-    const title = req.body.recipeInfo.title;
-    const description = req.body.recipeInfo.description;
-    const activeTime = req.body.recipeInfo.activeTime;
-    const totalTime = req.body.recipeInfo.totalTime;
-    const directions = req.body.recipeInfo.directions;
-    const requiredMethods = req.body.recipeInfo.requiredMethods;
-    const requiredEquipment = req.body.recipeInfo.requiredEquipment;
-    const requiredIngredients = req.body.recipeInfo.requiredIngredients;
-    const requiredSubrecipes = req.body.recipeInfo.requiredSubrecipes;
-    const recipeImage = req.body.recipeInfo.recipeImage;
-    const equipmentImage = req.body.recipeInfo.recipeEquipmentImage;
-    const ingredientsImage = req.body.recipeInfo.recipeIngredientsImage;
-    const cookingImage = req.body.recipeInfo.recipeCookingImage;
+    const {
+      ownership,
+      title,
+      description,
+      activeTime,
+      totalTime,
+      directions,
+      requiredMethods,
+      requiredEquipment,
+      requiredIngredients,
+      requiredSubrecipes,
+      recipeImage,
+      equipmentImage,
+      ingredientsImage,
+      cookingImage
+    }= req.body.recipeInfo;
 
-    const authorId = req.session!.userInfo.userId;
-    const ownership = req.body.recipeInfo.ownership;
-    const ownerId = (ownership === "private")
-    ? req.session!.userInfo.userId
-    : 1;
+    const authorId = req.session!.userInfo.id;
+    const ownerId = (ownership === "private") ? req.session!.userInfo.id : 1;
     
     const recipeToCreate = {
       recipeTypeId,
@@ -135,31 +130,31 @@ export const userRecipeController = {
     
     return res.send({message: 'Recipe created.'});
   },
-  updateMyUserRecipe: async function(req: Request, res: Response) {
-    const recipeId = Number(req.body.recipeInfo.recipeId);
+  update: async function(req: Request, res: Response) {
+    const id = Number(req.body.recipeInfo.id);
     const recipeTypeId = Number(req.body.recipeInfo.recipeTypeId);
     const cuisineId = Number(req.body.recipeInfo.cuisineId);
-    const title = req.body.recipeInfo.title;
-    const description = req.body.recipeInfo.description;
-    const activeTime = req.body.recipeInfo.activeTime;
-    const totalTime = req.body.recipeInfo.totalTime;
-    const directions = req.body.recipeInfo.directions;
-    const requiredMethods = req.body.recipeInfo.requiredMethods;
-    const requiredEquipment = req.body.recipeInfo.requiredEquipment;
-    const requiredIngredients = req.body.recipeInfo.requiredIngredients;
-    const requiredSubrecipes = req.body.recipeInfo.requiredSubrecipes;
-    const recipeImage = req.body.recipeInfo.recipeImage;
-    const equipmentImage = req.body.recipeInfo.recipeEquipmentImage;
-    const ingredientsImage = req.body.recipeInfo.recipeIngredientsImage;
-    const cookingImage = req.body.recipeInfo.recipeCookingImage;
+    const {
+      ownership,
+      title,
+      description,
+      activeTime,
+      totalTime,
+      directions,
+      requiredMethods,
+      requiredEquipment,
+      requiredIngredients,
+      requiredSubrecipes,
+      recipeImage,
+      equipmentImage,
+      ingredientsImage,
+      cookingImage
+    }= req.body.recipeInfo;
 
-    const authorId = req.session!.userInfo.userId;
-    const ownership = req.body.recipeInfo.ownership;
-    const ownerId = (ownership === "private")
-    ? req.session!.userInfo.userId
-    : 1;
+    const authorId = req.session!.userInfo.id;
+    const ownerId = (ownership === "private") ? req.session!.userInfo.id : 1;
 
-    if (typeof recipeId === "undefined") {
+    if (typeof id === "undefined") {
       return res.send({message: 'Invalid recipe ID!'});
     }
 
@@ -182,7 +177,7 @@ export const userRecipeController = {
     assert(recipeToUpdateWith, validRecipeEntity);
 
     await updateRecipeService({
-      recipeId,
+      id,
       authorId,
       ownerId,
       recipeToUpdateWith,
@@ -194,10 +189,10 @@ export const userRecipeController = {
 
     return res.send({message: 'Recipe updated.'});
   },
-  deleteMyPrivateUserRecipe: async function(req: Request, res: Response) {
-    const recipeId = Number(req.body.recipeId);
-    const authorId = req.session!.userInfo.userId;
-    const ownerId = req.session!.userInfo.userId;
+  deletePrivateById: async function(req: Request, res: Response) {
+    const id = Number(req.body.id);
+    const authorId = req.session!.userInfo.id;
+    const ownerId = req.session!.userInfo.id;
 
     const recipeEquipment = new RecipeEquipment(pool);
     const recipeIngredient = new RecipeIngredient(pool);
@@ -206,32 +201,30 @@ export const userRecipeController = {
     const recipe = new Recipe(pool);
 
     await Promise.all([
-      recipeEquipment.deleteRecipeEquipment(recipeId),
-      recipeIngredient.deleteRecipeIngredients(recipeId),
-      recipeMethod.deleteRecipeMethods(recipeId),
-      recipeSubrecipe.deleteRecipeSubrecipes(recipeId),
-      recipeSubrecipe.deleteRecipeSubrecipesBySubrecipeId(recipeId)
+      recipeEquipment.deleteByRecipeId(id),
+      recipeIngredient.deleteByRecipeId(id),
+      recipeMethod.deleteByRecipeId(id),
+      recipeSubrecipe.deleteByRecipeId(id),
+      recipeSubrecipe.deleteBySubrecipeId(id)
     ]);
 
-    await recipe.deleteMyPrivateUserRecipe(recipeId, authorId, ownerId);
+    await recipe.deletePrivateById(id, authorId, ownerId);
 
     return res.send({message: 'Recipe deleted.'});
   },
-  disownMyPublicUserRecipe: async function(req: Request, res: Response) {
-    const recipeId = Number(req.body.recipeId);
-    const authorId = req.session!.userInfo.userId;
+  disownById: async function(req: Request, res: Response) {
+    const id = Number(req.body.id);
+    const authorId = req.session!.userInfo.id;
 
     const recipe = new Recipe(pool);
-
-    await recipe.disownMyPublicUserRecipe(recipeId, authorId);
-
-    // (make sure the update goes through first though)
-    const [ recipeInfoForElasticSearch ] = await recipe
-    .getPublicRecipeForElasticSearchInsert(recipeId);
-
     const recipeSearch = new RecipeSearch(esClient);
 
-    await recipeSearch.saveRecipe(recipeInfoForElasticSearch[0]);  // fix?
+    await recipe.disownById(id, authorId);
+
+    // (make sure the update goes through first though)
+    const [ recipeInfoForElasticSearch ] = await recipe.getForElasticSearch(id);
+    
+    await recipeSearch.save(recipeInfoForElasticSearch[0]);  // fix?
 
     return res.send({message: 'Recipe disowned.'});
   }

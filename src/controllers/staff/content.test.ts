@@ -16,15 +16,15 @@ jest.mock('../../mysql-access/Content', () => {
   return {
     ...originalModule,
     Content: jest.fn().mockImplementation(() => ({
-      createContent: mockCreateContent,
-      updateContent: mockUpdateContent,
-      deleteContent: mockDeleteContent
+      create: mockCreate,
+      update: mockUpdate,
+      delete: mockDelete
     }))
   };
 });
-let mockCreateContent = jest.fn();
-let mockUpdateContent = jest.fn();
-let mockDeleteContent = jest.fn();
+let mockCreate = jest.fn();
+let mockUpdate = jest.fn();
+let mockDelete = jest.fn();
 
 afterAll(() => {
   mockDate = null;
@@ -39,13 +39,14 @@ afterEach(() => {
 });
 
 describe('staff content controller', () => {
-  const session = {...<Express.Session>{}, staffInfo: {staffId: 15}};
+  const session = {...<Express.Session>{}, staffInfo: {id: 15}};
+
   mockDate = new Date(1466424490000);
   spyDate = jest
-  .spyOn(global, 'Date')
-  .mockImplementation(() => mockDate as unknown as string);
+    .spyOn(global, 'Date')
+    .mockImplementation(() => mockDate as unknown as string);
 
-  describe('createContent method', () => {
+  describe('create method', () => {
     const req: Partial<Request> = {
       session,
       body: {
@@ -53,7 +54,7 @@ describe('staff content controller', () => {
           contentTypeId: 7,
           published: null,
           title: "Some Title",
-          contentItems: "[]"
+          items: "[]"
         }
       }
     };
@@ -62,7 +63,7 @@ describe('staff content controller', () => {
     };
 
     it('uses assert correctly', async () => {
-      await staffContentController.createContent(<Request>req, <Response>res);
+      await staffContentController.create(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith(
         coerce({
           contentTypeId: 7,
@@ -71,47 +72,47 @@ describe('staff content controller', () => {
           created: ((mockDate).toISOString()).split("T")[0],
           published: null,
           title: "Some Title",
-          contentItems: "[]"
+          items: "[]"
         }, validCreatingContentEntity),
         validCreatingContentEntity
       );
     });
 
-    it('uses createContent correctly', async () => {
-      await staffContentController.createContent(<Request>req, <Response>res);
-      expect(mockCreateContent).toHaveBeenCalledWith({
+    it('uses create correctly', async () => {
+      await staffContentController.create(<Request>req, <Response>res);
+      expect(mockCreate).toHaveBeenCalledWith({
         contentTypeId: 7,
         authorId: 1,
         ownerId: 1,
         created: ((mockDate).toISOString()).split("T")[0],
         published: null,
         title: "Some Title",
-        contentItems: "[]"
+        items: "[]"
       });
     });
 
     it('sends data correctly', async () => {
-      await staffContentController.createContent(<Request>req, <Response>res);
-      expect(res.send).toBeCalledWith({message: 'Content created.'});
+      await staffContentController.create(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith({message: 'Content created.'});
     });
 
     it('returns correctly', async () => {
-      const actual = await staffContentController
-      .createContent(<Request>req, <Response>res);
+      const actual =
+        await staffContentController.create(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Content created.'});
     });
   });
 
-  describe('updateContent method', () => {
+  describe('update method', () => {
     const req: Partial<Request> = {
       session,
       body: {
         contentInfo: {
-          contentId: 35,
+          id: 35,
           contentTypeId: 7,
           published: null,
           title: "Some Title",
-          contentItems: "[]"
+          items: "[]"
         }
       }
     };
@@ -120,7 +121,7 @@ describe('staff content controller', () => {
     };
 
     it('uses assert correctly', async () => {
-      await staffContentController.updateContent(<Request>req, <Response>res);
+      await staffContentController.update(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith(
         coerce({
           contentTypeId: 7,
@@ -133,9 +134,9 @@ describe('staff content controller', () => {
       );
     });
 
-    it('uses updateContent correctly', async () => {
-      await staffContentController.updateContent(<Request>req, <Response>res);
-      expect(mockUpdateContent).toHaveBeenCalledWith({
+    it('uses update correctly', async () => {
+      await staffContentController.update(<Request>req, <Response>res);
+      expect(mockUpdate).toHaveBeenCalledWith({
         contentId: 35,
         contentTypeId: 7,
         ownerId: 1,
@@ -146,36 +147,36 @@ describe('staff content controller', () => {
     });
 
     it('sends data correctly', async () => {
-      await staffContentController.updateContent(<Request>req, <Response>res);
-      expect(res.send).toBeCalledWith({message: 'Content updated.'});
+      await staffContentController.update(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith({message: 'Content updated.'});
     });
 
     it('returns correctly', async () => {
-      const actual = await staffContentController
-      .updateContent(<Request>req, <Response>res);
+      const actual =
+        await staffContentController.update(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Content updated.'});
     });
   });
 
-  describe('deleteContent method', () => {
-    const req: Partial<Request> = {session, body: {contentId: 35}};
+  describe('delete method', () => {
+    const req: Partial<Request> = {session, body: {id: 35}};
     const res: Partial<Response> = {
       send: jest.fn().mockResolvedValue({message: 'Content deleted.'})
     };
 
-    it('uses deleteContent correctly', async () => {
-      await staffContentController.deleteContent(<Request>req, <Response>res);
-      expect(mockDeleteContent).toHaveBeenCalledWith(1, 35);
+    it('uses delete correctly', async () => {
+      await staffContentController.delete(<Request>req, <Response>res);
+      expect(mockDelete).toHaveBeenCalledWith(1, 35);
     });
 
     it('sends data correctly', async () => {
-      await staffContentController.deleteContent(<Request>req, <Response>res);
-      expect(res.send).toBeCalledWith({message: 'Content deleted.'});
+      await staffContentController.delete(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith({message: 'Content deleted.'});
     });
 
     it('returns correctly', async () => {
-      const actual = await staffContentController
-      .deleteContent(<Request>req, <Response>res);
+      const actual =
+        await staffContentController.delete(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Content deleted.'});
     });
   });

@@ -3,27 +3,27 @@ import { Request, Response } from 'express';
 import { staffCuisineIngredientController } from './cuisineIngredient';
 
 jest.mock('../../mysql-access/CuisineIngredient', () => {
-  const originalModule = jest
-  .requireActual('../../mysql-access/CuisineIngredient');
+  const originalModule =
+    jest.requireActual('../../mysql-access/CuisineIngredient');
   return {
     ...originalModule,
     CuisineIngredient: jest.fn().mockImplementation(() => ({
-      createCuisineIngredient: mockCreateCuisineIngredient,
-      deleteCuisineIngredient: mockDeleteCuisineIngredient
+      create: mockCreate,
+      delete: mockDelete
     }))
   };
 });
-let mockCreateCuisineIngredient = jest.fn();
-let mockDeleteCuisineIngredient = jest.fn();
+let mockCreate = jest.fn();
+let mockDelete = jest.fn();
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 describe('staff cuisine ingredient controller', () => {
-  const session = {...<Express.Session>{}, staffInfo: {staffId: 15}};
+  const session = {...<Express.Session>{}, staffInfo: {id: 15}};
 
-  describe('createCuisineIngredient method', () => {
+  describe('create method', () => {
     const req: Partial<Request> = {
       session,
       body: {cuisineId: 4, ingredientId: 4}
@@ -34,26 +34,27 @@ describe('staff cuisine ingredient controller', () => {
       })
     };
 
-    it('uses createCuisineIngredient correctly', async () => {
+    it('uses create correctly', async () => {
       await staffCuisineIngredientController
-      .createCuisineIngredient(<Request>req, <Response>res);
-      expect(mockCreateCuisineIngredient).toHaveBeenCalledWith(4, 4);
+        .create(<Request>req, <Response>res);
+      expect(mockCreate).toHaveBeenCalledWith(4, 4);
     });
 
     it('sends data correctly', async () => {
       await staffCuisineIngredientController
-      .createCuisineIngredient(<Request>req, <Response>res);
-      expect(res.send).toBeCalledWith({message: 'Cuisine ingredient created.'});
+        .create(<Request>req, <Response>res);
+      expect(res.send)
+        .toHaveBeenCalledWith({message: 'Cuisine ingredient created.'});
     });
 
     it('returns correctly', async () => {
       const actual = await staffCuisineIngredientController
-      .createCuisineIngredient(<Request>req, <Response>res);
+        .create(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Cuisine ingredient created.'});
     });
   });
 
-  describe('deleteCuisineIngredient method', () => {
+  describe('delete method', () => {
     const req: Partial<Request> = {
       session,
       body: {cuisineId: 4, ingredientId: 4}
@@ -64,21 +65,22 @@ describe('staff cuisine ingredient controller', () => {
       })
     };
 
-    it('uses deleteCuisineIngredient correctly', async () => {
+    it('uses delete correctly', async () => {
       await staffCuisineIngredientController
-      .deleteCuisineIngredient(<Request>req, <Response>res);
-      expect(mockDeleteCuisineIngredient).toHaveBeenCalledWith(4, 4);
+        .delete(<Request>req, <Response>res);
+      expect(mockDelete).toHaveBeenCalledWith(4, 4);
     });
 
     it('sends data correctly', async () => {
       await staffCuisineIngredientController
-      .deleteCuisineIngredient(<Request>req, <Response>res);
-      expect(res.send).toBeCalledWith({message: 'Cuisine ingredient deleted.'});
+        .delete(<Request>req, <Response>res);
+      expect(res.send)
+        .toHaveBeenCalledWith({message: 'Cuisine ingredient deleted.'});
     });
 
     it('returns correctly', async () => {
       const actual = await staffCuisineIngredientController
-      .deleteCuisineIngredient(<Request>req, <Response>res);
+        .delete(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Cuisine ingredient deleted.'});
     });
   });

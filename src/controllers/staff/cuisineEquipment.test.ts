@@ -3,27 +3,27 @@ import { Request, Response } from 'express';
 import { staffCuisineEquipmentController } from './cuisineEquipment';
 
 jest.mock('../../mysql-access/CuisineEquipment', () => {
-  const originalModule = jest
-  .requireActual('../../mysql-access/CuisineEquipment');
+  const originalModule =
+    jest.requireActual('../../mysql-access/CuisineEquipment');
   return {
     ...originalModule,
     CuisineEquipment: jest.fn().mockImplementation(() => ({
-      createCuisineEquipment: mockCreateCuisineEquipment,
-      deleteCuisineEquipment: mockDeleteCuisineEquipment
+      create: mockCreate,
+      delete: mockDelete
     }))
   };
 });
-let mockCreateCuisineEquipment = jest.fn();
-let mockDeleteCuisineEquipment = jest.fn();
+let mockCreate = jest.fn();
+let mockDelete = jest.fn();
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 describe('staff cuisine equipment controller', () => {
-  const session = {...<Express.Session>{}, staffInfo: {staffId: 15}};
+  const session = {...<Express.Session>{}, staffInfo: {id: 15}};
 
-  describe('createCuisineEquipment method', () => {
+  describe('create method', () => {
     const req: Partial<Request> = {
       session,
       body: {cuisineId: 4, equipmentId: 4}
@@ -32,26 +32,25 @@ describe('staff cuisine equipment controller', () => {
       send: jest.fn().mockResolvedValue({message: 'Cuisine equipment created.'})
     };
 
-    it('uses createCuisineEquipment correctly', async () => {
-      await staffCuisineEquipmentController
-      .createCuisineEquipment(<Request>req, <Response>res);
-      expect(mockCreateCuisineEquipment).toHaveBeenCalledWith(4, 4);
+    it('uses create correctly', async () => {
+      await staffCuisineEquipmentController.create(<Request>req, <Response>res);
+      expect(mockCreate).toHaveBeenCalledWith(4, 4);
     });
 
     it('sends data correctly', async () => {
-      await staffCuisineEquipmentController
-      .createCuisineEquipment(<Request>req, <Response>res);
-      expect(res.send).toBeCalledWith({message: 'Cuisine equipment created.'});
+      await staffCuisineEquipmentController.create(<Request>req, <Response>res);
+      expect(res.send)
+        .toHaveBeenCalledWith({message: 'Cuisine equipment created.'});
     });
 
     it('returns correctly', async () => {
       const actual = await staffCuisineEquipmentController
-      .createCuisineEquipment(<Request>req, <Response>res);
+        .create(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Cuisine equipment created.'});
     });
   });
 
-  describe('deleteCuisineEquipment method', () => {
+  describe('delete method', () => {
     const req: Partial<Request> = {
       session,
       body: {cuisineId: 4, equipmentId: 4}
@@ -60,21 +59,20 @@ describe('staff cuisine equipment controller', () => {
       send: jest.fn().mockResolvedValue({message: 'Cuisine equipment deleted.'})
     };
 
-    it('uses deleteCuisineEquipment correctly', async () => {
-      await staffCuisineEquipmentController
-      .deleteCuisineEquipment(<Request>req, <Response>res);
-      expect(mockDeleteCuisineEquipment).toHaveBeenCalledWith(4, 4);
+    it('uses delete correctly', async () => {
+      await staffCuisineEquipmentController.delete(<Request>req, <Response>res);
+      expect(mockDelete).toHaveBeenCalledWith(4, 4);
     });
 
     it('sends data correctly', async () => {
-      await staffCuisineEquipmentController
-      .deleteCuisineEquipment(<Request>req, <Response>res);
-      expect(res.send).toBeCalledWith({message: 'Cuisine equipment deleted.'});
+      await staffCuisineEquipmentController.delete(<Request>req, <Response>res);
+      expect(res.send)
+        .toHaveBeenCalledWith({message: 'Cuisine equipment deleted.'});
     });
 
     it('returns correctly', async () => {
       const actual = await staffCuisineEquipmentController
-      .deleteCuisineEquipment(<Request>req, <Response>res);
+        .delete(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Cuisine equipment deleted.'});
     });
   });
