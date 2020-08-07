@@ -1,7 +1,7 @@
 'use strict';
 
 export class ExceptionError extends Error {
-  code: (number|null);
+  code: (number | null);
   payload: object;
 
   constructor(
@@ -23,30 +23,18 @@ export class ExceptionError extends Error {
   }
 }
 
-export function Exception(
-  message: string,
-  payload: object
-) {
+export function Exception(message: string,payload: object) {
   return new ExceptionError(null, "", message, payload);
-};
+}
 
-export function ValidationException(
-  message: string,
-  payload: object
-) {
+export function ValidationException(message: string, payload: object) {
   return new ExceptionError(400, 'ValidationException', message, payload);
-};
+}
 
-export function ForbiddenException(
-  message: string,
-  payload: object
-) {
+export function ForbiddenException(message: string, payload: object) {
   return new ExceptionError(403, 'ForbiddenException', message, payload);
-};
+}
 
-export function NotFoundException(
-  message: string,
-  payload: object
-) {
+export function NotFoundException(message: string, payload: object) {
   return new ExceptionError(404, 'NotFoundException', message, payload);
-};
+}

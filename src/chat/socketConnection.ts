@@ -18,7 +18,7 @@ import { getUser } from './handlers/getUser';
 import { rejoinRoom } from './handlers/rejoinRoom';
 
 export async function socketConnection(socket: Socket) {
-  const { userId, username, avatar } = socket.request.userInfo;
+  const { id, username, avatar } = socket.request.userInfo;
   
   const nobscUser = new NOBSCUser(pool);
   const nobscFriendship = new NOBSCFriendship(pool);
@@ -36,7 +36,7 @@ export async function socketConnection(socket: Socket) {
   // rename
   socket.on('GetOnline', async function() {
     await getOnline({
-      userId,
+      id,
       username,
       avatar,
       socket,
@@ -54,7 +54,7 @@ export async function socketConnection(socket: Socket) {
   socket.on('AddChat', async function(chatMessageText: string) {
     await addChat({
       chatMessageText,
-      userId,
+      id,
       username,
       avatar,
       socket,
@@ -66,7 +66,7 @@ export async function socketConnection(socket: Socket) {
     await addWhisper({
       whisperText,
       to,
-      userId,
+      id,
       username,
       avatar,
       socket,
@@ -81,7 +81,7 @@ export async function socketConnection(socket: Socket) {
   socket.on('AddRoom', async function(room: string) {
     await addRoom({
       room,
-      userId,
+      id,
       username,
       avatar,
       socket,
@@ -92,7 +92,7 @@ export async function socketConnection(socket: Socket) {
   socket.on('RejoinRoom', async function(room: string) {
     await rejoinRoom({
       room,
-      userId,
+      id,
       username,
       avatar,
       socket,
@@ -107,7 +107,7 @@ export async function socketConnection(socket: Socket) {
   socket.on('disconnecting', async function(reason: any) {
     await disconnecting({
       reason,
-      userId,
+      id,
       username,
       avatar,
       socket,

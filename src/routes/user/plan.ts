@@ -14,36 +14,36 @@ export const router = Router();
 router.post(
   '/all',
   userIsAuth,
-  catchExceptions(userPlanController.viewAllMyPrivatePlans)
+  catchExceptions(userPlanController.view)
 );
 
 router.post(
   '/one',
   userIsAuth,
-  [body('planId').not().isEmpty().trim().escape()],
-  catchExceptions(userPlanController.viewMyPrivatePlan)
+  [body('id').not().isEmpty().trim().escape()],
+  catchExceptions(userPlanController.viewById)
 );
 
 router.post(
   '/create',
   userIsAuth,
-  [body('planName').not().isEmpty().trim().escape()],
-  catchExceptions(userPlanController.createMyPrivatePlan)
+  [body('name').not().isEmpty().trim().escape()],
+  catchExceptions(userPlanController.create)
 );
 
 router.put(
   '/update',
   userIsAuth,
   [
-    body('planId').not().isEmpty().trim().escape(),
-    body('planName').not().isEmpty().trim().escape()
+    body('id').not().isEmpty().trim().escape(),
+    body('name').not().isEmpty().trim().escape()
   ],
-  catchExceptions(userPlanController.updateMyPrivatePlan)
+  catchExceptions(userPlanController.update)
 );
 
 router.delete(
   '/delete',
   userIsAuth,
-  [body('planId').not().isEmpty().trim().escape()],
-  catchExceptions(userPlanController.deleteMyPrivatePlan)
+  [body('id').not().isEmpty().trim().escape()],
+  catchExceptions(userPlanController.delete)
 );

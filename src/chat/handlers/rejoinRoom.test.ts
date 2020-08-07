@@ -7,8 +7,8 @@ import { rejoinRoom } from './rejoinRoom';
 const mockAddRoom = jest.fn();
 const mockAddUserToRoom = jest.fn();
 const mockGetUsersInRoom = jest.fn().mockResolvedValue([
-  {user_id: 48, username: "Jack", avatar: "Jack123"},
-  {user_id: 84, username: "Jill", avatar: "Jill123"}
+  {id: 48, username: "Jack", avatar: "Jack123"},
+  {id: 84, username: "Jill", avatar: "Jill123"}
 ]);
 const mockMessengerRoom: Partial<IMessengerRoom> = {
   addRoom: mockAddRoom,
@@ -30,7 +30,7 @@ const mockSocket: Partial<Socket> = {
 
 const params = {
   room: "someRoom",
-  userId: 150,
+  id: 150,
   username: "Name",
   avatar: "Name123",
   socket: <Socket>mockSocket,
@@ -44,43 +44,43 @@ afterEach(() => {
 describe('rejoinRoom handler', () => {
   it ('uses socket.join correctly', async () => {
     await rejoinRoom(params);
-    expect (params.socket.join).toHaveBeenCalledWith("someRoom");
+    expect(params.socket.join).toHaveBeenCalledWith("someRoom");
   });
 
   // ?
   it ('uses addRoom correctly', async () => {
     await rejoinRoom(params);
-    expect (mockAddRoom).toHaveBeenCalledWith("someRoom");
+    expect(mockAddRoom).toHaveBeenCalledWith("someRoom");
   });
 
   it ('uses addUserToRoom correctly', async () => {
     await rejoinRoom(params);
-    expect (mockAddUserToRoom).toHaveBeenCalledWith(150, "someRoom");
+    expect(mockAddUserToRoom).toHaveBeenCalledWith(150, "someRoom");
   });
 
   it ('uses getUsersInRoom correctly', async () => {
     await rejoinRoom(params);
-    expect (mockGetUsersInRoom).toHaveBeenCalledWith("someRoom");
+    expect(mockGetUsersInRoom).toHaveBeenCalledWith("someRoom");
   });
 
   it ('uses socket.broadcast.to correctly', async () => {
     await rejoinRoom(params);
-    expect (params.socket.broadcast.to).toHaveBeenCalledWith("someRoom");
+    expect(params.socket.broadcast.to).toHaveBeenCalledWith("someRoom");
   });
 
   it ('uses socket.broadcast.emit correctly', async () => {
     await rejoinRoom(params);
-    expect (params.socket.broadcast.emit)
-    .toHaveBeenCalledWith('AddUser', ChatUser(150, "Name", "Name123"));
+    expect(params.socket.broadcast.emit)
+      .toHaveBeenCalledWith('AddUser', ChatUser(150, "Name", "Name123"));
   });
 
   it ('uses socket.emit with RegetUser event correctly', async () => {
     await rejoinRoom(params);
-    expect (params.socket.emit).toHaveBeenCalledWith(
+    expect(params.socket.emit).toHaveBeenCalledWith(
       'RegetUser',
       [
-        {user_id: 48, username: "Jack", avatar: "Jack123"},
-        {user_id: 84, username: "Jill", avatar: "Jill123"}
+        {id: 48, username: "Jack", avatar: "Jack123"},
+        {id: 84, username: "Jill", avatar: "Jill123"}
       ],
       "someRoom"
     );

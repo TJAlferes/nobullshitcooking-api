@@ -5,7 +5,7 @@ import { ChatUser } from '../entities/ChatUser';
 
 export async function addRoom({
   room,
-  userId,
+  id,
   username,
   avatar,
   socket,
@@ -19,20 +19,20 @@ export async function addRoom({
     if (currentRooms[currentRoom] !== socket.id) {
       socket.leave(currentRooms[currentRoom]);
 
-      messengerRoom.removeUserFromRoom(userId, currentRooms[currentRoom]);
+      messengerRoom.removeUserFromRoom(id, currentRooms[currentRoom]);
 
       socket.broadcast.to(currentRooms[currentRoom])
-      .emit('RemoveUser', ChatUser(userId, username, avatar));
+        .emit('RemoveUser', ChatUser(id, username, avatar));
     }
   }
 
   socket.join(room);
 
   await messengerRoom.addRoom(room);  // ???
-  await messengerRoom.addUserToRoom(userId, room);
+  await messengerRoom.addUserToRoom(id, room);
 
   socket.broadcast.to(room)
-  .emit('AddUser', ChatUser(userId, username, avatar));
+    .emit('AddUser', ChatUser(id, username, avatar));
 
   const users = await messengerRoom.getUsersInRoom(room);
 
@@ -41,7 +41,7 @@ export async function addRoom({
 
 interface IAddRoom {
   room: string;
-  userId: number;
+  id: number;
   username: string;
   avatar: string;
   socket: Socket;

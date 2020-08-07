@@ -33,7 +33,7 @@ const mockSocket: Partial<Socket> = {
 
 const params = {
   room: "nextRoom",
-  userId: 150,
+  id: 150,
   username: "Name",
   avatar: "Name123",
   socket: <Socket>mockSocket,
@@ -66,11 +66,14 @@ describe ('addRoom handler', () => {
     expect(params.socket.broadcast.to).toHaveBeenCalledWith("someRoom");
   });
 
-  it('uses socket.broadcast.to.emit with Remove user event correctly', async () => {
-    await addRoom(params);
-    expect(params.socket.broadcast.emit)
-    .toHaveBeenCalledWith('RemoveUser', ChatUser(150, "Name", "Name123"));
-  });
+  it(
+    'uses socket.broadcast.to.emit with Remove user event correctly',
+    async () => {
+      await addRoom(params);
+      expect(params.socket.broadcast.emit)
+        .toHaveBeenCalledWith('RemoveUser', ChatUser(150, "Name", "Name123"));
+    }
+  );
 
   it('uses socket.join correctly', async () => {
     await addRoom(params);
@@ -95,7 +98,7 @@ describe ('addRoom handler', () => {
   it('uses socket.broadcast.to.emit with AddUser event correctly', async () => {
     await addRoom(params);
     expect(params.socket.broadcast.emit)
-    .toHaveBeenCalledWith('AddUser', ChatUser(150, "Name", "Name123"));
+      .toHaveBeenCalledWith('AddUser', ChatUser(150, "Name", "Name123"));
   });
 
   it('uses getUsersInRoom correctly', async () => {
@@ -106,6 +109,6 @@ describe ('addRoom handler', () => {
   it('uses socket.emit with GetUser event correctly', async () => {
     await addRoom(params);
     expect(params.socket.emit)
-    .toHaveBeenCalledWith('GetUser', [], "nextRoom");
+      .toHaveBeenCalledWith('GetUser', [], "nextRoom");
   });
 });

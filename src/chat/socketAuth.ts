@@ -20,7 +20,7 @@ export async function addMessengerUser(
   const messengerUser = new MessengerUser(pubClient);
 
   await messengerUser.addUser(
-    session.userInfo.userId,
+    session.userInfo.id,
     session.userInfo.username,
     session.userInfo.avatar,
     sid,
@@ -45,7 +45,7 @@ export function useSocketAuth(io: Server, redisSession: RedisStore) {
     if (sid === false) return next(new Error('Not authenticated.'));
 
     redisSession.get(sid, async function(err, session) {
-      if (!session || !session.userInfo.userId) {
+      if (!session || !session.userInfo.id) {
         return next(new Error('Not authenticated.'));
       }
 

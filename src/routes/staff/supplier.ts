@@ -14,36 +14,36 @@ export const router = Router();
 router.post(
   '/',
   staffIsAuth,
-  [body('supplierId').not().isEmpty().trim().escape()],
-  catchExceptions(staffSupplierController.viewSupplierById)
+  [body('id').not().isEmpty().trim().escape()],
+  catchExceptions(staffSupplierController.viewById)
 );
 
 router.post(
   '/all',
   staffIsAuth,
-  catchExceptions(staffSupplierController.viewAllSuppliers)
+  catchExceptions(staffSupplierController.view)
 );
 
 router.post(
   '/create',
   staffIsAuth,
-  [body('supplierName').not().isEmpty().trim().escape()],
-  catchExceptions(staffSupplierController.createSupplier)
+  [body('name').not().isEmpty().trim().escape()],
+  catchExceptions(staffSupplierController.create)
 );
 
 router.put(
   '/update',
   staffIsAuth,
   [
-    body('supplierId').not().isEmpty().trim().escape(),
-    body('supplierName').not().isEmpty().trim().escape()
+    body('id').not().isEmpty().trim().escape(),
+    body('name').not().isEmpty().trim().escape()
   ],
-  catchExceptions(staffSupplierController.updateSupplier)
+  catchExceptions(staffSupplierController.update)
 );
 
 router.delete(
   '/delete',
   staffIsAuth,
-  [body('supplierId').not().isEmpty().trim().escape()],
-  catchExceptions(staffSupplierController.deleteSupplier)
+  [body('id').not().isEmpty().trim().escape()],
+  catchExceptions(staffSupplierController.delete)
 );

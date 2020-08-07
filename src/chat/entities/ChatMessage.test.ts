@@ -3,11 +3,11 @@ import { ChatMessage } from './ChatMessage';
 const chat = ChatMessage(
   'hello',
   '5067',
-  {userId: 7, username: 'Lucky', avatar: 'Lucky'}
+  {id: 7, username: 'Lucky', avatar: 'Lucky'}
 );
 
 describe('ChatMessage', () => {
-  it('returns a chatMessageId as current time appended to the userId', () => {
+  it('returns a chatMessageId as current time appended to the id', () => {
     expect(chat.chatMessageId[0]).toEqual('7');
   });
 
@@ -20,6 +20,6 @@ describe('ChatMessage', () => {
   });
 
   it('returns the user', () => {
-    expect(chat.user).toEqual({userId: 7, username: 'Lucky', avatar: 'Lucky'});
+    expect(chat.user).toEqual({id: 7, username: 'Lucky', avatar: 'Lucky'});
   });
 });

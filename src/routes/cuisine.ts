@@ -10,17 +10,17 @@ export const router = Router();
 
 router.get(
   '/',
-  catchExceptions(cuisineController.viewCuisines)
+  catchExceptions(cuisineController.view)
 );
 
 router.get(
-  '/detail/:cuisineId',
-  [param('cuisineId').not().isEmpty().trim().escape()],
-  catchExceptions(cuisineController.viewCuisineDetailById)
+  '/detail/:id',
+  [param('id').not().isEmpty().trim().escape()],
+  catchExceptions(cuisineController.viewDetailById)
 );
 
 router.get(
-  '/:cuisineId',
-  [param('cuisineId').not().isEmpty().trim().escape()],
-  catchExceptions(cuisineController.viewCuisineById)
+  '/:id',
+  [param('id').not().isEmpty().trim().escape()],
+  catchExceptions(cuisineController.viewById)
 );

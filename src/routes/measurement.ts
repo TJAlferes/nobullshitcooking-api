@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { param } from 'express-validator';
 
 import { measurementController } from '../controllers/measurement';
 import { catchExceptions } from '../lib/utils/catchExceptions';
@@ -9,10 +10,11 @@ export const router = Router();
 
 router.get(
   '/',
-  catchExceptions(measurementController.viewMeasurements)
+  catchExceptions(measurementController.view)
 );
 
 router.get(
-  '/:measurementId',
-  catchExceptions(measurementController.viewMeasurementById)
+  '/:id',
+  [param('id').not().isEmpty().trim().escape()],
+  catchExceptions(measurementController.viewById)
 );

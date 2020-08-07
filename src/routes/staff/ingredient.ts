@@ -16,33 +16,33 @@ router.post(
   staffIsAuth,
   [
     body('ingredientTypeId').not().isEmpty().trim().escape(),
-    body('ingredientBrand').not().isEmpty().trim().escape(),
-    body('ingredientVariety').not().isEmpty().trim().escape(),
-    body('ingredientName').not().isEmpty().trim().escape(),
-    body('ingredientDescription').not().isEmpty().trim().escape(),
-    body('ingredientImage').not().isEmpty().trim().escape()
+    body('brand').not().isEmpty().trim().escape(),
+    body('variety').not().isEmpty().trim().escape(),
+    body('name').not().isEmpty().trim().escape(),
+    body('description').not().isEmpty().trim().escape(),
+    body('image').not().isEmpty().trim().escape()
   ],
-  catchExceptions(staffIngredientController.createIngredient)
+  catchExceptions(staffIngredientController.create)
 );
 
 router.put(
   '/update',
   staffIsAuth,
   [
-    body('ingredientId').not().isEmpty().trim().escape(),
+    body('id').not().isEmpty().trim().escape(),
     body('ingredientTypeId').not().isEmpty().trim().escape(),
-    body('ingredientBrand').not().isEmpty().trim().escape(),
-    body('ingredientVariety').not().isEmpty().trim().escape(),
-    body('ingredientName').not().isEmpty().trim().escape(),
-    body('ingredientDescription').not().isEmpty().trim().escape(),
-    body('ingredientImage').not().isEmpty().trim().escape()
+    body('brand').not().isEmpty().trim().escape(),
+    body('variety').not().isEmpty().trim().escape(),
+    body('name').not().isEmpty().trim().escape(),
+    body('description').not().isEmpty().trim().escape(),
+    body('image').not().isEmpty().trim().escape()
   ],
-  catchExceptions(staffIngredientController.updateIngredient)
+  catchExceptions(staffIngredientController.update)
 );
 
 router.delete(
   '/delete',
   staffIsAuth,
-  [body('ingredientId').not().isEmpty().trim().escape()],
-  catchExceptions(staffIngredientController.deleteIngredient)
+  [body('id').not().isEmpty().trim().escape()],
+  catchExceptions(staffIngredientController.delete)
 );

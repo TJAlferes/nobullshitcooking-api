@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { param } from 'express-validator';
 
 import { recipeTypeController } from '../controllers/recipeType';
 import { catchExceptions } from '../lib/utils/catchExceptions';
@@ -9,10 +10,11 @@ export const router = Router();
 
 router.get(
   '/',
-  catchExceptions(recipeTypeController.viewRecipeTypes)
+  catchExceptions(recipeTypeController.view)
 );
 
 router.get(
-  '/:recipeTypeId',
-  catchExceptions(recipeTypeController.viewRecipeTypeById)
+  '/:id',
+  [param('id').not().isEmpty().trim().escape()],
+  catchExceptions(recipeTypeController.viewById)
 );

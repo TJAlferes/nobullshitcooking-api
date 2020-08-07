@@ -16,10 +16,11 @@ export const router = Router();
 router.post(
   '/create',
   staffIsAuth,
-  [body('equipmentId').not().isEmpty().trim().escape()],
-  catchExceptions(
-    staffCuisineEquipmentController.createCuisineEquipment
-  )
+  [
+    body('cuisineId').not().isEmpty().trim().escape(),
+    body('equipmentId').not().isEmpty().trim().escape()
+  ],
+  catchExceptions(staffCuisineEquipmentController.create)
 );
 
 router.delete(
@@ -29,7 +30,5 @@ router.delete(
     body('cuisineId').not().isEmpty().trim().escape(),
     body('equipmentId').not().isEmpty().trim().escape()
   ],
-  catchExceptions(
-    staffCuisineEquipmentController.deleteCuisineEquipment
-  )
+  catchExceptions(staffCuisineEquipmentController.delete)
 );

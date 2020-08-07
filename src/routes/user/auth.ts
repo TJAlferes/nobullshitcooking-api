@@ -64,11 +64,11 @@ router.post(
     body('username').not().isEmpty().trim().escape(),
     body('avatar').not().isEmpty().trim().escape()
   ],
-  catchExceptions(userAuthController.updateUser)
+  catchExceptions(userAuthController.update)
 );
 
 router.post(
   '/delete-account',
   userIsAuth,
-  catchExceptions(userAuthController.deleteUser)
+  catchExceptions(userAuthController.delete)
 );

@@ -14,14 +14,14 @@ export const router = Router();
 router.post(
   '/all',
   userIsAuth,
-  catchExceptions(userEquipmentController.viewAllMyPrivateUserEquipment)
+  catchExceptions(userEquipmentController.view)
 );
 
 router.post(
   '/one',
   userIsAuth,
-  [body('equipmentId').not().isEmpty().trim().escape()],
-  catchExceptions(userEquipmentController.viewMyPrivateUserEquipment)
+  [body('id').not().isEmpty().trim().escape()],
+  catchExceptions(userEquipmentController.viewById)
 );
 
 router.post(
@@ -29,11 +29,11 @@ router.post(
   userIsAuth,
   [
     body('equipmentTypeId').not().isEmpty().trim().escape(),
-    body('equipmentName').not().isEmpty().trim().escape(),
-    body('equipmentDescription').not().isEmpty().trim().escape(),
-    body('equipmentImage').not().isEmpty().trim().escape()
+    body('name').not().isEmpty().trim().escape(),
+    body('description').not().isEmpty().trim().escape(),
+    body('image').not().isEmpty().trim().escape()
   ],
-  catchExceptions(userEquipmentController.createMyPrivateUserEquipment)
+  catchExceptions(userEquipmentController.create)
 );
 
 router.put(
@@ -42,16 +42,16 @@ router.put(
   [
     body('equipmentId').not().isEmpty().trim().escape(),
     body('equipmentTypeId').not().isEmpty().trim().escape(),
-    body('equipmentName').not().isEmpty().trim().escape(),
-    body('equipmentDescription').not().isEmpty().trim().escape(),
-    body('equipmentImage').not().isEmpty().trim().escape()
+    body('name').not().isEmpty().trim().escape(),
+    body('description').not().isEmpty().trim().escape(),
+    body('image').not().isEmpty().trim().escape()
   ],
-  catchExceptions(userEquipmentController.updateMyPrivateUserEquipment)
+  catchExceptions(userEquipmentController.update)
 );
 
 router.delete(
   '/delete',
   userIsAuth,
-  [body('equipmentId').not().isEmpty().trim().escape()],
-  catchExceptions(userEquipmentController.deleteMyPrivateUserEquipment)
+  [body('id').not().isEmpty().trim().escape()],
+  catchExceptions(userEquipmentController.delete)
 );

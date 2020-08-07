@@ -7,7 +7,7 @@ import { ChatUser  } from '../entities/ChatUser';
 
 export async function disconnecting({
   reason,
-  userId,
+  id,
   username,
   avatar,
   socket,
@@ -21,33 +21,30 @@ export async function disconnecting({
   for (let room in clonedSocket.rooms) {
     if (room !== clonedSocket.id) {
       socket.broadcast.to(room)
-      .emit('RemoveUser', ChatUser(userId, username, avatar));
+        .emit('RemoveUser', ChatUser(id, username, avatar));
 
-      messengerRoom.removeUserFromRoom(userId, room);
+      messengerRoom.removeUserFromRoom(id, room);
     }
   }
 
-  const acceptedFriends = await nobscFriendship
-  .viewMyAcceptedFriendships(userId);
+  const acceptedFriends = await nobscFriendship.viewAccepted(id);
 
   if (acceptedFriends.length) {
-    for (let acceptedFriend of acceptedFriends) {
-      const onlineFriend = await messengerUser
-      .getUserSocketId(acceptedFriend.user_id);
-
+    for (let f of acceptedFriends) {
+      const onlineFriend = await messengerUser.getUserSocketId(f.user_id);
       if (!onlineFriend) continue;
 
       socket.broadcast.to(onlineFriend)
-      .emit('ShowOffline', ChatUser(userId, username, avatar));
+        .emit('ShowOffline', ChatUser(id, username, avatar));
     }
   }
 
-  await messengerUser.removeUser(userId);
+  await messengerUser.removeUser(id);
 }
 
 interface IDisconnecting {
   reason: any;
-  userId: number;
+  id: number;
   username: string;
   avatar: string;
   socket: Socket;

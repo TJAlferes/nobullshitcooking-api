@@ -21,7 +21,7 @@ describe('addMessengerUser helper', () => {
     };
     const sid = '123456789';
     const session: Partial<Express.SessionData> = {
-      userInfo: {userId: 150, username: "Name", avatar: "Name123"}
+      userInfo: {id: 150, username: "Name", avatar: "Name123"}
     };
     await addMessengerUser(<Socket>socket, sid, <Express.SessionData>session);
     expect(socket.request.sid).toEqual('123456789');
@@ -34,11 +34,11 @@ describe('addMessengerUser helper', () => {
     };
     const sid = '123456789';
     const session: Partial<Express.SessionData> = {
-      userInfo: {userId: 150, username: "Name", avatar: "Name123"}
+      userInfo: {id: 150, username: "Name", avatar: "Name123"}
     };
     await addMessengerUser(<Socket>socket, sid, <Express.SessionData>session);
     expect(socket.request.userInfo)
-    .toEqual({userId: 150, username: "Name", avatar: "Name123"});
+    .toEqual({id: 150, username: "Name", avatar: "Name123"});
   });
 
   it ('uses addUser correctly', async () => {
@@ -48,7 +48,7 @@ describe('addMessengerUser helper', () => {
     };
     const sid = '123456789';
     const session: Partial<Express.SessionData> = {
-      userInfo: {userId: 150, username: "Name", avatar: "Name123"}
+      userInfo: {id: 150, username: "Name", avatar: "Name123"}
     };
     await addMessengerUser(<Socket>socket, sid, <Express.SessionData>session);
     expect(mockAddUser)
@@ -85,14 +85,14 @@ describe('addMessengerUser helper', () => {
 
   it(`
     should return Error 'Not authenticated.'
-    when there is no .userInfo.userId present in the session
+    when there is no .userInfo.id present in the session
   `, () => {
     
   });
 
   it('should copy the session.userInfo to the socket.request', () => {
     const session: Partial<Express.SessionData> = {
-      userInfo: {userId: 150, username: "Name", avatar: "Name123"}
+      userInfo: {id: 150, username: "Name", avatar: "Name123"}
     };
     const socket: Partial<Socket> = {
       request: {headers: {cookie: {'connect.sid': '123456789'}}}

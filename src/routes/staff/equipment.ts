@@ -16,29 +16,29 @@ router.post(
   staffIsAuth,
   [
     body('equipmentTypeId').not().isEmpty().trim().escape(),
-    body('equipmentName').not().isEmpty().trim().escape(),
-    body('equipmentDescription').not().isEmpty().trim().escape(),
-    body('equipmentImage').not().isEmpty().trim().escape()
+    body('name').not().isEmpty().trim().escape(),
+    body('description').not().isEmpty().trim().escape(),
+    body('image').not().isEmpty().trim().escape()
   ],
-  catchExceptions(staffEquipmentController.createEquipment)
+  catchExceptions(staffEquipmentController.create)
 );
 
 router.put(
   '/update',
   staffIsAuth,
   [
-    body('equipmentId').not().isEmpty().trim().escape(),
+    body('id').not().isEmpty().trim().escape(),
     body('equipmentTypeId').not().isEmpty().trim().escape(),
-    body('equipmentName').not().isEmpty().trim().escape(),
-    body('equipmentDescription').not().isEmpty().trim().escape(),
-    body('equipmentImage').not().isEmpty().trim().escape()
+    body('name').not().isEmpty().trim().escape(),
+    body('description').not().isEmpty().trim().escape(),
+    body('image').not().isEmpty().trim().escape()
   ],
-  catchExceptions(staffEquipmentController.updateEquipment)
+  catchExceptions(staffEquipmentController.update)
 );
 
 router.delete(
   '/delete',
   staffIsAuth,
-  [body('equipmentId').not().isEmpty().trim().escape()],
-  catchExceptions(staffEquipmentController.deleteEquipment)
+  [body('id').not().isEmpty().trim().escape()],
+  catchExceptions(staffEquipmentController.delete)
 );

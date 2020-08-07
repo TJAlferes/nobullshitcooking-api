@@ -9,10 +9,10 @@ export const router = Router();
 
 router.get(
   '/official/all',
-  catchExceptions(recipeController.viewRecipes)
+  catchExceptions(recipeController.view)
 );
 
 router.get(
-  '/:recipeId',
+  '/:id',
   catchExceptions(recipeController.viewRecipeDetail)
 );

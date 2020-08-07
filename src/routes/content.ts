@@ -10,17 +10,17 @@ export const router = Router();
 
 router.get(
   '/',
-  catchExceptions(contentController.viewContent)
+  catchExceptions(contentController.view)
 );
 
 router.get(
-  '/links/:contentTypeName',
-  [param('contentTypeName').not().isEmpty().trim().escape()],
-  catchExceptions(contentController.getContentLinksByTypeName)
+  '/links/:name',
+  [param('name').not().isEmpty().trim().escape()],
+  catchExceptions(contentController.getLinksByContentTypeName)
 );
 
 router.get(
-  '/:contentId',
-  [param('contentId').not().isEmpty().trim().escape()],
-  catchExceptions(contentController.viewContentById)
+  '/:id',
+  [param('id').not().isEmpty().trim().escape()],
+  catchExceptions(contentController.viewById)
 );

@@ -11,5 +11,5 @@ export const router = Router();
 router.get(
   '/:username',
   [param('username').not().isEmpty().trim().escape()],
-  catchExceptions(profileController.viewProfile)
+  catchExceptions(profileController.view)
 );

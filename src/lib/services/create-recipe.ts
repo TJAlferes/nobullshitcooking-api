@@ -50,30 +50,26 @@ export async function createRecipeService({
   const recipeSubrecipe = new RecipeSubrecipe(pool);
   const recipeSearch = new RecipeSearch(esClient);
 
-  const createdRecipe = await recipe.createRecipe(recipeToCreate);
+  const createdRecipe = await recipe.create(recipeToCreate);
 
   const generatedId = createdRecipe.insertId;
 
   if (requiredMethods.length) {
     let recipeMethodsToCreate: number[] = [];
 
-    requiredMethods.map(rM => assert({
+    requiredMethods.map(m => assert({
       recipeId: generatedId,
-      methodId: rM.methodId
+      methodId: m.methodId
     }, validRecipeMethodEntity));
 
-    requiredMethods.map(rM => {
-      recipeMethodsToCreate.push(generatedId, rM.methodId)
+    requiredMethods.map(m => {
+      recipeMethodsToCreate.push(generatedId, m.methodId)
     });
 
-    const recipeMethodsPlaceholders = '(?, ?),'
-    .repeat(requiredMethods.length)
-    .slice(0, -1);
+    const recipeMethodsPlaceholders =
+      '(?, ?),'.repeat(requiredMethods.length).slice(0, -1);
 
-    await recipeMethod.createRecipeMethods(
-      recipeMethodsToCreate,
-      recipeMethodsPlaceholders
-    );
+    await recipeMethod.create(recipeMethodsToCreate, recipeMethodsPlaceholders);
   }
 
   // first check if the equipment exists?
@@ -81,25 +77,21 @@ export async function createRecipeService({
   if (requiredEquipment.length) {
     let recipeEquipmentToCreate: number[] = [];
 
-    requiredEquipment
-    .map(rE => assert({
+    requiredEquipment.map(e => assert({
       recipeId: generatedId,
-      equipmentId: rE.equipment,
-      amount: rE.amount
+      equipmentId: e.equipment,
+      amount: e.amount
     }, validRecipeEquipmentEntity));
 
-    requiredEquipment.map(rE => {
-      recipeEquipmentToCreate.push(generatedId, rE.equipment, rE.amount);
+    requiredEquipment.map(e => {
+      recipeEquipmentToCreate.push(generatedId, e.equipment, e.amount);
     });
 
-    const recipeEquipmentPlaceholders = '(?, ?, ?),'
-    .repeat(requiredEquipment.length)
-    .slice(0, -1);
+    const recipeEquipmentPlaceholders =
+      '(?, ?, ?),'.repeat(requiredEquipment.length).slice(0, -1);
 
-    await recipeEquipment.createRecipeEquipment(
-      recipeEquipmentToCreate,
-      recipeEquipmentPlaceholders
-    );
+    await recipeEquipment
+      .create(recipeEquipmentToCreate, recipeEquipmentPlaceholders);
   }
 
   // first check if the ingredients exists?
@@ -107,27 +99,23 @@ export async function createRecipeService({
   if (requiredIngredients.length) {
     let recipeIngredientsToCreate: number[] = [];
 
-    requiredIngredients
-    .map(rI => assert({
+    requiredIngredients.map(i => assert({
       recipeId: generatedId,
-      ingredientId: rI.ingredient,
-      amount: rI.amount,
-      measurementId: rI.unit
+      ingredientId: i.ingredient,
+      amount: i.amount,
+      measurementId: i.unit
     }, validRecipeIngredientEntity));
 
-    requiredIngredients.map(rI => {
+    requiredIngredients.map(i => {
       recipeIngredientsToCreate
-      .push(generatedId, rI.ingredient, rI.amount, rI.unit);
+        .push(generatedId, i.ingredient, i.amount, i.unit);
     });
 
-    const recipeIngredientsPlaceholders = '(?, ?, ?, ?),'
-    .repeat(requiredIngredients.length)
-    .slice(0, -1);
+    const recipeIngredientsPlaceholders =
+      '(?, ?, ?, ?),'.repeat(requiredIngredients.length).slice(0, -1);
 
-    await recipeIngredient.createRecipeIngredients(
-      recipeIngredientsToCreate,
-      recipeIngredientsPlaceholders
-    );
+    await recipeIngredient
+      .create(recipeIngredientsToCreate, recipeIngredientsPlaceholders);
   }
 
   // first check if the subrecipes exists?
@@ -135,34 +123,30 @@ export async function createRecipeService({
   if (requiredSubrecipes.length) {
     let recipeSubrecipesToCreate: number[] = [];
 
-    requiredSubrecipes
-    .map(rS => assert({
+    requiredSubrecipes.map(s => assert({
       recipeId: generatedId,
-      subrecipeId: rS.subrecipe,
-      amount: rS.amount,
-      measurementId: rS.unit
+      subrecipeId: s.subrecipe,
+      amount: s.amount,
+      measurementId: s.unit
     }, validRecipeSubrecipeEntity));
 
-    requiredSubrecipes.map(rS => {
-      recipeSubrecipesToCreate
-      .push(generatedId, rS.subrecipe, rS.amount, rS.unit);
+    requiredSubrecipes.map(s => {
+      recipeSubrecipesToCreate.push(generatedId, s.subrecipe, s.amount, s.unit);
     })
 
-    const recipeSubrecipesPlaceholders = '(?, ?, ?, ?),'
-    .repeat(requiredSubrecipes.length)
-    .slice(0, -1);
+    const recipeSubrecipesPlaceholders =
+      '(?, ?, ?, ?),'.repeat(requiredSubrecipes.length).slice(0, -1);
 
-    await recipeSubrecipe.createRecipeSubrecipes(
-      recipeSubrecipesToCreate,
-      recipeSubrecipesPlaceholders
-    );
+    await recipeSubrecipe
+      .create(recipeSubrecipesToCreate, recipeSubrecipesPlaceholders);
   }
 
+  // if public
   if (ownerId === 1) {
-    const [ recipeInfoForElasticSearch ] = await recipe
-    .getPublicRecipeForElasticSearchInsert(generatedId);
+    const [ recipeInfoForElasticSearch ] =
+      await recipe.getForElasticSearch(generatedId);
 
-    await recipeSearch.saveRecipe(recipeInfoForElasticSearch[0]);  // fix?
+    await recipeSearch.save(recipeInfoForElasticSearch[0]);  // fix?
   }
 }
 

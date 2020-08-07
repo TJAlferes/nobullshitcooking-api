@@ -10,15 +10,13 @@ export class MessengerUser implements IMessengerUser {
     this.removeUser = this.removeUser.bind(this);
   }
 
-  async getUserSocketId(userId: number) {
-    const foundUserSocketId = await this.client
-    .hget(`user:${userId}`, 'socketid');
-    //if (!foundUserSocketId) throw ?
+  async getUserSocketId(id: number) {
+    const foundUserSocketId = await this.client.hget(`user:${id}`, 'socketid');
     return foundUserSocketId;
   }
 
   async addUser(
-    userId: number,
+    id: number,
     username: string,
     avatar: string,
     sid: string,
@@ -26,32 +24,32 @@ export class MessengerUser implements IMessengerUser {
   ) {
     await this.client
     .multi()
-    .hset(`user:${userId}`, 'username', username)
-    .hset(`user:${userId}`, 'avatar', avatar)
-    .hset(`user:${userId}`, 'sid', sid)
-    .hset(`user:${userId}`, 'socketid', socketid)
-    .zadd('users', `${Date.now()}`, `${userId}`)
+    .hset(`user:${id}`, 'username', username)
+    .hset(`user:${id}`, 'avatar', avatar)
+    .hset(`user:${id}`, 'sid', sid)
+    .hset(`user:${id}`, 'socketid', socketid)
+    .zadd('users', `${Date.now()}`, `${id}`)
     .exec();
   }
 
-  async removeUser(userId: number) {
+  async removeUser(id: number) {
     await this.client
     .multi()
-    .zrem('users', userId)
-    .del(`user:${userId}`)
+    .zrem('users', id)
+    .del(`user:${id}`)
     .exec();
   }
 }
 
 export interface IMessengerUser {
   client: Redis;
-  getUserSocketId(userId: number): Promise<string|null>;
+  getUserSocketId(id: number): Promise<string|null>;
   addUser(
-    userId: number,
+    id: number,
     username: string,
     avatar: string,
     sid: string,
     socketid: string
   ): void;
-  removeUser(userId: number): void;
+  removeUser(id: number): void;
 }

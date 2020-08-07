@@ -6,7 +6,7 @@ export function ChatMessage(
   user: IChatUser
 ): IChatMessage {
   return {
-    chatMessageId: user.userId + (new Date).getTime().toString(),
+    chatMessageId: user.id + (new Date).getTime().toString(),
     chatMessageText,
     room,
     user

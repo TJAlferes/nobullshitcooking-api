@@ -18,27 +18,27 @@ router.post(
     body('contentTypeId').not().isEmpty().trim().escape(),
     body('published').not().isEmpty().trim().escape(),
     body('title').not().isEmpty().trim().escape(),
-    body('contentItems').not().isEmpty().trim().escape()
+    body('items').not().isEmpty().trim().escape()
   ],
-  catchExceptions(staffContentController.createContent)
+  catchExceptions(staffContentController.create)
 );
 
 router.put(
   '/update',
   staffIsAuth,
   [
-    body('contentId').not().isEmpty().trim().escape(),
+    body('id').not().isEmpty().trim().escape(),
     body('contentTypeId').not().isEmpty().trim().escape(),
     body('published').not().isEmpty().trim().escape(),
     body('title').not().isEmpty().trim().escape(),
-    body('contentItems').not().isEmpty().trim().escape()
+    body('items').not().isEmpty().trim().escape()
   ],
-  catchExceptions(staffContentController.updateContent)
+  catchExceptions(staffContentController.update)
 );
 
 router.delete(
   '/delete',
   staffIsAuth,
-  [body('contentId').not().isEmpty().trim().escape()],
-  catchExceptions(staffContentController.deleteContent)
+  [body('id').not().isEmpty().trim().escape()],
+  catchExceptions(staffContentController.delete)
 );

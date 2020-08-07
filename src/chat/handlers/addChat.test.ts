@@ -6,9 +6,7 @@ import { ChatUser } from '../entities/ChatUser';
 import { addChat } from './addChat';
 
 const mockAddChat = jest.fn();
-const mockMessengerChat: Partial<IMessengerChat> = {
-  addChat: mockAddChat
-};
+const mockMessengerChat: Partial<IMessengerChat> = {addChat: mockAddChat};
 
 jest.mock('../entities/ChatMessage');
 const mockChatMessage = ChatMessage as jest.Mocked<typeof ChatMessage>;
@@ -31,7 +29,7 @@ const mockSocket: Partial<Socket> = {
 
 const params = {
   chatMessageText: "howdy",
-  userId: 150,
+  id: 150,
   username: "Name",
   avatar: "Name123",
   socket: <Socket>mockSocket,
@@ -51,21 +49,14 @@ describe ('addChat handler', () => {
   it('uses ChatMessage correctly', async () => {
     await addChat(params);
     expect(mockChatMessage).toHaveBeenCalledWith(
-      "howdy",
-      "someRoom",
-      ChatUser(150, "Name", "Name123")
+      "howdy", "someRoom", ChatUser(150, "Name", "Name123")
     );
   });
 
   it('uses addChat correctly', async () => {
     await addChat(params);
-    expect(mockAddChat)
-    .toHaveBeenCalledWith(
-      ChatMessage(
-        "howdy",
-        "someRoom",
-        ChatUser(150, "Name", "Name123")
-      )
+    expect(mockAddChat).toHaveBeenCalledWith(
+      ChatMessage("howdy", "someRoom", ChatUser(150, "Name", "Name123"))
     );
   });
 
@@ -78,11 +69,7 @@ describe ('addChat handler', () => {
     await addChat(params);
     expect(params.socket.broadcast.emit).toHaveBeenCalledWith(
       'AddChat',
-      ChatMessage(
-        "howdy",
-        "someRoom",
-        ChatUser(150, "Name", "Name123")
-      )
+      ChatMessage("howdy", "someRoom", ChatUser(150, "Name", "Name123"))
     );
   });
 
@@ -90,11 +77,7 @@ describe ('addChat handler', () => {
     await addChat(params);
     expect(params.socket.emit).toHaveBeenCalledWith(
       'AddChat',
-      ChatMessage(
-        "howdy",
-        "someRoom",
-        ChatUser(150, "Name", "Name123")
-      )
+      ChatMessage("howdy", "someRoom", ChatUser(150, "Name", "Name123"))
     );
   });
 });

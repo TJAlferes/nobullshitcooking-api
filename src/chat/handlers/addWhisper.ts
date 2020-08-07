@@ -9,7 +9,7 @@ import { Whisper } from '../entities/Whisper';
 export async function addWhisper({
   whisperText,
   to,
-  userId,
+  id,
   username,
   avatar,
   socket,
@@ -17,21 +17,21 @@ export async function addWhisper({
   nobscFriendship,
   nobscUser
 }: IAddWhisper) {
-  const [ userExists ] = await nobscUser.getUserByName(to);
+  const [ userExists ] = await nobscUser.getByName(to);
   if (!userExists.length) {
     return socket.emit('FailedWhisper', 'User not found.');
   }
 
   const [ blockedUsers ] =
-    await nobscFriendship.viewMyBlockedUsers(userExists[0].user_id);
+    await nobscFriendship.viewBlocked(userExists[0].user_id);
 
-  const blockedByUser = blockedUsers.find((u: any) => u.user_id === userId);
+  const blockedByUser = blockedUsers.find((u: any) => u.user_id === id);
   if (blockedByUser) return socket.emit('FailedWhisper', 'User not found.');
 
   const onlineUser = await messengerUser.getUserSocketId(userExists[0].user_id);
   if (!onlineUser) return socket.emit('FailedWhisper', 'User not found.');
 
-  const whisper = Whisper(whisperText, to, ChatUser(userId, username, avatar));
+  const whisper = Whisper(whisperText, to, ChatUser(id, username, avatar));
 
   socket.broadcast.to(onlineUser).emit('AddWhisper', whisper);
   socket.emit('AddWhisper', whisper);
@@ -40,7 +40,7 @@ export async function addWhisper({
 interface IAddWhisper {
   whisperText: string;
   to: string;
-  userId: number;
+  id: number;
   username: string;
   avatar: string;
   socket: Socket;

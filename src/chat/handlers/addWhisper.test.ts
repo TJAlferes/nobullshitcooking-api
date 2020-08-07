@@ -10,17 +10,15 @@ import { addWhisper } from './addWhisper';
 
 jest.mock('../../mysql-access/Friendship', () => ({
   Friendship: jest.fn().mockImplementation(() => ({
-    viewMyBlockedUsers: mockViewMyBlockedUsers
+    viewBlocked: mockViewBlocked
   }))
 }));
-let mockViewMyBlockedUsers = jest.fn();
+let mockViewBlocked = jest.fn();
 
 jest.mock('../../mysql-access/User', () => ({
-  User: jest.fn().mockImplementation(() => ({
-    getUserByName: mockGetUserByName
-  }))
+  User: jest.fn().mockImplementation(() => ({getByName: mockGetByName}))
 }));
-let mockGetUserByName = jest.fn();
+let mockGetByName = jest.fn();
 
 let mockGetUserSocketId = jest.fn();
 
@@ -46,7 +44,7 @@ const mockSocket: Partial<Socket> = {
 const params = {
   whisperText: "howdy",
   to: "Buddy",
-  userId: 150,
+  id: 150,
   username: "Name",
   avatar: "Name123",
   socket: <Socket>mockSocket
@@ -64,7 +62,7 @@ describe('addWhisper handler', () => {
     };
 
     it('uses getUserByName correctly', async () => {
-      mockGetUserByName = jest.fn().mockResolvedValue([[]]);
+      mockGetByName = jest.fn().mockResolvedValue([[]]);
       const mockNobscFriendship = new Friendship(pool);
       const mockNobscUser = new User(pool);
       await addWhisper({
@@ -73,11 +71,11 @@ describe('addWhisper handler', () => {
         nobscFriendship: <IFriendship>mockNobscFriendship,
         nobscUser: <IUser>mockNobscUser
       });
-      expect(mockGetUserByName).toHaveBeenCalledWith("Buddy");
+      expect(mockGetByName).toHaveBeenCalledWith("Buddy");
     });
 
     it('uses socket.emit', async () => {
-      mockGetUserByName = jest.fn().mockResolvedValue([[]]);
+      mockGetByName = jest.fn().mockResolvedValue([[]]);
       const mockNobscFriendship = new Friendship(pool);
       const mockNobscUser = new User(pool);
       await addWhisper({
@@ -92,7 +90,7 @@ describe('addWhisper handler', () => {
 
     // these may be wrong...
     it('returns correctly', async () => {
-      mockGetUserByName = jest.fn().mockResolvedValue([[]]);
+      mockGetByName = jest.fn().mockResolvedValue([[]]);
       const mockNobscFriendship = new Friendship(pool);
       const mockNobscUser = new User(pool);
       const actual = await addWhisper({
@@ -111,8 +109,8 @@ describe('addWhisper handler', () => {
     };
 
     it('uses viewMyBlockedUsers correctly', async () => {
-      mockGetUserByName = jest.fn().mockResolvedValue([[{user_id: 999}]]);
-      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[{user_id: 150}]]);
+      mockGetByName = jest.fn().mockResolvedValue([[{id: 999}]]);
+      mockViewBlocked = jest.fn().mockResolvedValue([[{user_id: 150}]]);
       const mockNobscFriendship = new Friendship(pool);
       const mockNobscUser = new User(pool);
       await addWhisper({
@@ -121,12 +119,12 @@ describe('addWhisper handler', () => {
         nobscFriendship: <IFriendship>mockNobscFriendship,
         nobscUser: <IUser>mockNobscUser
       });
-      expect(mockViewMyBlockedUsers).toHaveBeenCalledWith(999);
+      expect(mockViewBlocked).toHaveBeenCalledWith(999);
     });
 
     it('uses socket.emit', async () => {
-      mockGetUserByName = jest.fn().mockResolvedValue([[{user_id: 999}]]);
-      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[{user_id: 150}]]);
+      mockGetByName = jest.fn().mockResolvedValue([[{id: 999}]]);
+      mockViewBlocked = jest.fn().mockResolvedValue([[{user_id: 150}]]);
       const mockNobscFriendship = new Friendship(pool);
       const mockNobscUser = new User(pool);
       await addWhisper({
@@ -140,8 +138,8 @@ describe('addWhisper handler', () => {
     });
 
     it('returns correctly', async () => {
-      mockGetUserByName = jest.fn().mockResolvedValue([[{user_id: 999}]]);
-      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[{user_id: 150}]]);
+      mockGetByName = jest.fn().mockResolvedValue([[{id: 999}]]);
+      mockViewBlocked = jest.fn().mockResolvedValue([[{user_id: 150}]]);
       const mockNobscFriendship = new Friendship(pool);
       const mockNobscUser = new User(pool);
       const actual = await addWhisper({
@@ -156,8 +154,8 @@ describe('addWhisper handler', () => {
 
   describe('when user being whispered is offline', () => {
     it('uses getUserSocketId correctly', async () => {
-      mockGetUserByName = jest.fn().mockResolvedValue([[{user_id: 999}]]);
-      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[]]);
+      mockGetByName = jest.fn().mockResolvedValue([[{id: 999}]]);
+      mockViewBlocked = jest.fn().mockResolvedValue([[]]);
       mockGetUserSocketId = jest.fn().mockResolvedValue(undefined);
       const mockMessengerUser: Partial<IMessengerUser> = {
         getUserSocketId: mockGetUserSocketId
@@ -174,8 +172,8 @@ describe('addWhisper handler', () => {
     });
 
     it('uses socket.emit', async () => {
-      mockGetUserByName = jest.fn().mockResolvedValue([[{user_id: 999}]]);
-      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[]]);
+      mockGetByName = jest.fn().mockResolvedValue([[{id: 999}]]);
+      mockViewBlocked = jest.fn().mockResolvedValue([[]]);
       mockGetUserSocketId = jest.fn().mockResolvedValue(undefined);
       const mockMessengerUser: Partial<IMessengerUser> = {
         getUserSocketId: mockGetUserSocketId
@@ -193,8 +191,8 @@ describe('addWhisper handler', () => {
     });
 
     it('returns correctly', async () => {
-      mockGetUserByName = jest.fn().mockResolvedValue([[{user_id: 999}]]);
-      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[]]);
+      mockGetByName = jest.fn().mockResolvedValue([[{id: 999}]]);
+      mockViewBlocked = jest.fn().mockResolvedValue([[]]);
       mockGetUserSocketId = jest.fn().mockResolvedValue(undefined);
       const mockMessengerUser: Partial<IMessengerUser> = {
         getUserSocketId: mockGetUserSocketId
@@ -213,8 +211,8 @@ describe('addWhisper handler', () => {
 
   describe('when okay', () => {
     it('uses ChatUser correctly', async () => {
-      mockGetUserByName = jest.fn().mockResolvedValue([[{user_id: 999}]]);
-      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[]]);
+      mockGetByName = jest.fn().mockResolvedValue([[{id: 999}]]);
+      mockViewBlocked = jest.fn().mockResolvedValue([[]]);
       mockGetUserSocketId = jest.fn().mockResolvedValue("123456789");
       const mockMessengerUser: Partial<IMessengerUser> = {
         getUserSocketId: mockGetUserSocketId
@@ -231,8 +229,8 @@ describe('addWhisper handler', () => {
     });
   
     it('uses Whisper correctly', async () => {
-      mockGetUserByName = jest.fn().mockResolvedValue([[{user_id: 999}]]);
-      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[]]);
+      mockGetByName = jest.fn().mockResolvedValue([[{id: 999}]]);
+      mockViewBlocked = jest.fn().mockResolvedValue([[]]);
       mockGetUserSocketId = jest.fn().mockResolvedValue("123456789");
       const mockMessengerUser: Partial<IMessengerUser> = {
         getUserSocketId: mockGetUserSocketId
@@ -253,8 +251,8 @@ describe('addWhisper handler', () => {
     });
 
     it ('uses socket.broadcast.to correctly', async () => {
-      mockGetUserByName = jest.fn().mockResolvedValue([[{user_id: 999}]]);
-      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[]]);
+      mockGetByName = jest.fn().mockResolvedValue([[{id: 999}]]);
+      mockViewBlocked = jest.fn().mockResolvedValue([[]]);
       mockGetUserSocketId = jest.fn().mockResolvedValue("123456789");
       const mockMessengerUser: Partial<IMessengerUser> = {
         getUserSocketId: mockGetUserSocketId
@@ -272,8 +270,8 @@ describe('addWhisper handler', () => {
     });
 
     it ('uses socket.broadcast.to.emit correctly', async () => {
-      mockGetUserByName = jest.fn().mockResolvedValue([[{user_id: 999}]]);
-      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[]]);
+      mockGetByName = jest.fn().mockResolvedValue([[{id: 999}]]);
+      mockViewBlocked = jest.fn().mockResolvedValue([[]]);
       mockGetUserSocketId = jest.fn().mockResolvedValue("123456789");
       const mockMessengerUser: Partial<IMessengerUser> = {
         getUserSocketId: mockGetUserSocketId
@@ -298,8 +296,8 @@ describe('addWhisper handler', () => {
     });
 
     it ('uses socket.emit with AddWhisper event correctly', async () => {
-      mockGetUserByName = jest.fn().mockResolvedValue([[{user_id: 999}]]);
-      mockViewMyBlockedUsers = jest.fn().mockResolvedValue([[]]);
+      mockGetByName = jest.fn().mockResolvedValue([[{id: 999}]]);
+      mockViewBlocked = jest.fn().mockResolvedValue([[]]);
       mockGetUserSocketId = jest.fn().mockResolvedValue("123456789");
       const mockMessengerUser: Partial<IMessengerUser> = {
         getUserSocketId: mockGetUserSocketId

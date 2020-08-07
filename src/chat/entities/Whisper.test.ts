@@ -3,11 +3,11 @@ import { Whisper } from './Whisper';
 const whisper = Whisper(
   'hello',
   'Batman',
-  {userId: 7, username: 'Lucky', avatar: 'Lucky'}
+  {id: 7, username: 'Lucky', avatar: 'Lucky'}
 );
 
 describe('Whisper', () => {
-  it('returns a whisperId as current time appended to the userId', () => {
+  it('returns a whisperId as current time appended to the id', () => {
     expect(whisper.whisperId[0]).toEqual('7');
   });
 
@@ -21,6 +21,6 @@ describe('Whisper', () => {
 
   it('returns the user', () => {
     expect(whisper.user)
-    .toEqual({userId: 7, username: 'Lucky', avatar: 'Lucky'});
+    .toEqual({id: 7, username: 'Lucky', avatar: 'Lucky'});
   });
 });

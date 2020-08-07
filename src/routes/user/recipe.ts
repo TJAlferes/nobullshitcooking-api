@@ -23,19 +23,19 @@ router.post(
     body('totalTime').not().isEmpty().trim().escape(),
     body('directions').not().isEmpty().trim().escape(),
     body('recipeImage').not().isEmpty().trim().escape(),
-    body('recipeEquipmentImage').not().isEmpty().trim().escape(),
-    body('recipeIngredientsImage').not().isEmpty().trim().escape(),
-    body('recipeCookingImage').not().isEmpty().trim().escape(),
+    body('equipmentImage').not().isEmpty().trim().escape(),
+    body('ingredientsImage').not().isEmpty().trim().escape(),
+    body('cookingImage').not().isEmpty().trim().escape(),
     body('ownership').not().isEmpty().trim().escape()
   ],
-  catchExceptions(userRecipeController.createRecipe)
+  catchExceptions(userRecipeController.create)
 );
 
 router.put(
   '/update',
   userIsAuth,
   [
-    body('recipeId').not().isEmpty().trim().escape(),
+    body('id').not().isEmpty().trim().escape(),
     body('recipeTypeId').not().isEmpty().trim().escape(),
     body('cuisineId').not().isEmpty().trim().escape(),
     body('title').not().isEmpty().trim().escape(),
@@ -44,64 +44,64 @@ router.put(
     body('totalTime').not().isEmpty().trim().escape(),
     body('directions').not().isEmpty().trim().escape(),
     body('recipeImage').not().isEmpty().trim().escape(),
-    body('recipeEquipmentImage').not().isEmpty().trim().escape(),
-    body('recipeIngredientsImage').not().isEmpty().trim().escape(),
-    body('recipeCookingImage').not().isEmpty().trim().escape(),
+    body('equipmentImage').not().isEmpty().trim().escape(),
+    body('ingredientsImage').not().isEmpty().trim().escape(),
+    body('cookingImage').not().isEmpty().trim().escape(),
     body('ownership').not().isEmpty().trim().escape()
   ],
-  catchExceptions(userRecipeController.updateMyUserRecipe)
+  catchExceptions(userRecipeController.update)
 );
 
 router.delete(
   '/delete/private',
   userIsAuth,
-  [body('recipeId').not().isEmpty().trim().escape()],
-  catchExceptions(userRecipeController.deleteMyPrivateUserRecipe)
+  [body('id').not().isEmpty().trim().escape()],
+  catchExceptions(userRecipeController.deletePrivateById)
 );
 
 router.delete(
   '/disown/public',
   userIsAuth,
-  [body('recipeId').not().isEmpty().trim().escape()],
-  catchExceptions(userRecipeController.disownMyPublicUserRecipe)
+  [body('id').not().isEmpty().trim().escape()],
+  catchExceptions(userRecipeController.disownById)
 );  // change to router.put
 
 router.post(
   '/private/all',
   userIsAuth,
-  catchExceptions(userRecipeController.viewAllMyPrivateUserRecipes)
+  catchExceptions(userRecipeController.viewPrivate)
 );
 
 router.post(
   '/public/all',
   userIsAuth,
-  catchExceptions(userRecipeController.viewAllMyPublicUserRecipes)
+  catchExceptions(userRecipeController.viewPublic)
 );
 
 router.post(
   '/private/one',
   userIsAuth,
-  [body('recipeId').not().isEmpty().trim().escape()],
-  catchExceptions(userRecipeController.viewMyPrivateUserRecipe)
+  [body('id').not().isEmpty().trim().escape()],
+  catchExceptions(userRecipeController.viewPrivateById)
 );
 
 router.post(
   '/public/one',
   userIsAuth,
-  [body('recipeId').not().isEmpty().trim().escape()],
-  catchExceptions(userRecipeController.viewMyPublicUserRecipe)
+  [body('id').not().isEmpty().trim().escape()],
+  catchExceptions(userRecipeController.viewPublicById)
 );
 
 router.post(
   '/edit/private',
   userIsAuth,
-  [body('recipeId').not().isEmpty().trim().escape()],
-  catchExceptions(userRecipeController.getInfoToEditMyPrivateUserRecipe)
+  [body('id').not().isEmpty().trim().escape()],
+  catchExceptions(userRecipeController.getInfoToEditPrivate)
 );
 
 router.post(
   '/edit/public',
   userIsAuth,
-  [body('recipeId').not().isEmpty().trim().escape()],
-  catchExceptions(userRecipeController.getInfoToEditMyPublicUserRecipe)
+  [body('id').not().isEmpty().trim().escape()],
+  catchExceptions(userRecipeController.getInfoToEditPublic)
 );

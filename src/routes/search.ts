@@ -7,7 +7,7 @@ export const router = Router();
 
 // for /search/...
 
-router.post(
+/*router.post(
   '/autocomplete/all',
   catchExceptions(searchController.autocompletePublicAll)
 );
@@ -15,7 +15,7 @@ router.post(
 router.post(
   '/find/all',
   catchExceptions(searchController.findPublicAll)
-);
+);*/
 
 router.post(
   '/autocomplete/recipes',

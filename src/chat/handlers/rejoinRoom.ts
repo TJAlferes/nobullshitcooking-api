@@ -5,7 +5,7 @@ import { ChatUser } from '../entities/ChatUser';
 
 export async function rejoinRoom({
   room,
-  userId,
+  id,
   username,
   avatar,
   socket,
@@ -16,10 +16,9 @@ export async function rejoinRoom({
   socket.join(room);
 
   await messengerRoom.addRoom(room);  // ?
-  await messengerRoom.addUserToRoom(userId, room);
+  await messengerRoom.addUserToRoom(id, room);
 
-  socket.broadcast.to(room)
-  .emit('AddUser', ChatUser(userId, username, avatar));
+  socket.broadcast.to(room).emit('AddUser', ChatUser(id, username, avatar));
 
   const users = await messengerRoom.getUsersInRoom(room);
   
@@ -28,7 +27,7 @@ export async function rejoinRoom({
 
 interface IRejoinRoom {
   room: string;
-  userId: number;
+  id: number;
   username: string;
   avatar: string;
   socket: Socket;

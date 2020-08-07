@@ -1,13 +1,13 @@
 export function ChatUser(
-  userId: number,
+  id: number,
   username: string,
   avatar: string
 ): IChatUser {
-  return {userId, username, avatar};
+  return {id, username, avatar};
 }
 
 export interface IChatUser {
-  userId: number;
+  id: number;
   username: string;
   avatar: string;
 }

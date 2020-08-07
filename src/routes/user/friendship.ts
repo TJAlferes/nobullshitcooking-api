@@ -14,47 +14,47 @@ export const router = Router();
 router.post(
   '/',
   userIsAuth,
-  catchExceptions(userFriendshipController.viewMyFriendships)
+  catchExceptions(userFriendshipController.view)
 );
 
 router.post(
   '/create',
   userIsAuth,
   [body('friendname').not().isEmpty().trim().escape()],
-  catchExceptions(userFriendshipController.createFriendship)
+  catchExceptions(userFriendshipController.create)
 );
 
 router.put(
   '/accept',
   userIsAuth,
   [body('friendname').not().isEmpty().trim().escape()],
-  catchExceptions(userFriendshipController.acceptFriendship)
+  catchExceptions(userFriendshipController.accept)
 );
 
 router.put(
   '/reject',
   userIsAuth,
   [body('friendname').not().isEmpty().trim().escape()],
-  catchExceptions(userFriendshipController.rejectFriendship)
+  catchExceptions(userFriendshipController.reject)
 );
 
 router.delete(
   '/delete',
   userIsAuth,
   [body('friendname').not().isEmpty().trim().escape()],
-  catchExceptions(userFriendshipController.deleteFriendship)
+  catchExceptions(userFriendshipController.delete)
 );
 
 router.post(
   '/block',
   userIsAuth,
   [body('friendname').not().isEmpty().trim().escape()],
-  catchExceptions(userFriendshipController.blockUser)
+  catchExceptions(userFriendshipController.block)
 );
 
 router.delete(
   '/unblock',
   userIsAuth,
   [body('friendname').not().isEmpty().trim().escape()],
-  catchExceptions(userFriendshipController.unblockUser)
+  catchExceptions(userFriendshipController.unblock)
 );

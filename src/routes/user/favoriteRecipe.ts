@@ -14,19 +14,19 @@ export const router = Router();
 router.post(
   '/',
   userIsAuth,
-  catchExceptions(userFavoriteRecipeController.viewMyFavoriteRecipes)
+  catchExceptions(userFavoriteRecipeController.viewByUserId)
 );
 
 router.post(
   '/create',
   userIsAuth,
-  [body('recipeId').not().isEmpty().trim().escape()],
-  catchExceptions(userFavoriteRecipeController.createMyFavoriteRecipe)
+  [body('id').not().isEmpty().trim().escape()],
+  catchExceptions(userFavoriteRecipeController.create)
 );
 
 router.delete(
   '/delete',
   userIsAuth,
-  [body('recipeId').not().isEmpty().trim().escape()],
-  catchExceptions(userFavoriteRecipeController.deleteMyFavoriteRecipe)
+  [body('id').not().isEmpty().trim().escape()],
+  catchExceptions(userFavoriteRecipeController.delete)
 );

@@ -47,13 +47,13 @@ export const staffSupplierController = {
     return res.send({message: 'Supplier updated.'});
   },
   delete: async function (req: Request, res: Response) {
-    const supplierId = Number(req.body.supplierInfo.supplierId);
+    const id = Number(req.body.supplierInfo.id);
 
     const cuisineSupplier = new CuisineSupplier(pool);
     const supplier = new Supplier(pool);
 
-    await cuisineSupplier.deleteBySupplierId(supplierId);
-    await supplier.delete(supplierId);
+    await cuisineSupplier.deleteBySupplierId(id);
+    await supplier.delete(id);
     
     return res.send({message: 'Supplier deleted.'});
   }

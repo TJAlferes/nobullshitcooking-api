@@ -6,7 +6,7 @@ export function Whisper(
   user: IChatUser
 ): IWhisper {
   return {
-    whisperId: user.userId + (new Date).getTime().toString(),
+    whisperId: user.id + (new Date).getTime().toString(),
     whisperText,
     to,
     user
