@@ -29,3 +29,35 @@ router.post(
   userIsAuth,
   catchExceptions(userContentController.viewAllMySubcribedContent)
 );
+
+router.post(
+  '/create',
+  userIsAuth,
+  [
+    body('contentTypeId').not().isEmpty().trim().escape(),
+    body('published').not().isEmpty().trim().escape(),
+    body('title').not().isEmpty().trim().escape(),
+    body('items').not().isEmpty().trim().escape()
+  ],
+  catchExceptions(userContentController.create)
+);
+
+router.put(
+  '/update',
+  userIsAuth,
+  [
+    body('id').not().isEmpty().trim().escape(),
+    body('contentTypeId').not().isEmpty().trim().escape(),
+    body('published').not().isEmpty().trim().escape(),
+    body('title').not().isEmpty().trim().escape(),
+    body('items').not().isEmpty().trim().escape()
+  ],
+  catchExceptions(userContentController.update)
+);
+
+router.delete(
+  '/delete',
+  userIsAuth,
+  [body('id').not().isEmpty().trim().escape()],
+  catchExceptions(userContentController.delete)
+);

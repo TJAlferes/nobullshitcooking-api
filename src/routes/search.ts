@@ -10,21 +10,11 @@ export const router = Router();
 /*router.post(
   '/autocomplete/all',
   catchExceptions(searchController.autocompletePublicAll)
-);
-
-router.post(
-  '/find/all',
-  catchExceptions(searchController.findPublicAll)
 );*/
 
 router.post(
-  '/autocomplete/recipes',
-  catchExceptions(searchController.autocompletePublicRecipes)
-);
-
-router.post(
-  '/find/recipes',
-  catchExceptions(searchController.findPublicRecipes)
+  '/autocomplete/equipment',
+  catchExceptions(searchController.autocompletePublicEquipment)
 );
 
 router.post(
@@ -33,16 +23,26 @@ router.post(
 );
 
 router.post(
+  '/autocomplete/recipes',
+  catchExceptions(searchController.autocompletePublicRecipes)
+);
+
+/*router.post(
+  '/find/all',
+  catchExceptions(searchController.findPublicAll)
+);*/
+
+router.post(
+  '/find/equipment',
+  catchExceptions(searchController.findPublicEquipment)
+);
+
+router.post(
   '/find/ingredients',
   catchExceptions(searchController.findPublicIngredients)
 );
 
 router.post(
-  '/autocomplete/equipment',
-  catchExceptions(searchController.autocompletePublicEquipment)
-);
-
-router.post(
-  '/find/equipment',
-  catchExceptions(searchController.findPublicEquipment)
+  '/find/recipes',
+  catchExceptions(searchController.findPublicRecipes)
 );

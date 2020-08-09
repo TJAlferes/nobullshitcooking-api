@@ -14,5 +14,5 @@ router.get(
 
 router.get(
   '/:id',
-  catchExceptions(recipeController.viewRecipeDetail)
+  catchExceptions(recipeController.viewById)
 );
