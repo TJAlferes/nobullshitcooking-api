@@ -64,7 +64,7 @@ router.delete(
   userIsAuth,
   [body('id').not().isEmpty().trim().escape()],
   catchExceptions(userRecipeController.disownById)
-);  // change to router.put
+);  // TO DO: change to router.put
 
 router.post(
   '/private/all',
