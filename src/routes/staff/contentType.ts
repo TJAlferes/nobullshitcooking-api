@@ -7,9 +7,7 @@ import { staffIsAuth } from '../../lib/utils/staffIsAuth';
 
 export const router = Router();
 
-// /v1/... ?
-
-// for /staff/content/...
+// for /staff/content-type/...
 
 router.post(
   '/create',

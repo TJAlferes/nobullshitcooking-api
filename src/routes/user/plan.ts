@@ -7,8 +7,6 @@ import { userIsAuth } from '../../lib/utils/userIsAuth';
 
 export const router = Router();
 
-// /v1/... ?
-
 // for /user/plan/...
 
 router.post(
@@ -45,5 +43,5 @@ router.delete(
   '/delete',
   userIsAuth,
   [body('id').not().isEmpty().trim().escape()],
-  catchExceptions(userPlanController.delete)
+  catchExceptions(userPlanController.deleteById)
 );

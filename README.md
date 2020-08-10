@@ -1,8 +1,10 @@
 ![nobsc-logo-large-white](https://user-images.githubusercontent.com/19824877/39939802-090658c8-551d-11e8-9f0c-55872add67b2.png)
 
-API
+# [No Bullshit Cooking](https://nobullshitcooking.com/)
 
-GENERAL
+## API
+
+### GENERAL
 
 **/content GET**
 
@@ -148,7 +150,15 @@ View ingredients search results.
 
 View recipes search results.
 
-USER
+**/supplier GET**
+
+View all official suppliers.
+
+**/supplier/:id GET**
+
+View one supplier by id.
+
+### USER
 
 **/user/auth/register POST**
 
@@ -180,15 +190,15 @@ Delete the user account.
 
 **/user/content/all POST**
 
-View all content created by the authenticated user.
+View all content (posts) created by the authenticated user.
 
 **/user/content/one POST**
 
-View one content created by the authenticated user.
+View one content (posts) created by the authenticated user.
 
 **/user/content/subscribed/all POST**
 
-View all content from other users the authenticated user is subscribed to.
+View all content (posts) from users the authenticated user is subscribed to.
 
 **/user/equipment/all POST**
 
@@ -374,7 +384,7 @@ Save one recipe by the authenticated user.
 
 Unsave one recipe by the authenticated user.
 
-STAFF
+### STAFF
 
 **/staff/auth/login POST**
 
@@ -395,3 +405,75 @@ Update one official content (page or post).
 **staff/content/delete DELETE**
 
 Delete one official content (page or post).
+
+**staff/cuisine-equipment/create POST**
+
+Add an equipment to the cuisine.
+
+**staff/cuisine-equipment/delete DELETE**
+
+Delete an equipment from the cuisine.
+
+**staff/cuisine-ingredient/create POST**
+
+Add an ingredient to the cuisine.
+
+**staff/cuisine-ingredient/delete DELETE**
+
+Delete an ingredient from the cuisine.
+
+**staff/cuisine-supplier/create POST**
+
+Add a supplier to the cuisine.
+
+**staff/cuisine-supplier/delete DELETE**
+
+Delete a supplier from the cuisine.
+
+**staff/equipment/create POST**
+
+Create a new official equipment.
+
+**staff/equipment/update PUT**
+
+Update one official equipment.
+
+**staff/equipment/delete DELETE**
+
+Delete one official equipment.
+
+**staff/ingredient/create POST**
+
+Create a new official ingredient.
+
+**staff/ingredient/update PUT**
+
+Update one official ingredient.
+
+**staff/ingredient/delete DELETE**
+
+Delete one official ingredient.
+
+**staff/recipe/create POST**
+
+Create a new official recipe.
+
+**staff/recipe/update PUT**
+
+Update one official recipe.
+
+**staff/recipe/delete DELETE**
+
+Delete one official recipe.
+
+**staff/supplier/create POST**
+
+Create a new official supplier.
+
+**staff/supplier/update PUT**
+
+Update one official supplier.
+
+**staff/supplier/delete DELETE**
+
+Delete one official supplier.

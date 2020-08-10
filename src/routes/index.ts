@@ -17,3 +17,4 @@ export { router as methodRoutes } from './method';
 export { router as recipeRoutes } from './recipe';
 export { router as recipeTypeRoutes } from './recipeType';
 export { router as searchRoutes } from './search';
+export { router as supplierRoutes } from './supplier';

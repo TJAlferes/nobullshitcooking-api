@@ -7,22 +7,7 @@ import { staffIsAuth } from '../../lib/utils/staffIsAuth';
 
 export const router = Router();
 
-// /v1/... ?
-
 // for /staff/supplier/...
-
-router.post(
-  '/',
-  staffIsAuth,
-  [body('id').not().isEmpty().trim().escape()],
-  catchExceptions(staffSupplierController.viewById)
-);
-
-router.post(
-  '/all',
-  staffIsAuth,
-  catchExceptions(staffSupplierController.view)
-);
 
 router.post(
   '/create',

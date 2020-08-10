@@ -21,12 +21,16 @@ import {
   methodRoutes,
   recipeRoutes,
   recipeTypeRoutes,
-  searchRoutes
+  searchRoutes,
+  supplierRoutes
 } from './routes';
 
 export function routesInit(app: Application) {
   app.get('/', (req, res) => {
-    res.send(`No Bullshit Cooking Backend API.`);
+    res.send(`
+      No Bullshit Cooking Backend API.
+      Documentation at https://github.com/tjalferes/nobullshitcooking-api
+    `);
   });
   app.use('/staff', staffRoutes);
   app.use('/user', userRoutes);
@@ -47,5 +51,6 @@ export function routesInit(app: Application) {
   app.use('/recipe', recipeRoutes);
   app.use('/recipe-type', recipeTypeRoutes);
   app.use('/search', searchRoutes);
+  app.use('/supplier', supplierRoutes);
   //app.use('/graphql', expressGraphQL({schema, rootValue, graphiql: true}));  // move also
 }
