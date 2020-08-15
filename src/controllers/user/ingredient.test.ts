@@ -17,19 +17,15 @@ jest.mock('../../mysql-access/Ingredient', () => {
       viewById: mockViewById,
       create: mockCreate,
       update: mockUpdate,
-      delete: mockDelete
+      deleteByOwnerId: mockDeleteByOwnerId
     }))
   };
 });
-let mockView = jest.fn().mockResolvedValue(
-  [[{id: 383}, {id: 5432}]]
-);
-let mockViewById = jest.fn().mockResolvedValue(
-  [[{id: 5432}]]
-);
+let mockView = jest.fn().mockResolvedValue([[{id: 383}, {id: 5432}]]);
+let mockViewById = jest.fn().mockResolvedValue([[{id: 5432}]]);
 let mockCreate = jest.fn();
 let mockUpdate = jest.fn();
-let mockDelete = jest.fn();
+let mockDeleteByOwnerId = jest.fn();
 
 jest.mock('../../mysql-access/RecipeIngredient', () => {
   const originalModule =
@@ -233,9 +229,9 @@ describe('user ingredient controller', () => {
       expect(mockDeleteByIngredientId).toHaveBeenCalledWith(5432);
     });
 
-    it('uses delete correctly', async () => {
+    it('uses deleteByOwnerId correctly', async () => {
       await userIngredientController.delete(<Request>req, <Response>res);
-      expect(mockDelete).toHaveBeenCalledWith(5432, 150);
+      expect(mockDeleteByOwnerId).toHaveBeenCalledWith(5432, 150);
     });
 
     it('sends data correctly', async () => {

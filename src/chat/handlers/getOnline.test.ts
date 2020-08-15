@@ -146,8 +146,8 @@ describe('getOnline handler', () => {
         messengerUser: <IMessengerUser>mockMessengerUser
       });
       expect(params.socket.emit).toHaveBeenCalledWith('GetOnline', [
-        {userId: 48, username: "Jack", avatar: "Jack123"},
-        {userId: 84, username: "Jill", avatar: "Jill123"}
+        {id: 48, username: "Jack", avatar: "Jack123"},
+        {id: 84, username: "Jill", avatar: "Jill123"}
       ]);
     });
   });

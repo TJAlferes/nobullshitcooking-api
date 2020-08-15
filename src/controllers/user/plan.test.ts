@@ -12,7 +12,7 @@ jest.mock('../../mysql-access/Plan', () => {
     ...originalModule,
     Plan: jest.fn().mockImplementation(() => ({
       view: mockView,
-      viewById: mockView,
+      viewById: mockViewById,
       create: mockCreate,
       update: mockUpdate,
       deleteById: mockDeleteById
@@ -53,7 +53,7 @@ describe('user plan controller', () => {
   });
 
   describe('viewById method', () => {
-    const req: Partial<Request> = {session, body: {planId: 5432}};
+    const req: Partial<Request> = {session, body: {id: 5432}};
     const res: Partial<Response> = {
       send: jest.fn().mockResolvedValue([{id: 5432}])
     };

@@ -15,21 +15,17 @@ jest.mock('../../mysql-access/Equipment', () => {
     Equipment: jest.fn().mockImplementation(() => ({
       view: mockView,
       viewById: mockViewById,
-      create: mockCreate,
-      update: mockUpdate,
-      delete: mockDelete
+      createPrivate: mockCreatePrivate,
+      updatePrivate: mockUpdatePrivate,
+      deleteByOwnerId: mockDeleteByOwnerId
     }))
   };
 });
-let mockView = jest.fn().mockResolvedValue(
-  [[{id: 383}, {id: 5432}]]
-);
-let mockViewById = jest.fn().mockResolvedValue(
-  [[{id: 5432}]]
-);
-let mockCreate = jest.fn();
-let mockUpdate = jest.fn();
-let mockDelete = jest.fn();
+let mockView = jest.fn().mockResolvedValue([[{id: 383}, {id: 5432}]]);
+let mockViewById = jest.fn().mockResolvedValue([[{id: 5432}]]);
+let mockCreatePrivate = jest.fn();
+let mockUpdatePrivate = jest.fn();
+let mockDeleteByOwnerId = jest.fn();
 
 jest.mock('../../mysql-access/RecipeEquipment', () => {
   const originalModule = jest
@@ -131,7 +127,7 @@ describe('user equipment controller', () => {
 
     it('uses create correctly', async () => {
       await userEquipmentController.create(<Request>req, <Response>res);
-      expect(mockCreate).toHaveBeenCalledWith({
+      expect(mockCreatePrivate).toHaveBeenCalledWith({
         equipmentTypeId: 2,
         authorId: 150,
         ownerId: 150,
@@ -187,7 +183,7 @@ describe('user equipment controller', () => {
 
     it('uses update correctly', async () => {
       await userEquipmentController.update(<Request>req, <Response>res);
-      expect(mockUpdate).toHaveBeenCalledWith({
+      expect(mockUpdatePrivate).toHaveBeenCalledWith({
         id: 5432,
         equipmentTypeId: 2,
         authorId: 150,
@@ -223,7 +219,7 @@ describe('user equipment controller', () => {
 
     it('uses delete correctly', async () => {
       await userEquipmentController.delete(<Request>req, <Response>res);
-      expect(mockDelete).toHaveBeenCalledWith(5432, 150);
+      expect(mockDeleteByOwnerId).toHaveBeenCalledWith(5432, 150);
     });
 
     it('sends data correctly', async () => {

@@ -5,18 +5,21 @@ import { Content } from '../mysql-access/Content';
 
 export const contentController = {
   view: async function(req: Request, res: Response) {
+    const authorId = 1;
+
     const content = new Content(pool);
 
-    const rows = await content.view();
+    const rows = await content.view(authorId);
 
     return res.send(rows);
   },
   viewById: async function(req: Request, res: Response) {
     const id = Number(req.params.id);
+    const authorId = 1;
 
     const content = new Content(pool);
 
-    const [ row ] = await content.viewById(id);
+    const [ row ] = await content.viewById(id, authorId);
 
     return res.send(row);
   },

@@ -14,6 +14,8 @@
     "build-webpack": "webpack --config webpack.prod.js"
   },
   "jest": {
+    "collectCoverage": true,
+    "coverageDirectory": "test-coverage",
     "globals": {
       "ts-jest": {
         "babelConfig": true
@@ -21,11 +23,12 @@
     },
     "globalSetup": "./global-setup.js",
     "preset": "ts-jest/presets/js-with-babel",
+    "testEnvironment": "node",
+    "testRegex": "/*.test.ts$",
     "transform": {
       "^.+\\.[t]sx?$": "ts-jest",
       "^.+\\.[j]sx?$": "babel-jest"
-    },
-    "testEnvironment": "node"
+    }
   },
   "author": "",
   "license": "ISC",

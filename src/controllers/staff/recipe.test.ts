@@ -6,10 +6,6 @@ import { staffRecipeController } from './recipe';
 
 jest.mock('superstruct');
 
-//jest.mock('../../lib/connections/elasticsearchClient');
-
-//jest.mock('../../lib/connections/mysqlPoolConnection');
-
 jest.mock('../../elasticsearch-access/RecipeSearch', () => {
   const originalModule = jest
   .requireActual('../../elasticsearch-access/RecipeSearch');
@@ -40,16 +36,10 @@ jest.mock('../../mysql-access/Recipe', () => {
     }))
   };
 });
-let mockGetForElasticSearch = jest.fn().mockResolvedValue(
-  [[{id: 5432}]]
-);
-let mockView = jest.fn().mockResolvedValue(
-  [[{id: 383}, {id: 5432}]]
-);
+let mockGetForElasticSearch = jest.fn().mockResolvedValue([[{id: 5432}]]);
+let mockView = jest.fn().mockResolvedValue([[{id: 383}, {id: 5432}]]);
 let mockViewById = jest.fn().mockResolvedValue([[{id: 5432}]]);
-let mockGetInfoToEdit = jest.fn().mockResolvedValue(
-  [[{id: 5432}]]
-);
+let mockGetInfoToEdit = jest.fn().mockResolvedValue([[{id: 5432}]]);
 let mockCreate = jest.fn().mockResolvedValue({insertId: 5432});
 let mockUpdate = jest.fn();
 let mockDisownById = jest.fn();

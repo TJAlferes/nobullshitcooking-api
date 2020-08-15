@@ -27,8 +27,7 @@ export const recipeController = {
     //assert({recipeId}, validRecipeRequest);
 
     const recipe = new Recipe(pool);
-
-    // inconsistent naming... please fix...
+    
     const [ row ] = await recipe.viewById(id, authorId, ownerId);
 
     return res.send(row);

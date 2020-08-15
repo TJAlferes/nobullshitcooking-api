@@ -13,22 +13,22 @@ import { Content } from '../../mysql-access/Content';
 export const userContentController = {
   view: async function(req: Request, res: Response) {
     const authorId = req.session!.userInfo.id;
-    const ownerId = req.session!.userInfo.id;
+    //const ownerId = req.session!.userInfo.id;
 
     const content = new Content(pool);
 
-    const rows = await content.view(authorId, ownerId);
+    const rows = await content.view(authorId);
 
     return res.send(rows);
   },
   viewById: async function(req: Request, res: Response) {
     const id = Number(req.body.id);
     const authorId = req.session!.userInfo.id;
-    const ownerId = req.session!.userInfo.id;
+    //const ownerId = req.session!.userInfo.id;
 
     const content = new Content(pool);
 
-    const [ row ] = await content.viewById(id, authorId, ownerId);
+    const [ row ] = await content.viewById(id, authorId);
 
     return res.send(row);
   },

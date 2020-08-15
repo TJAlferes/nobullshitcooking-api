@@ -34,9 +34,7 @@ jest.mock('../../mysql-access/Equipment', () => {
     }))
   };
 });
-let mockGetForElasticSearch = jest.fn().mockResolvedValue(
-  [[{id: 321}]]
-);
+let mockGetForElasticSearch = jest.fn().mockResolvedValue([[{id: 321}]]);
 let mockCreate = jest.fn().mockResolvedValue({insertId: 321});
 let mockUpdate = jest.fn();
 let mockDelete = jest.fn();

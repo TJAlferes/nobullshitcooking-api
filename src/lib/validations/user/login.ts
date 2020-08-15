@@ -6,8 +6,7 @@ export async function validLogin(
   {
     email,
     pass
-  }:
-  {
+  }: {
     email: string;
     pass: string;
   },
@@ -22,21 +21,18 @@ export async function validLogin(
 
   if (pass.length > 54) return {valid: false, feedback: 'Invalid password.'};
 
-  const [ userExists ] = await user.getUserByEmail(email);
-  
+  const [ userExists ] = await user.getByEmail(email);
   //crypto.timingSafeEqual()
   if (!userExists) {
     return {valid: false, feedback: 'Incorrect email or password.'};
   }
   
   const isCorrectPassword = await bcrypt.compare(pass, userExists.pass);
-
   if (!isCorrectPassword) {
     return {valid: false, feedback: 'Incorrect email or password.'};
   }
 
   const notYetConfirmed = userExists.confirmation_code !== null;
-
   if (notYetConfirmed) {
     return {
       valid: false,

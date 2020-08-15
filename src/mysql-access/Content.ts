@@ -39,7 +39,13 @@ export class Content implements IContent {
   async view(authorId: number) {
     const sql = `
       SELECT
-
+        id,
+        content_type_id,
+        author_id,
+        created,
+        published,
+        title,
+        items
       FROM content
       WHERE author_id = ?
     `;
@@ -48,13 +54,14 @@ export class Content implements IContent {
   }
 
   // TO DO: also make ByDate, ByAuthor, etc.
-  async viewById(id: number) {
+  async viewById(id: number, authorId: number) {
     const sql = `
       SELECT content_type_id, items
       FROM content
-      WHERE id = ?
+      WHERE id = ? AND author_id = ?
     `;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
+    const [ row ] =
+      await this.pool.execute<RowDataPacket[]>(sql, [id, authorId]);
     return row;
   }
 

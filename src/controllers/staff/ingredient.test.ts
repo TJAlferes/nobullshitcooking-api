@@ -34,9 +34,7 @@ jest.mock('../../mysql-access/Ingredient', () => {
     }))
   };
 });
-let mockGetForElasticSearch = jest.fn().mockResolvedValue(
-  [[{ingredient_id: 321}]]
-);
+let mockGetForElasticSearch = jest.fn().mockResolvedValue([[{id: 321}]]);
 let mockCreate = jest.fn().mockResolvedValue({insertId: 321});
 let mockUpdate = jest.fn();
 let mockDelete = jest.fn();
@@ -148,7 +146,7 @@ describe ('staff ingredient controller', () => {
     it('uses update correctly', async () => {
       await staffIngredientController.update(<Request>req, <Response>res);
       expect(mockUpdate).toHaveBeenCalledWith({
-        ingredientId: 321,
+        id: 321,
         ingredientTypeId: 3,
         authorId: 1,
         ownerId: 1,

@@ -5,8 +5,7 @@ export async function validRegister(
     email,
     pass,
     username
-  }:
-  {
+  }: {
     email: string;
     pass: string;
     username: string;
@@ -14,10 +13,7 @@ export async function validRegister(
   user: IUser
 ) {
   if (username.length < 6) {
-    return {
-      valid: false,
-      feedback: 'Username must be at least 6 characters.'
-    };
+    return {valid: false, feedback: 'Username must be at least 6 characters.'};
   }
 
   if (username.length > 20) {
@@ -43,14 +39,12 @@ export async function validRegister(
     };
   }
 
-  const [ userExists ] = await user.getUserByName(username);
-
+  const [ userExists ] = await user.getByName(username);
   if (userExists) {
     return {valid: false, feedback: 'Username already taken.'};
   }
 
-  const [ emailExists ] = await user.getUserByEmail(email);
-
+  const [ emailExists ] = await user.getByEmail(email);
   if (emailExists) {
     return {valid: false, feedback: 'Email already in use.'};
   }

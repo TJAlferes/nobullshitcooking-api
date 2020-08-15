@@ -22,7 +22,7 @@ export class Ingredient implements IIngredient {
     const ownerId = 1;
     const sql1 = `
       SELECT
-        CAST(i.id AS CHAR) AS id,
+        CAST(i.id AS CHAR),
         i.ingredient_type_id,
         i.owner_id,
         t.name AS ingredient_type_name,
@@ -60,7 +60,7 @@ export class Ingredient implements IIngredient {
     const ownerId = 1;
     const sql = `
       SELECT
-        CAST(i.id AS CHAR) AS id,
+        CAST(i.id AS CHAR),
         i.ingredient_type_id,
         i.owner_id,
         t.name AS ingredient_type_name,
@@ -77,7 +77,6 @@ export class Ingredient implements IIngredient {
       .execute<RowDataPacket[]>(sql, [id, ownerId]);
 
     let {
-      id,
       ingredient_type_name,
       brand,
       variety,
@@ -90,7 +89,7 @@ export class Ingredient implements IIngredient {
     const fullname = brand + variety + name;
 
     return {
-      id,
+      id: row[0].id,
       ingredient_type_name,
       fullname,
       brand,

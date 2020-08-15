@@ -8,7 +8,7 @@ jest.mock('../mysql-access/Content', () => ({
   Content: jest.fn().mockImplementation(() => ({
     view: mockView,
     viewById: mockViewById,
-    getContentLinksByTypeName: mockGetLinksByContentTypeName
+    getLinksByContentTypeName: mockGetLinksByContentTypeName
   }))
 }));
 let mockView = jest.fn().mockResolvedValue([rows]);
@@ -23,7 +23,7 @@ afterEach(() => {
 
 describe('content controller', () => {
   describe('view method', () => {
-    const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
+    const res: Partial<Response> = {send: jest.fn().mockResolvedValue([rows])};
 
     it('uses view correctly', async () => {
       await contentController.view(<Request>{}, <Response>res);
@@ -32,12 +32,12 @@ describe('content controller', () => {
 
     it('sends data correctly', async () => {
       await contentController.view(<Request>{}, <Response>res);
-      expect(res.send).toHaveBeenCalledWith(rows);
+      expect(res.send).toHaveBeenCalledWith([rows]);
     });
 
     it('returns correctly', async () => {
       const actual = await contentController.view(<Request>{}, <Response>res);
-      expect(actual).toEqual(rows);
+      expect(actual).toEqual([rows]);
     });
   });
   
@@ -47,7 +47,7 @@ describe('content controller', () => {
 
     it('uses viewById correctly', async () => {
       await contentController.viewById(<Request>req, <Response>res);
-      expect(mockViewById).toHaveBeenCalledWith(1);
+      expect(mockViewById).toHaveBeenCalledWith(1, 1);
     });
 
     it('sends data correctly', async () => {

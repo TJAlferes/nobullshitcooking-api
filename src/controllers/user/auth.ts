@@ -37,19 +37,14 @@ const SALT_ROUNDS = 10;
 
 export const userAuthController = {
   register: async function(req: Request, res: Response) {
-    const email = req.body.userInfo.email;
-    const pass = req.body.userInfo.password;
-    const username = req.body.userInfo.username;
+    const { email, password: pass, username } = req.body.userInfo;
 
     assert({email, pass, username}, validRegisterRequest);
 
     const user = new User(pool);
 
-    const {
-      valid,
-      feedback
-    } = await validRegister({email, pass, username}, user);
-
+    const { valid, feedback } =
+      await validRegister({email, pass, username}, user);
     if (!valid) return res.send({message: feedback});
 
     const encryptedPassword = await bcrypt.hash(pass, SALT_ROUNDS);
@@ -72,7 +67,7 @@ export const userAuthController = {
     return res.send({message: 'User account created.'});
   },
   verify: async function(req: Request, res: Response) {
-    const { email, pass, confirmationCode } = req.body.userInfo;
+    const { email, password: pass, confirmationCode } = req.body.userInfo;
 
     assert({email, pass, confirmationCode}, validVerifyRequest);
 
@@ -111,11 +106,8 @@ export const userAuthController = {
 
     const user = new User(pool);
 
-    const {
-      valid,
-      feedback,
-      userExists
-    } = await validLogin({email, pass}, user);
+    const { valid, feedback, userExists } =
+      await validLogin({email, pass}, user);
     if (!valid || !userExists) return res.send({message: feedback});
     
     req.session!.userInfo = {};

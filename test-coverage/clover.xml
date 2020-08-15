@@ -1,0 +1,2265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1597527913423" clover="3.2.0">
+  <project timestamp="1597527913423" name="All files">
+    <metrics statements="1887" coveredstatements="1198" conditionals="222" coveredconditionals="126" methods="310" coveredmethods="145" elements="2419" coveredelements="1469" complexity="0" loc="1887" ncloc="1887" packages="26" files="98" classes="98"/>
+    <package name="chat">
+      <metrics statements="22" coveredstatements="11" conditionals="8" coveredconditionals="0" methods="5" coveredmethods="1"/>
+      <file name="socketAuth.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\chat\socketAuth.ts">
+        <metrics statements="22" coveredstatements="11" conditionals="8" coveredconditionals="0" methods="5" coveredmethods="1"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="17" count="3" type="stmt"/>
+        <line num="18" count="3" type="stmt"/>
+        <line num="20" count="3" type="stmt"/>
+        <line num="22" count="3" type="stmt"/>
+        <line num="31" count="1" type="stmt"/>
+        <line num="32" count="0" type="stmt"/>
+        <line num="33" count="0" type="stmt"/>
+        <line num="38" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="41" count="1" type="stmt"/>
+        <line num="43" count="0" type="stmt"/>
+        <line num="45" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="47" count="0" type="stmt"/>
+        <line num="48" count="0" type="cond" truecount="0" falsecount="4"/>
+        <line num="49" count="0" type="stmt"/>
+        <line num="52" count="0" type="stmt"/>
+        <line num="54" count="0" type="stmt"/>
+        <line num="58" count="0" type="stmt"/>
+      </file>
+    </package>
+    <package name="chat.entities">
+      <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
+      <file name="ChatMessage.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\chat\entities\ChatMessage.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+      </file>
+      <file name="ChatUser.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\chat\entities\ChatUser.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="1" count="7" type="stmt"/>
+        <line num="6" count="30" type="stmt"/>
+      </file>
+      <file name="Whisper.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\chat\entities\Whisper.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="chat.handlers">
+      <metrics statements="75" coveredstatements="75" conditionals="24" coveredconditionals="17" methods="9" coveredmethods="9"/>
+      <file name="addChat.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\chat\handlers\addChat.ts">
+        <metrics statements="9" coveredstatements="9" conditionals="2" coveredconditionals="1" methods="2" coveredmethods="2"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="15" count="6" type="stmt"/>
+        <line num="16" count="6" type="cond" truecount="1" falsecount="1"/>
+        <line num="19" count="6" type="stmt"/>
+        <line num="21" count="6" type="stmt"/>
+        <line num="23" count="6" type="stmt"/>
+        <line num="24" count="6" type="stmt"/>
+      </file>
+      <file name="addRoom.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\chat\handlers\addRoom.ts">
+        <metrics statements="15" coveredstatements="15" conditionals="4" coveredconditionals="2" methods="1" coveredmethods="1"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="14" count="12" type="cond" truecount="1" falsecount="1"/>
+        <line num="15" count="12" type="stmt"/>
+        <line num="18" count="12" type="stmt"/>
+        <line num="19" count="12" type="cond" truecount="1" falsecount="1"/>
+        <line num="20" count="12" type="stmt"/>
+        <line num="22" count="12" type="stmt"/>
+        <line num="24" count="12" type="stmt"/>
+        <line num="29" count="12" type="stmt"/>
+        <line num="31" count="12" type="stmt"/>
+        <line num="32" count="12" type="stmt"/>
+        <line num="34" count="12" type="stmt"/>
+        <line num="37" count="12" type="stmt"/>
+        <line num="39" count="12" type="stmt"/>
+      </file>
+      <file name="addWhisper.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\chat\handlers\addWhisper.ts">
+        <metrics statements="14" coveredstatements="14" conditionals="6" coveredconditionals="6" methods="2" coveredmethods="2"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="20" count="14" type="stmt"/>
+        <line num="21" count="14" type="cond" truecount="2" falsecount="0"/>
+        <line num="22" count="3" type="stmt"/>
+        <line num="26" count="11" type="stmt"/>
+        <line num="28" count="11" type="stmt"/>
+        <line num="29" count="11" type="cond" truecount="2" falsecount="0"/>
+        <line num="31" count="8" type="stmt"/>
+        <line num="32" count="8" type="cond" truecount="2" falsecount="0"/>
+        <line num="34" count="5" type="stmt"/>
+        <line num="36" count="5" type="stmt"/>
+        <line num="37" count="5" type="stmt"/>
+      </file>
+      <file name="disconnecting.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\chat\handlers\disconnecting.ts">
+        <metrics statements="14" coveredstatements="14" conditionals="6" coveredconditionals="4" methods="1" coveredmethods="1"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="18" count="14" type="stmt"/>
+        <line num="21" count="14" type="stmt"/>
+        <line num="22" count="14" type="cond" truecount="1" falsecount="1"/>
+        <line num="23" count="14" type="stmt"/>
+        <line num="26" count="14" type="stmt"/>
+        <line num="30" count="14" type="stmt"/>
+        <line num="32" count="14" type="cond" truecount="1" falsecount="1"/>
+        <line num="33" count="14" type="stmt"/>
+        <line num="34" count="28" type="stmt"/>
+        <line num="35" count="28" type="cond" truecount="2" falsecount="0"/>
+        <line num="37" count="16" type="stmt"/>
+        <line num="42" count="14" type="stmt"/>
+      </file>
+      <file name="getOnline.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\chat\handlers\getOnline.ts">
+        <metrics statements="11" coveredstatements="11" conditionals="4" coveredconditionals="3" methods="1" coveredmethods="1"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="15" count="8" type="stmt"/>
+        <line num="16" count="8" type="cond" truecount="1" falsecount="1"/>
+        <line num="18" count="8" type="stmt"/>
+        <line num="20" count="8" type="stmt"/>
+        <line num="21" count="16" type="stmt"/>
+        <line num="22" count="16" type="cond" truecount="2" falsecount="0"/>
+        <line num="24" count="10" type="stmt"/>
+        <line num="27" count="10" type="stmt"/>
+        <line num="30" count="8" type="stmt"/>
+      </file>
+      <file name="getUser.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\chat\handlers\getUser.ts">
+        <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="2" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+      </file>
+      <file name="rejoinRoom.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\chat\handlers\rejoinRoom.ts">
+        <metrics statements="9" coveredstatements="9" conditionals="2" coveredconditionals="1" methods="1" coveredmethods="1"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="14" count="7" type="cond" truecount="1" falsecount="1"/>
+        <line num="16" count="7" type="stmt"/>
+        <line num="18" count="7" type="stmt"/>
+        <line num="19" count="7" type="stmt"/>
+        <line num="21" count="7" type="stmt"/>
+        <line num="23" count="7" type="stmt"/>
+        <line num="25" count="7" type="stmt"/>
+      </file>
+    </package>
+    <package name="controllers">
+      <metrics statements="206" coveredstatements="206" conditionals="2" coveredconditionals="1" methods="34" coveredmethods="34"/>
+      <file name="content.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\content.ts">
+        <metrics statements="17" coveredstatements="17" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="8" count="3" type="stmt"/>
+        <line num="10" count="3" type="stmt"/>
+        <line num="12" count="3" type="stmt"/>
+        <line num="14" count="3" type="stmt"/>
+        <line num="17" count="3" type="stmt"/>
+        <line num="18" count="3" type="stmt"/>
+        <line num="20" count="3" type="stmt"/>
+        <line num="22" count="3" type="stmt"/>
+        <line num="24" count="3" type="stmt"/>
+        <line num="27" count="3" type="stmt"/>
+        <line num="29" count="3" type="stmt"/>
+        <line num="31" count="3" type="stmt"/>
+        <line num="33" count="3" type="stmt"/>
+        <line num="35" count="3" type="stmt"/>
+      </file>
+      <file name="contentType.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\contentType.ts">
+        <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="8" count="3" type="stmt"/>
+        <line num="10" count="3" type="stmt"/>
+        <line num="12" count="3" type="stmt"/>
+        <line num="15" count="3" type="stmt"/>
+        <line num="17" count="3" type="stmt"/>
+        <line num="19" count="3" type="stmt"/>
+        <line num="21" count="3" type="stmt"/>
+      </file>
+      <file name="cuisine.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\cuisine.ts">
+        <metrics statements="14" coveredstatements="14" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="8" count="3" type="stmt"/>
+        <line num="10" count="3" type="stmt"/>
+        <line num="12" count="3" type="stmt"/>
+        <line num="15" count="3" type="stmt"/>
+        <line num="17" count="3" type="stmt"/>
+        <line num="19" count="3" type="stmt"/>
+        <line num="21" count="3" type="stmt"/>
+        <line num="24" count="3" type="stmt"/>
+        <line num="26" count="3" type="stmt"/>
+        <line num="28" count="3" type="stmt"/>
+        <line num="30" count="3" type="stmt"/>
+      </file>
+      <file name="cuisineEquipment.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\cuisineEquipment.ts">
+        <metrics statements="7" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="8" count="3" type="stmt"/>
+        <line num="10" count="3" type="stmt"/>
+        <line num="12" count="3" type="stmt"/>
+        <line num="14" count="3" type="stmt"/>
+      </file>
+      <file name="cuisineIngredient.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\cuisineIngredient.ts">
+        <metrics statements="7" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="8" count="3" type="stmt"/>
+        <line num="10" count="3" type="stmt"/>
+        <line num="12" count="3" type="stmt"/>
+        <line num="14" count="3" type="stmt"/>
+      </file>
+      <file name="cuisineSupplier.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\cuisineSupplier.ts">
+        <metrics statements="7" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="8" count="3" type="stmt"/>
+        <line num="10" count="3" type="stmt"/>
+        <line num="12" count="3" type="stmt"/>
+        <line num="14" count="3" type="stmt"/>
+      </file>
+      <file name="equipment.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\equipment.ts">
+        <metrics statements="14" coveredstatements="14" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="8" count="3" type="stmt"/>
+        <line num="9" count="3" type="stmt"/>
+        <line num="11" count="3" type="stmt"/>
+        <line num="13" count="3" type="stmt"/>
+        <line num="15" count="3" type="stmt"/>
+        <line num="18" count="3" type="stmt"/>
+        <line num="19" count="3" type="stmt"/>
+        <line num="20" count="3" type="stmt"/>
+        <line num="22" count="3" type="stmt"/>
+        <line num="24" count="3" type="stmt"/>
+        <line num="26" count="3" type="stmt"/>
+      </file>
+      <file name="equipmentType.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\equipmentType.ts">
+        <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="8" count="3" type="stmt"/>
+        <line num="10" count="3" type="stmt"/>
+        <line num="12" count="3" type="stmt"/>
+        <line num="15" count="3" type="stmt"/>
+        <line num="17" count="3" type="stmt"/>
+        <line num="19" count="3" type="stmt"/>
+        <line num="21" count="3" type="stmt"/>
+      </file>
+      <file name="ingredient.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\ingredient.ts">
+        <metrics statements="14" coveredstatements="14" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="8" count="3" type="stmt"/>
+        <line num="9" count="3" type="stmt"/>
+        <line num="11" count="3" type="stmt"/>
+        <line num="13" count="3" type="stmt"/>
+        <line num="15" count="3" type="stmt"/>
+        <line num="18" count="3" type="stmt"/>
+        <line num="19" count="3" type="stmt"/>
+        <line num="20" count="3" type="stmt"/>
+        <line num="22" count="3" type="stmt"/>
+        <line num="24" count="3" type="stmt"/>
+        <line num="26" count="3" type="stmt"/>
+      </file>
+      <file name="ingredientType.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\ingredientType.ts">
+        <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="8" count="3" type="stmt"/>
+        <line num="10" count="3" type="stmt"/>
+        <line num="12" count="3" type="stmt"/>
+        <line num="15" count="3" type="stmt"/>
+        <line num="17" count="3" type="stmt"/>
+        <line num="19" count="3" type="stmt"/>
+        <line num="21" count="3" type="stmt"/>
+      </file>
+      <file name="measurement.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\measurement.ts">
+        <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="8" count="3" type="stmt"/>
+        <line num="10" count="3" type="stmt"/>
+        <line num="12" count="3" type="stmt"/>
+        <line num="15" count="3" type="stmt"/>
+        <line num="17" count="3" type="stmt"/>
+        <line num="19" count="3" type="stmt"/>
+        <line num="21" count="3" type="stmt"/>
+      </file>
+      <file name="method.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\method.ts">
+        <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="8" count="3" type="stmt"/>
+        <line num="10" count="3" type="stmt"/>
+        <line num="12" count="3" type="stmt"/>
+        <line num="15" count="3" type="stmt"/>
+        <line num="17" count="3" type="stmt"/>
+        <line num="19" count="3" type="stmt"/>
+        <line num="21" count="3" type="stmt"/>
+      </file>
+      <file name="profile.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\profile.ts">
+        <metrics statements="19" coveredstatements="19" conditionals="2" coveredconditionals="1" methods="1" coveredmethods="1"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="12" count="6" type="stmt"/>
+        <line num="14" count="6" type="stmt"/>
+        <line num="16" count="6" type="stmt"/>
+        <line num="18" count="6" type="stmt"/>
+        <line num="19" count="6" type="cond" truecount="1" falsecount="1"/>
+        <line num="21" count="6" type="stmt"/>
+        <line num="22" count="6" type="stmt"/>
+        <line num="24" count="6" type="stmt"/>
+        <line num="26" count="6" type="stmt"/>
+        <line num="28" count="6" type="stmt"/>
+        <line num="30" count="6" type="stmt"/>
+        <line num="32" count="6" type="stmt"/>
+      </file>
+      <file name="recipe.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\recipe.ts">
+        <metrics statements="14" coveredstatements="14" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="12" count="3" type="stmt"/>
+        <line num="13" count="3" type="stmt"/>
+        <line num="15" count="3" type="stmt"/>
+        <line num="17" count="3" type="stmt"/>
+        <line num="19" count="3" type="stmt"/>
+        <line num="22" count="3" type="stmt"/>
+        <line num="23" count="3" type="stmt"/>
+        <line num="24" count="3" type="stmt"/>
+        <line num="29" count="3" type="stmt"/>
+        <line num="31" count="3" type="stmt"/>
+        <line num="33" count="3" type="stmt"/>
+      </file>
+      <file name="recipeType.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\recipeType.ts">
+        <metrics statements="13" coveredstatements="13" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="12" count="3" type="stmt"/>
+        <line num="14" count="3" type="stmt"/>
+        <line num="16" count="3" type="stmt"/>
+        <line num="19" count="4" type="stmt"/>
+        <line num="21" count="4" type="stmt"/>
+        <line num="23" count="4" type="stmt"/>
+        <line num="25" count="4" type="stmt"/>
+        <line num="27" count="4" type="stmt"/>
+      </file>
+      <file name="search.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\search.ts">
+        <metrics statements="30" coveredstatements="30" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="6"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="29" count="3" type="stmt"/>
+        <line num="31" count="3" type="stmt"/>
+        <line num="33" count="3" type="stmt"/>
+        <line num="35" count="3" type="stmt"/>
+        <line num="38" count="3" type="stmt"/>
+        <line num="40" count="3" type="stmt"/>
+        <line num="42" count="3" type="stmt"/>
+        <line num="44" count="3" type="stmt"/>
+        <line num="47" count="3" type="stmt"/>
+        <line num="49" count="3" type="stmt"/>
+        <line num="51" count="3" type="stmt"/>
+        <line num="53" count="3" type="stmt"/>
+        <line num="56" count="3" type="stmt"/>
+        <line num="58" count="3" type="stmt"/>
+        <line num="60" count="3" type="stmt"/>
+        <line num="62" count="3" type="stmt"/>
+        <line num="65" count="3" type="stmt"/>
+        <line num="67" count="3" type="stmt"/>
+        <line num="69" count="3" type="stmt"/>
+        <line num="71" count="3" type="stmt"/>
+        <line num="74" count="3" type="stmt"/>
+        <line num="76" count="3" type="stmt"/>
+        <line num="78" count="3" type="stmt"/>
+        <line num="80" count="3" type="stmt"/>
+      </file>
+    </package>
+    <package name="controllers.staff">
+      <metrics statements="253" coveredstatements="210" conditionals="34" coveredconditionals="5" methods="22" coveredmethods="19"/>
+      <file name="auth.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\staff\auth.ts">
+        <metrics statements="53" coveredstatements="11" conditionals="24" coveredconditionals="0" methods="4" coveredmethods="1"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="18" count="0" type="stmt"/>
+        <line num="20" count="0" type="stmt"/>
+        <line num="22" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="26" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="27" count="0" type="stmt"/>
+        <line num="33" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="34" count="0" type="stmt"/>
+        <line num="37" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="38" count="0" type="stmt"/>
+        <line num="41" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="42" count="0" type="stmt"/>
+        <line num="47" count="0" type="stmt"/>
+        <line num="49" count="0" type="stmt"/>
+        <line num="50" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="51" count="0" type="stmt"/>
+        <line num="54" count="0" type="stmt"/>
+        <line num="55" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="56" count="0" type="stmt"/>
+        <line num="59" count="0" type="stmt"/>
+        <line num="61" count="0" type="stmt"/>
+        <line num="63" count="0" type="stmt"/>
+        <line num="65" count="0" type="stmt"/>
+        <line num="67" count="0" type="stmt"/>
+        <line num="70" count="0" type="stmt"/>
+        <line num="72" count="0" type="stmt"/>
+        <line num="75" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="76" count="0" type="stmt"/>
+        <line num="79" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="81" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="83" count="0" type="stmt"/>
+        <line num="85" count="0" type="stmt"/>
+        <line num="86" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="87" count="0" type="stmt"/>
+        <line num="92" count="0" type="stmt"/>
+        <line num="93" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="94" count="0" type="stmt"/>
+        <line num="97" count="0" type="stmt"/>
+        <line num="98" count="0" type="stmt"/>
+        <line num="99" count="0" type="stmt"/>
+        <line num="100" count="0" type="stmt"/>
+        <line num="102" count="0" type="stmt"/>
+        <line num="109" count="2" type="stmt"/>
+        <line num="110" count="2" type="stmt"/>
+      </file>
+      <file name="content.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\staff\content.ts">
+        <metrics statements="30" coveredstatements="30" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="13" count="1" type="stmt"/>
+        <line num="15" count="4" type="stmt"/>
+        <line num="16" count="4" type="stmt"/>
+        <line num="18" count="4" type="stmt"/>
+        <line num="19" count="4" type="stmt"/>
+        <line num="20" count="4" type="stmt"/>
+        <line num="22" count="4" type="stmt"/>
+        <line num="33" count="4" type="stmt"/>
+        <line num="38" count="4" type="stmt"/>
+        <line num="40" count="4" type="stmt"/>
+        <line num="42" count="4" type="stmt"/>
+        <line num="45" count="4" type="stmt"/>
+        <line num="46" count="4" type="stmt"/>
+        <line num="47" count="4" type="stmt"/>
+        <line num="49" count="4" type="stmt"/>
+        <line num="51" count="4" type="stmt"/>
+        <line num="60" count="4" type="stmt"/>
+        <line num="65" count="4" type="stmt"/>
+        <line num="67" count="4" type="stmt"/>
+        <line num="69" count="4" type="stmt"/>
+        <line num="72" count="3" type="stmt"/>
+        <line num="74" count="3" type="stmt"/>
+        <line num="76" count="3" type="stmt"/>
+        <line num="78" count="3" type="stmt"/>
+        <line num="80" count="3" type="stmt"/>
+      </file>
+      <file name="cuisineEquipment.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\staff\cuisineEquipment.ts">
+        <metrics statements="13" coveredstatements="13" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="8" count="3" type="stmt"/>
+        <line num="9" count="3" type="stmt"/>
+        <line num="11" count="3" type="stmt"/>
+        <line num="13" count="3" type="stmt"/>
+        <line num="15" count="3" type="stmt"/>
+        <line num="18" count="3" type="stmt"/>
+        <line num="19" count="3" type="stmt"/>
+        <line num="21" count="3" type="stmt"/>
+        <line num="23" count="3" type="stmt"/>
+        <line num="25" count="3" type="stmt"/>
+      </file>
+      <file name="cuisineIngredient.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\staff\cuisineIngredient.ts">
+        <metrics statements="13" coveredstatements="13" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="8" count="3" type="stmt"/>
+        <line num="9" count="3" type="stmt"/>
+        <line num="11" count="3" type="stmt"/>
+        <line num="13" count="3" type="stmt"/>
+        <line num="15" count="3" type="stmt"/>
+        <line num="18" count="3" type="stmt"/>
+        <line num="19" count="3" type="stmt"/>
+        <line num="21" count="3" type="stmt"/>
+        <line num="23" count="3" type="stmt"/>
+        <line num="25" count="3" type="stmt"/>
+      </file>
+      <file name="cuisineSupplier.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\staff\cuisineSupplier.ts">
+        <metrics statements="13" coveredstatements="13" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="8" count="3" type="stmt"/>
+        <line num="9" count="3" type="stmt"/>
+        <line num="11" count="3" type="stmt"/>
+        <line num="13" count="3" type="stmt"/>
+        <line num="15" count="3" type="stmt"/>
+        <line num="18" count="3" type="stmt"/>
+        <line num="19" count="3" type="stmt"/>
+        <line num="21" count="3" type="stmt"/>
+        <line num="23" count="3" type="stmt"/>
+        <line num="25" count="3" type="stmt"/>
+      </file>
+      <file name="equipment.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\staff\equipment.ts">
+        <metrics statements="39" coveredstatements="39" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="14" count="4" type="stmt"/>
+        <line num="15" count="4" type="stmt"/>
+        <line num="17" count="4" type="stmt"/>
+        <line num="18" count="4" type="stmt"/>
+        <line num="20" count="4" type="stmt"/>
+        <line num="29" count="4" type="stmt"/>
+        <line num="31" count="4" type="stmt"/>
+        <line num="33" count="4" type="stmt"/>
+        <line num="35" count="4" type="stmt"/>
+        <line num="38" count="4" type="stmt"/>
+        <line num="40" count="4" type="stmt"/>
+        <line num="42" count="4" type="stmt"/>
+        <line num="44" count="4" type="stmt"/>
+        <line num="47" count="4" type="stmt"/>
+        <line num="48" count="4" type="stmt"/>
+        <line num="49" count="4" type="stmt"/>
+        <line num="51" count="4" type="stmt"/>
+        <line num="52" count="4" type="stmt"/>
+        <line num="54" count="4" type="stmt"/>
+        <line num="63" count="4" type="stmt"/>
+        <line num="65" count="4" type="stmt"/>
+        <line num="67" count="4" type="stmt"/>
+        <line num="69" count="4" type="stmt"/>
+        <line num="71" count="4" type="stmt"/>
+        <line num="73" count="4" type="stmt"/>
+        <line num="75" count="4" type="stmt"/>
+        <line num="78" count="4" type="stmt"/>
+        <line num="80" count="4" type="stmt"/>
+        <line num="81" count="4" type="stmt"/>
+        <line num="83" count="4" type="stmt"/>
+        <line num="84" count="4" type="stmt"/>
+        <line num="86" count="4" type="stmt"/>
+      </file>
+      <file name="ingredient.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\staff\ingredient.ts">
+        <metrics statements="43" coveredstatements="43" conditionals="8" coveredconditionals="4" methods="3" coveredmethods="3"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="14" count="4" type="stmt"/>
+        <line num="15" count="4" type="stmt"/>
+        <line num="17" count="4" type="stmt"/>
+        <line num="19" count="4" type="stmt"/>
+        <line num="21" count="4" type="stmt"/>
+        <line num="22" count="4" type="stmt"/>
+        <line num="24" count="4" type="stmt"/>
+        <line num="35" count="4" type="stmt"/>
+        <line num="37" count="4" type="stmt"/>
+        <line num="39" count="4" type="stmt"/>
+        <line num="41" count="4" type="stmt"/>
+        <line num="44" count="4" type="stmt"/>
+        <line num="46" count="4" type="stmt"/>
+        <line num="48" count="4" type="stmt"/>
+        <line num="50" count="4" type="stmt"/>
+        <line num="53" count="4" type="stmt"/>
+        <line num="54" count="4" type="stmt"/>
+        <line num="55" count="4" type="stmt"/>
+        <line num="57" count="4" type="stmt"/>
+        <line num="59" count="4" type="stmt"/>
+        <line num="61" count="4" type="stmt"/>
+        <line num="62" count="4" type="stmt"/>
+        <line num="64" count="4" type="stmt"/>
+        <line num="75" count="4" type="stmt"/>
+        <line num="77" count="4" type="stmt"/>
+        <line num="79" count="4" type="stmt"/>
+        <line num="81" count="4" type="stmt"/>
+        <line num="83" count="4" type="stmt"/>
+        <line num="85" count="4" type="stmt"/>
+        <line num="87" count="4" type="stmt"/>
+        <line num="90" count="4" type="stmt"/>
+        <line num="92" count="4" type="stmt"/>
+        <line num="93" count="4" type="stmt"/>
+        <line num="95" count="4" type="stmt"/>
+        <line num="96" count="4" type="stmt"/>
+        <line num="98" count="4" type="stmt"/>
+      </file>
+      <file name="recipe.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\staff\recipe.ts">
+        <metrics statements="49" coveredstatements="48" conditionals="2" coveredconditionals="1" methods="3" coveredmethods="3"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="13" count="1" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="15" count="1" type="stmt"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="18" count="1" type="stmt"/>
+        <line num="20" count="10" type="stmt"/>
+        <line num="21" count="10" type="stmt"/>
+        <line num="36" count="10" type="stmt"/>
+        <line num="38" count="10" type="stmt"/>
+        <line num="39" count="10" type="stmt"/>
+        <line num="41" count="10" type="stmt"/>
+        <line num="57" count="10" type="stmt"/>
+        <line num="59" count="10" type="stmt"/>
+        <line num="68" count="10" type="stmt"/>
+        <line num="71" count="10" type="stmt"/>
+        <line num="72" count="10" type="stmt"/>
+        <line num="73" count="10" type="stmt"/>
+        <line num="88" count="10" type="stmt"/>
+        <line num="90" count="10" type="stmt"/>
+        <line num="91" count="10" type="stmt"/>
+        <line num="93" count="10" type="cond" truecount="1" falsecount="1"/>
+        <line num="94" count="0" type="stmt"/>
+        <line num="97" count="10" type="stmt"/>
+        <line num="113" count="10" type="stmt"/>
+        <line num="115" count="10" type="stmt"/>
+        <line num="126" count="10" type="stmt"/>
+        <line num="129" count="11" type="stmt"/>
+        <line num="132" count="11" type="stmt"/>
+        <line num="133" count="11" type="stmt"/>
+        <line num="134" count="11" type="stmt"/>
+        <line num="135" count="11" type="stmt"/>
+        <line num="136" count="11" type="stmt"/>
+        <line num="137" count="11" type="stmt"/>
+        <line num="138" count="11" type="stmt"/>
+        <line num="140" count="11" type="stmt"/>
+        <line num="143" count="11" type="stmt"/>
+        <line num="153" count="11" type="stmt"/>
+        <line num="155" count="11" type="stmt"/>
+        <line num="157" count="11" type="stmt"/>
+      </file>
+    </package>
+    <package name="controllers.user">
+      <metrics statements="423" coveredstatements="422" conditionals="48" coveredconditionals="40" methods="46" coveredmethods="45"/>
+      <file name="auth.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\user\auth.ts">
+        <metrics statements="90" coveredstatements="90" conditionals="10" coveredconditionals="10" methods="8" coveredmethods="7"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="21" count="1" type="stmt"/>
+        <line num="22" count="1" type="stmt"/>
+        <line num="23" count="1" type="stmt"/>
+        <line num="24" count="1" type="stmt"/>
+        <line num="25" count="1" type="stmt"/>
+        <line num="27" count="1" type="stmt"/>
+        <line num="28" count="1" type="stmt"/>
+        <line num="29" count="1" type="stmt"/>
+        <line num="30" count="1" type="stmt"/>
+        <line num="31" count="1" type="stmt"/>
+        <line num="32" count="1" type="stmt"/>
+        <line num="33" count="1" type="stmt"/>
+        <line num="34" count="1" type="stmt"/>
+        <line num="36" count="1" type="stmt"/>
+        <line num="38" count="1" type="stmt"/>
+        <line num="40" count="26" type="stmt"/>
+        <line num="42" count="26" type="stmt"/>
+        <line num="44" count="26" type="stmt"/>
+        <line num="47" count="26" type="stmt"/>
+        <line num="48" count="26" type="cond" truecount="2" falsecount="0"/>
+        <line num="50" count="8" type="stmt"/>
+        <line num="52" count="8" type="stmt"/>
+        <line num="54" count="8" type="stmt"/>
+        <line num="61" count="8" type="stmt"/>
+        <line num="63" count="8" type="stmt"/>
+        <line num="65" count="8" type="stmt"/>
+        <line num="67" count="8" type="stmt"/>
+        <line num="70" count="19" type="stmt"/>
+        <line num="72" count="19" type="stmt"/>
+        <line num="74" count="19" type="stmt"/>
+        <line num="77" count="19" type="stmt"/>
+        <line num="78" count="19" type="cond" truecount="2" falsecount="0"/>
+        <line num="79" count="15" type="stmt"/>
+        <line num="82" count="4" type="stmt"/>
+        <line num="84" count="4" type="stmt"/>
+        <line num="87" count="19" type="stmt"/>
+        <line num="89" count="19" type="stmt"/>
+        <line num="91" count="19" type="stmt"/>
+        <line num="93" count="19" type="stmt"/>
+        <line num="94" count="19" type="cond" truecount="2" falsecount="0"/>
+        <line num="96" count="4" type="stmt"/>
+        <line num="98" count="4" type="stmt"/>
+        <line num="100" count="4" type="stmt"/>
+        <line num="103" count="19" type="stmt"/>
+        <line num="105" count="19" type="stmt"/>
+        <line num="107" count="19" type="stmt"/>
+        <line num="110" count="19" type="stmt"/>
+        <line num="111" count="19" type="cond" truecount="4" falsecount="0"/>
+        <line num="113" count="3" type="stmt"/>
+        <line num="114" count="3" type="stmt"/>
+        <line num="115" count="3" type="stmt"/>
+        <line num="116" count="3" type="stmt"/>
+        <line num="118" count="3" type="stmt"/>
+        <line num="125" count="2" type="stmt"/>
+        <line num="126" count="2" type="stmt"/>
+        <line num="129" count="4" type="stmt"/>
+        <line num="131" count="4" type="stmt"/>
+        <line num="133" count="4" type="stmt"/>
+        <line num="135" count="4" type="stmt"/>
+        <line num="137" count="4" type="stmt"/>
+        <line num="139" count="4" type="stmt"/>
+        <line num="142" count="4" type="stmt"/>
+        <line num="145" count="18" type="stmt"/>
+        <line num="147" count="18" type="stmt"/>
+        <line num="148" count="18" type="stmt"/>
+        <line num="149" count="18" type="stmt"/>
+        <line num="150" count="18" type="stmt"/>
+        <line num="151" count="18" type="stmt"/>
+        <line num="153" count="18" type="stmt"/>
+        <line num="154" count="18" type="stmt"/>
+        <line num="155" count="18" type="stmt"/>
+        <line num="156" count="18" type="stmt"/>
+        <line num="157" count="18" type="stmt"/>
+        <line num="158" count="18" type="stmt"/>
+        <line num="159" count="18" type="stmt"/>
+        <line num="160" count="18" type="stmt"/>
+        <line num="164" count="18" type="stmt"/>
+        <line num="173" count="18" type="stmt"/>
+        <line num="176" count="18" type="stmt"/>
+        <line num="178" count="18" type="stmt"/>
+        <line num="186" count="18" type="stmt"/>
+        <line num="188" count="18" type="stmt"/>
+        <line num="193" count="18" type="stmt"/>
+        <line num="195" count="18" type="stmt"/>
+      </file>
+      <file name="equipment.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\user\equipment.ts">
+        <metrics statements="43" coveredstatements="43" conditionals="0" coveredconditionals="0" methods="5" coveredmethods="5"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="13" count="3" type="stmt"/>
+        <line num="14" count="3" type="stmt"/>
+        <line num="16" count="3" type="stmt"/>
+        <line num="18" count="3" type="stmt"/>
+        <line num="20" count="3" type="stmt"/>
+        <line num="23" count="3" type="stmt"/>
+        <line num="24" count="3" type="stmt"/>
+        <line num="25" count="3" type="stmt"/>
+        <line num="27" count="3" type="stmt"/>
+        <line num="29" count="3" type="stmt"/>
+        <line num="31" count="3" type="stmt"/>
+        <line num="34" count="4" type="stmt"/>
+        <line num="35" count="4" type="stmt"/>
+        <line num="37" count="4" type="stmt"/>
+        <line num="38" count="4" type="stmt"/>
+        <line num="40" count="4" type="stmt"/>
+        <line num="49" count="4" type="stmt"/>
+        <line num="51" count="4" type="stmt"/>
+        <line num="53" count="4" type="stmt"/>
+        <line num="55" count="4" type="stmt"/>
+        <line num="58" count="4" type="stmt"/>
+        <line num="59" count="4" type="stmt"/>
+        <line num="60" count="4" type="stmt"/>
+        <line num="62" count="4" type="stmt"/>
+        <line num="63" count="4" type="stmt"/>
+        <line num="65" count="4" type="stmt"/>
+        <line num="74" count="4" type="stmt"/>
+        <line num="76" count="4" type="stmt"/>
+        <line num="78" count="4" type="stmt"/>
+        <line num="80" count="4" type="stmt"/>
+        <line num="83" count="4" type="stmt"/>
+        <line num="84" count="4" type="stmt"/>
+        <line num="86" count="4" type="stmt"/>
+        <line num="87" count="4" type="stmt"/>
+        <line num="89" count="4" type="stmt"/>
+        <line num="90" count="4" type="stmt"/>
+        <line num="92" count="4" type="stmt"/>
+      </file>
+      <file name="favoriteRecipe.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\user\favoriteRecipe.ts">
+        <metrics statements="21" coveredstatements="21" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="12" count="3" type="stmt"/>
+        <line num="14" count="3" type="stmt"/>
+        <line num="16" count="3" type="stmt"/>
+        <line num="18" count="3" type="stmt"/>
+        <line num="21" count="4" type="stmt"/>
+        <line num="22" count="4" type="stmt"/>
+        <line num="24" count="4" type="stmt"/>
+        <line num="26" count="4" type="stmt"/>
+        <line num="28" count="4" type="stmt"/>
+        <line num="30" count="4" type="stmt"/>
+        <line num="33" count="4" type="stmt"/>
+        <line num="34" count="4" type="stmt"/>
+        <line num="36" count="4" type="stmt"/>
+        <line num="38" count="4" type="stmt"/>
+        <line num="40" count="4" type="stmt"/>
+        <line num="42" count="4" type="stmt"/>
+      </file>
+      <file name="friendship.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\user\friendship.ts">
+        <metrics statements="79" coveredstatements="79" conditionals="24" coveredconditionals="23" methods="7" coveredmethods="7"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="13" count="3" type="stmt"/>
+        <line num="15" count="3" type="stmt"/>
+        <line num="17" count="3" type="stmt"/>
+        <line num="19" count="3" type="stmt"/>
+        <line num="22" count="19" type="stmt"/>
+        <line num="24" count="19" type="stmt"/>
+        <line num="26" count="19" type="stmt"/>
+        <line num="27" count="19" type="cond" truecount="2" falsecount="0"/>
+        <line num="29" count="16" type="stmt"/>
+        <line num="30" count="16" type="stmt"/>
+        <line num="32" count="16" type="stmt"/>
+        <line num="34" count="16" type="stmt"/>
+        <line num="35" count="16" type="cond" truecount="2" falsecount="0"/>
+        <line num="38" count="13" type="stmt"/>
+        <line num="39" count="13" type="cond" truecount="2" falsecount="0"/>
+        <line num="40" count="5" type="stmt"/>
+        <line num="47" count="5" type="stmt"/>
+        <line num="49" count="5" type="stmt"/>
+        <line num="51" count="5" type="stmt"/>
+        <line num="54" count="8" type="stmt"/>
+        <line num="55" count="8" type="cond" truecount="2" falsecount="0"/>
+        <line num="56" count="2" type="stmt"/>
+        <line num="58" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="59" count="2" type="stmt"/>
+        <line num="61" count="4" type="cond" truecount="2" falsecount="0"/>
+        <line num="62" count="2" type="stmt"/>
+        <line num="64" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="65" count="2" type="stmt"/>
+        <line num="69" count="7" type="stmt"/>
+        <line num="71" count="7" type="stmt"/>
+        <line num="73" count="7" type="stmt"/>
+        <line num="74" count="7" type="cond" truecount="2" falsecount="0"/>
+        <line num="76" count="4" type="stmt"/>
+        <line num="77" count="4" type="stmt"/>
+        <line num="79" count="4" type="stmt"/>
+        <line num="81" count="4" type="stmt"/>
+        <line num="83" count="4" type="stmt"/>
+        <line num="86" count="7" type="stmt"/>
+        <line num="88" count="7" type="stmt"/>
+        <line num="90" count="7" type="stmt"/>
+        <line num="91" count="7" type="cond" truecount="2" falsecount="0"/>
+        <line num="93" count="4" type="stmt"/>
+        <line num="94" count="4" type="stmt"/>
+        <line num="96" count="4" type="stmt"/>
+        <line num="98" count="4" type="stmt"/>
+        <line num="100" count="4" type="stmt"/>
+        <line num="103" count="7" type="stmt"/>
+        <line num="105" count="7" type="stmt"/>
+        <line num="107" count="7" type="stmt"/>
+        <line num="108" count="7" type="cond" truecount="2" falsecount="0"/>
+        <line num="110" count="4" type="stmt"/>
+        <line num="111" count="4" type="stmt"/>
+        <line num="113" count="4" type="stmt"/>
+        <line num="115" count="4" type="stmt"/>
+        <line num="117" count="4" type="stmt"/>
+        <line num="120" count="7" type="stmt"/>
+        <line num="122" count="7" type="stmt"/>
+        <line num="124" count="7" type="stmt"/>
+        <line num="125" count="7" type="cond" truecount="2" falsecount="0"/>
+        <line num="127" count="4" type="stmt"/>
+        <line num="128" count="4" type="stmt"/>
+        <line num="130" count="4" type="stmt"/>
+        <line num="132" count="4" type="stmt"/>
+        <line num="134" count="4" type="stmt"/>
+        <line num="137" count="7" type="stmt"/>
+        <line num="139" count="7" type="stmt"/>
+        <line num="141" count="7" type="stmt"/>
+        <line num="142" count="7" type="cond" truecount="2" falsecount="0"/>
+        <line num="144" count="4" type="stmt"/>
+        <line num="145" count="4" type="stmt"/>
+        <line num="147" count="4" type="stmt"/>
+        <line num="149" count="4" type="stmt"/>
+        <line num="151" count="4" type="stmt"/>
+      </file>
+      <file name="ingredient.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\user\ingredient.ts">
+        <metrics statements="47" coveredstatements="47" conditionals="8" coveredconditionals="4" methods="5" coveredmethods="5"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="13" count="3" type="stmt"/>
+        <line num="14" count="3" type="stmt"/>
+        <line num="16" count="3" type="stmt"/>
+        <line num="18" count="3" type="stmt"/>
+        <line num="20" count="3" type="stmt"/>
+        <line num="23" count="3" type="stmt"/>
+        <line num="24" count="3" type="stmt"/>
+        <line num="25" count="3" type="stmt"/>
+        <line num="27" count="3" type="stmt"/>
+        <line num="29" count="3" type="stmt"/>
+        <line num="31" count="3" type="stmt"/>
+        <line num="34" count="4" type="stmt"/>
+        <line num="35" count="4" type="stmt"/>
+        <line num="37" count="4" type="stmt"/>
+        <line num="39" count="4" type="stmt"/>
+        <line num="41" count="4" type="stmt"/>
+        <line num="42" count="4" type="stmt"/>
+        <line num="44" count="4" type="stmt"/>
+        <line num="55" count="4" type="stmt"/>
+        <line num="57" count="4" type="stmt"/>
+        <line num="59" count="4" type="stmt"/>
+        <line num="61" count="4" type="stmt"/>
+        <line num="64" count="4" type="stmt"/>
+        <line num="65" count="4" type="stmt"/>
+        <line num="66" count="4" type="stmt"/>
+        <line num="68" count="4" type="stmt"/>
+        <line num="70" count="4" type="stmt"/>
+        <line num="72" count="4" type="stmt"/>
+        <line num="73" count="4" type="stmt"/>
+        <line num="75" count="4" type="stmt"/>
+        <line num="86" count="4" type="stmt"/>
+        <line num="88" count="4" type="stmt"/>
+        <line num="90" count="4" type="stmt"/>
+        <line num="92" count="4" type="stmt"/>
+        <line num="95" count="4" type="stmt"/>
+        <line num="96" count="4" type="stmt"/>
+        <line num="98" count="4" type="stmt"/>
+        <line num="99" count="4" type="stmt"/>
+        <line num="101" count="4" type="stmt"/>
+        <line num="102" count="4" type="stmt"/>
+        <line num="104" count="4" type="stmt"/>
+      </file>
+      <file name="plan.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\user\plan.ts">
+        <metrics statements="35" coveredstatements="35" conditionals="0" coveredconditionals="0" methods="5" coveredmethods="5"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="10" count="3" type="stmt"/>
+        <line num="12" count="3" type="stmt"/>
+        <line num="14" count="3" type="stmt"/>
+        <line num="16" count="3" type="stmt"/>
+        <line num="19" count="3" type="stmt"/>
+        <line num="20" count="3" type="stmt"/>
+        <line num="22" count="3" type="stmt"/>
+        <line num="24" count="3" type="stmt"/>
+        <line num="26" count="3" type="stmt"/>
+        <line num="29" count="4" type="stmt"/>
+        <line num="31" count="4" type="stmt"/>
+        <line num="32" count="4" type="stmt"/>
+        <line num="34" count="4" type="stmt"/>
+        <line num="36" count="4" type="stmt"/>
+        <line num="38" count="4" type="stmt"/>
+        <line num="40" count="4" type="stmt"/>
+        <line num="42" count="4" type="stmt"/>
+        <line num="45" count="4" type="stmt"/>
+        <line num="47" count="4" type="stmt"/>
+        <line num="48" count="4" type="stmt"/>
+        <line num="50" count="4" type="stmt"/>
+        <line num="52" count="4" type="stmt"/>
+        <line num="54" count="4" type="stmt"/>
+        <line num="56" count="4" type="stmt"/>
+        <line num="58" count="4" type="stmt"/>
+        <line num="61" count="3" type="stmt"/>
+        <line num="62" count="3" type="stmt"/>
+        <line num="64" count="3" type="stmt"/>
+        <line num="66" count="3" type="stmt"/>
+        <line num="68" count="3" type="stmt"/>
+      </file>
+      <file name="recipe.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\user\recipe.ts">
+        <metrics statements="87" coveredstatements="86" conditionals="6" coveredconditionals="3" methods="10" coveredmethods="10"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="13" count="1" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="18" count="3" type="stmt"/>
+        <line num="19" count="3" type="stmt"/>
+        <line num="21" count="3" type="stmt"/>
+        <line num="23" count="3" type="stmt"/>
+        <line num="25" count="3" type="stmt"/>
+        <line num="28" count="3" type="stmt"/>
+        <line num="29" count="3" type="stmt"/>
+        <line num="31" count="3" type="stmt"/>
+        <line num="33" count="3" type="stmt"/>
+        <line num="35" count="3" type="stmt"/>
+        <line num="38" count="3" type="stmt"/>
+        <line num="39" count="3" type="stmt"/>
+        <line num="40" count="3" type="stmt"/>
+        <line num="42" count="3" type="stmt"/>
+        <line num="44" count="3" type="stmt"/>
+        <line num="46" count="3" type="stmt"/>
+        <line num="49" count="3" type="stmt"/>
+        <line num="50" count="3" type="stmt"/>
+        <line num="51" count="3" type="stmt"/>
+        <line num="53" count="3" type="stmt"/>
+        <line num="55" count="3" type="stmt"/>
+        <line num="57" count="3" type="stmt"/>
+        <line num="60" count="3" type="stmt"/>
+        <line num="61" count="3" type="stmt"/>
+        <line num="62" count="3" type="stmt"/>
+        <line num="64" count="3" type="stmt"/>
+        <line num="66" count="3" type="stmt"/>
+        <line num="68" count="3" type="stmt"/>
+        <line num="71" count="3" type="stmt"/>
+        <line num="72" count="3" type="stmt"/>
+        <line num="73" count="3" type="stmt"/>
+        <line num="75" count="3" type="stmt"/>
+        <line num="77" count="3" type="stmt"/>
+        <line num="79" count="3" type="stmt"/>
+        <line num="82" count="9" type="stmt"/>
+        <line num="83" count="9" type="stmt"/>
+        <line num="99" count="9" type="stmt"/>
+        <line num="101" count="9" type="stmt"/>
+        <line num="102" count="9" type="cond" truecount="1" falsecount="1"/>
+        <line num="104" count="9" type="stmt"/>
+        <line num="121" count="9" type="stmt"/>
+        <line num="126" count="9" type="stmt"/>
+        <line num="135" count="9" type="stmt"/>
+        <line num="138" count="9" type="stmt"/>
+        <line num="139" count="9" type="stmt"/>
+        <line num="140" count="9" type="stmt"/>
+        <line num="156" count="9" type="stmt"/>
+        <line num="158" count="9" type="stmt"/>
+        <line num="159" count="9" type="cond" truecount="1" falsecount="1"/>
+        <line num="161" count="9" type="cond" truecount="1" falsecount="1"/>
+        <line num="162" count="0" type="stmt"/>
+        <line num="165" count="9" type="stmt"/>
+        <line num="182" count="9" type="stmt"/>
+        <line num="187" count="9" type="stmt"/>
+        <line num="198" count="9" type="stmt"/>
+        <line num="201" count="8" type="stmt"/>
+        <line num="202" count="8" type="stmt"/>
+        <line num="203" count="8" type="stmt"/>
+        <line num="205" count="8" type="stmt"/>
+        <line num="206" count="8" type="stmt"/>
+        <line num="207" count="8" type="stmt"/>
+        <line num="208" count="8" type="stmt"/>
+        <line num="209" count="8" type="stmt"/>
+        <line num="211" count="8" type="stmt"/>
+        <line num="219" count="8" type="stmt"/>
+        <line num="221" count="8" type="stmt"/>
+        <line num="224" count="5" type="stmt"/>
+        <line num="225" count="5" type="stmt"/>
+        <line num="227" count="5" type="stmt"/>
+        <line num="228" count="5" type="stmt"/>
+        <line num="230" count="5" type="stmt"/>
+        <line num="233" count="5" type="stmt"/>
+        <line num="235" count="5" type="stmt"/>
+        <line num="237" count="5" type="stmt"/>
+      </file>
+      <file name="savedRecipe.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\controllers\user\savedRecipe.ts">
+        <metrics statements="21" coveredstatements="21" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="12" count="3" type="stmt"/>
+        <line num="14" count="3" type="stmt"/>
+        <line num="16" count="3" type="stmt"/>
+        <line num="18" count="3" type="stmt"/>
+        <line num="21" count="4" type="stmt"/>
+        <line num="22" count="4" type="stmt"/>
+        <line num="24" count="4" type="stmt"/>
+        <line num="26" count="4" type="stmt"/>
+        <line num="28" count="4" type="stmt"/>
+        <line num="30" count="4" type="stmt"/>
+        <line num="33" count="4" type="stmt"/>
+        <line num="34" count="4" type="stmt"/>
+        <line num="36" count="4" type="stmt"/>
+        <line num="38" count="4" type="stmt"/>
+        <line num="40" count="4" type="stmt"/>
+        <line num="42" count="4" type="stmt"/>
+      </file>
+    </package>
+    <package name="elasticsearch-access">
+      <metrics statements="46" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="15" coveredmethods="0"/>
+      <file name="EquipmentSearch.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\elasticsearch-access\EquipmentSearch.ts">
+        <metrics statements="16" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="5" coveredmethods="0"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="18" count="0" type="stmt"/>
+        <line num="22" count="0" type="stmt"/>
+        <line num="45" count="0" type="stmt"/>
+        <line num="50" count="0" type="stmt"/>
+        <line num="55" count="0" type="stmt"/>
+        <line num="56" count="0" type="stmt"/>
+        <line num="62" count="0" type="stmt"/>
+        <line num="63" count="0" type="stmt"/>
+        <line num="64" count="0" type="stmt"/>
+      </file>
+      <file name="IngredientSearch.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\elasticsearch-access\IngredientSearch.ts">
+        <metrics statements="16" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="5" coveredmethods="0"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="18" count="0" type="stmt"/>
+        <line num="22" count="0" type="stmt"/>
+        <line num="50" count="0" type="stmt"/>
+        <line num="63" count="0" type="stmt"/>
+        <line num="68" count="0" type="stmt"/>
+        <line num="69" count="0" type="stmt"/>
+        <line num="75" count="0" type="stmt"/>
+        <line num="76" count="0" type="stmt"/>
+        <line num="77" count="0" type="stmt"/>
+      </file>
+      <file name="RecipeSearch.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\elasticsearch-access\RecipeSearch.ts">
+        <metrics statements="14" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="5" coveredmethods="0"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="18" count="0" type="stmt"/>
+        <line num="22" count="0" type="stmt"/>
+        <line num="48" count="0" type="stmt"/>
+        <line num="65" count="0" type="stmt"/>
+        <line num="83" count="0" type="stmt"/>
+        <line num="87" count="0" type="stmt"/>
+        <line num="88" count="0" type="stmt"/>
+      </file>
+    </package>
+    <package name="lib.connections">
+      <metrics statements="4" coveredstatements="4" conditionals="6" coveredconditionals="3" methods="0" coveredmethods="0"/>
+      <file name="elasticsearchClient.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\connections\elasticsearchClient.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="2" coveredconditionals="1" methods="0" coveredmethods="0"/>
+        <line num="3" count="5" type="stmt"/>
+        <line num="5" count="5" type="stmt"/>
+      </file>
+      <file name="mysqlPoolConnection.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\connections\mysqlPoolConnection.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="4" coveredconditionals="2" methods="0" coveredmethods="0"/>
+        <line num="3" count="33" type="stmt"/>
+        <line num="5" count="33" type="stmt"/>
+      </file>
+    </package>
+    <package name="lib.services">
+      <metrics statements="131" coveredstatements="119" conditionals="26" coveredconditionals="14" methods="21" coveredmethods="18"/>
+      <file name="create-recipe.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\services\create-recipe.ts">
+        <metrics statements="53" coveredstatements="53" conditionals="10" coveredconditionals="5" methods="9" coveredmethods="9"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="6" count="2" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="9" count="2" type="stmt"/>
+        <line num="13" count="2" type="stmt"/>
+        <line num="17" count="2" type="stmt"/>
+        <line num="21" count="2" type="stmt"/>
+        <line num="25" count="2" type="stmt"/>
+        <line num="28" count="2" type="stmt"/>
+        <line num="31" count="2" type="stmt"/>
+        <line num="34" count="2" type="stmt"/>
+        <line num="38" count="2" type="stmt"/>
+        <line num="46" count="19" type="stmt"/>
+        <line num="47" count="19" type="stmt"/>
+        <line num="48" count="19" type="stmt"/>
+        <line num="49" count="19" type="stmt"/>
+        <line num="50" count="19" type="stmt"/>
+        <line num="51" count="19" type="stmt"/>
+        <line num="53" count="19" type="stmt"/>
+        <line num="55" count="19" type="stmt"/>
+        <line num="57" count="19" type="cond" truecount="1" falsecount="1"/>
+        <line num="58" count="19" type="stmt"/>
+        <line num="60" count="38" type="stmt"/>
+        <line num="65" count="19" type="stmt"/>
+        <line num="66" count="38" type="stmt"/>
+        <line num="70" count="19" type="stmt"/>
+        <line num="72" count="19" type="stmt"/>
+        <line num="77" count="19" type="cond" truecount="1" falsecount="1"/>
+        <line num="78" count="19" type="stmt"/>
+        <line num="80" count="38" type="stmt"/>
+        <line num="86" count="19" type="stmt"/>
+        <line num="87" count="38" type="stmt"/>
+        <line num="91" count="19" type="stmt"/>
+        <line num="93" count="19" type="stmt"/>
+        <line num="99" count="19" type="cond" truecount="1" falsecount="1"/>
+        <line num="100" count="19" type="stmt"/>
+        <line num="102" count="38" type="stmt"/>
+        <line num="109" count="19" type="stmt"/>
+        <line num="110" count="38" type="stmt"/>
+        <line num="115" count="19" type="stmt"/>
+        <line num="117" count="19" type="stmt"/>
+        <line num="123" count="19" type="cond" truecount="1" falsecount="1"/>
+        <line num="124" count="19" type="stmt"/>
+        <line num="126" count="19" type="stmt"/>
+        <line num="133" count="19" type="stmt"/>
+        <line num="134" count="19" type="stmt"/>
+        <line num="138" count="19" type="stmt"/>
+        <line num="140" count="19" type="stmt"/>
+        <line num="145" count="19" type="cond" truecount="1" falsecount="1"/>
+        <line num="147" count="19" type="stmt"/>
+        <line num="149" count="19" type="stmt"/>
+      </file>
+      <file name="email-confirmation-code.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\services\email-confirmation-code.ts">
+        <metrics statements="9" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="18" count="0" type="stmt"/>
+        <line num="30" count="0" type="stmt"/>
+        <line num="32" count="0" type="stmt"/>
+      </file>
+      <file name="simple-email-service.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\services\simple-email-service.ts">
+        <metrics statements="8" coveredstatements="3" conditionals="2" coveredconditionals="0" methods="2" coveredmethods="0"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="42" count="0" type="stmt"/>
+        <line num="43" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="44" count="0" type="stmt"/>
+      </file>
+      <file name="update-recipe.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\services\update-recipe.ts">
+        <metrics statements="61" coveredstatements="61" conditionals="14" coveredconditionals="9" methods="9" coveredmethods="9"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="6" count="2" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
+        <line num="9" count="2" type="stmt"/>
+        <line num="13" count="2" type="stmt"/>
+        <line num="17" count="2" type="stmt"/>
+        <line num="21" count="2" type="stmt"/>
+        <line num="25" count="2" type="stmt"/>
+        <line num="28" count="2" type="stmt"/>
+        <line num="31" count="2" type="stmt"/>
+        <line num="34" count="2" type="stmt"/>
+        <line num="38" count="2" type="stmt"/>
+        <line num="48" count="19" type="stmt"/>
+        <line num="49" count="19" type="stmt"/>
+        <line num="50" count="19" type="stmt"/>
+        <line num="51" count="19" type="stmt"/>
+        <line num="52" count="19" type="stmt"/>
+        <line num="53" count="19" type="stmt"/>
+        <line num="55" count="19" type="cond" truecount="4" falsecount="0"/>
+        <line num="56" count="10" type="stmt"/>
+        <line num="58" count="9" type="stmt"/>
+        <line num="61" count="19" type="stmt"/>
+        <line num="62" count="19" type="stmt"/>
+        <line num="64" count="19" type="cond" truecount="1" falsecount="1"/>
+        <line num="65" count="38" type="stmt"/>
+        <line num="70" count="19" type="stmt"/>
+        <line num="71" count="38" type="stmt"/>
+        <line num="74" count="19" type="stmt"/>
+        <line num="78" count="19" type="stmt"/>
+        <line num="83" count="19" type="stmt"/>
+        <line num="84" count="19" type="stmt"/>
+        <line num="86" count="19" type="cond" truecount="1" falsecount="1"/>
+        <line num="87" count="19" type="stmt"/>
+        <line num="89" count="38" type="stmt"/>
+        <line num="95" count="19" type="stmt"/>
+        <line num="96" count="38" type="stmt"/>
+        <line num="99" count="19" type="stmt"/>
+        <line num="103" count="19" type="stmt"/>
+        <line num="108" count="19" type="stmt"/>
+        <line num="109" count="19" type="stmt"/>
+        <line num="111" count="19" type="cond" truecount="1" falsecount="1"/>
+        <line num="112" count="19" type="stmt"/>
+        <line num="114" count="38" type="stmt"/>
+        <line num="121" count="19" type="stmt"/>
+        <line num="122" count="38" type="stmt"/>
+        <line num="125" count="19" type="stmt"/>
+        <line num="129" count="19" type="stmt"/>
+        <line num="134" count="19" type="stmt"/>
+        <line num="135" count="19" type="stmt"/>
+        <line num="137" count="19" type="cond" truecount="1" falsecount="1"/>
+        <line num="138" count="19" type="stmt"/>
+        <line num="140" count="19" type="stmt"/>
+        <line num="147" count="19" type="stmt"/>
+        <line num="148" count="19" type="stmt"/>
+        <line num="151" count="19" type="stmt"/>
+        <line num="155" count="19" type="stmt"/>
+        <line num="159" count="19" type="cond" truecount="1" falsecount="1"/>
+        <line num="160" count="19" type="stmt"/>
+        <line num="162" count="19" type="stmt"/>
+      </file>
+    </package>
+    <package name="lib.validations.content">
+      <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="creatingContentEntity.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\content\creatingContentEntity.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+      </file>
+      <file name="editingContentEntity.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\content\editingContentEntity.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="lib.validations.equipment">
+      <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="equipmentEntity.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\equipment\equipmentEntity.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="lib.validations.favoriteRecipe">
+      <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="favoriteRecipeEntity.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\favoriteRecipe\favoriteRecipeEntity.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="lib.validations.friendship">
+      <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="friendshipEntity.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\friendship\friendshipEntity.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="lib.validations.ingredient">
+      <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="ingredientEntity.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\ingredient\ingredientEntity.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="lib.validations.plan">
+      <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="planEntity.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\plan\planEntity.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="lib.validations.profile">
+      <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="profileRequest.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\profile\profileRequest.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="lib.validations.recipe">
+      <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="recipeEntity.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\recipe\recipeEntity.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="lib.validations.recipeEquipment">
+      <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="recipeEquipmentEntity.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\recipeEquipment\recipeEquipmentEntity.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="lib.validations.recipeIngredient">
+      <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="recipeIngredientEntity.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\recipeIngredient\recipeIngredientEntity.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="lib.validations.recipeMethod">
+      <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="recipeMethodEntity.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\recipeMethod\recipeMethodEntity.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="lib.validations.recipeSubrecipe">
+      <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="recipeSubrecipeEntity.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\recipeSubrecipe\recipeSubrecipeEntity.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="2" type="stmt"/>
+        <line num="3" count="2" type="stmt"/>
+      </file>
+    </package>
+    <package name="lib.validations.recipeType">
+      <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="recipeTypeRequest.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\recipeType\recipeTypeRequest.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="lib.validations.savedRecipe">
+      <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="savedRecipeEntity.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\savedRecipe\savedRecipeEntity.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="lib.validations.staff">
+      <metrics statements="6" coveredstatements="6" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+      <file name="loginRequest.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\staff\loginRequest.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+      </file>
+      <file name="registerRequest.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\staff\registerRequest.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+      </file>
+      <file name="staffEntity.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\staff\staffEntity.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="lib.validations.user">
+      <metrics statements="83" coveredstatements="79" conditionals="50" coveredconditionals="46" methods="13" coveredmethods="13"/>
+      <file name="index.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\user\index.ts">
+        <metrics statements="9" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="9" coveredmethods="9"/>
+        <line num="1" count="34" type="stmt"/>
+        <line num="2" count="27" type="stmt"/>
+        <line num="3" count="10" type="stmt"/>
+        <line num="4" count="6" type="stmt"/>
+        <line num="5" count="26" type="stmt"/>
+        <line num="6" count="20" type="stmt"/>
+        <line num="7" count="20" type="stmt"/>
+        <line num="8" count="51" type="stmt"/>
+        <line num="9" count="20" type="stmt"/>
+      </file>
+      <file name="login.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\user\login.ts">
+        <metrics statements="16" coveredstatements="15" conditionals="12" coveredconditionals="11" methods="1" coveredmethods="1"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="16" count="19" type="cond" truecount="1" falsecount="1"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="20" count="19" type="cond" truecount="2" falsecount="0"/>
+        <line num="22" count="16" type="cond" truecount="2" falsecount="0"/>
+        <line num="24" count="13" type="stmt"/>
+        <line num="26" count="13" type="cond" truecount="2" falsecount="0"/>
+        <line num="27" count="4" type="stmt"/>
+        <line num="30" count="9" type="stmt"/>
+        <line num="31" count="9" type="cond" truecount="2" falsecount="0"/>
+        <line num="32" count="3" type="stmt"/>
+        <line num="35" count="6" type="stmt"/>
+        <line num="36" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="37" count="3" type="stmt"/>
+        <line num="43" count="3" type="stmt"/>
+      </file>
+      <file name="loginRequest.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\user\loginRequest.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+      </file>
+      <file name="register.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\user\register.ts">
+        <metrics statements="18" coveredstatements="17" conditionals="14" coveredconditionals="13" methods="1" coveredmethods="1"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="15" count="26" type="cond" truecount="2" falsecount="0"/>
+        <line num="16" count="3" type="stmt"/>
+        <line num="19" count="23" type="cond" truecount="2" falsecount="0"/>
+        <line num="20" count="3" type="stmt"/>
+        <line num="27" count="20" type="cond" truecount="1" falsecount="1"/>
+        <line num="28" count="0" type="stmt"/>
+        <line num="31" count="20" type="cond" truecount="2" falsecount="0"/>
+        <line num="32" count="3" type="stmt"/>
+        <line num="35" count="17" type="cond" truecount="2" falsecount="0"/>
+        <line num="36" count="3" type="stmt"/>
+        <line num="42" count="14" type="stmt"/>
+        <line num="43" count="14" type="cond" truecount="2" falsecount="0"/>
+        <line num="44" count="3" type="stmt"/>
+        <line num="47" count="11" type="stmt"/>
+        <line num="48" count="11" type="cond" truecount="2" falsecount="0"/>
+        <line num="49" count="3" type="stmt"/>
+        <line num="52" count="8" type="stmt"/>
+      </file>
+      <file name="registerRequest.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\user\registerRequest.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+      </file>
+      <file name="resend.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\user\resend.ts">
+        <metrics statements="15" coveredstatements="14" conditionals="12" coveredconditionals="11" methods="1" coveredmethods="1"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="16" count="19" type="cond" truecount="1" falsecount="1"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="20" count="19" type="cond" truecount="2" falsecount="0"/>
+        <line num="22" count="16" type="cond" truecount="2" falsecount="0"/>
+        <line num="24" count="13" type="stmt"/>
+        <line num="26" count="13" type="cond" truecount="2" falsecount="0"/>
+        <line num="27" count="3" type="stmt"/>
+        <line num="30" count="10" type="stmt"/>
+        <line num="31" count="10" type="cond" truecount="2" falsecount="0"/>
+        <line num="32" count="3" type="stmt"/>
+        <line num="35" count="7" type="stmt"/>
+        <line num="36" count="7" type="cond" truecount="2" falsecount="0"/>
+        <line num="38" count="4" type="stmt"/>
+      </file>
+      <file name="updatingUser.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\user\updatingUser.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+      </file>
+      <file name="userEntity.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\user\userEntity.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+      </file>
+      <file name="verify.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\user\verify.ts">
+        <metrics statements="15" coveredstatements="14" conditionals="12" coveredconditionals="11" methods="1" coveredmethods="1"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="18" count="19" type="cond" truecount="1" falsecount="1"/>
+        <line num="19" count="0" type="stmt"/>
+        <line num="22" count="19" type="cond" truecount="2" falsecount="0"/>
+        <line num="24" count="16" type="cond" truecount="2" falsecount="0"/>
+        <line num="26" count="13" type="stmt"/>
+        <line num="27" count="13" type="cond" truecount="2" falsecount="0"/>
+        <line num="28" count="3" type="stmt"/>
+        <line num="34" count="10" type="stmt"/>
+        <line num="35" count="10" type="cond" truecount="2" falsecount="0"/>
+        <line num="36" count="3" type="stmt"/>
+        <line num="39" count="7" type="cond" truecount="2" falsecount="0"/>
+        <line num="40" count="3" type="stmt"/>
+        <line num="46" count="4" type="stmt"/>
+      </file>
+      <file name="verifyRequest.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\lib\validations\user\verifyRequest.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="mysql-access">
+      <metrics statements="602" coveredstatements="27" conditionals="24" coveredconditionals="0" methods="142" coveredmethods="3"/>
+      <file name="Content.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\mysql-access\Content.ts">
+        <metrics statements="30" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="8" coveredmethods="0"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="18" count="0" type="stmt"/>
+        <line num="19" count="0" type="stmt"/>
+        <line num="33" count="0" type="stmt"/>
+        <line num="35" count="0" type="stmt"/>
+        <line num="40" count="0" type="stmt"/>
+        <line num="52" count="0" type="stmt"/>
+        <line num="53" count="0" type="stmt"/>
+        <line num="58" count="0" type="stmt"/>
+        <line num="64" count="0" type="stmt"/>
+        <line num="65" count="0" type="stmt"/>
+        <line num="77" count="0" type="stmt"/>
+        <line num="88" count="0" type="stmt"/>
+        <line num="97" count="0" type="stmt"/>
+        <line num="108" count="0" type="stmt"/>
+        <line num="114" count="0" type="stmt"/>
+        <line num="122" count="0" type="stmt"/>
+        <line num="126" count="0" type="stmt"/>
+        <line num="132" count="0" type="stmt"/>
+        <line num="134" count="0" type="stmt"/>
+        <line num="138" count="0" type="stmt"/>
+        <line num="139" count="0" type="stmt"/>
+      </file>
+      <file name="CuisineEquipment.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\mysql-access\CuisineEquipment.ts">
+        <metrics statements="14" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="0"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="22" count="0" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="27" count="0" type="stmt"/>
+        <line num="30" count="0" type="stmt"/>
+        <line num="32" count="0" type="stmt"/>
+        <line num="36" count="0" type="stmt"/>
+        <line num="39" count="0" type="stmt"/>
+        <line num="41" count="0" type="stmt"/>
+      </file>
+      <file name="CuisineIngredient.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\mysql-access\CuisineIngredient.ts">
+        <metrics statements="14" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="0"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="22" count="0" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="27" count="0" type="stmt"/>
+        <line num="30" count="0" type="stmt"/>
+        <line num="32" count="0" type="stmt"/>
+        <line num="36" count="0" type="stmt"/>
+        <line num="39" count="0" type="stmt"/>
+        <line num="41" count="0" type="stmt"/>
+      </file>
+      <file name="CuisineSupplier.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\mysql-access\CuisineSupplier.ts">
+        <metrics statements="19" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="5" coveredmethods="0"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="15" count="0" type="stmt"/>
+        <line num="22" count="0" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="28" count="0" type="stmt"/>
+        <line num="29" count="0" type="stmt"/>
+        <line num="32" count="0" type="stmt"/>
+        <line num="34" count="0" type="stmt"/>
+        <line num="39" count="0" type="stmt"/>
+        <line num="42" count="0" type="stmt"/>
+        <line num="44" count="0" type="stmt"/>
+        <line num="49" count="0" type="stmt"/>
+        <line num="50" count="0" type="stmt"/>
+        <line num="52" count="0" type="stmt"/>
+      </file>
+      <file name="Equipment.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\mysql-access\Equipment.ts">
+        <metrics statements="50" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="12" coveredmethods="0"/>
+        <line num="3" count="3" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="15" count="0" type="stmt"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="18" count="0" type="stmt"/>
+        <line num="19" count="0" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="24" count="0" type="stmt"/>
+        <line num="38" count="0" type="stmt"/>
+        <line num="40" count="0" type="stmt"/>
+        <line num="43" count="0" type="stmt"/>
+        <line num="44" count="0" type="stmt"/>
+        <line num="47" count="0" type="stmt"/>
+        <line num="51" count="0" type="stmt"/>
+        <line num="52" count="0" type="stmt"/>
+        <line num="65" count="0" type="stmt"/>
+        <line num="67" count="0" type="stmt"/>
+        <line num="71" count="0" type="stmt"/>
+        <line num="85" count="0" type="stmt"/>
+        <line num="87" count="0" type="stmt"/>
+        <line num="91" count="0" type="stmt"/>
+        <line num="104" count="0" type="stmt"/>
+        <line num="106" count="0" type="stmt"/>
+        <line num="117" count="0" type="stmt"/>
+        <line num="127" count="0" type="stmt"/>
+        <line num="136" count="0" type="stmt"/>
+        <line num="148" count="0" type="stmt"/>
+        <line num="154" count="0" type="stmt"/>
+        <line num="161" count="0" type="stmt"/>
+        <line num="165" count="0" type="stmt"/>
+        <line num="166" count="0" type="stmt"/>
+        <line num="167" count="0" type="stmt"/>
+        <line num="178" count="0" type="stmt"/>
+        <line num="188" count="0" type="stmt"/>
+        <line num="196" count="0" type="stmt"/>
+        <line num="208" count="0" type="stmt"/>
+        <line num="220" count="0" type="stmt"/>
+        <line num="230" count="0" type="stmt"/>
+        <line num="234" count="0" type="stmt"/>
+        <line num="235" count="0" type="stmt"/>
+        <line num="237" count="0" type="stmt"/>
+        <line num="241" count="0" type="stmt"/>
+        <line num="242" count="0" type="stmt"/>
+      </file>
+      <file name="FavoriteRecipe.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\mysql-access\FavoriteRecipe.ts">
+        <metrics statements="22" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="0"/>
+        <line num="3" count="3" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="30" count="0" type="stmt"/>
+        <line num="31" count="0" type="stmt"/>
+        <line num="53" count="0" type="stmt"/>
+        <line num="55" count="0" type="stmt"/>
+        <line num="58" count="0" type="stmt"/>
+        <line num="60" count="0" type="stmt"/>
+        <line num="64" count="0" type="stmt"/>
+        <line num="67" count="0" type="stmt"/>
+        <line num="69" count="0" type="stmt"/>
+        <line num="73" count="0" type="stmt"/>
+        <line num="74" count="0" type="stmt"/>
+        <line num="75" count="0" type="stmt"/>
+        <line num="79" count="0" type="stmt"/>
+        <line num="80" count="0" type="stmt"/>
+      </file>
+      <file name="Friendship.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\mysql-access\Friendship.ts">
+        <metrics statements="63" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="14" coveredmethods="0"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="15" count="0" type="stmt"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="18" count="0" type="stmt"/>
+        <line num="19" count="0" type="stmt"/>
+        <line num="20" count="0" type="stmt"/>
+        <line num="39" count="0" type="stmt"/>
+        <line num="44" count="0" type="stmt"/>
+        <line num="46" count="0" type="stmt"/>
+        <line num="50" count="0" type="stmt"/>
+        <line num="55" count="0" type="stmt"/>
+        <line num="57" count="0" type="stmt"/>
+        <line num="61" count="0" type="stmt"/>
+        <line num="69" count="0" type="stmt"/>
+        <line num="70" count="0" type="stmt"/>
+        <line num="74" count="0" type="stmt"/>
+        <line num="80" count="0" type="stmt"/>
+        <line num="81" count="0" type="stmt"/>
+        <line num="85" count="0" type="stmt"/>
+        <line num="91" count="0" type="stmt"/>
+        <line num="92" count="0" type="stmt"/>
+        <line num="96" count="0" type="stmt"/>
+        <line num="102" count="0" type="stmt"/>
+        <line num="103" count="0" type="stmt"/>
+        <line num="107" count="0" type="stmt"/>
+        <line num="111" count="0" type="stmt"/>
+        <line num="114" count="0" type="stmt"/>
+        <line num="116" count="0" type="stmt"/>
+        <line num="120" count="0" type="stmt"/>
+        <line num="126" count="0" type="stmt"/>
+        <line num="133" count="0" type="stmt"/>
+        <line num="136" count="0" type="stmt"/>
+        <line num="138" count="0" type="stmt"/>
+        <line num="142" count="0" type="stmt"/>
+        <line num="149" count="0" type="stmt"/>
+        <line num="152" count="0" type="stmt"/>
+        <line num="154" count="0" type="stmt"/>
+        <line num="158" count="0" type="stmt"/>
+        <line num="165" count="0" type="stmt"/>
+        <line num="168" count="0" type="stmt"/>
+        <line num="170" count="0" type="stmt"/>
+        <line num="174" count="0" type="stmt"/>
+        <line num="177" count="0" type="stmt"/>
+        <line num="182" count="0" type="stmt"/>
+        <line num="183" count="0" type="stmt"/>
+        <line num="185" count="0" type="stmt"/>
+        <line num="188" count="0" type="stmt"/>
+        <line num="192" count="0" type="stmt"/>
+        <line num="195" count="0" type="stmt"/>
+        <line num="197" count="0" type="stmt"/>
+        <line num="201" count="0" type="stmt"/>
+        <line num="202" count="0" type="stmt"/>
+        <line num="204" count="0" type="stmt"/>
+        <line num="205" count="0" type="stmt"/>
+      </file>
+      <file name="Ingredient.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\mysql-access\Ingredient.ts">
+        <metrics statements="58" coveredstatements="1" conditionals="8" coveredconditionals="0" methods="12" coveredmethods="0"/>
+        <line num="3" count="3" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="15" count="0" type="stmt"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="18" count="0" type="stmt"/>
+        <line num="22" count="0" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="39" count="0" type="stmt"/>
+        <line num="41" count="0" type="stmt"/>
+        <line num="43" count="0" type="stmt"/>
+        <line num="44" count="0" type="stmt"/>
+        <line num="46" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="47" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="48" count="0" type="stmt"/>
+        <line num="50" count="0" type="stmt"/>
+        <line num="56" count="0" type="stmt"/>
+        <line num="60" count="0" type="stmt"/>
+        <line num="61" count="0" type="stmt"/>
+        <line num="76" count="0" type="stmt"/>
+        <line num="85" count="0" type="stmt"/>
+        <line num="87" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="88" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="89" count="0" type="stmt"/>
+        <line num="91" count="0" type="stmt"/>
+        <line num="103" count="0" type="stmt"/>
+        <line num="119" count="0" type="stmt"/>
+        <line num="121" count="0" type="stmt"/>
+        <line num="125" count="0" type="stmt"/>
+        <line num="138" count="0" type="stmt"/>
+        <line num="140" count="0" type="stmt"/>
+        <line num="153" count="0" type="stmt"/>
+        <line num="165" count="0" type="stmt"/>
+        <line num="176" count="0" type="stmt"/>
+        <line num="190" count="0" type="stmt"/>
+        <line num="202" count="0" type="stmt"/>
+        <line num="211" count="0" type="stmt"/>
+        <line num="215" count="0" type="stmt"/>
+        <line num="216" count="0" type="stmt"/>
+        <line num="217" count="0" type="stmt"/>
+        <line num="230" count="0" type="stmt"/>
+        <line num="242" count="0" type="stmt"/>
+        <line num="252" count="0" type="stmt"/>
+        <line num="266" count="0" type="stmt"/>
+        <line num="280" count="0" type="stmt"/>
+        <line num="292" count="0" type="stmt"/>
+        <line num="296" count="0" type="stmt"/>
+        <line num="297" count="0" type="stmt"/>
+        <line num="299" count="0" type="stmt"/>
+        <line num="303" count="0" type="stmt"/>
+        <line num="304" count="0" type="stmt"/>
+      </file>
+      <file name="Plan.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\mysql-access\Plan.ts">
+        <metrics statements="25" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="7" coveredmethods="0"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="18" count="0" type="stmt"/>
+        <line num="19" count="0" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="28" count="0" type="stmt"/>
+        <line num="32" count="0" type="stmt"/>
+        <line num="35" count="0" type="stmt"/>
+        <line num="37" count="0" type="stmt"/>
+        <line num="41" count="0" type="stmt"/>
+        <line num="44" count="0" type="stmt"/>
+        <line num="46" count="0" type="stmt"/>
+        <line num="50" count="0" type="stmt"/>
+        <line num="51" count="0" type="stmt"/>
+        <line num="53" count="0" type="stmt"/>
+        <line num="57" count="0" type="stmt"/>
+        <line num="58" count="0" type="stmt"/>
+      </file>
+      <file name="Recipe.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\mysql-access\Recipe.ts">
+        <metrics statements="63" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="16" coveredmethods="0"/>
+        <line num="3" count="3" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="15" count="0" type="stmt"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="18" count="0" type="stmt"/>
+        <line num="19" count="0" type="stmt"/>
+        <line num="20" count="0" type="stmt"/>
+        <line num="21" count="0" type="stmt"/>
+        <line num="25" count="0" type="stmt"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="67" count="0" type="stmt"/>
+        <line num="69" count="0" type="stmt"/>
+        <line num="71" count="0" type="stmt"/>
+        <line num="72" count="0" type="stmt"/>
+        <line num="75" count="0" type="stmt"/>
+        <line num="79" count="0" type="stmt"/>
+        <line num="80" count="0" type="stmt"/>
+        <line num="120" count="0" type="stmt"/>
+        <line num="122" count="0" type="stmt"/>
+        <line num="126" count="0" type="stmt"/>
+        <line num="132" count="0" type="stmt"/>
+        <line num="134" count="0" type="stmt"/>
+        <line num="138" count="0" type="stmt"/>
+        <line num="198" count="0" type="stmt"/>
+        <line num="200" count="0" type="stmt"/>
+        <line num="218" count="0" type="stmt"/>
+        <line num="237" count="0" type="stmt"/>
+        <line num="253" count="0" type="stmt"/>
+        <line num="272" count="0" type="stmt"/>
+        <line num="291" count="0" type="stmt"/>
+        <line num="307" count="0" type="stmt"/>
+        <line num="311" count="0" type="stmt"/>
+        <line num="312" count="0" type="stmt"/>
+        <line num="313" count="0" type="stmt"/>
+        <line num="317" count="0" type="stmt"/>
+        <line num="376" count="0" type="stmt"/>
+        <line num="378" count="0" type="stmt"/>
+        <line num="397" count="0" type="stmt"/>
+        <line num="414" count="0" type="stmt"/>
+        <line num="430" count="0" type="stmt"/>
+        <line num="434" count="0" type="stmt"/>
+        <line num="435" count="0" type="stmt"/>
+        <line num="439" count="0" type="stmt"/>
+        <line num="445" count="0" type="stmt"/>
+        <line num="447" count="0" type="stmt"/>
+        <line num="451" count="0" type="stmt"/>
+        <line num="452" count="0" type="stmt"/>
+        <line num="455" count="0" type="stmt"/>
+        <line num="459" count="0" type="stmt"/>
+        <line num="460" count="0" type="stmt"/>
+        <line num="466" count="0" type="stmt"/>
+        <line num="468" count="0" type="stmt"/>
+        <line num="472" count="0" type="stmt"/>
+        <line num="473" count="0" type="stmt"/>
+        <line num="475" count="0" type="stmt"/>
+      </file>
+      <file name="RecipeEquipment.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\mysql-access\RecipeEquipment.ts">
+        <metrics statements="37" coveredstatements="1" conditionals="4" coveredconditionals="0" methods="7" coveredmethods="0"/>
+        <line num="3" count="4" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="24" count="0" type="stmt"/>
+        <line num="25" count="0" type="stmt"/>
+        <line num="29" count="0" type="stmt"/>
+        <line num="33" count="0" type="stmt"/>
+        <line num="35" count="0" type="stmt"/>
+        <line num="44" count="0" type="stmt"/>
+        <line num="45" count="0" type="stmt"/>
+        <line num="51" count="0" type="stmt"/>
+        <line num="53" count="0" type="stmt"/>
+        <line num="55" count="0" type="stmt"/>
+        <line num="56" count="0" type="stmt"/>
+        <line num="58" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="59" count="0" type="stmt"/>
+        <line num="60" count="0" type="stmt"/>
+        <line num="61" count="0" type="stmt"/>
+        <line num="63" count="0" type="stmt"/>
+        <line num="66" count="0" type="stmt"/>
+        <line num="67" count="0" type="stmt"/>
+        <line num="69" count="0" type="stmt"/>
+        <line num="74" count="0" type="stmt"/>
+        <line num="75" count="0" type="stmt"/>
+        <line num="77" count="0" type="stmt"/>
+        <line num="81" count="0" type="stmt"/>
+        <line num="82" count="0" type="stmt"/>
+        <line num="83" count="0" type="stmt"/>
+        <line num="87" count="0" type="stmt"/>
+        <line num="88" count="0" type="stmt"/>
+        <line num="89" count="0" type="stmt"/>
+      </file>
+      <file name="RecipeIngredient.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\mysql-access\RecipeIngredient.ts">
+        <metrics statements="37" coveredstatements="1" conditionals="4" coveredconditionals="0" methods="7" coveredmethods="0"/>
+        <line num="3" count="4" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="25" count="0" type="stmt"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="30" count="0" type="stmt"/>
+        <line num="35" count="0" type="stmt"/>
+        <line num="37" count="0" type="stmt"/>
+        <line num="46" count="0" type="stmt"/>
+        <line num="47" count="0" type="stmt"/>
+        <line num="55" count="0" type="stmt"/>
+        <line num="57" count="0" type="stmt"/>
+        <line num="59" count="0" type="stmt"/>
+        <line num="60" count="0" type="stmt"/>
+        <line num="62" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="63" count="0" type="stmt"/>
+        <line num="64" count="0" type="stmt"/>
+        <line num="65" count="0" type="stmt"/>
+        <line num="67" count="0" type="stmt"/>
+        <line num="70" count="0" type="stmt"/>
+        <line num="71" count="0" type="stmt"/>
+        <line num="73" count="0" type="stmt"/>
+        <line num="78" count="0" type="stmt"/>
+        <line num="79" count="0" type="stmt"/>
+        <line num="81" count="0" type="stmt"/>
+        <line num="85" count="0" type="stmt"/>
+        <line num="86" count="0" type="stmt"/>
+        <line num="87" count="0" type="stmt"/>
+        <line num="91" count="0" type="stmt"/>
+        <line num="92" count="0" type="stmt"/>
+        <line num="93" count="0" type="stmt"/>
+      </file>
+      <file name="RecipeMethod.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\mysql-access\RecipeMethod.ts">
+        <metrics statements="33" coveredstatements="1" conditionals="4" coveredconditionals="0" methods="6" coveredmethods="0"/>
+        <line num="3" count="3" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="24" count="0" type="stmt"/>
+        <line num="28" count="0" type="stmt"/>
+        <line num="31" count="0" type="stmt"/>
+        <line num="33" count="0" type="stmt"/>
+        <line num="42" count="0" type="stmt"/>
+        <line num="43" count="0" type="stmt"/>
+        <line num="49" count="0" type="stmt"/>
+        <line num="51" count="0" type="stmt"/>
+        <line num="53" count="0" type="stmt"/>
+        <line num="54" count="0" type="stmt"/>
+        <line num="56" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="57" count="0" type="stmt"/>
+        <line num="58" count="0" type="stmt"/>
+        <line num="59" count="0" type="stmt"/>
+        <line num="61" count="0" type="stmt"/>
+        <line num="64" count="0" type="stmt"/>
+        <line num="65" count="0" type="stmt"/>
+        <line num="67" count="0" type="stmt"/>
+        <line num="72" count="0" type="stmt"/>
+        <line num="73" count="0" type="stmt"/>
+        <line num="74" count="0" type="stmt"/>
+        <line num="78" count="0" type="stmt"/>
+        <line num="79" count="0" type="stmt"/>
+        <line num="80" count="0" type="stmt"/>
+      </file>
+      <file name="RecipeSubrecipe.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\mysql-access\RecipeSubrecipe.ts">
+        <metrics statements="41" coveredstatements="1" conditionals="4" coveredconditionals="0" methods="8" coveredmethods="0"/>
+        <line num="3" count="3" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="18" count="0" type="stmt"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="27" count="0" type="stmt"/>
+        <line num="31" count="0" type="stmt"/>
+        <line num="36" count="0" type="stmt"/>
+        <line num="38" count="0" type="stmt"/>
+        <line num="47" count="0" type="stmt"/>
+        <line num="48" count="0" type="stmt"/>
+        <line num="55" count="0" type="stmt"/>
+        <line num="57" count="0" type="stmt"/>
+        <line num="59" count="0" type="stmt"/>
+        <line num="60" count="0" type="stmt"/>
+        <line num="62" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="63" count="0" type="stmt"/>
+        <line num="65" count="0" type="stmt"/>
+        <line num="66" count="0" type="stmt"/>
+        <line num="68" count="0" type="stmt"/>
+        <line num="71" count="0" type="stmt"/>
+        <line num="72" count="0" type="stmt"/>
+        <line num="74" count="0" type="stmt"/>
+        <line num="79" count="0" type="stmt"/>
+        <line num="80" count="0" type="stmt"/>
+        <line num="81" count="0" type="stmt"/>
+        <line num="85" count="0" type="stmt"/>
+        <line num="86" count="0" type="stmt"/>
+        <line num="87" count="0" type="stmt"/>
+        <line num="91" count="0" type="stmt"/>
+        <line num="92" count="0" type="stmt"/>
+        <line num="94" count="0" type="stmt"/>
+        <line num="98" count="0" type="stmt"/>
+        <line num="99" count="0" type="stmt"/>
+        <line num="101" count="0" type="stmt"/>
+      </file>
+      <file name="RecipeType.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\mysql-access\RecipeType.ts">
+        <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="13" count="1" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="15" count="1" type="stmt"/>
+        <line num="19" count="1" type="stmt"/>
+        <line num="20" count="1" type="stmt"/>
+        <line num="21" count="1" type="stmt"/>
+      </file>
+      <file name="SavedRecipe.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\mysql-access\SavedRecipe.ts">
+        <metrics statements="22" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="6" coveredmethods="0"/>
+        <line num="3" count="3" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="29" count="0" type="stmt"/>
+        <line num="30" count="0" type="stmt"/>
+        <line num="34" count="0" type="stmt"/>
+        <line num="36" count="0" type="stmt"/>
+        <line num="37" count="0" type="stmt"/>
+        <line num="39" count="0" type="stmt"/>
+        <line num="43" count="0" type="stmt"/>
+        <line num="46" count="0" type="stmt"/>
+        <line num="48" count="0" type="stmt"/>
+        <line num="52" count="0" type="stmt"/>
+        <line num="53" count="0" type="stmt"/>
+        <line num="54" count="0" type="stmt"/>
+        <line num="58" count="0" type="stmt"/>
+        <line num="59" count="0" type="stmt"/>
+      </file>
+      <file name="Staff.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\mysql-access\Staff.ts">
+        <metrics statements="30" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="8" coveredmethods="0"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="18" count="0" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="24" count="0" type="stmt"/>
+        <line num="28" count="0" type="stmt"/>
+        <line num="33" count="0" type="stmt"/>
+        <line num="34" count="0" type="stmt"/>
+        <line num="38" count="0" type="stmt"/>
+        <line num="41" count="0" type="stmt"/>
+        <line num="43" count="0" type="stmt"/>
+        <line num="47" count="0" type="stmt"/>
+        <line num="48" count="0" type="stmt"/>
+        <line num="49" count="0" type="stmt"/>
+        <line num="53" count="0" type="stmt"/>
+        <line num="56" count="0" type="stmt"/>
+        <line num="58" count="0" type="stmt"/>
+        <line num="62" count="0" type="stmt"/>
+        <line num="68" count="0" type="stmt"/>
+        <line num="70" count="0" type="stmt"/>
+        <line num="74" count="0" type="stmt"/>
+        <line num="75" count="0" type="stmt"/>
+        <line num="76" count="0" type="stmt"/>
+      </file>
+      <file name="User.ts" path="C:\Users\Timothy\Desktop\workbench\nobsc\api\src\mysql-access\User.ts">
+        <metrics statements="34" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="9" coveredmethods="0"/>
+        <line num="3" count="2" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="15" count="0" type="stmt"/>
+        <line num="20" count="0" type="stmt"/>
+        <line num="25" count="0" type="stmt"/>
+        <line num="27" count="0" type="stmt"/>
+        <line num="32" count="0" type="stmt"/>
+        <line num="35" count="0" type="stmt"/>
+        <line num="37" count="0" type="stmt"/>
+        <line num="41" count="0" type="stmt"/>
+        <line num="42" count="0" type="stmt"/>
+        <line num="43" count="0" type="stmt"/>
+        <line num="47" count="0" type="stmt"/>
+        <line num="48" count="0" type="stmt"/>
+        <line num="49" count="0" type="stmt"/>
+        <line num="53" count="0" type="stmt"/>
+        <line num="57" count="0" type="stmt"/>
+        <line num="59" count="0" type="stmt"/>
+        <line num="63" count="0" type="stmt"/>
+        <line num="66" count="0" type="stmt"/>
+        <line num="67" count="0" type="stmt"/>
+        <line num="77" count="0" type="stmt"/>
+        <line num="83" count="0" type="stmt"/>
+        <line num="85" count="0" type="stmt"/>
+        <line num="89" count="0" type="stmt"/>
+        <line num="90" count="0" type="stmt"/>
+        <line num="91" count="0" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>

@@ -128,7 +128,7 @@ describe('staff content controller', () => {
           ownerId: 1,
           published: null,
           title: "Some Title",
-          contentItems: "[]"
+          items: "[]"
         }, validEditingContentEntity),
         validEditingContentEntity
       );
@@ -137,12 +137,12 @@ describe('staff content controller', () => {
     it('uses update correctly', async () => {
       await staffContentController.update(<Request>req, <Response>res);
       expect(mockUpdate).toHaveBeenCalledWith({
-        contentId: 35,
+        id: 35,
         contentTypeId: 7,
         ownerId: 1,
         published: null,
         title: "Some Title",
-        contentItems: "[]"
+        items: "[]"
       });
     });
 

@@ -23,12 +23,12 @@ export async function addWhisper({
   }
 
   const [ blockedUsers ] =
-    await nobscFriendship.viewBlocked(userExists[0].user_id);
+    await nobscFriendship.viewBlocked(userExists[0].id);
 
   const blockedByUser = blockedUsers.find((u: any) => u.user_id === id);
   if (blockedByUser) return socket.emit('FailedWhisper', 'User not found.');
 
-  const onlineUser = await messengerUser.getUserSocketId(userExists[0].user_id);
+  const onlineUser = await messengerUser.getUserSocketId(userExists[0].id);
   if (!onlineUser) return socket.emit('FailedWhisper', 'User not found.');
 
   const whisper = Whisper(whisperText, to, ChatUser(id, username, avatar));

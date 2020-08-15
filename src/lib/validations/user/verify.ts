@@ -7,8 +7,7 @@ export async function validVerify(
     email,
     pass,
     confirmationCode
-  }:
-  {
+  }: {
     email: string;
     pass: string;
     confirmationCode: string;
@@ -24,8 +23,7 @@ export async function validVerify(
 
   if (pass.length > 54) return {valid: false, feedback: 'Invalid password.'};
 
-  const [ emailExists ] = await user.getUserByEmail(email);
-  
+  const [ emailExists ] = await user.getByEmail(email);
   if (!emailExists) {
     return {
       valid: false,
@@ -34,7 +32,6 @@ export async function validVerify(
   }
 
   const isCorrectPassword = await bcrypt.compare(pass, emailExists.pass);
-
   if (!isCorrectPassword) {
     return {valid: false, feedback: 'Incorrect email or password.'};
   }

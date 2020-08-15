@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { assert } from 'superstruct';
+import { assert, coerce } from 'superstruct';
 
 import { RecipeSearch } from '../../elasticsearch-access/RecipeSearch';
 import { esClient } from '../../lib/connections/elasticsearchClient';
@@ -117,7 +117,11 @@ export const userRecipeController = {
       cookingImage
     };
 
-    assert(recipeToCreate, validRecipeEntity);
+    //assert(recipeToCreate, validRecipeEntity);
+    assert(
+      coerce({recipeToCreate}, validRecipeEntity),
+      validRecipeEntity
+    );
 
     await createRecipeService({
       ownerId,
@@ -174,7 +178,11 @@ export const userRecipeController = {
       cookingImage
     };
     
-    assert(recipeToUpdateWith, validRecipeEntity);
+    //assert(recipeToUpdateWith, validRecipeEntity);
+    assert(
+      coerce({recipeToUpdateWith}, validRecipeEntity),
+      validRecipeEntity
+    );
 
     await updateRecipeService({
       id,
