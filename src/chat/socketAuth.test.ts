@@ -5,9 +5,9 @@ import { addMessengerUser, sessionIdsAreEqual } from './socketAuth';
 jest.mock('../lib/connections/redisConnection', () => ({pubClient: jest.fn()}));
 
 jest.mock('../redis-access/MessengerUser', () => ({
-  MessengerUser: jest.fn().mockImplementation(() => ({addUser: mockAddUser}))
+  MessengerUser: jest.fn().mockImplementation(() => ({add: mockAdd}))
 }));
-let mockAddUser = jest.fn();
+let mockAdd = jest.fn();
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -51,7 +51,7 @@ describe('addMessengerUser helper', () => {
       userInfo: {id: 150, username: "Name", avatar: "Name123"}
     };
     await addMessengerUser(<Socket>socket, sid, <Express.SessionData>session);
-    expect(mockAddUser)
+    expect(mockAdd)
     .toHaveBeenCalledWith(150, "Name", "Name123", '123456789', '123456789');
   });
 });

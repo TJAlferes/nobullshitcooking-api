@@ -23,7 +23,7 @@ export async function disconnecting({
       socket.broadcast.to(room)
         .emit('RemoveUser', ChatUser(id, username, avatar));
 
-      messengerRoom.removeUserFromRoom(id, room);
+      messengerRoom.removeUser(id, room);
     }
   }
 
@@ -31,7 +31,7 @@ export async function disconnecting({
 
   if (acceptedFriends.length) {
     for (let f of acceptedFriends) {
-      const onlineFriend = await messengerUser.getUserSocketId(f.user_id);
+      const onlineFriend = await messengerUser.getSocketId(f.user_id);
       if (!onlineFriend) continue;
 
       socket.broadcast.to(onlineFriend)
@@ -39,7 +39,7 @@ export async function disconnecting({
     }
   }
 
-  await messengerUser.removeUser(id);
+  await messengerUser.remove(id);
 }
 
 interface IDisconnecting {

@@ -1,21 +1,15 @@
-import { IChatUser } from './ChatUser';
+import { IChatMessage, IChatUser, KMessage } from './types';
 
 export function ChatMessage(
-  chatMessageText: string,
+  text: string,
   room: string,
   user: IChatUser
 ): IChatMessage {
   return {
-    chatMessageId: user.id + (new Date).getTime().toString(),
-    chatMessageText,
+    kind: KMessage,
+    id: user.id + (new Date).getTime().toString(),
+    text,
     room,
     user
   };
-};
-
-export interface IChatMessage {
-  chatMessageId: string;
-  chatMessageText: string;
-  room: string;
-  user: IChatUser;
 }

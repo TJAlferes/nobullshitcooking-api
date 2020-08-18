@@ -4,15 +4,15 @@ import { IMessengerRoom } from '../../redis-access/MessengerRoom';
 import { ChatUser } from '../entities/ChatUser';
 import { addRoom } from './addRoom';
 
-const mockAddRoom = jest.fn();
-const mockAddUserToRoom = jest.fn();
-const mockGetUsersInRoom = jest.fn().mockResolvedValue([]);
-const mockRemoveUserFromRoom = jest.fn();
+const mockAdd = jest.fn();
+const mockAddUser = jest.fn();
+const mockGetUsers = jest.fn().mockResolvedValue([]);
+const mockRemoveUser = jest.fn();
 const mockMessengerRoom: Partial<IMessengerRoom> = {
-  addRoom: mockAddRoom,
-  addUserToRoom: mockAddUserToRoom,
-  getUsersInRoom: mockGetUsersInRoom,
-  removeUserFromRoom: mockRemoveUserFromRoom,
+  add: mockAdd,
+  addUser: mockAddUser,
+  getUsers: mockGetUsers,
+  removeUser: mockRemoveUser,
 };
 
 jest.mock('../entities/ChatUser');
@@ -56,9 +56,9 @@ describe ('addRoom handler', () => {
     expect(params.socket.leave).toHaveBeenCalledWith("someRoom");
   });
 
-  it('uses removeUserFromRoom correctly', async () => {
+  it('uses removeUser correctly', async () => {
     await addRoom(params);
-    expect(mockRemoveUserFromRoom).toHaveBeenCalledWith(150, "someRoom");
+    expect(mockRemoveUser).toHaveBeenCalledWith(150, "someRoom");
   });
 
   it('uses socket.broadcast.to with Remove user event correctly', async () => {
@@ -82,12 +82,12 @@ describe ('addRoom handler', () => {
 
   it('uses addRoom correctly', async () => {
     await addRoom(params);
-    expect(mockAddRoom).toHaveBeenCalledWith("nextRoom");
+    expect(mockAdd).toHaveBeenCalledWith("nextRoom");
   });
 
-  it('uses addUserToRoom correctly', async () => {
+  it('uses addUser correctly', async () => {
     await addRoom(params);
-    expect(mockAddUserToRoom).toHaveBeenCalledWith(150, "nextRoom");
+    expect(mockAddUser).toHaveBeenCalledWith(150, "nextRoom");
   });
 
   it('uses socket.broadcast.to with AddUser event correctly', async () => {
@@ -101,9 +101,9 @@ describe ('addRoom handler', () => {
       .toHaveBeenCalledWith('AddUser', ChatUser(150, "Name", "Name123"));
   });
 
-  it('uses getUsersInRoom correctly', async () => {
+  it('uses getUsers correctly', async () => {
     await addRoom(params);
-    expect(mockGetUsersInRoom).toHaveBeenCalledWith("nextRoom");
+    expect(mockGetUsers).toHaveBeenCalledWith("nextRoom");
   });
 
   it('uses socket.emit with GetUser event correctly', async () => {

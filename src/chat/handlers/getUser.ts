@@ -3,7 +3,7 @@ import { Socket } from 'socket.io';
 import { IMessengerRoom } from '../../redis-access/MessengerRoom';
 
 export async function getUser({ room, socket, messengerRoom, }: IGetUser) {
-  const users = await messengerRoom.getUsersInRoom(room);
+  const users = await messengerRoom.getUsers(room);
   socket.emit('GetUser', users);
 }
 

@@ -4,10 +4,10 @@ import { IFriendship } from '../../mysql-access/Friendship';
 import { IUser } from '../../mysql-access/User';
 import { IMessengerUser } from '../../redis-access/MessengerUser';
 import { ChatUser } from '../entities/ChatUser';
-import { Whisper } from '../entities/Whisper';
+import { ChatWhisper } from '../entities/ChatWhisper';
 
 export async function addWhisper({
-  whisperText,
+  text,
   to,
   id,
   username,
@@ -28,17 +28,17 @@ export async function addWhisper({
   const blockedByUser = blockedUsers.find((u: any) => u.user_id === id);
   if (blockedByUser) return socket.emit('FailedWhisper', 'User not found.');
 
-  const onlineUser = await messengerUser.getUserSocketId(userExists[0].id);
+  const onlineUser = await messengerUser.getSocketId(userExists[0].id);
   if (!onlineUser) return socket.emit('FailedWhisper', 'User not found.');
 
-  const whisper = Whisper(whisperText, to, ChatUser(id, username, avatar));
+  const whisper = ChatWhisper(text, to, ChatUser(id, username, avatar));
 
   socket.broadcast.to(onlineUser).emit('AddWhisper', whisper);
   socket.emit('AddWhisper', whisper);
 }
 
 interface IAddWhisper {
-  whisperText: string;
+  text: string;
   to: string;
   id: number;
   username: string;

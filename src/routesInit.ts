@@ -1,6 +1,4 @@
 import { Application } from 'express';
-//const { buildSchema } = require('graphql');  // move also
-//const expressGraphQL = require('express-graphql');  // move also
 
 import {
   staffRoutes,
@@ -52,5 +50,4 @@ export function routesInit(app: Application) {
   app.use('/recipe-type', recipeTypeRoutes);
   app.use('/search', searchRoutes);
   app.use('/supplier', supplierRoutes);
-  //app.use('/graphql', expressGraphQL({schema, rootValue, graphiql: true}));  // move also
 }

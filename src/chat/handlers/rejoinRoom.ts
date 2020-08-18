@@ -15,12 +15,12 @@ export async function rejoinRoom({
   
   socket.join(room);
 
-  await messengerRoom.addRoom(room);  // ?
-  await messengerRoom.addUserToRoom(id, room);
+  await messengerRoom.add(room);  // ?
+  await messengerRoom.addUser(id, room);
 
   socket.broadcast.to(room).emit('AddUser', ChatUser(id, username, avatar));
 
-  const users = await messengerRoom.getUsersInRoom(room);
+  const users = await messengerRoom.getUsers(room);
   
   socket.emit('RegetUser', users, room);
 }

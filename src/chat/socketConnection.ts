@@ -9,7 +9,7 @@ import { User as NOBSCUser } from '../mysql-access/User';
 import { MessengerChat } from '../redis-access/MessengerChat';
 import { MessengerRoom } from '../redis-access/MessengerRoom';
 import { MessengerUser } from '../redis-access/MessengerUser';
-import { addChat } from './handlers/addChat';
+import { addMessage } from './handlers/addMessage';
 import { addRoom } from './handlers/addRoom';
 import { addWhisper } from './handlers/addWhisper';
 import { disconnecting } from './handlers/disconnecting';
@@ -51,9 +51,9 @@ export async function socketConnection(socket: Socket) {
 
   // Messages
 
-  socket.on('AddChat', async function(chatMessageText: string) {
-    await addChat({
-      chatMessageText,
+  socket.on('AddMessage', async function(text: string) {
+    await addMessage({
+      text,
       id,
       username,
       avatar,
@@ -62,9 +62,9 @@ export async function socketConnection(socket: Socket) {
     });
   });
 
-  socket.on('AddWhisper', async function(whisperText: string, to: string) {
+  socket.on('AddWhisper', async function(text: string, to: string) {
     await addWhisper({
-      whisperText,
+      text,
       to,
       id,
       username,

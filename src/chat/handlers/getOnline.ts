@@ -18,7 +18,7 @@ export async function getOnline({
   let online = [];
 
   for (let f of acceptedFriends) {
-    const onlineFriend = await messengerUser.getUserSocketId(f.user_id);
+    const onlineFriend = await messengerUser.getSocketId(f.user_id);
     if (!onlineFriend) continue;
 
     socket.broadcast.to(onlineFriend)

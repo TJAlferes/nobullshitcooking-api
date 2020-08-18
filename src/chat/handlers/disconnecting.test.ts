@@ -14,16 +14,14 @@ jest.mock('../../mysql-access/Friendship', () => ({
 }));
 let mockViewAccepted = jest.fn();
 
-const mockRemoveUserFromRoom = jest.fn();
-const mockMessengerRoom: Partial<IMessengerRoom> = {
-  removeUserFromRoom: mockRemoveUserFromRoom
-};
-
-let mockGetUserSocketId = jest.fn();
 const mockRemoveUser = jest.fn();
+const mockMessengerRoom: Partial<IMessengerRoom> = {removeUser: mockRemoveUser};
 
-jest.mock('../entities/ChatUser');
-const mockChatUser = ChatUser as jest.Mocked<typeof ChatUser>;
+let mockGetSocketId = jest.fn();
+const mockRemove = jest.fn();
+
+jest.mock('../entities/ChatUser');  // ?
+//const mockChatUser = ChatUser as jest.Mocked<typeof ChatUser>;  // ?
 
 const mockBroadcast: any = {
   emit: jest.fn(),
@@ -54,12 +52,12 @@ describe('disconnecting handler', () => {
 
   describe('when friends are offline', () => {
     it ('uses socket.broadcast.to with RemoveUser event correctly', async () => {
-      mockGetUserSocketId = jest.fn().mockResolvedValue(undefined);
+      mockGetSocketId = jest.fn().mockResolvedValue(undefined);
       mockViewAccepted = jest.fn()
         .mockResolvedValue([{user_id: 48}, {user_id: 84}]);
       const mockMessengerUser: Partial<IMessengerUser> = {
-        getUserSocketId: mockGetUserSocketId,
-        removeUser: mockRemoveUser
+        getSocketId: mockGetSocketId,
+        remove: mockRemove
       };
       const mockNobscFriendship = new Friendship(pool);
       await disconnecting({
@@ -72,12 +70,12 @@ describe('disconnecting handler', () => {
     });
 
     it ('uses socket.broadcast.to.emit with RemoveUser event correctly', async () => {
-      mockGetUserSocketId = jest.fn().mockResolvedValue(undefined);
+      mockGetSocketId = jest.fn().mockResolvedValue(undefined);
       mockViewAccepted = jest.fn()
         .mockResolvedValue([{user_id: 48}, {user_id: 84}]);
       const mockMessengerUser: Partial<IMessengerUser> = {
-        getUserSocketId: mockGetUserSocketId,
-        removeUser: mockRemoveUser
+        getSocketId: mockGetSocketId,
+        remove: mockRemove
       };
       const mockNobscFriendship = new Friendship(pool);
       await disconnecting({
@@ -90,13 +88,13 @@ describe('disconnecting handler', () => {
       .toHaveBeenCalledWith('RemoveUser', ChatUser(150, "Name", "Name123"));
     });
 
-    it('uses removeUserFromRoom correctly', async () => {
-      mockGetUserSocketId = jest.fn().mockResolvedValue(undefined);
+    it('uses removeUser correctly', async () => {
+      mockGetSocketId = jest.fn().mockResolvedValue(undefined);
       mockViewAccepted = jest.fn()
         .mockResolvedValue([{user_id: 48}, {user_id: 84}]);
       const mockMessengerUser: Partial<IMessengerUser> = {
-        getUserSocketId: mockGetUserSocketId,
-        removeUser: mockRemoveUser
+        getSocketId: mockGetSocketId,
+        remove: mockRemove
       };
       const mockNobscFriendship = new Friendship(pool);
       await disconnecting({
@@ -105,16 +103,16 @@ describe('disconnecting handler', () => {
         messengerUser: <IMessengerUser>mockMessengerUser,
         nobscFriendship: <IFriendship>mockNobscFriendship
       });
-      expect(mockRemoveUserFromRoom).toHaveBeenCalledWith(150, "someRoom");
+      expect(mockRemoveUser).toHaveBeenCalledWith(150, "someRoom");
     });
 
     it('uses viewMyAcceptedFriendships correctly', async () => {
-      mockGetUserSocketId = jest.fn().mockResolvedValue(undefined);
+      mockGetSocketId = jest.fn().mockResolvedValue(undefined);
       mockViewAccepted = jest.fn()
         .mockResolvedValue([{user_id: 48}, {user_id: 84}]);
       const mockMessengerUser: Partial<IMessengerUser> = {
-        getUserSocketId: mockGetUserSocketId,
-        removeUser: mockRemoveUser
+        getSocketId: mockGetSocketId,
+        remove: mockRemove
       };
       const mockNobscFriendship = new Friendship(pool);
       await disconnecting({
@@ -126,13 +124,13 @@ describe('disconnecting handler', () => {
       expect(mockViewAccepted).toHaveBeenCalledWith(150);
     });
 
-    it('uses getUserSocketId correctly', async () => {
-      mockGetUserSocketId = jest.fn().mockResolvedValue(undefined);
+    it('uses getSocketId correctly', async () => {
+      mockGetSocketId = jest.fn().mockResolvedValue(undefined);
       mockViewAccepted = jest.fn()
         .mockResolvedValue([{user_id: 48}, {user_id: 84}]);
       const mockMessengerUser: Partial<IMessengerUser> = {
-        getUserSocketId: mockGetUserSocketId,
-        removeUser: mockRemoveUser
+        getSocketId: mockGetSocketId,
+        remove: mockRemove
       };
       const mockNobscFriendship = new Friendship(pool);
       await disconnecting({
@@ -141,17 +139,17 @@ describe('disconnecting handler', () => {
         messengerUser: <IMessengerUser>mockMessengerUser,
         nobscFriendship: <IFriendship>mockNobscFriendship
       });
-      expect(mockGetUserSocketId).toHaveBeenCalledWith(48);
-      expect(mockGetUserSocketId).toHaveBeenCalledWith(84);
+      expect(mockGetSocketId).toHaveBeenCalledWith(48);
+      expect(mockGetSocketId).toHaveBeenCalledWith(84);
     });
 
-    it('uses removeUser correctly', async () => {
-      mockGetUserSocketId = jest.fn().mockResolvedValue(undefined);
+    it('uses remove correctly', async () => {
+      mockGetSocketId = jest.fn().mockResolvedValue(undefined);
       mockViewAccepted = jest.fn()
         .mockResolvedValue([{user_id: 48}, {user_id: 84}]);
       const mockMessengerUser: Partial<IMessengerUser> = {
-        getUserSocketId: mockGetUserSocketId,
-        removeUser: mockRemoveUser
+        getSocketId: mockGetSocketId,
+        remove: mockRemove
       };
       const mockNobscFriendship = new Friendship(pool);
       await disconnecting({
@@ -160,18 +158,18 @@ describe('disconnecting handler', () => {
         messengerUser: <IMessengerUser>mockMessengerUser,
         nobscFriendship: <IFriendship>mockNobscFriendship
       });
-      expect(mockRemoveUser).toHaveBeenCalledWith(150);
+      expect(mockRemove).toHaveBeenCalledWith(150);
     });
   });
 
   describe('when friends are online', () => {
     it ('uses socket.broadcast.to with RemoveUser event correctly', async () => {
-      mockGetUserSocketId = jest.fn().mockResolvedValue("123456789");
+      mockGetSocketId = jest.fn().mockResolvedValue("123456789");
       mockViewAccepted = jest.fn()
         .mockResolvedValue([{user_id: 48}, {user_id: 84}]);
       const mockMessengerUser: Partial<IMessengerUser> = {
-        getUserSocketId: mockGetUserSocketId,
-        removeUser: mockRemoveUser
+        getSocketId: mockGetSocketId,
+        remove: mockRemove
       };
       const mockNobscFriendship = new Friendship(pool);
       await disconnecting({
@@ -184,12 +182,12 @@ describe('disconnecting handler', () => {
     });
 
     it ('uses socket.broadcast.to.emit with RemoveUser event correctly', async () => {
-      mockGetUserSocketId = jest.fn().mockResolvedValue("123456789");
+      mockGetSocketId = jest.fn().mockResolvedValue("123456789");
       mockViewAccepted = jest.fn()
         .mockResolvedValue([{user_id: 48}, {user_id: 84}]);
       const mockMessengerUser: Partial<IMessengerUser> = {
-        getUserSocketId: mockGetUserSocketId,
-        removeUser: mockRemoveUser
+        getSocketId: mockGetSocketId,
+        remove: mockRemove
       };
       const mockNobscFriendship = new Friendship(pool);
       await disconnecting({
@@ -202,13 +200,13 @@ describe('disconnecting handler', () => {
       .toHaveBeenCalledWith('RemoveUser', ChatUser(150, "Name", "Name123"));
     });
 
-    it('uses removeUserFromRoom correctly', async () => {
-      mockGetUserSocketId = jest.fn().mockResolvedValue("123456789");
+    it('uses removeUser correctly', async () => {
+      mockGetSocketId = jest.fn().mockResolvedValue("123456789");
       mockViewAccepted = jest.fn()
         .mockResolvedValue([{user_id: 48}, {user_id: 84}]);
       const mockMessengerUser: Partial<IMessengerUser> = {
-        getUserSocketId: mockGetUserSocketId,
-        removeUser: mockRemoveUser
+        getSocketId: mockGetSocketId,
+        remove: mockRemove
       };
       const mockNobscFriendship = new Friendship(pool);
       await disconnecting({
@@ -217,16 +215,16 @@ describe('disconnecting handler', () => {
         messengerUser: <IMessengerUser>mockMessengerUser,
         nobscFriendship: <IFriendship>mockNobscFriendship
       });
-      expect(mockRemoveUserFromRoom).toHaveBeenCalledWith(150, "someRoom");
+      expect(mockRemoveUser).toHaveBeenCalledWith(150, "someRoom");
     });
 
-    it('uses viewMyAcceptedFriendships correctly', async () => {
-      mockGetUserSocketId = jest.fn().mockResolvedValue("123456789");
+    it('uses viewAccepted correctly', async () => {
+      mockGetSocketId = jest.fn().mockResolvedValue("123456789");
       mockViewAccepted = jest.fn()
         .mockResolvedValue([{user_id: 48}, {user_id: 84}]);
       const mockMessengerUser: Partial<IMessengerUser> = {
-        getUserSocketId: mockGetUserSocketId,
-        removeUser: mockRemoveUser
+        getSocketId: mockGetSocketId,
+        remove: mockRemove
       };
       const mockNobscFriendship = new Friendship(pool);
       await disconnecting({
@@ -238,13 +236,13 @@ describe('disconnecting handler', () => {
       expect(mockViewAccepted).toHaveBeenCalledWith(150);
     });
 
-    it('uses getUserSocketId correctly', async () => {
-      mockGetUserSocketId = jest.fn().mockResolvedValue("123456789");
+    it('uses getSocketId correctly', async () => {
+      mockGetSocketId = jest.fn().mockResolvedValue("123456789");
       mockViewAccepted = jest.fn()
         .mockResolvedValue([{user_id: 48}, {user_id: 84}]);
       const mockMessengerUser: Partial<IMessengerUser> = {
-        getUserSocketId: mockGetUserSocketId,
-        removeUser: mockRemoveUser
+        getSocketId: mockGetSocketId,
+        remove: mockRemove
       };
       const mockNobscFriendship = new Friendship(pool);
       await disconnecting({
@@ -253,17 +251,17 @@ describe('disconnecting handler', () => {
         messengerUser: <IMessengerUser>mockMessengerUser,
         nobscFriendship: <IFriendship>mockNobscFriendship
       });
-      expect(mockGetUserSocketId).toHaveBeenCalledWith(48);
-      expect(mockGetUserSocketId).toHaveBeenCalledWith(84);
+      expect(mockGetSocketId).toHaveBeenCalledWith(48);
+      expect(mockGetSocketId).toHaveBeenCalledWith(84);
     });
 
     it ('uses socket.broadcast.to with ShowOffline event correctly', async () => {
-      mockGetUserSocketId = jest.fn().mockResolvedValue("123456789");
+      mockGetSocketId = jest.fn().mockResolvedValue("123456789");
       mockViewAccepted = jest.fn()
         .mockResolvedValue([{user_id: 48}, {user_id: 84}]);
       const mockMessengerUser: Partial<IMessengerUser> = {
-        getUserSocketId: mockGetUserSocketId,
-        removeUser: mockRemoveUser
+        getSocketId: mockGetSocketId,
+        remove: mockRemove
       };
       const mockNobscFriendship = new Friendship(pool);
       await disconnecting({
@@ -276,12 +274,12 @@ describe('disconnecting handler', () => {
     });
 
     it ('uses socket.broadcast.to.emit with ShowOffline event correctly', async () => {
-      mockGetUserSocketId = jest.fn().mockResolvedValue("123456789");
+      mockGetSocketId = jest.fn().mockResolvedValue("123456789");
       mockViewAccepted = jest.fn()
         .mockResolvedValue([{user_id: 48}, {user_id: 84}]);
       const mockMessengerUser: Partial<IMessengerUser> = {
-        getUserSocketId: mockGetUserSocketId,
-        removeUser: mockRemoveUser
+        getSocketId: mockGetSocketId,
+        remove: mockRemove
       };
       const mockNobscFriendship = new Friendship(pool);
       await disconnecting({
@@ -294,13 +292,13 @@ describe('disconnecting handler', () => {
       .toHaveBeenCalledWith('ShowOffline', ChatUser(150, "Name", "Name123"));
     });
 
-    it('uses removeUser correctly', async () => {
-      mockGetUserSocketId = jest.fn().mockResolvedValue("123456789");
+    it('uses remove correctly', async () => {
+      mockGetSocketId = jest.fn().mockResolvedValue("123456789");
       mockViewAccepted = jest.fn()
         .mockResolvedValue([{user_id: 48}, {user_id: 84}]);
       const mockMessengerUser: Partial<IMessengerUser> = {
-        getUserSocketId: mockGetUserSocketId,
-        removeUser: mockRemoveUser
+        getSocketId: mockGetSocketId,
+        remove: mockRemove
       };
       const mockNobscFriendship = new Friendship(pool);
       await disconnecting({
@@ -309,7 +307,7 @@ describe('disconnecting handler', () => {
         messengerUser: <IMessengerUser>mockMessengerUser,
         nobscFriendship: <IFriendship>mockNobscFriendship
       });
-      expect(mockRemoveUser).toHaveBeenCalledWith(150);
+      expect(mockRemove).toHaveBeenCalledWith(150);
     });
   });
 

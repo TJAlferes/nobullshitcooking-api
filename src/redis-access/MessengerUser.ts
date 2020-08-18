@@ -5,17 +5,17 @@ export class MessengerUser implements IMessengerUser {
 
   constructor(client: Redis) {
     this.client = client;
-    this.getUserSocketId = this.getUserSocketId.bind(this);
-    this.addUser = this.addUser.bind(this);
-    this.removeUser = this.removeUser.bind(this);
+    this.getSocketId = this.getSocketId.bind(this);
+    this.add = this.add.bind(this);
+    this.remove = this.remove.bind(this);
   }
 
-  async getUserSocketId(id: number) {
+  async getSocketId(id: number) {
     const foundUserSocketId = await this.client.hget(`user:${id}`, 'socketid');
     return foundUserSocketId;
   }
 
-  async addUser(
+  async add(
     id: number,
     username: string,
     avatar: string,
@@ -32,7 +32,7 @@ export class MessengerUser implements IMessengerUser {
     .exec();
   }
 
-  async removeUser(id: number) {
+  async remove(id: number) {
     await this.client
     .multi()
     .zrem('users', id)
@@ -43,13 +43,13 @@ export class MessengerUser implements IMessengerUser {
 
 export interface IMessengerUser {
   client: Redis;
-  getUserSocketId(id: number): Promise<string|null>;
-  addUser(
+  getSocketId(id: number): Promise<string|null>;
+  add(
     id: number,
     username: string,
     avatar: string,
     sid: string,
     socketid: string
   ): void;
-  removeUser(id: number): void;
+  remove(id: number): void;
 }

@@ -19,7 +19,7 @@ export async function addRoom({
     if (currentRooms[currentRoom] !== socket.id) {
       socket.leave(currentRooms[currentRoom]);
 
-      messengerRoom.removeUserFromRoom(id, currentRooms[currentRoom]);
+      messengerRoom.removeUser(id, currentRooms[currentRoom]);
 
       socket.broadcast.to(currentRooms[currentRoom])
         .emit('RemoveUser', ChatUser(id, username, avatar));
@@ -28,13 +28,13 @@ export async function addRoom({
 
   socket.join(room);
 
-  await messengerRoom.addRoom(room);  // ???
-  await messengerRoom.addUserToRoom(id, room);
+  await messengerRoom.add(room);  // ???
+  await messengerRoom.addUser(id, room);
 
   socket.broadcast.to(room)
     .emit('AddUser', ChatUser(id, username, avatar));
 
-  const users = await messengerRoom.getUsersInRoom(room);
+  const users = await messengerRoom.getUsers(room);
 
   socket.emit('GetUser', users, room);
 }

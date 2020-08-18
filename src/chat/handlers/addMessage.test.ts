@@ -3,10 +3,10 @@ import { Socket } from 'socket.io';
 import { IMessengerChat } from '../../redis-access/MessengerChat';
 import { ChatMessage } from '../entities/ChatMessage';
 import { ChatUser } from '../entities/ChatUser';
-import { addChat } from './addChat';
+import { addMessage } from './addMessage';
 
-const mockAddChat = jest.fn();
-const mockMessengerChat: Partial<IMessengerChat> = {addChat: mockAddChat};
+const mockAddMessage = jest.fn();
+const mockMessengerChat: Partial<IMessengerChat> = {addMessage: mockAddMessage};
 
 jest.mock('../entities/ChatMessage');
 const mockChatMessage = ChatMessage as jest.Mocked<typeof ChatMessage>;
@@ -28,7 +28,7 @@ const mockSocket: Partial<Socket> = {
 };
 
 const params = {
-  chatMessageText: "howdy",
+  text: "howdy",
   id: 150,
   username: "Name",
   avatar: "Name123",
@@ -40,43 +40,43 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-describe ('addChat handler', () => {
+describe ('addMessage handler', () => {
   it('uses ChatUser correctly', async () => {
-    await addChat(params);
+    await addMessage(params);
     expect(mockChatUser).toHaveBeenCalledWith(150, "Name", "Name123");
   });
 
   it('uses ChatMessage correctly', async () => {
-    await addChat(params);
+    await addMessage(params);
     expect(mockChatMessage).toHaveBeenCalledWith(
       "howdy", "someRoom", ChatUser(150, "Name", "Name123")
     );
   });
 
-  it('uses addChat correctly', async () => {
-    await addChat(params);
-    expect(mockAddChat).toHaveBeenCalledWith(
+  it('uses addMessage correctly', async () => {
+    await addMessage(params);
+    expect(mockAddMessage).toHaveBeenCalledWith(
       ChatMessage("howdy", "someRoom", ChatUser(150, "Name", "Name123"))
     );
   });
 
   it('uses socket.broadcast.to correctly', async () => {
-    await addChat(params);
+    await addMessage(params);
     expect(params.socket.broadcast.to).toHaveBeenCalledWith("someRoom");
   });
 
   it('uses socket.broadcast.to.emit correctly', async () => {
-    await addChat(params);
+    await addMessage(params);
     expect(params.socket.broadcast.emit).toHaveBeenCalledWith(
-      'AddChat',
+      'AddMessage',
       ChatMessage("howdy", "someRoom", ChatUser(150, "Name", "Name123"))
     );
   });
 
   it('uses socket.emit correctly', async () => {
-    await addChat(params);
+    await addMessage(params);
     expect(params.socket.emit).toHaveBeenCalledWith(
-      'AddChat',
+      'AddMessage',
       ChatMessage("howdy", "someRoom", ChatUser(150, "Name", "Name123"))
     );
   });

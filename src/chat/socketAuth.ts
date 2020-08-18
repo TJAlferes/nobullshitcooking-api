@@ -14,18 +14,14 @@ export async function addMessengerUser(
   sid: string,
   session: Express.SessionData
 ) {
+  const { id, username, avatar } = session.userInfo;
+
   socket.request.sid = sid;
   socket.request.userInfo = session.userInfo;
 
   const messengerUser = new MessengerUser(pubClient);
 
-  await messengerUser.addUser(
-    session.userInfo.id,
-    session.userInfo.username,
-    session.userInfo.avatar,
-    sid,
-    socket.id
-  );
+  await messengerUser.add(id, username, avatar, sid, socket.id);
 }
 
 export function sessionIdsAreEqual(socket: Socket) {

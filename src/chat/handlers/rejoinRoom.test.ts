@@ -4,16 +4,16 @@ import { IMessengerRoom } from '../../redis-access/MessengerRoom';
 import { ChatUser } from '../entities/ChatUser';
 import { rejoinRoom } from './rejoinRoom';
 
-const mockAddRoom = jest.fn();
-const mockAddUserToRoom = jest.fn();
-const mockGetUsersInRoom = jest.fn().mockResolvedValue([
+const mockAdd = jest.fn();
+const mockAddUser = jest.fn();
+const mockGetUsers = jest.fn().mockResolvedValue([
   {id: 48, username: "Jack", avatar: "Jack123"},
   {id: 84, username: "Jill", avatar: "Jill123"}
 ]);
 const mockMessengerRoom: Partial<IMessengerRoom> = {
-  addRoom: mockAddRoom,
-  addUserToRoom: mockAddUserToRoom,
-  getUsersInRoom: mockGetUsersInRoom
+  add: mockAdd,
+  addUser: mockAddUser,
+  getUsers: mockGetUsers
 };
 
 const mockBroadcast: any = {
@@ -48,19 +48,19 @@ describe('rejoinRoom handler', () => {
   });
 
   // ?
-  it ('uses addRoom correctly', async () => {
+  it ('uses add correctly', async () => {
     await rejoinRoom(params);
-    expect(mockAddRoom).toHaveBeenCalledWith("someRoom");
+    expect(mockAdd).toHaveBeenCalledWith("someRoom");
   });
 
-  it ('uses addUserToRoom correctly', async () => {
+  it ('uses addUser correctly', async () => {
     await rejoinRoom(params);
-    expect(mockAddUserToRoom).toHaveBeenCalledWith(150, "someRoom");
+    expect(mockAddUser).toHaveBeenCalledWith(150, "someRoom");
   });
 
-  it ('uses getUsersInRoom correctly', async () => {
+  it ('uses getUsers correctly', async () => {
     await rejoinRoom(params);
-    expect(mockGetUsersInRoom).toHaveBeenCalledWith("someRoom");
+    expect(mockGetUsers).toHaveBeenCalledWith("someRoom");
   });
 
   it ('uses socket.broadcast.to correctly', async () => {

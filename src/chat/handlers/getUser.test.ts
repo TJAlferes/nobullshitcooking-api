@@ -3,12 +3,12 @@ import { Socket } from 'socket.io';
 import { IMessengerRoom } from '../../redis-access/MessengerRoom';
 import { getUser } from './getUser';
 
-const mockGetUsersInRoom = jest.fn().mockResolvedValue([
+const mockGetUsers = jest.fn().mockResolvedValue([
   {id: 48, username: "Jack", avatar: "Jack123"},
   {id: 84, username: "Jill", avatar: "Jill123"}
 ]);
 const mockMessengerRoom: Partial<IMessengerRoom> = {
-  getUsersInRoom: mockGetUsersInRoom
+  getUsers: mockGetUsers
 };
 
 const mockSocket: Partial<Socket> = {emit: jest.fn().mockReturnValue(true)};
@@ -26,7 +26,7 @@ afterEach(() => {
 describe('getUser handler', () => {
   it ('uses getUsersInRoom correctly', async () => {
     await getUser(params);
-    expect (mockGetUsersInRoom).toHaveBeenCalledWith("someRoom");
+    expect (mockGetUsers).toHaveBeenCalledWith("someRoom");
   });
 
   it ('uses socket.emit with GetUser event correctly', async () => {
