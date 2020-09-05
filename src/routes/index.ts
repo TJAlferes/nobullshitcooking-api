@@ -14,6 +14,7 @@ export { router as ingredientRoutes } from './ingredient';
 export { router as ingredientTypeRoutes } from './ingredientType';
 export { router as measurementRoutes } from './measurement';
 export { router as methodRoutes } from './method';
+export { router as profileRoutes } from './profile';
 export { router as recipeRoutes } from './recipe';
 export { router as recipeTypeRoutes } from './recipeType';
 export { router as searchRoutes } from './search';

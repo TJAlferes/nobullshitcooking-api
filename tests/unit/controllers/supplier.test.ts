@@ -5,7 +5,7 @@ import { supplierController } from '../../../src/controllers/supplier';
 const rows: any = [{id: 1, name: "Name"}];
 
 jest.mock('../../../src/mysql-access/Supplier', () => ({
-  Method: jest.fn().mockImplementation(() => ({
+  Supplier: jest.fn().mockImplementation(() => ({
     view: mockView,
     viewById: mockViewById
   }))

@@ -1,8 +1,10 @@
 import { Request, Response } from 'express';
 import { assert, coerce } from 'superstruct';
 
-import { validRecipeEntity } from '../../../../src/lib/validations/recipe/recipeEntity';
 import { userRecipeController } from '../../../../src/controllers/user/recipe';
+import {
+  validRecipeEntity
+} from '../../../../src/lib/validations/recipe/recipeEntity';
 
 jest.mock('superstruct');
 
@@ -11,8 +13,8 @@ jest.mock('../../../../src/lib/connections/elasticsearchClient');
 jest.mock('../../../../src/lib/connections/mysqlPoolConnection');
 
 jest.mock('../../../../src/elasticsearch-access/RecipeSearch', () => {
-  const originalModule = jest
-  .requireActual('../../elasticsearch-access/RecipeSearch');
+  const originalModule =
+    jest.requireActual('../../../../src/elasticsearch-access/RecipeSearch');
   return {
     ...originalModule,
     RecipeSearch: jest.fn().mockImplementation(() => ({save: mockESSave}))
@@ -21,7 +23,8 @@ jest.mock('../../../../src/elasticsearch-access/RecipeSearch', () => {
 let mockESSave = jest.fn();
 
 jest.mock('../../../../src/mysql-access/Recipe', () => {
-  const originalModule = jest.requireActual('../../../../src/mysql-access/Recipe');
+  const originalModule =
+    jest.requireActual('../../../../src/mysql-access/Recipe');
   return {
     ...originalModule,
     Recipe: jest.fn().mockImplementation(() => ({
@@ -78,7 +81,8 @@ let mockRIUpdate = jest.fn();
 let mockRIDeleteByRecipeId = jest.fn();
 
 jest.mock('../../../../src/mysql-access/RecipeMethod', () => {
-  const originalModule = jest.requireActual('../../../../src/mysql-access/RecipeMethod');
+  const originalModule =
+    jest.requireActual('../../../../src/mysql-access/RecipeMethod');
   return {
     ...originalModule,
     RecipeMethod: jest.fn().mockImplementation(() => ({

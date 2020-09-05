@@ -7,12 +7,9 @@ const mockGetUsers = jest.fn().mockResolvedValue([
   {id: 48, username: "Jack", avatar: "Jack123"},
   {id: 84, username: "Jill", avatar: "Jill123"}
 ]);
-const mockMessengerRoom: Partial<IMessengerRoom> = {
-  getUsers: mockGetUsers
-};
+const mockMessengerRoom: Partial<IMessengerRoom> = {getUsers: mockGetUsers};
 
 const mockSocket: Partial<Socket> = {emit: jest.fn().mockReturnValue(true)};
-
 const params = {
   room: "someRoom",
   socket: <Socket>mockSocket,

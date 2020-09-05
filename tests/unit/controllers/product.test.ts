@@ -5,7 +5,7 @@ import { productController } from '../../../src/controllers/product';
 const rows: any = [{id: 1, name: "Name"}];
 
 jest.mock('../../../src/mysql-access/Product', () => ({
-  Ingredient: jest.fn().mockImplementation(() => ({
+  Product: jest.fn().mockImplementation(() => ({
     view: mockView,
     viewById: mockViewById
   }))

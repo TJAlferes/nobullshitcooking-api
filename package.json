@@ -13,7 +13,7 @@
   },
   "jest": {
     "collectCoverage": true,
-    "coverageDirectory": "test-coverage",
+    "coverageDirectory": "coverage",
     "globals": {
       "ts-jest": {
         "babelConfig": true

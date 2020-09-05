@@ -16,11 +16,8 @@ const mockMessengerRoom: Partial<IMessengerRoom> = {
   getUsers: mockGetUsers
 };
 
-const mockBroadcast: any = {
-  emit: jest.fn(),
-  to: jest.fn((room: string) => mockBroadcast)
-};
-
+const mockBroadcast: any =
+  {emit: jest.fn(), to: jest.fn((room: string) => mockBroadcast)};
 const mockSocket: Partial<Socket> = {
   broadcast: <Socket>mockBroadcast,
   emit: jest.fn().mockReturnValue(true),

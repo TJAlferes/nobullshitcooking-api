@@ -17,6 +17,7 @@ import {
   ingredientTypeRoutes,
   measurementRoutes,
   methodRoutes,
+  profileRoutes,
   recipeRoutes,
   recipeTypeRoutes,
   searchRoutes,
@@ -46,6 +47,7 @@ export function routesInit(app: Application) {
   app.use('/ingredient-type', ingredientTypeRoutes);
   app.use('/measurement', measurementRoutes);
   app.use('/method', methodRoutes);
+  app.use('/profile', profileRoutes);
   app.use('/recipe', recipeRoutes);
   app.use('/recipe-type', recipeTypeRoutes);
   app.use('/search', searchRoutes);

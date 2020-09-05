@@ -23,7 +23,7 @@ let mockAutoIngredients = jest.fn().mockResolvedValue(found);
 let mockFindIngredients = jest.fn().mockResolvedValue(found);
 
 jest.mock('../../../src/elasticsearch-access/ProductSearch', () => ({
-  IngredientSearch: jest.fn().mockImplementation(() => ({
+  ProductSearch: jest.fn().mockImplementation(() => ({
     auto: mockAutoProducts,
     find: mockFindProducts
   }))

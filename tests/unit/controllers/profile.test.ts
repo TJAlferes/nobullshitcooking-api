@@ -1,10 +1,10 @@
-//const httpMocks = require('node-mocks-http');
-//const request = require('supertest');
 import { Request, Response } from 'express';
 import { assert } from 'superstruct';
 
 import { profileController } from '../../../src/controllers/profile';
-import { validProfileRequest } from '../../../src/lib/validations/profile/profileRequest';
+import {
+  validProfileRequest
+} from '../../../src/lib/validations/profile/profileRequest';
 
 const rows: any = [{id: 1, name: "Name"}];
 
@@ -25,9 +25,8 @@ let mockView = jest.fn().mockResolvedValue([rows]);
 jest.mock('../../../src/mysql-access/User', () => ({
   User: jest.fn().mockImplementation(() => ({viewByName: mockViewByName}))
 }));
-let mockViewByName = jest.fn().mockResolvedValue(
-  [[{user_id: 1, avatar: "Name23"}]]
-);
+let mockViewByName =
+  jest.fn().mockResolvedValue([[{user_id: 1, avatar: "Name23"}]]);
 
 afterEach(() => {
   jest.clearAllMocks();

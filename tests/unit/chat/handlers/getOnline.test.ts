@@ -9,22 +9,19 @@ const mockViewAccepted = jest.fn().mockResolvedValue([
   {user_id: 48, username: "Jack", avatar: "Jack123"},
   {user_id: 84, username: "Jill", avatar: "Jill123"}
 ]);
-const mockNobscFriendship: Partial<IFriendship> = {
-  viewAccepted: mockViewAccepted
-};
+const mockNobscFriendship: Partial<IFriendship> =
+  {viewAccepted: mockViewAccepted};
 
-let mockGetSocketId = jest.fn();
-
-const mockBroadcast: any = {
-  emit: jest.fn(),
-  to: jest.fn((room: string) => mockBroadcast)
-};
-
+const mockBroadcast: any =
+  {emit: jest.fn(), to: jest.fn((room: string) => mockBroadcast)};
 const mockSocket: Partial<Socket> = {
   broadcast: <Socket>mockBroadcast,
   emit: jest.fn().mockReturnValue(true),
   rooms: {"someRoom": "someRoom"}
 };
+
+let mockGetSocketId = jest.fn();
+let mockMessengerUser: Partial<IMessengerUser>;
 
 const params = {
   id: 150,
@@ -41,11 +38,12 @@ afterEach(() => {
 describe('getOnline handler', () => {
 
   describe('when friends are offline', () => {
-    it ('uses viewMyAcceptedFriendships correctly', async () => {
+    beforeAll(() => {
       mockGetSocketId = jest.fn().mockResolvedValue(undefined);
-      const mockMessengerUser: Partial<IMessengerUser> = {
-        getSocketId: mockGetSocketId
-      };
+      mockMessengerUser = {getSocketId: mockGetSocketId};
+    });
+
+    it ('uses viewMyAcceptedFriendships correctly', async () => {
       await getOnline({
         ...params,
         messengerUser: <IMessengerUser>mockMessengerUser
@@ -54,10 +52,6 @@ describe('getOnline handler', () => {
     });
 
     it ('uses getSocketId correctly', async () => {
-      mockGetSocketId = jest.fn().mockResolvedValue(undefined);
-      const mockMessengerUser: Partial<IMessengerUser> = {
-        getSocketId: mockGetSocketId
-      };
       await getOnline({
         ...params,
         messengerUser: <IMessengerUser>mockMessengerUser
@@ -67,24 +61,21 @@ describe('getOnline handler', () => {
     });
 
     it ('uses socket.emit with GetOnline event correctly', async () => {
-      mockGetSocketId = jest.fn().mockResolvedValue(undefined);
-      const mockMessengerUser: Partial<IMessengerUser> = {
-        getSocketId: mockGetSocketId
-      };
       await getOnline({
         ...params,
         messengerUser: <IMessengerUser>mockMessengerUser
       });
-
+      // finish
     });
   });
 
   describe('when friends are online', () => {
-    it ('uses viewMyAcceptedFriendships correctly', async () => {
+    beforeAll(() => {
       mockGetSocketId = jest.fn().mockResolvedValue("123456789");
-      const mockMessengerUser: Partial<IMessengerUser> = {
-        getSocketId: mockGetSocketId
-      };
+      mockMessengerUser = {getSocketId: mockGetSocketId};
+    });
+
+    it ('uses viewMyAcceptedFriendships correctly', async () => {
       await getOnline({
         ...params,
         messengerUser: <IMessengerUser>mockMessengerUser
@@ -93,10 +84,6 @@ describe('getOnline handler', () => {
     });
 
     it ('uses getSocketId correctly', async () => {
-      mockGetSocketId = jest.fn().mockResolvedValue("123456789");
-      const mockMessengerUser: Partial<IMessengerUser> = {
-        getSocketId: mockGetSocketId
-      };
       await getOnline({
         ...params,
         messengerUser: <IMessengerUser>mockMessengerUser
@@ -108,10 +95,6 @@ describe('getOnline handler', () => {
     it (
       'uses socket.broadcast.to with ShowOnline event correctly',
       async () => {
-        mockGetSocketId = jest.fn().mockResolvedValue("123456789");
-        const mockMessengerUser: Partial<IMessengerUser> = {
-          getSocketId: mockGetSocketId
-        };
         await getOnline({
           ...params,
           messengerUser: <IMessengerUser>mockMessengerUser
@@ -123,10 +106,6 @@ describe('getOnline handler', () => {
     it (
       'uses socket.broadcast.emit with ShowOnline event correctly',
       async () => {
-        mockGetSocketId = jest.fn().mockResolvedValue("123456789");
-        const mockMessengerUser: Partial<IMessengerUser> = {
-          getSocketId: mockGetSocketId
-        };
         await getOnline({
           ...params,
           messengerUser: <IMessengerUser>mockMessengerUser
@@ -137,10 +116,6 @@ describe('getOnline handler', () => {
     );
 
     it ('uses socket.emit with GetOnline event correctly', async () => {
-      mockGetSocketId = jest.fn().mockResolvedValue("123456789");
-      const mockMessengerUser: Partial<IMessengerUser> = {
-        getSocketId: mockGetSocketId
-      };
       await getOnline({
         ...params,
         messengerUser: <IMessengerUser>mockMessengerUser
