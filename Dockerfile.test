@@ -18,4 +18,8 @@ RUN npm install && npm cache clean --force
 
 WORKDIR /api/src
 COPY ./src .
-CMD npm test "/src/app.test.ts"
+
+WORKDIR /api/tests
+COPY ./tests .
+
+CMD npm run test

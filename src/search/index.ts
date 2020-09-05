@@ -2,23 +2,28 @@ import { esClient } from '../lib/connections/elasticsearchClient';
 import { pool } from '../lib/connections/mysqlPoolConnection';
 import { Equipment } from '../mysql-access/Equipment';
 import { Ingredient } from '../mysql-access/Ingredient';
+import { Product } from '../mysql-access/Product';
 import { Recipe } from '../mysql-access/Recipe';
 
 export async function bulkUp() {
   const recipe = new Recipe(pool);
   const ingredient = new Ingredient(pool);
+  const product = new Product(pool);
   const equipment = new Equipment(pool);
   
-  const [ bulkRecipes, bulkIngredients, bulkEquipment ] = await Promise.all([
-    recipe.getAllForElasticSearch(),
-    ingredient.getAllForElasticSearch(),
-    equipment.getAllForElasticSearch()
-  ]);
+  const [ bulkRecipes, bulkIngredients, bulkProducts, bulkEquipment ] =
+    await Promise.all([
+      recipe.getAllForElasticSearch(),
+      ingredient.getAllForElasticSearch(),
+      product.getAllForElasticSearch(),
+      equipment.getAllForElasticSearch()
+    ]);
 
   // delete
   await Promise.all([
     esClient.indices.delete({index: "recipes"}),
     esClient.indices.delete({index: "ingredients"}),
+    esClient.indices.delete({index: "products"}),
     esClient.indices.delete({index: "equipment"})
   ]);
 
@@ -127,6 +132,39 @@ export async function bulkUp() {
           }
         }
       }
+    }),
+    esClient.indices.create({
+      index: "products",
+      body: {
+        settings: {
+          analysis: {
+            analyzer: {
+              autocomplete: {tokenizer: "autocomplete", filter: ["lowercase"]},
+              autocomplete_search: {tokenizer: "lowercase"}
+            },
+            tokenizer: {
+              autocomplete: {
+                type: "edge_ngram",
+                min_gram: 2,
+                max_gram: 10,
+                token_chars: ["letter"]
+              }
+            }
+          }
+        },
+        mappings: {
+          properties: {
+            id: {type: 'integer'},
+            product_category_name: {type: 'keyword'},
+            product_type_name: {type: 'keyword'},
+            fullname: {
+              type: 'text',
+              analyzer: 'autocomplete',
+              search_analyzer: 'autocomplete_search'
+            }
+          }
+        }
+      }
     })
   ]);
 
@@ -146,6 +184,11 @@ export async function bulkUp() {
       index: "equipment",
       body: bulkEquipment,
       refresh: "true"
+    }),
+    esClient.bulk({
+      index: "products",
+      body: bulkProducts,
+      refresh: "true"
     })
   ]);
 
@@ -153,7 +196,8 @@ export async function bulkUp() {
   await Promise.all([
     esClient.indices.refresh({index: "recipes"}),
     esClient.indices.refresh({index: "ingredients"}),
-    esClient.indices.refresh({index: "equipment"})
+    esClient.indices.refresh({index: "equipment"}),
+    esClient.indices.refresh({index: "products"})
   ]);
 
   /*

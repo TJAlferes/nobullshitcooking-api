@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 //import { AllSearch } from '../elasticsearch-access/AllSearch';
 import { EquipmentSearch } from '../elasticsearch-access/EquipmentSearch';
 import { IngredientSearch } from '../elasticsearch-access/IngredientSearch';
+import { ProductSearch } from '../elasticsearch-access/ProductSearch';
 import { RecipeSearch } from '../elasticsearch-access/RecipeSearch';
 import { esClient } from '../lib/connections/elasticsearchClient';
 
@@ -58,6 +59,24 @@ export const searchController = {
     const ingredientSearch = new IngredientSearch(esClient);
 
     const found = await ingredientSearch.find(body);
+
+    return res.json({found});
+  },
+  autocompletePublicProducts: async function(req: Request, res: Response) {
+    const searchTerm = req.body.searchTerm;
+
+    const productSearch = new ProductSearch(esClient);
+
+    const found = await productSearch.auto(searchTerm);
+
+    return res.json({found});
+  },
+  findPublicProducts: async function(req: Request, res: Response) {
+    const body = req.body.body;  // security?
+
+    const productSearch = new ProductSearch(esClient);
+
+    const found = await productSearch.find(body);
 
     return res.json({found});
   },

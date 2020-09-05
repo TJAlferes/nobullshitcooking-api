@@ -19,6 +19,12 @@ CREATE TABLE `cuisines` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE `customers` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `email` varchar(60) UNIQUE NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE `equipment_types` (
   `id` tinyint unsigned NOT NULL DEFAULT '0',
   `name` varchar(25) DEFAULT NULL,
@@ -38,6 +44,18 @@ CREATE TABLE `measurements` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `methods` (
+  `id` tinyint unsigned NOT NULL DEFAULT '0',
+  `name` varchar(25) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `product_categories` (
+  `id` tinyint unsigned NOT NULL DEFAULT '0',
+  `name` varchar(25) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `product_types` (
   `id` tinyint unsigned NOT NULL DEFAULT '0',
   `name` varchar(25) DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -158,6 +176,36 @@ CREATE TABLE `notifications` (
   FOREIGN KEY (`receiver_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE `orders` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `customer_id` int unsigned NOT NULL,
+  `staff_id` int unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`),
+  FOREIGN KEY (`staff_id`) REFERENCES `staff` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `products` (
+  `id` smallint unsigned NOT NULL AUTO_INCREMENT,
+  `ingredient_type_id` tinyint unsigned NOT NULL DEFAULT '0',
+  `brand` varchar(100),
+  `variety` varchar(100),
+  `name` varchar(100) NOT NULL,
+  `alt_names` json DEFAULT NULL,
+  `description` text NOT NULL,
+  `specs` json DEFAULT NULL,
+  `image` varchar(100) NOT NULL DEFAULT 'nobsc-product-default',
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`product_type_id`) REFERENCES `product_types` (`id`),
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `order_products` (
+  `order_id` int unsigned NOT NULL,
+  `product_id` smallint unsigned NOT NULL,
+  FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
+  FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE `plans` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `author_id` int unsigned NOT NULL,
@@ -167,6 +215,13 @@ CREATE TABLE `plans` (
   PRIMARY KEY (`id`),
   FOREIGN KEY (`author_id`) REFERENCES `users` (`id`),
   FOREIGN KEY (`owner_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `product_suppliers` (
+  `product_id` smallint unsigned NOT NULL,
+  `supplier_id` smallint unsigned NOT NULL,
+  FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
+  FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `recipes` (

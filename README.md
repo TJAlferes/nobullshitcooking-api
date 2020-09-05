@@ -4,7 +4,56 @@
 
 # [No Bullshit Cooking](https://nobullshitcooking.com/)
 
-## API
+## MySQL Database
+
+### TABLES
+
+content
+content_types
+cuisines
+cuisine_equipment
+cuisine_ingredients
+cuisine_suppliers
+customers
+equipment
+equipment_types
+favorite_recipes
+friendships
+ingredients
+ingredient_types
+measurements
+methods
+notifications
+orders
+order_products
+plans
+products
+product_suppliers
+recipes
+recipe_equipment
+recipe_ingredients
+recipe_methods
+recipe_subrecipes
+recipe_types
+saved_recipes
+staff
+suppliers
+users
+
+## Redis store
+
+MessengerChat
+MessengerRoom
+MessengerUser
+
+## ElasticSearch indices
+
+Equipment
+Ingredient
+Product
+Recipe
+
+## Node.js Express API endpoints
 
 ### GENERAL
 

@@ -12,14 +12,14 @@ export const router = Router();
 router.post(
   '/all',
   userIsAuth,
-  catchExceptions(userContentController.viewAllMyContent)
+  catchExceptions(userContentController.view)
 );
 
 router.post(
   '/one',
   userIsAuth,
-  [body('contentId').not().isEmpty().trim().escape()],
-  catchExceptions(userContentController.viewMyContent)
+  [body('id').not().isEmpty().trim().escape()],
+  catchExceptions(userContentController.viewById)
 );
 
 router.post(

@@ -17,4 +17,5 @@ RUN npm install && npm cache clean --force
 
 WORKDIR /api/src
 COPY ./src .
+
 CMD npm run dev-ts
