@@ -6,4 +6,4 @@ logs
 npm-debug.log*
 .npm
 dist/
-test-coverage/
+coverage/
