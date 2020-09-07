@@ -24,10 +24,7 @@ export class Grocer implements IGrocer {
 
   async create({ ownerId, name, address, notes }: ICreatingGrocer) {
     const sql = `
-      INSERT INTO grocers
-      (owner_id, grocer_name, grocer_address, grocer_notes)
-      VALUES
-      (?, ?, ?, ?)
+      INSERT INTO grocers (owner_id, name, address, notes) VALUES (?, ?, ?, ?)
     `;
     const [ row ] = await this.pool
       .execute<RowDataPacket[]>(sql, [ownerId, name, address, notes]);

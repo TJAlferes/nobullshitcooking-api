@@ -4,7 +4,7 @@ import { assert } from 'superstruct';
 import { profileController } from '../../../src/controllers/profile';
 import {
   validProfileRequest
-} from '../../../src/lib/validations/profile/profileRequest';
+} from '../../../src/lib/validations/profile/request';
 
 const rows: any = [{id: 1, name: "Name"}];
 

@@ -4,6 +4,12 @@
 
 # [No Bullshit Cooking](https://nobullshitcooking.com/)
 
+> "No one who has been generous has ever perished in destitution."
+
+> "All civilization is the deoccultization of knowledge."
+
+> "Simple systems can display complex behavior, complex systems can only display simple behavior."
+
 ## MySQL Database
 
 ### TABLES

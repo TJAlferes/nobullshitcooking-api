@@ -1,18 +1,15 @@
 import { Request, Response } from 'express';
 
-import { staffCuisineIngredientController } from '../../../../src/controllers/staff/cuisineIngredient';
+import {
+  staffCuisineIngredientController
+} from '../../../../src/controllers/staff/cuisineIngredient';
 
-jest.mock('../../../../src/mysql-access/CuisineIngredient', () => {
-  const originalModule =
-    jest.requireActual('../../../../src/mysql-access/CuisineIngredient');
-  return {
-    ...originalModule,
-    CuisineIngredient: jest.fn().mockImplementation(() => ({
-      create: mockCreate,
-      delete: mockDelete
-    }))
-  };
-});
+jest.mock('../../../../src/mysql-access/CuisineIngredient', () => ({
+  CuisineIngredient: jest.fn().mockImplementation(() => ({
+    create: mockCreate,
+    delete: mockDelete
+  }))
+}));
 let mockCreate = jest.fn();
 let mockDelete = jest.fn();
 

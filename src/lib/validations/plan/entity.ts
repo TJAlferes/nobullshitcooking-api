@@ -3,8 +3,8 @@ import { defaulted, number, object, string } from 'superstruct';
 export const validPlanEntity = object({
   authorId: number(),
   ownerId: number(),
-  planName: string(),
-  planData: defaulted(
+  name: string(),
+  data: defaulted(
     string(),
     JSON.stringify({
       1: [],

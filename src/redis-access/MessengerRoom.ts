@@ -36,18 +36,18 @@ export class MessengerRoom implements IMessengerRoom {
   
   async addUser(id: number, room: string) {
     await this.pubClient
-    .multi()
-    .zadd(`rooms:${room}`, `${Date.now()}`, `${id}`)
-    .set(`user:${id}:room`, room)
-    .exec();
+      .multi()
+      .zadd(`rooms:${room}`, `${Date.now()}`, `${id}`)
+      .set(`user:${id}:room`, room)
+      .exec();
   }
   
   async removeUser(id: number, room: string) {
     await this.pubClient
-    .multi()
-    .zrem(`rooms:${room}`, id)
-    .del(`user:${id}:room`)
-    .exec();
+      .multi()
+      .zrem(`rooms:${room}`, id)
+      .del(`user:${id}:room`)
+      .exec();
   };
 }
 

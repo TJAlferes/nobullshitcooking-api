@@ -5,6 +5,7 @@ import { Ingredient } from '../mysql-access/Ingredient';
 import { Product } from '../mysql-access/Product';
 import { Recipe } from '../mysql-access/Recipe';
 
+// TO DO: rename this
 export async function bulkUp() {
   const recipe = new Recipe(pool);
   const ingredient = new Ingredient(pool);

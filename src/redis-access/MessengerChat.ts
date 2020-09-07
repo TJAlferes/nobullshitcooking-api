@@ -12,10 +12,14 @@ export class MessengerChat implements IMessengerChat {
   
   async addMessage(message: IChatMessage) {
     await this.client
-    .multi()
-    .zadd(`rooms:${message.room}:chats`, `${Date.now()}`, JSON.stringify(message))
-    .zadd('rooms', `${(new Date).getTime()}`, JSON.stringify(message.room))
-    .exec();
+      .multi()
+      .zadd(
+        `rooms:${message.room}:chats`,
+        `${Date.now()}`,
+        JSON.stringify(message)
+      )
+      .zadd('rooms', `${(new Date).getTime()}`, JSON.stringify(message.room))
+      .exec();
   };
 }
 

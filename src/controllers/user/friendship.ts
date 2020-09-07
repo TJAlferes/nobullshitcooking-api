@@ -2,9 +2,7 @@ import { Request, Response } from 'express';
 import { assert } from 'superstruct';
 
 import { pool } from '../../lib/connections/mysqlPoolConnection';
-import {
-  validFriendshipEntity
-} from '../../lib/validations/friendship/friendshipEntity';
+import { validFriendshipEntity } from '../../lib/validations/friendship/entity';
 import { Friendship } from '../../mysql-access/Friendship';
 import { User } from '../../mysql-access/User';
 

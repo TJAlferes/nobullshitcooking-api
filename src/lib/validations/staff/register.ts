@@ -1,17 +1,17 @@
-import { IUser } from '../../../mysql-access/User';
+import { IStaff } from '../../../mysql-access/Staff';
 
 export async function validRegister(
-  {email, pass, username}: Info,
-  user: IUser
+  {email, pass, staffname}: Info,
+  staff: IStaff
 ) {
-  if (username.length < 6) {
-    return {valid: false, feedback: 'Username must be at least 6 characters.'};
+  if (staffname.length < 6) {
+    return {valid: false, feedback: 'Staffname must be at least 6 characters.'};
   }
 
-  if (username.length > 20) {
+  if (staffname.length > 20) {
     return {
       valid: false,
-      feedback: 'Username must be no more than 20 characters.'
+      feedback: 'Staffname must be no more than 20 characters.'
     };
   }
 
@@ -31,10 +31,10 @@ export async function validRegister(
     };
   }
 
-  const [ userExists ] = await user.getByName(username);
-  if (userExists) return {valid: false, feedback: 'Username already taken.'};
+  const [ staffExists ] = await staff.getByName(staffname);
+  if (staffExists) return {valid: false, feedback: 'Staffname already taken.'};
 
-  const [ emailExists ] = await user.getByEmail(email);
+  const [ emailExists ] = await staff.getByEmail(email);
   if (emailExists) return {valid: false, feedback: 'Email already in use.'};
 
   return {valid: true, feedback: 'Valid.'};
@@ -43,5 +43,5 @@ export async function validRegister(
 type Info = {
   email: string;
   pass: string;
-  username: string;
+  staffname: string;
 };

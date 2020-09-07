@@ -2,26 +2,24 @@ import { Request, Response } from 'express';
 import { assert, coerce } from 'superstruct';
 
 import {
-  validCreatingContentEntity
-} from '../../../../src/lib/validations/content/creatingContentEntity';
+  staffContentController
+} from '../../../../src/controllers/staff/content';
 import {
-  validEditingContentEntity
-} from '../../../../src/lib/validations/content/editingContentEntity';
-import { staffContentController } from '../../../../src/controllers/staff/content';
+  validContentCreation
+} from '../../../../src/lib/validations/content/create';
+import {
+  validContentUpdate
+} from '../../../../src/lib/validations/content/update';
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/mysql-access/Content', () => {
-  const originalModule = jest.requireActual('../../../../src/mysql-access/Content');
-  return {
-    ...originalModule,
-    Content: jest.fn().mockImplementation(() => ({
-      create: mockCreate,
-      update: mockUpdate,
-      delete: mockDelete
-    }))
-  };
-});
+jest.mock('../../../../src/mysql-access/Content', () => ({
+  Content: jest.fn().mockImplementation(() => ({
+    create: mockCreate,
+    update: mockUpdate,
+    delete: mockDelete
+  }))
+}));
 let mockCreate = jest.fn();
 let mockUpdate = jest.fn();
 let mockDelete = jest.fn();
@@ -72,8 +70,8 @@ describe('staff content controller', () => {
           published: null,
           title: "Some Title",
           items: "[]"
-        }, validCreatingContentEntity),
-        validCreatingContentEntity
+        }, validContentCreation),
+        validContentCreation
       );
     });
 
@@ -127,8 +125,8 @@ describe('staff content controller', () => {
           published: null,
           title: "Some Title",
           items: "[]"
-        }, validEditingContentEntity),
-        validEditingContentEntity
+        }, validContentUpdate),
+        validContentUpdate
       );
     });
 

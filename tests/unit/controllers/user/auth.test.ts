@@ -1,26 +1,24 @@
-//const httpMocks = require('node-mocks-http');
-//const request = require('supertest');
+import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import { assert } from 'superstruct';
-import bcrypt from 'bcrypt';
-import * as uuid from 'uuid'
+import * as uuid from 'uuid';
 import { v4 as uuidv4 } from 'uuid';
 
+import { userAuthController } from '../../../../src/controllers/user/auth';
 import {
   emailConfirmationCode
 } from '../../../../src/lib/services/email-confirmation-code';
 import {
-  validRegisterRequest,
-  validRegister,
-  validUserEntity,
-  validVerifyRequest,
-  validVerify,
-  validResend,
-  validLoginRequest,
   validLogin,
-  validUpdatingUser
+  validLoginRequest,
+  validRegister,
+  validRegisterRequest,
+  validResend,
+  validUserCreation,
+  validUserUpdate,
+  validVerify,
+  validVerifyRequest,
 } from '../../../../src/lib/validations/user/index';
-import { userAuthController } from '../../../../src/controllers/user/auth';
 
 jest.mock('bcrypt');
 const mockBcrypt = bcrypt as jest.Mocked<typeof bcrypt>;
@@ -36,24 +34,20 @@ mockUUID.v4.mockReturnValue("123XYZ");
 
 jest.mock('../../../../src/lib/services/email-confirmation-code', () => {
   const originalModule = jest
-  .requireActual('../../../../src/lib/services/email-confirmation-code');
+    .requireActual('../../../../src/lib/services/email-confirmation-code');
   return {...originalModule, emailConfirmationCode: jest.fn()};
 });
 
-jest.mock('../../../../src/mysql-access/User', () => {
-  const originalModule = jest.requireActual('../../../../src/mysql-access/User');
-  return {
-    ...originalModule,
-    User: jest.fn().mockImplementation(() => ({
-      getByEmail: mockGetByEmail,
-      getByName: mockGetByName,
-      create: mockCreateUser,
-      verify: mockVerifyUser,
-      update: mockUpdateUser,
-      delete: mockDeleteUser
-    }))
-  };
-});
+jest.mock('../../../../src/mysql-access/User', () => ({
+  User: jest.fn().mockImplementation(() => ({
+    getByEmail: mockGetByEmail,
+    getByName: mockGetByName,
+    create: mockCreateUser,
+    verify: mockVerifyUser,
+    update: mockUpdateUser,
+    delete: mockDeleteUser
+  }))
+}));
 let mockGetByEmail = jest.fn();
 let mockGetByName = jest.fn();
 let mockCreateUser = jest.fn();
@@ -61,146 +55,94 @@ let mockVerifyUser = jest.fn();
 let mockUpdateUser = jest.fn();
 let mockDeleteUser = jest.fn();
 
-jest.mock('../../../../src/mysql-access/Content', () => {
-  const originalModule = jest.requireActual('../../../../src/mysql-access/Content');
-  return {
-    ...originalModule,
-    Content: jest.fn().mockImplementation(() => ({
-      deleteAllByOwnerId: mockContentDeleteAllByOwnerId
-    }))
-  };
-});
+jest.mock('../../../../src/mysql-access/Content', () => ({
+  Content: jest.fn().mockImplementation(() => ({
+    deleteAllByOwnerId: mockContentDeleteAllByOwnerId
+  }))
+}));
 let mockContentDeleteAllByOwnerId = jest.fn();
 
-jest.mock('../../../../src/mysql-access/Friendship', () => {
-  const originalModule = jest.requireActual('../../../../src/mysql-access/Friendship');
-  return {
-    ...originalModule,
-    Friendship: jest.fn().mockImplementation(() => ({
-      deleteAllByUserId: mockDeleteAllFriendshipsByUserId
-    }))
-  };
-});
+jest.mock('../../../../src/mysql-access/Friendship', () => ({
+  Friendship: jest.fn().mockImplementation(() => ({
+    deleteAllByUserId: mockDeleteAllFriendshipsByUserId
+  }))
+}));
 let mockDeleteAllFriendshipsByUserId = jest.fn();
 
-jest.mock('../../../../src/mysql-access/Plan', () => {
-  const originalModule = jest.requireActual('../../../../src/mysql-access/Plan');
-  return {
-    ...originalModule,
-    Plan: jest.fn().mockImplementation(() => ({
-      deleteAllByOwnerId: mockDeleteAllPlansByOwnerId
-    }))
-  };
-});
+jest.mock('../../../../src/mysql-access/Plan', () => ({
+  Plan: jest.fn().mockImplementation(() => ({
+    deleteAllByOwnerId: mockDeleteAllPlansByOwnerId
+  }))
+}));
 let mockDeleteAllPlansByOwnerId = jest.fn();
 
-jest.mock('../../../../src/mysql-access/FavoriteRecipe', () => {
-  const originalModule = jest.requireActual('../../../../src/mysql-access/FavoriteRecipe');
-  return {
-    ...originalModule,
-    FavoriteRecipe: jest.fn().mockImplementation(() => ({
-      deleteAllByUserId: mockDeleteAllFavoriteRecipesByUserId
-    }))
-  };
-});
+jest.mock('../../../../src/mysql-access/FavoriteRecipe', () => ({
+  FavoriteRecipe: jest.fn().mockImplementation(() => ({
+    deleteAllByUserId: mockDeleteAllFavoriteRecipesByUserId
+  }))
+}));
 let mockDeleteAllFavoriteRecipesByUserId = jest.fn();
 
-jest.mock('../../../../src/mysql-access/SavedRecipe', () => {
-  const originalModule = jest.requireActual('../../../../src/mysql-access/SavedRecipe');
-  return {
-    ...originalModule,
-    SavedRecipe: jest.fn().mockImplementation(() => ({
-      deleteAllByUserId: mockDeleteAllSavedRecipesByUserId
-    }))
-  };
-});
+jest.mock('../../../../src/mysql-access/SavedRecipe', () => ({
+  SavedRecipe: jest.fn().mockImplementation(() => ({
+    deleteAllByUserId: mockDeleteAllSavedRecipesByUserId
+  }))
+}));
 let mockDeleteAllSavedRecipesByUserId = jest.fn();
 
-jest.mock('../../../../src/mysql-access/Recipe', () => {
-  const originalModule = jest.requireActual('../../../../src/mysql-access/Recipe');
-  return {
-    ...originalModule,
-    Recipe: jest.fn().mockImplementation(() => ({
-      getAllPrivateIdsByUserId: mockGetAllPrivateIdsByUserId,
-      disown: mockDisown,
-      deletePrivate: mockDeletePrivate
-    }))
-  };
-});
+jest.mock('../../../../src/mysql-access/Recipe', () => ({
+  Recipe: jest.fn().mockImplementation(() => ({
+    getAllPrivateIdsByUserId: mockGetAllPrivateIdsByUserId,
+    disown: mockDisown,
+    deletePrivate: mockDeletePrivate
+  }))
+}));
 let mockGetAllPrivateIdsByUserId = jest.fn().mockResolvedValue([273, 837, 941]);
 let mockDisown = jest.fn();
 let mockDeletePrivate = jest.fn();
 
-jest.mock('../../../../src/mysql-access/RecipeEquipment', () => {
-  const originalModule = jest
-  .requireActual('../../../../src/mysql-access/RecipeEquipment');
-  return {
-    ...originalModule,
-    RecipeEquipment: jest.fn().mockImplementation(() => ({
-      deleteByRecipeIds: mockDeleteRecipeEquipmentByRecipeIds
-    }))
-  };
-});
+jest.mock('../../../../src/mysql-access/RecipeEquipment', () => ({
+  RecipeEquipment: jest.fn().mockImplementation(() => ({
+    deleteByRecipeIds: mockDeleteRecipeEquipmentByRecipeIds
+  }))
+}));
 let mockDeleteRecipeEquipmentByRecipeIds = jest.fn();
 
-jest.mock('../../../../src/mysql-access/RecipeIngredient', () => {
-  const originalModule = jest
-  .requireActual('../../../../src/mysql-access/RecipeIngredient');
-  return {
-    ...originalModule,
-    RecipeIngredient: jest.fn().mockImplementation(() => ({
-      deleteByRecipeIds: mockDeleteRecipeIngredientsByRecipeIds
-    }))
-  };
-});
+jest.mock('../../../../src/mysql-access/RecipeIngredient', () => ({
+  RecipeIngredient: jest.fn().mockImplementation(() => ({
+    deleteByRecipeIds: mockDeleteRecipeIngredientsByRecipeIds
+  }))
+}));
 let mockDeleteRecipeIngredientsByRecipeIds = jest.fn();
 
-jest.mock('../../../../src/mysql-access/RecipeMethod', () => {
-  const originalModule = jest
-  .requireActual('../../../../src/mysql-access/RecipeMethod');
-  return {
-    ...originalModule,
-    RecipeMethod: jest.fn().mockImplementation(() => ({
-      deleteByRecipeIds: mockDeleteRecipeMethodsByRecipeIds
-    }))
-  };
-});
+jest.mock('../../../../src/mysql-access/RecipeMethod', () => ({
+  RecipeMethod: jest.fn().mockImplementation(() => ({
+    deleteByRecipeIds: mockDeleteRecipeMethodsByRecipeIds
+  }))
+}));
 let mockDeleteRecipeMethodsByRecipeIds = jest.fn();
 
-jest.mock('../../../../src/mysql-access/RecipeSubrecipe', () => {
-  const originalModule = jest
-  .requireActual('../../../../src/mysql-access/RecipeSubrecipe');
-  return {
-    ...originalModule,
-    RecipeSubrecipe: jest.fn().mockImplementation(() => ({
-      deleteByRecipeIds: mockDeleteRecipeSubrecipesByRecipeIds,
-      deleteBySubrecipeIds: mockDeleteRecipeSubrecipesBySubrecipeIds
-    }))
-  };
-});
+jest.mock('../../../../src/mysql-access/RecipeSubrecipe', () => ({
+  RecipeSubrecipe: jest.fn().mockImplementation(() => ({
+    deleteByRecipeIds: mockDeleteRecipeSubrecipesByRecipeIds,
+    deleteBySubrecipeIds: mockDeleteRecipeSubrecipesBySubrecipeIds
+  }))
+}));
 let mockDeleteRecipeSubrecipesByRecipeIds = jest.fn();
 let mockDeleteRecipeSubrecipesBySubrecipeIds = jest.fn();
 
-jest.mock('../../../../src/mysql-access/Equipment', () => {
-  const originalModule = jest.requireActual('../../../../src/mysql-access/Equipment');
-  return {
-    ...originalModule,
-    Equipment: jest.fn().mockImplementation(() => ({
-      deleteAllByOwnerId: mockDeleteAllEquipmentByOwnerId
-    }))
-  };
-});
+jest.mock('../../../../src/mysql-access/Equipment', () => ({
+  Equipment: jest.fn().mockImplementation(() => ({
+    deleteAllByOwnerId: mockDeleteAllEquipmentByOwnerId
+  }))
+}));
 let mockDeleteAllEquipmentByOwnerId = jest.fn();
 
-jest.mock('../../../../src/mysql-access/Ingredient', () => {
-  const originalModule = jest.requireActual('../../../../src/mysql-access/Ingredient');
-  return {
-    ...originalModule,
-    Ingredient: jest.fn().mockImplementation(() => ({
-      deleteAllByOwnerId: mockDeleteAllIngredientsByOwnerId
-    }))
-  };
-});
+jest.mock('../../../../src/mysql-access/Ingredient', () => ({
+  Ingredient: jest.fn().mockImplementation(() => ({
+    deleteAllByOwnerId: mockDeleteAllIngredientsByOwnerId
+  }))
+}));
 let mockDeleteAllIngredientsByOwnerId = jest.fn();
 
 afterEach(() => {
@@ -462,7 +404,8 @@ describe('user auth controller', () => {
 
       it('sends data correctly', async () => {
         await userAuthController.register(<Request>req, <Response>res);
-        expect(res.send).toHaveBeenCalledWith({message: 'Email already in use.'});
+        expect(res.send)
+          .toHaveBeenCalledWith({message: 'Email already in use.'});
       });
   
       it('returns correctly', async () => {
@@ -522,7 +465,7 @@ describe('user auth controller', () => {
             username: "NameIsGood",
             confirmationCode: "123XYZ"
           },
-          validUserEntity
+          validUserCreation
         );
       });
 
@@ -1410,7 +1353,7 @@ describe('user auth controller', () => {
           username: "NameIsGood",
           avatar: "NameIsGood"
         },
-        validUpdatingUser
+        validUserUpdate
       );
     });
 

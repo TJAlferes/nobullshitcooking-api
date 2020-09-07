@@ -2,9 +2,7 @@ import { Request, Response } from 'express';
 import { assert } from 'superstruct';
 
 import { pool } from '../lib/connections/mysqlPoolConnection';
-import {
-  validRecipeTypeRequest
-} from '../lib/validations/recipeType/recipeTypeRequest';
+import { validRecipeTypeRequest } from '../lib/validations/recipeType/request';
 import { RecipeType } from '../mysql-access/RecipeType';
 
 export const recipeTypeController = {

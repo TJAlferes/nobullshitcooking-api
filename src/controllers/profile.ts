@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { assert } from 'superstruct';
 
 import { pool } from '../lib/connections/mysqlPoolConnection';
-import { validProfileRequest } from '../lib/validations/profile/profileRequest';
+import { validProfileRequest } from '../lib/validations/profile/request';
 import { FavoriteRecipe } from '../mysql-access/FavoriteRecipe';
 import { Recipe } from '../mysql-access/Recipe';
 import { User } from '../mysql-access/User';

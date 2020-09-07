@@ -1,6 +1,6 @@
 import { defaulted, number, object, string } from 'superstruct';
 
-export const validCreatingContentEntity = object({
+export const validContentCreation = object({
   contentTypeId: number(),
   authorId: number(),
   ownerId: number(),

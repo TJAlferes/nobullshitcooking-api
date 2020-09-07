@@ -2,42 +2,48 @@ import { Request, Response } from 'express';
 import { assert } from 'superstruct';
 
 import {
+  staffProductController
+} from '../../../../src/controllers/staff/product';
+import {
   validProductEntity
-} from '../../../../src/lib/validations/product/productEntity';
-import { staffProductController } from '../../../../src/controllers/staff/product';
+} from '../../../../src/lib/validations/product/entity';
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/elasticsearch-access/ProductSearch', () => {
-  const originalModule =
-    jest.requireActual('../../../../src/elasticsearch-access/ProductSearch');
-  return {
-    ...originalModule,
-    ProductSearch: jest.fn().mockImplementation(() => ({
-      save: mockESSave,
-      delete: mockESDelete
-    }))
-  };
-});
+jest.mock('../../../../src/elasticsearch-access/ProductSearch', () => ({
+  ProductSearch: jest.fn().mockImplementation(() => ({
+    save: mockESSave,
+    delete: mockESDelete
+  }))
+}));
 let mockESSave = jest.fn();
 let mockESDelete = jest.fn();
 
-jest.mock('../../../../src/mysql-access/Product', () => {
-  const originalModule = jest.requireActual('../../../../src/mysql-access/Product');
-  return {
-    ...originalModule,
-    Product: jest.fn().mockImplementation(() => ({
-      getForElasticSearch: mockGetForElasticSearch,
-      create: mockCreate,
-      update: mockUpdate,
-      delete: mockDelete
-    }))
-  };
-});
+jest.mock('../../../../src/mysql-access/Product', () => ({
+  Product: jest.fn().mockImplementation(() => ({
+    getForElasticSearch: mockGetForElasticSearch,
+    create: mockCreate,
+    update: mockUpdate,
+    delete: mockDelete
+  }))
+}));
 let mockGetForElasticSearch = jest.fn().mockResolvedValue([[{id: 321}]]);
 let mockCreate = jest.fn().mockResolvedValue({insertId: 321});
 let mockUpdate = jest.fn();
 let mockDelete = jest.fn();
+
+const productCreation = {
+  productCategoryId: 3,
+  productTypeId: 3,
+  brand: "Some Brand",
+  variety: "Some Variety",
+  name: "My Product",
+  altNames: [],
+  description: "Some description.",
+  specs: {},
+  image: "some-image"
+};
+const productUpdate = {id: 321, ...productCreation};
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -47,54 +53,19 @@ describe ('staff product controller', () => {
   const session = {...<Express.Session>{}, staffInfo: {id: 15}};
 
   describe('create method', () => {
-    const req: Partial<Request> = {
-      session,
-      body: {
-        productInfo: {
-          productTypeId: 3,
-          brand: "Some Brand",
-          variety: "Some Variety",
-          name: "My Product",
-          description: "Some description.",
-          specs: {},
-          image: "some-image"
-        }
-      }
-    };
+    const req: Partial<Request> =
+      {session, body: {productInfo: productCreation}};
     const res: Partial<Response> =
       {send: jest.fn().mockResolvedValue({message: 'Product created.'})};
 
     it('uses assert correctly', async () => {
       await staffProductController.create(<Request>req, <Response>res);
-      expect(assert).toHaveBeenCalledWith(
-        {
-          productTypeId: 3,
-          authorId: 1,
-          ownerId: 1,
-          brand: "Some Brand",
-          variety: "Some Variety",
-          name: "My Product",
-          description: "Some description.",
-          specs: {},
-          image: "some-image"
-        },
-        validProductEntity
-      );
+      expect(assert).toHaveBeenCalledWith(productCreation, validProductEntity);
     });
 
     it('uses create correctly', async () => {
       await staffProductController.create(<Request>req, <Response>res);
-      expect(mockCreate).toHaveBeenCalledWith({
-        productTypeId: 3,
-        authorId: 1,
-        ownerId: 1,
-        brand: "Some Brand",
-        variety: "Some Variety",
-        name: "My Product",
-        description: "Some description.",
-        specs: {},
-        image: "some-image"
-      });
+      expect(mockCreate).toHaveBeenCalledWith(productCreation);
     });
 
     it('sends data correctly', async () => {
@@ -110,52 +81,18 @@ describe ('staff product controller', () => {
   });
 
   describe('update method', () => {
-    const req: Partial<Request> = {
-      session,
-      body: {
-        productInfo: {
-          id: 321,
-          productTypeId: 3,
-          brand: "Some Brand",
-          variety: "Some Variety",
-          name: "My Product",
-          description: "Some description.",
-          specs: {},
-          image: "some-image"
-        }
-      }
-    };
+    const req: Partial<Request> = {session, body: {productInfo: productUpdate}};
     const res: Partial<Response> =
       {send: jest.fn().mockResolvedValue({message: 'Product updated.'})};
 
     it('uses assert correctly', async () => {
       await staffProductController.update(<Request>req, <Response>res);
-      expect(assert).toHaveBeenCalledWith(
-        {
-          productTypeId: 3,
-          brand: "Some Brand",
-          variety: "Some Variety",
-          name: "My Product",
-          description: "Some description.",
-          specs: {},
-          image: "some-image"
-        },
-        validProductEntity
-      );
+      expect(assert).toHaveBeenCalledWith(productCreation, validProductEntity);
     });
 
     it('uses update correctly', async () => {
       await staffProductController.update(<Request>req, <Response>res);
-      expect(mockUpdate).toHaveBeenCalledWith({
-        id: 321,
-        productTypeId: 3,
-        brand: "Some Brand",
-        variety: "Some Variety",
-        name: "My Product",
-        description: "Some description.",
-        specs: {},
-        image: "some-image"
-      });
+      expect(mockUpdate).toHaveBeenCalledWith({id: 321, ...productCreation});
     });
 
     it('sends data correctly', async () => {

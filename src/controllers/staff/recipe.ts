@@ -6,7 +6,7 @@ import { esClient } from '../../lib/connections/elasticsearchClient';
 import { pool } from '../../lib/connections/mysqlPoolConnection';
 import { createRecipeService } from '../../lib/services/create-recipe';
 import { updateRecipeService } from '../../lib/services/update-recipe';
-import { validRecipeEntity } from '../../lib/validations/recipe/recipeEntity';
+import { validRecipeEntity } from '../../lib/validations/recipe/entity';
 import { Recipe } from '../../mysql-access/Recipe';
 import { RecipeEquipment } from '../../mysql-access/RecipeEquipment';
 import { RecipeIngredient } from '../../mysql-access/RecipeIngredient';
@@ -38,7 +38,7 @@ export const staffRecipeController = {
     const authorId = 1;
     const ownerId = 1;
 
-    const recipeToCreate = {
+    const recipeCreation = {
       recipeTypeId,
       cuisineId,
       authorId,
@@ -54,11 +54,11 @@ export const staffRecipeController = {
       cookingImage
     };
 
-    assert(recipeToCreate, validRecipeEntity)
+    assert(recipeCreation, validRecipeEntity)
 
     await createRecipeService({
       ownerId,
-      recipeToCreate,
+      recipeCreation,
       requiredMethods,
       requiredEquipment,
       requiredIngredients,
@@ -94,7 +94,7 @@ export const staffRecipeController = {
       return res.send({message: 'Invalid recipe ID!'});
     }
 
-    const recipeToUpdateWith = {
+    const recipeUpdate = {
       recipeTypeId,
       cuisineId,
       authorId,
@@ -110,13 +110,13 @@ export const staffRecipeController = {
       cookingImage
     };
 
-    assert(recipeToUpdateWith, validRecipeEntity);
+    assert(recipeUpdate, validRecipeEntity);
 
     await updateRecipeService({
       id,
       authorId,
       ownerId,
-      recipeToUpdateWith,
+      recipeUpdate,
       requiredMethods,
       requiredEquipment,
       requiredIngredients,

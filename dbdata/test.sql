@@ -187,7 +187,8 @@ CREATE TABLE `orders` (
 
 CREATE TABLE `products` (
   `id` smallint unsigned NOT NULL AUTO_INCREMENT,
-  `ingredient_type_id` tinyint unsigned NOT NULL DEFAULT '0',
+  `product_category_id` tinyint unsigned NOT NULL DEFAULT '0',
+  `product_type_id` tinyint unsigned NOT NULL DEFAULT '0',
   `brand` varchar(100),
   `variety` varchar(100),
   `name` varchar(100) NOT NULL,
@@ -196,7 +197,8 @@ CREATE TABLE `products` (
   `specs` json DEFAULT NULL,
   `image` varchar(100) NOT NULL DEFAULT 'nobsc-product-default',
   PRIMARY KEY (`id`),
-  FOREIGN KEY (`product_type_id`) REFERENCES `product_types` (`id`),
+  FOREIGN KEY (`product_category_id`) REFERENCES `product_categories` (`id`),
+  FOREIGN KEY (`product_type_id`) REFERENCES `product_types` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `order_products` (

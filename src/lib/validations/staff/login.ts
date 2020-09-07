@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt';
 
-import { IUser } from '../../../mysql-access/User';
+import { IStaff } from '../../../mysql-access/Staff';
 
-export async function validResend({email, pass}: Info, user: IUser) {
+export async function validLogin({email, pass}: Info, staff: IStaff) {
   // Problem: This would invalidate some older/alternative email types.
   if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
     return {valid: false, feedback: 'Invalid email.'};
@@ -12,21 +12,18 @@ export async function validResend({email, pass}: Info, user: IUser) {
 
   if (pass.length > 54) return {valid: false, feedback: 'Invalid password.'};
 
-  const [ emailExists ] = await user.getByEmail(email);
-  //if (userExists && crypto.timingSafeEqual(userExists[0].email, email))
-  if (!emailExists) {
+  const [ staffExists ] = await staff.getByEmail(email);
+  //crypto.timingSafeEqual()
+  if (!staffExists) {
     return {valid: false, feedback: 'Incorrect email or password.'};
   }
-
-  const isCorrectPassword = await bcrypt.compare(pass, emailExists.pass);
+  
+  const isCorrectPassword = await bcrypt.compare(pass, staffExists.pass);
   if (!isCorrectPassword) {
     return {valid: false, feedback: 'Incorrect email or password.'};
   }
 
-  const alreadyConfirmed = emailExists.confirmation_code === null;
-  if (alreadyConfirmed) return {valid: false, feedback: 'Already verified.'};
-
-  return {valid: true, feedback: 'Valid.'};
+  return {valid: true, feedback: 'Valid.', staffExists};
 }
 
 type Info = {

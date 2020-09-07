@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 
-import { ingredientTypeController } from '../../../src/controllers/ingredientType';
+import {
+  ingredientTypeController
+} from '../../../src/controllers/ingredientType';
 
 const rows: any = [{id: 1, name: "Name"}];
 

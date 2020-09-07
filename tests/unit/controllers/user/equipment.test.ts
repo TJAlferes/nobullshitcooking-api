@@ -2,41 +2,34 @@ import { Request, Response } from 'express';
 import { assert } from 'superstruct';
 
 import {
+  userEquipmentController
+} from '../../../../src/controllers/user/equipment';
+import {
   validEquipmentEntity
-} from '../../../../src/lib/validations/equipment/equipmentEntity';
-import { userEquipmentController } from '../../../../src/controllers/user/equipment';
+} from '../../../../src/lib/validations/equipment/entity';
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/mysql-access/Equipment', () => {
-  const originalModule = jest.requireActual('../../../../src/mysql-access/Equipment');
-  return {
-    ...originalModule,
-    Equipment: jest.fn().mockImplementation(() => ({
-      view: mockView,
-      viewById: mockViewById,
-      createPrivate: mockCreatePrivate,
-      updatePrivate: mockUpdatePrivate,
-      deleteByOwnerId: mockDeleteByOwnerId
-    }))
-  };
-});
+jest.mock('../../../../src/mysql-access/Equipment', () => ({
+  Equipment: jest.fn().mockImplementation(() => ({
+    view: mockView,
+    viewById: mockViewById,
+    createPrivate: mockCreatePrivate,
+    updatePrivate: mockUpdatePrivate,
+    deleteByOwnerId: mockDeleteByOwnerId
+  }))
+}));
 let mockView = jest.fn().mockResolvedValue([[{id: 383}, {id: 5432}]]);
 let mockViewById = jest.fn().mockResolvedValue([[{id: 5432}]]);
 let mockCreatePrivate = jest.fn();
 let mockUpdatePrivate = jest.fn();
 let mockDeleteByOwnerId = jest.fn();
 
-jest.mock('../../../../src/mysql-access/RecipeEquipment', () => {
-  const originalModule = jest
-  .requireActual('../../../../src/mysql-access/RecipeEquipment');
-  return {
-    ...originalModule,
-    RecipeEquipment: jest.fn().mockImplementation(() => ({
-      deleteByEquipmentId: mockDeleteByEquipmentId
-    }))
-  };
-});
+jest.mock('../../../../src/mysql-access/RecipeEquipment', () => ({
+  RecipeEquipment: jest.fn().mockImplementation(() => ({
+    deleteByEquipmentId: mockDeleteByEquipmentId
+  }))
+}));
 let mockDeleteByEquipmentId = jest.fn();
 
 afterEach(() => {

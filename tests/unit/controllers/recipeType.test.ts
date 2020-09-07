@@ -4,7 +4,7 @@ import { assert } from 'superstruct';
 import { recipeTypeController } from '../../../src/controllers/recipeType';
 import {
   validRecipeTypeRequest
-} from '../../../src/lib/validations/recipeType/recipeTypeRequest';
+} from '../../../src/lib/validations/recipeType/request';
 
 const rows: any = [{id: 1, name: "Name"}];
 
@@ -50,8 +50,7 @@ describe('recipeType controller', () => {
 
     it('uses assert correctly', async () => {
       await recipeTypeController.viewById(<Request>req, <Response>res);
-      expect(assert)
-        .toHaveBeenCalledWith({id: 1}, validRecipeTypeRequest);
+      expect(assert).toHaveBeenCalledWith({id: 1}, validRecipeTypeRequest);
     });
 
     it('uses viewById', async () => {

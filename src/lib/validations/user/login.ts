@@ -2,16 +2,7 @@ import bcrypt from 'bcrypt';
 
 import { IUser } from '../../../mysql-access/User';
 
-export async function validLogin(
-  {
-    email,
-    pass
-  }: {
-    email: string;
-    pass: string;
-  },
-  user: IUser
-) {
+export async function validLogin({email, pass}: Info, user: IUser) {
   // Problem: This would invalidate some older/alternative email types.
   if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
     return {valid: false, feedback: 'Invalid email.'};
@@ -42,3 +33,8 @@ export async function validLogin(
 
   return {valid: true, feedback: 'Valid.', userExists};
 }
+
+type Info = {
+  email: string;
+  pass: string;
+};

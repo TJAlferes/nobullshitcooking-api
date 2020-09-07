@@ -4,9 +4,7 @@ import { assert } from 'superstruct';
 import { EquipmentSearch } from '../../elasticsearch-access/EquipmentSearch';
 import { esClient } from '../../lib/connections/elasticsearchClient';
 import { pool } from '../../lib/connections/mysqlPoolConnection';
-import {
-  validEquipmentEntity
-} from '../../lib/validations/equipment/equipmentEntity';
+import { validEquipmentEntity } from '../../lib/validations/equipment/entity';
 import { Equipment } from '../../mysql-access/Equipment';
 
 export const staffEquipmentController = {
@@ -17,7 +15,7 @@ export const staffEquipmentController = {
     const authorId = 1;
     const ownerId = 1;
 
-    const equipmentToCreate = {
+    const equipmentCreation = {
       equipmentTypeId,
       authorId,
       ownerId,
@@ -26,11 +24,11 @@ export const staffEquipmentController = {
       image
     };
 
-    assert(equipmentToCreate, validEquipmentEntity);
+    assert(equipmentCreation, validEquipmentEntity);
 
     const equipment = new Equipment(pool);
 
-    const createdEquipment = await equipment.create(equipmentToCreate);
+    const createdEquipment = await equipment.create(equipmentCreation);
 
     const generatedId = createdEquipment.insertId;
 
@@ -51,7 +49,7 @@ export const staffEquipmentController = {
     const authorId = 1;
     const ownerId = 1;
 
-    const equipmentToUpdateWith = {
+    const equipmentUpdate = {
       equipmentTypeId,
       authorId,
       ownerId,
@@ -60,11 +58,11 @@ export const staffEquipmentController = {
       image
     };
 
-    assert(equipmentToUpdateWith, validEquipmentEntity);
+    assert(equipmentUpdate, validEquipmentEntity);
 
     const equipment = new Equipment(pool);
 
-    await equipment.update({id, ...equipmentToUpdateWith});
+    await equipment.update({id, ...equipmentUpdate});
 
     const [ equipmentForInsert ] = await equipment.getForElasticSearch(id);
     

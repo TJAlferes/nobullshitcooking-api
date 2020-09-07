@@ -4,35 +4,40 @@ import { assert } from 'superstruct';
 import { ProductSearch } from '../../elasticsearch-access/ProductSearch';
 import { pool } from '../../lib/connections/mysqlPoolConnection';
 import { esClient } from '../../lib/connections/elasticsearchClient';
-import {
-  validProductEntity
-} from '../../lib/validations/product/productEntity';
+import { validProductEntity } from '../../lib/validations/product/entity';
 import { Product } from '../../mysql-access/Product';
 
 export const staffProductController = {
   create: async function(req: Request, res: Response) {
+    const productCategoryId = Number(req.body.productInfo.productCategoryId);
     const productTypeId = Number(req.body.productInfo.productTypeId);
-    const brand = req.body.productInfo.brand
-      ? req.body.productInfo.brand : "";
-    const variety = req.body.productInfo.variety
-      ? req.body.productInfo.variety : "";
-    const { name, description, specs, image } = req.body.productInfo;
+    const {
+      brand,
+      variety,
+      name,
+      altNames,
+      description,
+      specs,
+      image
+    } = req.body.productInfo;
 
-    const productToCreate = {
+    const productCreation = {
+      productCategoryId,
       productTypeId,
       brand,
       variety,
       name,
+      altNames,
       description,
       specs,
       image
     };
 
-    assert(productToCreate, validProductEntity);
+    assert(productCreation, validProductEntity);
 
     const product = new Product(pool);
 
-    const createdProduct = await product.create(productToCreate);
+    const createdProduct = await product.create(productCreation);
 
     const generatedId = createdProduct.insertId;
 
@@ -46,28 +51,35 @@ export const staffProductController = {
   },
   update: async function(req: Request, res: Response) {
     const id = Number(req.body.productInfo.id);
+    const productCategoryId = Number(req.body.productInfo.productCategoryId);
     const productTypeId = Number(req.body.productInfo.productTypeId);
-    const brand = req.body.productInfo.brand
-      ? req.body.productInfo.brand : "";
-    const variety = req.body.productInfo.variety
-      ? req.body.productInfo.variety : "";
-    const { name, description, specs, image } = req.body.productInfo;
+    const {
+      brand,
+      variety,
+      name,
+      altNames,
+      description,
+      specs,
+      image
+    } = req.body.productInfo;
 
-    const productToUpdateWith = {
+    const productUpdate = {
+      productCategoryId,
       productTypeId,
       brand,
       variety,
       name,
+      altNames,
       description,
       specs,
       image
     };
 
-    assert(productToUpdateWith, validProductEntity);
+    assert(productUpdate, validProductEntity);
 
     const product = new Product(pool);
 
-    await product.update({id, ...productToUpdateWith});
+    await product.update({id, ...productUpdate});
 
     const productForInsert = await product.getForElasticSearch(id);
 

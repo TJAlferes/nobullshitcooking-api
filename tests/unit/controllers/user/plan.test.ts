@@ -1,24 +1,20 @@
 import { Request, Response } from 'express';
 import { assert } from 'superstruct';
 
-import { validPlanEntity } from '../../../../src/lib/validations/plan/planEntity';
 import { userPlanController } from '../../../../src/controllers/user/plan';
+import { validPlanEntity } from '../../../../src/lib/validations/plan/entity';
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/mysql-access/Plan', () => {
-  const originalModule = jest.requireActual('../../../../src/mysql-access/Plan');
-  return {
-    ...originalModule,
-    Plan: jest.fn().mockImplementation(() => ({
-      view: mockView,
-      viewById: mockViewById,
-      create: mockCreate,
-      update: mockUpdate,
-      deleteById: mockDeleteById
-    }))
-  };
-});
+jest.mock('../../../../src/mysql-access/Plan', () => ({
+  Plan: jest.fn().mockImplementation(() => ({
+    view: mockView,
+    viewById: mockViewById,
+    create: mockCreate,
+    update: mockUpdate,
+    deleteById: mockDeleteById
+  }))
+}));
 let mockView = jest.fn().mockResolvedValue([[{id: 383}, {id: 5432}]]);
 let mockViewById = jest.fn().mockResolvedValue([[{id: 5432}]]);
 let mockCreate = jest.fn();

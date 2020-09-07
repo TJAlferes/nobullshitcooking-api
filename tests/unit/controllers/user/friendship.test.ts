@@ -2,29 +2,27 @@ import { Request, Response } from 'express';
 import { assert } from 'superstruct';
 
 import {
+  userFriendshipController
+} from '../../../../src/controllers/user/friendship';
+import {
   validFriendshipEntity
-} from '../../../../src/lib/validations/friendship/friendshipEntity';
-import { userFriendshipController } from '../../../../src/controllers/user/friendship';
+} from '../../../../src/lib/validations/friendship/entity';
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/mysql-access/Friendship', () => {
-  const originalModule = jest.requireActual('../../../../src/mysql-access/Friendship');
-  return {
-    ...originalModule,
-    Friendship: jest.fn().mockImplementation(() => ({
-      getByFriendId:  mockGetByFriendId,
-      checkIfBlockedBy:  mockCheckIfBlockedBy,
-      view: mockView,
-      create: mockCreate,
-      accept: mockAccept,
-      reject: mockReject,
-      delete: mockDelete,
-      block: mockBlock,
-      unblock: mockUnblock
-    }))
-  };
-});
+jest.mock('../../../../src/mysql-access/Friendship', () => ({
+  Friendship: jest.fn().mockImplementation(() => ({
+    getByFriendId:  mockGetByFriendId,
+    checkIfBlockedBy:  mockCheckIfBlockedBy,
+    view: mockView,
+    create: mockCreate,
+    accept: mockAccept,
+    reject: mockReject,
+    delete: mockDelete,
+    block: mockBlock,
+    unblock: mockUnblock
+  }))
+}));
 let mockGetByFriendId = jest.fn();
 let mockCheckIfBlockedBy = jest.fn();
 let mockView = jest.fn();
@@ -35,13 +33,9 @@ let mockDelete = jest.fn();
 let mockBlock = jest.fn();
 let mockUnblock = jest.fn();
 
-jest.mock('../../../../src/mysql-access/User', () => {
-  const originalModule = jest.requireActual('../../../../src/mysql-access/User');
-  return {
-    ...originalModule,
+jest.mock('../../../../src/mysql-access/User', () => ({
     User: jest.fn().mockImplementation(() => ({viewByName: mockViewByName}))
-  };
-});
+}));
 let mockViewByName = jest.fn();
 
 afterEach(() => {

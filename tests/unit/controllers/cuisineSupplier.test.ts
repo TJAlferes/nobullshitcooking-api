@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 
-import { cuisineSupplierController } from '../../../src/controllers/cuisineSupplier';
+import {
+  cuisineSupplierController
+} from '../../../src/controllers/cuisineSupplier';
 
 const rows: any = [{id: 1, name: "Name"}];
 

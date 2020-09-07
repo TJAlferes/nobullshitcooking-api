@@ -24,22 +24,20 @@ import {
 } from '../../mysql-access/RecipeSubrecipe';
 import {
   validRecipeEquipmentEntity
-} from '../validations/recipeEquipment/recipeEquipmentEntity';
+} from '../validations/recipeEquipment/entity';
 import {
   validRecipeIngredientEntity
-} from '../validations/recipeIngredient/recipeIngredientEntity';
-import {
-  validRecipeMethodEntity
-} from '../validations/recipeMethod/recipeMethodEntity';
+} from '../validations/recipeIngredient/entity';
+import { validRecipeMethodEntity } from '../validations/recipeMethod/entity';
 import {
   validRecipeSubrecipeEntity
-} from '../validations/recipeSubrecipe/recipeSubrecipeEntity';
+} from '../validations/recipeSubrecipe/entity';
 
 export async function updateRecipeService({
   id,
   authorId,
   ownerId,
-  recipeToUpdateWith,
+  recipeUpdate,
   requiredMethods,
   requiredEquipment,
   requiredIngredients,
@@ -53,9 +51,9 @@ export async function updateRecipeService({
   const recipeSearch = new RecipeSearch(esClient);
 
   if (authorId == 1 && ownerId === 1) {
-    await recipe.update({id, ...recipeToUpdateWith});  // if staff
+    await recipe.update({id, ...recipeUpdate});  // if staff
   } else {
-    await recipe.updatePrivate({id, ...recipeToUpdateWith});  // if user
+    await recipe.updatePrivate({id, ...recipeUpdate});  // if user
   }
 
   let recipeMethodsToUpdateWith: number[] = [];
@@ -167,7 +165,7 @@ interface UpdateRecipeService {
   id: number;
   authorId: number;
   ownerId: number;
-  recipeToUpdateWith: ICreatingRecipe;
+  recipeUpdate: ICreatingRecipe;
   requiredEquipment: IMakeRecipeEquipment[];
   requiredIngredients: IMakeRecipeIngredient[];
   requiredMethods: IMakeRecipeMethod[];

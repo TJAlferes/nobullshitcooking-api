@@ -2,38 +2,31 @@ import { Request, Response } from 'express';
 import { assert } from 'superstruct';
 
 import {
+  staffIngredientController
+} from '../../../../src/controllers/staff/ingredient';
+import {
   validIngredientEntity
-} from '../../../../src/lib/validations/ingredient/ingredientEntity';
-import { staffIngredientController } from '../../../../src/controllers/staff/ingredient';
+} from '../../../../src/lib/validations/ingredient/entity';
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/elasticsearch-access/IngredientSearch', () => {
-  const originalModule =
-    jest.requireActual('../../../../src/elasticsearch-access/IngredientSearch');
-  return {
-    ...originalModule,
-    IngredientSearch: jest.fn().mockImplementation(() => ({
-      save: mockESSave,
-      delete: mockESDelete
-    }))
-  };
-});
+jest.mock('../../../../src/elasticsearch-access/IngredientSearch', () => ({
+  IngredientSearch: jest.fn().mockImplementation(() => ({
+    save: mockESSave,
+    delete: mockESDelete
+  }))
+}));
 let mockESSave = jest.fn();
 let mockESDelete = jest.fn();
 
-jest.mock('../../../../src/mysql-access/Ingredient', () => {
-  const originalModule = jest.requireActual('../../../../src/mysql-access/Ingredient');
-  return {
-    ...originalModule,
-    Ingredient: jest.fn().mockImplementation(() => ({
-      getForElasticSearch: mockGetForElasticSearch,
-      create: mockCreate,
-      update: mockUpdate,
-      delete: mockDelete
-    }))
-  };
-});
+jest.mock('../../../../src/mysql-access/Ingredient', () => ({
+  Ingredient: jest.fn().mockImplementation(() => ({
+    getForElasticSearch: mockGetForElasticSearch,
+    create: mockCreate,
+    update: mockUpdate,
+    delete: mockDelete
+  }))
+}));
 let mockGetForElasticSearch = jest.fn().mockResolvedValue([[{id: 321}]]);
 let mockCreate = jest.fn().mockResolvedValue({insertId: 321});
 let mockUpdate = jest.fn();

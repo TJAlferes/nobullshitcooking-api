@@ -1,10 +1,8 @@
 import { Request, Response } from 'express';
-import { assert } from 'superstruct';
+//import { assert } from 'superstruct';
 
 import { pool } from '../lib/connections/mysqlPoolConnection';
-import {
-  validRecipeRequest
-} from '../lib/validations/recipe/recipeRequest';
+//import { validRecipeRequest } from '../lib/validations/recipe/recipeRequest';
 import { Recipe } from '../mysql-access/Recipe';
 
 export const recipeController = {

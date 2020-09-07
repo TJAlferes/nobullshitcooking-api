@@ -1,6 +1,6 @@
 import { defaulted, object, string } from 'superstruct';
 
-export const validUpdatingUser = object({
+export const validUserUpdate = object({
   email: string(),
   pass: string(),
   username: string(),

@@ -2,12 +2,12 @@ import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import { assert } from 'superstruct';
 
-import { validLoginRequest } from '../../../../src/lib/validations/staff/loginRequest';
-import {
-  validRegisterRequest
-} from '../../../../src/lib/validations/staff/registerRequest';
-import { validStaffEntity } from '../../../../src/lib/validations/staff/staffEntity';
 import { staffAuthController } from '../../../../src/controllers/staff/auth';
+import {
+  validLoginRequest,
+  validRegisterRequest,
+  validStaffCreation
+} from '../../../../src/lib/validations/staff/index';
 
 jest.mock('bcrypt');
 const mockBcrypt = bcrypt as jest.Mocked<typeof bcrypt>;
@@ -17,17 +17,13 @@ mockBcrypt.hash.mockResolvedValue(
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/mysql-access/Staff', () => {
-  const originalModule = jest.requireActual('../../../../src/mysql-access/Staff');
-  return {
-    ...originalModule,
-    Staff: jest.fn().mockImplementation(() => ({
-      getByEmail: mockGetByEmail,
-      getByName: mockGetByName,
-      create: mockCreate
-    }))
-  };
-});
+jest.mock('../../../../src/mysql-access/Staff', () => ({
+  Staff: jest.fn().mockImplementation(() => ({
+    getByEmail: mockGetByEmail,
+    getByName: mockGetByName,
+    create: mockCreate
+  }))
+}));
 let mockGetByEmail = jest.fn();
 let mockGetByName = jest.fn();
 let mockCreate = jest.fn();

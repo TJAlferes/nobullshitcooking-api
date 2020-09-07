@@ -2,41 +2,34 @@ import { Request, Response } from 'express';
 import { assert } from 'superstruct';
 
 import {
+  userIngredientController
+} from '../../../../src/controllers/user/ingredient';
+import {
   validIngredientEntity
-} from '../../../../src/lib/validations/ingredient/ingredientEntity';
-import { userIngredientController } from '../../../../src/controllers/user/ingredient';
+} from '../../../../src/lib/validations/ingredient/entity';
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/mysql-access/Ingredient', () => {
-  const originalModule = jest.requireActual('../../../../src/mysql-access/Ingredient');
-  return {
-    ...originalModule,
-    Ingredient: jest.fn().mockImplementation(() => ({
-      view: mockView,
-      viewById: mockViewById,
-      create: mockCreate,
-      update: mockUpdate,
-      deleteByOwnerId: mockDeleteByOwnerId
-    }))
-  };
-});
+jest.mock('../../../../src/mysql-access/Ingredient', () => ({
+  Ingredient: jest.fn().mockImplementation(() => ({
+    view: mockView,
+    viewById: mockViewById,
+    create: mockCreate,
+    update: mockUpdate,
+    deleteByOwnerId: mockDeleteByOwnerId
+  }))
+}));
 let mockView = jest.fn().mockResolvedValue([[{id: 383}, {id: 5432}]]);
 let mockViewById = jest.fn().mockResolvedValue([[{id: 5432}]]);
 let mockCreate = jest.fn();
 let mockUpdate = jest.fn();
 let mockDeleteByOwnerId = jest.fn();
 
-jest.mock('../../../../src/mysql-access/RecipeIngredient', () => {
-  const originalModule =
-    jest.requireActual('../../../../src/mysql-access/RecipeIngredient');
-  return {
-    ...originalModule,
-    RecipeIngredient: jest.fn().mockImplementation(() => ({
-      deleteByIngredientId: mockDeleteByIngredientId
-    }))
-  };
-});
+jest.mock('../../../../src/mysql-access/RecipeIngredient', () => ({
+  RecipeIngredient: jest.fn().mockImplementation(() => ({
+    deleteByIngredientId: mockDeleteByIngredientId
+  }))
+}));
 let mockDeleteByIngredientId = jest.fn();
 
 afterEach(() => {

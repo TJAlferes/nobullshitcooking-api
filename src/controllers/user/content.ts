@@ -2,12 +2,8 @@ import { Request, Response } from 'express';
 import { assert, coerce } from 'superstruct';
 
 import { pool } from '../../lib/connections/mysqlPoolConnection';
-import {
-  validCreatingContentEntity
-} from '../../lib/validations/content/creatingContentEntity';
-import {
-  validEditingContentEntity
-} from '../../lib/validations/content/editingContentEntity';
+import { validContentCreation } from '../../lib/validations/content/create';
+import { validContentUpdate } from '../../lib/validations/content/update';
 import { Content } from '../../mysql-access/Content';
 
 export const userContentController = {
@@ -40,7 +36,7 @@ export const userContentController = {
     const ownerId = req.session!.userInfo.id;
     const created = ((new Date).toISOString()).split("T")[0];
 
-    const contentToCreate = {
+    const contentCreation = {
       contentTypeId,
       authorId,
       ownerId,
@@ -52,13 +48,13 @@ export const userContentController = {
 
     // you need to understand coerce and defaulted better
     assert(
-      coerce({contentToCreate}, validCreatingContentEntity),
-      validCreatingContentEntity
+      coerce({contentCreation}, validContentCreation),
+      validContentCreation
     );
 
     const content = new Content(pool);
 
-    await content.create(contentToCreate);
+    await content.create(contentCreation);
 
     return res.send({message: 'Content created.'});
   },
@@ -69,7 +65,7 @@ export const userContentController = {
 
     const ownerId = req.session!.userInfo.id;
 
-    const contentToUpdateWith = {
+    const contentUpdate = {
       contentTypeId,
       ownerId,
       published,
@@ -79,13 +75,13 @@ export const userContentController = {
 
     // you need to understand coerce and defaulted better
     assert(
-      coerce({contentToUpdateWith}, validEditingContentEntity),
-      validEditingContentEntity
+      coerce({contentUpdate}, validContentUpdate),
+      validContentUpdate
     );
 
     const content = new Content(pool);
 
-    await content.update({id, ...contentToUpdateWith});
+    await content.update({id, ...contentUpdate});
 
     return res.send({message: 'Content updated.'});
   },

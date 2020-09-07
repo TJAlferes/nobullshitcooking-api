@@ -1,6 +1,6 @@
 import { defaulted, object, string } from 'superstruct';
 
-export const validUserEntity = object({
+export const validUserCreation = object({
   email: string(),
   pass: string(),
   username: string(),

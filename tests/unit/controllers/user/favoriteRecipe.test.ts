@@ -2,24 +2,21 @@ import { Request, Response } from 'express';
 import { assert } from 'superstruct';
 
 import {
+  userFavoriteRecipeController
+} from '../../../../src/controllers/user/favoriteRecipe';
+import {
   validFavoriteRecipeEntity
-} from '../../../../src/lib/validations/favoriteRecipe/favoriteRecipeEntity';
-import { userFavoriteRecipeController } from '../../../../src/controllers/user/favoriteRecipe';
+} from '../../../../src/lib/validations/favoriteRecipe/entity';
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/mysql-access/FavoriteRecipe', () => {
-  const originalModule =
-    jest.requireActual('../../../../src/mysql-access/FavoriteRecipe');
-  return {
-    ...originalModule,
+jest.mock('../../../../src/mysql-access/FavoriteRecipe', () => ({
     FavoriteRecipe: jest.fn().mockImplementation(() => ({
       viewByUserId: mockViewByUserId,
       create: mockCreate,
       delete: mockDelete
     }))
-  };
-});
+}));
 let mockViewByUserId = jest.fn().mockResolvedValue([[{id: 383}, {id: 5432}]]);
 let mockCreate = jest.fn();
 let mockDelete = jest.fn();

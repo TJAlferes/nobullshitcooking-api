@@ -1,9 +1,9 @@
-export { validRegisterRequest } from './registerRequest';
-export { validRegister } from './register';
-export { validUserEntity } from './userEntity';
-export { validUpdatingUser } from './updatingUser';
-export { validVerifyRequest } from './verifyRequest';
-export { validVerify } from './verify';
-export { validResend } from './resend';
-export { validLoginRequest } from './loginRequest';
+export { validUserCreation } from './create';
 export { validLogin } from './login';
+export { validLoginRequest } from './loginRequest';
+export { validRegister } from './register';
+export { validRegisterRequest } from './registerRequest';
+export { validResend } from './resend';
+export { validUserUpdate } from './update';
+export { validVerify } from './verify';
+export { validVerifyRequest } from './verifyRequest';

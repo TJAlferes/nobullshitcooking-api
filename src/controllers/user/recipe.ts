@@ -6,7 +6,7 @@ import { esClient } from '../../lib/connections/elasticsearchClient';
 import { pool } from '../../lib/connections/mysqlPoolConnection';
 import { createRecipeService } from '../../lib/services/create-recipe';
 import { updateRecipeService } from '../../lib/services/update-recipe';
-import { validRecipeEntity } from '../../lib/validations/recipe/recipeEntity';
+import { validRecipeEntity } from '../../lib/validations/recipe/entity';
 import { Recipe } from '../../mysql-access/Recipe';
 import { RecipeEquipment } from '../../mysql-access/RecipeEquipment';
 import { RecipeIngredient } from '../../mysql-access/RecipeIngredient';
@@ -101,7 +101,7 @@ export const userRecipeController = {
     const authorId = req.session!.userInfo.id;
     const ownerId = (ownership === "private") ? req.session!.userInfo.id : 1;
     
-    const recipeToCreate = {
+    const recipeCreation = {
       recipeTypeId,
       cuisineId,
       authorId,
@@ -117,15 +117,15 @@ export const userRecipeController = {
       cookingImage
     };
 
-    //assert(recipeToCreate, validRecipeEntity);
+    //assert(recipeCreation, validRecipeEntity);
     assert(
-      coerce({recipeToCreate}, validRecipeEntity),
+      coerce({recipeCreation}, validRecipeEntity),
       validRecipeEntity
     );
 
     await createRecipeService({
       ownerId,
-      recipeToCreate,
+      recipeCreation,
       requiredMethods,
       requiredEquipment,
       requiredIngredients,
@@ -162,7 +162,7 @@ export const userRecipeController = {
       return res.send({message: 'Invalid recipe ID!'});
     }
 
-    const recipeToUpdateWith = {
+    const recipeUpdate = {
       recipeTypeId,
       cuisineId,
       authorId,
@@ -178,9 +178,9 @@ export const userRecipeController = {
       cookingImage
     };
     
-    //assert(recipeToUpdateWith, validRecipeEntity);
+    //assert(recipeUpdate, validRecipeEntity);
     assert(
-      coerce({recipeToUpdateWith}, validRecipeEntity),
+      coerce({recipeUpdate}, validRecipeEntity),
       validRecipeEntity
     );
 
@@ -188,7 +188,7 @@ export const userRecipeController = {
       id,
       authorId,
       ownerId,
-      recipeToUpdateWith,
+      recipeUpdate,
       requiredMethods,
       requiredEquipment,
       requiredIngredients,

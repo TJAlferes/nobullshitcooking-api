@@ -3,15 +3,7 @@ import bcrypt from 'bcrypt';
 import { IUser } from '../../../mysql-access/User';
 
 export async function validVerify(
-  {
-    email,
-    pass,
-    confirmationCode
-  }: {
-    email: string;
-    pass: string;
-    confirmationCode: string;
-  },
+  {email, pass, confirmationCode}: Info,
   user: IUser
 ) {
   // Problem: This would invalidate some older/alternative email types.
@@ -45,3 +37,9 @@ export async function validVerify(
 
   return {valid: true, feedback: 'Valid.'};
 }
+
+type Info = {
+  email: string;
+  pass: string;
+  confirmationCode: string;
+};

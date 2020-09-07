@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { assert } from 'superstruct';
 
 import { pool } from '../../lib/connections/mysqlPoolConnection';
-import { validPlanEntity } from '../../lib/validations/plan/planEntity';
+import { validPlanEntity } from '../../lib/validations/plan/entity';
 import { Plan } from '../../mysql-access/Plan';
 
 export const userPlanController = {
@@ -31,13 +31,13 @@ export const userPlanController = {
     const authorId = req.session!.userInfo.id;
     const ownerId = req.session!.userInfo.id;
 
-    const planToCreate = {authorId, ownerId, name, data};
+    const planCreation = {authorId, ownerId, name, data};
 
-    assert(planToCreate, validPlanEntity);
+    assert(planCreation, validPlanEntity);
 
     const plan = new Plan(pool);
 
-    await plan.create(planToCreate);
+    await plan.create(planCreation);
 
     return res.send({message: 'Plan created.'});
   },
@@ -47,13 +47,13 @@ export const userPlanController = {
     const authorId = req.session!.userInfo.id;
     const ownerId = req.session!.userInfo.id;
 
-    const planToUpdateWith = {authorId, ownerId, name, data};
+    const planUpdate = {authorId, ownerId, name, data};
 
-    assert(planToUpdateWith, validPlanEntity);
+    assert(planUpdate, validPlanEntity);
 
     const plan = new Plan(pool);
 
-    await plan.update({id, ...planToUpdateWith});
+    await plan.update({id, ...planUpdate});
 
     return res.send({message: 'Plan updated.'});
   },

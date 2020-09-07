@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
+import { Request, Response } from 'express';
 import { assert } from 'superstruct';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -8,15 +8,15 @@ import {
   emailConfirmationCode
 } from '../../lib/services/email-confirmation-code';
 import {
-  validRegisterRequest,
-  validRegister,
-  validUserEntity,
-  validVerifyRequest,
-  validVerify,
-  validResend,
-  validLoginRequest,
   validLogin,
-  validUpdatingUser
+  validLoginRequest,
+  validRegister,
+  validRegisterRequest,
+  validResend,
+  validUserCreation,
+  validUserUpdate,
+  validVerify,
+  validVerifyRequest
 } from '../../lib/validations/user/index';
 import { Content } from '../../mysql-access/Content';
 import { Equipment } from '../../mysql-access/Equipment';
@@ -41,6 +41,7 @@ export const userAuthController = {
 
     assert({email, pass, username}, validRegisterRequest);
 
+    // why here? why not in the service/validation?
     const user = new User(pool);
 
     const { valid, feedback } =
@@ -58,7 +59,7 @@ export const userAuthController = {
       confirmationCode
     };
 
-    assert(userToCreate, validUserEntity);
+    assert(userToCreate, validUserCreation);
 
     await user.create(userToCreate);
 
@@ -132,7 +133,7 @@ export const userAuthController = {
 
     const userToUpdateWith = {email, pass, username, avatar};
 
-    assert(userToUpdateWith, validUpdatingUser);
+    assert(userToUpdateWith, validUserUpdate);
 
     const user = new User(pool);
 

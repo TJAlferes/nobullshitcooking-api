@@ -24,20 +24,18 @@ import {
 } from '../../mysql-access/RecipeSubrecipe';
 import {
   validRecipeEquipmentEntity
-} from '../validations/recipeEquipment/recipeEquipmentEntity';
+} from '../validations/recipeEquipment/entity';
 import {
   validRecipeIngredientEntity
-} from '../validations/recipeIngredient/recipeIngredientEntity';
-import {
-  validRecipeMethodEntity
-} from '../validations/recipeMethod/recipeMethodEntity';
+} from '../validations/recipeIngredient/entity';
+import { validRecipeMethodEntity } from '../validations/recipeMethod/entity';
 import {
   validRecipeSubrecipeEntity
-} from '../validations/recipeSubrecipe/recipeSubrecipeEntity';
+} from '../validations/recipeSubrecipe/entity';
 
 export async function createRecipeService({
   ownerId,
-  recipeToCreate,
+  recipeCreation,
   requiredMethods,
   requiredEquipment,
   requiredIngredients,
@@ -50,7 +48,7 @@ export async function createRecipeService({
   const recipeSubrecipe = new RecipeSubrecipe(pool);
   const recipeSearch = new RecipeSearch(esClient);
 
-  const createdRecipe = await recipe.create(recipeToCreate);
+  const createdRecipe = await recipe.create(recipeCreation);
 
   const generatedId = createdRecipe.insertId;
 
@@ -152,7 +150,7 @@ export async function createRecipeService({
 
 interface CreateRecipeService {
   ownerId: number;
-  recipeToCreate: ICreatingRecipe;
+  recipeCreation: ICreatingRecipe;
   requiredEquipment: IMakeRecipeEquipment[];
   requiredIngredients: IMakeRecipeIngredient[];
   requiredMethods: IMakeRecipeMethod[];

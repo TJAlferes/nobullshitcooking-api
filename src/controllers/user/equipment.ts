@@ -2,9 +2,7 @@ import { Request, Response } from 'express';
 import { assert } from 'superstruct';
 
 import { pool } from '../../lib/connections/mysqlPoolConnection';
-import {
-  validEquipmentEntity
-} from '../../lib/validations/equipment/equipmentEntity';
+import { validEquipmentEntity } from '../../lib/validations/equipment/entity';
 import { Equipment } from '../../mysql-access/Equipment';
 import { RecipeEquipment } from '../../mysql-access/RecipeEquipment';
 
@@ -37,7 +35,7 @@ export const userEquipmentController = {
     const authorId = req.session!.userInfo.id;
     const ownerId = req.session!.userInfo.id;
 
-    const equipmentToCreate = {
+    const equipmentCreation = {
       equipmentTypeId,
       authorId,
       ownerId,
@@ -46,11 +44,11 @@ export const userEquipmentController = {
       image
     };
 
-    assert(equipmentToCreate, validEquipmentEntity);
+    assert(equipmentCreation, validEquipmentEntity);
 
     const equipment = new Equipment(pool);
 
-    await equipment.createPrivate(equipmentToCreate);
+    await equipment.createPrivate(equipmentCreation);
 
     return res.send({message: 'Equipment created.'});
   },
@@ -62,7 +60,7 @@ export const userEquipmentController = {
     const authorId = req.session!.userInfo.id;
     const ownerId = req.session!.userInfo.id;
 
-    const equipmentToUpdateWith = {
+    const equipmentUpdate = {
       equipmentTypeId,
       authorId,
       ownerId,
@@ -71,11 +69,11 @@ export const userEquipmentController = {
       image
     };
 
-    assert(equipmentToUpdateWith, validEquipmentEntity);
+    assert(equipmentUpdate, validEquipmentEntity);
 
     const equipment = new Equipment(pool);
 
-    await equipment.updatePrivate({id, ...equipmentToUpdateWith});
+    await equipment.updatePrivate({id, ...equipmentUpdate});
 
     return res.send({message: 'Equipment updated.'});
   },

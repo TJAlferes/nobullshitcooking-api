@@ -4,7 +4,7 @@ import { assert } from 'superstruct';
 import { pool } from '../../lib/connections/mysqlPoolConnection';
 import {
   validFavoriteRecipeEntity
-} from '../../lib/validations/favoriteRecipe/favoriteRecipeEntity';
+} from '../../lib/validations/favoriteRecipe/entity';
 import { FavoriteRecipe } from '../../mysql-access/FavoriteRecipe';
 
 export const userFavoriteRecipeController = {

@@ -6,21 +6,14 @@ import { v4 as uuidv4 } from 'uuid';  // do in React instead?
 import { getSignedUrlPromise } from '../../lib/utils/getSignedUrlPromise';
 
 const AWS_S3_AVATAR_BUCKET: string = process.env.AWS_S3_AVATAR_BUCKET!;
-
 const AWS_S3_CONTENT_BUCKET: string = process.env.AWS_S3_CONTENT_BUCKET!;
-
 const AWS_S3_EQUIPMENT_BUCKET: string = process.env.AWS_S3_EQUIPMENT_BUCKET!;
-
 const AWS_S3_INGREDIENT_BUCKET: string = process.env.AWS_S3_INGREDIENT_BUCKET!;
-
 const AWS_S3_RECIPE_BUCKET: string = process.env.AWS_S3_RECIPE_BUCKET!;
-
 const AWS_S3_RECIPE_COOKING_BUCKET: string =
   process.env.AWS_S3_RECIPE_COOKING_BUCKET!;
-
 const AWS_S3_RECIPE_EQUIPMENT_BUCKET: string =
   process.env.AWS_S3_RECIPE_EQUIPMENT_BUCKET!;
-
 const AWS_S3_RECIPE_INGREDIENTS_BUCKET: string =
   process.env.AWS_S3_RECIPE_INGREDIENTS_BUCKET!;
 

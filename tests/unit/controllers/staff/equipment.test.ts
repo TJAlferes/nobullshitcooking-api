@@ -2,38 +2,31 @@ import { Request, Response } from 'express';
 import { assert } from 'superstruct';
 
 import {
+  staffEquipmentController
+} from '../../../../src/controllers/staff/equipment';
+import {
   validEquipmentEntity
-} from '../../../../src/lib/validations/equipment/equipmentEntity';
-import { staffEquipmentController } from '../../../../src/controllers/staff/equipment';
+} from '../../../../src/lib/validations/equipment/entity';
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/elasticsearch-access/EquipmentSearch', () => {
-  const originalModule =
-    jest.requireActual('../../../../src/elasticsearch-access/EquipmentSearch');
-  return {
-    ...originalModule,
-    EquipmentSearch: jest.fn().mockImplementation(() => ({
-      save: mockESSave,
-      delete: mockESDelete
-    }))
-  };
-});
+jest.mock('../../../../src/elasticsearch-access/EquipmentSearch', () => ({
+  EquipmentSearch: jest.fn().mockImplementation(() => ({
+    save: mockESSave,
+    delete: mockESDelete
+  }))
+}));
 let mockESSave = jest.fn();
 let mockESDelete = jest.fn();
 
-jest.mock('../../../../src/mysql-access/Equipment', () => {
-  const originalModule = jest.requireActual('../../../../src/mysql-access/Equipment');
-  return {
-    ...originalModule,
-    Equipment: jest.fn().mockImplementation(() => ({
-      getForElasticSearch: mockGetForElasticSearch,
-      create: mockCreate,
-      update: mockUpdate,
-      delete: mockDelete
-    }))
-  };
-});
+jest.mock('../../../../src/mysql-access/Equipment', () => ({
+  Equipment: jest.fn().mockImplementation(() => ({
+    getForElasticSearch: mockGetForElasticSearch,
+    create: mockCreate,
+    update: mockUpdate,
+    delete: mockDelete
+  }))
+}));
 let mockGetForElasticSearch = jest.fn().mockResolvedValue([[{id: 321}]]);
 let mockCreate = jest.fn().mockResolvedValue({insertId: 321});
 let mockUpdate = jest.fn();

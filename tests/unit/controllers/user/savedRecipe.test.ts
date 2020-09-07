@@ -2,23 +2,21 @@ import { Request, Response } from 'express';
 import { assert } from 'superstruct';
 
 import {
+  userSavedRecipeController
+} from '../../../../src/controllers/user/savedRecipe';
+import {
   validSavedRecipeEntity
-} from '../../../../src/lib/validations/savedRecipe/savedRecipeEntity';
-import { userSavedRecipeController } from '../../../../src/controllers/user/savedRecipe';
+} from '../../../../src/lib/validations/savedRecipe/entity';
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/mysql-access/SavedRecipe', () => {
-  const originalModule = jest.requireActual('../../../../src/mysql-access/SavedRecipe');
-  return {
-    ...originalModule,
-    SavedRecipe: jest.fn().mockImplementation(() => ({
-      viewByUserId: mockViewByUserId,
-      create: mockCreate,
-      delete: mockDelete
-    }))
-  };
-});
+jest.mock('../../../../src/mysql-access/SavedRecipe', () => ({
+  SavedRecipe: jest.fn().mockImplementation(() => ({
+    viewByUserId: mockViewByUserId,
+    create: mockCreate,
+    delete: mockDelete
+  }))
+}));
 let mockViewByUserId = jest.fn().mockResolvedValue([[{id: 383}, {id: 5432}]]);
 let mockCreate = jest.fn();
 let mockDelete = jest.fn();

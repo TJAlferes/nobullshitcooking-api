@@ -23,21 +23,21 @@ export class MessengerUser implements IMessengerUser {
     socketid: string
   ) {
     await this.client
-    .multi()
-    .hset(`user:${id}`, 'username', username)
-    .hset(`user:${id}`, 'avatar', avatar)
-    .hset(`user:${id}`, 'sid', sid)
-    .hset(`user:${id}`, 'socketid', socketid)
-    .zadd('users', `${Date.now()}`, `${id}`)
-    .exec();
+      .multi()
+      .hset(`user:${id}`, 'username', username)
+      .hset(`user:${id}`, 'avatar', avatar)
+      .hset(`user:${id}`, 'sid', sid)
+      .hset(`user:${id}`, 'socketid', socketid)
+      .zadd('users', `${Date.now()}`, `${id}`)
+      .exec();
   }
 
   async remove(id: number) {
     await this.client
-    .multi()
-    .zrem('users', id)
-    .del(`user:${id}`)
-    .exec();
+      .multi()
+      .zrem('users', id)
+      .del(`user:${id}`)
+      .exec();
   }
 }
 

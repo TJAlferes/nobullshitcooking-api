@@ -4,39 +4,41 @@ import { assert } from 'superstruct';
 import { IngredientSearch } from '../../elasticsearch-access/IngredientSearch';
 import { pool } from '../../lib/connections/mysqlPoolConnection';
 import { esClient } from '../../lib/connections/elasticsearchClient';
-import {
-  validIngredientEntity
-} from '../../lib/validations/ingredient/ingredientEntity';
+import { validIngredientEntity } from '../../lib/validations/ingredient/entity';
 import { Ingredient } from '../../mysql-access/Ingredient';
 
 export const staffIngredientController = {
   create: async function(req: Request, res: Response) {
     const ingredientTypeId = Number(req.body.ingredientInfo.ingredientTypeId);
-    const brand = req.body.ingredientInfo.brand
-      ? req.body.ingredientInfo.brand : "";
-    const variety = req.body.ingredientInfo.variety
-      ? req.body.ingredientInfo.variety : "";
-    const { name, description, image } = req.body.ingredientInfo;
+    const {
+      brand,
+      variety,
+      name,
+      altNames,
+      description,
+      image
+    } = req.body.ingredientInfo;
 
     const authorId = 1;
     const ownerId = 1;
 
-    const ingredientToCreate = {
+    const ingredientCreation = {
       ingredientTypeId,
       authorId,
       ownerId,
       brand,
       variety,
       name,
+      altNames,
       description,
       image
     };
 
-    assert(ingredientToCreate, validIngredientEntity);
+    assert(ingredientCreation, validIngredientEntity);
 
     const ingredient = new Ingredient(pool);
 
-    const createdIngredient = await ingredient.create(ingredientToCreate);
+    const createdIngredient = await ingredient.create(ingredientCreation);
 
     const generatedId = createdIngredient.insertId;
 
@@ -52,31 +54,35 @@ export const staffIngredientController = {
   update: async function(req: Request, res: Response) {
     const id = Number(req.body.ingredientInfo.id);
     const ingredientTypeId = Number(req.body.ingredientInfo.ingredientTypeId);
-    const brand = req.body.ingredientInfo.brand
-      ? req.body.ingredientInfo.brand : "";
-    const variety = req.body.ingredientInfo.variety
-      ? req.body.ingredientInfo.variety : "";
-    const { name, description, image } = req.body.ingredientInfo;
+    const {
+      brand,
+      variety,
+      name,
+      altNames,
+      description,
+      image
+    } = req.body.ingredientInfo;
 
     const authorId = 1;
     const ownerId = 1;
 
-    const ingredientToUpdateWith = {
+    const ingredientUpdate = {
       ingredientTypeId,
       authorId,
       ownerId,
       brand,
       variety,
       name,
+      altNames,
       description,
       image
     };
 
-    assert(ingredientToUpdateWith, validIngredientEntity);
+    assert(ingredientUpdate, validIngredientEntity);
 
     const ingredient = new Ingredient(pool);
 
-    await ingredient.update({id, ...ingredientToUpdateWith});
+    await ingredient.update({id, ...ingredientUpdate});
 
     const ingredientForInsert = await ingredient.getForElasticSearch(id);
 
