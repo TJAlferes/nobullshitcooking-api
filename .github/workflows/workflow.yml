@@ -33,6 +33,8 @@ jobs:
 
     #- run: npm run test -- --coverage --watchAll=false
     - run: docker-compose -f docker-compose.test.yml up -d mysql-test
+    - run: sleep 59s
+    - run: docker ps
     - run: docker cp ./dbdata/test.sql tests_mysql-test_1:test.sql
     - run: docker exec -it tests_mysql-test_1 bash
     - run: mysql -u root -p pass
