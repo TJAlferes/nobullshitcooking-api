@@ -22,7 +22,7 @@
     "globalSetup": "./global-setup.js",
     "preset": "ts-jest/presets/js-with-babel",
     "testEnvironment": "node",
-    "testPathIgnorePatterns": ["/node_modules/", "/tests/integration/"],
+    "testPathIgnorePatterns": ["/node_modules/"],
     "testRegex": "/*.test.ts$",
     "transform": {
       "^.+\\.[t]sx?$": "ts-jest",

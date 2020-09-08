@@ -43,18 +43,19 @@ services:
       #- "5602:5602"
   
   redis-test:
-    image: redis:latest
     healthcheck:
       test: redis-cli ping
-    volumes:
-      - redis-test:/data
+    image: redis:latest
     ports:
       - "6379:6379"
+    volumes:
+      - redis-test:/data
   
   nobsc-api-test:
     build:
       context: ../..
       dockerfile: ./Dockerfile.test
+    command: "npm run test -- --coverage --watchAll=false"
     depends_on:
       mysql-test:
         condition: service_healthy
