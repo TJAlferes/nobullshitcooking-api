@@ -44,7 +44,7 @@ jobs:
     #./docker-entrypoint.sh mysqld 
     #- run: ls
     #- run: sudo systemctl status mysql.service
-    - run: rm /etc/mysql/my.cnf
+    - run: sudo rm /etc/mysql/my.cnf
     - run: mysql -u root -p pass
     - run: DROP DATABASE nobsc;
     - run: CREATE DATABASE nobsc;
