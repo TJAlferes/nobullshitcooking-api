@@ -32,6 +32,8 @@ jobs:
     - run: npm install
 
     #- run: npm run test -- --coverage --watchAll=false
+    - run: docker-compose down
+    - run sleep: 29s
     - run: docker-compose -f docker-compose.test.yml up -d mysql-test
     - run: sleep 29s
     - run: docker ps
@@ -39,7 +41,9 @@ jobs:
     - run: docker exec nobullshitcooking-api_mysql-test_1 bash
     #- run: sudo /etc/init.d/mysql start
     #- run: sudo systemctl start mysql
-    - run: sudo systemctl status mysql.service
+    #./docker-entrypoint.sh mysqld 
+    - run: ls
+    #- run: sudo systemctl status mysql.service
     - run: mysql -u root -p pass
     - run: DROP DATABASE nobsc;
     - run: CREATE DATABASE nobsc;
