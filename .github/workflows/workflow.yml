@@ -33,9 +33,8 @@ jobs:
 
     #- run: npm run test -- --coverage --watchAll=false
     - run: docker-compose -f docker-compose.test.yml down
-    - run: docker rm -vf
     - run: sleep 29s
-    - run: docker rmi -f
+    - run: docker system prune --all --force --volumes
     - run: sleep 29s
     - run: docker-compose -f docker-compose.test.yml up --build -d mysql-test
     - run: sleep 29s
