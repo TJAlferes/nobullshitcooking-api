@@ -63,7 +63,7 @@ services:
         condition: service_healthy
       redis-test:
         condition: service_healthy
-    env_file: .env
+    env_file: ./.env
     environment:
       NODE_ENV: test
       NODE_PATH: /api/node_modules
