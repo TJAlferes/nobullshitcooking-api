@@ -1,6 +1,6 @@
 #1
 
-FROM mysql:8.0.19
+FROM mysql:8.0.21
 
 COPY ./dbdata/test.sql /dbdata/test.sql
 
