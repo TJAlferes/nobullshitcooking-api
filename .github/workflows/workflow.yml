@@ -32,7 +32,7 @@ jobs:
     - run: npm install
 
     #- run: npm run test -- --coverage --watchAll=false
-    - run: docker-compose down
+    - run: docker-compose -f docker-compose.test.yml down
     - run: sleep 29s
     - run: docker-compose -f docker-compose.test.yml up -d mysql-test
     - run: sleep 29s
