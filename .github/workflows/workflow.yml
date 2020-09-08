@@ -37,8 +37,9 @@ jobs:
     - run: docker ps
     - run: docker cp ./dbdata/test.sql nobullshitcooking-api_mysql-test_1:test.sql
     - run: docker exec nobullshitcooking-api_mysql-test_1 bash
-    - run: sudo /etc/init.d/mysql start
-    #-run: sudo systemctl start mysql
+    #- run: sudo /etc/init.d/mysql start
+    - run: sudo systemctl start mysql
+    - run: sudo systemctl status mysql.service
     - run: mysql -u root -p pass
     - run: DROP DATABASE nobsc;
     - run: CREATE DATABASE nobsc;
