@@ -45,6 +45,8 @@ jobs:
     #- run: ls
     #- run: sudo systemctl status mysql.service
     #- run: sudo rm /etc/mysql/my.cnf
+    - run: sleep 29s
+    - run: telnet 127.0.0.1 3306
     - run: docker logs nobullshitcooking-api_mysql-test_1
     - run: mysql -u root -p pass
     - run: DROP DATABASE nobsc;
