@@ -33,10 +33,10 @@ jobs:
 
     #- run: npm run test -- --coverage --watchAll=false
     - run: docker-compose -f docker-compose.test.yml up -d mysql-test
-    - run: sleep 59s
+    - run: sleep 29s
     - run: docker ps
     - run: docker cp ./dbdata/test.sql nobullshitcooking-api_mysql-test_1:test.sql
-    - run: docker exec -it nobullshitcooking-api_mysql-test_1 bash
+    - run: docker exec -T nobullshitcooking-api_mysql-test_1 bash
     - run: mysql -u root -p pass
     - run: DROP DATABASE nobsc;
     - run: CREATE DATABASE nobsc;
