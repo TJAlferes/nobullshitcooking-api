@@ -1,5 +1,9 @@
 \W
 
+DROP DATABASE nobsc;
+
+CREATE DATABASE nobsc;
+
 USE nobsc;
 
 CREATE TABLE `content_types` (

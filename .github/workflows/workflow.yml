@@ -42,7 +42,8 @@ jobs:
     - run: docker cp ./dbdata/test.sql nobullshitcooking-api_mysql-test_1:test.sql
     - run: sleep 9s
     #- run: docker exec nobullshitcooking-api_mysql-test_1 bash
-    - run: docker exec nobullshitcooking-api_mysql-test_1 mysql -u root -p pass -e "DROP DATABASE nobsc; CREATE DATABASE nobsc; SOURCE test.sql;"
+    #- run: docker exec nobullshitcooking-api_mysql-test_1 mysql -u root -p pass -e "SOURCE test.sql;"
+    - run: docker exec nobullshitcooking-api_mysql-test_1 /bin/sh -c 'mysql -u root -p pass </test.sql'
     #- run: sudo /etc/init.d/mysql start
     #- run: sudo systemctl start mysql
     #- run: sudo systemctl status mysql.service
