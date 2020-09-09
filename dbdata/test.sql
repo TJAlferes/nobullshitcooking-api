@@ -641,7 +641,7 @@ VALUES
 (5, "Storage");
 
 INSERT INTO equipment
-(id, author_id, owner_id, name, description, image)
+(equipment_type_id, author_id, owner_id, name, description, image)
 VALUES
 (2, 1, 1, "Ceramic Stone",                    "It works.", "nobsc-ceramic-stone"),
 (2, 1, 1, "Chef\'s Knife",                    "It works.", "nobsc-chefs-knife"),
@@ -725,7 +725,7 @@ VALUES
 (18, "Product");
 
 INSERT INTO ingredients
-(id, author_id, owner_id, variety, name, description, image)
+(ingredient_type_id, author_id, owner_id, variety, name, description, image)
 VALUES
 (1, 1, 1, NULL,                  "Tuna",                                     "Tasty.", "nobsc-tuna"),
 (1, 1, 1, NULL,                  "Salmon",                                   "Tasty.", "nobsc-salmon"),
@@ -1128,7 +1128,7 @@ VALUES
 (18, 1, 1, "Light",              "Soy Sauce",                                "Tasty.", "nobsc-tobasco-sauce");
 
 INSERT INTO ingredients
-(id, author_id, owner_id, brand, name, description, image)
+(ingredient_type_id, author_id, owner_id, brand, name, description, image)
 VALUES
 (18, 1, 1, "Tobasco",            "Hot Sauce",                                "Tasty.", "nobsc-tobasco-sauce");
 
@@ -1191,7 +1191,7 @@ VALUES
 (12, "Condiment");
 
 INSERT INTO recipes
-(id, cuisine_id, author_id, owner_id, title, description, active_time, total_time, directions)
+(recipe_type_id, cuisine_id, author_id, owner_id, title, description, active_time, total_time, directions)
 VALUES
 (1,  1,  1, 1, "Borscht",                            "Excellent",        "00:30:00", "04:00:00", "Chop beets and onions..."),
 (2,  2,  1, 1, "Soft Buttery Pretzle",               "Melting goodness", "00:20:00", "01:20:00", "Set oven to 400 F. Mix dough..."),
