@@ -101,7 +101,7 @@ CREATE TABLE `users` (
 
 CREATE TABLE `content` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `content_type_id` smallint unsigned NOT NULL,
+  `content_type_id` smallint unsigned NOT NULL DEFAULT '0',
   `author_id` int unsigned NOT NULL,
   `owner_id` int unsigned NOT NULL,
   `created` char(10) NOT NULL,
