@@ -38,28 +38,27 @@ jobs:
     - run: sleep 29s
     - run: docker-compose -f docker-compose.test.yml up --build -d mysql-test
     - run: sleep 59s
-    - run: docker ps
+    #- run: docker ps
     - run: docker cp ./dbdata/test.sql nobullshitcooking-api_mysql-test_1:test.sql
-    - run: docker exec nobullshitcooking-api_mysql-test_1 bash
+    - run: sleep 9s
+    #- run: docker exec nobullshitcooking-api_mysql-test_1 bash
+    - run: docker exec nobullshitcooking-api_mysql-test_1 mysql -u root -p pass -e "DROP DATABASE nobsc; CREATE DATABASE nobsc; SOURCE test.sql;"
     #- run: sudo /etc/init.d/mysql start
     #- run: sudo systemctl start mysql
-    #./docker-entrypoint.sh mysqld 
-    #- run: ls
     #- run: sudo systemctl status mysql.service
     #- run: sudo rm /etc/mysql/my.cnf
-    #- run: sleep 29s
-    #- run: telnet 127.0.0.1 3306
-    #- run: sudo systemctl status mysql.service
-    - run: sudo service mysql status
+    #- run: sudo service mysql status
     #- run: sudo service mysql start
     - run: sleep 29s
-    - run: docker logs nobullshitcooking-api_mysql-test_1
-    - run: mysql -u root -p pass
-    - run: DROP DATABASE nobsc;
-    - run: CREATE DATABASE nobsc;
-    - run: SOURCE test.sql;
+    #- run: docker logs nobullshitcooking-api_mysql-test_1
+    #- run: mysql -u root -p pass
+    #- run: DROP DATABASE nobsc;
+    #- run: CREATE DATABASE nobsc;
+    #- run: SOURCE test.sql;
     - run: quit
-    - run: exit
+    #- run: exit
+    - run: docker-compose -f docker-compose.test.yml down
+    - run: sleep 29s
     - run: docker-compose -f docker-compose.test.yml up --build --exit-code-from nobsc-api-test
 
     - name: Upload coverage to Codecov
