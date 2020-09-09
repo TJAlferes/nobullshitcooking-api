@@ -22,4 +22,4 @@ COPY ./src .
 WORKDIR /api/tests
 COPY ./tests .
 
-CMD npm run test
+CMD npm run test "tests/unit/*" -- --coverage --watchAll=false

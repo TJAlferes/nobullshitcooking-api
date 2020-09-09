@@ -55,7 +55,6 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile.test
-    command: "npm run test -- --coverage --watchAll=false"
     depends_on:
       mysql-test:
         condition: service_healthy
