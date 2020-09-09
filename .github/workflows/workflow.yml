@@ -37,7 +37,7 @@ jobs:
     - run: docker system prune --all --force --volumes
     - run: sleep 29s
     - run: docker-compose -f docker-compose.test.yml up --build -d mysql-test
-    - run: sleep 29s
+    - run: sleep 59s
     - run: docker ps
     - run: docker cp ./dbdata/test.sql nobullshitcooking-api_mysql-test_1:test.sql
     - run: docker exec nobullshitcooking-api_mysql-test_1 bash
