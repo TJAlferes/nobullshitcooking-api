@@ -17,6 +17,7 @@ services:
       MYSQL_PASSWORD: pass
       MYSQL_USER: root
       MYSQL_DATABASE: nobsc
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
     ports:
       - "3306:3306"
   
