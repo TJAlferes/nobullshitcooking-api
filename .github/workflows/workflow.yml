@@ -50,7 +50,7 @@ jobs:
     #- run: docker exec nobullshitcooking-api_mysql-test_1 /bin/sh -c 'quit'
     #- run: docker exec nobullshitcooking-api_mysql-test_1 /bin/sh -c 'mysqld restart'
     #- run: sleep 20s
-    - run: docker exec nobullshitcooking-api_mysql-test_1 /bin/sh -c 'mysql -u root -p pass </test.sql'
+    - run: docker exec nobullshitcooking-api_mysql-test_1 /bin/sh -c 'mysql -u root -ppass </test.sql'
     - run: sleep 15s
     #- run: docker logs nobullshitcooking-api_mysql-test_1
     #- run: docker exec nobullshitcooking-api_mysql-test_1 /bin/sh -c 'quit'
