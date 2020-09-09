@@ -55,4 +55,4 @@ jobs:
         name: codecov-umbrella
         #fail_ci_if_error: true
 
-    timeout-minutes: 5
+    timeout-minutes: 10
