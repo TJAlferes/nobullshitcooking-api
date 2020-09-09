@@ -13,42 +13,42 @@ describe('GET /content/links/:contentTypeName', () => {
     const { body } = await request(server).get('/content/links/exercises');
     expect(body).toEqual([
       {
-        content_id: 1,
+        id: 1,
         content_type_id: 8,
         content_type_name: "Exercises",
         published: "2020-04-14",
         title: "Bike"
       },
       {
-        content_id: 2,
+        id: 2,
         content_type_id: 8,
         content_type_name: "Exercises",
         published: "2020-04-14",
         title: "Pullup"
       },
       {
-        content_id: 3,
+        id: 3,
         content_type_id: 8,
         content_type_name: "Exercises",
         published: "2020-04-14",
         title: "Pushup"
       },
       {
-        content_id: 4,
+        id: 4,
         content_type_id: 8,
         content_type_name: "Exercises",
         published: "2020-04-14",
         title: "Run"
       },
       {
-        content_id: 5,
+        id: 5,
         content_type_id: 8,
         content_type_name: "Exercises",
         published: "2020-04-14",
         title: "Squat"
       },
       {
-        content_id: 6,
+        id: 6,
         content_type_id: 8,
         content_type_name: "Exercises",
         published: "2020-04-14",
@@ -62,7 +62,7 @@ describe('GET /content/links/:contentTypeName', () => {
 describe('GET /content/:contentId', () => {
   it('returns data correctly', async (done) => {
     const { body } = await request(server).get('/content/1');
-    expect(body).toEqual({content_type_id: 8, content_items: "[]"});  // ?
+    expect(body).toEqual({content_type_id: 8, items: "[]"});  // ?
     done();
   });
 });

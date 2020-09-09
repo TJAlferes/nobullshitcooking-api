@@ -13,7 +13,7 @@ describe('POST /staff/cuisine-supplier/create', () => {
     const { body } = await request(server)
       .post('/staff/cuisine-supplier/create')
       .send({cuisineId: 4, supplierId: 4});
-    expect(body).toEqual();
+    expect(body).toEqual({message: 'Cuisine supplier created.'});
     done(); 
   });
 });
@@ -23,7 +23,7 @@ describe('DELETE /staff/cuisine-supplier/delete', () => {
     const { body } = await request(server)
       .delete('/staff/cuisine-supplier/delete')
       .send({cuisineId: 4, supplierId: 4});
-    expect(body).toEqual();
+    expect(body).toEqual({message: 'Cuisine supplier deleted.'});
     done(); 
   });
 });

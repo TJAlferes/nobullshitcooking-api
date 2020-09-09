@@ -25,7 +25,7 @@ describe('POST /staff/recipe/create', () => {
         cookingImage: "cookingImage",
         ownership: "public"
       });
-    expect(body).toEqual();
+    expect(body).toEqual({message: 'Recipe created.'});
     done(); 
   });
 });
@@ -47,7 +47,7 @@ describe('PUT /staff/recipe/update', () => {
         ingredientsImage: "ingredientsImage",
         cookingImage: "cookingImage"
       });
-    expect(body).toEqual();
+    expect(body).toEqual({message: 'Recipe updated.'});
     done(); 
   });
 });
@@ -56,7 +56,7 @@ describe('DELETE /staff/recipe/delete', () => {
   it('deletes recipe', async (done) => {
     const { body } = await request(server).delete('/staff/recipe/delete')
       .send({id: 88});
-    expect(body).toEqual();
+    expect(body).toEqual({message: 'Recipe deleted.'});
     done(); 
   });
 });

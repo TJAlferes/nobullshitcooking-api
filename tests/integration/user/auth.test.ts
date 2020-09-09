@@ -16,7 +16,7 @@ describe('POST /user/auth/register', () => {
         password: "secret",
         username: "newuser"
       });
-    expect(body).toEqual();
+    expect(body).toEqual({message: 'User account created.'});
     done();
   });
 
@@ -27,7 +27,7 @@ describe('POST /user/auth/register', () => {
         password: "secret",
         username: "newuser"
       });
-    expect(body).toEqual();
+    expect(body).toEqual(1);
     done();
   });
 });
@@ -40,7 +40,7 @@ describe('POST /user/auth/verify', () => {
         password: "secret",
         confirmationCode: "confirmationCode"
       });
-    expect(body).toEqual();
+    expect(body).toEqual({message: 'User account verified.'});
     done();
   });
 
@@ -51,25 +51,25 @@ describe('POST /user/auth/verify', () => {
         password: "secret",
         confirmationCode: "confirmationCode"
       });
-    expect(body).toEqual();
+    expect(body).toEqual(1);
     done();
   });
 });
 
 describe('POST /user/auth/resend-confirmation-code', () => {
-  it('verifies new user', async (done) => {
+  it('resends confirmation code', async (done) => {
     const { body } = await request(server)
       .post('/user/auth/resend-confirmation-code')
       .send({email: "newuser@site.com", password: "secret"});
-    expect(body).toEqual();
+    expect(body).toEqual({message: 'Confirmation code re-sent.'});
     done();
   });
 
-  it('does not verify already verified user', async (done) => {
+  it('does not resend to an already verified user', async (done) => {
     const { body } = await request(server)
       .post('/user/auth/resend-confirmation-code')
       .send({email: "newuser@site.com", password: "secret"});
-    expect(body).toEqual();
+    expect(body).toEqual(1);
     done();
   });
 });
@@ -78,21 +78,22 @@ describe('POST /user/auth/login', () => {
   it('logs in existing user', async (done) => {
     const { body } = await request(server).post('/user/auth/login')
       .send({email: "user@site.com", password: "secret"});
-    expect(body).toEqual();
+    expect(body)
+      .toEqual({message: "Signed in.", username: "Person", avatar: "Person"});
     done();
   });
 
   it('does not log in already logged in user', async (done) => {
     const { body } = await request(server).post('/user/auth/login')
       .send({email: "loggedinuser@site.com", password: "secret"});
-    expect(body).toEqual();
+    expect(body).toEqual(1);
     done();
   });
 
   it('does not log in non-existing user', async (done) => {
     const { body } = await request(server).post('/user/auth/login')
       .send({email: "nonuser@site.com", password: "secret"})
-    expect(body).toEqual();
+    expect(body).toEqual(1);
     done();
   });
 });
@@ -100,13 +101,13 @@ describe('POST /user/auth/login', () => {
 describe('POST /user/auth/logout', () => {
   it('logs out existing user', async (done) => {
     const { body } = await request(server).post('/user/auth/logout');
-    expect(body).toEqual();
+    expect(body).toEqual(1);
     done();
   });
 
   it('does not log out non-existing user', async (done) => {
     const { body } = await request(server).post('/user/auth/logout');
-    expect(body).toEqual();
+    expect(body).toEqual(1);
     done();
   });
 });

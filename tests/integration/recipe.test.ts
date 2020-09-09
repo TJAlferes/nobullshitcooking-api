@@ -12,7 +12,7 @@ describe('GET /recipe/1', () => {
   it('returns data correctly', async (done) => {
     const { body } = await request(server).get('/recipe/1');
     expect(body).toEqual({
-      recipe_id: 1,
+      id: 1,
       author: "NOBSC",
       author_avatar: "nobsc-user-default",
       recipe_type_name: "Drink",
@@ -26,9 +26,15 @@ describe('GET /recipe/1', () => {
       equipment_image: "nobsc-recipe-equipment-default",
       ingredients_image: "nobsc-recipe-ingredients-default",
       cooking_image: "nobsc-recipe-cooking-default",
-      required_methods: "[{\"method_name\": \"Steam\"}]",
-      required_equipment: "[{\"amount\": 1, \"equipment_name\": \"Ceramic Stone\"}]",
-      required_ingredients: "[{\"amount\": 4.00, \"ingredient_name\": \"Chicken Breasts\", \"measurement_name\": \"teaspoon\"}]",
+      required_methods: [{method_name: "Steam"}],
+      required_equipment: [{amount: 1, equipment_name: "Ceramic Stone"}],
+      required_ingredients: [
+        {
+          amount: 4.00,
+          ingredient_name: "Chicken Breasts",
+          measurement_name: "teaspoon"
+        }
+      ],
       required_subrecipes: null
     });
     done();

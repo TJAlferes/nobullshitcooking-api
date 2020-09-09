@@ -16,7 +16,7 @@ describe('POST /staff/auth/register', () => {
         password: "secret",
         staffname: "newstaff"
       });
-    expect(body).toEqual();
+    expect(body).toEqual(1);
     done();
   });
 
@@ -27,7 +27,7 @@ describe('POST /staff/auth/register', () => {
         password: "secret",
         staffname: "newstaff"
       });
-    expect(body).toEqual();
+    expect(body).toEqual(1);
     done();
   });
 });
@@ -36,21 +36,21 @@ describe('POST /staff/auth/login', () => {
   it('logs in existing staff', async (done) => {
     const { body } = await request(server).post('/staff/auth/login')
       .send({email: "staff@site.com", password: "secret"});
-    expect(body).toEqual();
+    expect(body).toEqual(1);
     done();
   });
 
   it('does not log in already logged in staff', async (done) => {
     const { body } = await request(server).post('/staff/auth/login')
       .send({email: "loggedinstaff@site.com", password: "secret"});
-    expect(body).toEqual();
+    expect(body).toEqual(1);
     done();
   });
 
   it('does not log in non-existing staff', async (done) => {
     const { body } = await request(server).post('/staff/auth/login')
       .send({email: "nonstaff@site.com", password: "secret"})
-    expect(body).toEqual();
+    expect(body).toEqual(1);
     done();
   });
 });
@@ -58,13 +58,13 @@ describe('POST /staff/auth/login', () => {
 describe('POST /staff/auth/logout', () => {
   it('logs out existing staff', async (done) => {
     const { body } = await request(server).post('/staff/auth/logout');
-    expect(body).toEqual();
+    expect(body).toEqual(1);
     done();
   });
 
   it('does not log out non-existing staff', async (done) => {
     const { body } = await request(server).post('/staff/auth/logout');
-    expect(body).toEqual();
+    expect(body).toEqual(1);
     done();
   });
 });

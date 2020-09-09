@@ -12,13 +12,13 @@ describe('GET /ingredient/1', () => {
   it('returns data correctly', async (done) => {
     const { body } = await request(server).get('/ingredient/1');
     expect(body).toEqual({
-      ingredient_id: 1,
+      id: 1,
       ingredient_type_name: "Fish",
-      ingredient_brand: null,
-      ingredient_variety: null,
-      ingredient_name: "Tuna",
-      ingredient_description: "Tasty.",
-      ingredient_image: "nobsc-tuna"
+      brand: null,
+      variety: null,
+      name: "Tuna",
+      description: "Tasty.",
+      image: "nobsc-tuna"
     });
     done();
   });

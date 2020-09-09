@@ -11,7 +11,7 @@ beforeEach(async () => {
 describe('GET /ingredient-type/1', () => {
   it('returns data correctly', async (done) => {
     const { body } = await request(server).get('/ingredient-type/1');
-    expect(body).toEqual({ingredient_type_id: 1, ingredient_type_name: "Fish"});
+    expect(body).toEqual({id: 1, name: "Fish"});
     done();
   });
 });

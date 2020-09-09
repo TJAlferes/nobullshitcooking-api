@@ -19,7 +19,7 @@ describe('POST /staff/ingredient/create', () => {
         description: "Description.",
         image: "image"
       });
-    expect(body).toEqual();
+    expect(body).toEqual({message: 'Ingredient created.'});
     done(); 
   });
 });
@@ -36,7 +36,7 @@ describe('PUT /staff/ingredient/update', () => {
         description: "Description.",
         image: "image"
       });
-    expect(body).toEqual();
+    expect(body).toEqual({message: 'Ingredient updated.'});
     done(); 
   });
 });
@@ -45,7 +45,7 @@ describe('DELETE /staff/ingredient/delete', () => {
   it('deletes ingredient', async (done) => {
     const { body } = await request(server).delete('/staff/ingredient/delete')
       .send({id: 88});
-    expect(body).toEqual();
+    expect(body).toEqual({message: 'Ingredient deleted.'});
     done(); 
   });
 });

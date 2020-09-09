@@ -17,7 +17,7 @@ describe('POST /staff/equipment/create', () => {
         description: "Description.",
         image: "image"
       });
-    expect(body).toEqual();
+    expect(body).toEqual({message: 'Equipment created.'});
     done(); 
   });
 });
@@ -32,7 +32,7 @@ describe('PUT /staff/equipment/update', () => {
         description: "Description.",
         image: "image"
       });
-    expect(body).toEqual();
+    expect(body).toEqual({message: 'Equipment updated.'});
     done(); 
   });
 });
@@ -41,7 +41,7 @@ describe('DELETE /staff/equipment/delete', () => {
   it('deletes equipment', async (done) => {
     const { body } = await request(server).delete('/staff/equipment/delete')
       .send({id: 88});
-    expect(body).toEqual();
+    expect(body).toEqual({message: 'Equipment deleted.'});
     done(); 
   });
 });
