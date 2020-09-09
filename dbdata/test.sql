@@ -351,7 +351,7 @@ VALUES
 (15, 7, "Methods",     "/page/guide/food/methods");
 
 INSERT INTO content
-(id, author_id, owner_id, created, published, title, items)
+(content_type_id, author_id, owner_id, created, published, title, items)
 VALUES
 (8,  1, 1, "2020-04-14", "2020-04-14", "Bike",                               "[]"),
 (8,  1, 1, "2020-04-14", "2020-04-14", "Pullup",                             "[]"),
