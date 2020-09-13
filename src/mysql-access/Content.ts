@@ -31,7 +31,8 @@ export class Content implements IContent {
         c.published IS NOT NULL
     `;
     const [ rows ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [authorId, contentTypeName]);
+      .execute<RowDataPacket[]>(sql, [authorId, contentTypeName]);
+    //await this.pool.end();
     return rows;
   }
 
@@ -50,6 +51,7 @@ export class Content implements IContent {
       WHERE author_id = ?
     `;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [authorId]);
+    //await this.pool.end();
     return row;
   }
 
@@ -62,6 +64,7 @@ export class Content implements IContent {
     `;
     const [ row ] =
       await this.pool.execute<RowDataPacket[]>(sql, [id, authorId]);
+    //await this.pool.end();
     return row;
   }
 
@@ -94,6 +97,7 @@ export class Content implements IContent {
       title,
       items
     ]);
+    //await this.pool.end();
     return row;
   }
 
@@ -119,6 +123,7 @@ export class Content implements IContent {
       ownerId,
       id
     ]);
+    //await this.pool.end();
     return row;
   }
 
@@ -131,12 +136,14 @@ export class Content implements IContent {
     `;
     const [ row ] = await this.pool
       .execute<RowDataPacket[]>(sql, [ownerId, id]);
+    //await this.pool.end();
     return row;
   }
 
   async deleteAllByOwnerId(ownerId: number) {
     const sql = `DELETE FROM content WHERE owner_id = ?`;
     await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
+    //await this.pool.end();
   }
 }
 

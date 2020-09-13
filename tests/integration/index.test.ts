@@ -1,6 +1,6 @@
 import request from 'supertest';
 
-const { server } = require('../../src/app');
+let { server } = require('../../src/app');
 
 // Make sure this only touches test DBs
 // Make sure this never touches dev DBs
@@ -10,6 +10,12 @@ const { server } = require('../../src/app');
 
 beforeEach(async () => {
   // clean the tes db
+});
+
+afterAll(() => {
+  //server = null;  // sufficient?
+  // you need a way to close all connections to dbs
+  // separate out dbs?
 });
 
 describe('GET /', () => {

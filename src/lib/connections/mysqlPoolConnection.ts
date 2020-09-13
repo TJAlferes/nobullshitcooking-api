@@ -19,7 +19,7 @@ export const pool = process.env.NODE_ENV === 'production'
       password: process.env.TEST_MYSQL_PASSWORD,
       database: process.env.TEST_MYSQL_DATABASE,
       waitForConnections: true,
-      connectionLimit: 50,
+      connectionLimit: 10,
       queueLimit: 0,
       insecureAuth: true
     })
@@ -29,7 +29,7 @@ export const pool = process.env.NODE_ENV === 'production'
       password: process.env.DEV_MYSQL_PASSWORD,
       database: process.env.DEV_MYSQL_DATABASE,
       waitForConnections: true,
-      connectionLimit: 50,
+      connectionLimit: 10,
       queueLimit: 0,
       insecureAuth: true
     });

@@ -15,6 +15,7 @@ export class ContentType implements IContentType {
   async view() {
     const sql = `SELECT id, parent_id, name, path FROM nobsc_content_types`;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql);
+    //await this.pool.end();
     return rows;
   }
 
@@ -23,6 +24,7 @@ export class ContentType implements IContentType {
       SELECT id, parent_id, name, path FROM content_types WHERE id = ?
     `;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
+    //await this.pool.end();
     return row;
   }
 
@@ -32,6 +34,7 @@ export class ContentType implements IContentType {
     `;
     const [ row ] = await this.pool
       .execute<RowDataPacket[]>(sql, [parentId, name, path]);
+    //await this.pool.end();
     return row;
   }
 
@@ -44,12 +47,14 @@ export class ContentType implements IContentType {
     `;
     const [ row ] = await this.pool
       .execute<RowDataPacket[]>(sql, [parentId, name, path, id]);
+    //await this.pool.end();
     return row;
   }
 
   async delete(id: number) {
     const sql = `DELETE FROM content_types WHERE id = ? LIMIT 1`;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
+    //await this.pool.end();
     return row;
   }
 }

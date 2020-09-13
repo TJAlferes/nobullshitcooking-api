@@ -1,3 +1,5 @@
+'use strict';
+
 import compression from 'compression';
 import cors from 'cors';
 //import csurf from 'csurf');  // no longer needed?

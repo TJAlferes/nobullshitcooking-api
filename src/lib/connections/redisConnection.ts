@@ -2,31 +2,43 @@
 
 import Redis from 'ioredis';
 
+const productionConfig =
+  {host: process.env.ELASTICACHE_PROD_PRIMARY, port: 6379};
+const testConfig = {
+  autoResendUnfulfilledCommands: false,
+  host: 'redis-test',
+  maxRetriesPerRequest: 0,
+  port: 6379,
+  retryStrategy: (times: number) => null,
+  showFriendlyErrorStack: true
+};
+const developmentConfig = {host: 'redis-dev', port: 6379};
+
 export const pubClient = process.env.NODE_ENV === 'production'
-  ? new Redis({host: process.env.ELASTICACHE_PROD_PRIMARY, port: 6379})
+  ? new Redis(productionConfig)
   : process.env.NODE_ENV === 'test'
-    ? new Redis({host: 'redis-test', port: 6379, showFriendlyErrorStack: true})
-    : new Redis({host: 'redis-dev', port: 6379});
+    ? new Redis(testConfig)
+    : new Redis(developmentConfig);
 
 export const subClient = process.env.NODE_ENV === 'production'
-  ? new Redis({host: process.env.ELASTICACHE_PROD_PRIMARY, port: 6379})
+  ? new Redis(productionConfig)
   : process.env.NODE_ENV === 'test'
-    ? new Redis({host: 'redis-test', port: 6379, showFriendlyErrorStack: true})
-    : new Redis({host: 'redis-dev', port: 6379});
+    ? new Redis(testConfig)
+    : new Redis(developmentConfig);
 
 export const sessClient = process.env.NODE_ENV === 'production'
-  ? new Redis({host: process.env.ELASTICACHE_PROD_PRIMARY, port: 6379})
+  ? new Redis(productionConfig)
   : process.env.NODE_ENV === 'test'
-    ? new Redis({host: 'redis-test', port: 6379, showFriendlyErrorStack: true})
-    : new Redis({host: 'redis-dev', port: 6379});
+    ? new Redis(testConfig)
+    : new Redis(developmentConfig);
 
 export const workerClient = process.env.NODE_ENV === 'production'
-  ? new Redis({host: process.env.ELASTICACHE_PROD_PRIMARY, port: 6379})
+  ? new Redis(productionConfig)
   : process.env.NODE_ENV === 'test'
-    ? new Redis({host: 'redis-test', port: 6379, showFriendlyErrorStack: true})
-    : new Redis({host: 'redis-dev', port: 6379});
+    ? new Redis(testConfig)
+    : new Redis(developmentConfig);
 
-// set up proper retry logic
+//if (process.env.NODE_ENV !== 'test') {}
 
 pubClient.on('connect', () => console.log('pubClient connected'));
 pubClient.on('ready', () => console.log('pubClient ready'));

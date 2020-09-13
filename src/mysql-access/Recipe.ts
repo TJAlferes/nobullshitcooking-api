@@ -140,7 +140,7 @@ export class Recipe implements IRecipe {
         r.id,
         u.username AS author,
         u.avatar AS author_avatar,
-        rt.name AS .recipe_type_name,
+        rt.name AS recipe_type_name,
         c.name AS cuisine_name,
         r.title,
         r.description,

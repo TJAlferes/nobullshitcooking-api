@@ -1,3 +1,5 @@
+'use strict';
+
 import { Application } from 'express';
 
 import {

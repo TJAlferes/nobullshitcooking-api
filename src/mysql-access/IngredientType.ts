@@ -12,12 +12,14 @@ export class IngredientType implements IIngredientType {
   async view() {
     const sql = `SELECT id, name FROM ingredient_types`;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql);
+    //await this.pool.end();  // ? it uses release for you
     return rows;
   }
 
   async viewById(id: number) {
     const sql = `SELECT id, name FROM ingredient_types WHERE id = ?`;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
+    //await this.pool.end();
     return row;
   }
 }

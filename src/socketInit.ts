@@ -19,8 +19,9 @@ export function socketInit(server: Server, redisSession: RedisStore) {
   
   io.on('connection', socketConnection);
 
+  // move this to separate server/lambda?
   const INTERVAL = 60 * 60 * 1000 * 3;  // 3 hours
-  setInterval(cleanUp, INTERVAL);
+  if (process.env.NODE_ENV !== "test") setInterval(cleanUp, INTERVAL);
 
   //return io;
 }

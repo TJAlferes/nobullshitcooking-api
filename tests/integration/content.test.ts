@@ -10,7 +10,9 @@ beforeEach(async () => {
 
 describe('GET /content/links/:contentTypeName', () => {
   it('returns data correctly', async (done) => {
-    const { body } = await request(server).get('/content/links/exercises');
+    const { body } = await request(server)
+      .get('/content/links/exercises')
+      .end();
     expect(body).toEqual([
       {
         id: 1,
@@ -61,7 +63,7 @@ describe('GET /content/links/:contentTypeName', () => {
 
 describe('GET /content/:contentId', () => {
   it('returns data correctly', async (done) => {
-    const { body } = await request(server).get('/content/1');
+    const { body } = await request(server).get('/content/1').end();
     expect(body).toEqual({content_type_id: 8, items: "[]"});  // ?
     done();
   });
