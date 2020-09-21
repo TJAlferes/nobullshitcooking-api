@@ -1,20 +1,27 @@
 import { Router } from 'express';
 import { param } from 'express-validator';
+import { Pool } from 'mysql2/promise';
 
-import { ingredientTypeController } from '../controllers/ingredientType';
+import { IngredientTypeController } from '../controllers/ingredientType';
 import { catchExceptions } from '../lib/utils/catchExceptions';
 
-export const router = Router();
+const router = Router();
 
 // for /ingredient-type/...
 
-router.get(
-  '/',
-  catchExceptions(ingredientTypeController.view)
-);
+export function ingredientTypeRouter(pool: Pool) {
+  const controller = new IngredientTypeController(pool);
 
-router.get(
-  '/:id',
-  [param('id').not().isEmpty().trim().escape()],
-  catchExceptions(ingredientTypeController.viewById)
-);
+  router.get(
+    '/',
+    catchExceptions(controller.view)
+  );
+  
+  router.get(
+    '/:id',
+    [param('id').not().isEmpty().trim().escape()],
+    catchExceptions(controller.viewById)
+  );
+
+  return router;
+}

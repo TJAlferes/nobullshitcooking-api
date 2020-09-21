@@ -1,47 +1,54 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
+import { Pool } from 'mysql2/promise';
 
-import { userPlanController } from '../../controllers/user/plan';
+import { UserPlanController } from '../../controllers/user/plan';
 import { catchExceptions } from '../../lib/utils/catchExceptions';
 import { userIsAuth } from '../../lib/utils/userIsAuth';
 
-export const router = Router();
+const router = Router();
 
 // for /user/plan/...
 
-router.post(
-  '/all',
-  userIsAuth,
-  catchExceptions(userPlanController.view)
-);
+export function userPlanRouter(pool: Pool) {
+  const controller = new UserPlanController(pool);
 
-router.post(
-  '/one',
-  userIsAuth,
-  [body('id').not().isEmpty().trim().escape()],
-  catchExceptions(userPlanController.viewById)
-);
+  router.post(
+    '/all',
+    userIsAuth,
+    catchExceptions(controller.view)
+  );
 
-router.post(
-  '/create',
-  userIsAuth,
-  [body('name').not().isEmpty().trim().escape()],
-  catchExceptions(userPlanController.create)
-);
+  router.post(
+    '/one',
+    userIsAuth,
+    [body('id').not().isEmpty().trim().escape()],
+    catchExceptions(controller.viewById)
+  );
 
-router.put(
-  '/update',
-  userIsAuth,
-  [
-    body('id').not().isEmpty().trim().escape(),
-    body('name').not().isEmpty().trim().escape()
-  ],
-  catchExceptions(userPlanController.update)
-);
+  router.post(
+    '/create',
+    userIsAuth,
+    [body('name').not().isEmpty().trim().escape()],
+    catchExceptions(controller.create)
+  );
 
-router.delete(
-  '/delete',
-  userIsAuth,
-  [body('id').not().isEmpty().trim().escape()],
-  catchExceptions(userPlanController.deleteById)
-);
+  router.put(
+    '/update',
+    userIsAuth,
+    [
+      body('id').not().isEmpty().trim().escape(),
+      body('name').not().isEmpty().trim().escape()
+    ],
+    catchExceptions(controller.update)
+  );
+
+  router.delete(
+    '/delete',
+    userIsAuth,
+    [body('id').not().isEmpty().trim().escape()],
+    catchExceptions(controller.deleteById)
+  );
+
+  return router;
+}

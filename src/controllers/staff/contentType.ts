@@ -1,20 +1,29 @@
 /*import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
 import { pool } from '../../lib/connections/mysqlPoolConnection';
 import {
   validContentTypeEntity
-} from '../../lib/validations/content/contentTypeEntity';
+} from '../../lib/validations/contentType/entity';
 import { Content } from '../../mysql-access/Content';
 
-export const staffContentController = {
-  createContent: async function(req: Request, res: Response) {
+export class StaffContentTypeController = {
+  pool: Pool;
 
-  },
-  updateContent: async function(req: Request, res: Response) {
+  constructor(pool: Pool) {
+    this.pool = pool;
+  }
+  
+  async create(req: Request, res: Response) {
 
-  },
-  deleteContentType: async function(req: Request, res: Response) {
+  }
+
+  async update(req: Request, res: Response) {
+
+  }
+
+  async delete(req: Request, res: Response) {
 
   }
 };*/

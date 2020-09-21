@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 
-import { pool } from '../lib/connections/mysqlPoolConnection';
 import { ContentType } from '../mysql-access/ContentType';
 import { Cuisine } from '../mysql-access/Cuisine';
 import { Equipment } from '../mysql-access/Equipment';
@@ -12,22 +12,27 @@ import { Method } from '../mysql-access/Method';
 import { Recipe } from '../mysql-access/Recipe';
 import { RecipeType } from '../mysql-access/RecipeType';
 
-export const dataInitController = {
-  viewInitialData: async function(req: Request, res: Response) {
+export class DataInitController {
+  pool: Pool;
+
+  constructor(pool: Pool) {
+    this.pool = pool;
+    this.viewInitialData = this.viewInitialData.bind(this);
+  }
+
+  async viewInitialData(req: Request, res: Response) {
     const authorId = 1;
     const ownerId = 1;
-
-    const contentType = new ContentType(pool);
-    const cuisine = new Cuisine(pool);
-    const equipment = new Equipment(pool);
-    const equipmentType = new EquipmentType(pool);
-    const ingredient = new Ingredient(pool);
-    const ingredientType = new IngredientType(pool);
-    const measurement = new Measurement(pool);
-    const method = new Method(pool);
-    const recipe = new Recipe(pool);
-    const recipeType = new RecipeType(pool);
-
+    const contentType = new ContentType(this.pool);
+    const cuisine = new Cuisine(this.pool);
+    const equipment = new Equipment(this.pool);
+    const equipmentType = new EquipmentType(this.pool);
+    const ingredient = new Ingredient(this.pool);
+    const ingredientType = new IngredientType(this.pool);
+    const measurement = new Measurement(this.pool);
+    const method = new Method(this.pool);
+    const recipe = new Recipe(this.pool);
+    const recipeType = new RecipeType(this.pool);
     const [
       contentTypes,
       cuisines,
@@ -51,7 +56,6 @@ export const dataInitController = {
       recipe.view(authorId, ownerId),
       recipeType.view()
     ]);
-
     return res.send({
       contentTypes,
       cuisines,
@@ -65,4 +69,4 @@ export const dataInitController = {
       recipeTypes
     });
   }
-};
+}

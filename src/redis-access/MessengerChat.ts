@@ -20,7 +20,7 @@ export class MessengerChat implements IMessengerChat {
       )
       .zadd('rooms', `${(new Date).getTime()}`, JSON.stringify(message.room))
       .exec();
-  };
+  }
 }
 
 export interface IMessengerChat {

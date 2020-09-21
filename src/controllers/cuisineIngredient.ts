@@ -1,16 +1,20 @@
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 
-import { pool } from '../lib/connections/mysqlPoolConnection';
 import { CuisineIngredient } from '../mysql-access/CuisineIngredient';
 
-export const cuisineIngredientController = {
-  viewByCuisineId: async function(req: Request, res: Response) {
+export class CuisineIngredientController {
+  pool: Pool;
+
+  constructor(pool: Pool) {
+    this.pool = pool;
+    this.viewByCuisineId = this.viewByCuisineId.bind(this);
+  }
+
+  async viewByCuisineId(req: Request, res: Response) {
     const id = Number(req.params.id);
-
-    const cuisineIngredient = new CuisineIngredient(pool);
-
+    const cuisineIngredient = new CuisineIngredient(this.pool);
     const rows = await cuisineIngredient.viewByCuisineId(id);
-
     return res.send(rows);
   }
-};
+}

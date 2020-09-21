@@ -1,28 +1,31 @@
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 
-import { pool } from '../lib/connections/mysqlPoolConnection';
 import { Ingredient } from '../mysql-access/Ingredient';
 
-export const ingredientController = {
-  view: async function (req: Request, res: Response) {
+export class IngredientController {
+  pool: Pool;
+
+  constructor(pool: Pool) {
+    this.pool = pool;
+    this.view = this.view.bind(this);
+    this.viewById = this.viewById.bind(this);
+  }
+
+  async view(req: Request, res: Response) {
     const authorId = 1;
     const ownerId = 1;
-
-    const ingredient = new Ingredient(pool);
-
+    const ingredient = new Ingredient(this.pool);
     const rows = await ingredient.view(authorId, ownerId);
-
     return res.send(rows);
-  },
-  viewById: async function(req: Request, res: Response) {
+  }
+
+  async viewById(req: Request, res: Response) {
     const id = Number(req.params.id);
     const authorId = 1;
     const ownerId = 1;
-
-    const ingredient = new Ingredient(pool);
-
+    const ingredient = new Ingredient(this.pool);
     const [ row ] = await ingredient.viewById(id, authorId, ownerId);
-
     return res.send(row);
   }
-};
+}

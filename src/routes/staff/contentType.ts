@@ -1,5 +1,6 @@
 /*import { Router } from 'express';
 import { body } from 'express-validator';
+import { Pool } from 'mysql2/promise';
 
 import { staffContentTypeController } from '../../controllers/staff/contentType';
 import { catchExceptions } from '../../lib/utils/catchExceptions';

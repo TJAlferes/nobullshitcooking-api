@@ -1,13 +1,20 @@
 import { Router } from 'express';
+import { Pool } from 'mysql2/promise';
 
-import { dataInitController } from '../controllers/dataInit';
+import { DataInitController } from '../controllers/dataInit';
 import { catchExceptions } from '../lib/utils/catchExceptions';
 
-export const router = Router();
+const router = Router();
 
 // for /data-init/...
 
-router.get(
-  '/',
-  catchExceptions(dataInitController.viewInitialData)
-);
+export function dataInitRouter(pool: Pool) {
+  const controller = new DataInitController(pool);
+
+  router.get(
+    '/',
+    catchExceptions(controller.viewInitialData)
+  );
+
+  return router;
+}

@@ -1,58 +1,65 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
+import { Pool } from 'mysql2/promise';
 
-import { userFriendshipController } from '../../controllers/user/friendship';
+import { UserFriendshipController } from '../../controllers/user/friendship';
 import { catchExceptions } from '../../lib/utils/catchExceptions';
 import { userIsAuth } from '../../lib/utils/userIsAuth';
 
-export const router = Router();
+const router = Router();
 
 // for /user/friendship/...
 
-router.post(
-  '/',
-  userIsAuth,
-  catchExceptions(userFriendshipController.view)
-);
+export function userFriendshipRouter(pool: Pool) {
+  const controller = new UserFriendshipController(pool);
 
-router.post(
-  '/create',
-  userIsAuth,
-  [body('friendname').not().isEmpty().trim().escape()],
-  catchExceptions(userFriendshipController.create)
-);
+  router.post(
+    '/',
+    userIsAuth,
+    catchExceptions(controller.view)
+  );
 
-router.put(
-  '/accept',
-  userIsAuth,
-  [body('friendname').not().isEmpty().trim().escape()],
-  catchExceptions(userFriendshipController.accept)
-);
+  router.post(
+    '/create',
+    userIsAuth,
+    [body('friendname').not().isEmpty().trim().escape()],
+    catchExceptions(controller.create)
+  );
 
-router.put(
-  '/reject',
-  userIsAuth,
-  [body('friendname').not().isEmpty().trim().escape()],
-  catchExceptions(userFriendshipController.reject)
-);
+  router.put(
+    '/accept',
+    userIsAuth,
+    [body('friendname').not().isEmpty().trim().escape()],
+    catchExceptions(controller.accept)
+  );
 
-router.delete(
-  '/delete',
-  userIsAuth,
-  [body('friendname').not().isEmpty().trim().escape()],
-  catchExceptions(userFriendshipController.delete)
-);
+  router.put(
+    '/reject',
+    userIsAuth,
+    [body('friendname').not().isEmpty().trim().escape()],
+    catchExceptions(controller.reject)
+  );
 
-router.post(
-  '/block',
-  userIsAuth,
-  [body('friendname').not().isEmpty().trim().escape()],
-  catchExceptions(userFriendshipController.block)
-);
+  router.delete(
+    '/delete',
+    userIsAuth,
+    [body('friendname').not().isEmpty().trim().escape()],
+    catchExceptions(controller.delete)
+  );
 
-router.delete(
-  '/unblock',
-  userIsAuth,
-  [body('friendname').not().isEmpty().trim().escape()],
-  catchExceptions(userFriendshipController.unblock)
-);
+  router.post(
+    '/block',
+    userIsAuth,
+    [body('friendname').not().isEmpty().trim().escape()],
+    catchExceptions(controller.block)
+  );
+
+  router.delete(
+    '/unblock',
+    userIsAuth,
+    [body('friendname').not().isEmpty().trim().escape()],
+    catchExceptions(controller.unblock)
+  );
+
+  return router;
+}

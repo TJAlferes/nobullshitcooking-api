@@ -12,16 +12,11 @@ export async function rejoinRoom({
   messengerRoom
 }: IRejoinRoom) {
   if (room === '') return;
-  
   socket.join(room);
-
   await messengerRoom.add(room);  // ?
   await messengerRoom.addUser(id, room);
-
   socket.broadcast.to(room).emit('AddUser', ChatUser(id, username, avatar));
-
   const users = await messengerRoom.getUsers(room);
-  
   socket.emit('RegetUser', users, room);
 }
 

@@ -20,6 +20,12 @@ import {
   validVerifyRequest,
 } from '../../../../src/lib/validations/user/index';
 
+/*
+
+mocks and setup
+
+*/
+
 jest.mock('bcrypt');
 const mockBcrypt = bcrypt as jest.Mocked<typeof bcrypt>;
 mockBcrypt.hash.mockResolvedValue(
@@ -148,6 +154,12 @@ let mockDeleteAllIngredientsByOwnerId = jest.fn();
 afterEach(() => {
   jest.clearAllMocks();
 });
+
+/*
+
+tests
+
+*/
 
 describe('user auth controller', () => {
 

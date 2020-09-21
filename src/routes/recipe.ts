@@ -1,18 +1,25 @@
 import { Router } from 'express';
+import { Pool } from 'mysql2/promise';
 
-import { recipeController } from '../controllers/recipe';
+import { RecipeController } from '../controllers/recipe';
 import { catchExceptions } from '../lib/utils/catchExceptions';
 
-export const router = Router();
+const router = Router();
 
 // for /recipe/...
 
-router.get(
-  '/official/all',
-  catchExceptions(recipeController.view)
-);
+export function recipeRouter(pool: Pool) {
+  const controller = new RecipeController(pool);
 
-router.get(
-  '/:id',
-  catchExceptions(recipeController.viewById)
-);
+  router.get(
+    '/official/all',
+    catchExceptions(controller.view)
+  );
+  
+  router.get(
+    '/:id',
+    catchExceptions(controller.viewById)
+  );
+
+  return router;
+}

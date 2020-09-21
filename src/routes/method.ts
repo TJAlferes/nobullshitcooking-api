@@ -1,20 +1,27 @@
 import { Router } from 'express';
 import { param } from 'express-validator';
+import { Pool } from 'mysql2/promise';
 
-import { methodController } from '../controllers/method';
+import { MethodController } from '../controllers/method';
 import { catchExceptions } from '../lib/utils/catchExceptions';
 
-export const router = Router();
+const router = Router();
 
 // for /method/...
 
-router.get(
-  '/',
-  catchExceptions(methodController.view)
-);
+export function methodRouter(pool: Pool) {
+  const controller = new MethodController(pool);
 
-router.get(
-  '/:id',
-  [param('id').not().isEmpty().trim().escape()],
-  catchExceptions(methodController.viewById)
-);
+  router.get(
+    '/',
+    catchExceptions(controller.view)
+  );
+  
+  router.get(
+    '/:id',
+    [param('id').not().isEmpty().trim().escape()],
+    catchExceptions(controller.viewById)
+  );
+
+  return router;
+}

@@ -17,28 +17,22 @@ export async function disconnecting({
 }: IDisconnecting) {
   const clonedSocket = {...socket};
   //console.log('disconnecting; reason: ', reason);
-  
   for (let room in clonedSocket.rooms) {
     if (room !== clonedSocket.id) {
       socket.broadcast.to(room)
         .emit('RemoveUser', ChatUser(id, username, avatar));
-
       messengerRoom.removeUser(id, room);
     }
   }
-
   const acceptedFriends = await nobscFriendship.viewAccepted(id);
-
   if (acceptedFriends.length) {
     for (let f of acceptedFriends) {
       const onlineFriend = await messengerUser.getSocketId(f.user_id);
       if (!onlineFriend) continue;
-
       socket.broadcast.to(onlineFriend)
         .emit('ShowOffline', ChatUser(id, username, avatar));
     }
   }
-
   await messengerUser.remove(id);
 }
 

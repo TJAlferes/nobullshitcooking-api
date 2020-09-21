@@ -1,48 +1,55 @@
 import { Router } from 'express';
+import { Client } from '@elastic/elasticsearch';
 
-import { searchController } from '../controllers/search';
+import { SearchController } from '../controllers/search';
 import { catchExceptions } from '../lib/utils/catchExceptions';
 
-export const router = Router();
+const router = Router();
 
 // for /search/...
 
-/*router.post(
-  '/autocomplete/all',
-  catchExceptions(searchController.autocompletePublicAll)
-);*/
+export function searchRouter(esClient: Client) {
+  const controller = new SearchController(esClient);
 
-router.post(
-  '/autocomplete/equipment',
-  catchExceptions(searchController.autocompletePublicEquipment)
-);
+  /*router.post(
+    '/autocomplete/all',
+    catchExceptions(controller.autocompletePublicAll)
+  );*/
 
-router.post(
-  '/autocomplete/ingredients',
-  catchExceptions(searchController.autocompletePublicIngredients)
-);
+  router.post(
+    '/autocomplete/equipment',
+    catchExceptions(controller.autocompletePublicEquipment)
+  );
 
-router.post(
-  '/autocomplete/recipes',
-  catchExceptions(searchController.autocompletePublicRecipes)
-);
+  router.post(
+    '/autocomplete/ingredients',
+    catchExceptions(controller.autocompletePublicIngredients)
+  );
 
-/*router.post(
-  '/find/all',
-  catchExceptions(searchController.findPublicAll)
-);*/
+  router.post(
+    '/autocomplete/recipes',
+    catchExceptions(controller.autocompletePublicRecipes)
+  );
 
-router.post(
-  '/find/equipment',
-  catchExceptions(searchController.findPublicEquipment)
-);
+  /*router.post(
+    '/find/all',
+    catchExceptions(controller.findPublicAll)
+  );*/
 
-router.post(
-  '/find/ingredients',
-  catchExceptions(searchController.findPublicIngredients)
-);
+  router.post(
+    '/find/equipment',
+    catchExceptions(controller.findPublicEquipment)
+  );
 
-router.post(
-  '/find/recipes',
-  catchExceptions(searchController.findPublicRecipes)
-);
+  router.post(
+    '/find/ingredients',
+    catchExceptions(controller.findPublicIngredients)
+  );
+
+  router.post(
+    '/find/recipes',
+    catchExceptions(controller.findPublicRecipes)
+  );
+
+  return router;
+}

@@ -1,61 +1,68 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
+import { Pool } from 'mysql2/promise';
 
-import { userContentController } from '../../controllers/user/content';
+import { UserContentController } from '../../controllers/user/content';
 import { catchExceptions } from '../../lib/utils/catchExceptions';
 import { userIsAuth } from '../../lib/utils/userIsAuth';
 
-export const router = Router();
+const router = Router();
 
 // for /user/content/...
 
-router.post(
-  '/all',
-  userIsAuth,
-  catchExceptions(userContentController.view)
-);
+export function userContentRouter(pool: Pool) {
+  const controller = new UserContentController(pool);
 
-router.post(
-  '/one',
-  userIsAuth,
-  [body('id').not().isEmpty().trim().escape()],
-  catchExceptions(userContentController.viewById)
-);
+  router.post(
+    '/all',
+    userIsAuth,
+    catchExceptions(controller.view)
+  );
 
-router.post(
-  '/subscribed/all',
-  userIsAuth,
-  catchExceptions(userContentController.viewAllMySubcribedContent)
-);
+  router.post(
+    '/one',
+    userIsAuth,
+    [body('id').not().isEmpty().trim().escape()],
+    catchExceptions(controller.viewById)
+  );
 
-router.post(
-  '/create',
-  userIsAuth,
-  [
-    body('contentTypeId').not().isEmpty().trim().escape(),
-    body('published').not().isEmpty().trim().escape(),
-    body('title').not().isEmpty().trim().escape(),
-    body('items').not().isEmpty().trim().escape()
-  ],
-  catchExceptions(userContentController.create)
-);
+  router.post(
+    '/subscribed/all',
+    userIsAuth,
+    catchExceptions(controller.viewAllMySubcribedContent)
+  );
 
-router.put(
-  '/update',
-  userIsAuth,
-  [
-    body('id').not().isEmpty().trim().escape(),
-    body('contentTypeId').not().isEmpty().trim().escape(),
-    body('published').not().isEmpty().trim().escape(),
-    body('title').not().isEmpty().trim().escape(),
-    body('items').not().isEmpty().trim().escape()
-  ],
-  catchExceptions(userContentController.update)
-);
+  router.post(
+    '/create',
+    userIsAuth,
+    [
+      body('contentTypeId').not().isEmpty().trim().escape(),
+      body('published').not().isEmpty().trim().escape(),
+      body('title').not().isEmpty().trim().escape(),
+      body('items').not().isEmpty().trim().escape()
+    ],
+    catchExceptions(controller.create)
+  );
 
-router.delete(
-  '/delete',
-  userIsAuth,
-  [body('id').not().isEmpty().trim().escape()],
-  catchExceptions(userContentController.delete)
-);
+  router.put(
+    '/update',
+    userIsAuth,
+    [
+      body('id').not().isEmpty().trim().escape(),
+      body('contentTypeId').not().isEmpty().trim().escape(),
+      body('published').not().isEmpty().trim().escape(),
+      body('title').not().isEmpty().trim().escape(),
+      body('items').not().isEmpty().trim().escape()
+    ],
+    catchExceptions(controller.update)
+  );
+
+  router.delete(
+    '/delete',
+    userIsAuth,
+    [body('id').not().isEmpty().trim().escape()],
+    catchExceptions(controller.delete)
+  );
+
+  return router;
+}

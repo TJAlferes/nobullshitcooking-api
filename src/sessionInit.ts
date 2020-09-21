@@ -4,14 +4,14 @@ import connectRedis from 'connect-redis';
 import { Application } from 'express';
 import expressSession, { SessionOptions } from 'express-session';
 import { Server } from 'http';
+import { Pool } from 'mysql2/promise';
 
-import { sessClient } from './lib/connections/redisConnection';
+import { sessClient } from './lib/connections/redisConnection';  // to do
 import { socketInit } from './socketInit';
 
-export function sessionInit(app: Application, server: Server) {
+export function sessionInit(app: Application, pool: Pool, server: Server) {
   const RedisStore = connectRedis(expressSession);
-  const redisSession = new RedisStore({client: sessClient});
-
+  const redisSession = new RedisStore({client: sessClient});  // to do
   const sessionOptions: SessionOptions = {
     name: "connect.sid",
     resave: true,
@@ -20,7 +20,6 @@ export function sessionInit(app: Application, server: Server) {
     store: redisSession,
     unset: "destroy"
   };
-
   if (app.get('env') === 'production') {
     // new Chrome requirements:
     /*sessionOptions.cookie = {
@@ -41,8 +40,6 @@ export function sessionInit(app: Application, server: Server) {
       secure: false
     };
   }
-
-  socketInit(server, redisSession);
-
+  socketInit(pool, redisSession, server);
   return expressSession(sessionOptions);
 }

@@ -2,6 +2,8 @@
 
 import express, { Request, Response, NextFunction } from 'express';
 import { createServer } from 'http';
+import { Pool } from 'mysql2/promise';
+import { Client } from '@elastic/elasticsearch';
 
 import { middlewareInit}  from './middlewareInit';
 import { routesInit } from './routesInit';
@@ -10,31 +12,29 @@ import { routesInit } from './routesInit';
 const app = express();
 const server = createServer(app);
 
-middlewareInit(app, server);  // must be called before routesInit
-routesInit(app);
-
-process.on('unhandledRejection', (reason, promise: Promise<any>) => {
-  console.log('Unhandled Rejection at:', reason);
-});
-
-if (app.get('env') === 'production') {
-  app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
-    res.status(500).json({error: error.message || 'something went wrong'});
+export function appServer(pool: Pool, esClient: Client) {
+  middlewareInit(app, pool, server);  // must be called before routesInit
+  routesInit(app, pool, esClient);
+  process.on('unhandledRejection', (reason, promise: Promise<any>) => {
+    console.log('Unhandled Rejection at:', reason);
   });
-} else {
-  app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
-    res.status(500).json({error});
-  });
+  if (process.env.NODE_ENV === 'production') {
+    app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
+      res.status(500).json({error: error.message || 'something went wrong'});
+    });
+  } else {
+    app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
+      res.status(500).json({error});
+    });
+  }
+  // move this, and create startup conditional
+  /*try {
+    setTimeout(() => {
+      console.log('Now running bulkUp.');
+      bulkUp();
+    }, 60000);  // at the 1 minute mark
+  } catch(err) {
+    console.log(err);
+  }*/
+  return server;
 }
-
-// move this, and create startup conditional
-/*try {
-  setTimeout(() => {
-    console.log('Now running bulkUp.');
-    bulkUp();
-  }, 60000);  // at the 1 minute mark
-} catch(err) {
-  console.log(err);
-}*/
-
-module.exports = {app, server};

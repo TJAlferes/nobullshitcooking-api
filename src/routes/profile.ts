@@ -1,15 +1,22 @@
 import { Router } from 'express';
 import { param } from 'express-validator';
+import { Pool } from 'mysql2/promise';
 
-import { profileController } from '../controllers/profile';
+import { ProfileController } from '../controllers/profile';
 import { catchExceptions } from '../lib/utils/catchExceptions';
 
-export const router = Router();
+const router = Router();
 
 // for /profile/...
 
-router.get(
-  '/:username',
-  [param('username').not().isEmpty().trim().escape()],
-  catchExceptions(profileController.view)
-);
+export function profileRouter(pool: Pool) {
+  const controller = new ProfileController(pool);
+
+  router.get(
+    '/:username',
+    [param('username').not().isEmpty().trim().escape()],
+    catchExceptions(controller.view)
+  );
+
+  return router;
+}

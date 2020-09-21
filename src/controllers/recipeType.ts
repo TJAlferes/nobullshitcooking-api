@@ -1,27 +1,30 @@
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
-import { pool } from '../lib/connections/mysqlPoolConnection';
 import { validRecipeTypeRequest } from '../lib/validations/recipeType/request';
 import { RecipeType } from '../mysql-access/RecipeType';
 
-export const recipeTypeController = {
-  view: async function(req: Request, res: Response) {
-    const recipeType = new RecipeType(pool);
+export class RecipeTypeController {
+  pool: Pool;
 
+  constructor(pool: Pool) {
+    this.pool = pool;
+    this.view = this.view.bind(this);
+    this.viewById = this.viewById.bind(this);
+  }
+
+  async view(req: Request, res: Response) {
+    const recipeType = new RecipeType(this.pool);
     const rows = await recipeType.view();
-
     return res.send(rows);
-  },
-  viewById: async function(req: Request, res: Response) {
+  }
+
+  async viewById(req: Request, res: Response) {
     const id = Number(req.params.id);
-
     assert({id}, validRecipeTypeRequest);
-
-    const recipeType = new RecipeType(pool);
-
+    const recipeType = new RecipeType(this.pool);
     const [ row ] = await recipeType.viewById(id);
-    
     return res.send(row);
   }
-};
+}

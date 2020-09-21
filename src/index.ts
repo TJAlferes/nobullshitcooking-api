@@ -1,20 +1,17 @@
 'use strict';
 
-//require('babel-polyfill');  // pollutes globals?
-//require('core-js/stable');  // 'core-js'
 require('regenerator-runtime/runtime');
 require('dotenv').config();
 
-const { app, server } = require('./app');
+import { esClient } from './lib/connections/elasticsearchClient';
+import { pool } from './lib/connections/mysqlPoolConnection';
+import { appServer } from './app';
 
-let PORT: number;
-
-if (app.get('env') === 'production') {
+const server = appServer(pool, esClient);
+let PORT: number = Number(process.env.PORT) || 3003;;
+let HOST: string = '0.0.0.0';;
+if (process.env.NODE_ENV === 'production') {
   PORT = Number(process.env.PORT) || 8081;
-  server
-    .listen(PORT, '127.0.0.1', () => console.log('Listening on port ' + PORT));
-} else {
-  PORT = Number(process.env.PORT) || 3003;
-  server
-    .listen(PORT, '0.0.0.0', () => console.log('Listening on port ' + PORT));
+  HOST = '127.0.0.1';
 }
+server.listen(PORT, HOST, () => console.log('Listening on port ' + PORT));

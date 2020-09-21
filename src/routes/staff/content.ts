@@ -1,42 +1,49 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
+import { Pool } from 'mysql2/promise';
 
-import { staffContentController } from '../../controllers/staff/content';
+import { StaffContentController } from '../../controllers/staff/content';
 import { catchExceptions } from '../../lib/utils/catchExceptions';
 import { staffIsAuth } from '../../lib/utils/staffIsAuth';
 
-export const router = Router();
+const router = Router();
 
 // for /staff/content/...
 
-router.post(
-  '/create',
-  staffIsAuth,
-  [
-    body('contentTypeId').not().isEmpty().trim().escape(),
-    body('published').not().isEmpty().trim().escape(),
-    body('title').not().isEmpty().trim().escape(),
-    body('items').not().isEmpty().trim().escape()
-  ],
-  catchExceptions(staffContentController.create)
-);
+export function staffContentRouter(pool: Pool) {
+  const controller = new StaffContentController(pool);
 
-router.put(
-  '/update',
-  staffIsAuth,
-  [
-    body('id').not().isEmpty().trim().escape(),
-    body('contentTypeId').not().isEmpty().trim().escape(),
-    body('published').not().isEmpty().trim().escape(),
-    body('title').not().isEmpty().trim().escape(),
-    body('items').not().isEmpty().trim().escape()
-  ],
-  catchExceptions(staffContentController.update)
-);
+  router.post(
+    '/create',
+    staffIsAuth,
+    [
+      body('contentTypeId').not().isEmpty().trim().escape(),
+      body('published').not().isEmpty().trim().escape(),
+      body('title').not().isEmpty().trim().escape(),
+      body('items').not().isEmpty().trim().escape()
+    ],
+    catchExceptions(controller.create)
+  );
 
-router.delete(
-  '/delete',
-  staffIsAuth,
-  [body('id').not().isEmpty().trim().escape()],
-  catchExceptions(staffContentController.delete)
-);
+  router.put(
+    '/update',
+    staffIsAuth,
+    [
+      body('id').not().isEmpty().trim().escape(),
+      body('contentTypeId').not().isEmpty().trim().escape(),
+      body('published').not().isEmpty().trim().escape(),
+      body('title').not().isEmpty().trim().escape(),
+      body('items').not().isEmpty().trim().escape()
+    ],
+    catchExceptions(controller.update)
+  );
+
+  router.delete(
+    '/delete',
+    staffIsAuth,
+    [body('id').not().isEmpty().trim().escape()],
+    catchExceptions(controller.delete)
+  );
+
+  return router;
+}

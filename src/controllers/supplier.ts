@@ -1,23 +1,27 @@
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 
-import { pool } from '../lib/connections/mysqlPoolConnection';
 import { Supplier } from '../mysql-access/Supplier';
 
-export const supplierController = {
-  view: async function(req: Request, res: Response) {
-    const supplier = new Supplier(pool);
+export class SupplierController {
+  pool: Pool;
 
+  constructor(pool: Pool) {
+    this.pool = pool;
+    this.view = this.view.bind(this);
+    this.viewById = this.viewById.bind(this);
+  }
+
+  async view(req: Request, res: Response) {
+    const supplier = new Supplier(this.pool);
     const rows = await supplier.view();
-
     return res.send(rows);
-  },
-  viewById: async function(req: Request, res: Response) {
+  }
+
+  async viewById(req: Request, res: Response) {
     const id = Number(req.params.id);
-
-    const supplier = new Supplier(pool);
-
+    const supplier = new Supplier(this.pool);
     const [ row ] = await supplier.viewById(id);
-    
     return res.send(row);
   }
-};
+}

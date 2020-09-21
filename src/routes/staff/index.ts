@@ -1,25 +1,41 @@
 import { Router } from 'express';
+import { Pool } from 'mysql2/promise';
 
-import { router as staffAuthRouter } from './auth';
-import { router as staffContentRouter } from './content';
-import { router as staffCuisineEquipmentRouter } from './cuisineEquipment';
-import { router as staffCuisineIngredientRouter } from './cuisineIngredient';
-import { router as staffCuisineSupplierRouter } from './cuisineSupplier';
-import { router as staffEquipmentRouter } from './equipment';
-import { router as staffGetSignedUrlRouter } from './get-signed-url';
-import { router as staffIngredientRouter } from './ingredient';
-import { router as staffRecipeRouter } from './recipe';
-import { router as staffSupplierRouter } from './supplier';
+import { staffAuthRouter } from './auth';
+import { staffContentRouter } from './content';
+import { staffCuisineEquipmentRouter } from './cuisineEquipment';
+import { staffCuisineIngredientRouter } from './cuisineIngredient';
+import { staffCuisineSupplierRouter } from './cuisineSupplier';
+import { staffEquipmentRouter } from './equipment';
+import { staffGetSignedUrlRouter } from './get-signed-url';
+import { staffIngredientRouter } from './ingredient';
+import { staffRecipeRouter } from './recipe';
+import { staffSupplierRouter } from './supplier';
 
-export const router = Router();
+const router = Router();
 
-router.use('/auth', staffAuthRouter);
-router.use('/content', staffContentRouter);
-router.use('/cusine-equipment', staffCuisineEquipmentRouter);
-router.use('/cusine-ingredient', staffCuisineIngredientRouter);
-router.use('/cusine-supplier', staffCuisineSupplierRouter);
-router.use('/equipment', staffEquipmentRouter);
-router.use('/get-signed-url/content', staffGetSignedUrlRouter);
-router.use('/ingredient', staffIngredientRouter);
-router.use('/recipe', staffRecipeRouter);
-router.use('/supplier', staffSupplierRouter);
+export function staffRouter(pool: Pool) {
+  const staffAuthRoutes = staffAuthRouter(pool);
+  const staffContentRoutes = staffContentRouter(pool);
+  const staffCuisineEquipmentRoutes = staffCuisineEquipmentRouter(pool);
+  const staffCuisineIngredientRoutes = staffCuisineIngredientRouter(pool);
+  const staffCuisineSupplierRoutes = staffCuisineSupplierRouter(pool);
+  const staffEquipmentRoutes = staffEquipmentRouter(pool);
+  const staffGetSignedUrlRoutes = staffGetSignedUrlRouter();
+  const staffIngredientRoutes = staffIngredientRouter(pool);
+  const staffRecipeRoutes = staffRecipeRouter(pool);
+  const staffSupplierRoutes = staffSupplierRouter(pool);
+
+  router.use('/auth', staffAuthRoutes);
+  router.use('/content', staffContentRoutes);
+  router.use('/cusine-equipment', staffCuisineEquipmentRoutes);
+  router.use('/cusine-ingredient', staffCuisineIngredientRoutes);
+  router.use('/cusine-supplier', staffCuisineSupplierRoutes);
+  router.use('/equipment', staffEquipmentRoutes);
+  router.use('/get-signed-url/content', staffGetSignedUrlRoutes);
+  router.use('/ingredient', staffIngredientRoutes);
+  router.use('/recipe', staffRecipeRoutes);
+  router.use('/supplier', staffSupplierRoutes);
+
+  return router;
+}

@@ -9,21 +9,19 @@ import expressRateLimit from 'express-rate-limit';  // Use rate-limiter-flexible
 import helmet from 'helmet';
 //import hpp from 'hpp');
 import { Server } from 'http';
+import { Pool } from 'mysql2/promise';
 
 import { sessionInit } from './sessionInit';
 
-export function middlewareInit(app: Application, server: Server) {
-  const rateLimiterOptions = {windowMs: 1 * 60 * 1000, max: 1000};  // limit each IP to 1000 requests per minute (100?)
-
+export function middlewareInit(app: Application, pool: Pool, server: Server) {
+  // limit each IP requests per minute:
+  const rateLimiterOptions = {windowMs: 1 * 60 * 1000, max: 100};  // 1000?
   const corsOptions = {origin: ['http://localhost:8080'], credentials: true};
-  
   if (app.get('env') === 'production') {
     app.set('trust proxy', 1);  // trust first proxy
     corsOptions.origin = ['https://nobullshitcooking.com'];
   }
-  
-  const session = sessionInit(app, server);
-  
+  const session = sessionInit(app, pool, server);
   //app.use(expressPinoLogger());
   app.use(express.json());
   app.use(express.urlencoded({extended: false}));

@@ -1,32 +1,55 @@
 'use strict';
 
 import { Application } from 'express';
+import { Pool } from 'mysql2/promise';
+import { Client } from '@elastic/elasticsearch';
 
 import {
-  staffRoutes,
-  userRoutes,
-  contentRoutes,
-  contentTypeRoutes,
-  cuisineRoutes,
-  cuisineEquipmentRoutes,
-  cuisineIngredientRoutes,
-  cuisineSupplierRoutes,
-  dataInitRoutes,
-  equipmentRoutes,
-  equipmentTypeRoutes,
-  favoriteRecipeRoutes,
-  ingredientRoutes,
-  ingredientTypeRoutes,
-  measurementRoutes,
-  methodRoutes,
-  profileRoutes,
-  recipeRoutes,
-  recipeTypeRoutes,
-  searchRoutes,
-  supplierRoutes
+  staffRouter,
+  userRouter,
+  contentRouter,
+  contentTypeRouter,
+  cuisineRouter,
+  cuisineEquipmentRouter,
+  cuisineIngredientRouter,
+  cuisineSupplierRouter,
+  dataInitRouter,
+  equipmentRouter,
+  equipmentTypeRouter,
+  favoriteRecipeRouter,
+  ingredientRouter,
+  ingredientTypeRouter,
+  measurementRouter,
+  methodRouter,
+  profileRouter,
+  recipeRouter,
+  recipeTypeRouter,
+  searchRouter,
+  supplierRouter
 } from './routes';
 
-export function routesInit(app: Application) {
+export function routesInit(app: Application, pool: Pool, esClient: Client) {
+  const staffRoutes = staffRouter(pool);
+  const userRoutes = userRouter(pool);
+  const contentRoutes = contentRouter(pool);
+  const contentTypeRoutes = contentTypeRouter(pool);
+  const cuisineRoutes = cuisineRouter(pool);
+  const cuisineEquipmentRoutes = cuisineEquipmentRouter(pool);
+  const cuisineIngredientRoutes = cuisineIngredientRouter(pool);
+  const cuisineSupplierRoutes = cuisineSupplierRouter(pool);
+  const dataInitRoutes = dataInitRouter(pool);
+  const equipmentRoutes = equipmentRouter(pool);
+  const equipmentTypeRoutes = equipmentTypeRouter(pool);
+  const favoriteRecipeRoutes = favoriteRecipeRouter(pool);
+  const ingredientRoutes = ingredientRouter(pool);
+  const ingredientTypeRoutes = ingredientTypeRouter(pool);
+  const measurementRoutes = measurementRouter(pool);
+  const methodRoutes = methodRouter(pool);
+  const profileRoutes = profileRouter(pool);
+  const recipeRoutes = recipeRouter(pool);
+  const recipeTypeRoutes = recipeTypeRouter(pool);
+  const searchRoutes = searchRouter(esClient);
+  const supplierRoutes = supplierRouter(pool);
   app.get('/', (req, res) => {
     res.send(`
       No Bullshit Cooking Backend API.

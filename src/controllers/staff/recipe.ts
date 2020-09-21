@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
 import { RecipeSearch } from '../../elasticsearch-access/RecipeSearch';
-import { esClient } from '../../lib/connections/elasticsearchClient';
-import { pool } from '../../lib/connections/mysqlPoolConnection';
+import { esClient } from '../../lib/connections/elasticsearchClient';  // remove
 import { createRecipeService } from '../../lib/services/create-recipe';
 import { updateRecipeService } from '../../lib/services/update-recipe';
 import { validRecipeEntity } from '../../lib/validations/recipe/entity';
@@ -15,8 +15,17 @@ import { RecipeSubrecipe } from '../../mysql-access/RecipeSubrecipe';
 import { FavoriteRecipe } from '../../mysql-access/FavoriteRecipe';
 import { SavedRecipe } from '../../mysql-access/SavedRecipe';
 
-export const staffRecipeController = {
-  create: async function(req: Request, res: Response) {
+export class StaffRecipeController {
+  pool: Pool;
+
+  constructor(pool: Pool) {
+    this.pool = pool;
+    this.create = this.create.bind(this);
+    this.update = this.update.bind(this);
+    this.delete = this.delete.bind(this);
+  }
+  
+  async create(req: Request, res: Response) {
     const recipeTypeId = Number(req.body.recipeInfo.recipeTypeId);
     const cuisineId = Number(req.body.recipeInfo.cuisineId);
     const {
@@ -34,10 +43,8 @@ export const staffRecipeController = {
       ingredientsImage,
       cookingImage
     } = req.body.recipeInfo;
-
     const authorId = 1;
     const ownerId = 1;
-
     const recipeCreation = {
       recipeTypeId,
       cuisineId,
@@ -53,9 +60,7 @@ export const staffRecipeController = {
       ingredientsImage,
       cookingImage
     };
-
     assert(recipeCreation, validRecipeEntity)
-
     await createRecipeService({
       ownerId,
       recipeCreation,
@@ -64,10 +69,10 @@ export const staffRecipeController = {
       requiredIngredients,
       requiredSubrecipes
     });
-
     return res.send({message: 'Recipe created.'});
-  },
-  update: async function(req: Request, res: Response) {
+  }
+
+  async update(req: Request, res: Response) {
     const id = Number(req.body.recipeInfo.id);
     const recipeTypeId = Number(req.body.recipeInfo.recipeTypeId);
     const cuisineId = Number(req.body.recipeInfo.cuisineId);
@@ -86,14 +91,11 @@ export const staffRecipeController = {
       ingredientsImage,
       cookingImage
     } = req.body.recipeInfo;
-
     const authorId = 1;
     const ownerId = 1;
-
     if (typeof id === "undefined") {
       return res.send({message: 'Invalid recipe ID!'});
     }
-
     const recipeUpdate = {
       recipeTypeId,
       cuisineId,
@@ -109,9 +111,7 @@ export const staffRecipeController = {
       ingredientsImage,
       cookingImage
     };
-
     assert(recipeUpdate, validRecipeEntity);
-
     await updateRecipeService({
       id,
       authorId,
@@ -122,23 +122,20 @@ export const staffRecipeController = {
       requiredIngredients,
       requiredSubrecipes
     });
-
     return res.send({message: 'Recipe updated.'});
-  },
-  delete: async function(req: Request, res: Response) {
+  }
+
+  async delete(req: Request, res: Response) {
     const id = Number(req.body.id);
-
     // transaction(s)?:
-    const favoriteRecipe = new FavoriteRecipe(pool);
-    const savedRecipe = new SavedRecipe(pool);
-    const recipeMethod = new RecipeMethod(pool);
-    const recipeEquipment = new RecipeEquipment(pool);
-    const recipeIngredient = new RecipeIngredient(pool);
-    const recipeSubrecipe = new RecipeSubrecipe(pool);
-    const recipe = new Recipe(pool);
-
+    const favoriteRecipe = new FavoriteRecipe(this.pool);
+    const savedRecipe = new SavedRecipe(this.pool);
+    const recipeMethod = new RecipeMethod(this.pool);
+    const recipeEquipment = new RecipeEquipment(this.pool);
+    const recipeIngredient = new RecipeIngredient(this.pool);
+    const recipeSubrecipe = new RecipeSubrecipe(this.pool);
+    const recipe = new Recipe(this.pool);
     const recipeSearch = new RecipeSearch(esClient);
-
     // what about plans???
     await Promise.all([
       favoriteRecipe.deleteAllByRecipeId(id),
@@ -149,11 +146,8 @@ export const staffRecipeController = {
       recipeSubrecipe.deleteByRecipeId(id),
       recipeSubrecipe.deleteBySubrecipeId(id)
     ]);
-
     await recipe.deleteById(id);
-
     await recipeSearch.delete(String(id));
-
     return res.send({message: 'Recipe deleted.'});
   }
-};
+}

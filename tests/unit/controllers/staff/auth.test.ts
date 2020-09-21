@@ -9,6 +9,12 @@ import {
   validStaffCreation
 } from '../../../../src/lib/validations/staff/index';
 
+/*
+
+mocks and setup
+
+*/
+
 jest.mock('bcrypt');
 const mockBcrypt = bcrypt as jest.Mocked<typeof bcrypt>;
 mockBcrypt.hash.mockResolvedValue(
@@ -31,6 +37,12 @@ let mockCreate = jest.fn();
 afterEach(() => {
   jest.clearAllMocks();
 });
+
+/*
+
+tests
+
+*/
 
 describe('staff auth controller', () => {
   describe('register method', () => {

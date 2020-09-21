@@ -1,23 +1,27 @@
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 
-import { pool } from '../lib/connections/mysqlPoolConnection';
 import { ContentType } from '../mysql-access/ContentType';
 
-export const contentTypeController = {
-  view: async function(req: Request, res: Response) {
-    const contentType = new ContentType(pool);
+export class ContentTypeController {
+  pool: Pool;
 
+  constructor(pool: Pool) {
+    this.pool = pool;
+    this.view = this.view.bind(this);
+    this.viewById = this.viewById.bind(this);
+  }
+
+  async view(req: Request, res: Response) {
+    const contentType = new ContentType(this.pool);
     const rows = await contentType.view();
-
     return res.send(rows);
-  },
-  viewById: async function(req: Request, res: Response) {
+  }
+
+  async viewById(req: Request, res: Response) {
     const id = Number(req.params.id);
-
-    const contentType = new ContentType(pool);
-    
+    const contentType = new ContentType(this.pool);
     const [ row ] = await contentType.viewById(id);
-
     return res.send(row);
   }
-};
+}

@@ -1,60 +1,58 @@
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 
-import { pool } from '../../lib/connections/mysqlPoolConnection';
 import { CuisineSupplier } from '../../mysql-access/CuisineSupplier';
 import { Supplier } from '../../mysql-access/Supplier';
 
-export const staffSupplierController = {
-  view: async function (req: Request, res: Response) {
-    const supplier = new Supplier(pool);
+export class StaffSupplierController {
+  pool: Pool;
 
+  constructor(pool: Pool) {
+    this.pool = pool;
+    this.view = this.view.bind(this);
+    this.viewById = this.viewById.bind(this);
+    this.create = this.create.bind(this);
+    this.update = this.update.bind(this);
+    this.delete = this.delete.bind(this);
+  }
+
+  async view(req: Request, res: Response) {
+    const supplier = new Supplier(this.pool);
     const rows = await supplier.view();
-
     return res.send({suppliers: rows});
-  },
-  viewById: async function (req: Request, res: Response) {
+  }
+
+  async viewById(req: Request, res: Response) {
     const id = Number(req.body.supplierInfo.id);
-
-    const supplier = new Supplier(pool);
-
+    const supplier = new Supplier(this.pool);
     const row = await supplier.viewById(id);
-
     return res.send({supplier: row});
-  },
-  create: async function (req: Request, res: Response) {
+  }
+
+  async create(req: Request, res: Response) {
     const { name } = req.body.supplierInfo;
-
     // TO DO: validate
-    
-    const supplier = new Supplier(pool);
-
+    const supplier = new Supplier(this.pool);
     await supplier.create(name);
-
     return res.send({message: 'Supplier created.'});
-  },
-  update: async function (req: Request, res: Response) {
+  }
+
+  async update(req: Request, res: Response) {
     const id = Number(req.body.supplierInfo.id);
     const { name } = req.body.supplierInfo;
-
     // TO DO: validate
-
     //const supplierToUpdateWith = {supplierName};
-
-    const supplier = new Supplier(pool);
-
+    const supplier = new Supplier(this.pool);
     await supplier.update(id, name);
-
     return res.send({message: 'Supplier updated.'});
-  },
-  delete: async function (req: Request, res: Response) {
+  }
+
+  async delete(req: Request, res: Response) {
     const id = Number(req.body.supplierInfo.id);
-
-    const cuisineSupplier = new CuisineSupplier(pool);
-    const supplier = new Supplier(pool);
-
+    const cuisineSupplier = new CuisineSupplier(this.pool);
+    const supplier = new Supplier(this.pool);
     await cuisineSupplier.deleteBySupplierId(id);
     await supplier.delete(id);
-    
     return res.send({message: 'Supplier deleted.'});
   }
-};
+}

@@ -1,20 +1,27 @@
 import { Router } from 'express';
 import { param } from 'express-validator';
+import { Pool } from 'mysql2/promise';
 
-import { contentTypeController } from '../controllers/contentType';
+import { ContentTypeController } from '../controllers/contentType';
 import { catchExceptions } from '../lib/utils/catchExceptions';
 
-export const router = Router();
+const router = Router();
 
 // for /content-type/...
 
-router.get(
-  '/',
-  catchExceptions(contentTypeController.view)
-);
+export function contentTypeRouter(pool: Pool) {
+  const controller = new ContentTypeController(pool);
 
-router.get(
-  '/:id',
-  [param('id').not().isEmpty().trim().escape()],
-  catchExceptions(contentTypeController.viewById)
-);
+  router.get(
+    '/',
+    catchExceptions(controller.view)
+  );
+  
+  router.get(
+    '/:id',
+    [param('id').not().isEmpty().trim().escape()],
+    catchExceptions(controller.viewById)
+  );
+
+  return router;
+}

@@ -14,19 +14,14 @@ export async function getOnline({
 }: IGetOnline) {
   const acceptedFriends = await nobscFriendship.viewAccepted(id);
   if (!acceptedFriends.length) return;  // ?
-
   let online = [];
-
   for (let f of acceptedFriends) {
     const onlineFriend = await messengerUser.getSocketId(f.user_id);
     if (!onlineFriend) continue;
-
     socket.broadcast.to(onlineFriend)
       .emit('ShowOnline', ChatUser(id, username, avatar));
-
     online.push(ChatUser(f.user_id, f.username, f.avatar));
   }
-  
   socket.emit('GetOnline', online);
 }
 

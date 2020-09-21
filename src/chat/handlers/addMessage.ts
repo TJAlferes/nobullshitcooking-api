@@ -14,11 +14,8 @@ export async function addMessage({
 }: IAddMessage) {
   const room = Object.keys(socket.rooms).find(r => r !== socket.id);
   if (!room) return;
-
   const message = ChatMessage(text, room, ChatUser(id, username, avatar));
-
   await messengerChat.addMessage(message);
-  
   socket.broadcast.to(room).emit('AddMessage', message);
   socket.emit('AddMessage', message);
 }

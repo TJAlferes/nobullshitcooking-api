@@ -1,32 +1,39 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
+import { Pool } from 'mysql2/promise';
 
 import {
-  staffCuisineSupplierController
+  StaffCuisineSupplierController
 } from '../../controllers/staff/cuisineSupplier';
 import { catchExceptions } from '../../lib/utils/catchExceptions';
 import { staffIsAuth } from '../../lib/utils/staffIsAuth';
 
-export const router = Router();
+const router = Router();
 
 // for /staff/cuisine-supplier/...
 
-router.post(
-  '/create',
-  staffIsAuth,
-  [
-    body('cuisineId').not().isEmpty().trim().escape(),
-    body('supplierId').not().isEmpty().trim().escape()
-  ],
-  catchExceptions(staffCuisineSupplierController.create)
-);
+export function staffCuisineSupplierRouter(pool: Pool) {
+  const controller = new StaffCuisineSupplierController(pool);
 
-router.delete(
-  '/delete',
-  staffIsAuth,
-  [
-    body('cuisineId').not().isEmpty().trim().escape(),
-    body('supplierId').not().isEmpty().trim().escape()
-  ],
-  catchExceptions(staffCuisineSupplierController.delete)
-);
+  router.post(
+    '/create',
+    staffIsAuth,
+    [
+      body('cuisineId').not().isEmpty().trim().escape(),
+      body('supplierId').not().isEmpty().trim().escape()
+    ],
+    catchExceptions(controller.create)
+  );
+
+  router.delete(
+    '/delete',
+    staffIsAuth,
+    [
+      body('cuisineId').not().isEmpty().trim().escape(),
+      body('supplierId').not().isEmpty().trim().escape()
+    ],
+    catchExceptions(controller.delete)
+  );
+
+  return router;
+}

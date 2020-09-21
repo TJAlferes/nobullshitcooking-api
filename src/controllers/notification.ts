@@ -1,25 +1,36 @@
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 //import { v4 as uuidv4 } from 'uuid';
 
-//const pool = require('../data-access/dbPoolConnection');
 //const User = require('../data-access/user/User');
 
 // NOTE: Notifications are not implemented yet, and possibly never will be
 
-export const notificationController = {
-  viewNotificationForUser: async function(req: Request, res: Response) {
+export class NotificationController {
+  pool: Pool;
+
+  constructor(pool: Pool) {
+    this.pool = pool;
+    this.view = this.view.bind(this);
+    this.viewById = this.viewById.bind(this);
+  }
+
+  async view(req: Request, res: Response) {
     //const userId = req.session.userInfo.userId;
-  },
-  viewAllNotificationsForUser: async function(req: Request, res: Response) {
+  }
+
+  async viewById(req: Request, res: Response) {
     //const userId = req.session.userInfo.userId;
-  },
-  markNotificationAsRead: async function(req: Request, res: Response) {
+  }
+
+  async markNotificationAsRead(req: Request, res: Response) {
     //const userId = req.session.userInfo.userId;
-  },
-  createNotification: async function(req: Request, res: Response) {
+  }
+
+  async createNotification(req: Request, res: Response) {
     // if referenced in any way
     // so if favorited/saved
     // if used as subrecipe
     // if used in plan
   }
-};
+}

@@ -1,35 +1,42 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
+import { Pool } from 'mysql2/promise';
 
-import { staffAuthController } from '../../controllers/staff/auth';
+import { StaffAuthController } from '../../controllers/staff/auth';
 import { catchExceptions } from '../../lib/utils/catchExceptions';
 import { staffIsAuth } from '../../lib/utils/staffIsAuth';
 
-export const router = Router();
+const router = Router();
 
 // for /staff/auth/...
 
-router.post(
-  '/register',
-  [
-    body('email').not().isEmpty().trim().escape(),
-    body('password').not().isEmpty().trim().escape(),
-    body('staffname').not().isEmpty().trim().escape()
-  ],
-  catchExceptions(staffAuthController.register)
-);
+export function staffAuthRouter(pool: Pool) {
+  const controller = new StaffAuthController(pool);
 
-router.post(
-  '/login',
-  [
-    body('email').not().isEmpty().trim().escape(),
-    body('password').not().isEmpty().trim().escape()
-  ],
-  catchExceptions(staffAuthController.login)
-);
+  router.post(
+    '/register',
+    [
+      body('email').not().isEmpty().trim().escape(),
+      body('password').not().isEmpty().trim().escape(),
+      body('staffname').not().isEmpty().trim().escape()
+    ],
+    catchExceptions(controller.register)
+  );
+  
+  router.post(
+    '/login',
+    [
+      body('email').not().isEmpty().trim().escape(),
+      body('password').not().isEmpty().trim().escape()
+    ],
+    catchExceptions(controller.login)
+  );
+  
+  router.post(
+    '/logout',
+    staffIsAuth,
+    catchExceptions(controller.logout)
+  );
 
-router.post(
-  '/logout',
-  staffIsAuth,
-  catchExceptions(staffAuthController.logout)
-);
+  return router;
+}

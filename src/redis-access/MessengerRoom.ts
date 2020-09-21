@@ -18,19 +18,16 @@ export class MessengerRoom implements IMessengerRoom {
 
   async add(room: string) {
     if (room !== '') await this.pubClient.zadd('rooms', `${Date.now()}`, room);
-  };
+  }
 
   async getUsers(room: string) {
     const data = await this.pubClient.zrange(`rooms:${room}`, 0, -1);
-    
     const pubClient = this.pubClient;
     let users = [];
-
     for (let id of data){
       const userHash = await pubClient.hgetall(`user:${id}`);
       users.push(ChatUser(Number(id), userHash.username, userHash.avatar));
     }
-
     return users;
   }
   
@@ -48,7 +45,7 @@ export class MessengerRoom implements IMessengerRoom {
       .zrem(`rooms:${room}`, id)
       .del(`user:${id}:room`)
       .exec();
-  };
+  }
 }
 
 export interface IMessengerRoom {

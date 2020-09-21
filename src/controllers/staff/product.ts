@@ -1,14 +1,23 @@
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
 import { ProductSearch } from '../../elasticsearch-access/ProductSearch';
-import { pool } from '../../lib/connections/mysqlPoolConnection';
-import { esClient } from '../../lib/connections/elasticsearchClient';
+import { esClient } from '../../lib/connections/elasticsearchClient';  // remove
 import { validProductEntity } from '../../lib/validations/product/entity';
 import { Product } from '../../mysql-access/Product';
 
-export const staffProductController = {
-  create: async function(req: Request, res: Response) {
+export class StaffProductController {
+  pool: Pool;
+
+  constructor(pool: Pool) {
+    this.pool = pool;
+    this.create = this.create.bind(this);
+    this.update = this.update.bind(this);
+    this.delete = this.delete.bind(this);
+  }
+  
+  async create(req: Request, res: Response) {
     const productCategoryId = Number(req.body.productInfo.productCategoryId);
     const productTypeId = Number(req.body.productInfo.productTypeId);
     const {
@@ -20,7 +29,6 @@ export const staffProductController = {
       specs,
       image
     } = req.body.productInfo;
-
     const productCreation = {
       productCategoryId,
       productTypeId,
@@ -32,24 +40,17 @@ export const staffProductController = {
       specs,
       image
     };
-
     assert(productCreation, validProductEntity);
-
-    const product = new Product(pool);
-
+    const product = new Product(this.pool);
     const createdProduct = await product.create(productCreation);
-
     const generatedId = createdProduct.insertId;
-
     const productForInsert = await product.getForElasticSearch(generatedId);
-    
     const productSearch = new ProductSearch(esClient);
-
     await productSearch.save(productForInsert);
-
     return res.send({message: 'Product created.'});
-  },
-  update: async function(req: Request, res: Response) {
+  }
+
+  async update(req: Request, res: Response) {
     const id = Number(req.body.productInfo.id);
     const productCategoryId = Number(req.body.productInfo.productCategoryId);
     const productTypeId = Number(req.body.productInfo.productTypeId);
@@ -62,7 +63,6 @@ export const staffProductController = {
       specs,
       image
     } = req.body.productInfo;
-
     const productUpdate = {
       productCategoryId,
       productTypeId,
@@ -74,30 +74,21 @@ export const staffProductController = {
       specs,
       image
     };
-
     assert(productUpdate, validProductEntity);
-
-    const product = new Product(pool);
-
+    const product = new Product(this.pool);
     await product.update({id, ...productUpdate});
-
     const productForInsert = await product.getForElasticSearch(id);
-
     const productSearch = new ProductSearch(esClient);
-
     await productSearch.save(productForInsert);
-
     return res.send({message: 'Product updated.'});
-  },
-  delete: async function(req: Request, res: Response) {
+  }
+
+  async delete(req: Request, res: Response) {
     const id = Number(req.body.id);
-
-    const product = new Product(pool);
+    const product = new Product(this.pool);
     const productSearch = new ProductSearch(esClient);
-
     await product.delete(id);
     await productSearch.delete(String(id));
-
     return res.send({message: 'Product deleted.'});
   }
-};
+}

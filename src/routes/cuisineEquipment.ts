@@ -1,15 +1,22 @@
 import { Router } from 'express';
 import { param } from 'express-validator';
+import { Pool } from 'mysql2/promise';
 
-import { cuisineEquipmentController } from '../controllers/cuisineEquipment';
+import { CuisineEquipmentController } from '../controllers/cuisineEquipment';
 import { catchExceptions } from '../lib/utils/catchExceptions';
 
-export const router = Router();
+const router = Router();
 
 // for /cuisine-equipment/...
 
-router.get(
-  '/:id',
-  [param('id').not().isEmpty().trim().escape()],
-  catchExceptions(cuisineEquipmentController.viewByCuisineId)
-);
+export function cuisineEquipmentRouter(pool: Pool) {
+  const controller = new CuisineEquipmentController(pool);
+
+  router.get(
+    '/:id',
+    [param('id').not().isEmpty().trim().escape()],
+    catchExceptions(controller.viewByCuisineId)
+  );
+
+  return router;
+}

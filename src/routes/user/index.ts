@@ -1,25 +1,41 @@
 import { Router } from 'express';
+import { Pool } from 'mysql2/promise';
 
-import { router as userAuthRouter } from './auth';
-import { router as userEquipmentRouter } from './equipment';
-import { router as userFavoriteRecipeRouter } from './favoriteRecipe';
-import { router as userFriendshipRouter } from './friendship';
-import { router as userGetSignedUrlRouter } from './get-signed-url';
-import { router as userIngredientRouter } from './ingredient';
-import { router as userPlanRouter } from './plan';
-//import { router as userProfileRouter } from './profile';
-import { router as userRecipeRouter } from './recipe';
-import { router as userSavedRecipeRouter } from './savedRecipe';
+import { userAuthRouter } from './auth';
+import { userEquipmentRouter } from './equipment';
+import { userFavoriteRecipeRouter } from './favoriteRecipe';
+import { userFriendshipRouter } from './friendship';
+import { userGetSignedUrlRouter } from './get-signed-url';
+import { userIngredientRouter } from './ingredient';
+import { userPlanRouter } from './plan';
+//import { userProfileRouter } from './profile';
+import { userRecipeRouter } from './recipe';
+import { userSavedRecipeRouter } from './savedRecipe';
 
-export const router = Router();
+const router = Router();
 
-router.use('/auth', userAuthRouter);
-router.use('/equipment', userEquipmentRouter);
-router.use('/favorite-recipe', userFavoriteRecipeRouter);
-router.use('/friendship', userFriendshipRouter);
-router.use('/get-signed-url', userGetSignedUrlRouter);
-router.use('/ingredient', userIngredientRouter);
-router.use('/plan', userPlanRouter);
-//router.use('/profile', userProfileRouter);
-router.use('/recipe', userRecipeRouter);
-router.use('/saved-recipe', userSavedRecipeRouter);
+export function userRouter(pool: Pool) {
+  const userAuthRoutes = userAuthRouter(pool);
+  const userEquipmentRoutes = userEquipmentRouter(pool);
+  const userFavoriteRecipeRoutes = userFavoriteRecipeRouter(pool);
+  const userFriendshipRoutes = userFriendshipRouter(pool);
+  const userGetSignedUrlRoutes = userGetSignedUrlRouter();
+  const userIngredientRoutes = userIngredientRouter(pool);
+  const userPlanRoutes = userPlanRouter(pool);
+  //const userProfileRoutes = userProfileRouter(pool);
+  const userRecipeRoutes = userRecipeRouter(pool);
+  const userSavedRecipeRoutes = userSavedRecipeRouter(pool);
+
+  router.use('/auth', userAuthRoutes);
+  router.use('/equipment', userEquipmentRoutes);
+  router.use('/favorite-recipe', userFavoriteRecipeRoutes);
+  router.use('/friendship', userFriendshipRoutes);
+  router.use('/get-signed-url', userGetSignedUrlRoutes);
+  router.use('/ingredient', userIngredientRoutes);
+  router.use('/plan', userPlanRoutes);
+  //router.use('/profile', userProfileRoutes);
+  router.use('/recipe', userRecipeRoutes);
+  router.use('/saved-recipe', userSavedRecipeRoutes);
+
+  return router;
+}
