@@ -1,9 +1,12 @@
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 
-import { productController } from '../../../src/controllers/product';
+import { ProductController } from '../../../src/controllers/product';
+
+const pool: Partial<Pool> = {};
+const controller = new ProductController(<Pool>pool);
 
 const rows: any = [{id: 1, name: "Name"}];
-
 jest.mock('../../../src/mysql-access/Product', () => ({
   Product: jest.fn().mockImplementation(() => ({
     view: mockView,
@@ -22,18 +25,17 @@ describe('product controller', () => {
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue([rows])};
 
     it('uses view correctly', async () => {
-      await productController.view(<Request>{}, <Response>res);
+      await controller.view(<Request>{}, <Response>res);
       expect(mockView).toHaveBeenCalledTimes(1);
     });
 
     it('sends data correctly', async () => {
-      await productController.view(<Request>{}, <Response>res);
+      await controller.view(<Request>{}, <Response>res);
       expect(res.send).toHaveBeenCalledWith([rows]);
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await productController.view(<Request>{}, <Response>res);
+      const actual = await controller.view(<Request>{}, <Response>res);
       expect(actual).toEqual([rows]);
     });
   });
@@ -43,18 +45,17 @@ describe('product controller', () => {
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
     it('uses viewById correctly', async () => {
-      await productController.viewById(<Request>req, <Response>res);
+      await controller.viewById(<Request>req, <Response>res);
       expect(mockViewById).toHaveBeenCalledWith(1);
     });
 
     it('sends data correctly', async () => {
-      await productController.viewById(<Request>req, <Response>res);
+      await controller.viewById(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith(rows);
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await productController.viewById(<Request>req, <Response>res);
+      const actual = await controller.viewById(<Request>req, <Response>res);
       expect(actual).toEqual(rows);
     });
   });

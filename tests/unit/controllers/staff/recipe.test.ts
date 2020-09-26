@@ -1,12 +1,16 @@
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
 import {
-  staffRecipeController
+  StaffRecipeController
 } from '../../../../src/controllers/staff/recipe';
 import {
   validRecipeEntity
 } from '../../../../src/lib/validations/recipe/entity';
+
+const pool: Partial<Pool> = {};
+const controller = new StaffRecipeController(<Pool>pool);
 
 jest.mock('superstruct');
 
@@ -141,7 +145,7 @@ describe('staff recipe controller', () => {
       {send: jest.fn().mockResolvedValue({message: 'Recipe created.'})};
 
     it('uses assert correctly', async () => {
-      await staffRecipeController.create(<Request>req, <Response>res);
+      await controller.create(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith(
         {
           recipeTypeId: 2,
@@ -161,7 +165,7 @@ describe('staff recipe controller', () => {
     });
 
     it('uses createRecipe correctly', async () => {
-      await staffRecipeController.create(<Request>req, <Response>res);
+      await controller.create(<Request>req, <Response>res);
       expect(mockCreate).toHaveBeenCalledWith({
         recipeTypeId: 2,
         cuisineId: 2,
@@ -178,19 +182,19 @@ describe('staff recipe controller', () => {
     });
 
     it('uses RecipeMethods.create correctly', async () => {
-      await staffRecipeController.create(<Request>req, <Response>res);
+      await controller.create(<Request>req, <Response>res);
       expect(mockRMCreate)
         .toHaveBeenCalledWith([5432, 2, 5432, 5], '(?, ?),(?, ?)');
     });
 
     it('uses RecipeEquipment.create correctly', async () => {
-      await staffRecipeController.create(<Request>req, <Response>res);
+      await controller.create(<Request>req, <Response>res);
       expect(mockRECreate)
         .toHaveBeenCalledWith([5432, 2, 1, 5432, 5, 3], '(?, ?, ?),(?, ?, ?)');
     });
 
     it('uses RecipeIngredients.create correctly', async () => {
-      await staffRecipeController.create(<Request>req, <Response>res);
+      await controller.create(<Request>req, <Response>res);
       expect(mockRICreate).toHaveBeenCalledWith(
         [5432, 2, 5, 4, 5432, 5, 2, 4],
         '(?, ?, ?, ?),(?, ?, ?, ?)'
@@ -198,29 +202,28 @@ describe('staff recipe controller', () => {
     });
 
     it('uses RecipeSubrecipes.create correctly', async () => {
-      await staffRecipeController.create(<Request>req, <Response>res);
+      await controller.create(<Request>req, <Response>res);
       expect(mockRSCreate)
         .toHaveBeenCalledWith([5432, 48, 1, 1], '(?, ?, ?, ?)');
     });
 
     it('uses getForElasticSearch correctly', async () => {
-      await staffRecipeController.create(<Request>req, <Response>res);
+      await controller.create(<Request>req, <Response>res);
       expect(mockGetForElasticSearch).toHaveBeenCalledWith(5432);
     });
 
     it('uses RecipeSearch.save correctly', async () => {
-      await staffRecipeController.create(<Request>req, <Response>res);
+      await controller.create(<Request>req, <Response>res);
       expect(mockESSave).toHaveBeenCalledWith({id: 5432});
     });
 
     it('sends data correctly', async () => {
-      await staffRecipeController.create(<Request>req, <Response>res);
+      await controller.create(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith({message: 'Recipe created.'});
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await staffRecipeController.create(<Request>req, <Response>res);
+      const actual = await controller.create(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Recipe created.'});
     });
   });
@@ -258,7 +261,7 @@ describe('staff recipe controller', () => {
       {send: jest.fn().mockResolvedValue({message: 'Recipe updated.'})};
 
     it('uses assert correctly', async () => {
-      await staffRecipeController.update(<Request>req, <Response>res);
+      await controller.update(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith(
         {
           recipeTypeId: 2,
@@ -278,7 +281,7 @@ describe('staff recipe controller', () => {
     });
 
     it ('uses update correctly', async () => {
-      await staffRecipeController.update(<Request>req, <Response>res);
+      await controller.update(<Request>req, <Response>res);
       expect(mockUpdate).toHaveBeenCalledWith({
         id: 5432,
         recipeTypeId: 2,
@@ -296,13 +299,13 @@ describe('staff recipe controller', () => {
     });
 
     it('uses RecipeMethods.update correctly', async () => {
-      await staffRecipeController.update(<Request>req, <Response>res);
+      await controller.update(<Request>req, <Response>res);
       expect(mockRMUpdate)
         .toHaveBeenCalledWith([5432, 2, 5432, 5], '(?, ?),(?, ?)', 5432);
     });
 
     it('uses RecipeEquipment.update correctly', async () => {
-      await staffRecipeController.update(<Request>req, <Response>res);
+      await controller.update(<Request>req, <Response>res);
       expect(mockREUpdate).toHaveBeenCalledWith(
         [5432, 2, 1, 5432, 5, 3],
         '(?, ?, ?),(?, ?, ?)',
@@ -311,7 +314,7 @@ describe('staff recipe controller', () => {
     });
 
     it('uses RecipeIngredients.update correctly', async () => {
-      await staffRecipeController.update(<Request>req, <Response>res);
+      await controller.update(<Request>req, <Response>res);
       expect(mockRIUpdate).toHaveBeenCalledWith(
         [5432, 2, 5, 4, 5432, 5, 2, 4],
         '(?, ?, ?, ?),(?, ?, ?, ?)',
@@ -320,29 +323,29 @@ describe('staff recipe controller', () => {
     });
 
     it('uses RecipeSubrecipes.update correctly', async () => {
-      await staffRecipeController.update(<Request>req, <Response>res);
+      await controller.update(<Request>req, <Response>res);
       expect(mockRSUpdate)
         .toHaveBeenCalledWith([5432, 49, 1, 1], '(?, ?, ?, ?)', 5432);
     });
 
     it('uses getForElasticSearch correctly', async () => {
-      await staffRecipeController.update(<Request>req, <Response>res);
+      await controller.update(<Request>req, <Response>res);
       expect(mockGetForElasticSearch).toHaveBeenCalledWith(5432);
     });
 
     it('uses RecipeSearch.save correctly', async () => {
-      await staffRecipeController.update(<Request>req, <Response>res);
+      await controller.update(<Request>req, <Response>res);
       expect(mockESSave).toHaveBeenCalledWith({id: 5432});
     });
 
     it('sends data correctly', async () => {
-      await staffRecipeController.update(<Request>req, <Response>res);
+      await controller.update(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith({message: 'Recipe updated.'});
     });
 
     it('returns correctly', async () => {
       const actual =
-        await staffRecipeController.update(<Request>req, <Response>res);
+        await controller.update(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Recipe updated.'});
     });
   });
@@ -353,58 +356,57 @@ describe('staff recipe controller', () => {
       {send: jest.fn().mockResolvedValue({message: 'Recipe deleted.'})};
 
     it('uses FavoritedRecipe.deleteAllByRecipeId correctly', async () => {
-      await staffRecipeController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockFRDeleteAllByRecipeId).toHaveBeenCalledWith(5432);
     });
 
     it('uses SavedRecipe.deleteAllByRecipeId correctly', async () => {
-      await staffRecipeController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockSRDeleteAllByRecipeId).toHaveBeenCalledWith(5432);
     });
 
     it('uses RecipeEquipment.deleteByRecipeId correctly', async () => {
-      await staffRecipeController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockREDeleteByRecipeId).toHaveBeenCalledWith(5432);
     });
 
     it('uses RecipeIngredients.deleteByRecipeId correctly', async () => {
-      await staffRecipeController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockRIDeleteByRecipeId).toHaveBeenCalledWith(5432);
     });
 
     it('uses RecipeMethods.deleteByRecipeId correctly', async () => {
-      await staffRecipeController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockRMDeleteByRecipeId).toHaveBeenCalledWith(5432);
     });
 
     it('uses RecipeSubrecipes.deleteByRecipeId correctly', async () => {
-      await staffRecipeController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockRSDeleteByRecipeId).toHaveBeenCalledWith(5432);
     });
 
     it('uses RecipeSubrecipes.deleteBySubrecipeId correctly', async () => {
-      await staffRecipeController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockRSDeleteBySubrecipeId).toHaveBeenCalledWith(5432);
     });
 
     it('uses deleteById correctly', async () => {
-      await staffRecipeController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockDeleteById).toHaveBeenCalledWith(5432);
     });
 
     it('uses RecipeSearch.delete correctly', async () => {
-      await staffRecipeController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockESDelete).toHaveBeenCalledWith(String(5432));
     });
 
     it('sends data correctly', async () => {
-      await staffRecipeController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith({message: 'Recipe deleted.'});
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await staffRecipeController.delete(<Request>req, <Response>res);
+      const actual = await controller.delete(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Recipe deleted.'});
     });
   });

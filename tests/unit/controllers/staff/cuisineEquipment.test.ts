@@ -1,8 +1,12 @@
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 
 import {
-  staffCuisineEquipmentController
+  StaffCuisineEquipmentController
 } from '../../../../src/controllers/staff/cuisineEquipment';
+
+const pool: Partial<Pool> = {};
+const controller = new StaffCuisineEquipmentController(<Pool>pool);
 
 jest.mock('../../../../src/mysql-access/CuisineEquipment', () => ({
   CuisineEquipment: jest.fn().mockImplementation(() => ({
@@ -28,19 +32,18 @@ describe('staff cuisine equipment controller', () => {
     };
 
     it('uses create correctly', async () => {
-      await staffCuisineEquipmentController.create(<Request>req, <Response>res);
+      await controller.create(<Request>req, <Response>res);
       expect(mockCreate).toHaveBeenCalledWith(4, 4);
     });
 
     it('sends data correctly', async () => {
-      await staffCuisineEquipmentController.create(<Request>req, <Response>res);
+      await controller.create(<Request>req, <Response>res);
       expect(res.send)
         .toHaveBeenCalledWith({message: 'Cuisine equipment created.'});
     });
 
     it('returns correctly', async () => {
-      const actual = await staffCuisineEquipmentController
-        .create(<Request>req, <Response>res);
+      const actual = await controller.create(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Cuisine equipment created.'});
     });
   });
@@ -53,19 +56,18 @@ describe('staff cuisine equipment controller', () => {
     };
 
     it('uses delete correctly', async () => {
-      await staffCuisineEquipmentController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockDelete).toHaveBeenCalledWith(4, 4);
     });
 
     it('sends data correctly', async () => {
-      await staffCuisineEquipmentController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(res.send)
         .toHaveBeenCalledWith({message: 'Cuisine equipment deleted.'});
     });
 
     it('returns correctly', async () => {
-      const actual = await staffCuisineEquipmentController
-        .delete(<Request>req, <Response>res);
+      const actual = await controller.delete(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Cuisine equipment deleted.'});
     });
   });

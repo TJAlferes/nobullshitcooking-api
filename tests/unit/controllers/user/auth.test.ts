@@ -1,10 +1,11 @@
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 import * as uuid from 'uuid';
 import { v4 as uuidv4 } from 'uuid';
 
-import { userAuthController } from '../../../../src/controllers/user/auth';
+import { UserAuthController } from '../../../../src/controllers/user/auth';
 import {
   emailConfirmationCode
 } from '../../../../src/lib/services/email-confirmation-code';
@@ -20,11 +21,8 @@ import {
   validVerifyRequest,
 } from '../../../../src/lib/validations/user/index';
 
-/*
-
-mocks and setup
-
-*/
+const pool: Partial<Pool> = {};
+const controller = new UserAuthController(<Pool>pool);
 
 jest.mock('bcrypt');
 const mockBcrypt = bcrypt as jest.Mocked<typeof bcrypt>;
@@ -182,7 +180,7 @@ describe('user auth controller', () => {
       };
 
       it('uses assert on request correctly', async () => {
-        await userAuthController.register(<Request>req, <Response>res);
+        await controller.register(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {
             email: "person@person.com",
@@ -194,15 +192,14 @@ describe('user auth controller', () => {
       });
 
       it('sends data correctly', async () => {
-        await userAuthController.register(<Request>req, <Response>res);
+        await controller.register(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({
           message: 'Username must be at least 6 characters.'
         });
       });
   
       it('returns correctly', async () => {
-        const actual =
-          await userAuthController.register(<Request>req, <Response>res);
+        const actual = await controller.register(<Request>req, <Response>res);
         expect(actual)
           .toEqual({message: 'Username must be at least 6 characters.'});
       });
@@ -225,7 +222,7 @@ describe('user auth controller', () => {
       };
 
       it('uses assert on request correctly', async () => {
-        await userAuthController.register(<Request>req, <Response>res);
+        await controller.register(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {
             email: "person@person.com",
@@ -237,15 +234,14 @@ describe('user auth controller', () => {
       });
 
       it('sends data correctly', async () => {
-        await userAuthController.register(<Request>req, <Response>res);
+        await controller.register(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({
           message: 'Username must be no more than 20 characters.'
         });
       });
   
       it('returns correctly', async () => {
-        const actual = await userAuthController
-        .register(<Request>req, <Response>res);
+        const actual = await controller.register(<Request>req, <Response>res);
         expect(actual)
           .toEqual({message: 'Username must be no more than 20 characters.'});
       });
@@ -271,7 +267,7 @@ describe('user auth controller', () => {
       };
 
       it('uses assert on request correctly', async () => {
-        await userAuthController.register(<Request>req, <Response>res);
+        await controller.register(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {
             email: "person@person.com",
@@ -283,15 +279,14 @@ describe('user auth controller', () => {
       });
 
       it('sends data correctly', async () => {
-        await userAuthController.register(<Request>req, <Response>res);
+        await controller.register(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({
           message: 'Password must be at least 6 characters.'
         });
       });
   
       it('returns correctly', async () => {
-        const actual = await userAuthController
-          .register(<Request>req, <Response>res);
+        const actual = await controller.register(<Request>req, <Response>res);
         expect(actual)
           .toEqual({message: 'Password must be at least 6 characters.'});
       });
@@ -314,7 +309,7 @@ describe('user auth controller', () => {
       };
 
       it('uses assert on request correctly', async () => {
-        await userAuthController.register(<Request>req, <Response>res);
+        await controller.register(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {
             email: "person@person.com",
@@ -326,15 +321,14 @@ describe('user auth controller', () => {
       });
 
       it('sends data correctly', async () => {
-        await userAuthController.register(<Request>req, <Response>res);
+        await controller.register(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({
           message: 'Password must be no more than 54 characters.'
         });
       });
   
       it('returns correctly', async () => {
-        const actual = await userAuthController
-        .register(<Request>req, <Response>res);
+        const actual = await controller.register(<Request>req, <Response>res);
         expect(actual)
           .toEqual({message: 'Password must be no more than 54 characters.'});
       });
@@ -359,7 +353,7 @@ describe('user auth controller', () => {
       });
 
       it('uses assert on request correctly', async () => {
-        await userAuthController.register(<Request>req, <Response>res);
+        await controller.register(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {
             email: "person@person.com",
@@ -371,14 +365,13 @@ describe('user auth controller', () => {
       });
 
       it('sends data correctly', async () => {
-        await userAuthController.register(<Request>req, <Response>res);
+        await controller.register(<Request>req, <Response>res);
         expect(res.send)
           .toHaveBeenCalledWith({message: 'Username already taken.'});
       });
   
       it('returns correctly', async () => {
-        const actual =
-          await userAuthController.register(<Request>req, <Response>res);
+        const actual = await controller.register(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'Username already taken.'});
       });
     });
@@ -403,7 +396,7 @@ describe('user auth controller', () => {
       });
 
       it('uses assert on request correctly', async () => {
-        await userAuthController.register(<Request>req, <Response>res);
+        await controller.register(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {
             email: "person@person.com",
@@ -415,14 +408,13 @@ describe('user auth controller', () => {
       });
 
       it('sends data correctly', async () => {
-        await userAuthController.register(<Request>req, <Response>res);
+        await controller.register(<Request>req, <Response>res);
         expect(res.send)
           .toHaveBeenCalledWith({message: 'Email already in use.'});
       });
   
       it('returns correctly', async () => {
-        const actual = await userAuthController
-          .register(<Request>req, <Response>res);
+        const actual = await controller.register(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'Email already in use.'});
       });
     });
@@ -447,7 +439,7 @@ describe('user auth controller', () => {
       });
 
       it('uses assert on request correctly', async () => {
-        await userAuthController.register(<Request>req, <Response>res);
+        await controller.register(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {
             email: "person@person.com",
@@ -459,17 +451,17 @@ describe('user auth controller', () => {
       });
 
       it('uses bcrypt.hash correctly', async () => {
-        await userAuthController.register(<Request>req, <Response>res);
+        await controller.register(<Request>req, <Response>res);
         expect(bcrypt.hash).toHaveBeenCalledWith("Password99$", 10);
       });
 
       it('uses uuidv4 correctly', async () => {
-        await userAuthController.register(<Request>req, <Response>res);
+        await controller.register(<Request>req, <Response>res);
         expect(uuidv4).toBeCalledTimes(1);
       });
 
       it('uses assert on entity correctly', async () => {
-        await userAuthController.register(<Request>req, <Response>res);
+        await controller.register(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {
             email: "person@person.com",
@@ -482,7 +474,7 @@ describe('user auth controller', () => {
       });
 
       it('uses createUser correctly', async () => {
-        await userAuthController.register(<Request>req, <Response>res);
+        await controller.register(<Request>req, <Response>res);
         expect(mockCreateUser).toHaveBeenCalledWith({
           email: "person@person.com",
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
@@ -492,20 +484,19 @@ describe('user auth controller', () => {
       });
 
       it('uses emailConfirmationCode', async () => {
-        await userAuthController.register(<Request>req, <Response>res);
+        await controller.register(<Request>req, <Response>res);
         expect(emailConfirmationCode)
           .toHaveBeenCalledWith("person@person.com", "123XYZ");
       });
 
       it('sends data correctly', async () => {
-        await userAuthController.register(<Request>req, <Response>res);
+        await controller.register(<Request>req, <Response>res);
         expect(res.send)
           .toHaveBeenCalledWith({message: 'User account created.'});
       });
   
       it('returns correctly', async () => {
-        const actual = await userAuthController
-          .register(<Request>req, <Response>res);
+        const actual = await controller.register(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'User account created.'});
       });
     });
@@ -532,7 +523,7 @@ describe('user auth controller', () => {
       };
 
       it('uses assert on request correctly', async () => {
-        await userAuthController.verify(<Request>req, <Response>res);
+        await controller.verify(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {
             email: "person@person.com",
@@ -544,13 +535,12 @@ describe('user auth controller', () => {
       });
 
       it('sends data correctly', async () => {
-        await userAuthController.verify(<Request>req, <Response>res);
+        await controller.verify(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({message: 'Invalid password.'});
       });
   
       it('returns correctly', async () => {
-        const actual = await userAuthController
-        .verify(<Request>req, <Response>res);
+        const actual = await controller.verify(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'Invalid password.'});
       });
     });
@@ -570,7 +560,7 @@ describe('user auth controller', () => {
       };
 
       it('uses assert on request correctly', async () => {
-        await userAuthController.verify(<Request>req, <Response>res);
+        await controller.verify(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {
             email: "person@person.com",
@@ -582,13 +572,12 @@ describe('user auth controller', () => {
       });
 
       it('sends data correctly', async () => {
-        await userAuthController.verify(<Request>req, <Response>res);
+        await controller.verify(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({message: 'Invalid password.'});
       });
   
       it('returns correctly', async () => {
-        const actual = await userAuthController
-        .verify(<Request>req, <Response>res);
+        const actual = await controller.verify(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'Invalid password.'});
       });
     });
@@ -614,7 +603,7 @@ describe('user auth controller', () => {
       });
 
       it('uses assert on request correctly', async () => {
-        await userAuthController.verify(<Request>req, <Response>res);
+        await controller.verify(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {
             email: "person@person.com",
@@ -626,15 +615,14 @@ describe('user auth controller', () => {
       });
 
       it('sends data correctly', async () => {
-        await userAuthController.verify(<Request>req, <Response>res);
+        await controller.verify(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({
           message: 'An issue occurred, please double check your info and try again.'
         });
       });
   
       it('returns correctly', async () => {
-        const actual = await userAuthController
-          .verify(<Request>req, <Response>res);
+        const actual = await controller.verify(<Request>req, <Response>res);
         expect(actual).toEqual({
           message: 'An issue occurred, please double check your info and try again.'
         });
@@ -666,7 +654,7 @@ describe('user auth controller', () => {
       });
 
       it('uses assert on request correctly', async () => {
-        await userAuthController.verify(<Request>req, <Response>res);
+        await controller.verify(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {
             email: "person@person.com",
@@ -678,14 +666,13 @@ describe('user auth controller', () => {
       });
 
       it('sends data correctly', async () => {
-        await userAuthController.verify(<Request>req, <Response>res);
+        await controller.verify(<Request>req, <Response>res);
         expect(res.send)
           .toHaveBeenCalledWith({message: 'Incorrect email or password.'});
       });
   
       it('returns correctly', async () => {
-        const actual =
-          await userAuthController.verify(<Request>req, <Response>res);
+        const actual = await controller.verify(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'Incorrect email or password.'});
       });
     });
@@ -716,7 +703,7 @@ describe('user auth controller', () => {
       });
 
       it('uses assert on request correctly', async () => {
-        await userAuthController.verify(<Request>req, <Response>res);
+        await controller.verify(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {
             email: "person@person.com",
@@ -728,15 +715,14 @@ describe('user auth controller', () => {
       });
 
       it('sends data correctly', async () => {
-        await userAuthController.verify(<Request>req, <Response>res);
+        await controller.verify(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({
           message: 'An issue occurred, please double check your info and try again.'
         });
       });
   
       it('returns correctly', async () => {
-        const actual = await userAuthController
-          .verify(<Request>req, <Response>res);
+        const actual = await controller.verify(<Request>req, <Response>res);
         expect(actual).toEqual({
           message: 'An issue occurred, please double check your info and try again.'
         });
@@ -767,7 +753,7 @@ describe('user auth controller', () => {
       });
 
       it('uses assert on request correctly', async () => {
-        await userAuthController.verify(<Request>req, <Response>res);
+        await controller.verify(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {
             email: "person@person.com",
@@ -779,18 +765,17 @@ describe('user auth controller', () => {
       });
 
       it ('uses verifyUser correctly', async () => {
-        await userAuthController.verify(<Request>req, <Response>res);
+        await controller.verify(<Request>req, <Response>res);
         expect(mockVerifyUser).toHaveBeenCalledWith("person@person.com");
       });
 
       it('sends data correctly', async () => {
-        await userAuthController.verify(<Request>req, <Response>res);
+        await controller.verify(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({message: 'User account verified.'});
       });
   
       it('returns correctly', async () => {
-        const actual = await userAuthController
-        .verify(<Request>req, <Response>res);
+        const actual = await controller.verify(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'User account verified.'});
       });
     });
@@ -817,8 +802,7 @@ describe('user auth controller', () => {
       };
 
       it('uses assert on request correctly', async () => {
-        await userAuthController
-          .resendConfirmationCode(<Request>req, <Response>res);
+        await controller.resendConfirmationCode(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {email: "person@person.com", pass: "Pa99$"},
           validLoginRequest
@@ -826,13 +810,12 @@ describe('user auth controller', () => {
       });
 
       it('sends data correctly', async () => {
-        await userAuthController
-          .resendConfirmationCode(<Request>req, <Response>res);
+        await controller.resendConfirmationCode(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({message: 'Invalid password.'});
       });
   
       it('returns correctly', async () => {
-        const actual = await userAuthController
+        const actual = await controller
           .resendConfirmationCode(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'Invalid password.'});
       });
@@ -853,8 +836,7 @@ describe('user auth controller', () => {
       };
 
       it('uses assert on request correctly', async () => {
-        await userAuthController
-          .resendConfirmationCode(<Request>req, <Response>res);
+        await controller.resendConfirmationCode(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {
             email: "person@person.com",
@@ -865,13 +847,12 @@ describe('user auth controller', () => {
       });
 
       it('sends data correctly', async () => {
-        await userAuthController
-          .resendConfirmationCode(<Request>req, <Response>res);
+        await controller.resendConfirmationCode(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({message: 'Invalid password.'});
       });
   
       it('returns correctly', async () => {
-        const actual = await userAuthController
+        const actual = await controller
           .resendConfirmationCode(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'Invalid password.'});
       });
@@ -898,8 +879,7 @@ describe('user auth controller', () => {
       });
 
       it('uses assert on request correctly', async () => {
-        await userAuthController
-          .resendConfirmationCode(<Request>req, <Response>res);
+        await controller.resendConfirmationCode(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {email: "person@person.com", pass: "Password99$"},
           validLoginRequest
@@ -907,14 +887,13 @@ describe('user auth controller', () => {
       });
 
       it('sends data correctly', async () => {
-        await userAuthController
-          .resendConfirmationCode(<Request>req, <Response>res);
+        await controller.resendConfirmationCode(<Request>req, <Response>res);
         expect(res.send)
           .toHaveBeenCalledWith({message: 'Incorrect email or password.'});
       });
   
       it('returns correctly', async () => {
-        const actual = await userAuthController
+        const actual = await controller
           .resendConfirmationCode(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'Incorrect email or password.'});
       });
@@ -946,8 +925,7 @@ describe('user auth controller', () => {
       });
 
       it('uses assert on request correctly', async () => {
-        await userAuthController
-          .resendConfirmationCode(<Request>req, <Response>res);
+        await controller.resendConfirmationCode(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {email: "person@person.com", pass: "WrongPassword99$"},
           validLoginRequest
@@ -955,14 +933,13 @@ describe('user auth controller', () => {
       });
 
       it('sends data correctly', async () => {
-        await userAuthController
-          .resendConfirmationCode(<Request>req, <Response>res);
+        await controller.resendConfirmationCode(<Request>req, <Response>res);
         expect(res.send)
           .toHaveBeenCalledWith({message: 'Incorrect email or password.'});
       });
 
       it('returns correctly', async () => {
-        const actual = await userAuthController
+        const actual = await controller
           .resendConfirmationCode(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'Incorrect email or password.'});
       });
@@ -992,8 +969,7 @@ describe('user auth controller', () => {
       });
 
       it('uses assert on request correctly', async () => {
-        await userAuthController
-          .resendConfirmationCode(<Request>req, <Response>res);
+        await controller.resendConfirmationCode(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {email: "person@person.com", pass: "Password99$"},
           validLoginRequest
@@ -1001,13 +977,12 @@ describe('user auth controller', () => {
       });
 
       it('sends data correctly', async () => {
-        await userAuthController
-          .resendConfirmationCode(<Request>req, <Response>res);
+        await controller.resendConfirmationCode(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({message: 'Already verified.'});
       });
 
       it('returns correctly', async () => {
-        const actual = await userAuthController
+        const actual = await controller
           .resendConfirmationCode(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'Already verified.'});
       });
@@ -1037,8 +1012,7 @@ describe('user auth controller', () => {
       });
 
       it('uses assert on request correctly', async () => {
-        await userAuthController
-        .resendConfirmationCode(<Request>req, <Response>res);
+        await controller.resendConfirmationCode(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {email: "person@person.com", pass: "Password99$"},
           validLoginRequest
@@ -1046,21 +1020,19 @@ describe('user auth controller', () => {
       });
 
       it('uses emailConfirmationCode', async () => {
-        await userAuthController
-          .resendConfirmationCode(<Request>req, <Response>res);
+        await controller.resendConfirmationCode(<Request>req, <Response>res);
         expect(emailConfirmationCode)
           .toHaveBeenCalledWith("person@person.com", "123XYZ");
       });
 
       it('sends data correctly', async () => {
-        await userAuthController
-          .resendConfirmationCode(<Request>req, <Response>res);
+        await controller.resendConfirmationCode(<Request>req, <Response>res);
         expect(res.send)
           .toHaveBeenCalledWith({message: 'Confirmation code re-sent.'});
       });
   
       it('returns correctly', async () => {
-        const actual = await userAuthController
+        const actual = await controller
           .resendConfirmationCode(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'Confirmation code re-sent.'});
       });
@@ -1079,7 +1051,7 @@ describe('user auth controller', () => {
         {send: jest.fn().mockResolvedValue({message: 'Invalid password.'})};
       
       it('uses assert on request correctly', async () => {
-        await userAuthController.login(<Request>req, <Response>res);
+        await controller.login(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {email: "person@person.com", pass: "Pa99$"},
           validLoginRequest
@@ -1087,13 +1059,12 @@ describe('user auth controller', () => {
       });
 
       it('sends data correctly', async () => {
-        await userAuthController.login(<Request>req, <Response>res);
+        await controller.login(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({message: 'Invalid password.'});
       });
   
       it('returns correctly', async () => {
-        const actual = await userAuthController
-          .login(<Request>req, <Response>res);
+        const actual = await controller.login(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'Invalid password.'});
       });
     });
@@ -1112,7 +1083,7 @@ describe('user auth controller', () => {
       };
 
       it('uses assert on request correctly', async () => {
-        await userAuthController.login(<Request>req, <Response>res);
+        await controller.login(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {
             email: "person@person.com",
@@ -1123,13 +1094,12 @@ describe('user auth controller', () => {
       });
 
       it('sends data correctly', async () => {
-        await userAuthController.login(<Request>req, <Response>res);
+        await controller.login(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({message: 'Invalid password.'});
       });
   
       it('returns correctly', async () => {
-        const actual = await userAuthController
-          .login(<Request>req, <Response>res);
+        const actual = await controller.login(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'Invalid password.'});
       });
     });
@@ -1151,7 +1121,7 @@ describe('user auth controller', () => {
       });
 
       it('uses assert on request correctly', async () => {
-        await userAuthController.login(<Request>req, <Response>res);
+        await controller.login(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {email: "person@person.com", pass: "Password99$"},
           validLoginRequest
@@ -1159,14 +1129,13 @@ describe('user auth controller', () => {
       });
 
       it('sends data correctly', async () => {
-        await userAuthController.login(<Request>req, <Response>res);
+        await controller.login(<Request>req, <Response>res);
         expect(res.send)
           .toHaveBeenCalledWith({message: 'Incorrect email or password.'});
       });
   
       it('returns correctly', async () => {
-        const actual = await userAuthController
-          .login(<Request>req, <Response>res);
+        const actual = await controller.login(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'Incorrect email or password.'});
       });
     });
@@ -1193,7 +1162,7 @@ describe('user auth controller', () => {
       });
 
       it('uses assert on request correctly', async () => {
-        await userAuthController.login(<Request>req, <Response>res);
+        await controller.login(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {email: "person@person.com", pass: "WrongPassword99$"},
           validLoginRequest
@@ -1201,14 +1170,13 @@ describe('user auth controller', () => {
       });
 
       it('sends data correctly', async () => {
-        await userAuthController.login(<Request>req, <Response>res);
+        await controller.login(<Request>req, <Response>res);
         expect(res.send)
           .toHaveBeenCalledWith({message: 'Incorrect email or password.'});
       });
 
       it('returns correctly', async () => {
-        const actual = await userAuthController
-          .login(<Request>req, <Response>res);
+        const actual = await controller.login(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'Incorrect email or password.'});
       });
     });
@@ -1233,7 +1201,7 @@ describe('user auth controller', () => {
       })
 
       it('uses assert on request correctly', async () => {
-        await userAuthController.login(<Request>req, <Response>res);
+        await controller.login(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {email: "person@person.com", pass: "Password99$"},
           validLoginRequest
@@ -1241,15 +1209,14 @@ describe('user auth controller', () => {
       });
 
       it('sends data correctly', async () => {
-        await userAuthController.login(<Request>req, <Response>res);
+        await controller.login(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({
           message: 'Please check your email for your confirmation code.'
         });
       });
 
       it('returns correctly', async () => {
-        const actual = await userAuthController
-          .login(<Request>req, <Response>res);
+        const actual = await controller.login(<Request>req, <Response>res);
         expect(actual).toEqual({
           message: 'Please check your email for your confirmation code.'
         });
@@ -1284,7 +1251,7 @@ describe('user auth controller', () => {
       });
 
       it('uses assert on request correctly', async () => {
-        await userAuthController.login(<Request>req, <Response>res);
+        await controller.login(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {email: "person@person.com", pass: "Password99$"},
           validLoginRequest
@@ -1292,13 +1259,13 @@ describe('user auth controller', () => {
       });
 
       it('attaches userInfo object to session object', async () => {
-        await userAuthController.login(<Request>req, <Response>res);
+        await controller.login(<Request>req, <Response>res);
         expect(req.session!.userInfo)
           .toEqual({id: 150, username: "NameIsGood", avatar: "NameIsGood"});
       });
 
       it('sends data correctly', async () => {
-        await userAuthController.login(<Request>req, <Response>res);
+        await controller.login(<Request>req, <Response>res);
         expect(res.json).toHaveBeenCalledWith({
           message: 'Signed in.',
           username: "NameIsGood",
@@ -1307,8 +1274,7 @@ describe('user auth controller', () => {
       });
 
       it('returns correctly', async () => {
-        const actual = await userAuthController
-          .login(<Request>req, <Response>res);
+        const actual = await controller.login(<Request>req, <Response>res);
         expect(actual).toEqual({
           message: 'Signed in.',
           username: "NameIsGood",
@@ -1331,12 +1297,12 @@ describe('user auth controller', () => {
     const res: Partial<Response> = {end: jest.fn()};
     
     it('uses destroy', async () => {
-      await userAuthController.logout(<Request>req, <Response>res);
+      await controller.logout(<Request>req, <Response>res);
       expect(mockDestroy).toBeCalledTimes(1);
     });
 
     it('uses res.end', async () => {
-      await userAuthController.logout(<Request>req, <Response>res);
+      await controller.logout(<Request>req, <Response>res);
       expect(res.end).toBeCalledTimes(1);
     });
   });
@@ -1357,7 +1323,7 @@ describe('user auth controller', () => {
       {send: jest.fn().mockResolvedValue({message: 'Account updated.'})};
 
     it('uses assert correctly', async () => {
-      await userAuthController.update(<Request>req, <Response>res);
+      await controller.update(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith(
         {
           email: "person@person.com",
@@ -1370,7 +1336,7 @@ describe('user auth controller', () => {
     });
 
     it ('uses updateUser correctly', async () => {
-      await userAuthController.update(<Request>req, <Response>res);
+      await controller.update(<Request>req, <Response>res);
       expect(mockUpdateUser).toHaveBeenCalledWith({
         id: 150,
         email: "person@person.com",
@@ -1381,13 +1347,12 @@ describe('user auth controller', () => {
     });
 
     it('sends data correctly', async () => {
-      await userAuthController.update(<Request>req, <Response>res);
+      await controller.update(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith({message: 'Account updated.'});
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await userAuthController.update(<Request>req, <Response>res);
+      const actual = await controller.update(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Account updated.'});
     });
   });
@@ -1402,98 +1367,98 @@ describe('user auth controller', () => {
     // (would you have to make it a generator function?)
 
     it('uses Content.deleteAllByOwnerId correctly', async () => {
-      await userAuthController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockContentDeleteAllByOwnerId).toHaveBeenCalledWith(150);
     });
 
     it('uses Friendships correctly', async () => {
-      await userAuthController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockDeleteAllFriendshipsByUserId).toHaveBeenCalledWith(150);
     });
 
     it('uses Plan correctly', async () => {
-      await userAuthController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockDeleteAllPlansByOwnerId).toHaveBeenCalledWith(150);
     });
 
     it('uses FavoriteRecipe correctly', async () => {
-      await userAuthController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockDeleteAllFavoriteRecipesByUserId).toHaveBeenCalledWith(150);
     });
 
     it('uses SavedRecipe correctly', async () => {
-      await userAuthController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockDeleteAllSavedRecipesByUserId).toHaveBeenCalledWith(150);
     });
 
     it('uses Recipe.disown correctly', async () => {
-      await userAuthController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockDisown).toHaveBeenCalledWith(150);
     });
 
     it('uses Recipe.getAllPrivateIdsByUserId correctly', async () => {
-      await userAuthController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockGetAllPrivateIdsByUserId).toHaveBeenCalledWith(150);
     });
 
     it('uses RecipeEquipment.deleteByRecipeIds correctly', async () => {
-      await userAuthController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockDeleteRecipeEquipmentByRecipeIds)
         .toHaveBeenCalledWith([273, 837, 941]);
     });
 
     it('uses RecipeIngredients.deleteByRecipeIds correctly', async () => {
-      await userAuthController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockDeleteRecipeIngredientsByRecipeIds)
         .toHaveBeenCalledWith([273, 837, 941]);
     });
 
     it('uses RecipeMethods.deleteByRecipeIds correctly', async () => {
-      await userAuthController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockDeleteRecipeMethodsByRecipeIds)
         .toHaveBeenCalledWith([273, 837, 941]);
     });
 
     it('uses RecipeSubrecipes.deleteByRecipeIds correctly', async () => {
-      await userAuthController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockDeleteRecipeSubrecipesByRecipeIds)
         .toHaveBeenCalledWith([273, 837, 941]);
     });
 
     it('uses RecipeSubrecipes.deleteBySubrecipeIds correctly', async () => {
-      await userAuthController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockDeleteRecipeSubrecipesBySubrecipeIds)
         .toHaveBeenCalledWith([273, 837, 941]);
     });
 
     it('uses Recipe.deletePrivate correctly', async () => {
-      await userAuthController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockDeletePrivate).toHaveBeenCalledWith(150, 150);
     });
 
     it('uses Equipment.deleteAllByOwnerId correctly', async () => {
-      await userAuthController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockDeleteAllEquipmentByOwnerId).toHaveBeenCalledWith(150);
     });
 
     it('uses Ingredient.deleteAllByOwnerId correctly', async () => {
-      await userAuthController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockDeleteAllIngredientsByOwnerId).toHaveBeenCalledWith(150);
     });
 
     it('uses User.delete correctly', async () => {
-      await userAuthController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockDeleteUser).toHaveBeenCalledWith(150);
     });
 
     it('sends data correctly', async () => {
-      await userAuthController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith({message: 'Account deleted.'});
     });
 
     it('returns correctly', async () => {
       const actual =
-        await userAuthController.delete(<Request>req, <Response>res);
+        await controller.delete(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Account deleted.'});
     });
   });

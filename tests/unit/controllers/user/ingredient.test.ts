@@ -1,12 +1,16 @@
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
 import {
-  userIngredientController
+  UserIngredientController
 } from '../../../../src/controllers/user/ingredient';
 import {
   validIngredientEntity
 } from '../../../../src/lib/validations/ingredient/entity';
+
+const pool: Partial<Pool> = {};
+const controller = new UserIngredientController(<Pool>pool);
 
 jest.mock('superstruct');
 
@@ -45,18 +49,17 @@ describe('user ingredient controller', () => {
       {send: jest.fn().mockResolvedValue([[{id: 383}, {id: 5432}]])};
 
     it('uses view correctly', async () => {
-      await userIngredientController.view(<Request>req, <Response>res);
+      await controller.view(<Request>req, <Response>res);
       expect(mockView).toHaveBeenCalledWith(150, 150);
     });
 
     it('sends data correctly', async () => {
-      await userIngredientController.view(<Request>req, <Response>res);
+      await controller.view(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith([[{id: 383}, {id: 5432}]]);
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await userIngredientController.view(<Request>req, <Response>res);
+      const actual = await controller.view(<Request>req, <Response>res);
       expect(actual).toEqual([[{id: 383}, {id: 5432}]]);
     });
   });
@@ -67,18 +70,17 @@ describe('user ingredient controller', () => {
       {send: jest.fn().mockResolvedValue([{id: 5432}])};
 
     it('uses viewById correctly', async () => {
-      await userIngredientController.viewById(<Request>req, <Response>res);
+      await controller.viewById(<Request>req, <Response>res);
       expect(mockViewById).toHaveBeenCalledWith(5432, 150, 150);
     });
 
     it('sends data correctly', async () => {
-      await userIngredientController.viewById(<Request>req, <Response>res);
+      await controller.viewById(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith([{id: 5432}]);
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await userIngredientController.viewById(<Request>req, <Response>res);
+      const actual = await controller.viewById(<Request>req, <Response>res);
       expect(actual).toEqual([{id: 5432}]);
     });
   });
@@ -102,7 +104,7 @@ describe('user ingredient controller', () => {
     };
 
     it('uses assert correctly', async () => {
-      await userIngredientController.create(<Request>req, <Response>res);
+      await controller.create(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith(
         {
           ingredientTypeId: 2,
@@ -119,7 +121,7 @@ describe('user ingredient controller', () => {
     });
 
     it('uses create correctly', async () => {
-      await userIngredientController.create(<Request>req, <Response>res);
+      await controller.create(<Request>req, <Response>res);
       expect(mockCreate).toHaveBeenCalledWith({
         ingredientTypeId: 2,
         authorId: 150,
@@ -133,13 +135,12 @@ describe('user ingredient controller', () => {
     });
 
     it('sends data correctly', async () => {
-      await userIngredientController.create(<Request>req, <Response>res);
+      await controller.create(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith({message: 'Ingredient created.'});
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await userIngredientController.create(<Request>req, <Response>res);
+      const actual = await controller.create(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Ingredient created.'});
     });
   });
@@ -163,7 +164,7 @@ describe('user ingredient controller', () => {
       {send: jest.fn().mockResolvedValue({message: 'Ingredient updated.'})};
 
     it('uses assert correctly', async () => {
-      await userIngredientController.update(<Request>req, <Response>res);
+      await controller.update(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith(
         {
           ingredientTypeId: 2,
@@ -180,7 +181,7 @@ describe('user ingredient controller', () => {
     });
 
     it('uses update correctly', async () => {
-      await userIngredientController.update(<Request>req, <Response>res);
+      await controller.update(<Request>req, <Response>res);
       expect(mockUpdate).toHaveBeenCalledWith({
         id: 5432,
         ingredientTypeId: 2,
@@ -195,13 +196,12 @@ describe('user ingredient controller', () => {
     });
 
     it('sends data correctly', async () => {
-      await userIngredientController.update(<Request>req, <Response>res);
+      await controller.update(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith({message: 'Ingredient updated.'});
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await userIngredientController.update(<Request>req, <Response>res);
+      const actual = await controller.update(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Ingredient updated.'});
     });
   });
@@ -212,23 +212,22 @@ describe('user ingredient controller', () => {
       {send: jest.fn().mockResolvedValue({message: 'Ingredient deleted.'})};
 
     it('uses deleteByIngredientId correctly', async () => {
-      await userIngredientController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockDeleteByIngredientId).toHaveBeenCalledWith(5432);
     });
 
     it('uses deleteByOwnerId correctly', async () => {
-      await userIngredientController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockDeleteByOwnerId).toHaveBeenCalledWith(5432, 150);
     });
 
     it('sends data correctly', async () => {
-      await userIngredientController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith({message: 'Ingredient deleted.'});
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await userIngredientController.delete(<Request>req, <Response>res);
+      const actual = await controller.delete(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Ingredient deleted.'});
     });
   });

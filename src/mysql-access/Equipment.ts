@@ -21,7 +21,7 @@ export class Equipment implements IEquipment {
 
   async getAllForElasticSearch() {
     const ownerId = 1;  // only public equipment goes into ElasticSearch
-    const sql1 = `
+    const sql = `
       SELECT
         CAST(e.id AS CHAR) AS equipment_id,
         e.equipment_type_id,
@@ -35,7 +35,7 @@ export class Equipment implements IEquipment {
       WHERE e.owner_id = ?
     `;
 
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql1, [ownerId]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
 
     let final = [];
 

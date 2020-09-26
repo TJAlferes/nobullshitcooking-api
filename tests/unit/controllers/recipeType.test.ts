@@ -1,15 +1,16 @@
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
-import { recipeTypeController } from '../../../src/controllers/recipeType';
+import { RecipeTypeController } from '../../../src/controllers/recipeType';
 import {
   validRecipeTypeRequest
 } from '../../../src/lib/validations/recipeType/request';
 
+const pool: Partial<Pool> = {};
+const controller = new RecipeTypeController(<Pool>pool);
+
 const rows: any = [{id: 1, name: "Name"}];
-
-jest.mock('superstruct');
-
 jest.mock('../../../src/mysql-access/RecipeType', () => ({
   RecipeType: jest.fn().mockImplementation(() => ({
     view: mockView,
@@ -18,6 +19,8 @@ jest.mock('../../../src/mysql-access/RecipeType', () => ({
 }));
 let mockView = jest.fn().mockResolvedValue([rows]);
 let mockViewById = jest.fn().mockResolvedValue([rows]);
+
+jest.mock('superstruct');
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -28,18 +31,17 @@ describe('recipeType controller', () => {
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue([rows])};
 
     it('uses view correctly', async () => {
-      await recipeTypeController.view(<Request>{}, <Response>res);
+      await controller.view(<Request>{}, <Response>res);
       expect(mockView).toHaveBeenCalledTimes(1);
     });
 
     it('sends data correctly', async () => {
-      await recipeTypeController.view(<Request>{}, <Response>res);
+      await controller.view(<Request>{}, <Response>res);
       expect(res.send).toHaveBeenCalledWith([rows]);
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await recipeTypeController.view(<Request>{}, <Response>res);
+      const actual = await controller.view(<Request>{}, <Response>res);
       expect(actual).toEqual([rows]);
     });
   });
@@ -49,23 +51,22 @@ describe('recipeType controller', () => {
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
     it('uses assert correctly', async () => {
-      await recipeTypeController.viewById(<Request>req, <Response>res);
+      await controller.viewById(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith({id: 1}, validRecipeTypeRequest);
     });
 
     it('uses viewById', async () => {
-      await recipeTypeController.viewById(<Request>req, <Response>res);
+      await controller.viewById(<Request>req, <Response>res);
       expect(mockViewById).toHaveBeenCalledWith(1);
     });
 
     it('sends data correctly', async () => {
-      await recipeTypeController.viewById(<Request>req, <Response>res);
+      await controller.viewById(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith(rows);
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await recipeTypeController.viewById(<Request>req, <Response>res);
+      const actual = await controller.viewById(<Request>req, <Response>res);
       expect(actual).toEqual(rows);
     });
   });

@@ -1,11 +1,14 @@
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 
 import {
-  equipmentTypeController
+  EquipmentTypeController
 } from '../../../src/controllers/equipmentType';
 
-const rows: any = [{id: 1, name: "Name"}];
+const pool: Partial<Pool> = {};
+const controller = new EquipmentTypeController(<Pool>pool);
 
+const rows: any = [{id: 1, name: "Name"}];
 jest.mock('../../../src/mysql-access/EquipmentType', () => ({
   EquipmentType: jest.fn().mockImplementation(() => ({
     view: mockView,
@@ -24,18 +27,17 @@ describe('equipmentType controller', () => {
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue([rows])};
 
     it('uses view correctly', async () => {
-      await equipmentTypeController.view(<Request>{}, <Response>res);
+      await controller.view(<Request>{}, <Response>res);
       expect(mockView).toHaveBeenCalledTimes(1);
     });
 
     it('sends data correctly', async () => {
-      await equipmentTypeController.view(<Request>{}, <Response>res);
+      await controller.view(<Request>{}, <Response>res);
       expect(res.send).toHaveBeenCalledWith([rows]);
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await equipmentTypeController.view(<Request>{}, <Response>res);
+      const actual = await controller.view(<Request>{}, <Response>res);
       expect(actual).toEqual([rows]);
     });
   });
@@ -45,18 +47,17 @@ describe('equipmentType controller', () => {
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
     it('uses viewById correctly', async () => {
-      await equipmentTypeController.viewById(<Request>req, <Response>res);
+      await controller.viewById(<Request>req, <Response>res);
       expect(mockViewById).toHaveBeenCalledWith(1);
     });
 
     it('sends data correctly', async () => {
-      await equipmentTypeController.viewById(<Request>req, <Response>res);
+      await controller.viewById(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith(rows);
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await equipmentTypeController.viewById(<Request>req, <Response>res);
+      const actual = await controller.viewById(<Request>req, <Response>res);
       expect(actual).toEqual(rows);
     });
   });

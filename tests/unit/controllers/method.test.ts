@@ -1,9 +1,12 @@
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 
-import { methodController } from '../../../src/controllers/method';
+import { MethodController } from '../../../src/controllers/method';
+
+const pool: Partial<Pool> = {};
+const controller = new MethodController(<Pool>pool);
 
 const rows: any = [{id: 1, name: "Name"}];
-
 jest.mock('../../../src/mysql-access/Method', () => ({
   Method: jest.fn().mockImplementation(() => ({
     view: mockView,
@@ -22,17 +25,17 @@ describe('method controller', () => {
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue([rows])};
 
     it('uses view correctly', async () => {
-      await methodController.view(<Request>{}, <Response>res);
+      await controller.view(<Request>{}, <Response>res);
       expect(mockView).toHaveBeenCalledTimes(1);
     });
 
     it('sends data correctly', async () => {
-      await methodController.view(<Request>{}, <Response>res);
+      await controller.view(<Request>{}, <Response>res);
       expect(res.send).toHaveBeenCalledWith([rows]);
     });
 
     it('returns correctly', async () => {
-      const actual = await methodController.view(<Request>{}, <Response>res);
+      const actual = await controller.view(<Request>{}, <Response>res);
       expect(actual).toEqual([rows]);
     });
   });
@@ -42,18 +45,17 @@ describe('method controller', () => {
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
     it('uses viewById correctly', async () => {
-      await methodController.viewById(<Request>req, <Response>res);
+      await controller.viewById(<Request>req, <Response>res);
       expect(mockViewById).toHaveBeenCalledWith(1);
     });
 
     it('sends data correctly', async () => {
-      await methodController.viewById(<Request>req, <Response>res);
+      await controller.viewById(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith(rows);
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await methodController.viewById(<Request>req, <Response>res);
+      const actual = await controller.viewById(<Request>req, <Response>res);
       expect(actual).toEqual(rows);
     });
   });

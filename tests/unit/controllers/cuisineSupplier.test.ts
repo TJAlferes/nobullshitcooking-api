@@ -1,11 +1,14 @@
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 
 import {
-  cuisineSupplierController
+  CuisineSupplierController
 } from '../../../src/controllers/cuisineSupplier';
 
-const rows: any = [{id: 1, name: "Name"}];
+const pool: Partial<Pool> = {};
+const controller = new CuisineSupplierController(<Pool>pool);
 
+const rows: any = [{id: 1, name: "Name"}];
 jest.mock('../../../src/mysql-access/CuisineSupplier', () => ({
   CuisineSupplier: jest.fn().mockImplementation(() => ({
     viewByCuisineId: mockViewByCuisineId
@@ -23,19 +26,17 @@ describe('cuisineSupplier controller', () => {
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue([rows])};
 
     it('uses viewByCuisineId correctly', async () => {
-      await cuisineSupplierController
-        .viewByCuisineId(<Request>req, <Response>res);
+      await controller.viewByCuisineId(<Request>req, <Response>res);
       expect(mockViewByCuisineId).toHaveBeenCalledWith(1);
     });
 
     it('sends data', async () => {
-      await cuisineSupplierController
-        .viewByCuisineId(<Request>req, <Response>res);
+      await controller.viewByCuisineId(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith([rows]);
     });
 
     it('returns correctly', async () => {
-      const actual = await cuisineSupplierController
+      const actual = await controller
         .viewByCuisineId(<Request>req, <Response>res);
       expect(actual).toEqual([rows]);
     });

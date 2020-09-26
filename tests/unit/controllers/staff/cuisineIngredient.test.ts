@@ -1,8 +1,12 @@
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 
 import {
-  staffCuisineIngredientController
+  StaffCuisineIngredientController
 } from '../../../../src/controllers/staff/cuisineIngredient';
+
+const pool: Partial<Pool> = {};
+const controller = new StaffCuisineIngredientController(<Pool>pool);
 
 jest.mock('../../../../src/mysql-access/CuisineIngredient', () => ({
   CuisineIngredient: jest.fn().mockImplementation(() => ({
@@ -30,21 +34,18 @@ describe('staff cuisine ingredient controller', () => {
     };
 
     it('uses create correctly', async () => {
-      await staffCuisineIngredientController
-        .create(<Request>req, <Response>res);
+      await controller.create(<Request>req, <Response>res);
       expect(mockCreate).toHaveBeenCalledWith(4, 4);
     });
 
     it('sends data correctly', async () => {
-      await staffCuisineIngredientController
-        .create(<Request>req, <Response>res);
+      await controller.create(<Request>req, <Response>res);
       expect(res.send)
         .toHaveBeenCalledWith({message: 'Cuisine ingredient created.'});
     });
 
     it('returns correctly', async () => {
-      const actual = await staffCuisineIngredientController
-        .create(<Request>req, <Response>res);
+      const actual = await controller.create(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Cuisine ingredient created.'});
     });
   });
@@ -59,21 +60,18 @@ describe('staff cuisine ingredient controller', () => {
     };
 
     it('uses delete correctly', async () => {
-      await staffCuisineIngredientController
-        .delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockDelete).toHaveBeenCalledWith(4, 4);
     });
 
     it('sends data correctly', async () => {
-      await staffCuisineIngredientController
-        .delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(res.send)
         .toHaveBeenCalledWith({message: 'Cuisine ingredient deleted.'});
     });
 
     it('returns correctly', async () => {
-      const actual = await staffCuisineIngredientController
-        .delete(<Request>req, <Response>res);
+      const actual = await controller.delete(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Cuisine ingredient deleted.'});
     });
   });

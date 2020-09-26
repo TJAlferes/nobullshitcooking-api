@@ -1,14 +1,16 @@
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
-import { profileController } from '../../../src/controllers/profile';
+import { ProfileController } from '../../../src/controllers/profile';
 import {
   validProfileRequest
 } from '../../../src/lib/validations/profile/request';
 
-const rows: any = [{id: 1, name: "Name"}];
+const pool: Partial<Pool> = {};
+const controller = new ProfileController(<Pool>pool);
 
-jest.mock('superstruct');
+const rows: any = [{id: 1, name: "Name"}];
 
 jest.mock('../../../src/mysql-access/FavoriteRecipe', () => ({
   FavoriteRecipe: jest.fn().mockImplementation(() => ({
@@ -28,6 +30,8 @@ jest.mock('../../../src/mysql-access/User', () => ({
 let mockViewByName =
   jest.fn().mockResolvedValue([[{user_id: 1, avatar: "Name23"}]]);
 
+jest.mock('superstruct');
+
 afterEach(() => {
   jest.clearAllMocks();
 });
@@ -45,28 +49,28 @@ describe('profile controller', () => {
     };
 
     it('uses assert correctly', async () => {
-      await profileController.view(<Request>req, <Response>res);
+      await controller.view(<Request>req, <Response>res);
       expect(assert)
         .toHaveBeenCalledWith({username: "Name"}, validProfileRequest);
     });
 
     it('uses user.viewByName correctly', async () => {
-      await profileController.view(<Request>req, <Response>res);
+      await controller.view(<Request>req, <Response>res);
       expect(mockViewByName).toHaveBeenCalledTimes(1);
     });
 
     it('uses recipe.view correctly', async () => {
-      await profileController.view(<Request>req, <Response>res);
+      await controller.view(<Request>req, <Response>res);
       expect(mockView).toHaveBeenCalledTimes(1);
     });
 
     it('uses favoriteRecipe.viewByUserId correctly', async () => {
-      await profileController.view(<Request>req, <Response>res);
+      await controller.view(<Request>req, <Response>res);
       expect(mockViewByUserId).toHaveBeenCalledTimes(1);
     });
 
     it('sends data correctly', async () => {
-      await profileController.view(<Request>req, <Response>res);
+      await controller.view(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith({
         message: 'Success.',
         avatar: "Name23",
@@ -76,7 +80,7 @@ describe('profile controller', () => {
     });
 
     it('returns correctly', async () => {
-      const actual = await profileController.view(<Request>req, <Response>res);
+      const actual = await controller.view(<Request>req, <Response>res);
       expect(actual).toEqual({
         message: 'Success.',
         avatar: "Name23",

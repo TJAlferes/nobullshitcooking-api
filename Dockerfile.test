@@ -22,4 +22,4 @@ COPY ./src .
 WORKDIR /api/tests
 COPY ./tests .
 
-CMD npm run test "tests/unit/*" -- --coverage --logHeapUsage --runInBand --watchAll=false
+CMD npm run test "tests/integration/index.test.ts" -- --coverage --logHeapUsage --runInBand --watchAll=false

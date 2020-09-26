@@ -20,7 +20,7 @@ export class Ingredient implements IIngredient {
 
   async getAllForElasticSearch() {
     const ownerId = 1;
-    const sql1 = `
+    const sql = `
       SELECT
         CAST(i.id AS CHAR),
         i.ingredient_type_id,
@@ -36,7 +36,7 @@ export class Ingredient implements IIngredient {
       WHERE i.owner_id = ?
     `;
 
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql1, [ownerId]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
 
     let final = [];
 
@@ -133,7 +133,7 @@ export class Ingredient implements IIngredient {
         i.image
       FROM ingredients i
       INNER JOIN ingredient_types t ON i.ingredient_type_id = t.id
-      WHERE owner_id = 1 AND id = ?
+      WHERE owner_id = 1 AND i.id = ?
     `;
     const [ row ] = await this.pool
       .execute<RowDataPacket[]>(sql, [id, authorId, ownerId]);

@@ -1,11 +1,14 @@
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 
 import {
-  ingredientTypeController
+  IngredientTypeController
 } from '../../../src/controllers/ingredientType';
 
-const rows: any = [{id: 1, name: "Name"}];
+const pool: Partial<Pool> = {};
+const controller = new IngredientTypeController(<Pool>pool);
 
+const rows: any = [{id: 1, name: "Name"}];
 jest.mock('../../../src/mysql-access/IngredientType', () => ({
   IngredientType: jest.fn().mockImplementation(() => ({
     view: mockView,
@@ -24,18 +27,17 @@ describe('ingredientType controller', () => {
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue([rows])};
 
     it('uses viewIngredientTypes correctly', async () => {
-      await ingredientTypeController.view(<Request>{}, <Response>res);
+      await controller.view(<Request>{}, <Response>res);
       expect(mockView).toHaveBeenCalledTimes(1);
     });
 
     it('sends data correctly', async () => {
-      await ingredientTypeController.view(<Request>{}, <Response>res);
+      await controller.view(<Request>{}, <Response>res);
       expect(res.send).toHaveBeenCalledWith([rows]);
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await ingredientTypeController.view(<Request>{}, <Response>res);
+      const actual = await controller.view(<Request>{}, <Response>res);
       expect(actual).toEqual([rows]);
     });
   });
@@ -45,18 +47,17 @@ describe('ingredientType controller', () => {
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
     it('uses viewById correctly', async () => {
-      await ingredientTypeController.viewById(<Request>req, <Response>res);
+      await controller.viewById(<Request>req, <Response>res);
       expect(mockViewById).toHaveBeenCalledWith(1);
     });
 
     it('sends data correctly', async () => {
-      await ingredientTypeController.viewById(<Request>req, <Response>res);
+      await controller.viewById(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith(rows);
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await ingredientTypeController.viewById(<Request>req, <Response>res);
+      const actual = await controller.viewById(<Request>req, <Response>res);
       expect(actual).toEqual(rows);
     });
   });

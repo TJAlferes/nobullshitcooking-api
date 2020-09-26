@@ -1,12 +1,16 @@
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
 import {
-  userEquipmentController
+  UserEquipmentController
 } from '../../../../src/controllers/user/equipment';
 import {
   validEquipmentEntity
 } from '../../../../src/lib/validations/equipment/entity';
+
+const pool: Partial<Pool> = {};
+const controller = new UserEquipmentController(<Pool>pool);
 
 jest.mock('superstruct');
 
@@ -45,18 +49,17 @@ describe('user equipment controller', () => {
       {send: jest.fn().mockResolvedValue([[{id: 383}, {id: 5432}]])};
 
     it('uses view correctly', async () => {
-      await userEquipmentController.view(<Request>req, <Response>res);
+      await controller.view(<Request>req, <Response>res);
       expect(mockView).toHaveBeenCalledWith(150, 150);
     });
 
     it('sends data corectly', async () => {
-      await userEquipmentController.view(<Request>req, <Response>res);
+      await controller.view(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith([[{id: 383}, {id: 5432}]]);
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await userEquipmentController.view(<Request>req, <Response>res);
+      const actual = await controller.view(<Request>req, <Response>res);
       expect(actual).toEqual([[{id: 383}, {id: 5432}]]);
     });
   });
@@ -67,18 +70,17 @@ describe('user equipment controller', () => {
       {send: jest.fn().mockResolvedValue([{id: 5432}])};
 
     it('uses viewById correctly', async () => {
-      await userEquipmentController.viewById(<Request>req, <Response>res);
+      await controller.viewById(<Request>req, <Response>res);
       expect(mockViewById).toHaveBeenCalledWith(5432, 150, 150);
     });
 
     it('sends data correctly', async () => {
-      await userEquipmentController.viewById(<Request>req, <Response>res);
+      await controller.viewById(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith([{id: 5432}]);
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await userEquipmentController.viewById(<Request>req, <Response>res);
+      const actual = await controller.viewById(<Request>req, <Response>res);
       expect(actual).toEqual([{id: 5432}]);
     });
   });
@@ -99,7 +101,7 @@ describe('user equipment controller', () => {
       {send: jest.fn().mockResolvedValue({message: 'Equipment created.'})};
 
     it('uses assert correctly', async () => {
-      await userEquipmentController.create(<Request>req, <Response>res);
+      await controller.create(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith(
         {
           equipmentTypeId: 2,
@@ -114,7 +116,7 @@ describe('user equipment controller', () => {
     });
 
     it('uses create correctly', async () => {
-      await userEquipmentController.create(<Request>req, <Response>res);
+      await controller.create(<Request>req, <Response>res);
       expect(mockCreatePrivate).toHaveBeenCalledWith({
         equipmentTypeId: 2,
         authorId: 150,
@@ -126,13 +128,12 @@ describe('user equipment controller', () => {
     });
 
     it('sends data correctly', async () => {
-      await userEquipmentController.create(<Request>req, <Response>res);
+      await controller.create(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith({message: 'Equipment created.'});
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await userEquipmentController.create(<Request>req, <Response>res);
+      const actual = await controller.create(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Equipment created.'});
     });
   });
@@ -154,7 +155,7 @@ describe('user equipment controller', () => {
       {send: jest.fn().mockResolvedValue({message: 'Equipment updated.'})};
 
     it('uses validation correctly', async () => {
-      await userEquipmentController.update(<Request>req, <Response>res);
+      await controller.update(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith(
         {
           equipmentTypeId: 2,
@@ -169,7 +170,7 @@ describe('user equipment controller', () => {
     });
 
     it('uses update correctly', async () => {
-      await userEquipmentController.update(<Request>req, <Response>res);
+      await controller.update(<Request>req, <Response>res);
       expect(mockUpdatePrivate).toHaveBeenCalledWith({
         id: 5432,
         equipmentTypeId: 2,
@@ -182,13 +183,12 @@ describe('user equipment controller', () => {
     });
 
     it('sends data correctly', async () => {
-      await userEquipmentController.update(<Request>req, <Response>res);
+      await controller.update(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith({message: 'Equipment updated.'});
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await userEquipmentController.update(<Request>req, <Response>res);
+      const actual = await controller.update(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Equipment updated.'});
     });
   });
@@ -199,23 +199,22 @@ describe('user equipment controller', () => {
       {send: jest.fn().mockResolvedValue({message: 'Equipment deleted.'})};
 
     it('uses deleteByEquipmentId correctly', async () => {
-      await userEquipmentController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockDeleteByEquipmentId).toHaveBeenCalledWith(5432);
     });
 
     it('uses delete correctly', async () => {
-      await userEquipmentController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockDeleteByOwnerId).toHaveBeenCalledWith(5432, 150);
     });
 
     it('sends data correctly', async () => {
-      await userEquipmentController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith({message: 'Equipment deleted.'});
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await userEquipmentController.delete(<Request>req, <Response>res);
+      const actual = await controller.delete(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Equipment deleted.'});
     });
   });

@@ -1,9 +1,12 @@
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 
-import { equipmentController } from '../../../src/controllers/equipment';
+import { EquipmentController } from '../../../src/controllers/equipment';
+
+const pool: Partial<Pool> = {};
+const controller = new EquipmentController(<Pool>pool);
 
 const rows: any = [{id: 1, name: "Name"}];
-
 jest.mock('../../../src/mysql-access/Equipment', () => ({
   Equipment: jest.fn().mockImplementation(() => ({
     view: mockView,
@@ -22,17 +25,17 @@ describe('equipment controller', () => {
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue([rows])};
 
     it('uses view correctly', async () => {
-      await equipmentController.view(<Request>{}, <Response>res);
+      await controller.view(<Request>{}, <Response>res);
       expect(mockView).toHaveBeenCalledTimes(1);
     });
 
     it('sends data correctly', async () => {
-      await equipmentController.view(<Request>{}, <Response>res);
+      await controller.view(<Request>{}, <Response>res);
       expect(res.send).toHaveBeenCalledWith([rows]);
     });
 
     it('returns correctly', async () => {
-      const actual = await equipmentController.view(<Request>{}, <Response>res);
+      const actual = await controller.view(<Request>{}, <Response>res);
       expect(actual).toEqual([rows]);
     });
   });
@@ -42,18 +45,17 @@ describe('equipment controller', () => {
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
     it('uses viewById correctly', async () => {
-      await equipmentController.viewById(<Request>req, <Response>res);
+      await controller.viewById(<Request>req, <Response>res);
       expect(mockViewById).toHaveBeenCalledWith(1, 1, 1);
     });
 
     it('sends data correctly', async () => {
-      await equipmentController.viewById(<Request>req, <Response>res);
+      await controller.viewById(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith(rows);
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await equipmentController.viewById(<Request>req, <Response>res);
+      const actual = await controller.viewById(<Request>req, <Response>res);
       expect(actual).toEqual(rows);
     });
   });

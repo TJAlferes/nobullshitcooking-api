@@ -20,9 +20,9 @@ export class ProfileController {
     assert({username}, validProfileRequest);
     const user = new User(this.pool);
     const [ userExists ] = await user.viewByName(username);
-    if (!userExists.length) return res.send({message: 'User does not exist.'});
-    const id = userExists[0].user_id;
-    const avatar = userExists[0].avatar;
+    if (!userExists) return res.send({message: 'User does not exist.'});
+    const id = userExists.user_id;
+    const avatar = userExists.avatar;
     const recipe = new Recipe(this.pool);
     const publicRecipes = await recipe.view(id, 1);
     const favoriteRecipe = new FavoriteRecipe(this.pool);

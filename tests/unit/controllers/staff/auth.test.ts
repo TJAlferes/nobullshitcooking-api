@@ -1,19 +1,17 @@
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
-import { staffAuthController } from '../../../../src/controllers/staff/auth';
+import { StaffAuthController } from '../../../../src/controllers/staff/auth';
 import {
   validLoginRequest,
   validRegisterRequest,
   validStaffCreation
 } from '../../../../src/lib/validations/staff/index';
 
-/*
-
-mocks and setup
-
-*/
+const pool: Partial<Pool> = {};
+const controller = new StaffAuthController(<Pool>pool);
 
 jest.mock('bcrypt');
 const mockBcrypt = bcrypt as jest.Mocked<typeof bcrypt>;
@@ -38,12 +36,6 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-/*
-
-tests
-
-*/
-
 describe('staff auth controller', () => {
   describe('register method', () => {
     // finish
@@ -65,12 +57,12 @@ describe('staff auth controller', () => {
     const res: Partial<Response> = {end: jest.fn()};
     
     it('uses destroy', async () => {
-      await staffAuthController.logout(<Request>req, <Response>res);
+      await controller.logout(<Request>req, <Response>res);
       expect(mockDestroy).toBeCalledTimes(1);
     });
 
     it('uses res.end', async () => {
-      await staffAuthController.logout(<Request>req, <Response>res);
+      await controller.logout(<Request>req, <Response>res);
       expect(res.end).toBeCalledTimes(1);
     });
   });

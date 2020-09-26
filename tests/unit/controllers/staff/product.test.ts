@@ -1,14 +1,18 @@
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
 import {
-  staffProductController
+  StaffProductController
 } from '../../../../src/controllers/staff/product';
 import {
   validProductEntity
 } from '../../../../src/lib/validations/product/entity';
 
 jest.mock('superstruct');
+
+const pool: Partial<Pool> = {};
+const controller = new StaffProductController(<Pool>pool);
 
 jest.mock('../../../../src/elasticsearch-access/ProductSearch', () => ({
   ProductSearch: jest.fn().mockImplementation(() => ({
@@ -59,23 +63,22 @@ describe ('staff product controller', () => {
       {send: jest.fn().mockResolvedValue({message: 'Product created.'})};
 
     it('uses assert correctly', async () => {
-      await staffProductController.create(<Request>req, <Response>res);
+      await controller.create(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith(productCreation, validProductEntity);
     });
 
     it('uses create correctly', async () => {
-      await staffProductController.create(<Request>req, <Response>res);
+      await controller.create(<Request>req, <Response>res);
       expect(mockCreate).toHaveBeenCalledWith(productCreation);
     });
 
     it('sends data correctly', async () => {
-      await staffProductController.create(<Request>req, <Response>res);
+      await controller.create(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith({message: 'Product created.'});
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await staffProductController.create(<Request>req, <Response>res);
+      const actual = await controller.create(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Product created.'});
     });
   });
@@ -86,23 +89,22 @@ describe ('staff product controller', () => {
       {send: jest.fn().mockResolvedValue({message: 'Product updated.'})};
 
     it('uses assert correctly', async () => {
-      await staffProductController.update(<Request>req, <Response>res);
+      await controller.update(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith(productCreation, validProductEntity);
     });
 
     it('uses update correctly', async () => {
-      await staffProductController.update(<Request>req, <Response>res);
+      await controller.update(<Request>req, <Response>res);
       expect(mockUpdate).toHaveBeenCalledWith({id: 321, ...productCreation});
     });
 
     it('sends data correctly', async () => {
-      await staffProductController.update(<Request>req, <Response>res);
+      await controller.update(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith({message: 'Product updated.'});
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await staffProductController.update(<Request>req, <Response>res);
+      const actual = await controller.update(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Product updated.'});
     });
   });
@@ -113,23 +115,22 @@ describe ('staff product controller', () => {
       {send: jest.fn().mockResolvedValue({message: 'Product deleted.'})};
 
     it('uses delete correctly', async () => {
-      await staffProductController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockDelete).toHaveBeenCalledWith(321);
     });
 
     it('uses ElasticSearch delete correctly', async () => {
-      await staffProductController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockESDelete).toHaveBeenCalledWith(String(321));
     });
 
     it('sends data correctly', async () => {
-      await staffProductController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith({message: 'Product deleted.'});
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await staffProductController.delete(<Request>req, <Response>res);
+      const actual = await controller.delete(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Product deleted.'});
     });
   });

@@ -1,14 +1,18 @@
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
 import {
-  staffEquipmentController
+  StaffEquipmentController
 } from '../../../../src/controllers/staff/equipment';
 import {
   validEquipmentEntity
 } from '../../../../src/lib/validations/equipment/entity';
 
 jest.mock('superstruct');
+
+const pool: Partial<Pool> = {};
+const controller = new StaffEquipmentController(<Pool>pool);
 
 jest.mock('../../../../src/elasticsearch-access/EquipmentSearch', () => ({
   EquipmentSearch: jest.fn().mockImplementation(() => ({
@@ -55,7 +59,7 @@ describe ('staff equipment controller', () => {
       {send: jest.fn().mockResolvedValue({message: 'Equipment created.'})};
 
     it('uses assert correctly', async () => {
-      await staffEquipmentController.create(<Request>req, <Response>res);
+      await controller.create(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith(
         {
           equipmentTypeId: 3,
@@ -70,7 +74,7 @@ describe ('staff equipment controller', () => {
     });
 
     it('uses create correctly', async () => {
-      await staffEquipmentController.create(<Request>req, <Response>res);
+      await controller.create(<Request>req, <Response>res);
       expect(mockCreate).toHaveBeenCalledWith({
         equipmentTypeId: 3,
         authorId: 1,
@@ -82,13 +86,12 @@ describe ('staff equipment controller', () => {
     });
 
     it('sends data correctly', async () => {
-      await staffEquipmentController.create(<Request>req, <Response>res);
+      await controller.create(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith({message: 'Equipment created.'});
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await staffEquipmentController.create(<Request>req, <Response>res);
+      const actual = await controller.create(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Equipment created.'});
     });
   });
@@ -110,7 +113,7 @@ describe ('staff equipment controller', () => {
       {send: jest.fn().mockResolvedValue({message: 'Equipment updated.'})};
 
     it('uses assert correctly', async () => {
-      await staffEquipmentController.update(<Request>req, <Response>res);
+      await controller.update(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith(
         {
           equipmentTypeId: 3,
@@ -125,7 +128,7 @@ describe ('staff equipment controller', () => {
     });
 
     it('uses update correctly', async () => {
-      await staffEquipmentController.update(<Request>req, <Response>res);
+      await controller.update(<Request>req, <Response>res);
       expect(mockUpdate).toHaveBeenCalledWith({
         id: 321,
         equipmentTypeId: 3,
@@ -138,13 +141,12 @@ describe ('staff equipment controller', () => {
     });
 
     it('sends data correctly', async () => {
-      await staffEquipmentController.update(<Request>req, <Response>res);
+      await controller.update(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith({message: 'Equipment updated.'});
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await staffEquipmentController.update(<Request>req, <Response>res);
+      const actual = await controller.update(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Equipment updated.'});
     });
   });
@@ -155,23 +157,22 @@ describe ('staff equipment controller', () => {
       {send: jest.fn().mockResolvedValue({message: 'Equipment deleted.'})};
 
     it('uses delete correctly', async () => {
-      await staffEquipmentController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockDelete).toHaveBeenCalledWith(321);
     });
 
     it('uses ElasticSearch delete correctly', async () => {
-      await staffEquipmentController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockESDelete).toHaveBeenCalledWith(String(321));
     });
 
     it('sends data correctly', async () => {
-      await staffEquipmentController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith({message: 'Equipment deleted.'});
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await staffEquipmentController.delete(<Request>req, <Response>res);
+      const actual = await controller.delete(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Equipment deleted.'});
     });
   });

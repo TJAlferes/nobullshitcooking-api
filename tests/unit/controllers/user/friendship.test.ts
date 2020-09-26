@@ -1,12 +1,16 @@
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
 import {
-  userFriendshipController
+  UserFriendshipController
 } from '../../../../src/controllers/user/friendship';
 import {
   validFriendshipEntity
 } from '../../../../src/lib/validations/friendship/entity';
+
+const pool: Partial<Pool> = {};
+const controller = new UserFriendshipController(<Pool>pool);
 
 jest.mock('superstruct');
 
@@ -55,18 +59,17 @@ describe('user friendship controller', () => {
     });
 
     it('uses view correctly', async () => {
-      await userFriendshipController.view(<Request>req, <Response>res);
+      await controller.view(<Request>req, <Response>res);
       expect(mockView).toHaveBeenCalledWith(150);
     });
 
     it('sends data correctly', async () => {
-      await userFriendshipController.view(<Request>req, <Response>res);
+      await controller.view(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith([rows]);
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await userFriendshipController.view(<Request>req, <Response>res);
+      const actual = await controller.view(<Request>req, <Response>res);
       expect(actual).toEqual([rows]);
     });
   });
@@ -83,18 +86,17 @@ describe('user friendship controller', () => {
       });
 
       it('uses viewByName correctly', async () => {
-        await userFriendshipController.create(<Request>req, <Response>res);
+        await controller.create(<Request>req, <Response>res);
         expect(mockViewByName).toHaveBeenCalledWith("Name");
       });
 
       it('sends data correctly', async () => {
-        await userFriendshipController.create(<Request>req, <Response>res);
+        await controller.create(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({message: 'User not found.'});
       });
   
       it('returns correctly', async () => {
-        const actual =
-          await userFriendshipController.create(<Request>req, <Response>res);
+        const actual = await controller.create(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'User not found.'});
       });
     });
@@ -112,18 +114,17 @@ describe('user friendship controller', () => {
       });
 
       it('uses checkIfBlockedBy correctly', async () => {
-        await userFriendshipController.create(<Request>req, <Response>res);
+        await controller.create(<Request>req, <Response>res);
         expect(mockCheckIfBlockedBy).toHaveBeenCalledWith(150, 42);
       });
 
       it('sends data correctly', async () => {
-        await userFriendshipController.create(<Request>req, <Response>res);
+        await controller.create(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({message: 'User not found.'});
       });
   
       it('returns correctly', async () => {
-        const actual =
-          await userFriendshipController.create(<Request>req, <Response>res);
+        const actual = await controller.create(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'User not found.'});
       });
     });
@@ -142,12 +143,12 @@ describe('user friendship controller', () => {
       });
 
       it ('uses getFriendshipByFriendId correctly', async () => {
-        await userFriendshipController.create(<Request>req, <Response>res);
+        await controller.create(<Request>req, <Response>res);
         expect(mockGetByFriendId).toHaveBeenCalledWith(150, 42);
       });
 
       it('uses assert correctly', async () => {
-        await userFriendshipController.create(<Request>req, <Response>res);
+        await controller.create(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {
             userId: 150,
@@ -160,19 +161,18 @@ describe('user friendship controller', () => {
       });
 
       it('uses create correctly', async () => {
-        await userFriendshipController.create(<Request>req, <Response>res);
+        await controller.create(<Request>req, <Response>res);
         expect(mockCreate).toHaveBeenCalledTimes(1);
       });
 
       it('sends data correctly', async () => {
-        await userFriendshipController.create(<Request>req, <Response>res);
+        await controller.create(<Request>req, <Response>res);
         expect(res.send)
           .toHaveBeenCalledWith({message: 'Friendship request sent.'});
       });
   
       it('returns correctly', async () => {
-        const actual =
-          await userFriendshipController.create(<Request>req, <Response>res);
+        const actual = await controller.create(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'Friendship request sent.'});
       });
     });
@@ -192,13 +192,12 @@ describe('user friendship controller', () => {
       });
 
       it('sends data correctly', async () => {
-        await userFriendshipController.create(<Request>req, <Response>res);
+        await controller.create(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({message: 'Already sent.'});
       });
   
       it('returns correctly', async () => {
-        const actual =
-          await userFriendshipController.create(<Request>req, <Response>res);
+        const actual = await controller.create(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'Already sent.'});
       });
     });
@@ -218,13 +217,12 @@ describe('user friendship controller', () => {
       });
 
       it('sends data correctly', async () => {
-        await userFriendshipController.create(<Request>req, <Response>res);
+        await controller.create(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({message: 'Already received.'});
       });
   
       it('returns correctly', async () => {
-        const actual =
-          await userFriendshipController.create(<Request>req, <Response>res);
+        const actual = await controller.create(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'Already received.'});
       });
     });
@@ -244,13 +242,12 @@ describe('user friendship controller', () => {
       });
 
       it('sends data correctly', async () => {
-        await userFriendshipController.create(<Request>req, <Response>res);
+        await controller.create(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({message: 'Already friends.'});
       });
   
       it('returns correctly', async () => {
-        const actual =
-          await userFriendshipController.create(<Request>req, <Response>res);
+        const actual = await controller.create(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'Already friends.'});
       });
     });
@@ -273,14 +270,13 @@ describe('user friendship controller', () => {
       });
 
       it('sends data correctly', async () => {
-        await userFriendshipController.create(<Request>req, <Response>res);
+        await controller.create(<Request>req, <Response>res);
         expect(res.send)
           .toHaveBeenCalledWith({message: 'User blocked. First unblock.'});
       });
 
       it('returns correctly', async () => {
-        const actual =
-          await userFriendshipController.create(<Request>req, <Response>res);
+        const actual = await controller.create(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'User blocked. First unblock.'});
       });
     });
@@ -299,18 +295,17 @@ describe('user friendship controller', () => {
       });
 
       it('uses viewByName correctly', async () => {
-        await userFriendshipController.accept(<Request>req, <Response>res);
+        await controller.accept(<Request>req, <Response>res);
         expect(mockViewByName).toHaveBeenCalledWith("Name");
       });
 
       it('sends data correctly', async () => {
-        await userFriendshipController.accept(<Request>req, <Response>res);
+        await controller.accept(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({message: 'User not found.'});
       });
       
       it('returns correctly', async () => {
-        const actual =
-          await userFriendshipController.accept(<Request>req, <Response>res);
+        const actual = await controller.accept(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'User not found.'});
       });
     });
@@ -329,24 +324,23 @@ describe('user friendship controller', () => {
       });
 
       it('uses viewByName correctly', async () => {
-        await userFriendshipController.accept(<Request>req, <Response>res);
+        await controller.accept(<Request>req, <Response>res);
         expect(mockViewByName).toHaveBeenCalledWith("Name");
       });
 
       it('uses accept correctly', async () => {
-        await userFriendshipController.accept(<Request>req, <Response>res);
+        await controller.accept(<Request>req, <Response>res);
         expect(mockAccept).toHaveBeenCalledWith(150, 42);
       });
 
       it('sends data correctly', async () => {
-        await userFriendshipController.accept(<Request>req, <Response>res);
+        await controller.accept(<Request>req, <Response>res);
         expect(res.send)
           .toHaveBeenCalledWith({message: 'Friendship request accepted.'});
       });
   
       it('returns correctly', async () => {
-        const actual =
-          await userFriendshipController.accept(<Request>req, <Response>res);
+        const actual = await controller.accept(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'Friendship request accepted.'});
       });
     });
@@ -365,18 +359,17 @@ describe('user friendship controller', () => {
       });
 
       it('uses viewByName correctly', async () => {
-        await userFriendshipController.reject(<Request>req, <Response>res);
+        await controller.reject(<Request>req, <Response>res);
         expect(mockViewByName).toHaveBeenCalledWith("Name");
       });
 
       it('sends data correctly', async () => {
-        await userFriendshipController.reject(<Request>req, <Response>res);
+        await controller.reject(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({message: 'User not found.'});
       });
   
       it('returns correctly', async () => {
-        const actual =
-          await userFriendshipController.reject(<Request>req, <Response>res);
+        const actual = await controller.reject(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'User not found.'});
       });
     });
@@ -395,24 +388,23 @@ describe('user friendship controller', () => {
       });
 
       it('uses viewByName correctly', async () => {
-        await userFriendshipController.reject(<Request>req, <Response>res);
+        await controller.reject(<Request>req, <Response>res);
         expect(mockViewByName).toHaveBeenCalledWith("Name");
       });
 
       it('uses reject correctly', async () => {
-        await userFriendshipController.reject(<Request>req, <Response>res);
+        await controller.reject(<Request>req, <Response>res);
         expect(mockReject).toHaveBeenCalledWith(150, 42);
       });
 
       it('sends data correctly', async () => {
-        await userFriendshipController.reject(<Request>req, <Response>res);
+        await controller.reject(<Request>req, <Response>res);
         expect(res.send)
           .toHaveBeenCalledWith({message: 'Friendship request rejected.'});
       });
   
       it('returns correctly', async () => {
-        const actual =
-          await userFriendshipController.reject(<Request>req, <Response>res);
+        const actual = await controller.reject(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'Friendship request rejected.'});
       });
     });
@@ -431,18 +423,17 @@ describe('user friendship controller', () => {
       });
 
       it('uses viewByName correctly', async () => {
-        await userFriendshipController.delete(<Request>req, <Response>res);
+        await controller.delete(<Request>req, <Response>res);
         expect(mockViewByName).toHaveBeenCalledWith("Name");
       });
 
       it('sends data correctly', async () => {
-        await userFriendshipController.delete(<Request>req, <Response>res);
+        await controller.delete(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({message: 'User not found.'});
       });
   
       it('returns correctly', async () => {
-        const actual =
-          await userFriendshipController.delete(<Request>req, <Response>res);
+        const actual = await controller.delete(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'User not found.'});
       });
     });
@@ -461,25 +452,24 @@ describe('user friendship controller', () => {
       });
 
       it('uses viewByName correctly', async () => {
-        await userFriendshipController.delete(<Request>req, <Response>res);
+        await controller.delete(<Request>req, <Response>res);
         expect(mockViewByName).toHaveBeenCalledWith("Name");
       });
 
       it('uses delete correctly', async () => {
-        await userFriendshipController.delete(<Request>req, <Response>res);
+        await controller.delete(<Request>req, <Response>res);
         expect(mockDelete).toHaveBeenCalledWith(150, 42);
       });
 
       it('sends data correctly', async () => {
-        await userFriendshipController.delete(<Request>req, <Response>res);
+        await controller.delete(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({
           message: 'No longer friends. Maybe again later.'
         });
       });
 
       it('returns correctly', async () => {
-        const actual =
-          await userFriendshipController.delete(<Request>req, <Response>res);
+        const actual = await controller.delete(<Request>req, <Response>res);
         expect(actual)
           .toEqual({message: 'No longer friends. Maybe again later.'});
       });
@@ -499,18 +489,17 @@ describe('user friendship controller', () => {
       });
 
       it('uses viewByName correctly', async () => {
-        await userFriendshipController.block(<Request>req, <Response>res);
+        await controller.block(<Request>req, <Response>res);
         expect(mockViewByName).toHaveBeenCalledWith("Name");
       });
 
       it('sends data correctly', async () => {
-        await userFriendshipController.block(<Request>req, <Response>res);
+        await controller.block(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({message: 'User not found.'});
       });
   
       it('returns correctly', async () => {
-        const actual =
-          await userFriendshipController.block(<Request>req, <Response>res);
+        const actual = await controller.block(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'User not found.'});
       });
     });
@@ -526,23 +515,22 @@ describe('user friendship controller', () => {
       });
 
       it('uses viewByName correctly', async () => {
-        await userFriendshipController.block(<Request>req, <Response>res);
+        await controller.block(<Request>req, <Response>res);
         expect(mockViewByName).toHaveBeenCalledWith("Name");
       });
 
       it('uses block correctly', async () => {
-        await userFriendshipController.block(<Request>req, <Response>res);
+        await controller.block(<Request>req, <Response>res);
         expect(mockBlock).toHaveBeenCalledWith(150, 42);
       });
 
       it('sends data correctly', async () => {
-        await userFriendshipController.block(<Request>req, <Response>res);
+        await controller.block(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({message: 'User blocked.'});
       });
   
       it('returns correctly', async () => {
-        const actual =
-          await userFriendshipController.block(<Request>req, <Response>res);
+        const actual = await controller.block(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'User blocked.'});
       });
     });
@@ -561,18 +549,17 @@ describe('user friendship controller', () => {
       });
 
       it('uses viewByName correctly', async () => {
-        await userFriendshipController.unblock(<Request>req, <Response>res);
+        await controller.unblock(<Request>req, <Response>res);
         expect(mockViewByName).toHaveBeenCalledWith("Name");
       });
 
       it('sends data correctly', async () => {
-        await userFriendshipController.unblock(<Request>req, <Response>res);
+        await controller.unblock(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({message: 'User not found.'});
       });
   
       it('returns correctly', async () => {
-        const actual =
-          await userFriendshipController.unblock(<Request>req, <Response>res);
+        const actual = await controller.unblock(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'User not found.'});
       });
     });
@@ -588,23 +575,22 @@ describe('user friendship controller', () => {
       });
 
       it('uses viewByName correctly', async () => {
-        await userFriendshipController.unblock(<Request>req, <Response>res);
+        await controller.unblock(<Request>req, <Response>res);
         expect(mockViewByName).toHaveBeenCalledWith("Name");
       });
 
       it('uses unblock correctly', async () => {
-        await userFriendshipController.unblock(<Request>req, <Response>res);
+        await controller.unblock(<Request>req, <Response>res);
         expect(mockUnblock).toHaveBeenCalledWith(150, 42);
       });
 
       it('sends data correctly', async () => {
-        await userFriendshipController.unblock(<Request>req, <Response>res);
+        await controller.unblock(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({message: 'User unblocked.'});
       });
   
       it('returns correctly', async () => {
-        const actual =
-          await userFriendshipController.unblock(<Request>req, <Response>res);
+        const actual = await controller.unblock(<Request>req, <Response>res);
         expect(actual).toEqual({message: 'User unblocked.'});
       });
     });

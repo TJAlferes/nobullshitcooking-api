@@ -1,8 +1,12 @@
 import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
 
 import {
-  staffCuisineSupplierController
+  StaffCuisineSupplierController
 } from '../../../../src/controllers/staff/cuisineSupplier';
+
+const pool: Partial<Pool> = {};
+const controller = new StaffCuisineSupplierController(<Pool>pool);
 
 jest.mock('../../../../src/mysql-access/CuisineSupplier', () => ({
   CuisineSupplier: jest.fn().mockImplementation(() => ({
@@ -28,19 +32,18 @@ describe('staff cuisine supplier controller', () => {
     };
 
     it('uses create correctly', async () => {
-      await staffCuisineSupplierController.create(<Request>req, <Response>res);
+      await controller.create(<Request>req, <Response>res);
       expect(mockCreate).toHaveBeenCalledWith(4, 4);
     });
 
     it('sends data correctly', async () => {
-      await staffCuisineSupplierController.create(<Request>req, <Response>res);
+      await controller.create(<Request>req, <Response>res);
       expect(res.send)
         .toHaveBeenCalledWith({message: 'Cuisine supplier created.'});
     });
 
     it('returns correctly', async () => {
-      const actual = await staffCuisineSupplierController
-        .create(<Request>req, <Response>res);
+      const actual = await controller.create(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Cuisine supplier created.'});
     });
   });
@@ -53,19 +56,18 @@ describe('staff cuisine supplier controller', () => {
     };
 
     it('uses delete correctly', async () => {
-      await staffCuisineSupplierController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(mockDelete).toHaveBeenCalledWith(4, 4);
     });
 
     it('sends data correctly', async () => {
-      await staffCuisineSupplierController.delete(<Request>req, <Response>res);
+      await controller.delete(<Request>req, <Response>res);
       expect(res.send)
         .toHaveBeenCalledWith({message: 'Cuisine supplier deleted.'});
     });
 
     it('returns correctly', async () => {
-      const actual = await staffCuisineSupplierController
-        .delete(<Request>req, <Response>res);
+      const actual = await controller.delete(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Cuisine supplier deleted.'});
     });
   });

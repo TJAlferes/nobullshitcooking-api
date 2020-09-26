@@ -12,7 +12,7 @@ export class CuisineEquipment implements ICuisineEquipment {
 
   async viewByCuisineId(cuisineId: number) {
     const sql = `
-      SELECT e.id AS equipment_id, e.name AS equipment_name
+      SELECT ce.equipment_id, e.name AS equipment_name
       FROM cuisine_equipment ce
       INNER JOIN equipment e ON e.id = ce.equipment_id
       WHERE ce.cuisine_id = ?

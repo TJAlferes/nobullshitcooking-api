@@ -1,6 +1,10 @@
 import { Request, Response } from 'express';
+import { Client } from '@elastic/elasticsearch';
 
-import { searchController } from '../../../src/controllers/search';
+import { SearchController } from '../../../src/controllers/search';
+
+const esClient: Partial<Client> = {};
+const controller = new SearchController(<Client>esClient);
 
 const found = {some: "value"};
 
@@ -45,32 +49,26 @@ afterEach(() => {
 });
 
 describe('search controller', () => {
-  /*describe('autocompletePublicAll method', () => {
+  //describe('autocompletePublicAll method', () => {});
 
-  });
-
-  describe('findPublicAll method', () => {
-
-  });*/
+  //describe('findPublicAll method', () => {});
 
   describe('autocompletePublicEquipment method', () => {
     const req: Partial<Request> = {body: {searchTerm: "term"}};
     const res: Partial<Response> = {json: jest.fn().mockResolvedValue({found})};
 
     it('uses auto correctly', async () => {
-      await searchController
-        .autocompletePublicEquipment(<Request>req, <Response>res);
+      await controller.autocompletePublicEquipment(<Request>req, <Response>res);
       expect(mockAutoEquipment).toHaveBeenCalledWith("term");
     });
 
     it('sends data correctly', async () => {
-      await searchController
-        .autocompletePublicEquipment(<Request>req, <Response>res);
+      await controller.autocompletePublicEquipment(<Request>req, <Response>res);
       expect(res.json).toHaveBeenCalledWith({found});
     });
 
     it('returns correctly', async () => {
-      const actual = await searchController
+      const actual = await controller
         .autocompletePublicEquipment(<Request>req, <Response>res);
       expect(actual).toEqual({found});
     });
@@ -81,18 +79,18 @@ describe('search controller', () => {
     const res: Partial<Response> = {json: jest.fn().mockResolvedValue({found})};
 
     it('uses find correctly', async () => {
-      await searchController.findPublicEquipment(<Request>req, <Response>res);
+      await controller.findPublicEquipment(<Request>req, <Response>res);
       expect(mockFindEquipment).toHaveBeenCalledWith({someBody: "value"});
     });
 
     it('sends data correctly', async () => {
-      await searchController.findPublicEquipment(<Request>req, <Response>res);
+      await controller.findPublicEquipment(<Request>req, <Response>res);
       expect(res.json).toHaveBeenCalledWith({found});
     });
 
     it('returns correctly', async () => {
       const actual =
-        await searchController.findPublicEquipment(<Request>req, <Response>res);
+        await controller.findPublicEquipment(<Request>req, <Response>res);
       expect(actual).toEqual({found});
     });
   });
@@ -102,19 +100,19 @@ describe('search controller', () => {
     const res: Partial<Response> = {json: jest.fn().mockResolvedValue({found})};
 
     it('uses auto correctly', async () => {
-      await searchController
+      await controller
         .autocompletePublicIngredients(<Request>req, <Response>res);
       expect(mockAutoIngredients).toHaveBeenCalledWith("term");
     });
 
     it('sends data correctly', async () => {
-      await searchController
+      await controller
         .autocompletePublicIngredients(<Request>req, <Response>res);
       expect(res.json).toHaveBeenCalledWith({found});
     });
 
     it('returns correctly', async () => {
-      const actual = await searchController
+      const actual = await controller
         .autocompletePublicIngredients(<Request>req, <Response>res);
       expect(actual).toEqual({found});
     });
@@ -125,19 +123,17 @@ describe('search controller', () => {
     const res: Partial<Response> = {json: jest.fn().mockResolvedValue({found})};
 
     it('uses find correctly', async () => {
-      await searchController
-        .findPublicIngredients(<Request>req, <Response>res);
+      await controller.findPublicIngredients(<Request>req, <Response>res);
       expect(mockFindIngredients).toHaveBeenCalledWith({someBody: "value"});
     });
 
     it('sends data correctly', async () => {
-      await searchController
-        .findPublicIngredients(<Request>req, <Response>res);
+      await controller.findPublicIngredients(<Request>req, <Response>res);
       expect(res.json).toHaveBeenCalledWith({found});
     });
 
     it('returns correctly', async () => {
-      const actual = await searchController
+      const actual = await controller
         .findPublicIngredients(<Request>req, <Response>res);
       expect(actual).toEqual({found});
     });
@@ -148,19 +144,17 @@ describe('search controller', () => {
     const res: Partial<Response> = {json: jest.fn().mockResolvedValue({found})};
 
     it('uses auto correctly', async () => {
-      await searchController
-        .autocompletePublicProducts(<Request>req, <Response>res);
+      await controller.autocompletePublicProducts(<Request>req, <Response>res);
       expect(mockAutoProducts).toHaveBeenCalledWith("term");
     });
 
     it('sends data correctly', async () => {
-      await searchController
-        .autocompletePublicProducts(<Request>req, <Response>res);
+      await controller.autocompletePublicProducts(<Request>req, <Response>res);
       expect(res.json).toHaveBeenCalledWith({found});
     });
 
     it('returns correctly', async () => {
-      const actual = await searchController
+      const actual = await controller
         .autocompletePublicProducts(<Request>req, <Response>res);
       expect(actual).toEqual({found});
     });
@@ -171,19 +165,17 @@ describe('search controller', () => {
     const res: Partial<Response> = {json: jest.fn().mockResolvedValue({found})};
 
     it('uses find correctly', async () => {
-      await searchController
-        .findPublicProducts(<Request>req, <Response>res);
+      await controller.findPublicProducts(<Request>req, <Response>res);
       expect(mockFindProducts).toHaveBeenCalledWith({someBody: "value"});
     });
 
     it('sends data correctly', async () => {
-      await searchController
-        .findPublicProducts(<Request>req, <Response>res);
+      await controller.findPublicProducts(<Request>req, <Response>res);
       expect(res.json).toHaveBeenCalledWith({found});
     });
 
     it('returns correctly', async () => {
-      const actual = await searchController
+      const actual = await controller
         .findPublicProducts(<Request>req, <Response>res);
       expect(actual).toEqual({found});
     });
@@ -194,19 +186,17 @@ describe('search controller', () => {
     const res: Partial<Response> = {json: jest.fn().mockResolvedValue({found})};
 
     it('uses auto correctly', async () => {
-      await searchController
-        .autocompletePublicRecipes(<Request>req, <Response>res);
+      await controller.autocompletePublicRecipes(<Request>req, <Response>res);
       expect(mockAutoRecipes).toHaveBeenCalledWith("term");
     });
 
     it('sends data correctly', async () => {
-      await searchController
-        .autocompletePublicRecipes(<Request>req, <Response>res);
+      await controller.autocompletePublicRecipes(<Request>req, <Response>res);
       expect(res.json).toHaveBeenCalledWith({found});
     });
 
     it('returns correctly', async () => {
-      const actual = await searchController
+      const actual = await controller
         .autocompletePublicRecipes(<Request>req, <Response>res);
       expect(actual).toEqual({found});
     });
@@ -217,18 +207,18 @@ describe('search controller', () => {
     const res: Partial<Response> = {json: jest.fn().mockResolvedValue({found})};
 
     it('uses find correctly', async () => {
-      await searchController.findPublicRecipes(<Request>req, <Response>res);
+      await controller.findPublicRecipes(<Request>req, <Response>res);
       expect(mockFindRecipes).toHaveBeenCalledWith({someBody: "value"});
     });
 
     it('sends data correctly', async () => {
-      await searchController.findPublicRecipes(<Request>req, <Response>res);
+      await controller.findPublicRecipes(<Request>req, <Response>res);
       expect(res.json).toHaveBeenCalledWith({found});
     });
 
     it('returns correctly', async () => {
       const actual =
-        await searchController.findPublicRecipes(<Request>req, <Response>res);
+        await controller.findPublicRecipes(<Request>req, <Response>res);
       expect(actual).toEqual({found});
     });
   });
