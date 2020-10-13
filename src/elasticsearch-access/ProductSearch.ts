@@ -78,7 +78,7 @@ export class ProductSearch implements IProductSearch {
   }
 }
 
-interface IProductSearch {
+export interface IProductSearch {
   client: Client;
   find(searchBody: any): any;  // finish
   auto(searchTerm: string): any;  // finish

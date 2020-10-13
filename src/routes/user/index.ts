@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { Pool } from 'mysql2/promise';
+import { Client } from '@elastic/elasticsearch';
 
 import { userAuthRouter } from './auth';
 import { userEquipmentRouter } from './equipment';
@@ -14,7 +15,7 @@ import { userSavedRecipeRouter } from './savedRecipe';
 
 const router = Router();
 
-export function userRouter(pool: Pool) {
+export function userRouter(esClient: Client, pool: Pool) {
   const userAuthRoutes = userAuthRouter(pool);
   const userEquipmentRoutes = userEquipmentRouter(pool);
   const userFavoriteRecipeRoutes = userFavoriteRecipeRouter(pool);
@@ -23,7 +24,7 @@ export function userRouter(pool: Pool) {
   const userIngredientRoutes = userIngredientRouter(pool);
   const userPlanRoutes = userPlanRouter(pool);
   //const userProfileRoutes = userProfileRouter(pool);
-  const userRecipeRoutes = userRecipeRouter(pool);
+  const userRecipeRoutes = userRecipeRouter(esClient, pool);
   const userSavedRecipeRoutes = userSavedRecipeRouter(pool);
 
   router.use('/auth', userAuthRoutes);

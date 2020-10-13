@@ -1,16 +1,18 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
+import { Client } from '@elastic/elasticsearch';
 
 import { ProductSearch } from '../../elasticsearch-access/ProductSearch';
-import { esClient } from '../../lib/connections/elasticsearchClient';  // remove
 import { validProductEntity } from '../../lib/validations/product/entity';
 import { Product } from '../../mysql-access/Product';
 
 export class StaffProductController {
+  esClient: Client;
   pool: Pool;
 
-  constructor(pool: Pool) {
+  constructor(esClient: Client, pool: Pool) {
+    this.esClient = esClient;
     this.pool = pool;
     this.create = this.create.bind(this);
     this.update = this.update.bind(this);
@@ -45,7 +47,7 @@ export class StaffProductController {
     const createdProduct = await product.create(productCreation);
     const generatedId = createdProduct.insertId;
     const productForInsert = await product.getForElasticSearch(generatedId);
-    const productSearch = new ProductSearch(esClient);
+    const productSearch = new ProductSearch(this.esClient);
     await productSearch.save(productForInsert);
     return res.send({message: 'Product created.'});
   }
@@ -78,7 +80,7 @@ export class StaffProductController {
     const product = new Product(this.pool);
     await product.update({id, ...productUpdate});
     const productForInsert = await product.getForElasticSearch(id);
-    const productSearch = new ProductSearch(esClient);
+    const productSearch = new ProductSearch(this.esClient);
     await productSearch.save(productForInsert);
     return res.send({message: 'Product updated.'});
   }
@@ -86,7 +88,7 @@ export class StaffProductController {
   async delete(req: Request, res: Response) {
     const id = Number(req.body.id);
     const product = new Product(this.pool);
-    const productSearch = new ProductSearch(esClient);
+    const productSearch = new ProductSearch(this.esClient);
     await product.delete(id);
     await productSearch.delete(String(id));
     return res.send({message: 'Product deleted.'});

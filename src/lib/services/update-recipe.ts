@@ -2,25 +2,23 @@
 
 import { assert } from 'superstruct';
 
-import { esClient } from '../connections/elasticsearchClient';
-import { pool } from '../connections/mysqlPoolConnection';
-import { RecipeSearch } from '../../elasticsearch-access/RecipeSearch';
-import { Recipe, ICreatingRecipe } from '../../mysql-access/Recipe';
+import { IRecipeSearch } from '../../elasticsearch-access/RecipeSearch';
+import { ICreatingRecipe, IRecipe } from '../../mysql-access/Recipe';
 import {
-  RecipeEquipment,
-  IMakeRecipeEquipment
+  IMakeRecipeEquipment,
+  IRecipeEquipment
 } from '../../mysql-access/RecipeEquipment';
 import {
-  RecipeIngredient,
-  IMakeRecipeIngredient
+  IMakeRecipeIngredient,
+  IRecipeIngredient
 } from '../../mysql-access/RecipeIngredient';
 import {
-  RecipeMethod,
-  IMakeRecipeMethod
+  IMakeRecipeMethod,
+  IRecipeMethod
 } from '../../mysql-access/RecipeMethod';
 import {
-  RecipeSubrecipe,
-  IMakeRecipeSubrecipe
+  IMakeRecipeSubrecipe,
+  IRecipeSubrecipe
 } from '../../mysql-access/RecipeSubrecipe';
 import {
   validRecipeEquipmentEntity
@@ -41,15 +39,14 @@ export async function updateRecipeService({
   requiredMethods,
   requiredEquipment,
   requiredIngredients,
-  requiredSubrecipes
+  requiredSubrecipes,
+  recipe,
+  recipeMethod,
+  recipeEquipment,
+  recipeIngredient,
+  recipeSubrecipe,
+  recipeSearch
 }: UpdateRecipeService) {
-  const recipe = new Recipe(pool);
-  const recipeMethod = new RecipeMethod(pool);
-  const recipeEquipment = new RecipeEquipment(pool);
-  const recipeIngredient = new RecipeIngredient(pool);
-  const recipeSubrecipe = new RecipeSubrecipe(pool);
-  const recipeSearch = new RecipeSearch(esClient);
-
   if (authorId == 1 && ownerId === 1) {
     await recipe.update({id, ...recipeUpdate});  // if staff
   } else {
@@ -170,4 +167,10 @@ interface UpdateRecipeService {
   requiredIngredients: IMakeRecipeIngredient[];
   requiredMethods: IMakeRecipeMethod[];
   requiredSubrecipes: IMakeRecipeSubrecipe[];
+  recipe: IRecipe;
+  recipeMethod: IRecipeMethod;
+  recipeEquipment: IRecipeEquipment;
+  recipeIngredient: IRecipeIngredient;
+  recipeSubrecipe: IRecipeSubrecipe;
+  recipeSearch: IRecipeSearch;
 }

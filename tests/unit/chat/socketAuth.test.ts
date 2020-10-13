@@ -1,3 +1,4 @@
+import { Redis } from 'ioredis';
 import { Socket } from 'socket.io';
 
 import {
@@ -5,9 +6,9 @@ import {
   sessionIdsAreEqual
 } from '../../../src/chat/socketAuth';
 
-jest.mock('../../../src/lib/connections/redisConnection', () => ({
+jest.mock('../../../src/lib/connections/redis', () => ({
   pubClient: jest.fn()
-}));
+}));  // ?
 
 jest.mock('../../../src/redis-access/MessengerUser', () => ({
   MessengerUser: jest.fn().mockImplementation(() => ({add: mockAdd}))
@@ -20,6 +21,7 @@ afterEach(() => {
 
 describe('addMessengerUser helper', () => {
   it('copies sid to socket.request correctly', async () => {
+    const pubClient: Partial<Redis> = {};
     const socket: Partial<Socket> = {
       id: '123456789',
       request: {headers: {cookie: {'connect.sid': '123456789'}}}
@@ -27,11 +29,17 @@ describe('addMessengerUser helper', () => {
     const sid = '123456789';
     const session: Partial<Express.SessionData> =
       {userInfo: {id: 150, username: "Name", avatar: "Name123"}};
-    await addMessengerUser(<Socket>socket, sid, <Express.SessionData>session);
+    await addMessengerUser(
+      <Redis>pubClient,
+      <Socket>socket,
+      sid,
+      <Express.SessionData>session
+    );
     expect(socket.request.sid).toEqual('123456789');
   });
 
   it('copies session.userInfo to the socket.request', async () => {
+    const pubClient: Partial<Redis> = {};
     const socket: Partial<Socket> = {
       id: '123456789',
       request: {headers: {cookie: {'connect.sid': '123456789'}}}
@@ -39,12 +47,18 @@ describe('addMessengerUser helper', () => {
     const sid = '123456789';
     const session: Partial<Express.SessionData> =
       {userInfo: {id: 150, username: "Name", avatar: "Name123"}};
-    await addMessengerUser(<Socket>socket, sid, <Express.SessionData>session);
+      await addMessengerUser(
+        <Redis>pubClient,
+        <Socket>socket,
+        sid,
+        <Express.SessionData>session
+      );
     expect(socket.request.userInfo)
       .toEqual({id: 150, username: "Name", avatar: "Name123"});
   });
 
   it ('uses addUser correctly', async () => {
+    const pubClient: Partial<Redis> = {};
     const socket: Partial<Socket> = {
       id: '123456789',
       request: {headers: {cookie: {'connect.sid': '123456789'}}}
@@ -52,7 +66,12 @@ describe('addMessengerUser helper', () => {
     const sid = '123456789';
     const session: Partial<Express.SessionData> =
       {userInfo: {id: 150, username: "Name", avatar: "Name123"}};
-    await addMessengerUser(<Socket>socket, sid, <Express.SessionData>session);
+      await addMessengerUser(
+        <Redis>pubClient,
+        <Socket>socket,
+        sid,
+        <Express.SessionData>session
+      );
     expect(mockAdd)
       .toHaveBeenCalledWith(150, "Name", "Name123", '123456789', '123456789');
   });

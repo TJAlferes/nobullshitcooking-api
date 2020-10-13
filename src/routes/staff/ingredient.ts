@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
 import { Pool } from 'mysql2/promise';
+import { Client } from '@elastic/elasticsearch';
 
 import { StaffIngredientController } from '../../controllers/staff/ingredient';
 import { catchExceptions } from '../../lib/utils/catchExceptions';
@@ -10,8 +11,8 @@ const router = Router();
 
 // for /staff/ingredient/...
 
-export function staffIngredientRouter(pool: Pool) {
-  const controller = new StaffIngredientController(pool);
+export function staffIngredientRouter(esClient: Client, pool: Pool) {
+  const controller = new StaffIngredientController(esClient, pool);
 
   router.post(
     '/create',

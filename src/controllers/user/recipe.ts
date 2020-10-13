@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert, coerce } from 'superstruct';
+import { Client } from '@elastic/elasticsearch';
 
 import { RecipeSearch } from '../../elasticsearch-access/RecipeSearch';
-import { esClient } from '../../lib/connections/elasticsearchClient';  // remove
 import { createRecipeService } from '../../lib/services/create-recipe';
 import { updateRecipeService } from '../../lib/services/update-recipe';
 import { validRecipeEntity } from '../../lib/validations/recipe/entity';
@@ -14,9 +14,11 @@ import { RecipeMethod } from '../../mysql-access/RecipeMethod';
 import { RecipeSubrecipe } from '../../mysql-access/RecipeSubrecipe';
 
 export class UserRecipeController {
+  esClient: Client;
   pool: Pool;
 
-  constructor(pool: Pool) {
+  constructor(esClient: Client, pool: Pool) {
+    this.esClient = esClient;
     this.pool = pool;
     this.viewPrivate = this.viewPrivate.bind(this);
     this.viewPublic = this.viewPublic.bind(this);
@@ -121,13 +123,25 @@ export class UserRecipeController {
       coerce({recipeCreation}, validRecipeEntity),
       validRecipeEntity
     );
+    const recipe = new Recipe(this.pool);
+    const recipeMethod = new RecipeMethod(this.pool);
+    const recipeEquipment = new RecipeEquipment(this.pool);
+    const recipeIngredient = new RecipeIngredient(this.pool);
+    const recipeSubrecipe = new RecipeSubrecipe(this.pool);
+    const recipeSearch = new RecipeSearch(this.esClient);
     await createRecipeService({
       ownerId,
       recipeCreation,
       requiredMethods,
       requiredEquipment,
       requiredIngredients,
-      requiredSubrecipes
+      requiredSubrecipes,
+      recipe,
+      recipeMethod,
+      recipeEquipment,
+      recipeIngredient,
+      recipeSubrecipe,
+      recipeSearch
     });
     return res.send({message: 'Recipe created.'});
   }
@@ -177,6 +191,12 @@ export class UserRecipeController {
       coerce({recipeUpdate}, validRecipeEntity),
       validRecipeEntity
     );
+    const recipe = new Recipe(this.pool);
+    const recipeMethod = new RecipeMethod(this.pool);
+    const recipeEquipment = new RecipeEquipment(this.pool);
+    const recipeIngredient = new RecipeIngredient(this.pool);
+    const recipeSubrecipe = new RecipeSubrecipe(this.pool);
+    const recipeSearch = new RecipeSearch(this.esClient);
     await updateRecipeService({
       id,
       authorId,
@@ -185,7 +205,13 @@ export class UserRecipeController {
       requiredMethods,
       requiredEquipment,
       requiredIngredients,
-      requiredSubrecipes
+      requiredSubrecipes,
+      recipe,
+      recipeMethod,
+      recipeEquipment,
+      recipeIngredient,
+      recipeSubrecipe,
+      recipeSearch
     });
     return res.send({message: 'Recipe updated.'});
   }
@@ -214,7 +240,7 @@ export class UserRecipeController {
     const id = Number(req.body.id);
     const authorId = req.session!.userInfo.id;
     const recipe = new Recipe(this.pool);
-    const recipeSearch = new RecipeSearch(esClient);
+    const recipeSearch = new RecipeSearch(this.esClient);
     await recipe.disownById(id, authorId);
     // (make sure the update goes through first though)
     const [ recipeInfoForElasticSearch ] = await recipe.getForElasticSearch(id);

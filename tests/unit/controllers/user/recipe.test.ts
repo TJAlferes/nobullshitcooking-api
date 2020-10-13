@@ -1,20 +1,22 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert, coerce } from 'superstruct';
+import { Client } from '@elastic/elasticsearch';
 
 import { UserRecipeController } from '../../../../src/controllers/user/recipe';
 import {
   validRecipeEntity
 } from '../../../../src/lib/validations/recipe/entity';
 
+const esClient: Partial<Client> = {};
 const pool: Partial<Pool> = {};
-const controller = new UserRecipeController(<Pool>pool);  // TO DO: pass in esClient, check others too
+const controller = new UserRecipeController(<Client>esClient, <Pool>pool);
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/lib/connections/elasticsearchClient');
+jest.mock('../../../../src/lib/connections/elasticsearch');  // ?
 
-jest.mock('../../../../src/lib/connections/mysqlPoolConnection');
+jest.mock('../../../../src/lib/connections/mysql');  // ?
 
 jest.mock('../../../../src/elasticsearch-access/RecipeSearch', () => ({
   RecipeSearch: jest.fn().mockImplementation(() => ({save: mockESSave}))

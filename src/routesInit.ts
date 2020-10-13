@@ -29,8 +29,8 @@ import {
 } from './routes';
 
 export function routesInit(app: Application, pool: Pool, esClient: Client) {
-  const staffRoutes = staffRouter(pool);
-  const userRoutes = userRouter(pool);
+  const staffRoutes = staffRouter(esClient, pool);
+  const userRoutes = userRouter(esClient, pool);
   const contentRoutes = contentRouter(pool);
   const contentTypeRoutes = contentTypeRouter(pool);
   const cuisineRoutes = cuisineRouter(pool);

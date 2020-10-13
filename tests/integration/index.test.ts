@@ -1,7 +1,8 @@
 import request from 'supertest';
 
-import { esClient } from '../../src/lib/connections/elasticsearchClient';
-import { pool } from '../../src/lib/connections/mysqlPoolConnection';
+import { esClient } from '../../src/lib/connections/elasticsearch';
+import { pool } from '../../src/lib/connections/mysql';
+import { redisClients } from '../../src/lib/connections/redis';
 import { appServer } from '../../src/app';
 import {
   staffAuthTests,
@@ -55,15 +56,23 @@ import {
 
 // Avoid global seeds and fixtures, add data per test (per it)
 
-export let server: any = appServer(pool, esClient);;
+export let server: any = appServer(pool, esClient, redisClients);
 
 beforeAll(() => {
   // TO DO: clean the test db
+  console.log('Integration tests started.');
 });
 
 afterAll(() => {
-  // TO DO NOW: disconnect dbs: mysql, redis, elasticsearch
+  const { pubClient, subClient, sessClient, workerClient } = redisClients;
   server = null;
+  esClient.close();
+  pool.end();
+  pubClient.disconnect();
+  subClient.disconnect();
+  sessClient.disconnect();
+  workerClient.disconnect();
+  console.log('Integration tests finished.');
 });
 
 describe ('NOBSC API', () => {

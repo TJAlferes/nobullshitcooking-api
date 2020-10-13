@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 
-import { pool } from '../../../../src/lib/connections/mysqlPoolConnection';
+import { pool } from '../../../../src/lib/connections/mysql';  // just mock like in others?
 import { IFriendship, Friendship } from '../../../../src/mysql-access/Friendship';
 import { IUser, User } from '../../../../src/mysql-access/User';
 import { IMessengerUser } from '../../../../src/redis-access/MessengerUser';

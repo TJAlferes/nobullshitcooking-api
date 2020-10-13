@@ -1,16 +1,18 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
+import { Client } from '@elastic/elasticsearch';
 
 import { EquipmentSearch } from '../../elasticsearch-access/EquipmentSearch';
-import { esClient } from '../../lib/connections/elasticsearchClient';  // remove
 import { validEquipmentEntity } from '../../lib/validations/equipment/entity';
 import { Equipment } from '../../mysql-access/Equipment';
 
 export class StaffEquipmentController {
+  esClient: Client;
   pool: Pool;
 
-  constructor(pool: Pool) {
+  constructor(esClient: Client, pool: Pool) {
+    this.esClient = esClient;
     this.pool = pool;
     this.create = this.create.bind(this);
     this.update = this.update.bind(this);
@@ -36,7 +38,7 @@ export class StaffEquipmentController {
     const generatedId = createdEquipment.insertId;
     const [ equipmentForInsert ] =
       await equipment.getForElasticSearch(generatedId);
-    const equipmentSearch = new EquipmentSearch(esClient);
+    const equipmentSearch = new EquipmentSearch(this.esClient);
     await equipmentSearch.save(equipmentForInsert[0]);
     return res.send({message: 'Equipment created.'});
   }
@@ -59,7 +61,7 @@ export class StaffEquipmentController {
     const equipment = new Equipment(this.pool);
     await equipment.update({id, ...equipmentUpdate});
     const [ equipmentForInsert ] = await equipment.getForElasticSearch(id);
-    const equipmentSearch = new EquipmentSearch(esClient);
+    const equipmentSearch = new EquipmentSearch(this.esClient);
     await equipmentSearch.save(equipmentForInsert[0]);
     return res.send({message: 'Equipment updated.'});
   }
@@ -67,7 +69,7 @@ export class StaffEquipmentController {
   async delete(req: Request, res: Response) {
     const id = Number(req.body.id);
     const equipment = new Equipment(this.pool);
-    const equipmentSearch = new EquipmentSearch(esClient);
+    const equipmentSearch = new EquipmentSearch(this.esClient);
     await equipment.delete(id);
     await equipmentSearch.delete(String(id));
     return res.send({message: 'Equipment deleted.'});

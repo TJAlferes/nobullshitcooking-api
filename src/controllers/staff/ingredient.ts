@@ -1,16 +1,18 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
+import { Client } from '@elastic/elasticsearch';
 
 import { IngredientSearch } from '../../elasticsearch-access/IngredientSearch';
-import { esClient } from '../../lib/connections/elasticsearchClient';
 import { validIngredientEntity } from '../../lib/validations/ingredient/entity';
 import { Ingredient } from '../../mysql-access/Ingredient';
 
 export class StaffIngredientController {
+  esClient: Client;
   pool: Pool;
 
-  constructor(pool: Pool) {
+  constructor(esClient: Client, pool: Pool) {
+    this.esClient = esClient;
     this.pool = pool;
     this.create = this.create.bind(this);
     this.update = this.update.bind(this);
@@ -46,7 +48,7 @@ export class StaffIngredientController {
     const generatedId = createdIngredient.insertId;
     const ingredientForInsert =
       await ingredient.getForElasticSearch(generatedId);
-    const ingredientSearch = new IngredientSearch(esClient);
+    const ingredientSearch = new IngredientSearch(this.esClient);
     await ingredientSearch.save(ingredientForInsert);
     return res.send({message: 'Ingredient created.'});
   }
@@ -79,7 +81,7 @@ export class StaffIngredientController {
     const ingredient = new Ingredient(this.pool);
     await ingredient.update({id, ...ingredientUpdate});
     const ingredientForInsert = await ingredient.getForElasticSearch(id);
-    const ingredientSearch = new IngredientSearch(esClient);
+    const ingredientSearch = new IngredientSearch(this.esClient);
     await ingredientSearch.save(ingredientForInsert);
     return res.send({message: 'Ingredient updated.'});
   }
@@ -87,7 +89,7 @@ export class StaffIngredientController {
   async delete(req: Request, res: Response) {
     const id = Number(req.body.id);
     const ingredient = new Ingredient(this.pool);
-    const ingredientSearch = new IngredientSearch(esClient);
+    const ingredientSearch = new IngredientSearch(this.esClient);
     await ingredient.delete(id);
     await ingredientSearch.delete(String(id));
     return res.send({message: 'Ingredient deleted.'});

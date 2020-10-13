@@ -89,7 +89,7 @@ export class RecipeSearch implements IRecipeSearch {
   }
 }
 
-interface IRecipeSearch {
+export interface IRecipeSearch {
   client: Client;
   find(searchBody: any): any;  // finish
   auto(searchTerm: string): any;  // finish

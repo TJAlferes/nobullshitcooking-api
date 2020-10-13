@@ -2,6 +2,7 @@
 
 import express, { Request, Response, NextFunction } from 'express';
 import { createServer } from 'http';
+import { Redis } from 'ioredis';
 import { Pool } from 'mysql2/promise';
 import { Client } from '@elastic/elasticsearch';
 
@@ -12,8 +13,12 @@ import { routesInit } from './routesInit';
 const app = express();
 const server = createServer(app);
 
-export function appServer(pool: Pool, esClient: Client) {
-  middlewareInit(app, pool, server);  // must be called before routesInit
+export function appServer(
+  pool: Pool,
+  esClient: Client,
+  redisClients: RedisClients
+) {
+  middlewareInit(app, pool, redisClients, server);  // must be called before routesInit
   routesInit(app, pool, esClient);
   process.on('unhandledRejection', (reason, promise: Promise<any>) => {
     console.log('Unhandled Rejection at:', reason);
@@ -37,4 +42,11 @@ export function appServer(pool: Pool, esClient: Client) {
     console.log(err);
   }*/
   return server;
+}
+
+export type RedisClients = {
+  pubClient: Redis;
+  subClient: Redis;
+  sessClient: Redis;
+  workerClient: Redis;
 }

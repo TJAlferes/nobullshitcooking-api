@@ -4,12 +4,13 @@ import cookie from 'cookie';
 import cookieParser from 'cookie-parser';
 import { RedisStore } from 'connect-redis';
 import { NextFunction } from 'express';
+import { Redis } from 'ioredis';
 import { Server, Socket } from 'socket.io';
 
-import { pubClient } from '../lib/connections/redisConnection';  // to do
 import { MessengerUser } from '../redis-access/MessengerUser';
 
 export async function addMessengerUser(
+  pubClient: Redis,
   socket: Socket,
   sid: string,
   session: Express.SessionData
@@ -28,7 +29,11 @@ export function sessionIdsAreEqual(socket: Socket) {
   return parsedCookie['connect.sid'] === sid ? false : sid;
 }
 
-export function useSocketAuth(io: Server, redisSession: RedisStore) {
+export function useSocketAuth(
+  io: Server,
+  pubClient: Redis,
+  redisSession: RedisStore
+) {
   function socketAuth(socket: Socket, next: NextFunction) {
     const sid = sessionIdsAreEqual(socket);
     if (sid === false) return next(new Error('Not authenticated.'));
@@ -36,7 +41,7 @@ export function useSocketAuth(io: Server, redisSession: RedisStore) {
       if (!session || !session.userInfo.id) {
         return next(new Error('Not authenticated.'));
       }
-      await addMessengerUser(socket, sid, session);
+      await addMessengerUser(pubClient, socket, sid, session);
       return next();
     });
   }

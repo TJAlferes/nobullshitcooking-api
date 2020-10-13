@@ -78,7 +78,7 @@ export class IngredientSearch implements IIngredientSearch {
   }
 }
 
-interface IIngredientSearch {
+export interface IIngredientSearch {
   client: Client;
   find(searchBody: any): any;  // finish
   auto(searchTerm: string): any;  // finish

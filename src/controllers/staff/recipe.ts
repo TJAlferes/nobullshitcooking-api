@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
+import { Client } from '@elastic/elasticsearch';
 
 import { RecipeSearch } from '../../elasticsearch-access/RecipeSearch';
-import { esClient } from '../../lib/connections/elasticsearchClient';  // remove
 import { createRecipeService } from '../../lib/services/create-recipe';
 import { updateRecipeService } from '../../lib/services/update-recipe';
 import { validRecipeEntity } from '../../lib/validations/recipe/entity';
@@ -16,9 +16,11 @@ import { FavoriteRecipe } from '../../mysql-access/FavoriteRecipe';
 import { SavedRecipe } from '../../mysql-access/SavedRecipe';
 
 export class StaffRecipeController {
+  esClient: Client;
   pool: Pool;
 
-  constructor(pool: Pool) {
+  constructor(esClient: Client, pool: Pool) {
+    this.esClient = esClient;
     this.pool = pool;
     this.create = this.create.bind(this);
     this.update = this.update.bind(this);
@@ -60,14 +62,26 @@ export class StaffRecipeController {
       ingredientsImage,
       cookingImage
     };
-    assert(recipeCreation, validRecipeEntity)
+    assert(recipeCreation, validRecipeEntity);
+    const recipe = new Recipe(this.pool);
+    const recipeMethod = new RecipeMethod(this.pool);
+    const recipeEquipment = new RecipeEquipment(this.pool);
+    const recipeIngredient = new RecipeIngredient(this.pool);
+    const recipeSubrecipe = new RecipeSubrecipe(this.pool);
+    const recipeSearch = new RecipeSearch(this.esClient);
     await createRecipeService({
       ownerId,
       recipeCreation,
       requiredMethods,
       requiredEquipment,
       requiredIngredients,
-      requiredSubrecipes
+      requiredSubrecipes,
+      recipe,
+      recipeMethod,
+      recipeEquipment,
+      recipeIngredient,
+      recipeSubrecipe,
+      recipeSearch
     });
     return res.send({message: 'Recipe created.'});
   }
@@ -112,6 +126,12 @@ export class StaffRecipeController {
       cookingImage
     };
     assert(recipeUpdate, validRecipeEntity);
+    const recipe = new Recipe(this.pool);
+    const recipeMethod = new RecipeMethod(this.pool);
+    const recipeEquipment = new RecipeEquipment(this.pool);
+    const recipeIngredient = new RecipeIngredient(this.pool);
+    const recipeSubrecipe = new RecipeSubrecipe(this.pool);
+    const recipeSearch = new RecipeSearch(this.esClient);
     await updateRecipeService({
       id,
       authorId,
@@ -120,7 +140,13 @@ export class StaffRecipeController {
       requiredMethods,
       requiredEquipment,
       requiredIngredients,
-      requiredSubrecipes
+      requiredSubrecipes,
+      recipe,
+      recipeMethod,
+      recipeEquipment,
+      recipeIngredient,
+      recipeSubrecipe,
+      recipeSearch
     });
     return res.send({message: 'Recipe updated.'});
   }
@@ -135,7 +161,7 @@ export class StaffRecipeController {
     const recipeIngredient = new RecipeIngredient(this.pool);
     const recipeSubrecipe = new RecipeSubrecipe(this.pool);
     const recipe = new Recipe(this.pool);
-    const recipeSearch = new RecipeSearch(esClient);
+    const recipeSearch = new RecipeSearch(this.esClient);
     // what about plans???
     await Promise.all([
       favoriteRecipe.deleteAllByRecipeId(id),

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
+import { Client } from '@elastic/elasticsearch';
 
 import {
   StaffIngredientController
@@ -11,8 +12,9 @@ import {
 
 jest.mock('superstruct');
 
+const esClient: Partial<Client> = {};
 const pool: Partial<Pool> = {};
-const controller = new StaffIngredientController(<Pool>pool);
+const controller = new StaffIngredientController(<Client>esClient, <Pool>pool);
 
 jest.mock('../../../../src/elasticsearch-access/IngredientSearch', () => ({
   IngredientSearch: jest.fn().mockImplementation(() => ({

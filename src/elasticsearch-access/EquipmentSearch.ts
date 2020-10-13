@@ -65,7 +65,7 @@ export class EquipmentSearch implements IEquipmentSearch {
   }
 }
 
-interface IEquipmentSearch {
+export interface IEquipmentSearch {
   client: Client;
   find(searchBody: any): any;  // finish
   auto(searchTerm: string): any;  // finish

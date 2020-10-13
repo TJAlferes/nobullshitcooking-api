@@ -1,10 +1,10 @@
 'use strict';
 
-import { workerClient } from '../lib/connections/redisConnection';
+import { Redis } from 'ioredis';
 
 const DELTA = 60 * 60 * 1000 * 2;  // 2 hours
 
-async function cleanUpRooms() {
+async function cleanUpRooms(workerClient: Redis) {
   await workerClient.zrangebyscore(
     'rooms',
     '-inf',
@@ -41,7 +41,7 @@ async function cleanUpRooms() {
 }
 
 // rooms?
-async function cleanUpChats() {
+async function cleanUpChats(workerClient: Redis) {
   await workerClient.zrange(
     'rooms',
     0,
@@ -69,9 +69,9 @@ async function cleanUpChats() {
   );
 }
 
-export async function cleanUp() {
+export async function cleanUp(workerClient: Redis) {
   console.log('Clean Up Isle NOBSC Messenger (START)');
-  await cleanUpRooms();
-  await cleanUpChats();
+  await cleanUpRooms(workerClient);
+  await cleanUpChats(workerClient);
   console.log('Clean Up Isle NOBSC Messenger (END)');
 }

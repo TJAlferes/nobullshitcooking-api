@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
+import { Client } from '@elastic/elasticsearch';
 
 import {
   StaffRecipeController
@@ -9,8 +10,9 @@ import {
   validRecipeEntity
 } from '../../../../src/lib/validations/recipe/entity';
 
+const esClient: Partial<Client> = {};
 const pool: Partial<Pool> = {};
-const controller = new StaffRecipeController(<Pool>pool);
+const controller = new StaffRecipeController(<Client>esClient, <Pool>pool);
 
 jest.mock('superstruct');
 

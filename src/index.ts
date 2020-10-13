@@ -3,11 +3,12 @@
 require('regenerator-runtime/runtime');
 require('dotenv').config();
 
-import { esClient } from './lib/connections/elasticsearchClient';
-import { pool } from './lib/connections/mysqlPoolConnection';
+import { esClient } from './lib/connections/elasticsearch';
+import { pool } from './lib/connections/mysql';
+import { redisClients } from './lib/connections/redis';
 import { appServer } from './app';
 
-const server = appServer(pool, esClient);
+const server = appServer(pool, esClient, redisClients);
 let PORT: number = Number(process.env.PORT) || 3003;
 let HOST: string = '0.0.0.0';
 if (process.env.NODE_ENV === 'production') {

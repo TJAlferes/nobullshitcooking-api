@@ -6,12 +6,17 @@ import expressSession, { SessionOptions } from 'express-session';
 import { Server } from 'http';
 import { Pool } from 'mysql2/promise';
 
-import { sessClient } from './lib/connections/redisConnection';  // to do
+import { RedisClients } from './app';
 import { socketInit } from './socketInit';
 
-export function sessionInit(app: Application, pool: Pool, server: Server) {
+export function sessionInit(
+  app: Application,
+  pool: Pool,
+  redisClients: RedisClients,
+  server: Server
+) {
   const RedisStore = connectRedis(expressSession);
-  const redisSession = new RedisStore({client: sessClient});  // to do
+  const redisSession = new RedisStore({client: redisClients.sessClient});
   const sessionOptions: SessionOptions = {
     name: "connect.sid",
     resave: true,
@@ -40,6 +45,6 @@ export function sessionInit(app: Application, pool: Pool, server: Server) {
       secure: false
     };
   }
-  socketInit(pool, redisSession, server);
+  socketInit(pool, redisClients, redisSession, server);
   return expressSession(sessionOptions);
 }

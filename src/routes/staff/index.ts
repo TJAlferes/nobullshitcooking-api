@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { Pool } from 'mysql2/promise';
+import { Client } from '@elastic/elasticsearch';
 
 import { staffAuthRouter } from './auth';
 import { staffContentRouter } from './content';
@@ -14,16 +15,16 @@ import { staffSupplierRouter } from './supplier';
 
 const router = Router();
 
-export function staffRouter(pool: Pool) {
+export function staffRouter(esClient: Client, pool: Pool) {
   const staffAuthRoutes = staffAuthRouter(pool);
   const staffContentRoutes = staffContentRouter(pool);
   const staffCuisineEquipmentRoutes = staffCuisineEquipmentRouter(pool);
   const staffCuisineIngredientRoutes = staffCuisineIngredientRouter(pool);
   const staffCuisineSupplierRoutes = staffCuisineSupplierRouter(pool);
-  const staffEquipmentRoutes = staffEquipmentRouter(pool);
+  const staffEquipmentRoutes = staffEquipmentRouter(esClient, pool);
   const staffGetSignedUrlRoutes = staffGetSignedUrlRouter();
-  const staffIngredientRoutes = staffIngredientRouter(pool);
-  const staffRecipeRoutes = staffRecipeRouter(pool);
+  const staffIngredientRoutes = staffIngredientRouter(esClient, pool);
+  const staffRecipeRoutes = staffRecipeRouter(esClient, pool);
   const staffSupplierRoutes = staffSupplierRouter(pool);
 
   router.use('/auth', staffAuthRoutes);

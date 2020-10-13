@@ -11,17 +11,23 @@ import helmet from 'helmet';
 import { Server } from 'http';
 import { Pool } from 'mysql2/promise';
 
+import { RedisClients } from './app';
 import { sessionInit } from './sessionInit';
 
-export function middlewareInit(app: Application, pool: Pool, server: Server) {
+export function middlewareInit(
+  app: Application,
+  pool: Pool,
+  redisClients: RedisClients,
+  server: Server
+) {
   // limit each IP requests per minute:
   const rateLimiterOptions = {windowMs: 1 * 60 * 1000, max: 100};  // 1000?
-  const corsOptions = {origin: ['http://localhost:8080'], credentials: true};
+  let corsOptions = {origin: ['http://localhost:8080'], credentials: true};
   if (app.get('env') === 'production') {
     app.set('trust proxy', 1);  // trust first proxy
     corsOptions.origin = ['https://nobullshitcooking.com'];
   }
-  const session = sessionInit(app, pool, server);
+  const session = sessionInit(app, pool, redisClients, server);
   //app.use(expressPinoLogger());
   app.use(express.json());
   app.use(express.urlencoded({extended: false}));
