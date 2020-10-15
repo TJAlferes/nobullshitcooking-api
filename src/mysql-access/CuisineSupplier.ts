@@ -37,7 +37,7 @@ export class CuisineSupplier implements ICuisineSupplier {
   // used when deleting a cuisine-supplier relationship
   async delete(cuisineId: number, supplierId: number) {
     const sql = `
-      DELETE FROM cuisine_suppliers WHERE cuisineId = ? AND supplier_id = ?
+      DELETE FROM cuisine_suppliers WHERE cuisine_id = ? AND supplier_id = ?
     `;
     const [ row ] = await this.pool
       .execute<RowDataPacket[]>(sql, [cuisineId, supplierId]);

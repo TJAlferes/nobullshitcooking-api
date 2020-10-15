@@ -19,34 +19,24 @@ export class Product implements IProduct {
       SELECT
         CAST(p.id AS CHAR),
         p.product_type_id,
+        c.name AS product_category_name,
         t.name AS product_type_name,
         p.brand,
         p.variety,
         p.name,
+        p.fullname,
         p.description,
         p.specs,
         p.image
-      FROM products i
+      FROM products p
+      INNER JOIN product_categories c ON c.id = p.product_category_id
       INNER JOIN product_types t ON t.id = p.product_type_id
     `;
-
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql);
-
     let final = [];
-
     for (let row of rows) {
-      let { brand, variety, name } = row;
-
-      brand = brand ? brand + " " : "";
-      variety = variety ? variety + " " : "";
-      const fullname = brand + variety + name;
-
-      final.push(
-        {index: {_index: 'products', _id: row.id}},
-        {...row, fullname}
-      );
+      final.push({index: {_index: 'products', _id: row.id}}, {...row});
     }
-
     return final;
   }
 
@@ -55,33 +45,31 @@ export class Product implements IProduct {
       SELECT
         CAST(p.id AS CHAR),
         p.product_type_id,
+        c.name AS product_category_name,
         t.name AS product_type_name,
         p.brand,
         p.variety,
         p.name,
+        p.fullname,
         p.description,
         p.specs,
         p.image
-      FROM products i
+      FROM products p
+      INNER JOIN product_categories c ON c.id = p.product_category_id
       INNER JOIN product_types t ON t.id = p.product_type_id
       WHERE p.id = ?
     `;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
-
     let {
       product_type_name,
       brand,
       variety,
       name,
+      fullname,
       description,
       specs,
       image
     } = row[0];
-
-    brand = brand ? brand + " " : "";
-    variety = variety ? variety + " " : "";
-    const fullname = brand + variety + name;
-
     return {
       id: row[0].id,
       product_type_name,
@@ -99,15 +87,19 @@ export class Product implements IProduct {
     const sql = `
       SELECT
         p.id,
+        p.product_category_id,
         p.product_type_id,
+        c.name AS product_category_name,
         t.name AS product_type_name,
         p.brand,
         p.variety,
         p.name,
+        p.fullname,
         p.description,
         p.specs,
         p.image
-      FROM products i
+      FROM products p
+      INNER JOIN product_categories c ON c.id = p.product_category_id
       INNER JOIN product_types t ON p.product_type_id = t.id
       ORDER BY p.name ASC
     `;
@@ -119,22 +111,28 @@ export class Product implements IProduct {
     const sql = `
       SELECT
         p.id,
+        p.product_category_id,
+        p.product_type_id,
+        c.name AS product_category_name,
         t.name AS product_type_name,
         p.brand,
         p.variety,
         p.name,
+        p.fullname,
         p.description,
         p.specs,
         p.image
-      FROM products i
+      FROM products p
+      INNER JOIN product_categories c ON c.id = p.product_category_id
       INNER JOIN product_types t ON p.product_type_id = t.id
-      WHERE AND id = ?
+      WHERE p.id = ?
     `;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
     return row;
   }
 
   async create({
+    productCategoryId,
     productTypeId,
     brand,
     variety,
@@ -145,6 +143,7 @@ export class Product implements IProduct {
   }: ICreatingProduct) {
     const sql = `
       INSERT INTO products (
+        product_category_id,
         product_type_id,
         brand,
         variety,
@@ -152,10 +151,11 @@ export class Product implements IProduct {
         description,
         specs,
         image
-      ) VALUES (?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
     const [ row ] = await this.pool
       .execute<RowDataPacket[] & ResultSetHeader>(sql, [
+        productCategoryId,
         productTypeId,
         brand,
         variety,
@@ -169,6 +169,7 @@ export class Product implements IProduct {
 
   async update({
     id,
+    productCategoryId,
     productTypeId,
     brand,
     variety,
@@ -180,6 +181,7 @@ export class Product implements IProduct {
     const sql = `
       UPDATE products
       SET
+        product_category_id = ?,
         product_type_id = ?,
         brand = ?,
         variety = ?,
@@ -191,6 +193,7 @@ export class Product implements IProduct {
       LIMIT 1
     `;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [
+      productCategoryId,
       productTypeId,
       brand,
       variety,
@@ -222,6 +225,7 @@ export interface IProduct {
   view(): Data;
   viewById(id: number): Data;
   create({
+    productCategoryId,
     productTypeId,
     brand,
     variety,
@@ -232,6 +236,7 @@ export interface IProduct {
   }: ICreatingProduct): DataWithHeader;
   update({
     id,
+    productCategoryId,
     productTypeId,
     brand,
     variety,
@@ -244,7 +249,8 @@ export interface IProduct {
 }
 
 interface ICreatingProduct {
-  productTypeId: number;  // category?
+  productCategoryId: number;
+  productTypeId: number;
   brand: string;
   variety: string;  // model?
   name: string;

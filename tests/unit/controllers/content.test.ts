@@ -6,7 +6,7 @@ import { ContentController } from '../../../src/controllers/content';
 const pool: Partial<Pool> = {};
 const controller = new ContentController(<Pool>pool);
 
-const rows: any = [{id: 1, name: "Name"}];  // TO DO: use realistic data
+const rows = [{id: 1, name: "Name"}];
 jest.mock('../../../src/mysql-access/Content', () => ({
   Content: jest.fn().mockImplementation(() => ({
     view: mockView,
@@ -21,8 +21,6 @@ let mockGetLinksByContentTypeName = jest.fn().mockResolvedValue([rows]);
 afterEach(() => {
   jest.clearAllMocks();
 });
-
-// fix
 
 describe('content controller', () => {
   describe('view method', () => {

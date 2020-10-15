@@ -6,7 +6,7 @@ import { MeasurementController } from '../../../src/controllers/measurement';
 const pool: Partial<Pool> = {};
 const controller = new MeasurementController(<Pool>pool);
 
-const rows: any = [{id: 1, name: "Name"}];
+const rows = [{id: 1, name: "Name"}];
 jest.mock('../../../src/mysql-access/Measurement', () => ({
   Measurement: jest.fn().mockImplementation(() => ({
     view: mockView,

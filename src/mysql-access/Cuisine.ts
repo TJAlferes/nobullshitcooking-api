@@ -33,44 +33,33 @@ export class Cuisine implements ICuisine {
       c.wiki,
       c.intro,
       (
-        SELECT s.supplier_id AS supplierId, s.supplier_name AS supplierName
+        SELECT s.id AS supplier_id, s.name AS supplier_name
         FROM suppliers s
-        INNER JOIN
-          cuisine_suppliers cs ON
-          cs.supplier_id = s.supplier_id
+        INNER JOIN cuisine_suppliers cs ON cs.supplier_id = s.id
         WHERE cs.cuisine_id = c.id
       ) cuisine_suppliers,
       (
-        SELECT e.equipment_id AS equipmentId, e.equipment_name AS equipmentName
+        SELECT e.id AS equipment_id, e.name AS equipment_name
         FROM equipment e
-        INNER JOIN
-          cuisine_equipment ce ON
-          ce.equipment_id = e.equipment_id
+        INNER JOIN cuisine_equipment ce ON ce.equipment_id = e.id
         WHERE ce.cuisine_id = c.id
       ) cuisine_equipment,
       (
-        SELECT
-          i.ingredient_id AS ingredientId,
-          i.ingredient_name AS ingredientName
+        SELECT i.id AS ingredient_id, i.name AS ingredient_name
         FROM ingredients i
-        INNER JOIN
-          cuisine_ingredients ci ON
-          ci.ingredient_id = i.ingredient_id
+        INNER JOIN cuisine_ingredients ci ON ci.ingredient_id = i.id
         WHERE ci.cuisine_id = c.id
       ) cuisine_ingredients,
       (
-        SELECT
-          r.recipe_id AS recipeId,
-          r.title AS title,
-          r.recipe_image AS recipeImage
-        FROM nobsc_recipes r
+        SELECT r.id AS recipe_id, r.title, r.recipe_image
+        FROM recipes r
         WHERE r.owner_id = ? AND r.cuisine_id = c.id
       ) official_recipes
       FROM cuisines c
       WHERE c.id = ?
     `;
     const [ row ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [ownerId, id]);
+      .execute<RowDataPacket[]>(sql, [ownerId, id]);
     return row;
   }
 }

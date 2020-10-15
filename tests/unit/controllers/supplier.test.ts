@@ -6,8 +6,7 @@ import { SupplierController } from '../../../src/controllers/supplier';
 const pool: Partial<Pool> = {};
 const controller = new SupplierController(<Pool>pool);
 
-const rows: any = [{id: 1, name: "Name"}];
-
+const rows = [{id: 1, name: "Name"}];
 jest.mock('../../../src/mysql-access/Supplier', () => ({
   Supplier: jest.fn().mockImplementation(() => ({
     view: mockView,

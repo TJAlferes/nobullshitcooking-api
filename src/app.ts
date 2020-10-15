@@ -8,7 +8,7 @@ import { Client } from '@elastic/elasticsearch';
 
 import { middlewareInit}  from './middlewareInit';
 import { routesInit } from './routesInit';
-//import { bulkUp } from './search';
+import { bulkUp } from './search';
 
 const app = express();
 const server = createServer(app);
@@ -33,14 +33,16 @@ export function appServer(
     });
   }
   // move this, and create startup conditional
-  /*try {
-    setTimeout(() => {
-      console.log('Now running bulkUp.');
-      bulkUp();
-    }, 60000);  // at the 1 minute mark
-  } catch(err) {
-    console.log(err);
-  }*/
+  if (process.env.NODE_ENV === 'development') {
+    try {
+      setTimeout(() => {
+        console.log('Now running bulkUp.');
+        bulkUp(esClient, pool);
+      }, 40000);  // at the 40 second mark
+    } catch(err) {
+      console.error(err);
+    }
+  }
   return server;
 }
 

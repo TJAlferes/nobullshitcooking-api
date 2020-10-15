@@ -6,7 +6,7 @@ import { CuisineController } from '../../../src/controllers/cuisine';
 const pool: Partial<Pool> = {};
 const controller = new CuisineController(<Pool>pool);
 
-const rows: any = [{id: 1, name: "Name"}];
+const rows = [{id: 1, name: "Name"}];
 jest.mock('../../../src/mysql-access/Cuisine', () => ({
   Cuisine: jest.fn().mockImplementation(() => ({
     view: mockView,

@@ -19,7 +19,7 @@ export class Ingredient implements IIngredient {
   }
 
   async getAllForElasticSearch() {
-    const ownerId = 1;
+    const ownerId = 1;  // only public ingredients goes into ElasticSearch
     const sql = `
       SELECT
         CAST(i.id AS CHAR),
@@ -29,35 +29,23 @@ export class Ingredient implements IIngredient {
         i.brand,
         i.variety,
         i.name,
+        i.fullname,
         i.description,
         i.image
       FROM ingredients i
       INNER JOIN ingredient_types t ON t.id = i.ingredient_type_id
       WHERE i.owner_id = ?
     `;
-
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
-
     let final = [];
-
     for (let row of rows) {
-      let { brand, variety, name } = row;
-
-      brand = brand ? brand + " " : "";
-      variety = variety ? variety + " " : "";
-      const fullname = brand + variety + name;
-
-      final.push(
-        {index: {_index: 'ingredients', _id: row.id}},
-        {...row, fullname}
-      );
+      final.push({index: {_index: 'ingredients', _id: row.id}}, {...row});
     }
-
     return final;
   }
 
   async getForElasticSearch(id: number) {
-    const ownerId = 1;
+    const ownerId = 1;  // only public ingredients goes into ElasticSearch
     const sql = `
       SELECT
         CAST(i.id AS CHAR),
@@ -67,6 +55,7 @@ export class Ingredient implements IIngredient {
         i.brand,
         i.variety,
         i.name,
+        i.fullname,
         i.description,
         i.image
       FROM ingredients i
@@ -75,19 +64,14 @@ export class Ingredient implements IIngredient {
     `;
     const [ row ] = await this.pool
       .execute<RowDataPacket[]>(sql, [id, ownerId]);
-
     let {
       ingredient_type_name,
       brand,
       variety,
       name,
+      fullname,
       image
     } = row[0];
-
-    brand = brand ? brand + " " : "";
-    variety = variety ? variety + " " : "";
-    const fullname = brand + variety + name;
-
     return {
       id: row[0].id,
       ingredient_type_name,
@@ -109,6 +93,7 @@ export class Ingredient implements IIngredient {
         i.brand,
         i.variety,
         i.name,
+        i.fullname,
         i.description,
         i.image
       FROM ingredients i
@@ -129,6 +114,7 @@ export class Ingredient implements IIngredient {
         i.brand,
         i.variety,
         i.name,
+        i.fullname,
         i.description,
         i.image
       FROM ingredients i

@@ -153,12 +153,6 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-/*
-
-tests
-
-*/
-
 describe('user auth controller', () => {
 
   describe('register method', () => {

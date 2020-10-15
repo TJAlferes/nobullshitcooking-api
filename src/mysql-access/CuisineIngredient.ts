@@ -34,7 +34,7 @@ export class CuisineIngredient implements ICuisineIngredient {
 
   async delete(cuisineId: number, ingredientId: number) {
     const sql = `
-      DELETE FROM cuisine_ingredients WHERE cuisineId = ? AND ingredient_id = ?
+      DELETE FROM cuisine_ingredients WHERE cuisine_id = ? AND ingredient_id = ?
     `;
     const [ row ] = await this.pool
       .execute<RowDataPacket[]>(sql, [cuisineId, ingredientId]);

@@ -23,7 +23,7 @@ export class Equipment implements IEquipment {
     const ownerId = 1;  // only public equipment goes into ElasticSearch
     const sql = `
       SELECT
-        CAST(e.id AS CHAR) AS equipment_id,
+        CAST(e.id AS CHAR),
         e.equipment_type_id,
         e.owner_id,
         t.name AS equipment_type_name,
@@ -34,16 +34,12 @@ export class Equipment implements IEquipment {
       INNER JOIN equipment_types t ON t.id = e.equipment_type_id
       WHERE e.owner_id = ?
     `;
-
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
-
     let final = [];
-
     // allows the sequence of awaits we want
     for (let row of rows) {
       final.push({index: {_index: 'equipment', _id: row.id}}, row);
     }
-
     return final;
   }
   
@@ -51,7 +47,7 @@ export class Equipment implements IEquipment {
     const ownerId = 1;  // only public equipment goes into ElasticSearch
     const sql = `
       SELECT
-        CAST(e.id AS CHAR) AS equipment_id,
+        CAST(e.id AS CHAR),
         e.equipment_type_id,
         e.owner_id,
         t.name AS equipment_type_name,
@@ -83,7 +79,7 @@ export class Equipment implements IEquipment {
       ORDER BY e.name ASC
     `;
     const [ rows ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [authorId, ownerId]);
+      .execute<RowDataPacket[]>(sql, [authorId, ownerId]);
     return rows;
   }
 
@@ -102,7 +98,7 @@ export class Equipment implements IEquipment {
       WHERE e.id = ? AND e.author_id = ? AND e.owner_id = ?
     `;
     const [ row ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [id, authorId, ownerId]);
+      .execute<RowDataPacket[]>(sql, [id, authorId, ownerId]);
     return row;
   }
 
@@ -125,14 +121,14 @@ export class Equipment implements IEquipment {
       ) VALUES (?, ?, ?, ?, ?, ?)
     `;
     const [ row ] = await this.pool
-    .execute<RowDataPacket[] & ResultSetHeader>(sql, [
-      equipmentTypeId,
-      authorId,
-      ownerId,
-      name,
-      description,
-      image
-    ]);
+      .execute<RowDataPacket[] & ResultSetHeader>(sql, [
+        equipmentTypeId,
+        authorId,
+        ownerId,
+        name,
+        description,
+        image
+      ]);
     return row;
   }
 

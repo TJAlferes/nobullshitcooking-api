@@ -6,7 +6,7 @@ import { ContentTypeController } from '../../../src/controllers/contentType';
 const pool: Partial<Pool> = {};
 const controller = new ContentTypeController(<Pool>pool);
 
-const rows: any = [{id: 1, name: "Name"}];
+const rows = [{id: 1, name: "Name"}];
 jest.mock('../../../src/mysql-access/ContentType', () => ({
   ContentType: jest.fn().mockImplementation(() => ({
     view: mockView,

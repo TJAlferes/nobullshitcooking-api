@@ -6,7 +6,7 @@ import { MethodController } from '../../../src/controllers/method';
 const pool: Partial<Pool> = {};
 const controller = new MethodController(<Pool>pool);
 
-const rows: any = [{id: 1, name: "Name"}];
+const rows = [{id: 1, name: "Name"}];
 jest.mock('../../../src/mysql-access/Method', () => ({
   Method: jest.fn().mockImplementation(() => ({
     view: mockView,

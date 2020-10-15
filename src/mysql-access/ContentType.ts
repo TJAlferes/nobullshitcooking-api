@@ -13,7 +13,7 @@ export class ContentType implements IContentType {
   }
 
   async view() {
-    const sql = `SELECT id, parent_id, name, path FROM nobsc_content_types`;
+    const sql = `SELECT id, parent_id, name, path FROM content_types`;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql);
     //await this.pool.end();
     return rows;

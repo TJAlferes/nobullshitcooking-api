@@ -22,7 +22,7 @@ export class Recipe implements IRecipe {
   }
 
   async getAllForElasticSearch() {
-    const ownerId = 1;
+    const ownerId = 1;  // only public recipes goes into ElasticSearch
     const sql = `
       SELECT
         CAST(r.id AS CHAR) AS id,
@@ -34,19 +34,19 @@ export class Recipe implements IRecipe {
         r.directions,
         r.recipe_image,
         (
-          SELECT JSON_ARRAYAGG(m.name AS method_name)
+          SELECT JSON_ARRAYAGG(m.name)
           FROM methods m
           INNER JOIN recipe_methods rm ON rm.method_id = m.id
           WHERE rm.recipe_id = r.id
         ) method_names,
         (
-          SELECT JSON_ARRAYAGG(e.name AS equipment_name)
+          SELECT JSON_ARRAYAGG(e.name)
           FROM equipment e
           INNER JOIN recipe_equipment re ON re.equipment_id = e.id
           WHERE re.recipe_id = r.id
         ) equipment_names,
         (
-          SELECT JSON_ARRAYAGG(i.name AS ingredient_name)
+          SELECT JSON_ARRAYAGG(i.name)
           FROM ingredients i
           INNER JOIN recipe_ingredients ri ON ri.ingredient_id = i.id
           WHERE ri.recipe_id = r.id
@@ -63,20 +63,16 @@ export class Recipe implements IRecipe {
       INNER JOIN cuisines c ON c.id = r.cuisine_id
       WHERE r.owner_id = ?
     `;
-
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
-
     let final = [];
-
     for (let row of rows) {
-      final.push({index: {_index: 'recipes', _id: row.recipe_id}}, {...row});
+      final.push({index: {_index: 'recipes', _id: row.id}}, {...row});
     }
-
     return final;
   }
 
   async getForElasticSearch(id: number) {
-    const ownerId = 1;
+    const ownerId = 1;  // only public recipes goes into ElasticSearch
     const sql = `
       SELECT
         CAST(r.id AS CHAR) AS id,
@@ -88,19 +84,19 @@ export class Recipe implements IRecipe {
         r.directions,
         r.recipe_image,
         (
-          SELECT JSON_ARRAYAGG(m.name AS method_name)
+          SELECT JSON_ARRAYAGG(m.name)
           FROM methods m
           INNER JOIN recipe_methods rm ON rm.method_id = m.id
           WHERE rm.recipe_id = r.id
         ) method_names,
         (
-          SELECT JSON_ARRAYAGG(e.name AS equipment_name)
+          SELECT JSON_ARRAYAGG(e.name)
           FROM equipment e
           INNER JOIN recipe_equipment re ON re.equipment_id = e.id
           WHERE re.recipe_id = r.id
         ) equipment_names,
         (
-          SELECT JSON_ARRAYAGG(i.name AS ingredient_name)
+          SELECT JSON_ARRAYAGG(i.name)
           FROM ingredients i
           INNER JOIN recipe_ingredients ri ON ri.ingredient_id = i.id
           WHERE ri.recipe_id = r.id
