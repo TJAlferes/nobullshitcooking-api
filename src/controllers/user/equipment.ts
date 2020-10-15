@@ -2,9 +2,9 @@ import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
+import { Equipment } from '../../access/mysql/Equipment';
+import { RecipeEquipment } from '../../access/mysql/RecipeEquipment';
 import { validEquipmentEntity } from '../../lib/validations/equipment/entity';
-import { Equipment } from '../../mysql-access/Equipment';
-import { RecipeEquipment } from '../../mysql-access/RecipeEquipment';
 
 export class UserEquipmentController {
   pool: Pool;

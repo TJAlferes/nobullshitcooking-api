@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 
-import { IMessengerRoom } from '../../../../src/redis-access/MessengerRoom';
+import { IMessengerRoom } from '../../../../src/access/redis/MessengerRoom';
 import { ChatUser } from '../../../../src/chat/entities/ChatUser';
 import { rejoinRoom } from '../../../../src/chat/handlers/rejoinRoom';
 

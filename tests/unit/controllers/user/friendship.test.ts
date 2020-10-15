@@ -14,7 +14,7 @@ const controller = new UserFriendshipController(<Pool>pool);
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/mysql-access/Friendship', () => ({
+jest.mock('../../../../src/access/mysql/Friendship', () => ({
   Friendship: jest.fn().mockImplementation(() => ({
     getByFriendId:  mockGetByFriendId,
     checkIfBlockedBy:  mockCheckIfBlockedBy,
@@ -37,7 +37,7 @@ let mockDelete = jest.fn();
 let mockBlock = jest.fn();
 let mockUnblock = jest.fn();
 
-jest.mock('../../../../src/mysql-access/User', () => ({
+jest.mock('../../../../src/access/mysql/User', () => ({
     User: jest.fn().mockImplementation(() => ({viewByName: mockViewByName}))
 }));
 let mockViewByName = jest.fn();

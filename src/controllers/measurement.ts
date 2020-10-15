@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 
-import { Measurement } from '../mysql-access/Measurement';
+import { Measurement } from '../access/mysql/Measurement';
 
 export class MeasurementController {
   pool: Pool;

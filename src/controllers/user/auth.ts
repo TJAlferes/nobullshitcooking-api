@@ -4,6 +4,20 @@ import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 import { v4 as uuidv4 } from 'uuid';
 
+import { Content } from '../../access/mysql/Content';
+import { Equipment } from '../../access/mysql/Equipment';
+import { Ingredient } from '../../access/mysql/Ingredient';
+import { FavoriteRecipe } from '../../access/mysql/FavoriteRecipe';
+import { Friendship } from '../../access/mysql/Friendship';
+//import { Notification } from '../../access/mysql/Notification';
+import { Plan } from '../../access/mysql/Plan';
+import { Recipe } from '../../access/mysql/Recipe';
+import { RecipeEquipment } from '../../access/mysql/RecipeEquipment';
+import { RecipeIngredient } from '../../access/mysql/RecipeIngredient';
+import { RecipeMethod } from '../../access/mysql/RecipeMethod';
+import { RecipeSubrecipe } from '../../access/mysql/RecipeSubrecipe';
+import { SavedRecipe } from '../../access/mysql/SavedRecipe';
+import { User } from '../../access/mysql/User';
 import {
   emailConfirmationCode
 } from '../../lib/services/email-confirmation-code';
@@ -18,20 +32,6 @@ import {
   validVerify,
   validVerifyRequest
 } from '../../lib/validations/user/index';
-import { Content } from '../../mysql-access/Content';
-import { Equipment } from '../../mysql-access/Equipment';
-import { Ingredient } from '../../mysql-access/Ingredient';
-import { FavoriteRecipe } from '../../mysql-access/FavoriteRecipe';
-import { Friendship } from '../../mysql-access/Friendship';
-//import { Notification } from '../../mysql-access/Notification';
-import { Plan } from '../../mysql-access/Plan';
-import { Recipe } from '../../mysql-access/Recipe';
-import { RecipeEquipment } from '../../mysql-access/RecipeEquipment';
-import { RecipeIngredient } from '../../mysql-access/RecipeIngredient';
-import { RecipeMethod } from '../../mysql-access/RecipeMethod';
-import { RecipeSubrecipe } from '../../mysql-access/RecipeSubrecipe';
-import { SavedRecipe } from '../../mysql-access/SavedRecipe';
-import { User } from '../../mysql-access/User';
 
 const SALT_ROUNDS = 10;
 

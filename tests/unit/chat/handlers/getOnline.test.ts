@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io';
 
-import { IFriendship } from '../../../../src/mysql-access/Friendship';
-import { IMessengerUser } from '../../../../src/redis-access/MessengerUser';
+import { IFriendship } from '../../../../src/access/mysql/Friendship';
+import { IMessengerUser } from '../../../../src/access/redis/MessengerUser';
 import { ChatUser } from '../../../../src/chat/entities/ChatUser';
 import { getOnline } from '../../../../src/chat/handlers/getOnline';
 

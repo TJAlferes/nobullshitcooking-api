@@ -1,9 +1,9 @@
 import { Socket } from 'socket.io';
 
 import { pool } from '../../../../src/lib/connections/mysql';  // just mock like in others?
-import { IFriendship, Friendship } from '../../../../src/mysql-access/Friendship';
-import { IUser, User } from '../../../../src/mysql-access/User';
-import { IMessengerUser } from '../../../../src/redis-access/MessengerUser';
+import { IFriendship, Friendship } from '../../../../src/access/mysql/Friendship';
+import { IUser, User } from '../../../../src/access/mysql/User';
+import { IMessengerUser } from '../../../../src/access/redis/MessengerUser';
 import { ChatUser } from '../../../../src/chat/entities/ChatUser';
 import { ChatWhisper } from '../../../../src/chat/entities/ChatWhisper';
 import { addWhisper } from '../../../../src/chat/handlers/addWhisper';
@@ -11,7 +11,7 @@ import { addWhisper } from '../../../../src/chat/handlers/addWhisper';
 let mockGetSocketId = jest.fn();
 let mockMessengerUser: Partial<IMessengerUser>;
 
-jest.mock('../../../../src/mysql-access/Friendship', () => ({
+jest.mock('../../../../src/access/mysql/Friendship', () => ({
   Friendship: jest.fn().mockImplementation(() => ({
     viewBlocked: mockViewBlocked
   }))
@@ -19,7 +19,7 @@ jest.mock('../../../../src/mysql-access/Friendship', () => ({
 let mockViewBlocked = jest.fn();
 let mockNobscFriendship: IFriendship;
 
-jest.mock('../../../../src/mysql-access/User', () => ({
+jest.mock('../../../../src/access/mysql/User', () => ({
   User: jest.fn().mockImplementation(() => ({getByName: mockGetByName}))
 }));
 let mockGetByName = jest.fn();

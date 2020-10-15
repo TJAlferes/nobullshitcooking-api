@@ -1,10 +1,10 @@
 import { Pool } from 'mysql2/promise';
 import { Client } from '@elastic/elasticsearch';
 
-import { Equipment } from '../mysql-access/Equipment';
-import { Ingredient } from '../mysql-access/Ingredient';
-import { Product } from '../mysql-access/Product';
-import { Recipe } from '../mysql-access/Recipe';
+import { Equipment } from '../../access/mysql/Equipment';
+import { Ingredient } from '../../access/mysql/Ingredient';
+import { Product } from '../../access/mysql/Product';
+import { Recipe } from '../../access/mysql/Recipe';
 
 const settings = {
   analysis: {

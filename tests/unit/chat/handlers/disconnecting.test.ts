@@ -1,13 +1,13 @@
 import { Socket } from 'socket.io';
 
 import { pool } from '../../../../src/lib/connections/mysql';  // just mock like in others?
-import { IFriendship, Friendship } from '../../../../src/mysql-access/Friendship';
-import { IMessengerRoom } from '../../../../src/redis-access/MessengerRoom';
-import { IMessengerUser } from '../../../../src/redis-access/MessengerUser';
+import { IFriendship, Friendship } from '../../../../src/access/mysql/Friendship';
+import { IMessengerRoom } from '../../../../src/access/redis/MessengerRoom';
+import { IMessengerUser } from '../../../../src/access/redis/MessengerUser';
 import { ChatUser  } from '../../../../src/chat/entities/ChatUser';
 import { disconnecting } from '../../../../src/chat/handlers/disconnecting';
 
-jest.mock('../../../../src/mysql-access/Friendship', () => ({
+jest.mock('../../../../src/access/mysql/Friendship', () => ({
   Friendship: jest.fn().mockImplementation(() => ({
     viewAccepted: mockViewAccepted
   }))

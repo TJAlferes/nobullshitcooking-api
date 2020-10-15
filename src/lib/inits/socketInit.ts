@@ -6,10 +6,10 @@ import { Pool } from 'mysql2/promise';
 import socketIO from 'socket.io';
 import redisAdapter from 'socket.io-redis';
 
-import { useSocketAuth } from './chat/socketAuth';
-import { socketConnection } from './chat/socketConnection';
-import { cleanUp } from './chat/workers';
-import { RedisClients } from './app';
+import { useSocketAuth } from '../../chat/socketAuth';
+import { socketConnection } from '../../chat/socketConnection';
+import { cleanUp } from '../../chat/workers';
+import { RedisClients } from '../../app';
 
 export function socketInit(
   pool: Pool,

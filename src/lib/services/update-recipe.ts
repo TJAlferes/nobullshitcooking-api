@@ -2,24 +2,24 @@
 
 import { assert } from 'superstruct';
 
-import { IRecipeSearch } from '../../elasticsearch-access/RecipeSearch';
-import { ICreatingRecipe, IRecipe } from '../../mysql-access/Recipe';
+import { IRecipeSearch } from '../../access/elasticsearch/RecipeSearch';
+import { ICreatingRecipe, IRecipe } from '../../access/mysql/Recipe';
 import {
   IMakeRecipeEquipment,
   IRecipeEquipment
-} from '../../mysql-access/RecipeEquipment';
+} from '../../access/mysql/RecipeEquipment';
 import {
   IMakeRecipeIngredient,
   IRecipeIngredient
-} from '../../mysql-access/RecipeIngredient';
+} from '../../access/mysql/RecipeIngredient';
 import {
   IMakeRecipeMethod,
   IRecipeMethod
-} from '../../mysql-access/RecipeMethod';
+} from '../../access/mysql/RecipeMethod';
 import {
   IMakeRecipeSubrecipe,
   IRecipeSubrecipe
-} from '../../mysql-access/RecipeSubrecipe';
+} from '../../access/mysql/RecipeSubrecipe';
 import {
   validRecipeEquipmentEntity
 } from '../validations/recipeEquipment/entity';

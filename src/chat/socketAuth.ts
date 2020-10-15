@@ -7,7 +7,7 @@ import { NextFunction } from 'express';
 import { Redis } from 'ioredis';
 import { Server, Socket } from 'socket.io';
 
-import { MessengerUser } from '../redis-access/MessengerUser';
+import { MessengerUser } from '../access/redis/MessengerUser';
 
 export async function addMessengerUser(
   pubClient: Redis,

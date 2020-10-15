@@ -1,4 +1,4 @@
-import { IStaff } from '../../../mysql-access/Staff';
+import { IStaff } from '../../../access/mysql/Staff';
 
 export async function validRegister(
   {email, pass, staffname}: Info,

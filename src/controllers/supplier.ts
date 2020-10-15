@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 
-import { Supplier } from '../mysql-access/Supplier';
+import { Supplier } from '../access/mysql/Supplier';
 
 export class SupplierController {
   pool: Pool;

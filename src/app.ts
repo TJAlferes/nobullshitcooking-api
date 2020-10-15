@@ -6,9 +6,9 @@ import { Redis } from 'ioredis';
 import { Pool } from 'mysql2/promise';
 import { Client } from '@elastic/elasticsearch';
 
-import { middlewareInit}  from './middlewareInit';
-import { routesInit } from './routesInit';
-import { bulkUp } from './search';
+import { middlewareInit}  from './lib/inits/middlewareInit';
+import { routesInit } from './lib/inits/routesInit';
+import { bulkUp } from './lib/jobs/bulkUp';
 
 const app = express();
 const server = createServer(app);

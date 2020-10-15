@@ -2,9 +2,9 @@ import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
+import { Ingredient } from '../../access/mysql/Ingredient';
+import { RecipeIngredient } from '../../access/mysql/RecipeIngredient';
 import { validIngredientEntity } from '../../lib/validations/ingredient/entity';
-import { Ingredient } from '../../mysql-access/Ingredient';
-import { RecipeIngredient } from '../../mysql-access/RecipeIngredient';
 
 export class UserIngredientController {
   pool: Pool;

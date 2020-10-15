@@ -1,8 +1,8 @@
 import { Socket } from 'socket.io';
 
-import { IFriendship } from '../../mysql-access/Friendship';
-import { IMessengerRoom } from '../../redis-access/MessengerRoom';
-import { IMessengerUser } from '../../redis-access/MessengerUser';
+import { IFriendship } from '../../access/mysql/Friendship';
+import { IMessengerRoom } from '../../access/redis/MessengerRoom';
+import { IMessengerUser } from '../../access/redis/MessengerUser';
 import { ChatUser  } from '../entities/ChatUser';
 
 export async function disconnecting({

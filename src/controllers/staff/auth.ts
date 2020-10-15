@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
+import { Staff } from '../../access/mysql/Staff';
 import {
   validLogin,
   validLoginRequest,
@@ -10,7 +11,6 @@ import {
   validRegisterRequest,
   validStaffCreation
 } from '../../lib/validations/staff/index';
-import { Staff } from '../../mysql-access/Staff';
 
 const SALT_ROUNDS = 10;
 

@@ -7,7 +7,7 @@ const pool: Partial<Pool> = {};
 const controller = new ProductController(<Pool>pool);
 
 const rows = [{id: 1, name: "Name"}];
-jest.mock('../../../src/mysql-access/Product', () => ({
+jest.mock('../../../src/access/mysql/Product', () => ({
   Product: jest.fn().mockImplementation(() => ({
     view: mockView,
     viewById: mockViewById

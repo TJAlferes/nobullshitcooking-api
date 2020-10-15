@@ -1,6 +1,6 @@
 import { Redis } from 'ioredis';
 
-import { IChatMessage } from '../chat/entities/types';
+import { IChatMessage } from '../../chat/entities/types';
 
 export class MessengerChat implements IMessengerChat {
   client: Redis;

@@ -6,7 +6,7 @@ import expressSession, { SessionOptions } from 'express-session';
 import { Server } from 'http';
 import { Pool } from 'mysql2/promise';
 
-import { RedisClients } from './app';
+import { RedisClients } from '../../app';
 import { socketInit } from './socketInit';
 
 export function sessionInit(

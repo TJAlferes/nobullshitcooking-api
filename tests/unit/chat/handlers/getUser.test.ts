@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 
-import { IMessengerRoom } from '../../../../src/redis-access/MessengerRoom';
+import { IMessengerRoom } from '../../../../src/access/redis/MessengerRoom';
 import { getUser } from '../../../../src/chat/handlers/getUser';
 
 const mockGetUsers = jest.fn().mockResolvedValue([

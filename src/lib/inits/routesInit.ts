@@ -26,7 +26,7 @@ import {
   recipeTypeRouter,
   searchRouter,
   supplierRouter
-} from './routes';
+} from '../../routes';
 
 export function routesInit(app: Application, pool: Pool, esClient: Client) {
   const staffRoutes = staffRouter(esClient, pool);

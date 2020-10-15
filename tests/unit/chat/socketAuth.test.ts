@@ -10,7 +10,7 @@ jest.mock('../../../src/lib/connections/redis', () => ({
   pubClient: jest.fn()
 }));  // ?
 
-jest.mock('../../../src/redis-access/MessengerUser', () => ({
+jest.mock('../../../src/access/redis/MessengerUser', () => ({
   MessengerUser: jest.fn().mockImplementation(() => ({add: mockAdd}))
 }));
 let mockAdd = jest.fn();

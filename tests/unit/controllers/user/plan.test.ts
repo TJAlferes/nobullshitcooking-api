@@ -10,7 +10,7 @@ const controller = new UserPlanController(<Pool>pool);
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/mysql-access/Plan', () => ({
+jest.mock('../../../../src/access/mysql/Plan', () => ({
   Plan: jest.fn().mockImplementation(() => ({
     view: mockView,
     viewById: mockViewById,

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 
-import { Content } from '../mysql-access/Content';
+import { Content } from '../access/mysql/Content';
 
 export class ContentController {
   pool: Pool;

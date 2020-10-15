@@ -11,7 +11,7 @@ import helmet from 'helmet';
 import { Server } from 'http';
 import { Pool } from 'mysql2/promise';
 
-import { RedisClients } from './app';
+import { RedisClients } from '../../app';
 import { sessionInit } from './sessionInit';
 
 export function middlewareInit(

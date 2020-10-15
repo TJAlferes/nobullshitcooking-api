@@ -14,7 +14,7 @@ const controller = new UserIngredientController(<Pool>pool);
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/mysql-access/Ingredient', () => ({
+jest.mock('../../../../src/access/mysql/Ingredient', () => ({
   Ingredient: jest.fn().mockImplementation(() => ({
     view: mockView,
     viewById: mockViewById,
@@ -29,7 +29,7 @@ let mockCreate = jest.fn();
 let mockUpdate = jest.fn();
 let mockDeleteByOwnerId = jest.fn();
 
-jest.mock('../../../../src/mysql-access/RecipeIngredient', () => ({
+jest.mock('../../../../src/access/mysql/RecipeIngredient', () => ({
   RecipeIngredient: jest.fn().mockImplementation(() => ({
     deleteByIngredientId: mockDeleteByIngredientId
   }))

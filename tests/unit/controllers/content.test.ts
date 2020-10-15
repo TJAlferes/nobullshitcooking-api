@@ -7,7 +7,7 @@ const pool: Partial<Pool> = {};
 const controller = new ContentController(<Pool>pool);
 
 const rows = [{id: 1, name: "Name"}];
-jest.mock('../../../src/mysql-access/Content', () => ({
+jest.mock('../../../src/access/mysql/Content', () => ({
   Content: jest.fn().mockImplementation(() => ({
     view: mockView,
     viewById: mockViewById,

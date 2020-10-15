@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 
-import { CuisineEquipment } from '../mysql-access/CuisineEquipment';
+import { CuisineEquipment } from '../access/mysql/CuisineEquipment';
 
 export class CuisineEquipmentController {
   pool: Pool;

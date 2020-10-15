@@ -1,7 +1,7 @@
 import { Redis } from 'ioredis';
 
-import { ChatUser } from '../chat/entities/ChatUser';
-import { IChatUser } from '../chat/entities/types';
+import { ChatUser } from '../../chat/entities/ChatUser';
+import { IChatUser } from '../../chat/entities/types';
 
 export class MessengerRoom implements IMessengerRoom {
   pubClient: Redis;

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 
-import { ContentType } from '../mysql-access/ContentType';
+import { ContentType } from '../access/mysql/ContentType';
 
 export class ContentTypeController {
   pool: Pool;

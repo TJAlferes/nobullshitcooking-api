@@ -17,7 +17,7 @@ const controller = new StaffContentController(<Pool>pool);
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/mysql-access/Content', () => ({
+jest.mock('../../../../src/access/mysql/Content', () => ({
   Content: jest.fn().mockImplementation(() => ({
     create: mockCreate,
     update: mockUpdate,

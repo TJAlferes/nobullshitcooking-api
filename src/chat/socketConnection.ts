@@ -3,11 +3,11 @@
 import { Pool } from 'mysql2/promise';
 import { Socket } from 'socket.io';
 
-import { Friendship as NOBSCFriendship } from '../mysql-access/Friendship';
-import { User as NOBSCUser } from '../mysql-access/User';
-import { MessengerChat } from '../redis-access/MessengerChat';
-import { MessengerRoom } from '../redis-access/MessengerRoom';
-import { MessengerUser } from '../redis-access/MessengerUser';
+import { Friendship as NOBSCFriendship } from '../access/mysql/Friendship';
+import { User as NOBSCUser } from '../access/mysql/User';
+import { MessengerChat } from '../access/redis/MessengerChat';
+import { MessengerRoom } from '../access/redis/MessengerRoom';
+import { MessengerUser } from '../access/redis/MessengerUser';
 import { RedisClients } from '../app';
 import { addMessage } from './handlers/addMessage';
 import { addRoom } from './handlers/addRoom';
@@ -23,9 +23,9 @@ export function socketConnection(pool: Pool, redisClients: RedisClients) {
     const { pubClient, subClient } = redisClients;
     const nobscUser = new NOBSCUser(pool);
     const nobscFriendship = new NOBSCFriendship(pool);
-    const messengerUser = new MessengerUser(pubClient);  // to do
-    const messengerRoom = new MessengerRoom(pubClient, subClient);  // to do
-    const messengerChat = new MessengerChat(pubClient);  // to do
+    const messengerUser = new MessengerUser(pubClient);
+    const messengerRoom = new MessengerRoom(pubClient, subClient);
+    const messengerChat = new MessengerChat(pubClient);
 
     /*
     

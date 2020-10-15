@@ -2,10 +2,10 @@ import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
+import { FavoriteRecipe } from '../../access/mysql/FavoriteRecipe';
 import {
   validFavoriteRecipeEntity
 } from '../../lib/validations/favoriteRecipe/entity';
-import { FavoriteRecipe } from '../../mysql-access/FavoriteRecipe';
 
 export class UserFavoriteRecipeController {
   pool: Pool;

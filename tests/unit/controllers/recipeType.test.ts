@@ -11,7 +11,7 @@ const pool: Partial<Pool> = {};
 const controller = new RecipeTypeController(<Pool>pool);
 
 const rows = [{id: 1, name: "Name"}];
-jest.mock('../../../src/mysql-access/RecipeType', () => ({
+jest.mock('../../../src/access/mysql/RecipeType', () => ({
   RecipeType: jest.fn().mockImplementation(() => ({
     view: mockView,
     viewById: mockViewById

@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 
-import { IStaff } from '../../../mysql-access/Staff';
+import { IStaff } from '../../../access/mysql/Staff';
 
 export async function validLogin({email, pass}: Info, staff: IStaff) {
   // Problem: This would invalidate some older/alternative email types.

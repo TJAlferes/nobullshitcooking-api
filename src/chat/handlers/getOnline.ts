@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io';
 
-import { IFriendship } from '../../mysql-access/Friendship';
-import { IMessengerUser } from '../../redis-access/MessengerUser';
+import { IFriendship } from '../../access/mysql/Friendship';
+import { IMessengerUser } from '../../access/redis/MessengerUser';
 import { ChatUser } from '../entities/ChatUser';
 
 export async function getOnline({

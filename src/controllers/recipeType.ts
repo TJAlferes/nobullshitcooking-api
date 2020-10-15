@@ -3,7 +3,7 @@ import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
 import { validRecipeTypeRequest } from '../lib/validations/recipeType/request';
-import { RecipeType } from '../mysql-access/RecipeType';
+import { RecipeType } from '../access/mysql/RecipeType';
 
 export class RecipeTypeController {
   pool: Pool;

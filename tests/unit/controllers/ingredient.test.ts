@@ -7,7 +7,7 @@ const pool: Partial<Pool> = {};
 const controller = new IngredientController(<Pool>pool);
 
 const rows = [{id: 1, name: "Name"}];
-jest.mock('../../../src/mysql-access/Ingredient', () => ({
+jest.mock('../../../src/access/mysql/Ingredient', () => ({
   Ingredient: jest.fn().mockImplementation(() => ({
     view: mockView,
     viewById: mockViewById

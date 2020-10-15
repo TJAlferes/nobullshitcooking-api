@@ -16,7 +16,7 @@ const controller = new StaffRecipeController(<Client>esClient, <Pool>pool);
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/elasticsearch-access/RecipeSearch', () => ({
+jest.mock('../../../../src/access/elasticsearch/RecipeSearch', () => ({
   RecipeSearch: jest.fn().mockImplementation(() => ({
     save: mockESSave,
     delete: mockESDelete
@@ -25,7 +25,7 @@ jest.mock('../../../../src/elasticsearch-access/RecipeSearch', () => ({
 let mockESSave = jest.fn();
 let mockESDelete = jest.fn();
 
-jest.mock('../../../../src/mysql-access/Recipe', () => ({
+jest.mock('../../../../src/access/mysql/Recipe', () => ({
   Recipe: jest.fn().mockImplementation(() => ({
     getForElasticSearch: mockGetForElasticSearch,
     view: mockView,
@@ -46,7 +46,7 @@ let mockUpdate = jest.fn();
 let mockDisownById = jest.fn();
 let mockDeleteById = jest.fn();
 
-jest.mock('../../../../src/mysql-access/RecipeEquipment', () => ({
+jest.mock('../../../../src/access/mysql/RecipeEquipment', () => ({
   RecipeEquipment: jest.fn().mockImplementation(() => ({
     create: mockRECreate,
     update: mockREUpdate,
@@ -57,7 +57,7 @@ let mockRECreate = jest.fn();
 let mockREUpdate = jest.fn();
 let mockREDeleteByRecipeId = jest.fn();
 
-jest.mock('../../../../src/mysql-access/RecipeIngredient', () => ({
+jest.mock('../../../../src/access/mysql/RecipeIngredient', () => ({
   RecipeIngredient: jest.fn().mockImplementation(() => ({
     create: mockRICreate,
     update: mockRIUpdate,
@@ -68,7 +68,7 @@ let mockRICreate = jest.fn();
 let mockRIUpdate = jest.fn();
 let mockRIDeleteByRecipeId = jest.fn();
 
-jest.mock('../../../../src/mysql-access/RecipeMethod', () => ({
+jest.mock('../../../../src/access/mysql/RecipeMethod', () => ({
   RecipeMethod: jest.fn().mockImplementation(() => ({
     create: mockRMCreate,
     update: mockRMUpdate,
@@ -79,7 +79,7 @@ let mockRMCreate = jest.fn();
 let mockRMUpdate = jest.fn();
 let mockRMDeleteByRecipeId = jest.fn();
 
-jest.mock('../../../../src/mysql-access/RecipeSubrecipe', () => ({
+jest.mock('../../../../src/access/mysql/RecipeSubrecipe', () => ({
   RecipeSubrecipe: jest.fn().mockImplementation(() => ({
     create: mockRSCreate,
     update: mockRSUpdate,
@@ -92,14 +92,14 @@ let mockRSUpdate = jest.fn();
 let mockRSDeleteByRecipeId = jest.fn();
 let mockRSDeleteBySubrecipeId = jest.fn();
 
-jest.mock('../../../../src/mysql-access/FavoriteRecipe', () => ({
+jest.mock('../../../../src/access/mysql/FavoriteRecipe', () => ({
   FavoriteRecipe: jest.fn().mockImplementation(() => ({
     deleteAllByRecipeId: mockFRDeleteAllByRecipeId
   }))
 }));
 let mockFRDeleteAllByRecipeId = jest.fn();
 
-jest.mock('../../../../src/mysql-access/SavedRecipe', () => ({
+jest.mock('../../../../src/access/mysql/SavedRecipe', () => ({
   SavedRecipe: jest.fn().mockImplementation(() => ({
     deleteAllByRecipeId: mockSRDeleteAllByRecipeId
   }))

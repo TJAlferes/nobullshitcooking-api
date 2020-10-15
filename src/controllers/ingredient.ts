@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 
-import { Ingredient } from '../mysql-access/Ingredient';
+import { Ingredient } from '../access/mysql/Ingredient';
 
 export class IngredientController {
   pool: Pool;

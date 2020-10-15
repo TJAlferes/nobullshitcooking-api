@@ -3,15 +3,15 @@ import { Pool } from 'mysql2/promise';
 import { assert, coerce } from 'superstruct';
 import { Client } from '@elastic/elasticsearch';
 
-import { RecipeSearch } from '../../elasticsearch-access/RecipeSearch';
+import { RecipeSearch } from '../../access/elasticsearch/RecipeSearch';
+import { Recipe } from '../../access/mysql/Recipe';
+import { RecipeEquipment } from '../../access/mysql/RecipeEquipment';
+import { RecipeIngredient } from '../../access/mysql/RecipeIngredient';
+import { RecipeMethod } from '../../access/mysql/RecipeMethod';
+import { RecipeSubrecipe } from '../../access/mysql/RecipeSubrecipe';
 import { createRecipeService } from '../../lib/services/create-recipe';
 import { updateRecipeService } from '../../lib/services/update-recipe';
 import { validRecipeEntity } from '../../lib/validations/recipe/entity';
-import { Recipe } from '../../mysql-access/Recipe';
-import { RecipeEquipment } from '../../mysql-access/RecipeEquipment';
-import { RecipeIngredient } from '../../mysql-access/RecipeIngredient';
-import { RecipeMethod } from '../../mysql-access/RecipeMethod';
-import { RecipeSubrecipe } from '../../mysql-access/RecipeSubrecipe';
 
 export class UserRecipeController {
   esClient: Client;

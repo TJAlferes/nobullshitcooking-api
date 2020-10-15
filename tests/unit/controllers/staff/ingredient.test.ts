@@ -16,7 +16,7 @@ const esClient: Partial<Client> = {};
 const pool: Partial<Pool> = {};
 const controller = new StaffIngredientController(<Client>esClient, <Pool>pool);
 
-jest.mock('../../../../src/elasticsearch-access/IngredientSearch', () => ({
+jest.mock('../../../../src/access/elasticsearch/IngredientSearch', () => ({
   IngredientSearch: jest.fn().mockImplementation(() => ({
     save: mockESSave,
     delete: mockESDelete
@@ -25,7 +25,7 @@ jest.mock('../../../../src/elasticsearch-access/IngredientSearch', () => ({
 let mockESSave = jest.fn();
 let mockESDelete = jest.fn();
 
-jest.mock('../../../../src/mysql-access/Ingredient', () => ({
+jest.mock('../../../../src/access/mysql/Ingredient', () => ({
   Ingredient: jest.fn().mockImplementation(() => ({
     getForElasticSearch: mockGetForElasticSearch,
     create: mockCreate,

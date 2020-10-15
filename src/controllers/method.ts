@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 
-import { Method } from '../mysql-access/Method';
+import { Method } from '../access/mysql/Method';
 
 export class MethodController {
   pool: Pool;

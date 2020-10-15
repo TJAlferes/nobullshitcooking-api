@@ -2,8 +2,8 @@ import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
+import { Plan } from '../../access/mysql/Plan';
 import { validPlanEntity } from '../../lib/validations/plan/entity';
-import { Plan } from '../../mysql-access/Plan';
 
 export class UserPlanController {
   pool: Pool;

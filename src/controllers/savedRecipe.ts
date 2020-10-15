@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 
-//import { SavedRecipe } from '../mysql-access/SavedRecipe';
+//import { SavedRecipe } from '../access/mysql/SavedRecipe';
 
 export class SavedRecipeController {
   pool: Pool;

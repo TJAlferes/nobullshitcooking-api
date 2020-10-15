@@ -16,7 +16,7 @@ const esClient: Partial<Client> = {};
 const pool: Partial<Pool> = {};
 const controller = new StaffEquipmentController(<Client>esClient, <Pool>pool);
 
-jest.mock('../../../../src/elasticsearch-access/EquipmentSearch', () => ({
+jest.mock('../../../../src/access/elasticsearch/EquipmentSearch', () => ({
   EquipmentSearch: jest.fn().mockImplementation(() => ({
     save: mockESSave,
     delete: mockESDelete
@@ -25,7 +25,7 @@ jest.mock('../../../../src/elasticsearch-access/EquipmentSearch', () => ({
 let mockESSave = jest.fn();
 let mockESDelete = jest.fn();
 
-jest.mock('../../../../src/mysql-access/Equipment', () => ({
+jest.mock('../../../../src/access/mysql/Equipment', () => ({
   Equipment: jest.fn().mockImplementation(() => ({
     getForElasticSearch: mockGetForElasticSearch,
     create: mockCreate,

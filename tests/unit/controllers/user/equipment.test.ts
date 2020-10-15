@@ -14,7 +14,7 @@ const controller = new UserEquipmentController(<Pool>pool);
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/mysql-access/Equipment', () => ({
+jest.mock('../../../../src/access/mysql/Equipment', () => ({
   Equipment: jest.fn().mockImplementation(() => ({
     view: mockView,
     viewById: mockViewById,
@@ -29,7 +29,7 @@ let mockCreatePrivate = jest.fn();
 let mockUpdatePrivate = jest.fn();
 let mockDeleteByOwnerId = jest.fn();
 
-jest.mock('../../../../src/mysql-access/RecipeEquipment', () => ({
+jest.mock('../../../../src/access/mysql/RecipeEquipment', () => ({
   RecipeEquipment: jest.fn().mockImplementation(() => ({
     deleteByEquipmentId: mockDeleteByEquipmentId
   }))

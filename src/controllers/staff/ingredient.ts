@@ -3,9 +3,9 @@ import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 import { Client } from '@elastic/elasticsearch';
 
-import { IngredientSearch } from '../../elasticsearch-access/IngredientSearch';
+import { IngredientSearch } from '../../access/elasticsearch/IngredientSearch';
+import { Ingredient } from '../../access/mysql/Ingredient';
 import { validIngredientEntity } from '../../lib/validations/ingredient/entity';
-import { Ingredient } from '../../mysql-access/Ingredient';
 
 export class StaffIngredientController {
   esClient: Client;

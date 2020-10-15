@@ -21,7 +21,7 @@ mockBcrypt.hash.mockResolvedValue(
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/mysql-access/Staff', () => ({
+jest.mock('../../../../src/access/mysql/Staff', () => ({
   Staff: jest.fn().mockImplementation(() => ({
     getByEmail: mockGetByEmail,
     getByName: mockGetByName,

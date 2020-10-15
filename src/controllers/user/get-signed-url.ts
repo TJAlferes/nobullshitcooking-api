@@ -1,7 +1,7 @@
 require('dotenv').config();
 import S3 from 'aws-sdk/clients/s3';
 import { Request, Response } from 'express';
-import { v4 as uuidv4 } from 'uuid';  // do in React instead?
+import { v4 as uuidv4 } from 'uuid';
 
 import { getSignedUrlPromise } from '../../lib/utils/getSignedUrlPromise';
 

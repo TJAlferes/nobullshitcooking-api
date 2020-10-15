@@ -8,7 +8,7 @@ const controller = new SearchController(<Client>esClient);
 
 const found = {some: "value"};
 
-jest.mock('../../../src/elasticsearch-access/EquipmentSearch', () => ({
+jest.mock('../../../src/access/elasticsearch/EquipmentSearch', () => ({
   EquipmentSearch: jest.fn().mockImplementation(() => ({
     auto: mockAutoEquipment,
     find: mockFindEquipment
@@ -17,7 +17,7 @@ jest.mock('../../../src/elasticsearch-access/EquipmentSearch', () => ({
 let mockAutoEquipment = jest.fn().mockResolvedValue(found);
 let mockFindEquipment = jest.fn().mockResolvedValue(found);
 
-jest.mock('../../../src/elasticsearch-access/IngredientSearch', () => ({
+jest.mock('../../../src/access/elasticsearch/IngredientSearch', () => ({
   IngredientSearch: jest.fn().mockImplementation(() => ({
     auto: mockAutoIngredients,
     find: mockFindIngredients
@@ -26,7 +26,7 @@ jest.mock('../../../src/elasticsearch-access/IngredientSearch', () => ({
 let mockAutoIngredients = jest.fn().mockResolvedValue(found);
 let mockFindIngredients = jest.fn().mockResolvedValue(found);
 
-jest.mock('../../../src/elasticsearch-access/ProductSearch', () => ({
+jest.mock('../../../src/access/elasticsearch/ProductSearch', () => ({
   ProductSearch: jest.fn().mockImplementation(() => ({
     auto: mockAutoProducts,
     find: mockFindProducts
@@ -35,7 +35,7 @@ jest.mock('../../../src/elasticsearch-access/ProductSearch', () => ({
 let mockAutoProducts = jest.fn().mockResolvedValue(found);
 let mockFindProducts = jest.fn().mockResolvedValue(found);
 
-jest.mock('../../../src/elasticsearch-access/RecipeSearch', () => ({
+jest.mock('../../../src/access/elasticsearch/RecipeSearch', () => ({
   RecipeSearch: jest.fn().mockImplementation(() => ({
     auto: mockAutoRecipes,
     find: mockFindRecipes

@@ -42,7 +42,7 @@ jest.mock('../../../../src/lib/services/email-confirmation-code', () => {
   return {...originalModule, emailConfirmationCode: jest.fn()};
 });
 
-jest.mock('../../../../src/mysql-access/User', () => ({
+jest.mock('../../../../src/access/mysql/User', () => ({
   User: jest.fn().mockImplementation(() => ({
     getByEmail: mockGetByEmail,
     getByName: mockGetByName,
@@ -59,42 +59,42 @@ let mockVerifyUser = jest.fn();
 let mockUpdateUser = jest.fn();
 let mockDeleteUser = jest.fn();
 
-jest.mock('../../../../src/mysql-access/Content', () => ({
+jest.mock('../../../../src/access/mysql/Content', () => ({
   Content: jest.fn().mockImplementation(() => ({
     deleteAllByOwnerId: mockContentDeleteAllByOwnerId
   }))
 }));
 let mockContentDeleteAllByOwnerId = jest.fn();
 
-jest.mock('../../../../src/mysql-access/Friendship', () => ({
+jest.mock('../../../../src/access/mysql/Friendship', () => ({
   Friendship: jest.fn().mockImplementation(() => ({
     deleteAllByUserId: mockDeleteAllFriendshipsByUserId
   }))
 }));
 let mockDeleteAllFriendshipsByUserId = jest.fn();
 
-jest.mock('../../../../src/mysql-access/Plan', () => ({
+jest.mock('../../../../src/access/mysql/Plan', () => ({
   Plan: jest.fn().mockImplementation(() => ({
     deleteAllByOwnerId: mockDeleteAllPlansByOwnerId
   }))
 }));
 let mockDeleteAllPlansByOwnerId = jest.fn();
 
-jest.mock('../../../../src/mysql-access/FavoriteRecipe', () => ({
+jest.mock('../../../../src/access/mysql/FavoriteRecipe', () => ({
   FavoriteRecipe: jest.fn().mockImplementation(() => ({
     deleteAllByUserId: mockDeleteAllFavoriteRecipesByUserId
   }))
 }));
 let mockDeleteAllFavoriteRecipesByUserId = jest.fn();
 
-jest.mock('../../../../src/mysql-access/SavedRecipe', () => ({
+jest.mock('../../../../src/access/mysql/SavedRecipe', () => ({
   SavedRecipe: jest.fn().mockImplementation(() => ({
     deleteAllByUserId: mockDeleteAllSavedRecipesByUserId
   }))
 }));
 let mockDeleteAllSavedRecipesByUserId = jest.fn();
 
-jest.mock('../../../../src/mysql-access/Recipe', () => ({
+jest.mock('../../../../src/access/mysql/Recipe', () => ({
   Recipe: jest.fn().mockImplementation(() => ({
     getAllPrivateIdsByUserId: mockGetAllPrivateIdsByUserId,
     disown: mockDisown,
@@ -105,28 +105,28 @@ let mockGetAllPrivateIdsByUserId = jest.fn().mockResolvedValue([273, 837, 941]);
 let mockDisown = jest.fn();
 let mockDeletePrivate = jest.fn();
 
-jest.mock('../../../../src/mysql-access/RecipeEquipment', () => ({
+jest.mock('../../../../src/access/mysql/RecipeEquipment', () => ({
   RecipeEquipment: jest.fn().mockImplementation(() => ({
     deleteByRecipeIds: mockDeleteRecipeEquipmentByRecipeIds
   }))
 }));
 let mockDeleteRecipeEquipmentByRecipeIds = jest.fn();
 
-jest.mock('../../../../src/mysql-access/RecipeIngredient', () => ({
+jest.mock('../../../../src/access/mysql/RecipeIngredient', () => ({
   RecipeIngredient: jest.fn().mockImplementation(() => ({
     deleteByRecipeIds: mockDeleteRecipeIngredientsByRecipeIds
   }))
 }));
 let mockDeleteRecipeIngredientsByRecipeIds = jest.fn();
 
-jest.mock('../../../../src/mysql-access/RecipeMethod', () => ({
+jest.mock('../../../../src/access/mysql/RecipeMethod', () => ({
   RecipeMethod: jest.fn().mockImplementation(() => ({
     deleteByRecipeIds: mockDeleteRecipeMethodsByRecipeIds
   }))
 }));
 let mockDeleteRecipeMethodsByRecipeIds = jest.fn();
 
-jest.mock('../../../../src/mysql-access/RecipeSubrecipe', () => ({
+jest.mock('../../../../src/access/mysql/RecipeSubrecipe', () => ({
   RecipeSubrecipe: jest.fn().mockImplementation(() => ({
     deleteByRecipeIds: mockDeleteRecipeSubrecipesByRecipeIds,
     deleteBySubrecipeIds: mockDeleteRecipeSubrecipesBySubrecipeIds
@@ -135,14 +135,14 @@ jest.mock('../../../../src/mysql-access/RecipeSubrecipe', () => ({
 let mockDeleteRecipeSubrecipesByRecipeIds = jest.fn();
 let mockDeleteRecipeSubrecipesBySubrecipeIds = jest.fn();
 
-jest.mock('../../../../src/mysql-access/Equipment', () => ({
+jest.mock('../../../../src/access/mysql/Equipment', () => ({
   Equipment: jest.fn().mockImplementation(() => ({
     deleteAllByOwnerId: mockDeleteAllEquipmentByOwnerId
   }))
 }));
 let mockDeleteAllEquipmentByOwnerId = jest.fn();
 
-jest.mock('../../../../src/mysql-access/Ingredient', () => ({
+jest.mock('../../../../src/access/mysql/Ingredient', () => ({
   Ingredient: jest.fn().mockImplementation(() => ({
     deleteAllByOwnerId: mockDeleteAllIngredientsByOwnerId
   }))

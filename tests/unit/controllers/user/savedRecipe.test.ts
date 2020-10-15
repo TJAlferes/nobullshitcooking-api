@@ -14,7 +14,7 @@ const controller = new UserSavedRecipeController(<Pool>pool);
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/mysql-access/SavedRecipe', () => ({
+jest.mock('../../../../src/access/mysql/SavedRecipe', () => ({
   SavedRecipe: jest.fn().mockImplementation(() => ({
     viewByUserId: mockViewByUserId,
     create: mockCreate,

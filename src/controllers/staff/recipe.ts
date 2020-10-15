@@ -3,17 +3,17 @@ import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 import { Client } from '@elastic/elasticsearch';
 
-import { RecipeSearch } from '../../elasticsearch-access/RecipeSearch';
+import { RecipeSearch } from '../../access/elasticsearch/RecipeSearch';
+import { FavoriteRecipe } from '../../access/mysql/FavoriteRecipe';
+import { Recipe } from '../../access/mysql/Recipe';
+import { RecipeEquipment } from '../../access/mysql/RecipeEquipment';
+import { RecipeIngredient } from '../../access/mysql/RecipeIngredient';
+import { RecipeMethod } from '../../access/mysql/RecipeMethod';
+import { RecipeSubrecipe } from '../../access/mysql/RecipeSubrecipe';
+import { SavedRecipe } from '../../access/mysql/SavedRecipe';
 import { createRecipeService } from '../../lib/services/create-recipe';
 import { updateRecipeService } from '../../lib/services/update-recipe';
 import { validRecipeEntity } from '../../lib/validations/recipe/entity';
-import { Recipe } from '../../mysql-access/Recipe';
-import { RecipeEquipment } from '../../mysql-access/RecipeEquipment';
-import { RecipeIngredient } from '../../mysql-access/RecipeIngredient';
-import { RecipeMethod } from '../../mysql-access/RecipeMethod';
-import { RecipeSubrecipe } from '../../mysql-access/RecipeSubrecipe';
-import { FavoriteRecipe } from '../../mysql-access/FavoriteRecipe';
-import { SavedRecipe } from '../../mysql-access/SavedRecipe';
 
 export class StaffRecipeController {
   esClient: Client;

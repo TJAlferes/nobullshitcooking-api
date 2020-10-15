@@ -8,7 +8,7 @@ import {
 const pool: Partial<Pool> = {};
 const controller = new StaffCuisineIngredientController(<Pool>pool);
 
-jest.mock('../../../../src/mysql-access/CuisineIngredient', () => ({
+jest.mock('../../../../src/access/mysql/CuisineIngredient', () => ({
   CuisineIngredient: jest.fn().mockImplementation(() => ({
     create: mockCreate,
     delete: mockDelete

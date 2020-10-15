@@ -7,7 +7,7 @@ const pool: Partial<Pool> = {};
 const controller = new MeasurementController(<Pool>pool);
 
 const rows = [{id: 1, name: "Name"}];
-jest.mock('../../../src/mysql-access/Measurement', () => ({
+jest.mock('../../../src/access/mysql/Measurement', () => ({
   Measurement: jest.fn().mockImplementation(() => ({
     view: mockView,
     viewById: mockViewById

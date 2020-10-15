@@ -2,10 +2,10 @@ import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
+import { FavoriteRecipe } from '../access/mysql/FavoriteRecipe';
+import { Recipe } from '../access/mysql/Recipe';
+import { User } from '../access/mysql/User';
 import { validProfileRequest } from '../lib/validations/profile/request';
-import { FavoriteRecipe } from '../mysql-access/FavoriteRecipe';
-import { Recipe } from '../mysql-access/Recipe';
-import { User } from '../mysql-access/User';
 
 export class ProfileController {
   pool: Pool;

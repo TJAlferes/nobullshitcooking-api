@@ -14,7 +14,7 @@ const controller = new UserFavoriteRecipeController(<Pool>pool);
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/mysql-access/FavoriteRecipe', () => ({
+jest.mock('../../../../src/access/mysql/FavoriteRecipe', () => ({
     FavoriteRecipe: jest.fn().mockImplementation(() => ({
       viewByUserId: mockViewByUserId,
       create: mockCreate,

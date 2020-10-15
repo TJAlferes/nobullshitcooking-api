@@ -2,10 +2,10 @@ import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
+import { SavedRecipe } from '../../access/mysql/SavedRecipe';
 import {
   validSavedRecipeEntity
 } from '../../lib/validations/savedRecipe/entity';
-import { SavedRecipe } from '../../mysql-access/SavedRecipe';
 
 export class UserSavedRecipeController {
   pool: Pool;

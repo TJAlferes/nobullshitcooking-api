@@ -2,6 +2,7 @@
 
 export class AllSearch implements IAllSearch {
   client: Client;
+  
   constructor(esClient: Client) {
     this.client = esClient;
     this.find = this.find.bind(this);

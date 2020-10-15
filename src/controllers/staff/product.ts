@@ -3,9 +3,9 @@ import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 import { Client } from '@elastic/elasticsearch';
 
-import { ProductSearch } from '../../elasticsearch-access/ProductSearch';
+import { ProductSearch } from '../../access/elasticsearch/ProductSearch';
+import { Product } from '../../access/mysql/Product';
 import { validProductEntity } from '../../lib/validations/product/entity';
-import { Product } from '../../mysql-access/Product';
 
 export class StaffProductController {
   esClient: Client;

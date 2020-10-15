@@ -6,7 +6,7 @@ import { pool } from '../../lib/connections/mysqlPoolConnection';
 import {
   validContentTypeEntity
 } from '../../lib/validations/contentType/entity';
-import { Content } from '../../mysql-access/Content';
+import { Content } from '../../access/mysql/Content';
 
 export class StaffContentTypeController = {
   pool: Pool;

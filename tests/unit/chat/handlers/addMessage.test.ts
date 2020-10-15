@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 
-import { IMessengerChat } from '../../../../src/redis-access/MessengerChat';
+import { IMessengerChat } from '../../../../src/access/redis/MessengerChat';
 import { ChatMessage } from '../../../../src/chat/entities/ChatMessage';
 import { ChatUser } from '../../../../src/chat/entities/ChatUser';
 import { addMessage } from '../../../../src/chat/handlers/addMessage';

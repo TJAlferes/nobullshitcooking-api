@@ -1,16 +1,16 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 
-import { ContentType } from '../mysql-access/ContentType';
-import { Cuisine } from '../mysql-access/Cuisine';
-import { Equipment } from '../mysql-access/Equipment';
-import { EquipmentType } from '../mysql-access/EquipmentType';
-import { Ingredient } from '../mysql-access/Ingredient';
-import { IngredientType } from '../mysql-access/IngredientType';
-import { Measurement } from '../mysql-access/Measurement';
-import { Method } from '../mysql-access/Method';
-import { Recipe } from '../mysql-access/Recipe';
-import { RecipeType } from '../mysql-access/RecipeType';
+import { ContentType } from '../access/mysql/ContentType';
+import { Cuisine } from '../access/mysql/Cuisine';
+import { Equipment } from '../access/mysql/Equipment';
+import { EquipmentType } from '../access/mysql/EquipmentType';
+import { Ingredient } from '../access/mysql/Ingredient';
+import { IngredientType } from '../access/mysql/IngredientType';
+import { Measurement } from '../access/mysql/Measurement';
+import { Method } from '../access/mysql/Method';
+import { Recipe } from '../access/mysql/Recipe';
+import { RecipeType } from '../access/mysql/RecipeType';
 
 export class DataInitController {
   pool: Pool;
