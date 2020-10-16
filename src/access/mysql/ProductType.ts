@@ -1,6 +1,6 @@
 import { Pool, RowDataPacket } from 'mysql2/promise';
 
-export class IngredientType implements IIngredientType {
+export class ProductType implements IProductType {
   pool: Pool;
 
   constructor(pool: Pool) {
@@ -10,13 +10,13 @@ export class IngredientType implements IIngredientType {
   }
 
   async view() {
-    const sql = `SELECT name FROM ingredient_types`;
+    const sql = `SELECT name FROM product_types`;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql);
     return rows;
   }
 
   async viewByName(name: string) {
-    const sql = `SELECT name FROM ingredient_types WHERE name = ?`;
+    const sql = `SELECT name FROM product_types WHERE name = ?`;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [name]);
     return row;
   }
@@ -24,7 +24,7 @@ export class IngredientType implements IIngredientType {
 
 type Data = Promise<RowDataPacket[]>;
 
-export interface IIngredientType {
+export interface IProductType {
   pool: Pool;
   view(): Data;
   viewByName(name: string): Data;

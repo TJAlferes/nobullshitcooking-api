@@ -18,15 +18,15 @@ export function cuisineRouter(pool: Pool) {
   );
   
   router.get(
-    '/detail/:id',
-    [param('id').not().isEmpty().trim().escape()],
-    catchExceptions(controller.viewDetailById)
+    '/detail/:name',
+    [param('name').not().isEmpty().trim().escape()],
+    catchExceptions(controller.viewDetailByName)
   );
   
   router.get(
-    '/:id',
-    [param('id').not().isEmpty().trim().escape()],
-    catchExceptions(controller.viewById)
+    '/:name',
+    [param('name').not().isEmpty().trim().escape()],
+    catchExceptions(controller.viewByName)
   );
 
   return router;

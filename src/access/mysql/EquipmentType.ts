@@ -6,18 +6,18 @@ export class EquipmentType implements IEquipmentType {
   constructor(pool: Pool) {
     this.pool = pool;
     this.view = this.view.bind(this);
-    this.viewById = this.viewById.bind(this);
+    this.viewByName = this.viewByName.bind(this);
   }
 
   async view() {
-    const sql = `SELECT id, name FROM equipment_types`;
+    const sql = `SELECT name FROM equipment_types`;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql);
     return rows;
   }
 
-  async viewById(id: number) {
-    const sql = `SELECT id, name FROM equipment_types WHERE id = ?`;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
+  async viewByName(name: string) {
+    const sql = `SELECT name FROM equipment_types WHERE name = ?`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [name]);
     return row;
   }
 }
@@ -27,5 +27,5 @@ type Data = Promise<RowDataPacket[]>;
 export interface IEquipmentType {
   pool: Pool;
   view(): Data;
-  viewById(id: number): Data;
+  viewByName(name: string): Data;
 }

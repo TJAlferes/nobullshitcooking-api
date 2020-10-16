@@ -18,9 +18,9 @@ export function measurementRouter(pool: Pool) {
   );
   
   router.get(
-    '/:id',
-    [param('id').not().isEmpty().trim().escape()],
-    catchExceptions(controller.viewById)
+    '/:name',
+    [param('name').not().isEmpty().trim().escape()],
+    catchExceptions(controller.viewByName)
   );
 
   return router;

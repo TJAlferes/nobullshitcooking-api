@@ -9,7 +9,7 @@ export class IngredientTypeController {
   constructor(pool: Pool) {
     this.pool = pool;
     this.view = this.view.bind(this);
-    this.viewById = this.viewById.bind(this);
+    this.viewByName = this.viewByName.bind(this);
   }
 
   async view(req: Request, res: Response) {
@@ -18,10 +18,10 @@ export class IngredientTypeController {
     return res.send(rows);
   }
 
-  async viewById(req: Request, res: Response) {
-    const id = Number(req.params.id);
+  async viewByName(req: Request, res: Response) {
+    const { name } = req.params;
     const ingredientType = new IngredientType(this.pool);
-    const [ row ] = await ingredientType.viewById(id);
+    const [ row ] = await ingredientType.viewByName(name);
     return res.send(row);
   }
 }
