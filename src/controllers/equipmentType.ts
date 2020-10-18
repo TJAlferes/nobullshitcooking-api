@@ -14,14 +14,19 @@ export class EquipmentTypeController {
 
   async view(req: Request, res: Response) {
     const equipmentType = new EquipmentType(this.pool);
+
     const rows = await equipmentType.view();
+
     return res.send(rows);
   }
 
   async viewByName(req: Request, res: Response) {
     const { name } = req.params;
+
     const equipmentType = new EquipmentType(this.pool);
+
     const [ row ] = await equipmentType.viewByName(name);
+    
     return res.send(row);
   }
 }

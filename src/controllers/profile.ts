@@ -16,17 +16,27 @@ export class ProfileController {
   }
 
   async view(req: Request, res: Response) {
-    const username = req.params.username;
+    const { username } = req.params;
+
     assert({username}, validProfileRequest);
+
     const user = new User(this.pool);
+
     const [ userExists ] = await user.viewByName(username);
+
     if (!userExists) return res.send({message: 'User does not exist.'});
-    const id = userExists.user_id;
+
     const avatar = userExists.avatar;
+    const owner = "NOBSC";
+
     const recipe = new Recipe(this.pool);
-    const publicRecipes = await recipe.view(id, 1);
+
+    const publicRecipes = await recipe.view(username, owner);
+
     const favoriteRecipe = new FavoriteRecipe(this.pool);
-    const favoriteRecipes = await favoriteRecipe.viewByUserId(id);
+
+    const favoriteRecipes = await favoriteRecipe.viewByUser(username);
+    
     return res
       .send({message: 'Success.', avatar, publicRecipes, favoriteRecipes});
   }

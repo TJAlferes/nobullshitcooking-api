@@ -14,21 +14,29 @@ export class CuisineController {
 
   async view(req: Request, res: Response) {
     const cuisine = new Cuisine(this.pool);
+
     const rows = await cuisine.view();
+
     return res.send(rows);
   }
 
   async viewByName(req: Request, res: Response) {
     const { name } = req.params;
+
     const cuisine = new Cuisine(this.pool);
+
     const [ row ] = await cuisine.viewByName(name);
+
     return res.send(row);
   }
 
   async viewDetailByName(req: Request, res: Response) {
     const { name } = req.params;
+
     const cuisine = new Cuisine(this.pool);
+
     const detail = await cuisine.viewDetailByName(name);
+    
     return res.send(detail);
   }
 }

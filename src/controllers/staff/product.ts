@@ -20,9 +20,9 @@ export class StaffProductController {
   }
   
   async create(req: Request, res: Response) {
-    const productCategoryId = Number(req.body.productInfo.productCategoryId);
-    const productTypeId = Number(req.body.productInfo.productTypeId);
     const {
+      category,
+      type,
       brand,
       variety,
       name,
@@ -31,9 +31,10 @@ export class StaffProductController {
       specs,
       image
     } = req.body.productInfo;
+
     const productCreation = {
-      productCategoryId,
-      productTypeId,
+      category,
+      type,
       brand,
       variety,
       name,
@@ -42,21 +43,29 @@ export class StaffProductController {
       specs,
       image
     };
+
     assert(productCreation, validProductEntity);
+
     const product = new Product(this.pool);
-    const createdProduct = await product.create(productCreation);
-    const generatedId = createdProduct.insertId;
+
+    await product.create(productCreation);
+
+    const generatedId = `${brand} ${variety} ${name}`;
+
     const productForInsert = await product.getForElasticSearch(generatedId);
+
     const productSearch = new ProductSearch(this.esClient);
+
     await productSearch.save(productForInsert);
+
     return res.send({message: 'Product created.'});
   }
 
   async update(req: Request, res: Response) {
-    const id = Number(req.body.productInfo.id);
-    const productCategoryId = Number(req.body.productInfo.productCategoryId);
-    const productTypeId = Number(req.body.productInfo.productTypeId);
     const {
+      id,
+      category,
+      type,
       brand,
       variety,
       name,
@@ -65,9 +74,10 @@ export class StaffProductController {
       specs,
       image
     } = req.body.productInfo;
+
     const productUpdate = {
-      productCategoryId,
-      productTypeId,
+      category,
+      type,
       brand,
       variety,
       name,
@@ -76,21 +86,31 @@ export class StaffProductController {
       specs,
       image
     };
+
     assert(productUpdate, validProductEntity);
+
     const product = new Product(this.pool);
+
     await product.update({id, ...productUpdate});
+
     const productForInsert = await product.getForElasticSearch(id);
+
     const productSearch = new ProductSearch(this.esClient);
+
     await productSearch.save(productForInsert);
+
     return res.send({message: 'Product updated.'});
   }
 
   async delete(req: Request, res: Response) {
-    const id = Number(req.body.id);
+    const { id } = req.body;
+
     const product = new Product(this.pool);
     const productSearch = new ProductSearch(this.esClient);
+
     await product.delete(id);
-    await productSearch.delete(String(id));
+    await productSearch.delete(id);
+    
     return res.send({message: 'Product deleted.'});
   }
 }

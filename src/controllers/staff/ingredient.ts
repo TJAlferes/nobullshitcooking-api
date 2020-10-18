@@ -20,8 +20,8 @@ export class StaffIngredientController {
   }
   
   async create(req: Request, res: Response) {
-    const ingredientTypeId = Number(req.body.ingredientInfo.ingredientTypeId);
     const {
+      type,
       brand,
       variety,
       name,
@@ -29,12 +29,13 @@ export class StaffIngredientController {
       description,
       image
     } = req.body.ingredientInfo;
-    const authorId = 1;
-    const ownerId = 1;
+    const author = "NOBSC";
+    const owner = "NOBSC";
+
     const ingredientCreation = {
-      ingredientTypeId,
-      authorId,
-      ownerId,
+      type,
+      author,
+      owner,
       brand,
       variety,
       name,
@@ -42,21 +43,29 @@ export class StaffIngredientController {
       description,
       image
     };
+
     assert(ingredientCreation, validIngredientEntity);
+
     const ingredient = new Ingredient(this.pool);
-    const createdIngredient = await ingredient.create(ingredientCreation);
-    const generatedId = createdIngredient.insertId;
+
+    await ingredient.create(ingredientCreation);
+
+    const generatedId = `${author} ${brand} ${variety} ${name}`;
+
     const ingredientForInsert =
       await ingredient.getForElasticSearch(generatedId);
+    
     const ingredientSearch = new IngredientSearch(this.esClient);
+
     await ingredientSearch.save(ingredientForInsert);
+
     return res.send({message: 'Ingredient created.'});
   }
 
   async update(req: Request, res: Response) {
-    const id = Number(req.body.ingredientInfo.id);
-    const ingredientTypeId = Number(req.body.ingredientInfo.ingredientTypeId);
     const {
+      id,
+      type,
       brand,
       variety,
       name,
@@ -64,12 +73,13 @@ export class StaffIngredientController {
       description,
       image
     } = req.body.ingredientInfo;
-    const authorId = 1;
-    const ownerId = 1;
+    const author = "NOBSC";
+    const owner = "NOBSC";
+
     const ingredientUpdate = {
-      ingredientTypeId,
-      authorId,
-      ownerId,
+      type,
+      author,
+      owner,
       brand,
       variety,
       name,
@@ -77,21 +87,31 @@ export class StaffIngredientController {
       description,
       image
     };
+
     assert(ingredientUpdate, validIngredientEntity);
+
     const ingredient = new Ingredient(this.pool);
+
     await ingredient.update({id, ...ingredientUpdate});
+
     const ingredientForInsert = await ingredient.getForElasticSearch(id);
+
     const ingredientSearch = new IngredientSearch(this.esClient);
+
     await ingredientSearch.save(ingredientForInsert);
+
     return res.send({message: 'Ingredient updated.'});
   }
 
   async delete(req: Request, res: Response) {
-    const id = Number(req.body.id);
+    const { id } = req.body;
+
     const ingredient = new Ingredient(this.pool);
     const ingredientSearch = new IngredientSearch(this.esClient);
+
     await ingredient.delete(id);
-    await ingredientSearch.delete(String(id));
+    await ingredientSearch.delete(id);
+    
     return res.send({message: 'Ingredient deleted.'});
   }
 }

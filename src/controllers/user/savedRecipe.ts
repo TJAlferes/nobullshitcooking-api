@@ -12,33 +12,44 @@ export class UserSavedRecipeController {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewByUserId = this.viewByUserId.bind(this);
+    this.viewByUser = this.viewByUser.bind(this);
     this.create = this.create.bind(this);
     this.delete = this.delete.bind(this);
   }
 
-  async viewByUserId(req: Request, res: Response) {
-    const userId = req.session!.userInfo.id;
+  async viewByUser(req: Request, res: Response) {
+    const user = req.session!.userInfo.username;
+
     const savedRecipe = new SavedRecipe(this.pool);
-    const rows = await savedRecipe.viewByUserId(userId);
+
+    const rows = await savedRecipe.viewByUser(user);
+
     return res.send(rows);
   }
 
   async create(req: Request, res: Response) {
-    const recipeId = Number(req.body.id);
-    const userId = req.session!.userInfo.id;
-    assert({userId, recipeId}, validSavedRecipeEntity);
+    const recipe = req.body.id;
+    const user = req.session!.userInfo.username;
+
+    assert({user, recipe}, validSavedRecipeEntity);
+
     const savedRecipe = new SavedRecipe(this.pool);
-    await savedRecipe.create(userId, recipeId);
+
+    await savedRecipe.create(user, recipe);
+
     return res.send({message: 'Saved.'});
   }
 
   async delete(req: Request, res: Response) {
-    const recipeId = Number(req.body.id);
-    const userId = req.session!.userInfo.id;
-    assert({userId, recipeId}, validSavedRecipeEntity);
+    const recipe = req.body.id;
+    const user = req.session!.userInfo.username;
+
+    assert({user, recipe}, validSavedRecipeEntity);
+
     const savedRecipe = new SavedRecipe(this.pool);
-    await savedRecipe.delete(userId, recipeId);
+
+    await savedRecipe.delete(user, recipe);
+    
     return res.send({message: 'Unsaved.'});
   }
 }

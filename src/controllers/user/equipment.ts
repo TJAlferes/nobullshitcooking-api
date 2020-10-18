@@ -19,68 +19,70 @@ export class UserEquipmentController {
   }
 
   async view(req: Request, res: Response) {
-    const authorId = req.session!.userInfo.id;
-    const ownerId = req.session!.userInfo.id;
+    const author = req.session!.userInfo.username;
+    const owner = req.session!.userInfo.username;
+
     const equipment = new Equipment(this.pool);
-    const rows = await equipment.view(authorId, ownerId);
+
+    const rows = await equipment.view(author, owner);
+
     return res.send(rows);
   }
 
   async viewById(req: Request, res: Response) {
-    const id = Number(req.body.id);
-    const authorId = req.session!.userInfo.id;
-    const ownerId = req.session!.userInfo.id;
+    const { id } = req.body;
+    const author = req.session!.userInfo.username;
+    const owner = req.session!.userInfo.username;
+
     const equipment = new Equipment(this.pool);
-    const [ row ] = await equipment.viewById(id, authorId, ownerId);
+
+    const [ row ] = await equipment.viewById(id, author, owner);
+
     return res.send(row);
   }
 
   async create(req: Request, res: Response) {
-    const equipmentTypeId = Number(req.body.equipmentInfo.equipmentTypeId);
-    const { name, description, image } = req.body.equipmentInfo;
-    const authorId = req.session!.userInfo.id;
-    const ownerId = req.session!.userInfo.id;
-    const equipmentCreation = {
-      equipmentTypeId,
-      authorId,
-      ownerId,
-      name,
-      description,
-      image
-    };
+    const { type, name, description, image } = req.body.equipmentInfo;
+    const author = req.session!.userInfo.username;
+    const owner = req.session!.userInfo.username;
+
+    const equipmentCreation = {type, author, owner, name, description, image};
+
     assert(equipmentCreation, validEquipmentEntity);
+
     const equipment = new Equipment(this.pool);
+
     await equipment.createPrivate(equipmentCreation);
+
     return res.send({message: 'Equipment created.'});
   }
 
   async update(req: Request, res: Response) {
-    const id = Number(req.body.equipmentInfo.id);
-    const equipmentTypeId = Number(req.body.equipmentInfo.equipmentTypeId);
-    const { name, description, image } = req.body.equipmentInfo;
-    const authorId = req.session!.userInfo.id;
-    const ownerId = req.session!.userInfo.id;
-    const equipmentUpdate = {
-      equipmentTypeId,
-      authorId,
-      ownerId,
-      name,
-      description,
-      image
-    };
+    const { id, type, name, description, image } = req.body.equipmentInfo;
+    const author = req.session!.userInfo.username;
+    const owner = req.session!.userInfo.username;
+
+    const equipmentUpdate = {type, author, owner, name, description, image};
+
     assert(equipmentUpdate, validEquipmentEntity);
+
     const equipment = new Equipment(this.pool);
+
     await equipment.updatePrivate({id, ...equipmentUpdate});
+
     return res.send({message: 'Equipment updated.'});
   }
 
   async delete(req: Request, res: Response) {
-    const id = Number(req.body.id);
-    const ownerId = req.session!.userInfo.id;
+    const { id } = req.body;
+    const owner = req.session!.userInfo.username;
+
     const recipeEquipment = new RecipeEquipment(this.pool);
     const equipment = new Equipment(this.pool);
-    await recipeEquipment.deleteByEquipmentId(id);
-    await equipment.deleteByOwnerId(id, ownerId);
+
+    await recipeEquipment.deleteByEquipment(id);
+    await equipment.deleteByOwner(id, owner);
+
     return res.send({message: 'Equipment deleted.'});
   }
 }

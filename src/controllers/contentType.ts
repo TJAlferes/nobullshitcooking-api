@@ -14,14 +14,19 @@ export class ContentTypeController {
 
   async view(req: Request, res: Response) {
     const contentType = new ContentType(this.pool);
+
     const rows = await contentType.view();
+
     return res.send(rows);
   }
 
   async viewByName(req: Request, res: Response) {
     const { name } = req.params;
+
     const contentType = new ContentType(this.pool);
+
     const [ row ] = await contentType.viewByName(name);
+    
     return res.send(row);
   }
 }

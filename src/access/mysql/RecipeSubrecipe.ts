@@ -115,9 +115,9 @@ type DataWithExtra = Promise<
 export interface IRecipeSubrecipe {
   pool: Pool;
   viewByRecipe(recipe: string): Data;
-  create(recipeSubrecipes: string[], placeholders: string): Data;
+  create(recipeSubrecipes: (string|number)[], placeholders: string): Data;
   update(
-    recipeSubrecipes: string[],
+    recipeSubrecipes: (string|number)[],
     placeholders: string,
     recipe: string
   ): DataWithExtra;  // | finish

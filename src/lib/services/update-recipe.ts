@@ -33,8 +33,8 @@ import {
 
 export async function updateRecipeService({
   id,
-  authorId,
-  ownerId,
+  author,
+  owner,
   recipeUpdate,
   requiredMethods,
   requiredEquipment,
@@ -47,121 +47,95 @@ export async function updateRecipeService({
   recipeSubrecipe,
   recipeSearch
 }: UpdateRecipeService) {
-  if (authorId == 1 && ownerId === 1) {
+  if (author === "NOBSC" && owner === "NOBSC") {
     await recipe.update({id, ...recipeUpdate});  // if staff
   } else {
     await recipe.updatePrivate({id, ...recipeUpdate});  // if user
   }
 
-  let recipeMethodsToUpdateWith: number[] = [];
+  let recipeMethodsToUpdateWith: string[] = [];
   let recipeMethodsPlaceholders = "none";
-
   if (requiredMethods.length) {
-    requiredMethods.map(m => assert({
-      id,
-      methodId: m.methodId
+    requiredMethods.map(({ method }) => assert({
+      recipe: id,
+      method
     }, validRecipeMethodEntity));
-
-    requiredMethods.map(m => {
-      recipeMethodsToUpdateWith.push(id, m.methodId)
+    requiredMethods.map(({ method }) => {
+      recipeMethodsToUpdateWith.push(id, method)
     });
-
     recipeMethodsPlaceholders =
       '(?, ?),'.repeat(requiredMethods.length).slice(0, -1);
   }
-
   await recipeMethod
     .update(recipeMethodsToUpdateWith, recipeMethodsPlaceholders, id);
 
   // first check if the equipment exists?
-
-  let recipeEquipmentToUpdateWith: number[] = [];
+  let recipeEquipmentToUpdateWith: (string|number)[] = [];
   let recipeEquipmentPlaceholders = "none";
-
   if (requiredEquipment.length) {
-    recipeEquipmentToUpdateWith = [];
-
-    requiredEquipment.map(e => assert({
-      id,
-      equipmentId: e.equipment,
-      amount: e.amount
+    requiredEquipment.map(({ equipment, amount }) => assert({
+      recipe: id,
+      equipment,
+      amount
     }, validRecipeEquipmentEntity));
-
-    requiredEquipment.map(e => {
-      recipeEquipmentToUpdateWith.push(id, e.equipment, e.amount)
+    requiredEquipment.map(({ equipment, amount }) => {
+      recipeEquipmentToUpdateWith.push(id, equipment, amount)
     });
-
     recipeEquipmentPlaceholders =
       '(?, ?, ?),'.repeat(requiredEquipment.length).slice(0, -1);
   }
-
   await recipeEquipment
     .update(recipeEquipmentToUpdateWith, recipeEquipmentPlaceholders, id);
 
   // first check if the ingredients exists?
-
-  let recipeIngredientsToUpdateWith: number[] = [];
+  let recipeIngredientsToUpdateWith: (string|number)[] = [];
   let recipeIngredientsPlaceholders = "none";
-
   if (requiredIngredients.length) {
-    recipeIngredientsToUpdateWith = [];
-
-    requiredIngredients.map(i => assert({
-      id,
-      ingredientId: i.ingredient,
-      amount: i.amount,
-      measurementId: i.unit
+    requiredIngredients.map(({ ingredient, amount, unit }) => assert({
+      recipe: id,
+      ingredient,
+      amount,
+      measurement: unit
     }, validRecipeIngredientEntity));
-
-    requiredIngredients.map(i => {
-      recipeIngredientsToUpdateWith.push(id, i.ingredient, i.amount, i.unit);
+    requiredIngredients.map(({ ingredient, amount, unit }) => {
+      recipeIngredientsToUpdateWith.push(id, ingredient, amount, unit);
     });
-
     recipeIngredientsPlaceholders =
       '(?, ?, ?, ?),'.repeat(requiredIngredients.length).slice(0, -1);
   }
-
   await recipeIngredient
     .update(recipeIngredientsToUpdateWith, recipeIngredientsPlaceholders, id);
 
   // first check if the subrecipes exists?
-
-  let recipeSubrecipesToUpdateWith: number[] = [];
+  let recipeSubrecipesToUpdateWith: (string|number)[] = [];
   let recipeSubrecipesPlaceholders = "none";
-
   if (requiredSubrecipes.length) {
-    recipeSubrecipesToUpdateWith = [];
-
-    requiredSubrecipes.map(s => assert({
-      id,
-      subrecipeId: s.subrecipe,
-      amount: s.amount,
-      measurementId: s.unit
+    requiredSubrecipes.map(({ subrecipe, amount, unit }) => assert({
+      recipe: id,
+      subrecipe,
+      amount,
+      measurement: unit
     }, validRecipeSubrecipeEntity));
-
-    requiredSubrecipes.map(s => {
-      recipeSubrecipesToUpdateWith.push(id, s.subrecipe, s.amount, s.unit);
+    requiredSubrecipes.map(({ subrecipe, amount, unit }) => {
+      recipeSubrecipesToUpdateWith.push(id, subrecipe, amount, unit);
     });
-
     recipeSubrecipesPlaceholders =
       '(?, ?, ?, ?),'.repeat(requiredSubrecipes.length).slice(0, -1);
   }
-
   await recipeSubrecipe
     .update(recipeSubrecipesToUpdateWith, recipeSubrecipesPlaceholders, id);
 
   // if public
-  if (ownerId === 1) {
-    const [ recipeInfoForElasticSearch ] = await recipe.getForElasticSearch(id);
-
-    await recipeSearch.save(recipeInfoForElasticSearch[0]);  // fix?
+  if (owner === "NOBSC") {
+    const [ infoForElasticSearch ] = await recipe.getForElasticSearch(id);
+    await recipeSearch.save(infoForElasticSearch[0]);  // fix?
   }
 }
 
 interface UpdateRecipeService {
-  id: number;
-  authorId: number;
-  ownerId: number;
+  id: string;
+  author: string;
+  owner: string;
   recipeUpdate: ICreatingRecipe;
   requiredEquipment: IMakeRecipeEquipment[];
   requiredIngredients: IMakeRecipeIngredient[];

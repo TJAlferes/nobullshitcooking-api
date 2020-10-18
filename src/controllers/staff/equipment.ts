@@ -20,58 +20,61 @@ export class StaffEquipmentController {
   }
   
   async create(req: Request, res: Response) {
-    const equipmentTypeId = Number(req.body.equipmentInfo.equipmentTypeId);
-    const { name, description, image } = req.body.equipmentInfo;
-    const authorId = 1;
-    const ownerId = 1;
-    const equipmentCreation = {
-      equipmentTypeId,
-      authorId,
-      ownerId,
-      name,
-      description,
-      image
-    };
+    const { type, name, description, image } = req.body.equipmentInfo;
+    const author = "NOBSC";
+    const owner = "NOBSC";
+
+    const equipmentCreation = {type, author, owner, name, description, image};
+
     assert(equipmentCreation, validEquipmentEntity);
+
     const equipment = new Equipment(this.pool);
-    const createdEquipment = await equipment.create(equipmentCreation);
-    const generatedId = createdEquipment.insertId;
+
+    await equipment.create(equipmentCreation);
+
+    const generatedId = `${author} ${name}`;
+
     const [ equipmentForInsert ] =
       await equipment.getForElasticSearch(generatedId);
+    
     const equipmentSearch = new EquipmentSearch(this.esClient);
+
     await equipmentSearch.save(equipmentForInsert[0]);
+
     return res.send({message: 'Equipment created.'});
   }
 
   async update(req: Request, res: Response) {
-    const id = Number(req.body.equipmentInfo.id);
-    const equipmentTypeId = Number(req.body.equipmentInfo.equipmentTypeId);
-    const { name, description, image } = req.body.equipmentInfo;
-    const authorId = 1;
-    const ownerId = 1;
-    const equipmentUpdate = {
-      equipmentTypeId,
-      authorId,
-      ownerId,
-      name,
-      description,
-      image
-    };
+    const { id, type, name, description, image } = req.body.equipmentInfo;
+    const author = "NOBSC";
+    const owner = "NOBSC";
+
+    const equipmentUpdate = {type, author, owner, name, description, image};
+
     assert(equipmentUpdate, validEquipmentEntity);
+
     const equipment = new Equipment(this.pool);
+
     await equipment.update({id, ...equipmentUpdate});
+
     const [ equipmentForInsert ] = await equipment.getForElasticSearch(id);
+
     const equipmentSearch = new EquipmentSearch(this.esClient);
+
     await equipmentSearch.save(equipmentForInsert[0]);
+    
     return res.send({message: 'Equipment updated.'});
   }
 
   async delete(req: Request, res: Response) {
-    const id = Number(req.body.id);
+    const { id } = req.body;
+
     const equipment = new Equipment(this.pool);
     const equipmentSearch = new EquipmentSearch(this.esClient);
+
     await equipment.delete(id);
-    await equipmentSearch.delete(String(id));
+    await equipmentSearch.delete(id);
+
     return res.send({message: 'Equipment deleted.'});
   }
 }

@@ -19,74 +19,74 @@ export class UserContentController {
   }
 
   async view(req: Request, res: Response) {
-    const authorId = req.session!.userInfo.id;
-    //const ownerId = req.session!.userInfo.id;
+    const author = req.session!.userInfo.username;
     const content = new Content(this.pool);
-    const rows = await content.view(authorId);
+
+    const rows = await content.view(author);
+
     return res.send(rows);
   }
 
   async viewById(req: Request, res: Response) {
-    const id = Number(req.body.id);
-    const authorId = req.session!.userInfo.id;
-    //const ownerId = req.session!.userInfo.id;
+    const { id } = req.body;
+    const author = req.session!.userInfo.username;
+
     const content = new Content(this.pool);
-    const [ row ] = await content.viewById(id, authorId);
+
+    const [ row ] = await content.viewById(id, author);
+
     return res.send(row);
   }
 
   async create(req: Request, res: Response) {
-    const contentTypeId = Number(req.body.contentInfo.contentTypeId);
-    const { published, title, items } = req.body.contentInfo;
-    const authorId = req.session!.userInfo.id;
-    const ownerId = req.session!.userInfo.id;
+    const { type, published, title, items } = req.body.contentInfo;
+    const author = req.session!.userInfo.username;
+    const owner = req.session!.userInfo.username;
     const created = ((new Date).toISOString()).split("T")[0];
-    const contentCreation = {
-      contentTypeId,
-      authorId,
-      ownerId,
-      created,
-      published,
-      title,
-      items
-    };
+
+    const contentCreation =
+      { type, author, owner, created, published, title, items };
+
     // you need to understand coerce and defaulted better
     assert(
       coerce({contentCreation}, validContentCreation),
       validContentCreation
     );
+
     const content = new Content(this.pool);
+
     await content.create(contentCreation);
+
     return res.send({message: 'Content created.'});
   }
 
   async update(req: Request, res: Response) {
-    const id = Number(req.body.contentInfo.id);
-    const contentTypeId = Number(req.body.contentInfo.contentTypeId);
-    const { published, title, items } = req.body.contentInfo;
-    const ownerId = req.session!.userInfo.id;
-    const contentUpdate = {
-      contentTypeId,
-      ownerId,
-      published,
-      title,
-      items
-    };
+    const { id, type, published, title, items } = req.body.contentInfo;
+    const owner = req.session!.userInfo.username;
+
+    const contentUpdate = { type, owner, published, title, items};
+
     // you need to understand coerce and defaulted better
     assert(
       coerce({contentUpdate}, validContentUpdate),
       validContentUpdate
     );
+
     const content = new Content(this.pool);
+
     await content.update({id, ...contentUpdate});
+
     return res.send({message: 'Content updated.'});
   }
 
   async delete(req: Request, res: Response) {
-    const id = Number(req.body.id);
-    const ownerId = req.session!.userInfo.id;
+    const { id } = req.body;
+    const owner = req.session!.userInfo.username;
+
     const content = new Content(this.pool);
-    await content.delete(ownerId, id);
+
+    await content.delete(owner, id);
+    
     return res.send({message: 'Content deleted.'});
   }
 }

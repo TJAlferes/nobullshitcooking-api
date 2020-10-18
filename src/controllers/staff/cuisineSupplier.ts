@@ -13,18 +13,22 @@ export class StaffCuisineSupplierController {
   }
   
   async create(req: Request, res: Response) {
-    const cuisineId = Number(req.body.cuisineId);
-    const supplierId = Number(req.body.supplierId);
+    const { cuisine, supplier } = req.body;
+
     const cuisineSupplier = new CuisineSupplier(this.pool);
-    await cuisineSupplier.create(cuisineId, supplierId);
+
+    await cuisineSupplier.create(cuisine, supplier);
+
     return res.send({message: 'Cuisine supplier created.'});
   }
 
   async delete(req: Request, res: Response) {
-    const cuisineId = Number(req.body.cuisineId);
-    const supplierId = Number(req.body.supplierId);
+    const { cuisine, supplier } = req.body;
+
     const cuisineSupplier = new CuisineSupplier(this.pool);
-    await cuisineSupplier.delete(cuisineId, supplierId);
+
+    await cuisineSupplier.delete(cuisine, supplier);
+    
     return res.send({message: 'Cuisine supplier deleted.'});
   }
 }

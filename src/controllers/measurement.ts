@@ -14,14 +14,19 @@ export class MeasurementController {
 
   async view(req: Request, res: Response) {
     const measurement = new Measurement(this.pool);
+
     const rows = await measurement.view();
+
     return res.send(rows);
   }
 
   async viewByName(req: Request, res: Response) {
     const { name } = req.params;
+
     const measurement = new Measurement(this.pool);
+
     const [ row ] = await measurement.viewByName(name);
+    
     return res.send(row);
   }
 }

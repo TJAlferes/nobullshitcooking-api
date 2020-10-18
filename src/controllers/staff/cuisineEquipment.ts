@@ -13,18 +13,22 @@ export class StaffCuisineEquipmentController {
   }
   
   async create(req: Request, res: Response) {
-    const cuisineId = Number(req.body.cuisineId);
-    const equipmentId = Number(req.body.equipmentId);
+    const { cuisine, equipment } = req.body;
+
     const cuisineEquipment = new CuisineEquipment(this.pool);
-    await cuisineEquipment.create(cuisineId, equipmentId);
+
+    await cuisineEquipment.create(cuisine, equipment);
+
     return res.send({message: 'Cuisine equipment created.'});
   }
 
   async delete(req: Request, res: Response) {
-    const cuisineId = Number(req.body.cuisineId);
-    const equipmentId = Number(req.body.equipmentId);
+    const { cuisine, equipment } = req.body;
+
     const cuisineEquipment = new CuisineEquipment(this.pool);
-    await cuisineEquipment.delete(cuisineId, equipmentId);
+
+    await cuisineEquipment.delete(cuisine, equipment);
+    
     return res.send({message: 'Cuisine equipment deleted.'});
   }
 }

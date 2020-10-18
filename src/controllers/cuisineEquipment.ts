@@ -8,13 +8,16 @@ export class CuisineEquipmentController {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewByCuisineId = this.viewByCuisineId.bind(this);
+    this.viewByCuisine = this.viewByCuisine.bind(this);
   }
 
-  async viewByCuisineId(req: Request, res: Response) {
-    const id = Number(req.params.id);
+  async viewByCuisine(req: Request, res: Response) {
+    const { cuisine } = req.params;
+
     const cuisineEquipment = new CuisineEquipment(this.pool);
-    const rows = await cuisineEquipment.viewByCuisineId(id);
+
+    const rows = await cuisineEquipment.viewByCuisine(cuisine);
+    
     return res.send(rows);
   }
 }

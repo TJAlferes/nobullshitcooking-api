@@ -21,8 +21,9 @@ export class DataInitController {
   }
 
   async viewInitialData(req: Request, res: Response) {
-    const authorId = 1;
-    const ownerId = 1;
+    const author = "NOBSC";
+    const owner = "NOBSC";
+
     const contentType = new ContentType(this.pool);
     const cuisine = new Cuisine(this.pool);
     const equipment = new Equipment(this.pool);
@@ -33,6 +34,7 @@ export class DataInitController {
     const method = new Method(this.pool);
     const recipe = new Recipe(this.pool);
     const recipeType = new RecipeType(this.pool);
+
     const [
       contentTypes,
       cuisines,
@@ -47,15 +49,16 @@ export class DataInitController {
     ] = await Promise.all([
       contentType.view(),
       cuisine.view(),
-      equipment.view(authorId, ownerId),
+      equipment.view(author, owner),
       equipmentType.view(),
-      ingredient.view(authorId, ownerId),
+      ingredient.view(author, owner),
       ingredientType.view(),
       measurement.view(),
       method.view(),
-      recipe.view(authorId, ownerId),
+      recipe.view(author, owner),
       recipeType.view()
     ]);
+    
     return res.send({
       contentTypes,
       cuisines,

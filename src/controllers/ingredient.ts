@@ -13,19 +13,25 @@ export class IngredientController {
   }
 
   async view(req: Request, res: Response) {
-    const authorId = 1;
-    const ownerId = 1;
+    const author = "NOBSC";
+    const owner = "NOBSC";
+
     const ingredient = new Ingredient(this.pool);
-    const rows = await ingredient.view(authorId, ownerId);
+
+    const rows = await ingredient.view(author, owner);
+
     return res.send(rows);
   }
 
   async viewById(req: Request, res: Response) {
-    const id = Number(req.params.id);
-    const authorId = 1;
-    const ownerId = 1;
+    const { id } = req.params;
+    const author = "NOBSC";
+    const owner = "NOBSC";
+
     const ingredient = new Ingredient(this.pool);
-    const [ row ] = await ingredient.viewById(id, authorId, ownerId);
+
+    const [ row ] = await ingredient.viewById(id, author, owner);
+    
     return res.send(row);
   }
 }

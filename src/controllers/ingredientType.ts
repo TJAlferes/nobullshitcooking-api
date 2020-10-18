@@ -14,14 +14,19 @@ export class IngredientTypeController {
 
   async view(req: Request, res: Response) {
     const ingredientType = new IngredientType(this.pool);
+
     const rows = await ingredientType.view();
+
     return res.send(rows);
   }
 
   async viewByName(req: Request, res: Response) {
     const { name } = req.params;
+
     const ingredientType = new IngredientType(this.pool);
+
     const [ row ] = await ingredientType.viewByName(name);
+    
     return res.send(row);
   }
 }

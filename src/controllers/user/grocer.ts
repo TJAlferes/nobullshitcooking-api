@@ -1,0 +1,65 @@
+import { Request, Response } from 'express';
+import { Pool } from 'mysql2/promise';
+import { assert } from 'superstruct';
+
+import { Grocer } from '../../access/mysql/Grocer';
+
+export class UserGrocerController {
+  pool: Pool;
+
+  constructor(pool: Pool) {
+    this.pool = pool;
+    this.view = this.view.bind(this);
+    //this.viewById = this.viewById.bind(this);
+    this.create = this.create.bind(this);
+    this.update = this.update.bind(this);
+    this.delete = this.delete.bind(this);
+  }
+
+  async view(req: Request, res: Response) {
+    const owner = req.session!.userInfo.username;
+
+    const grocer = new Grocer(this.pool);
+
+    const rows = await grocer.view(owner);
+
+    return res.send(rows);
+  }
+
+  async create(req: Request, res: Response) {
+    const { name, address, notes } = req.body.equipmentInfo;
+    const owner = req.session!.userInfo.username;
+
+    const grocerCreation = {owner, name, address, notes};
+
+    const grocer = new Grocer(this.pool);
+
+    await grocer.create(grocerCreation);
+
+    return res.send({message: 'Grocer created.'});
+  }
+
+  async update(req: Request, res: Response) {
+    const { id, name, address, notes } = req.body.grocerInfo;
+    const owner = req.session!.userInfo.username;
+
+    const grocerUpdate = {owner, name, address, notes};
+
+    const grocer = new Grocer(this.pool);
+
+    await grocer.update({id, ...grocerUpdate});
+
+    return res.send({message: 'Grocer updated.'});
+  }
+
+  async delete(req: Request, res: Response) {
+    const { id } = req.body;
+    const owner = req.session!.userInfo.username;
+
+    const grocer = new Grocer(this.pool);
+
+    await grocer.delete(id, owner);
+
+    return res.send({message: 'Grocer deleted.'});
+  }
+}

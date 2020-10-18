@@ -21,34 +21,37 @@ export class UserFriendshipController {
   }
 
   async view(req: Request, res: Response) {
-    const userId = req.session!.userInfo.id;
+    const username = req.session!.userInfo.username;
+
     const friendship = new Friendship(this.pool);
-    const rows = await friendship.view(userId);
+
+    const rows = await friendship.view(username);
+
     return res.send(rows);
   }
 
   async create(req: Request, res: Response) {
-    const { friendName } = req.body;
+    const { friend } = req.body;
+    const username = req.session!.userInfo.username;
 
     const user = new User(this.pool);
 
-    const [ friendExists ] = await user.viewByName(friendName);
-    if (!friendExists.length) return res.send({message: 'User not found.'});
+    const [ friendExists ] = await user.viewByName(friend);
 
-    const friendId = friendExists[0].id;
-    const userId = req.session!.userInfo.id;
+    if (!friendExists.length) return res.send({message: 'User not found.'});
 
     const friendship = new Friendship(this.pool);
 
-    const [ blockedBy ] = await friendship.checkIfBlockedBy(userId, friendId);
+    const [ blockedBy ] = await friendship.checkIfBlockedBy(username, friend);
+
     if (blockedBy.length) return res.send({message: 'User not found.'});
 
-    const [ friendshipExists ] =
-      await friendship.getByFriendId(userId, friendId);
+    const [ friendshipExists ] = await friendship.getByFriend(username, friend);
+
     if (!friendshipExists.length) {
       const friendshipToCreate = {
-        userId,
-        friendId,
+        username,
+        friend,
         status1: "pending-sent",
         status2: "pending-received"
       };
@@ -61,106 +64,110 @@ export class UserFriendshipController {
     }
 
     const { status } = friendshipExists[0];
+
     if (status === "pending-sent") {
       return res.send({message: 'Already sent.'});
     }
+
     if (status === "pending-received") {
       return res.send({message: 'Already received.'});
     }
+
     if (status === "accepted") {
       return res.send({message: 'Already friends.'});
     }
+
     if (status === "blocked") {
       return res.send({message: 'User blocked. First unblock.'});
     }
   }
 
   async accept(req: Request, res: Response) {
-    const { friendName } = req.body;
+    const { friend } = req.body;
 
     const user = new User(this.pool);
 
-    const [ friendExists ] = await user.viewByName(friendName);
+    const [ friendExists ] = await user.viewByName(friend);
+
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
-    const friendId = friendExists[0].id;
-    const userId = req.session!.userInfo.id;
+    const username = req.session!.userInfo.username;
 
     const friendship = new Friendship(this.pool);
 
-    await friendship.accept(userId, friendId);
+    await friendship.accept(username, friend);
 
     return res.send({message: 'Friendship request accepted.'});
   }
 
   async reject(req: Request, res: Response) {
-    const { friendName } = req.body;
+    const { friend } = req.body;
 
     const user = new User(this.pool);
 
-    const [ friendExists ] = await user.viewByName(friendName);
+    const [ friendExists ] = await user.viewByName(friend);
+
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
-    const friendId = friendExists[0].id;
-    const userId = req.session!.userInfo.id;
+    const username = req.session!.userInfo.username;
 
     const friendship = new Friendship(this.pool);
 
-    await friendship.reject(userId, friendId);
+    await friendship.reject(username, friend);
 
     return res.send({message: 'Friendship request rejected.'});
   }
 
   async delete(req: Request, res: Response) {
-    const { friendName } = req.body;
+    const { friend } = req.body;
 
     const user = new User(this.pool);
 
-    const [ friendExists ] = await user.viewByName(friendName);
+    const [ friendExists ] = await user.viewByName(friend);
+
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
-    const friendId = friendExists[0].id;
-    const userId = req.session!.userInfo.id;
+    const username = req.session!.userInfo.username;
 
     const friendship = new Friendship(this.pool);
 
-    await friendship.delete(userId, friendId);
+    await friendship.delete(username, friend);
 
     return res.send({message: 'No longer friends. Maybe again later.'});
   }
 
   async block(req: Request, res: Response) {
-    const { friendName } = req.body;
+    const { friend } = req.body;
 
     const user = new User(this.pool);
 
-    const [ friendExists ] = await user.viewByName(friendName);
+    const [ friendExists ] = await user.viewByName(friend);
+
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
-    const friendId = friendExists[0].id;
-    const userId = req.session!.userInfo.id;
+    const username = req.session!.userInfo.username;
 
     const friendship = new Friendship(this.pool);
 
-    await friendship.block(userId, friendId);
+    await friendship.block(username, friend);
 
     return res.send({message: 'User blocked.'});
   }
 
   async unblock(req: Request, res: Response) {
-    const { friendName } = req.body;
+    const { friend } = req.body;
 
     const user = new User(this.pool);
 
-    const [ friendExists ] = await user.viewByName(friendName);
+    const [ friendExists ] = await user.viewByName(friend);
+
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
-    const friendId = friendExists[0].id;
-    const userId = req.session!.userInfo.id;
+    const username = req.session!.userInfo.username;
 
     const friendship = new Friendship(this.pool);
     
-    await friendship.unblock(userId, friendId);
+    await friendship.unblock(username, friend);
 
     return res.send({message: 'User unblocked.'});
   }

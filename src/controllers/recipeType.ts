@@ -16,15 +16,21 @@ export class RecipeTypeController {
 
   async view(req: Request, res: Response) {
     const recipeType = new RecipeType(this.pool);
+
     const rows = await recipeType.view();
+
     return res.send(rows);
   }
 
   async viewByName(req: Request, res: Response) {
     const { name } = req.params;
+
     //assert({id}, validRecipeTypeRequest);
+
     const recipeType = new RecipeType(this.pool);
+
     const [ row ] = await recipeType.viewByName(name);
+    
     return res.send(row);
   }
 }

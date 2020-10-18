@@ -18,47 +18,66 @@ export class UserPlanController {
   }
 
   async view(req: Request, res: Response) {
-    const ownerId = req.session!.userInfo.id;
+    const owner = req.session!.userInfo.username;
+
     const plan = new Plan(this.pool);
-    const rows = await plan.view(ownerId);
+
+    const rows = await plan.view(owner);
+
     return res.send(rows);
   }
 
   async viewById(req: Request, res: Response) {
-    const id = Number(req.body.id);
-    const ownerId = req.session!.userInfo.id;
+    const { id } = req.body;
+    const owner = req.session!.userInfo.username;
+
     const plan = new Plan(this.pool);
-    const [ row ] = await plan.viewById(id, ownerId);
+
+    const [ row ] = await plan.viewById(id, owner);
+
     return res.send(row);
   }
 
   async create(req: Request, res: Response) {
     const { name, data } = req.body.planInfo;
-    const authorId = req.session!.userInfo.id;
-    const ownerId = req.session!.userInfo.id;
-    const planCreation = {authorId, ownerId, name, data};
+    const author = req.session!.userInfo.username;
+    const owner = req.session!.userInfo.username;
+
+    const planCreation = {author, owner, name, data};
+
     assert(planCreation, validPlanEntity);
+
     const plan = new Plan(this.pool);
+
     await plan.create(planCreation);
+
     return res.send({message: 'Plan created.'});
   }
 
   async update(req: Request, res: Response) {
     const { id, name, data } = req.body.planInfo;
-    const authorId = req.session!.userInfo.id;
-    const ownerId = req.session!.userInfo.id;
-    const planUpdate = {authorId, ownerId, name, data};
+    const author = req.session!.userInfo.username;
+    const owner = req.session!.userInfo.username;
+
+    const planUpdate = {author, owner, name, data};
+
     assert(planUpdate, validPlanEntity);
+
     const plan = new Plan(this.pool);
+
     await plan.update({id, ...planUpdate});
+
     return res.send({message: 'Plan updated.'});
   }
 
   async deleteById(req: Request, res: Response) {
-    const id = Number(req.body.id);
-    const ownerId = req.session!.userInfo.id;
+    const { id } = req.body;
+    const owner = req.session!.userInfo.username;
+
     const plan = new Plan(this.pool);
-    await plan.deleteById(id, ownerId);
+
+    await plan.delete(id, owner);
+
     return res.send({message: 'Plan deleted.'});
   }
 }

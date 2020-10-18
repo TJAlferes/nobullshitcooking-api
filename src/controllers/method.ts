@@ -14,14 +14,19 @@ export class MethodController {
 
   async view(req: Request, res: Response) {
     const method = new Method(this.pool);
+
     const rows = await method.view();
+
     return res.send(rows);
   }
 
   async viewByName(req: Request, res: Response) {
     const { name } = req.params;
+
     const method = new Method(this.pool);
+
     const [ row ] = await method.viewByName(name);
+    
     return res.send(row);
   }
 }
