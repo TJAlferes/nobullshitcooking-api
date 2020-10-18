@@ -13,8 +13,8 @@ export class EquipmentSearch implements IEquipmentSearch {
 
   // deep pagination can kill performance, set upper bounds 
   async find(searchBody: object) {
-    const { body } = await this.client
-      .search({index: "equipment", body: searchBody});
+    const { body } =
+      await this.client.search({index: "equipment", body: searchBody});
     return body;
   }
 
@@ -46,11 +46,11 @@ export class EquipmentSearch implements IEquipmentSearch {
   }
 
   // (staff only)
-  async save({ id, equipment_type_name, name, image }: ISavingEquipment) {
+  async save({ id, type, name, image }: ISavingEquipment) {
     const savedEquipment = await this.client.index({
       index: 'equipment',
       id,
-      body: {id, equipment_type_name, name, image}
+      body: {id, type, name, image}
     });
     await this.client.indices.refresh({index: 'equipment'});
     return savedEquipment;
@@ -69,13 +69,13 @@ export interface IEquipmentSearch {
   client: Client;
   find(searchBody: any): any;  // finish
   auto(searchTerm: string): any;  // finish
-  save({id, equipment_type_name, name, image}: ISavingEquipment): void;
+  save({id, type, name, image}: ISavingEquipment): void;
   delete(id: string): void;
 }
 
 interface ISavingEquipment {
   id: string;
-  equipment_type_name: string;
+  type: string;
   name: string;
   image: string;
 }

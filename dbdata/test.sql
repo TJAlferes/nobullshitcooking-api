@@ -253,6 +253,7 @@ CREATE TABLE `recipes` (
   `equipment_image` varchar(100) NOT NULL DEFAULT 'nobsc-recipe-equipment-default',
   `ingredients_image` varchar(100) NOT NULL DEFAULT 'nobsc-recipe-ingredients-default',
   `cooking_image` varchar(100) NOT NULL DEFAULT 'nobsc-recipe-cooking-default',
+  `video` varchar(100) NOT NULL DEFAULT '',
   `id` varchar(121) GENERATED ALWAYS AS (CONCAT(author, ' ', title)) STORED UNIQUE,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`type`) REFERENCES `recipe_types` (`name`) ON UPDATE CASCADE,

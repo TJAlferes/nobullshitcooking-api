@@ -17,7 +17,7 @@ export class SavedRecipe implements ISavedRecipe {
         r.title,
         r.recipe_image,
         r.owner,
-        r.recipe_type,
+        r.type,
         r.cuisine
       FROM saved_recipes s
       INNER JOIN recipes r ON r.id = s.recipe

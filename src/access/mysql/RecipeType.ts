@@ -16,7 +16,7 @@ export class RecipeType implements IRecipeType {
   }
 
   async viewByName(name: string) {
-    const sql = `SELECT name FROM recipe_types WHERE id = ?`;
+    const sql = `SELECT name FROM recipe_types WHERE name = ?`;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [name]);
     return row;
   }

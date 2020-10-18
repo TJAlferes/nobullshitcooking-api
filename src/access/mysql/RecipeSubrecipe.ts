@@ -5,32 +5,31 @@ export class RecipeSubrecipe implements IRecipeSubrecipe {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewByRecipeId = this.viewByRecipeId.bind(this);
+    this.viewByRecipe = this.viewByRecipe.bind(this);
     this.create = this.create.bind(this);
     this.update = this.update.bind(this);
-    this.deleteByRecipeId = this.deleteByRecipeId.bind(this);
-    this.deleteByRecipeIds = this.deleteByRecipeIds.bind(this);
-    this.deleteBySubrecipeId = this.deleteBySubrecipeId.bind(this);
-    this.deleteBySubrecipeIds = this.deleteBySubrecipeIds.bind(this);
+    this.deleteByRecipe = this.deleteByRecipe.bind(this);
+    this.deleteByRecipes = this.deleteByRecipes.bind(this);
+    this.deleteBySubrecipe = this.deleteBySubrecipe.bind(this);
+    this.deleteBySubrecipes = this.deleteBySubrecipes.bind(this);
   }
 
-  async viewByRecipeId(recipeId: number) {
+  async viewByRecipe(recipe: string) {
     const sql = `
-      SELECT rs.amount, m.name AS measurement_name, r.title
+      SELECT rs.amount, rs.measurement, r.title
       FROM recipe_subrecipes rs
-      INNER JOIN measurements m ON m.id = rs.measurement_id
-      INNER JOIN recipes r ON r.id = rs.subrecipe_id
-      WHERE rs.recipe_id = ?
-      ORDER BY r.recipe_type_id
+      INNER JOIN recipes r ON r.id = rs.subrecipe
+      WHERE rs.recipe = ?
+      ORDER BY r.type
     `;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [recipeId]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [recipe]);
     return rows;
   }
 
-  async create(recipeSubrecipes: number[], placeholders: string) {
+  async create(recipeSubrecipes: string[], placeholders: string) {
     const sql = `
       INSERT INTO recipe_subrecipes
-      (recipe_id, subrecipe_id, amount, measurement_id)
+      (recipe, subrecipe, amount, measurement)
       VALUES ${placeholders}
     `;
     const [ rows ] = await this.pool
@@ -40,16 +39,16 @@ export class RecipeSubrecipe implements IRecipeSubrecipe {
 
   // finish
   async update(
-    recipeSubrecipes: number[],
+    recipeSubrecipes: string[],
     placeholders: string,
-    recipeId: number
+    recipe: string
   ) {
-    const sql1 = `DELETE FROM recipe_subrecipes WHERE recipe_id = ?`;
+    const sql1 = `DELETE FROM recipe_subrecipes WHERE recipe = ?`;
     const sql2 = (recipeSubrecipes.length)
     ? `
       INSERT INTO recipe_subrecipes
-      (recipe_id, subrecipe_id, amount, measurement_id)
-      VALUES ${placeholders} 
+      (recipe, subrecipe, amount, measurement)
+      VALUES ${placeholders}
     `
     : "none";
     const connection = await this.pool.getConnection();
@@ -57,7 +56,7 @@ export class RecipeSubrecipe implements IRecipeSubrecipe {
     await connection.beginTransaction();
 
     try {
-      await connection.query(sql1, [recipeId]);
+      await connection.query(sql1, [recipe]);
 
       if (sql2 !== "none") {
         const [ rows ] = await connection
@@ -75,29 +74,29 @@ export class RecipeSubrecipe implements IRecipeSubrecipe {
     }
   }
 
-  async deleteByRecipeId(recipeId: number) {
-    const sql = `DELETE FROM recipe_subrecipes WHERE recipe_id = ?`;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [recipeId]);
+  async deleteByRecipe(recipe: string) {
+    const sql = `DELETE FROM recipe_subrecipes WHERE recipe = ?`;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [recipe]);
     return rows;
   }
 
-  async deleteByRecipeIds(recipeIds: number[]) {
-    const sql = `DELETE FROM recipe_subrecipes WHERE recipe_id = ANY(?)`;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, recipeIds);
+  async deleteByRecipes(recipes: string[]) {
+    const sql = `DELETE FROM recipe_subrecipes WHERE recipe = ANY(?)`;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, recipes);
     return rows;
   }
 
-  async deleteBySubrecipeId(subrecipeId: number) {
-    const sql = `DELETE FROM recipe_subrecipes WHERE subrecipe_id = ?`;
+  async deleteBySubrecipe(subrecipe: string) {
+    const sql = `DELETE FROM recipe_subrecipes WHERE subrecipe = ?`;
     const [ rows ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [subrecipeId]);
+      .execute<RowDataPacket[]>(sql, [subrecipe]);
     return rows;
   }
 
-  async deleteBySubrecipeIds(subrecipeIds: number[]) {
-    const sql = `DELETE FROM recipe_subrecipes WHERE subrecipe_id = ANY(?)`;
+  async deleteBySubrecipes(subrecipes: string[]) {
+    const sql = `DELETE FROM recipe_subrecipes WHERE subrecipe = ANY(?)`;
     const [ rows ] = await this.pool
-      .execute<RowDataPacket[]>(sql, subrecipeIds);
+      .execute<RowDataPacket[]>(sql, subrecipes);
     return rows;
   }
 }
@@ -115,21 +114,21 @@ type DataWithExtra = Promise<
 
 export interface IRecipeSubrecipe {
   pool: Pool;
-  viewByRecipeId(recipeId: number): Data;
-  create(recipeSubrecipes: number[], placeholders: string): Data;
+  viewByRecipe(recipe: string): Data;
+  create(recipeSubrecipes: string[], placeholders: string): Data;
   update(
-    recipeSubrecipes: number[],
+    recipeSubrecipes: string[],
     placeholders: string,
-    recipeId: number
+    recipe: string
   ): DataWithExtra;  // | finish
-  deleteByRecipeId(recipeId: number): Data;
-  deleteByRecipeIds(recipeIds: number[]): Data;
-  deleteBySubrecipeId(subrecipeId: number): Data;
-  deleteBySubrecipeIds(subrecipeIds: number[]): Data;
+  deleteByRecipe(recipe: string): Data;
+  deleteByRecipes(recipes: string[]): Data;
+  deleteBySubrecipe(subrecipe: string): Data;
+  deleteBySubrecipes(subrecipes: string[]): Data;
 }
 
 export interface IMakeRecipeSubrecipe {
-  subrecipe: number;
+  subrecipe: string;
   amount: number;
-  unit: number;
+  unit: string;
 }

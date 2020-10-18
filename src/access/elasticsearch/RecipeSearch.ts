@@ -51,8 +51,8 @@ export class RecipeSearch implements IRecipeSearch {
   async save({
     id,
     author,
-    recipe_type_name,
-    cuisine_name,
+    type,
+    cuisine,
     title,
     description,
     directions,
@@ -68,8 +68,8 @@ export class RecipeSearch implements IRecipeSearch {
       body: {
         id,
         author,
-        recipe_type_name,
-        cuisine_name,
+        type,
+        cuisine,
         title,
         description,
         directions,
@@ -96,8 +96,8 @@ export interface IRecipeSearch {
   save({
     id,
     author,
-    recipe_type_name,
-    cuisine_name,
+    type,
+    cuisine,
     title,
     description,
     directions,
@@ -113,8 +113,8 @@ export interface IRecipeSearch {
 interface ISavingRecipe {
   id: string;
   author: string;
-  recipe_type_name: string;
-  cuisine_name: string;
+  type: string;
+  cuisine: string;
   title: string;
   description: string;
   directions: string;

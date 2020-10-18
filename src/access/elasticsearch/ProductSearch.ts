@@ -53,7 +53,7 @@ export class ProductSearch implements IProductSearch {
   // (staff only)
   async save({
     id,
-    product_type_name,
+    type,
     fullname,
     brand,
     variety,
@@ -63,7 +63,7 @@ export class ProductSearch implements IProductSearch {
     const saved = await this.client.index({
       index: 'products',
       id,
-      body: {id, product_type_name, fullname, brand, variety, name, image}
+      body: {id, type, fullname, brand, variety, name, image}
     });
     await this.client.indices.refresh({index: 'products'});
     return saved;
@@ -84,7 +84,7 @@ export interface IProductSearch {
   auto(searchTerm: string): any;  // finish
   save({
     id,
-    product_type_name,
+    type,
     fullname,
     brand,
     variety,
@@ -96,7 +96,7 @@ export interface IProductSearch {
 
 interface ISavingProduct {
   id: string;
-  product_type_name: string;
+  type: string;
   fullname: string;
   brand: string;
   variety: string;

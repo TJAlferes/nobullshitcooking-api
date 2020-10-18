@@ -5,28 +5,24 @@ export class RecipeMethod implements IRecipeMethod {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewByRecipeId = this.viewByRecipeId.bind(this);
+    this.viewByRecipe = this.viewByRecipe.bind(this);
     this.create = this.create.bind(this);
     this.update = this.update.bind(this);
-    this.deleteByRecipeId = this.deleteByRecipeId.bind(this);
-    this.deleteByRecipeIds = this.deleteByRecipeIds.bind(this);
+    this.deleteByRecipe = this.deleteByRecipe.bind(this);
+    this.deleteByRecipes = this.deleteByRecipes.bind(this);
   }
 
-  async viewByRecipeId(recipeId: number) {
+  async viewByRecipe(recipe: string) {
     const sql = `
-      SELECT m.name AS method_name
-      FROM recipe_methods rm
-      INNER JOIN methods m ON m.id = rm.method_id
-      WHERE rm.recipe_id = ?
-      ORDER BY m.id
+      SELECT method FROM recipe_methods rm WHERE rm.recipe = ? ORDER BY method
     `;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [recipeId]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [recipe]);
     return rows;
   }
 
-  async create(recipeMethods: number[], placeholders: string) {
+  async create(recipeMethods: string[], placeholders: string) {
     const sql = `
-      INSERT INTO recipe_methods (recipe_id, method_id) VALUES ${placeholders} 
+      INSERT INTO recipe_methods (recipe, method) VALUES ${placeholders} 
     `;
     const [ rows ] = await this.pool
       .execute<RowDataPacket[]>(sql, recipeMethods);
@@ -35,23 +31,20 @@ export class RecipeMethod implements IRecipeMethod {
 
   // finish
   async update(
-    recipeMethods: number[],
+    recipeMethods: string[],
     placeholders: string,
-    recipeId: number
+    recipe: string
   ) {
-    const sql1 = `DELETE FROM recipe_methods WHERE recipe_id = ?`;
+    const sql1 = `DELETE FROM recipe_methods WHERE recipe = ?`;
     const sql2 = (recipeMethods.length)
-    ? `
-      INSERT INTO recipe_methods (recipe_id, method_id)
-      VALUES ${placeholders} 
-    `
+    ? `INSERT INTO recipe_methods (recipe, method) VALUES ${placeholders}`
     : "none";
     const connection = await this.pool.getConnection();
 
     await connection.beginTransaction();
 
     try {
-      await connection.query(sql1, [recipeId]);
+      await connection.query(sql1, [recipe]);
 
       if (sql2 !== "none") {
         const [ rows ] = await connection.query(sql2, recipeMethods);
@@ -68,15 +61,15 @@ export class RecipeMethod implements IRecipeMethod {
     }
   }
 
-  async deleteByRecipeId(recipeId: number) {
-    const sql = `DELETE FROM recipe_methods WHERE recipe_id = ?`;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [recipeId]);
+  async deleteByRecipe(recipe: string) {
+    const sql = `DELETE FROM recipe_methods WHERE recipe = ?`;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [recipe]);
     return rows;
   }
 
-  async deleteByRecipeIds(recipeIds: number[]) {
-    const sql = `DELETE FROM recipe_methods WHERE recipe_id = ANY(?)`;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, recipeIds);
+  async deleteByRecipes(recipes: string[]) {
+    const sql = `DELETE FROM recipe_methods WHERE recipe = ANY(?)`;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, recipes);
     return rows;
   }
 }
@@ -94,17 +87,17 @@ type DataWithExtra = Promise<
 
 export interface IRecipeMethod {
   pool: Pool;
-  viewByRecipeId(recipeId: number): Data;
-  create(recipeMethods: number[], placeholders: string): Data;
+  viewByRecipe(recipe: string): Data;
+  create(recipeMethods: string[], placeholders: string): Data;
   update(
-    recipeMethods: number[],
+    recipeMethods: string[],
     placeholders: string,
-    recipeId: number
+    recipe: string
   ): DataWithExtra;  // | finish
-  deleteByRecipeId(recipeId: number): Data;
-  deleteByRecipeIds(recipeIds: number[]): Data;
+  deleteByRecipe(recipe: string): Data;
+  deleteByRecipes(recipes: string[]): Data;
 }
 
 export interface IMakeRecipeMethod {
-  methodId: number;
+  method: string;
 }

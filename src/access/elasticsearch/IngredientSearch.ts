@@ -53,7 +53,7 @@ export class IngredientSearch implements IIngredientSearch {
   // (staff only)
   async save({
     id,
-    ingredient_type_name,
+    type,
     fullname,
     brand,
     variety,
@@ -63,7 +63,7 @@ export class IngredientSearch implements IIngredientSearch {
     const savedIngredient = await this.client.index({
       index: 'ingredients',
       id,
-      body: {id, ingredient_type_name, fullname, brand, variety, name, image}
+      body: {id, type, fullname, brand, variety, name, image}
     });
     await this.client.indices.refresh({index: 'ingredients'});
     return savedIngredient;
@@ -84,7 +84,7 @@ export interface IIngredientSearch {
   auto(searchTerm: string): any;  // finish
   save({
     id,
-    ingredient_type_name,
+    type,
     fullname,
     brand,
     variety,
@@ -96,7 +96,7 @@ export interface IIngredientSearch {
 
 interface ISavingIngredient {
   id: string;
-  ingredient_type_name: string;
+  type: string;
   fullname: string;
   brand: string;
   variety: string;

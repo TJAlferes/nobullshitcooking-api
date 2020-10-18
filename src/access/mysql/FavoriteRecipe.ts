@@ -18,7 +18,7 @@ export class FavoriteRecipe implements IFavoriteRecipe {
         r.title,
         r.recipe_image,
         r.owner,
-        r.recipe_type,
+        r.type,
         r.cuisine
       FROM favorite_recipes f
       INNER JOIN recipes r ON r.id = f.recipe

@@ -22,8 +22,6 @@ export class Cuisine implements ICuisine {
     return row;
   }
 
-  // TO DO: fix this... see Recipe for JSON functions
-  // TO DO: use fullname
   async viewDetailByName(name: string) {
     const owner = "NOBSC";
     const sql = `
@@ -33,25 +31,22 @@ export class Cuisine implements ICuisine {
       c.wiki,
       c.intro,
       (
-        SELECT s.name AS supplier_name
-        FROM suppliers s
-        INNER JOIN cuisine_suppliers cs ON cs.supplier = s.name
-        WHERE cs.cuisine = c.name
+        SELECT supplier FROM cuisine_suppliers cs WHERE cs.cuisine = c.name
       ) cuisine_suppliers,
       (
-        SELECT e.id AS equipment_id, e.name AS equipment_name
+        SELECT ce.equipment, e.name
         FROM equipment e
-        INNER JOIN cuisine_equipment ce ON ce.equipment_id = e.id
+        INNER JOIN cuisine_equipment ce ON ce.equipment = e.id
         WHERE ce.cuisine = c.name
       ) cuisine_equipment,
       (
-        SELECT i.id AS ingredient_id, i.name AS ingredient_name
+        SELECT ci.ingredient, i.fullname
         FROM ingredients i
-        INNER JOIN cuisine_ingredients ci ON ci.ingredient_id = i.id
+        INNER JOIN cuisine_ingredients ci ON ci.ingredient = i.id
         WHERE ci.cuisine = c.name
       ) cuisine_ingredients,
       (
-        SELECT r.id AS recipe_id, r.title, r.recipe_image
+        SELECT r.id, r.title, r.recipe_image
         FROM recipes r
         WHERE r.owner = ? AND r.cuisine = c.name
       ) official_recipes

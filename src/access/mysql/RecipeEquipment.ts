@@ -5,29 +5,29 @@ export class RecipeEquipment implements IRecipeEquipment {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewByRecipeId = this.viewByRecipeId.bind(this);
+    this.viewByRecipe = this.viewByRecipe.bind(this);
     this.create = this.create.bind(this);
     this.update = this.update.bind(this);
-    this.deleteByRecipeIds = this.deleteByRecipeIds.bind(this);
-    this.deleteByRecipeId = this.deleteByRecipeId.bind(this);
-    this.deleteByEquipmentId = this.deleteByEquipmentId.bind(this);
+    this.deleteByEquipment = this.deleteByEquipment.bind(this);
+    this.deleteByRecipe = this.deleteByRecipe.bind(this);
+    this.deleteByRecipes = this.deleteByRecipes.bind(this);
   }
 
-  async viewByRecipeId(recipeId: number) {
+  async viewByRecipe(recipe: string) {
     const sql = `
-      SELECT re.amount, e.name AS equipment_name
+      SELECT re.amount, e.name AS equipment
       FROM recipe_equipment re
-      INNER JOIN equipment e ON e.id = re.equipment_id
-      WHERE re.recipe_id = ?
-      ORDER BY e.equipment_type_id
+      INNER JOIN equipment e ON e.id = re.equipment
+      WHERE re.recipe = ?
+      ORDER BY e.type
     `;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [recipeId]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [recipe]);
     return rows;
   }
 
-  async create(recipeEquipment: number[], placeholders: string) {
+  async create(recipeEquipment: string[], placeholders: string) {
     const sql = `
-      INSERT INTO recipe_equipment (recipe_id, equipment_id, amount)
+      INSERT INTO recipe_equipment (recipe, equipment, amount)
       VALUES ${placeholders} 
     `;
     const [ row ] = await this.pool
@@ -37,14 +37,14 @@ export class RecipeEquipment implements IRecipeEquipment {
 
   // finish
   async update(
-    recipeEquipment: number[],
+    recipeEquipment: string[],
     placeholders: string,
-    recipeId: number
+    recipe: string
   ) {
-    const sql1 = `DELETE FROM recipe_equipment WHERE recipe_id = ?`;
+    const sql1 = `DELETE FROM recipe_equipment WHERE recipe = ?`;
     const sql2 = (recipeEquipment.length)
     ? `
-      INSERT INTO recipe_equipment (recipe_id, equipment_id, amount)
+      INSERT INTO recipe_equipment (recipe, equipment, amount)
       VALUES ${placeholders} 
     `
     : "none";
@@ -53,7 +53,7 @@ export class RecipeEquipment implements IRecipeEquipment {
     await connection.beginTransaction();
 
     try {
-      await connection.query(sql1, [recipeId]);
+      await connection.query(sql1, [recipe]);
 
       if (sql2 !== "none") {
         const [ row ] = await connection.query(sql2, recipeEquipment);
@@ -70,22 +70,21 @@ export class RecipeEquipment implements IRecipeEquipment {
     }
   }
 
-  async deleteByEquipmentId(equipmentId: number) {
-    const sql = `DELETE FROM recipe_equipment WHERE equipment_id = ?`;
-    const [ rows ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [equipmentId]);
+  async deleteByEquipment(equipment: string) {
+    const sql = `DELETE FROM recipe_equipment WHERE equipment = ?`;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [equipment]);
     return rows;
   }
 
-  async deleteByRecipeId(recipeId: number) {
-    const sql = `DELETE FROM recipe_equipment WHERE recipe_id = ?`;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [recipeId]);
+  async deleteByRecipe(recipe: string) {
+    const sql = `DELETE FROM recipe_equipment WHERE recipe = ?`;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [recipe]);
     return rows;
   }
 
-  async deleteByRecipeIds(recipeIds: number[]) {
-    const sql = `DELETE FROM recipe_equipment WHERE recipe_id = ANY(?)`;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, recipeIds);
+  async deleteByRecipes(recipes: string[]) {
+    const sql = `DELETE FROM recipe_equipment WHERE recipe = ANY(?)`;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, recipes);
     return rows;
   }
 }
@@ -103,19 +102,19 @@ type DataWithExtra = Promise<
 
 export interface IRecipeEquipment {
   pool: Pool;
-  viewByRecipeId(recipeId: number): Data;
-  create(recipeEquipment: number[], placeholders: string): Data;
+  viewByRecipe(recipe: string): Data;
+  create(recipeEquipment: string[], placeholders: string): Data;
   update(
-    recipeEquipment: number[],
+    recipeEquipment: string[],
     placeholders: string,
-    recipeId: number
+    recipe: string
   ): DataWithExtra;  // | finish
-  deleteByEquipmentId(equipmentId: number): Data;
-  deleteByRecipeId(recipeId: number): Data;
-  deleteByRecipeIds(recipeIds: number[]): Data;
+  deleteByEquipment(equipment: string): Data;
+  deleteByRecipe(recipe: string): Data;
+  deleteByRecipes(recipes: string[]): Data;
 }
 
 export interface IMakeRecipeEquipment {
-  equipment: number;
-  amount: number;
+  equipment: string;
+  amount: string;
 }
