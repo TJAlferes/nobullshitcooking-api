@@ -5,39 +5,40 @@ export class CuisineEquipment implements ICuisineEquipment {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewByCuisineId = this.viewByCuisineId.bind(this);
+    this.viewByCuisine = this.viewByCuisine.bind(this);
     this.create = this.create.bind(this);
     this.delete = this.delete.bind(this);
   }
 
-  async viewByCuisineId(cuisineId: number) {
+  // double check
+  async viewByCuisine(cuisine: string) {
     const sql = `
-      SELECT ce.equipment_id, e.name AS equipment_name
+      SELECT ce.equipment
       FROM cuisine_equipment ce
-      INNER JOIN equipment e ON e.id = ce.equipment_id
-      WHERE ce.cuisine_id = ?
-      GROUP BY e.equipment_type_id
+      INNER JOIN equipment e ON e.id = ce.equipment
+      WHERE ce.cuisine = ?
+      GROUP BY e.equipment_type
       ORDER BY e.name ASC
     `;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [cuisineId]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [cuisine]);
     return rows;
   }
 
-  async create(cuisineId: number, equipmentId: number) {
+  async create(cuisine: string, equipment: string) {
     const sql = `
-      INSERT INTO cuisine_equipment (cuisine_id, equipment_id) VALUES (?, ?)
+      INSERT INTO cuisine_equipment (cuisine, equipment) VALUES (?, ?)
     `;
     const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [cuisineId, equipmentId]);
+      .execute<RowDataPacket[]>(sql, [cuisine, equipment]);
     return row;
   }
 
-  async delete(cuisineId: number, equipmentId: number) {
+  async delete(cuisine: string, equipment: string) {
     const sql = `
-      DELETE FROM cuisine_equipment WHERE cuisine_id = ? AND equipment_id = ?
+      DELETE FROM cuisine_equipment WHERE cuisine = ? AND equipment = ?
     `;
     const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [cuisineId, equipmentId]);
+      .execute<RowDataPacket[]>(sql, [cuisine, equipment]);
     return row;
   }
 }
@@ -46,7 +47,7 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface ICuisineEquipment {
   pool: Pool;
-  viewByCuisineId(cuisineId: number): Data;
-  create(cuisineId: number, equipmentId: number): Data;
-  delete(cuisineId: number, equipmentId: number): Data;
+  viewByCuisine(cuisine: string): Data;
+  create(cuisine: string, equipment: string): Data;
+  delete(cuisine: string, equipment: string): Data;
 }

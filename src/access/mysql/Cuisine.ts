@@ -23,6 +23,7 @@ export class Cuisine implements ICuisine {
   }
 
   // TO DO: fix this... see Recipe for JSON functions
+  // TO DO: use fullname
   async viewDetailByName(name: string) {
     const owner = "NOBSC";
     const sql = `

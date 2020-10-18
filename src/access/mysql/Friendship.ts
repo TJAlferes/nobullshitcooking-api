@@ -5,7 +5,7 @@ export class Friendship implements IFriendship {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.getByFriendId = this.getByFriendId.bind(this);
+    this.getByFriend = this.getByFriend.bind(this);
     this.checkIfBlockedBy = this.checkIfBlockedBy.bind(this);
     this.view = this.view.bind(this);
     this.viewAccepted = this.viewAccepted.bind(this);
@@ -17,7 +17,6 @@ export class Friendship implements IFriendship {
     this.delete = this.delete.bind(this);
     this.block = this.block.bind(this);
     this.unblock = this.unblock.bind(this);
-    this.deleteAllByUserId = this.deleteAllByUserId.bind(this);
   }
 
   /*
@@ -31,178 +30,153 @@ export class Friendship implements IFriendship {
   double (reversed params) execution is needed in
   any INSERT, UPDATE, and DELETE queries
   in order to affect both sides of the relationship,
-  (except for block/unblock, which must be one-sided)
+  (again, except for block/unblock, which must be one-sided)
 
   */
 
-  async getByFriendId(userId: number, friendId: number) {
+  async getByFriend(user: string, friend: string) {
     const sql = `
-      SELECT user_id, friend_id, status
-      FROM friendships
-      WHERE user_id = ? AND friend_id = ?
+      SELECT user, friend, status FROM friendships WHERE user = ? AND friend = ?
     `;
     const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [userId, friendId]);
+      .execute<RowDataPacket[]>(sql, [user, friend]);
     return row;
   }
 
-  async checkIfBlockedBy(userId: number, friendId: number) {
+  async checkIfBlockedBy(user: string, friend: string) {
     const sql = `
-      SELECT user_id, friend_id
+      SELECT user, friend
       FROM friendships
-      WHERE user_id = ? AND friend_id = ? AND status = "blocked"
+      WHERE user = ? AND friend = ? AND status = "blocked"
     `;
     const [ rows ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [friendId, userId]);
+      .execute<RowDataPacket[]>(sql, [friend, user]);
     return rows;
   }
 
-  async view(userId: number) {
+  // change
+  async view(user: string) {
     const sql = `
-      SELECT u.id AS user_id, u.username, u.avatar, f.status
+      SELECT u.username, u.avatar, f.status
       FROM users u
-      INNER JOIN friendships f ON u.id = f.friend_id
+      INNER JOIN friendships f ON u.username = f.friend
       WHERE
-        f.user_id = ? AND
+        f.user = ? AND
         f.status IN ("accepted", "pending-received", "blocked")
     `;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [userId]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [user]);
     return rows;
   }
 
-  async viewAccepted(userId: number) {
+  async viewAccepted(user: string) {
     const sql = `
-      SELECT u.id AS user_id, u.username, u.avatar, f.status
+      SELECT u.username, u.avatar, f.status
       FROM users u
-      INNER JOIN friendships f ON u.id = f.friend_id
-      WHERE f.user_id = ? AND f.status = "accepted"
+      INNER JOIN friendships f ON u.username = f.friend
+      WHERE f.user = ? AND f.status = "accepted"
     `;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [userId]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [user]);
     return rows;
   }
 
-  async viewPending(userId: number) {
+  async viewPending(user: string) {
     const sql = `
-      SELECT u.id AS user_id, u.username, u.avatar, f.status
+      SELECT u.username, u.avatar, f.status
       FROM users u
-      INNER JOIN friendships f ON u.id = f.friend_id
-      WHERE f.user_id = ? AND f.status = "pending-received"
+      INNER JOIN friendships f ON u.username = f.friend
+      WHERE f.user = ? AND f.status = "pending-received"
     `;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [userId]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [user]);
     return rows;
   }
 
-  async viewBlocked(userId: number) {
+  async viewBlocked(user: string) {
     const sql = `
-      SELECT u.id AS user_id, u.username, u.avatar, f.status
+      SELECT u.username, u.avatar, f.status
       FROM users u
-      INNER JOIN friendships f ON u.id = f.friend_id
-      WHERE f.user_id = ? AND f.status = "blocked"
+      INNER JOIN friendships f ON u.username = f.friend
+      WHERE f.user = ? AND f.status = "blocked"
     `;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [userId]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [user]);
     return rows;
   }
 
-  async create({ userId, friendId, status1, status2 }: ICreatingFriendship) {
+  async create({ user, friend, status1, status2 }: ICreatingFriendship) {
     const sql = `
-      INSERT INTO friendships (user_id, friend_id, status) VALUES (?, ?, ?)
+      INSERT INTO friendships (user, friend, status) VALUES (?, ?, ?)
     `;
-
     const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [userId, friendId, status1]);
-
-    await this.pool.execute<RowDataPacket[]>(sql, [friendId, userId, status2]);
-
+      .execute<RowDataPacket[]>(sql, [user, friend, status1]);
+    await this.pool.execute<RowDataPacket[]>(sql, [friend, user, status2]);
     return row;
   }
 
-  async accept(userId: number, friendId: number) {
+  async accept(user: string, friend: string) {
     const sql1 = `
       UPDATE friendships
       SET status = "accepted"
-      WHERE user_id = ? AND friend_id = ? AND status = "pending-received"
+      WHERE user = ? AND friend = ? AND status = "pending-received"
       LIMIT 1
     `;
     const sql2 = `
       UPDATE friendships
       SET status = "accepted"
-      WHERE user_id = ? AND friend_id = ? AND status = "pending-sent"
+      WHERE user = ? AND friend = ? AND status = "pending-sent"
       LIMIT 1
     `;
-
     const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql1, [userId, friendId]);
-
-    await this.pool.execute<RowDataPacket[]>(sql2, [friendId, userId]);
-
+      .execute<RowDataPacket[]>(sql1, [user, friend]);
+    await this.pool.execute<RowDataPacket[]>(sql2, [friend, user]);
     return row;
   }
 
-  async reject(userId: number, friendId: number) {
+  async reject(user: string, friend: string) {
     const sql = `
       DELETE
       FROM friendships
-      WHERE user_id = ? AND friend_id = ? AND status != "blocked"
+      WHERE user = ? AND friend = ? AND status != "blocked"
       LIMIT 1
     `;
-
     const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [userId, friendId]);
-
-    await this.pool.execute<RowDataPacket[]>(sql, [friendId, userId]);
-
+      .execute<RowDataPacket[]>(sql, [user, friend]);
+    await this.pool.execute<RowDataPacket[]>(sql, [friend, user]);
     return row;
   }
 
-  async delete(userId: number, friendId: number) {
+  async delete(user: string, friend: string) {
     const sql = `
       DELETE
       FROM friendships
-      WHERE user_id = ? AND friend_id = ? AND status != "blocked"
+      WHERE user = ? AND friend = ? AND status != "blocked"
       LIMIT 1
     `;
-
     const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [userId, friendId]);
-
-    await this.pool.execute<RowDataPacket[]>(sql, [friendId, userId]);
-
+      .execute<RowDataPacket[]>(sql, [user, friend]);
+    await this.pool.execute<RowDataPacket[]>(sql, [friend, user]);
     return row;
   }
 
-  async block(userId: number, friendId: number) {
+  async block(user: string, friend: string) {
     const sql1 = `
-      DELETE FROM friendships WHERE user_id = ? AND friend_id = ? LIMIT 1
+      DELETE FROM friendships WHERE user = ? AND friend = ? LIMIT 1
     `;
     const sql2 = `
-      INSERT INTO friendships (user_id, friend_id, status)
-      VALUES (?, ?, "blocked")
+      INSERT INTO friendships (user, friend, status) VALUES (?, ?, "blocked")
     `;
-
-    await this.pool.execute(sql1, [userId, friendId]);
-    await this.pool.execute(sql1, [friendId, userId]);
-
+    await this.pool.execute(sql1, [user, friend]);
+    await this.pool.execute(sql1, [friend, user]);
     const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql2, [userId, friendId]);
-    
+      .execute<RowDataPacket[]>(sql2, [user, friend]);
     return row;
   }
   
-  async unblock(userId: number, friendId: number) {
+  async unblock(user: string, friend: string) {
     const sql = `
-      DELETE FROM friendships WHERE user_id = ? AND friend_id = ? LIMIT 1
+      DELETE FROM friendships WHERE user = ? AND friend = ? LIMIT 1
     `;
     const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [userId, friendId]);
+      .execute<RowDataPacket[]>(sql, [user, friend]);
     return row;
-  }
-
-  async deleteAllByUserId(userId: number) {
-    const sql1 = `DELETE FROM friendships WHERE user_id = ?`;
-    const sql2 = `DELETE FROM friendships WHERE friend_id = ?`;
-
-    await this.pool.execute<RowDataPacket[]>(sql1, [userId]);
-    await this.pool.execute<RowDataPacket[]>(sql2, [userId]);
   }
 }
 
@@ -210,24 +184,23 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IFriendship {
   pool: Pool;
-  getByFriendId(userId: number, friendId: number): Data;
-  checkIfBlockedBy(userId: number, friendId: number): Data;
-  view(userId: number): Data;
-  viewAccepted(userId: number): Data;
-  viewPending(userId: number): Data;
-  viewBlocked(userId: number): Data;
-  create({userId, friendId, status1, status2}: ICreatingFriendship): Data;
-  accept(userId: number, friendId: number): Data;
-  reject(userId: number, friendId: number): Data;
-  delete(userId: number, friendId: number): Data;
-  block(userId: number, friendId: number): Data;
-  unblock(userId: number, friendId: number): Data;
-  deleteAllByUserId(userId: number): void;
+  getByFriend(user: string, friend: string): Data;
+  checkIfBlockedBy(user: string, friend: string): Data;
+  view(user: string): Data;
+  viewAccepted(user: string): Data;
+  viewPending(user: string): Data;
+  viewBlocked(user: string): Data;
+  create({user, friend, status1, status2}: ICreatingFriendship): Data;
+  accept(user: string, friend: string): Data;
+  reject(user: string, friend: string): Data;
+  delete(user: string, friend: string): Data;
+  block(user: string, friend: string): Data;
+  unblock(user: string, friend: string): Data;
 }
 
 interface ICreatingFriendship {
-  userId: number;
-  friendId: number;
+  user: string;
+  friend: string;
   status1: string;
   status2: string;
 }

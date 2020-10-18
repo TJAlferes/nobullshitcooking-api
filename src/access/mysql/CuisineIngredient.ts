@@ -5,39 +5,40 @@ export class CuisineIngredient implements ICuisineIngredient {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewByCuisineId = this.viewByCuisineId.bind(this);
+    this.viewByCuisine = this.viewByCuisine.bind(this);
     this.create = this.create.bind(this);
     this.delete = this.delete.bind(this);
   }
 
-  async viewByCuisineId(cuisineId: number) {
+  // double check
+  async viewByCuisine(cuisine: string) {
     const sql = `
-      SELECT ci.ingredient_id, i.name AS ingredient_name
+      SELECT ci.ingredient
       FROM cuisine_ingredients ci
-      INNER JOIN ingredients i ON i.id = ci.ingredient_id
-      WHERE ci.cuisine_id = ?
-      GROUP BY i.ingredient_type_id
+      INNER JOIN ingredients i ON i.id = ci.ingredient
+      WHERE ci.cuisine = ?
+      GROUP BY i.ingredient_type
       ORDER BY i.name ASC
     `;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [cuisineId]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [cuisine]);
     return rows;
   }
 
-  async create(cuisineId: number, ingredientId: number) {
+  async create(cuisine: string, ingredient: string) {
     const sql = `
-      INSERT INTO cuisine_ingredients (cuisine_id, ingredient_id) VALUES (?, ?)
+      INSERT INTO cuisine_ingredients (cuisine, ingredient) VALUES (?, ?)
     `;
     const [ row ] = await this.pool
-    .execute<RowDataPacket[]>(sql, [cuisineId, ingredientId]);
+      .execute<RowDataPacket[]>(sql, [cuisine, ingredient]);
     return row;
   }
 
-  async delete(cuisineId: number, ingredientId: number) {
+  async delete(cuisine: string, ingredient: string) {
     const sql = `
-      DELETE FROM cuisine_ingredients WHERE cuisine_id = ? AND ingredient_id = ?
+      DELETE FROM cuisine_ingredients WHERE cuisine = ? AND ingredient = ?
     `;
     const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [cuisineId, ingredientId]);
+      .execute<RowDataPacket[]>(sql, [cuisine, ingredient]);
     return row;
   }
 }
@@ -46,7 +47,7 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface ICuisineIngredient {
   pool: Pool;
-  viewByCuisineId(cuisineId: number): Data;
-  create(cuisineId: number, ingredientId: number): Data;
-  delete(cuisineId: number, ingredientId: number): Data;
+  viewByCuisine(cuisine: string): Data;
+  create(cuisine: string, ingredient: string): Data;
+  delete(cuisine: string, ingredient: string): Data;
 }

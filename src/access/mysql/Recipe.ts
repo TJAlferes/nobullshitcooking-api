@@ -14,7 +14,6 @@ export class Recipe implements IRecipe {
     this.deleteById = this.deleteById.bind(this);
     this.getInfoToEdit = this.getInfoToEdit.bind(this);
     this.updatePrivate = this.updatePrivate.bind(this);
-    this.deletePrivate = this.deletePrivate.bind(this);
     this.deletePrivateById = this.deletePrivateById.bind(this);
     this.disown = this.disown.bind(this);
     this.disownById = this.disownById.bind(this);
@@ -22,48 +21,42 @@ export class Recipe implements IRecipe {
   }
 
   async getAllForElasticSearch() {
-    const ownerId = 1;  // only public recipes goes into ElasticSearch
+    const owner = "NOBSC";  // only public recipes goes into ElasticSearch
     const sql = `
       SELECT
-        CAST(r.id AS CHAR) AS id,
-        u.username AS author,
-        rt.name AS recipe_type_name,
-        c.name AS cuisine_name,
+        CAST(r.id AS CHAR),
+        r.author,
+        r.type,
+        r.cuisine,
         r.title,
         r.description,
         r.directions,
         r.recipe_image,
         (
-          SELECT JSON_ARRAYAGG(m.name)
-          FROM methods m
-          INNER JOIN recipe_methods rm ON rm.method_id = m.id
-          WHERE rm.recipe_id = r.id
+          SELECT JSON_ARRAYAGG(rm.method)
+          FROM recipe_methods rm
+          WHERE rm.recipe = r.id
         ) method_names,
         (
-          SELECT JSON_ARRAYAGG(e.name)
-          FROM equipment e
-          INNER JOIN recipe_equipment re ON re.equipment_id = e.id
-          WHERE re.recipe_id = r.id
+          SELECT JSON_ARRAYAGG(re.equipment)
+          FROM recipe_equipment re
+          WHERE re.recipe = r.id
         ) equipment_names,
         (
-          SELECT JSON_ARRAYAGG(i.name)
-          FROM ingredients i
-          INNER JOIN recipe_ingredients ri ON ri.ingredient_id = i.id
-          WHERE ri.recipe_id = r.id
+          SELECT JSON_ARRAYAGG(ri.ingredient)
+          FROM recipe_ingredients ri
+          WHERE ri.recipe = r.id
         ) ingredient_names,
         (
           SELECT JSON_ARRAYAGG(r.title)
           FROM recipes r
-          INNER JOIN recipe_subrecipes rs ON rs.subrecipe_id = r.id
-          WHERE rs.recipe_id = r.id
+          INNER JOIN recipe_subrecipes rs ON rs.subrecipe = r.id
+          WHERE rs.recipe = r.id
         ) subrecipe_titles
       FROM recipes r
-      INNER JOIN users u ON u.id = r.author_id
-      INNER JOIN recipe_types rt ON rt.id = r.recipe_type_id
-      INNER JOIN cuisines c ON c.id = r.cuisine_id
-      WHERE r.owner_id = ?
+      WHERE r.owner = ?
     `;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [owner]);
     let final = [];
     for (let row of rows) {
       final.push({index: {_index: 'recipes', _id: row.id}}, {...row});
@@ -72,49 +65,42 @@ export class Recipe implements IRecipe {
   }
 
   async getForElasticSearch(id: number) {
-    const ownerId = 1;  // only public recipes goes into ElasticSearch
+    const owner = "NOBSC";  // only public recipes goes into ElasticSearch
     const sql = `
       SELECT
-        CAST(r.id AS CHAR) AS id,
-        u.username AS author,
-        rt.name AS recipe_type_name,
-        c.name AS cuisine_name,
+        CAST(r.id AS CHAR),
+        r.author,
+        r.type,
+        r.cuisine,
         r.title,
         r.description,
         r.directions,
         r.recipe_image,
         (
-          SELECT JSON_ARRAYAGG(m.name)
-          FROM methods m
-          INNER JOIN recipe_methods rm ON rm.method_id = m.id
-          WHERE rm.recipe_id = r.id
+          SELECT JSON_ARRAYAGG(rm.method)
+          FROM recipe_methods rm
+          WHERE rm.recipe = r.id
         ) method_names,
         (
-          SELECT JSON_ARRAYAGG(e.name)
-          FROM equipment e
-          INNER JOIN recipe_equipment re ON re.equipment_id = e.id
-          WHERE re.recipe_id = r.id
+          SELECT JSON_ARRAYAGG(re.equipment)
+          FROM recipe_equipment re
+          WHERE re.recipe = r.id
         ) equipment_names,
         (
-          SELECT JSON_ARRAYAGG(i.name)
-          FROM ingredients i
-          INNER JOIN recipe_ingredients ri ON ri.ingredient_id = i.id
-          WHERE ri.recipe_id = r.id
+          SELECT JSON_ARRAYAGG(ri.ingredient)
+          FROM recipe_ingredients ri
+          WHERE ri.recipe = r.id
         ) ingredient_names,
         (
           SELECT JSON_ARRAYAGG(r.title)
           FROM recipes r
-          INNER JOIN recipe_subrecipes rs ON rs.subrecipe_id = r.id
+          INNER JOIN recipe_subrecipes rs ON rs.subrecipe = r.id
           WHERE rs.recipe_id = r.id
         ) subrecipe_titles
       FROM recipes r
-      INNER JOIN users u ON u.id = r.author_id
-      INNER JOIN recipe_types rt ON rt.id = r.recipe_type_id
-      INNER JOIN cuisines c ON c.id = r.cuisine_id
-      WHERE r.id = ? AND r.owner_id = ?
+      WHERE r.id = ? AND r.owner = ?
     `;
-    const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [id, ownerId]);
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id, owner]);
     return row;
   }
 
@@ -425,11 +411,6 @@ export class Recipe implements IRecipe {
     ]);
     return row;
   }
-
-  async deletePrivate(authorId: number, ownerId: number) {
-    const sql = `DELETE FROM recipes WHERE author_id = ? AND owner_id = ?`;
-    await this.pool.execute<RowDataPacket[]>(sql, [authorId, ownerId]);
-  }
   
   async deletePrivateById(id: number, authorId: number, ownerId: number) {
     const sql = `
@@ -531,7 +512,6 @@ export interface IRecipe {
     ingredientsImage,
     cookingImage
   }: IUpdatingRecipe): Data;
-  deletePrivate(authorId: number, ownerId: number): void;
   deletePrivateById(id: number, authorId: number, ownerId: number): Data;
   disown(authorId: number): void;
   disownById(id: number, authorId: number): Data;

@@ -6,9 +6,15 @@ CREATE DATABASE nobsc;
 
 USE nobsc;
 
+/*
+
+Create parent tables
+
+*/
+
 CREATE TABLE `content_types` (
   `name` varchar(60) UNIQUE NOT NULL,
-  `parent` varchar(60) NOT NULL DEFAULT '0',
+  `parent` varchar(60),
   `path` varchar(255) UNIQUE NOT NULL,
   PRIMARY KEY (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -64,7 +70,7 @@ CREATE TABLE `recipe_types` (
 CREATE TABLE `staff` (
   `email` varchar(60) UNIQUE NOT NULL,
   `pass` char(60) NOT NULL,
-  `staffname` varchar(20) UNIQUE NOT NULL,
+  `staffname` varchar(20) NOT NULL,
   `avatar` varchar(255) NOT NULL DEFAULT 'nobsc-staff-default',
   `role` varchar(20) NOT NULL DEFAULT 'staff',
   PRIMARY KEY (`staffname`)
@@ -78,16 +84,19 @@ CREATE TABLE `suppliers` (
 CREATE TABLE `users` (
   `email` varchar(60) UNIQUE NOT NULL,
   `pass` char(60) NOT NULL,
-  `username` varchar(20) UNIQUE NOT NULL,
+  `username` varchar(20) NOT NULL,
   `avatar` varchar(255) NOT NULL DEFAULT 'nobsc-user-default',
   `confirmation_code` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+/*
 
+Create child tables
+
+*/
 
 CREATE TABLE `content` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
   `type` varchar(60) NOT NULL,
   `author` varchar(20) NOT NULL,
   `owner` varchar(20) NOT NULL,
@@ -96,136 +105,146 @@ CREATE TABLE `content` (
   `title` varchar(100) NOT NULL,
   `image` varchar(100) NOT NULL DEFAULT 'nobsc-content-default',
   `items` json DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (`type`) REFERENCES `content_types` (`name`),
+  FOREIGN KEY (`type`) REFERENCES `content_types` (`name`) ON UPDATE CASCADE,
   FOREIGN KEY (`author`) REFERENCES `users` (`username`),
-  FOREIGN KEY (`owner`) REFERENCES `users` (`username`)
+  FOREIGN KEY (`owner`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE,
+  `id` varchar(121) GENERATED ALWAYS AS (CONCAT(author, ' ', title)) STORED,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `equipment` (
-  `id` smallint unsigned NOT NULL AUTO_INCREMENT,
   `type` varchar(25) NOT NULL,
   `author` varchar(20) NOT NULL,
   `owner` varchar(20) NOT NULL,
   `name` varchar(100) NOT NULL,
   `description` text NOT NULL,
   `image` varchar(100) NOT NULL DEFAULT 'nobsc-equipment-default',
+  `id` varchar(121) GENERATED ALWAYS AS (CONCAT(author, ' ', name)) STORED,
   PRIMARY KEY (`id`),
-  FOREIGN KEY (`type`) REFERENCES `equipment_types` (`name`),
+  FOREIGN KEY (`type`) REFERENCES `equipment_types` (`name`) ON UPDATE CASCADE,
   FOREIGN KEY (`author`) REFERENCES `users` (`username`),
+  FOREIGN KEY (`owner`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `grocers` (
+  `owner` varchar(20) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `address` varchar(100) NOT NULL,
+  `notes` text NOT NULL,
+  `id` varchar(121) GENERATED ALWAYS AS (CONCAT(owner, ' ', name)) STORED,
+  PRIMARY KEY (`id`),
   FOREIGN KEY (`owner`) REFERENCES `users` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `ingredients` (
-  `id` smallint unsigned NOT NULL AUTO_INCREMENT,
   `type` varchar(25) NOT NULL,
   `author` varchar(20) NOT NULL,
   `owner` varchar(20) NOT NULL,
   `brand` varchar(50) NOT NULL DEFAULT '',
   `variety` varchar(50) NOT NULL DEFAULT '',
-  `name` varchar(50) NOT NULL DEFAULT '',
+  `name` varchar(50) NOT NULL,
   `fullname` varchar(152) GENERATED ALWAYS AS (CONCAT(brand, ' ', variety, ' ', name)),
   `alt_names` json DEFAULT NULL,
   `description` text NOT NULL,
   `image` varchar(100) NOT NULL DEFAULT 'nobsc-ingredient-default',
+  `id` varchar(173) GENERATED ALWAYS AS (CONCAT(author, ' ', fullname)) STORED,
   PRIMARY KEY (`id`),
-  FOREIGN KEY (`type`) REFERENCES `ingredient_types` (`name`),
-  FOREIGN KEY (`owner`) REFERENCES `users` (`username`),
-  FOREIGN KEY (`author`) REFERENCES `users` (`username`) 
+  FOREIGN KEY (`type`) REFERENCES `ingredient_types` (`name`) ON UPDATE CASCADE,
+  FOREIGN KEY (`author`) REFERENCES `users` (`username`),
+  FOREIGN KEY (`owner`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `cuisine_equipment` (
-  `cuisine` varchar(60) NOT NULL,
-  `equipment` smallint unsigned NOT NULL,
-  FOREIGN KEY (`cuisine`) REFERENCES `cuisines` (`name`),
-  FOREIGN KEY (`equipment`) REFERENCES `equipment` (`id`)
+  `cuisine` varchar(60),
+  `equipment` varchar(121),
+  FOREIGN KEY (`cuisine`) REFERENCES `cuisines` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`equipment`) REFERENCES `equipment` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `cuisine_ingredients` (
   `cuisine` varchar(60) NOT NULL,
-  `ingredient` smallint unsigned NOT NULL DEFAULT '0',
-  FOREIGN KEY (`cuisine`) REFERENCES `cuisines` (`name`),
-  FOREIGN KEY (`ingredient`) REFERENCES `ingredients` (`id`)
+  `ingredient` varchar(173) NOT NULL,
+  FOREIGN KEY (`cuisine`) REFERENCES `cuisines` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`ingredient`) REFERENCES `ingredients` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `cuisine_suppliers` (
   `cuisine` varchar(60) NOT NULL,
   `supplier` varchar(60) NOT NULL,
-  FOREIGN KEY (`cuisine`) REFERENCES `cuisines` (`name`),
-  FOREIGN KEY (`supplier`) REFERENCES `suppliers` (`name`)
+  FOREIGN KEY (`cuisine`) REFERENCES `cuisines` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`supplier`) REFERENCES `suppliers` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `notifications` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
   `sender` varchar(20) NOT NULL,
   `receiver` varchar(20) NOT NULL,
   `read` tinyint NOT NULL DEFAULT '0',
   `type` varchar(45) NOT NULL,
   `note` varchar(255) NOT NULL,
   `created` char(10) NOT NULL,
+  `id` varchar(52) GENERATED ALWAYS AS (CONCAT(sender, ' ', receiver, ' ', created)) STORED UNIQUE,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`sender`) REFERENCES `users` (`username`),
   FOREIGN KEY (`receiver`) REFERENCES `users` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `orders` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `customer_id` int unsigned NOT NULL,
-  `staff_id` int unsigned NOT NULL,
+  `customer` varchar(60) NOT NULL,
+  `staff` varchar(20) NOT NULL,
+  `created` char(10) NOT NULL,
+  `id` varchar(92) GENERATED ALWAYS AS (CONCAT(customer, ' ', staff, ' ', created)) STORED UNIQUE,
   PRIMARY KEY (`id`),
-  FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`),
-  FOREIGN KEY (`staff_id`) REFERENCES `staff` (`id`)
+  FOREIGN KEY (`customer`) REFERENCES `customers` (`email`),
+  FOREIGN KEY (`staff`) REFERENCES `staff` (`staffname`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `products` (
-  `id` smallint unsigned NOT NULL AUTO_INCREMENT,
   `category` varchar(50) NOT NULL,
   `type` varchar(50) NOT NULL,
-  `brand` varchar(50) NOT NULL DEFAULT '',
-  `variety` varchar(50) NOT NULL DEFAULT '',
-  `name` varchar(50) NOT NULL DEFAULT '',
-  `fullname` varchar(152) GENERATED ALWAYS AS (CONCAT(brand, ' ', variety, ' ', name)),
+  `brand` varchar(50) NOT NULL,
+  `variety` varchar(50) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `fullname` varchar(152) GENERATED ALWAYS AS (CONCAT(brand, ' ', variety, ' ', name)) STORED UNIQUE,
   `alt_names` json DEFAULT NULL,
   `description` text NOT NULL,
   `specs` json DEFAULT NULL,
   `image` varchar(100) NOT NULL DEFAULT 'nobsc-product-default',
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (`category`) REFERENCES `product_categories` (`name`),
-  FOREIGN KEY (`type`) REFERENCES `product_types` (`name`)
+  PRIMARY KEY (`fullname`),
+  FOREIGN KEY (`category`) REFERENCES `product_categories` (`name`) ON UPDATE CASCADE,
+  FOREIGN KEY (`type`) REFERENCES `product_types` (`name`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `order_products` (
-  `order_id` int unsigned NOT NULL,
-  `product_id` smallint unsigned NOT NULL,
-  FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
-  FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
+  `order` varchar(92) NOT NULL,
+  `product` varchar(152) NOT NULL,
+  FOREIGN KEY (`order`) REFERENCES `orders` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`product`) REFERENCES `products` (`fullname`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `plans` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
   `author` varchar(20) NOT NULL,
   `owner` varchar(20) NOT NULL,
-  `name` varchar(100) NOT NULL DEFAULT '',
+  `name` varchar(100) NOT NULL,
   `data` json DEFAULT NULL,
+  `id` varchar(120) GENERATED ALWAYS AS (CONCAT(author, name)) STORED UNIQUE,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`author`) REFERENCES `users` (`username`),
-  FOREIGN KEY (`owner`) REFERENCES `users` (`username`)
+  FOREIGN KEY (`owner`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `product_suppliers` (
-  `product_id` smallint unsigned NOT NULL,
+  `product` varchar(152) NOT NULL,
   `supplier` varchar(60) NOT NULL,
-  FOREIGN KEY (`product_id`) REFERENCES `products` (`id`),
-  FOREIGN KEY (`supplier`) REFERENCES `suppliers` (`name`)
+  FOREIGN KEY (`product`) REFERENCES `products` (`fullname`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`supplier`) REFERENCES `suppliers` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `recipes` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
   `type` varchar(25) NOT NULL,
   `cuisine` varchar(40) NOT NULL,
   `author` varchar(20) NOT NULL,
   `owner` varchar(20) NOT NULL,
-  `title` varchar(100) NOT NULL DEFAULT '',
+  `title` varchar(100) NOT NULL,
   `description` varchar(150) NOT NULL DEFAULT '',
   `active_time` time NOT NULL,
   `total_time` time NOT NULL,
@@ -234,71 +253,200 @@ CREATE TABLE `recipes` (
   `equipment_image` varchar(100) NOT NULL DEFAULT 'nobsc-recipe-equipment-default',
   `ingredients_image` varchar(100) NOT NULL DEFAULT 'nobsc-recipe-ingredients-default',
   `cooking_image` varchar(100) NOT NULL DEFAULT 'nobsc-recipe-cooking-default',
+  `id` varchar(121) GENERATED ALWAYS AS (CONCAT(author, ' ', title)) STORED UNIQUE,
   PRIMARY KEY (`id`),
-  FOREIGN KEY (`type`) REFERENCES `recipe_types` (`name`),
-  FOREIGN KEY (`cuisine`) REFERENCES `cuisines` (`name`),
+  FOREIGN KEY (`type`) REFERENCES `recipe_types` (`name`) ON UPDATE CASCADE,
+  FOREIGN KEY (`cuisine`) REFERENCES `cuisines` (`name`) ON UPDATE CASCADE,
   FOREIGN KEY (`author`) REFERENCES `users` (`username`),
-  FOREIGN KEY (`owner`) REFERENCES `users` (`username`)
+  FOREIGN KEY (`owner`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `recipe_equipment` (
-  `recipe_id` int unsigned NOT NULL,
-  `equipment_id` smallint unsigned NOT NULL,
+  `recipe` varchar(121) NOT NULL,
+  `equipment` varchar(121) NOT NULL,
   `amount` tinyint unsigned NOT NULL,
-  FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`id`),
-  FOREIGN KEY (`equipment_id`) REFERENCES `equipment` (`id`)
+  FOREIGN KEY (`recipe`) REFERENCES `recipes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`equipment`) REFERENCES `equipment` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `recipe_ingredients` (
-  `recipe_id` int unsigned NOT NULL DEFAULT '0',
-  `ingredient_id` smallint unsigned NOT NULL DEFAULT '0',
+  `recipe` varchar(121) NOT NULL,
+  `ingredient` varchar(173) NOT NULL DEFAULT '0',
   `amount` decimal(5,2) NOT NULL,
   `measurement` varchar(25) NOT NULL,
-  FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`id`),
-  FOREIGN KEY (`ingredient_id`) REFERENCES `ingredients` (`id`),
-  FOREIGN KEY (`measurement`) REFERENCES `measurements` (`name`)
+  FOREIGN KEY (`recipe`) REFERENCES `recipes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`ingredient`) REFERENCES `ingredients` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`measurement`) REFERENCES `measurements` (`name`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `recipe_methods` (
-  `recipe_id` int unsigned NOT NULL,
+  `recipe` varchar(121) NOT NULL,
   `method` varchar(25) NOT NULL,
-  FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`id`),
-  FOREIGN KEY (`method`) REFERENCES `methods` (`name`)
+  FOREIGN KEY (`recipe`) REFERENCES `recipes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`method`) REFERENCES `methods` (`name`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `recipe_subrecipes` (
-  `recipe_id` int unsigned NOT NULL,
-  `subrecipe_id` int unsigned NOT NULL,
+  `recipe` varchar(121) NOT NULL,
+  `subrecipe` varchar(121) NOT NULL,
   `amount` decimal(5,2) NOT NULL,
   `measurement` varchar(25) NOT NULL,
-  FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`id`),
-  FOREIGN KEY (`subrecipe_id`) REFERENCES `recipes` (`id`),
-  FOREIGN KEY (`measurement`) REFERENCES `measurements` (`name`)
+  FOREIGN KEY (`recipe`) REFERENCES `recipes` (`id`),
+  FOREIGN KEY (`subrecipe`) REFERENCES `recipes` (`id`),
+  FOREIGN KEY (`measurement`) REFERENCES `measurements` (`name`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `favorite_recipes` (
-  `username` varchar(20) NOT NULL,
-  `recipe_id` int unsigned NOT NULL,
-  FOREIGN KEY (`username`) REFERENCES `users` (`username`),
-  FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`id`)
+  `user` varchar(20) NOT NULL,
+  `recipe` varchar(121) NOT NULL,
+  FOREIGN KEY (`user`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`recipe`) REFERENCES `recipes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `saved_recipes` (
-  `username` varchar(20) NOT NULL,
-  `recipe_id` int unsigned NOT NULL,
-  FOREIGN KEY (`username`) REFERENCES `users` (`username`),
-  FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`id`)
+  `user` varchar(20) NOT NULL,
+  `recipe` varchar(121) NOT NULL,
+  FOREIGN KEY (`user`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`recipe`) REFERENCES `recipes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `friendships` (
-  `username` varchar(20) NOT NULL,
+  `user` varchar(20) NOT NULL,
   `friend` varchar(20) NOT NULL,
   `status` varchar(20) NOT NULL,
-  FOREIGN KEY (`username`) REFERENCES `users` (`username`),
+  FOREIGN KEY (`user`) REFERENCES `users` (`username`),
   FOREIGN KEY (`friend`) REFERENCES `users` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+/*
 
+Triggers
+
+We created these triggers for two reasons:
+
+1.
+MySQL doesn't allow us
+to add foreign key constraints (such as ON UPDATE CASCADE)
+to columns that are used in generated columns.
+
+As an alternative to AUTO_INCREMENT ids,
+we are using natural keys, some of which are generated columns.
+
+This adds a little complexity,
+but it is a tradeoff cost we are willing to pay
+for us not using AUTO_INCREMENT ids,
+as AUTO_INCREMENT can have safety and scalability issues.
+
+(Another alternative to AUTO_INCREMENT ids and natural keys is UUIDs,
+but we have decided to just use natural keys.)
+
+2.
+MySQL says
+to not place duplicate constraints on the same foreign key in the same table.
+
+- In recipe_subrecipes, we would have needed duplicates on recipe.id
+
+- In friendships, we would have needed duplicates on users.username
+
+*/
+
+/* customer table triggers */
+
+DELIMITER $$
+CRATE TRIGGER customer_email_on_delete
+AFTER DELETE ON `customer` FOR EACH ROW
+BEGIN
+  DELETE FROM orders WHERE customer = OLD.email;
+END; $$
+DELIMITER ;
+
+DELIMITER $$
+CRATE TRIGGER customer_email_on_update
+AFTER UPDATE ON `customer` FOR EACH ROW
+BEGIN
+  UPDATE orders SET customer = NEW.email WHERE customer = OLD.email;
+END; $$
+DELIMITER ;
+
+/* staff table triggers */
+
+DELIMITER $$
+CRATE TRIGGER staff_staffname_on_delete
+AFTER DELETE ON `staff` FOR EACH ROW
+BEGIN
+  DELETE FROM orders WHERE staff = OLD.staffname;
+END; $$
+DELIMITER ;
+
+DELIMITER $$
+CRATE TRIGGER staff_staffname_on_update
+AFTER UPDATE ON `staff` FOR EACH ROW
+BEGIN
+  UPDATE orders SET staff = NEW.staffname WHERE staff = OLD.staffname;
+END; $$
+DELIMITER ;
+
+/* users table triggers */
+
+DELIMITER $$
+CREATE TRIGGER users_username_on_delete
+AFTER DELETE ON `users` FOR EACH ROW
+BEGIN
+  DELETE FROM content WHERE author = OLD.username;
+  DELETE FROM equipment WHERE author = OLD.username;
+  DELETE FROM grocers WHERE owner = OLD.username;
+  DELETE FROM ingredient WHERE author = OLD.username;
+  DELETE FROM notifications WHERE sender = OLD.username;
+  DELETE FROM notifications WHERE receiver = OLD.username;
+  DELETE FROM plans WHERE author = OLD.username;
+  DELETE FROM recipes WHERE author = OLD.username;
+  DELETE FROM friendships WHERE user = OLD.username;
+  DELETE FROM friendships WHERE friend = OLD.username;
+END; $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER users_username_on_update
+AFTER UPDATE ON `users` FOR EACH ROW
+BEGIN
+  UPDATE content SET author = NEW.username WHERE author = OLD.username;
+  UPDATE equipment SET author = NEW.username WHERE author = OLD.username;
+  UPDATE grocers SET owner = NEW.username WHERE owner = OLD.username;
+  UPDATE ingredient SET author = NEW.username WHERE author = OLD.username;
+  UPDATE notifications SET sender = NEW.username WHERE sender = OLD.username;
+  UPDATE notifications SET receiver = NEW.username WHERE receiver = OLD.username;
+  UPDATE plans SET author = NEW.username WHERE author = OLD.username;
+  UPDATE recipes SET author = NEW.username WHERE author = OLD.username;
+  UPDATE friendships SET user = NEW.username WHERE user = OLD.username;
+  UPDATE friendships SET friend = NEW.username WHERE friend = OLD.username;
+END; $$
+DELIMITER ;
+
+/* recipes table triggers */
+
+DELIMITER $$
+CREATE TRIGGER recipes_id_on_delete
+AFTER DELETE ON `recipes` FOR EACH ROW
+BEGIN
+  DELETE FROM recipe_subrecipes WHERE recipe = OLD.id;
+  DELETE FROM recipe_subrecipes WHERE subrecipe = OLD.id;
+END; $$
+DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER recipes_id_on_update
+AFTER UPDATE ON `recipes` FOR EACH ROW
+BEGIN
+  UPDATE recipe_subrecipes SET recipe = NEW.id WHERE recipe = OLD.id;
+  UPDATE recipe_subrecipes SET subrecipe = NEW.id WHERE subrecipe = OLD.id;
+END; $$
+DELIMITER ;
+
+/*
+
+Inserts
+
+*/
 
 INSERT INTO staff (email, pass, staffname) VALUES (
   "tjalferes@tjalferes.com",
@@ -321,8 +469,8 @@ INSERT INTO users (email, pass, username) VALUES (
 );
 
 INSERT INTO content_types (name, parent, path) VALUES
-("Page",        "0",       "/page"),
-("Post",        "0",       "/post"),
+("Page",        NULL,      "/page"),
+("Post",        NULL,      "/post"),
 ("Guide",       "Page",    "/page/guide"),
 ("Promo",       "Page",    "/page/promo"),
 ("Site",        "Page",    "/page/site"),
@@ -338,64 +486,66 @@ INSERT INTO content_types (name, parent, path) VALUES
 ("Methods",     "Food",    "/page/guide/food/methods");
 
 INSERT INTO content
-(type, author, owner, created, published, title, items)
+(type,          author,  owner,   created,      published,    title,                                items)
 VALUES
-("Exercises", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Bike",                             "[]"),
-("Exercises", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Pullup",                           "[]"),
-("Exercises", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Pushup",                           "[]"),
-("Exercises", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Run",                              "[]"),
-("Exercises", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Squat",                            "[]"),
-("Exercises", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Walk",                             "[]"),
+("Exercises",   "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Bike",                               "[]"),
+("Exercises",   "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Pullup",                             "[]"),
+("Exercises",   "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Pushup",                             "[]"),
+("Exercises",   "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Run",                                "[]"),
+("Exercises",   "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Squat",                              "[]"),
+("Exercises",   "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Walk",                               "[]"),
 
-("Principles", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Agility",                         "[]"),
-("Principles", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Balance",                         "[]"),
-("Principles", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Composition",                     "[]"),
-("Principles", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Endurance",                       "[]"),
-("Principles", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Flexibility",                     "[]"),
-("Principles", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Speed",                           "[]"),
-("Principles", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Strength",                        "[]"),
+("Principles",  "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Agility",                            "[]"),
+("Principles",  "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Balance",                            "[]"),
+("Principles",  "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Composition",                        "[]"),
+("Principles",  "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Endurance",                          "[]"),
+("Principles",  "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Flexibility",                        "[]"),
+("Principles",  "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Speed",                              "[]"),
+("Principles",  "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Strength",                           "[]"),
 
-("Recipes", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Appetizers",                         "[]"),
-("Recipes", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Casseroles",                         "[]"),
-("Recipes", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Condiments",                         "[]"),
-("Recipes", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Desserts",                           "[]"),
-("Recipes", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Dressings",                          "[]"),
-("Recipes", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Drinks",                             "[]"),
-("Recipes", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Mains",                              "[]"),
-("Recipes", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Salads",                             "[]"),
-("Recipes", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Sauces",                             "[]"),
-("Recipes", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Sides",                              "[]"),
-("Recipes", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Soups",                              "[]"),
-("Recipes", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Stews",                              "[]"),
+("Recipes",     "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Appetizers",                         "[]"),
+("Recipes",     "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Casseroles",                         "[]"),
+("Recipes",     "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Condiments",                         "[]"),
+("Recipes",     "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Desserts",                           "[]"),
+("Recipes",     "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Dressings",                          "[]"),
+("Recipes",     "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Drinks",                             "[]"),
+("Recipes",     "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Mains",                              "[]"),
+("Recipes",     "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Salads",                             "[]"),
+("Recipes",     "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Sauces",                             "[]"),
+("Recipes",     "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Sides",                              "[]"),
+("Recipes",     "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Soups",                              "[]"),
+("Recipes",     "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Stews",                              "[]"),
 
-("Ingredients", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Acids Herbs and Spices",         "[]"),
-("Ingredients", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Beans and Vegetables",           "[]"),
-("Ingredients", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Eggs and Dairy",                 "[]"),
-("Ingredients", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Fats and Oils",                  "[]"),
-("Ingredients", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Fish and Shellfish",             "[]"),
-("Ingredients", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Fruit",                          "[]"),
-("Ingredients", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Meat and Poultry",               "[]"),
-("Ingredients", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Seeds and Grains",               "[]"),
+("Ingredients", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Acids Herbs and Spices",             "[]"),
+("Ingredients", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Beans and Vegetables",               "[]"),
+("Ingredients", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Eggs and Dairy",                     "[]"),
+("Ingredients", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Fats and Oils",                      "[]"),
+("Ingredients", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Fish and Shellfish",                 "[]"),
+("Ingredients", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Fruit",                              "[]"),
+("Ingredients", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Meat and Poultry",                   "[]"),
+("Ingredients", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Seeds and Grains",                   "[]"),
 
-("Nutrition", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Calories",                         "[]"),
-("Nutrition", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Macronutrients",                   "[]"),
-("Nutrition", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Micronutrients",                   "[]"),
-("Nutrition", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Supplements",                      "[]"),
+("Nutrition",   "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Calories",                           "[]"),
+("Nutrition",   "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Macronutrients",                     "[]"),
+("Nutrition",   "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Micronutrients",                     "[]"),
+("Nutrition",   "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Supplements",                        "[]"),
 
-("Equipment", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Cleaning",                         "[]"),
-("Equipment", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Cooking",                          "[]"),
-("Equipment", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Dining",                           "[]"),
-("Equipment", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Preparing",                        "[]"),
-("Equipment", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Storage",                          "[]"),
+("Equipment",   "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Cleaning",                           "[]"),
+("Equipment",   "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Cooking",                            "[]"),
+("Equipment",   "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Dining",                             "[]"),
+("Equipment",   "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Preparing",                          "[]"),
+("Equipment",   "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Storage",                            "[]"),
 
-("Methods", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Bake Roast Toast and Broil",         "[]"),
-("Methods", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "BBQ Grill and Smoke",                "[]"),
-("Methods", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Chill and Freeze",                   "[]"),
-("Methods", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Saute Fry and Glaze",                "[]"),
-("Methods", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Steam Poach Simmer Boil and Blanch", "[]"),
-("Methods", "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Stew and Braise",                    "[]");
+("Methods",     "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Bake Roast Toast and Broil",         "[]"),
+("Methods",     "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "BBQ Grill and Smoke",                "[]"),
+("Methods",     "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Chill and Freeze",                   "[]"),
+("Methods",     "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Saute Fry and Glaze",                "[]"),
+("Methods",     "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Steam Poach Simmer Boil and Blanch", "[]"),
+("Methods",     "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Stew and Braise",                    "[]");
 
-INSERT INTO cuisines (name, nation, wiki, intro) VALUES
+INSERT INTO cuisines
+(name,                       nation,                              wiki, intro)
+VALUES
 ("Afghan",                   "Afghanistan",                       "Afghan_cuisine", ""),
 ("Albanian",                 "Albania",                           "Albanian_cuisine", ""),
 ("Algerian",                 "Algeria",                           "Algerian_cuisine", ""),
@@ -436,8 +586,8 @@ INSERT INTO cuisines (name, nation, wiki, intro) VALUES
 ("Chilean",                  "Chile",                             "Chilean_cuisine", ""),
 ("Chinese",                  "China",                             "Chinese_cuisine", ""),
 ("Colombian",                "Colombia",                          "Colombian_cuisine", ""),
-("Comoros",                       "Comoros",                           "NA", ""),
-("Congolese",                "Congo, Democratic Republic of the", "Congolese_cuisine", ""),
+("Comoros",                  "Comoros",                           "NA", ""),
+("Congolese, Democratic",    "Congo, Democratic Republic of the", "Congolese_cuisine", ""),
 ("Congolese",                "Congo, Republic of the",            "Congolese_cuisine", ""),
 ("Costa Rican",              "Costa Rica",                        "Costa_Rican_cuisine", ""),
 ("Croatian",                 "Croatia",                           "Croatian_cuisine", ""),
@@ -506,115 +656,115 @@ INSERT INTO cuisines (name, nation, wiki, intro) VALUES
 ("Liberian",                 "Liberia",                           "Liberian_cuisine", ""),
 ("Libyan",                   "Libya",                             "Libyan_cuisine", ""),
 ("Liechtensteiner",          "Liechtenstein",                     "Liechtenstein_cuisine", ""),
-("Lithuanian",              "Lithuania",                         "Lithuanian_cuisine", ""),
-("Luxembourg",              "Luxembourg",                        "Luxembourg%27s_cuisine", ""),
+("Lithuanian",               "Lithuania",                         "Lithuanian_cuisine", ""),
+("Luxembourg",               "Luxembourg",                        "Luxembourg%27s_cuisine", ""),
 
-("Malagasy",                "Madagascar",                        "Malagasy_cuisine", ""),
-("Malawian",                "Malawi",                            "Malawian_cuisine", ""),
-("Malaysian",               "Malaysia",                          "Malaysian_cuisine", ""),
-("Maldivian",               "Maldives",                          "Maldivian_cuisine", ""),
-("Malian",                  "Mali",                              "Malian_cuisine", ""),
-("Maltese",                 "Malta",                             "Maltese_cuisine", ""),
-("Marshall Islands",                      "Marshall Islands",                  "NA", ""),
-("Mauritanian",             "Mauritania",                        "Mauritanian_cuisine", ""),
-("Mauritius",               "Mauritius",                         "Cuisine_of_Mauritius", ""),
-("Mexican",                 "Mexico",                            "Mexican_cuisine", ""),
-("Micronesian",                      "Micronesia",                        "NA", ""),
-("Moldovan",                "Moldova",                           "Moldovan_cuisine", ""),
-("Monégasque",              "Monaco",                            "Monégasque_cuisine", ""),
-("Mongolian",               "Mongolia",                          "Mongolian_cuisine", ""),
-("Montenegrin",             "Montenegro",                        "Montenegrin_cuisine", ""),
-("Moroccan",                "Morocco",                           "Moroccan_cuisine", ""),
-("Mozambique",              "Mozambique",                        "Cuisine_of_Mozambique", ""),
-("Burmese",                 "Myanmar",                           "Burmese_cuisine", ""),
+("Malagasy",                 "Madagascar",                        "Malagasy_cuisine", ""),
+("Malawian",                 "Malawi",                            "Malawian_cuisine", ""),
+("Malaysian",                "Malaysia",                          "Malaysian_cuisine", ""),
+("Maldivian",                "Maldives",                          "Maldivian_cuisine", ""),
+("Malian",                   "Mali",                              "Malian_cuisine", ""),
+("Maltese",                  "Malta",                             "Maltese_cuisine", ""),
+("Marshall Islands",         "Marshall Islands",                  "NA", ""),
+("Mauritanian",              "Mauritania",                        "Mauritanian_cuisine", ""),
+("Mauritius",                "Mauritius",                         "Cuisine_of_Mauritius", ""),
+("Mexican",                  "Mexico",                            "Mexican_cuisine", ""),
+("Micronesian",              "Micronesia",                        "NA", ""),
+("Moldovan",                 "Moldova",                           "Moldovan_cuisine", ""),
+("Monégasque",               "Monaco",                            "Monégasque_cuisine", ""),
+("Mongolian",                "Mongolia",                          "Mongolian_cuisine", ""),
+("Montenegrin",              "Montenegro",                        "Montenegrin_cuisine", ""),
+("Moroccan",                 "Morocco",                           "Moroccan_cuisine", ""),
+("Mozambique",               "Mozambique",                        "Cuisine_of_Mozambique", ""),
+("Burmese",                  "Myanmar",                           "Burmese_cuisine", ""),
 
-("Namibian",                "Namibia",                           "Namibian_cuisine", ""),
-("Nauru",                      "Nauru",                             "NA", ""),
-("Nepalese",                "Nepal",                             "Nepalese_cuisine", ""),
-("Dutch",                   "Netherlands",                       "Dutch_cuisine", ""),
-("New Zealand",             "New Zealand",                       "New_Zealand_cuisine", ""),
-("Nicaraguan",              "Nicaragua",                         "Nicaraguan_cuisine", ""),
-("Niger",                   "Niger",                             "Cuisine_of_Niger", ""),
-("Nigerian",                "Nigeria",                           "Nigerian_cuisine", ""),
-("North Korean",            "North Korea",                       "North_Korean_cuisine", ""),
-("Macedonian",              "North Macedonia",                   "Macedonian_cuisine", ""),
-("Norwegian",               "Norway",                            "Norwegian_cuisine", ""),
+("Namibian",                 "Namibia",                           "Namibian_cuisine", ""),
+("Nauru",                    "Nauru",                             "NA", ""),
+("Nepalese",                 "Nepal",                             "Nepalese_cuisine", ""),
+("Dutch",                    "Netherlands",                       "Dutch_cuisine", ""),
+("New Zealand",              "New Zealand",                       "New_Zealand_cuisine", ""),
+("Nicaraguan",               "Nicaragua",                         "Nicaraguan_cuisine", ""),
+("Niger",                    "Niger",                             "Cuisine_of_Niger", ""),
+("Nigerian",                 "Nigeria",                           "Nigerian_cuisine", ""),
+("North Korean",             "North Korea",                       "North_Korean_cuisine", ""),
+("Macedonian",               "North Macedonia",                   "Macedonian_cuisine", ""),
+("Norwegian",                "Norway",                            "Norwegian_cuisine", ""),
 
-("Omani",                   "Oman",                              "Omani_cuisine", ""),
+("Omani",                    "Oman",                              "Omani_cuisine", ""),
 
-("Pakistani",               "Pakistan",                          "Pakistani_cuisine", ""),
-("Palauan",                 "Palau",                             "Palau#Cuisine", ""),
-("Palestinian",             "Palestine",                         "Palestinian_cuisine", ""),
-("Panamanian",              "Panama",                            "Panamanian_cuisine", ""),
-("Papua New Guinean",       "Papua New Guinea",                  "Papua_New_Guinean_cuisine", ""),
-("Paraguayan",              "Paraguay",                          "Paraguayan_cuisine", ""),
-("Peruvian",                "Peru",                              "Peruvian_cuisine", ""),
-("Filipino",                "Philippines",                       "Filipino_cuisine", ""),
-("Polish",                  "Poland",                            "Polish_cuisine", ""),
-("Portuguese",              "Portugal",                          "Portuguese_cuisine", ""),
+("Pakistani",                "Pakistan",                          "Pakistani_cuisine", ""),
+("Palauan",                  "Palau",                             "Palau#Cuisine", ""),
+("Palestinian",              "Palestine",                         "Palestinian_cuisine", ""),
+("Panamanian",               "Panama",                            "Panamanian_cuisine", ""),
+("Papua New Guinean",        "Papua New Guinea",                  "Papua_New_Guinean_cuisine", ""),
+("Paraguayan",               "Paraguay",                          "Paraguayan_cuisine", ""),
+("Peruvian",                 "Peru",                              "Peruvian_cuisine", ""),
+("Filipino",                 "Philippines",                       "Filipino_cuisine", ""),
+("Polish",                   "Poland",                            "Polish_cuisine", ""),
+("Portuguese",               "Portugal",                          "Portuguese_cuisine", ""),
 
-("Qatari",                  "Qatar",                             "Qatari_cuisine", ""),
+("Qatari",                   "Qatar",                             "Qatari_cuisine", ""),
 
-("Romanian",                "Romania",                           "Romanian_cuisine", ""),
-("Russian",                 "Russia",                            "Russian_cuisine", ""),
-("Rwandan",                 "Rwanda",                            "Rwandan_cuisine", ""),
+("Romanian",                 "Romania",                           "Romanian_cuisine", ""),
+("Russian",                  "Russia",                            "Russian_cuisine", ""),
+("Rwandan",                  "Rwanda",                            "Rwandan_cuisine", ""),
 
-("Saint Kitts and Nevis",                      "Saint Kitts and Nevis",             "NA", ""),
-("Saint Lucian",            "Saint Lucia",                       "Saint_Lucian_cuisine", ""),
-("Saint Vincent and the Grenadines",                      "Saint Vincent and the Grenadines",  "NA", ""),
-("Samoan",                  "Samoa",                             "NA", ""),
-("Sammarinese",             "San Marino",                        "Sammarinese_cuisine", ""),
-("Sao Tome and Principe",   "Sao Tome and Principe",             "Cuisine_of_São_Tomé_and_Príncipe", ""),
-("Saudi Arabian",           "Saudi Arabia",                      "Saudi_Arabian_cuisine", ""),
-("Senegalese",              "Senegal",                           "Senegalese_cuisine", ""),
-("Serbian",                 "Serbia",                            "Serbian_cuisine", ""),
-("Seychellois",             "Seychelles",                        "Seychellois_cuisine", ""),
-("Sierra Leonean",          "Sierra Leone",                      "Sierra_Leonean_cuisine", ""),
-("Singaporean",             "Singapore",                         "Singaporean_cuisine", ""),
-("Slovak",                  "Slovakia",                          "Slovak_cuisine", ""),
-("Slovenian",               "Slovenia",                          "Slovenian_cuisine", ""),
-("Solomon Islands",                      "Solomon Islands",                   "NA", ""),
-("Somali",                  "Somalia",                           "Somali_cuisine", ""),
-("South African",           "South Africa",                      "South_African_cuisine", ""),
-("South Korean",            "South Korea",                       "Korean_cuisine", ""),
-("South African",           "South Sudan",                       "South_African_cuisine", ""),
-("Spanish",                 "Spain",                             "Spanish_cuisine", ""),
-("Sri Lankan",              "Sri Lanka",                         "Sri_Lankan_cuisine", ""),
-("Sudanese",                "Sudan",                             "Sudanese_cuisine", ""),
-("Surinamese",              "Suriname",                          "Culture_of_Suriname#Cuisine", ""),
-("Swedish",                 "Sweden",                            "Swedish_cuisine", ""),
-("Swiss",                   "Switzerland",                       "Swiss_cuisine", ""),
-("Syrian",                  "Syria",                             "Syrian_cuisine", ""),
+("Saint Kitts and Nevis",    "Saint Kitts and Nevis",             "NA", ""),
+("Saint Lucian",             "Saint Lucia",                       "Saint_Lucian_cuisine", ""),
+("Grenadine",                "Saint Vincent and the Grenadines",  "NA", ""),
+("Samoan",                   "Samoa",                             "NA", ""),
+("Sammarinese",              "San Marino",                        "Sammarinese_cuisine", ""),
+("Sao Tome and Principe",    "Sao Tome and Principe",             "Cuisine_of_São_Tomé_and_Príncipe", ""),
+("Saudi Arabian",            "Saudi Arabia",                      "Saudi_Arabian_cuisine", ""),
+("Senegalese",               "Senegal",                           "Senegalese_cuisine", ""),
+("Serbian",                  "Serbia",                            "Serbian_cuisine", ""),
+("Seychellois",              "Seychelles",                        "Seychellois_cuisine", ""),
+("Sierra Leonean",           "Sierra Leone",                      "Sierra_Leonean_cuisine", ""),
+("Singaporean",              "Singapore",                         "Singaporean_cuisine", ""),
+("Slovak",                   "Slovakia",                          "Slovak_cuisine", ""),
+("Slovenian",                "Slovenia",                          "Slovenian_cuisine", ""),
+("Solomon Islands",          "Solomon Islands",                   "NA", ""),
+("Somali",                   "Somalia",                           "Somali_cuisine", ""),
+("South African",            "South Africa",                      "South_African_cuisine", ""),
+("South Korean",             "South Korea",                       "Korean_cuisine", ""),
+("South Sudan",              "South Sudan",                       "South_African_cuisine", ""),
+("Spanish",                  "Spain",                             "Spanish_cuisine", ""),
+("Sri Lankan",               "Sri Lanka",                         "Sri_Lankan_cuisine", ""),
+("Sudanese",                 "Sudan",                             "Sudanese_cuisine", ""),
+("Surinamese",               "Suriname",                          "Culture_of_Suriname#Cuisine", ""),
+("Swedish",                  "Sweden",                            "Swedish_cuisine", ""),
+("Swiss",                    "Switzerland",                       "Swiss_cuisine", ""),
+("Syrian",                   "Syria",                             "Syrian_cuisine", ""),
 
-("Taiwanese",               "Taiwan",                            "Taiwanese_cuisine", ""),
-("Tajik",                   "Tajikistan",                        "Tajik_cuisine", ""),
-("Tanzanian",               "Tanzania",                          "Culture_of_Tanzania#Cuisine", ""),
-("Thai",                    "Thailand",                          "Thai_cuisine", ""),
-("Timorese",                "Timor-Leste",                       "East_Timor", ""),
-("Togolese",                "Togo",                              "Togolese_cuisine", ""),
-("Tongan",                  "Tonga",                             "Culture_of_Tonga#Cuisine", ""),
-("Trinidad and Tobago",     "Trinidad and Tobago",               "Trinidad_and_Tobago_cuisine", ""),
-("Tunisian",                "Tunisia",                           "Tunisian_cuisine", ""),
-("Turkish",                 "Turkey",                            "Turkish_cuisine", ""),
-("Turkmen",                 "Turkmenistan",                      "Turkmen_cuisine", ""),
-("Tuvaluan",                "Tuvalu",                            "Cuisine_of_Tuvalu", ""),
+("Taiwanese",                "Taiwan",                            "Taiwanese_cuisine", ""),
+("Tajik",                    "Tajikistan",                        "Tajik_cuisine", ""),
+("Tanzanian",                "Tanzania",                          "Culture_of_Tanzania#Cuisine", ""),
+("Thai",                     "Thailand",                          "Thai_cuisine", ""),
+("Timorese",                 "Timor-Leste",                       "East_Timor", ""),
+("Togolese",                 "Togo",                              "Togolese_cuisine", ""),
+("Tongan",                   "Tonga",                             "Culture_of_Tonga#Cuisine", ""),
+("Trinidad and Tobago",      "Trinidad and Tobago",               "Trinidad_and_Tobago_cuisine", ""),
+("Tunisian",                 "Tunisia",                           "Tunisian_cuisine", ""),
+("Turkish",                  "Turkey",                            "Turkish_cuisine", ""),
+("Turkmen",                  "Turkmenistan",                      "Turkmen_cuisine", ""),
+("Tuvaluan",                 "Tuvalu",                            "Cuisine_of_Tuvalu", ""),
 
-("Ugandan",                 "Uganda",                            "Ugandan_cuisine", ""),
-("Ukrainian",               "Ukraine",                           "Ukrainian_cuisine", ""),
-("Emirati",                 "United Arab Emirates",              "Emirati_cuisine", ""),
-("British",                 "United Kingdom",                    "British_cuisine", ""),
-("American",                "United States of America",          "American_cuisine", ""),
-("Uruguayan",               "Uruguay",                           "Uruguayan_cuisine", ""),
-("Uzbek",                   "Uzbekistan",                        "Uzbek_cuisine", ""),
+("Ugandan",                  "Uganda",                            "Ugandan_cuisine", ""),
+("Ukrainian",                "Ukraine",                           "Ukrainian_cuisine", ""),
+("Emirati",                  "United Arab Emirates",              "Emirati_cuisine", ""),
+("British",                  "United Kingdom",                    "British_cuisine", ""),
+("American",                 "United States of America",          "American_cuisine", ""),
+("Uruguayan",                "Uruguay",                           "Uruguayan_cuisine", ""),
+("Uzbek",                    "Uzbekistan",                        "Uzbek_cuisine", ""),
 
-("Vanuatuan",               "Vanuatu",                           "Vanuatuan_cuisine", ""),
-("Venezuelan",              "Venezuala",                         "Venezuelan_cuisine", ""),
-("Vietnamese",              "Vietnam",                           "Vietnamese_cuisine", ""),
+("Vanuatuan",                "Vanuatu",                           "Vanuatuan_cuisine", ""),
+("Venezuelan",               "Venezuala",                         "Venezuelan_cuisine", ""),
+("Vietnamese",               "Vietnam",                           "Vietnamese_cuisine", ""),
 
-("Yemeni",                  "Yemen",                             "Yemeni_cuisine", ""),
+("Yemeni",                   "Yemen",                             "Yemeni_cuisine", ""),
 
-("Zambian",                 "Zambia",                            "Zambian_cuisine", ""),
-("Zimbabwean",              "Zimbabwe",                          "Zimbabwe#Cuisine", "");
+("Zambian",                  "Zambia",                            "Zambian_cuisine", ""),
+("Zimbabwean",               "Zimbabwe",                          "Zimbabwe#Cuisine", "");
 
 INSERT INTO equipment_types (name) VALUES
 ("Cleaning"),
@@ -623,7 +773,9 @@ INSERT INTO equipment_types (name) VALUES
 ("Dining"),
 ("Storage");
 
-INSERT INTO equipment (type, author, owner, name, description, image) VALUES
+INSERT INTO equipment
+(type,        author,  owner,   name,                               description, image)
+VALUES
 ("Preparing", "NOBSC", "NOBSC", "Ceramic Stone",                    "It works.", "nobsc-ceramic-stone"),
 ("Preparing", "NOBSC", "NOBSC", "Chef\'s Knife",                    "It works.", "nobsc-chefs-knife"),
 ("Preparing", "NOBSC", "NOBSC", "Cutting Board",                    "It works.", "nobsc-cutting-board"),
@@ -653,35 +805,35 @@ INSERT INTO equipment (type, author, owner, name, description, image) VALUES
 ("Preparing", "NOBSC", "NOBSC", "Aluminum Foil",                    "It works.", "nobsc-aluminum-foil"),
 ("Preparing", "NOBSC", "NOBSC", "Cheesecloth",                      "It works.", "nobsc-cheesecloth"),
 
-("Cooking", "NOBSC", "NOBSC", "Coffee Maker",                     "It works.", "nobsc-coffee-maker"),
-("Cooking", "NOBSC", "NOBSC", "Tea Pot",                          "It works.", "nobsc-tea-pot"),
-("Cooking", "NOBSC", "NOBSC", "Microwave",                        "It works.", "nobsc-ladle"),
-("Cooking", "NOBSC", "NOBSC", "Toaster Oven",                     "It works.", "nobsc-ladle"),
-("Cooking", "NOBSC", "NOBSC", "Small Sauce Pan",                  "It works.", "nobsc-small-sauce-pan"),
-("Cooking", "NOBSC", "NOBSC", "Medium Sauce Pan",                 "It works.", "nobsc-medium-sauce-pan"),
-("Cooking", "NOBSC", "NOBSC", "Medium Stock Pot",                 "It works.", "nobsc-medium-stock-pot"),
-("Cooking", "NOBSC", "NOBSC", "Large Stock Pot",                  "It works.", "nobsc-large-stock-pot"),
-("Cooking", "NOBSC", "NOBSC", "Stainless Steel Lidded Saute Pan", "It works.", "nobsc-stainless-steel-lidded-saute-pan"),
-("Cooking", "NOBSC", "NOBSC", "Small Stainless Steel Skillet",    "It works.", "nobsc-small-stainless-steel-skillet"),
-("Cooking", "NOBSC", "NOBSC", "Large Stainless Steel Skillet",    "It works.", "nobsc-large-stainless-steel-skillet"),
-("Cooking", "NOBSC", "NOBSC", "Small Cast-Iron Skillet",          "It works.", "nobsc-small-cast-iron-skillet"),
-("Cooking", "NOBSC", "NOBSC", "Large Cast-Iron Skillet",          "It works.", "nobsc-large-cast-iron-skillet"),
-("Cooking", "NOBSC", "NOBSC", "Glass Baking Dish",                "It works.", "nobsc-glass-baking-dish"),
-("Cooking", "NOBSC", "NOBSC", "Sturdy Baking Sheet",              "It works.", "nobsc-sturdy-baking-dish"),
-("Cooking", "NOBSC", "NOBSC", "Small Gratin Dish",                "It works.", "nobsc-small-gratin-dish"),
-("Cooking", "NOBSC", "NOBSC", "Large Gratin Dish",                "It works.", "nobsc-large-gratin-dish"),
-("Cooking", "NOBSC", "NOBSC", "Dutch Oven",                       "It works.", "nobsc-dutch-oven"),
-("Cooking", "NOBSC", "NOBSC", "Oven Mitts",                       "It works.", "nobsc-oven-mitts"),
-("Cooking", "NOBSC", "NOBSC", "Splatter Screen",                  "It works.", "nobsc-splatter-screen"),
-("Cooking", "NOBSC", "NOBSC", "Colander",                         "It works.", "nobsc-colander"),
-("Cooking", "NOBSC", "NOBSC", "Mesh Strainer",                    "It works.", "nobsc-mesh-strainer"),
-("Cooking", "NOBSC", "NOBSC", "Tongs",                            "It works.", "nobsc-tongs"),
-("Cooking", "NOBSC", "NOBSC", "Slotted Spoon",                    "It works.", "nobsc-slotted-spoon"),
-("Cooking", "NOBSC", "NOBSC", "Serving Spoon",                    "It works.", "nobsc-serving-spoon"),
-("Cooking", "NOBSC", "NOBSC", "Spider",                           "It works.", "nobsc-spider"),
-("Cooking", "NOBSC", "NOBSC", "Sturdy Spatula",                   "It works.", "nobsc-sturdy-spatula"),
-("Cooking", "NOBSC", "NOBSC", "Fish Spatula",                     "It works.", "nobsc-fish-spatula"),
-("Cooking", "NOBSC", "NOBSC", "Ladle",                            "It works.", "nobsc-ladle");
+("Cooking",   "NOBSC", "NOBSC", "Coffee Maker",                     "It works.", "nobsc-coffee-maker"),
+("Cooking",   "NOBSC", "NOBSC", "Tea Pot",                          "It works.", "nobsc-tea-pot"),
+("Cooking",   "NOBSC", "NOBSC", "Microwave",                        "It works.", "nobsc-ladle"),
+("Cooking",   "NOBSC", "NOBSC", "Toaster Oven",                     "It works.", "nobsc-ladle"),
+("Cooking",   "NOBSC", "NOBSC", "Small Sauce Pan",                  "It works.", "nobsc-small-sauce-pan"),
+("Cooking",   "NOBSC", "NOBSC", "Medium Sauce Pan",                 "It works.", "nobsc-medium-sauce-pan"),
+("Cooking",   "NOBSC", "NOBSC", "Medium Stock Pot",                 "It works.", "nobsc-medium-stock-pot"),
+("Cooking",   "NOBSC", "NOBSC", "Large Stock Pot",                  "It works.", "nobsc-large-stock-pot"),
+("Cooking",   "NOBSC", "NOBSC", "Stainless Steel Lidded Saute Pan", "It works.", "nobsc-stainless-steel-lidded-saute-pan"),
+("Cooking",   "NOBSC", "NOBSC", "Small Stainless Steel Skillet",    "It works.", "nobsc-small-stainless-steel-skillet"),
+("Cooking",   "NOBSC", "NOBSC", "Large Stainless Steel Skillet",    "It works.", "nobsc-large-stainless-steel-skillet"),
+("Cooking",   "NOBSC", "NOBSC", "Small Cast-Iron Skillet",          "It works.", "nobsc-small-cast-iron-skillet"),
+("Cooking",   "NOBSC", "NOBSC", "Large Cast-Iron Skillet",          "It works.", "nobsc-large-cast-iron-skillet"),
+("Cooking",   "NOBSC", "NOBSC", "Glass Baking Dish",                "It works.", "nobsc-glass-baking-dish"),
+("Cooking",   "NOBSC", "NOBSC", "Sturdy Baking Sheet",              "It works.", "nobsc-sturdy-baking-dish"),
+("Cooking",   "NOBSC", "NOBSC", "Small Gratin Dish",                "It works.", "nobsc-small-gratin-dish"),
+("Cooking",   "NOBSC", "NOBSC", "Large Gratin Dish",                "It works.", "nobsc-large-gratin-dish"),
+("Cooking",   "NOBSC", "NOBSC", "Dutch Oven",                       "It works.", "nobsc-dutch-oven"),
+("Cooking",   "NOBSC", "NOBSC", "Oven Mitts",                       "It works.", "nobsc-oven-mitts"),
+("Cooking",   "NOBSC", "NOBSC", "Splatter Screen",                  "It works.", "nobsc-splatter-screen"),
+("Cooking",   "NOBSC", "NOBSC", "Colander",                         "It works.", "nobsc-colander"),
+("Cooking",   "NOBSC", "NOBSC", "Mesh Strainer",                    "It works.", "nobsc-mesh-strainer"),
+("Cooking",   "NOBSC", "NOBSC", "Tongs",                            "It works.", "nobsc-tongs"),
+("Cooking",   "NOBSC", "NOBSC", "Slotted Spoon",                    "It works.", "nobsc-slotted-spoon"),
+("Cooking",   "NOBSC", "NOBSC", "Serving Spoon",                    "It works.", "nobsc-serving-spoon"),
+("Cooking",   "NOBSC", "NOBSC", "Spider",                           "It works.", "nobsc-spider"),
+("Cooking",   "NOBSC", "NOBSC", "Sturdy Spatula",                   "It works.", "nobsc-sturdy-spatula"),
+("Cooking",   "NOBSC", "NOBSC", "Fish Spatula",                     "It works.", "nobsc-fish-spatula"),
+("Cooking",   "NOBSC", "NOBSC", "Ladle",                            "It works.", "nobsc-ladle");
 
 INSERT INTO ingredient_types (name) VALUES
 ("Fish"),
@@ -704,156 +856,156 @@ INSERT INTO ingredient_types (name) VALUES
 ("Product");
 
 INSERT INTO ingredients
-(type, author, owner, variety, name, description, image)
+(type,        author,  owner,   variety,              name,                                       description, image)
 VALUES
-("Fish", "NOBSC", "NOBSC", "",                    "Tuna",                                     "Tasty.", "nobsc-tuna"),
-("Fish", "NOBSC", "NOBSC", "",                    "Salmon",                                   "Tasty.", "nobsc-salmon"),
-("Fish", "NOBSC", "NOBSC", "",                    "Tilapia",                                  "Tasty.", "nobsc-tilapia"),
-("Fish", "NOBSC", "NOBSC", "",                    "Pollock",                                  "Tasty.", "nobsc-pollock"),
-("Fish", "NOBSC", "NOBSC", "",                    "Catfish",                                  "Tasty.", "nobsc-catfish"),
-("Fish", "NOBSC", "NOBSC", "",                    "Cod",                                      "Tasty.", "nobsc-cod"),
+("Fish",      "NOBSC", "NOBSC", "",                   "Tuna",                                     "Tasty.", "nobsc-tuna"),
+("Fish",      "NOBSC", "NOBSC", "",                   "Salmon",                                   "Tasty.", "nobsc-salmon"),
+("Fish",      "NOBSC", "NOBSC", "",                   "Tilapia",                                  "Tasty.", "nobsc-tilapia"),
+("Fish",      "NOBSC", "NOBSC", "",                   "Pollock",                                  "Tasty.", "nobsc-pollock"),
+("Fish",      "NOBSC", "NOBSC", "",                   "Catfish",                                  "Tasty.", "nobsc-catfish"),
+("Fish",      "NOBSC", "NOBSC", "",                   "Cod",                                      "Tasty.", "nobsc-cod"),
 
-("Shellfish", "NOBSC", "NOBSC", "",                    "Clams",                                    "Tasty.", "nobsc-clams"),
-("Shellfish", "NOBSC", "NOBSC", "",                    "Crab",                                     "Tasty.", "nobsc-crab"),
-("Shellfish", "NOBSC", "NOBSC", "",                    "Shrimp",                                   "Tasty.", "nobsc-shrimp"),
+("Shellfish", "NOBSC", "NOBSC", "",                   "Clams",                                    "Tasty.", "nobsc-clams"),
+("Shellfish", "NOBSC", "NOBSC", "",                   "Crab",                                     "Tasty.", "nobsc-crab"),
+("Shellfish", "NOBSC", "NOBSC", "",                   "Shrimp",                                   "Tasty.", "nobsc-shrimp"),
 
-("Beef", "NOBSC", "NOBSC", "",                    "Chuck Seven Bone Roast",                   "Tasty.", "nobsc-chuck-7-bone-roast"),
-("Beef", "NOBSC", "NOBSC", "",                    "Chuck Seven Bone Steak",                   "Tasty.", "nobsc-chuck-7-bone-steak"),
-("Beef", "NOBSC", "NOBSC", "",                    "Chuck Arm Roast",                          "Tasty.", "nobsc-chuck-arm-roast"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Chuck Arm Roast",                          "Tasty.", "nobsc-chuck-arm-rost-boneless"),
-("Beef", "NOBSC", "NOBSC", "",                    "Chuck Arm Steak",                          "Tasty.", "nobsc-chuck-arm-steak"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Chuck Arm Steak",                          "Tasty.", "nobsc-chuck-arm-steak-boneless"),
-("Beef", "NOBSC", "NOBSC", "",                    "Chuck Blade Roast",                        "Tasty.", "nobsc-chuck-blade-roast"),
-("Beef", "NOBSC", "NOBSC", "",                    "Chuck Blade Steak",                        "Tasty.", "nobsc-chuck-blade-steak"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Chuck Blade Steak",                        "Tasty.", "nobsc-chuck-blade-steak-boneless"),
-("Beef", "NOBSC", "NOBSC", "Cap Off",             "Chuck Blade Steak",                        "Tasty.", "nobsc-chuck-blade-steak-cap-off"),
-("Beef", "NOBSC", "NOBSC", "",                    "Chuck Cross Rib Roast",                    "Tasty.", "nobsc-chuck-cross-rib-roast"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Chuck Cross Rib Roast",                    "Tasty.", "nobsc-chuck-cross-rib-roast-boneless"),
-("Beef", "NOBSC", "NOBSC", "",                    "Chuck Eye Edge Roast",                     "Tasty.", "nobsc-chuck-eye-edge-roast"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Chuck Eye Roast",                          "Tasty.", "nobsc-chuck-eye-roast-steak"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Chuck Eye Steak",                          "Tasty.", "nobsc-chuck-eye-steak-boneless"),
-("Beef", "NOBSC", "NOBSC", "",                    "Chuck Flanken Style Ribs",                 "Tasty.", "nobsc-chuck-flanken-style-ribs"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Chuck Flanken Style Ribs",                 "Tasty.", "nobsc-chuck-flanken-style-ribs-boneless"),
-("Beef", "NOBSC", "NOBSC", "",                    "Chuck Flat Ribs",                          "Tasty.", "nobsc-chuck-flat-ribs"),
-("Beef", "NOBSC", "NOBSC", "",                    "Chuck Mock Tender Roast",                  "Tasty.", "nobsc-chuck-mock-tender-roast"),
-("Beef", "NOBSC", "NOBSC", "",                    "Chuck Mock Tender Steak",                  "Tasty.", "nobsc-chuck-mock-tender-steak"),
-("Beef", "NOBSC", "NOBSC", "",                    "Chuck Neck Roast",                         "Tasty.", "nobsc-chuck-neck-roast"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Chuck Neck Roast",                         "Tasty.", "nobsc-chuck-neck-roast-boneless"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Chuck Roast",                              "Tasty.", "nobsc-chuck-roast-boneless"),
-("Beef", "NOBSC", "NOBSC", "",                    "Chuck Short Ribs",                         "Tasty.", "nobsc-chuck-short-ribs"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Chuck Short Ribs",                         "Tasty.", "nobsc-chuck-short-ribs-boneless"),
-("Beef", "NOBSC", "NOBSC", "",                    "Chuck Shoulder Center Steak Ranch Steak",  "Tasty.", "nobsc-chuck-shoulder-center-steak-ranch-steak"),
-("Beef", "NOBSC", "NOBSC", "",                    "Chuck Shoulder Roast",                     "Tasty.", "nobsc-chuck-shoulder-roast"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Chuck Shoulder Roast",                     "Tasty.", "nobsc-chuck-shoulder-roast-boneless"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Chuck Shoulder Steak",                     "Tasty.", "nobsc-chuck-shoulder-steak-boneless"),
-("Beef", "NOBSC", "NOBSC", "",                    "Chuck Shoulder Tender",                    "Tasty.", "nobsc-chuck-shoulder-tender"),
-("Beef", "NOBSC", "NOBSC", "",                    "Chuck Shoulder Tender Medallions",         "Tasty.", "nobsc-chuck-shoulder-tender-medallions"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Chuck Shoulder Top Blade Roast",           "Tasty.", "nobsc-chuck-shoulder-top-blade-roast-boneless"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Chuck Shoulder Top Blade Steak",           "Tasty.", "nobsc-chuck-shoulder-top-blade-steak-boneless"),
-("Beef", "NOBSC", "NOBSC", "",                    "Chuck Shoulder Top Blade Steak Flat Iron", "Tasty.", "nobsc-chuck-shoulder-top-blade-steak-flat-iron"),
-("Beef", "NOBSC", "NOBSC", "",                    "Chuck Top Blade Roast",                    "Tasty.", "nobsc-chuck-top-blade-roast"),
-("Beef", "NOBSC", "NOBSC", "Bone In",             "Chuck Top Blade Steak",                    "Tasty.", "nobsc-chuck-top-blade-steak-bone-in"),
-("Beef", "NOBSC", "NOBSC", "",                    "Chuck Under Blade Roast",                  "Tasty.", "nobsc-chuck-under-blade-roast"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Chuck Under Blade Roast",                  "Tasty.", "nobsc-chuck-under-blade-roast-boneless"),
-("Beef", "NOBSC", "NOBSC", "",                    "Chuck Under Blade Steak",                  "Tasty.", "nobsc-chuck-under-blade-steak"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Chuck Under Blade Steak",                  "Tasty.", "nobsc-chuck-under-blade-steak-boneless"),
-("Beef", "NOBSC", "NOBSC", "",                    "Round Bottom Round Roast",                 "Tasty.", "nobsc-round-bottom-round-roast"),
-("Beef", "NOBSC", "NOBSC", "",                    "Round Bottom Round Roast Triangle Roast",  "Tasty.", "nobsc-round-bottom-round-roast-triangle-roast"),
-("Beef", "NOBSC", "NOBSC", "",                    "Round Bottom Round Rump Roast",            "Tasty.", "nobsc-round-bottom-round-rump-roast"),
-("Beef", "NOBSC", "NOBSC", "",                    "Round Bottom Round Steak",                 "Tasty.", "nobsc-round-bottom-round-steak"),
-("Beef", "NOBSC", "NOBSC", "",                    "Round Bottom Round Steak Western Griller", "Tasty.", "nobsc-round-bottom-round-steak-western-griller"),
-("Beef", "NOBSC", "NOBSC", "",                    "Round Eye Round Roast",                    "Tasty.", "nobsc-round-eye-round-roast"),
-("Beef", "NOBSC", "NOBSC", "",                    "Round Eye Round Steak",                    "Tasty.", "nobsc-round-eye-round-steak"),
-("Beef", "NOBSC", "NOBSC", "",                    "Round Heel of Round",                      "Tasty.", "nobsc-round-heel-of-round"),
-("Beef", "NOBSC", "NOBSC", "",                    "Round Sirloin Tip Center Roast",           "Tasty.", "nobsc-round-sirloin-tip-center-roast"),
-("Beef", "NOBSC", "NOBSC", "",                    "Round Sirloin Tip Center Steak",           "Tasty.", "nobsc-round-sirloin-tip-center-steak"),
-("Beef", "NOBSC", "NOBSC", "",                    "Round Sirloin Tip Side Steak",             "Tasty.", "nobsc-round-sirloin-tip-side-steak"),
-("Beef", "NOBSC", "NOBSC", "",                    "Round Steak",                              "Tasty.", "nobsc-round-steak"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Round Steak",                              "Tasty.", "nobsc-round-steak-boneless"),
-("Beef", "NOBSC", "NOBSC", "",                    "Round Tip Roast",                          "Tasty.", "nobsc-round-tip-roast"),
-("Beef", "NOBSC", "NOBSC", "Cap Off",             "Round Tip Roast",                          "Tasty.", "nobsc-round-tip-roast-cap-off"),
-("Beef", "NOBSC", "NOBSC", "",                    "Round Tip Steak",                          "Tasty.", "nobsc-round-tip-steak"),
-("Beef", "NOBSC", "NOBSC", "Cap Off",             "Round Tip Steak",                          "Tasty.", "nobsc-round-tip-steak-cap-off"),
-("Beef", "NOBSC", "NOBSC", "",                    "Round Top Round Roast",                    "Tasty.", "nobsc-round-top-round-roast"),
-("Beef", "NOBSC", "NOBSC", "Cap Off",             "Round Top Round Roast",                    "Tasty.", "nobsc-round-top-round-roast-cap-off"),
-("Beef", "NOBSC", "NOBSC", "",                    "Round Top Round Steak",                    "Tasty.", "nobsc-round-top-round-steak"),
-("Beef", "NOBSC", "NOBSC", "",                    "Round Top Round Steak Butterflied",        "Tasty.", "nobsc-round-top-round-steak-butterflied"),
-("Beef", "NOBSC", "NOBSC", "",                    "Round Top Round Steak First Cut",          "Tasty.", "nobsc-round-top-round-steak-first-cut"),
-("Beef", "NOBSC", "NOBSC", "",                    "Loin Ball Tip Roast",                      "Tasty.", "nobsc-loin-ball-tip-roast"),
-("Beef", "NOBSC", "NOBSC", "",                    "Loin Ball Tip Steak",                      "Tasty.", "nobsc-loin-ball-tip-steak"),
-("Beef", "NOBSC", "NOBSC", "",                    "Loin Flap Meat Steak",                     "Tasty.", "nobsc-loin-flap-meat-steak"),
-("Beef", "NOBSC", "NOBSC", "",                    "Loin Porterhouse Steak",                   "Tasty.", "nobsc-loin-porterhouse-steak"),
-("Beef", "NOBSC", "NOBSC", "",                    "Loin Shell Sirloin Steak",                 "Tasty.", "nobsc-loin-shell-sirloin-steak"),
-("Beef", "NOBSC", "NOBSC", "",                    "Loin Sirloin Steak",                       "Tasty.", "nobsc-loin-sirloin-steak"),
-("Beef", "NOBSC", "NOBSC", "",                    "Loin T Bone Steak",                        "Tasty.", "nobsc-loin-t-bone-steak"),
-("Beef", "NOBSC", "NOBSC", "",                    "Loin Tenderloin Roast",                    "Tasty.", "nobsc-loin-tenderloin-roast"),
-("Beef", "NOBSC", "NOBSC", "",                    "Loin Tenderloin Steak",                    "Tasty.", "nobsc-loin-tenderloin-steak"),
-("Beef", "NOBSC", "NOBSC", "",                    "Loin Top Loin Roast",                      "Tasty.", "nobsc-loin-top-loin-roast"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Loin Top Loin Roast",                      "Tasty.", "nobsc-loin-top-loin-roast-boneless"),
-("Beef", "NOBSC", "NOBSC", "",                    "Loin Top Loin Steak",                      "Tasty.", "nobsc-loin-top-loin-steak"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Loin Top Loin Steak",                      "Tasty.", "nobsc-loin-top-loin-steak-boneless"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Loin Top Sirloin Roast",                   "Tasty.", "nobsc-loin-top-sirloin-roast-boneless"),
-("Beef", "NOBSC", "NOBSC", "Boneless Cap Off",    "Loin Top Sirloin Roast",                   "Tasty.", "nobsc-loin-top-sirloin-roast-boneless-cap-off"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Loin Top Sirloin Steak",                   "Tasty.", "nobsc-loin-top-sirloin-steak-boneless"),
-("Beef", "NOBSC", "NOBSC", "Boneless Cap Off",    "Loin Top Sirloin Steak",                   "Tasty.", "nobsc-loin-top-sirloin-steak-boneless-cap-off"),
-("Beef", "NOBSC", "NOBSC", "",                    "Loin Tri Tip Roast",                       "Tasty.", "nobsc-loin-tri-tip-roast"),
-("Beef", "NOBSC", "NOBSC", "",                    "Loin Tri Tip Steak",                       "Tasty.", "nobsc-loin-tri-tip-steak"),
-("Beef", "NOBSC", "NOBSC", "",                    "Shank Cross Cut",                          "Tasty.", "nobsc-shank-cross-cut"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Shank Cross Cut",                          "Tasty.", "nobsc-shank-cross-cut-boneless"),
-("Beef", "NOBSC", "NOBSC", "",                    "Plate Skirt Steak",                        "Tasty.", "nobsc-plate-skirt-steak"),
-("Beef", "NOBSC", "NOBSC", "",                    "Flank Steak",                              "Tasty.", "nobsc-flank-flank-steak"),
-("Beef", "NOBSC", "NOBSC", "",                    "Ground Beef",                              "Tasty.", "nobsc-ground-beef"),
-("Beef", "NOBSC", "NOBSC", "",                    "Back Ribs",                                "Tasty.", "nobsc-back-ribs"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Rib Cap Meat",                             "Tasty.", "nobsc-rib-cap-meat-boneless"),
-("Beef", "NOBSC", "NOBSC", "",                    "Rib Extra Trim Roast Large End",           "Tasty.", "nobsc-rib-extra-trim-roast-large-end"),
-("Beef", "NOBSC", "NOBSC", "",                    "Ribeye Roast",                             "Tasty.", "nobsc-ribeye-roast"),
-("Beef", "NOBSC", "NOBSC", "Lip On Bone In",      "Ribeye Roast",                             "Tasty.", "nobsc-ribeye-roast-lip-on-bone-in"),
-("Beef", "NOBSC", "NOBSC", "Lip On Boneless",     "Ribeye Roast",                             "Tasty.", "nobsc-ribeye-roast-lip-on-boneless"),
-("Beef", "NOBSC", "NOBSC", "",                    "Ribeye Steak",                             "Tasty.", "nobsc-ribeye-steak"),
-("Beef", "NOBSC", "NOBSC", "Lip On Bone In",      "Ribeye Steak",                             "Tasty.", "nobsc-ribeye-steak-lip-on-bone-in"),
-("Beef", "NOBSC", "NOBSC", "Lip On Boneless",     "Ribeye Steak",                             "Tasty.", "nobsc-ribeye-steak-lip-on-boneless"),
-("Beef", "NOBSC", "NOBSC", "",                    "Rib Roast Large End",                      "Tasty.", "nobsc-rib-roast-large-end"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Rib Roast Large End",                      "Tasty.", "nobsc-rib-roast-large-end-boneless"),
-("Beef", "NOBSC", "NOBSC", "",                    "Rib Roast Small End",                      "Tasty.", "nobsc-rib-roast-small-end"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Rib Roast Small End",                      "Tasty.", "nobsc-rib-roast-small-end-boneless"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Rib Rolled Cap Pot Roast",                 "Tasty.", "nobsc-rib-rolled-cap-pot-roast-boneless"),
-("Beef", "NOBSC", "NOBSC", "",                    "Rib Short Ribs",                           "Tasty.", "nobsc-rib-short-ribs"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Rib Short Ribs",                           "Tasty.", "nobsc-rib-short-ribs-boneless"),
-("Beef", "NOBSC", "NOBSC", "",                    "Rib Steak Large End",                      "Tasty.", "nobsc-rib-steak-large-end"),
-("Beef", "NOBSC", "NOBSC", "",                    "Rib Steak Small End",                      "Tasty.", "nobsc-rib-steak-small-end"),
-("Beef", "NOBSC", "NOBSC", "Boneless",            "Rib Steak Small End",                      "Tasty.", "nobsc-rib-steak-small-end-boneless"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Chuck Seven Bone Roast",                   "Tasty.", "nobsc-chuck-7-bone-roast"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Chuck Seven Bone Steak",                   "Tasty.", "nobsc-chuck-7-bone-steak"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Chuck Arm Roast",                          "Tasty.", "nobsc-chuck-arm-roast"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Chuck Arm Roast",                          "Tasty.", "nobsc-chuck-arm-rost-boneless"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Chuck Arm Steak",                          "Tasty.", "nobsc-chuck-arm-steak"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Chuck Arm Steak",                          "Tasty.", "nobsc-chuck-arm-steak-boneless"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Chuck Blade Roast",                        "Tasty.", "nobsc-chuck-blade-roast"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Chuck Blade Steak",                        "Tasty.", "nobsc-chuck-blade-steak"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Chuck Blade Steak",                        "Tasty.", "nobsc-chuck-blade-steak-boneless"),
+("Beef",      "NOBSC", "NOBSC", "Cap Off",            "Chuck Blade Steak",                        "Tasty.", "nobsc-chuck-blade-steak-cap-off"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Chuck Cross Rib Roast",                    "Tasty.", "nobsc-chuck-cross-rib-roast"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Chuck Cross Rib Roast",                    "Tasty.", "nobsc-chuck-cross-rib-roast-boneless"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Chuck Eye Edge Roast",                     "Tasty.", "nobsc-chuck-eye-edge-roast"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Chuck Eye Roast",                          "Tasty.", "nobsc-chuck-eye-roast-steak"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Chuck Eye Steak",                          "Tasty.", "nobsc-chuck-eye-steak-boneless"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Chuck Flanken Style Ribs",                 "Tasty.", "nobsc-chuck-flanken-style-ribs"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Chuck Flanken Style Ribs",                 "Tasty.", "nobsc-chuck-flanken-style-ribs-boneless"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Chuck Flat Ribs",                          "Tasty.", "nobsc-chuck-flat-ribs"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Chuck Mock Tender Roast",                  "Tasty.", "nobsc-chuck-mock-tender-roast"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Chuck Mock Tender Steak",                  "Tasty.", "nobsc-chuck-mock-tender-steak"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Chuck Neck Roast",                         "Tasty.", "nobsc-chuck-neck-roast"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Chuck Neck Roast",                         "Tasty.", "nobsc-chuck-neck-roast-boneless"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Chuck Roast",                              "Tasty.", "nobsc-chuck-roast-boneless"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Chuck Short Ribs",                         "Tasty.", "nobsc-chuck-short-ribs"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Chuck Short Ribs",                         "Tasty.", "nobsc-chuck-short-ribs-boneless"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Chuck Shoulder Center Steak Ranch Steak",  "Tasty.", "nobsc-chuck-shoulder-center-steak-ranch-steak"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Chuck Shoulder Roast",                     "Tasty.", "nobsc-chuck-shoulder-roast"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Chuck Shoulder Roast",                     "Tasty.", "nobsc-chuck-shoulder-roast-boneless"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Chuck Shoulder Steak",                     "Tasty.", "nobsc-chuck-shoulder-steak-boneless"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Chuck Shoulder Tender",                    "Tasty.", "nobsc-chuck-shoulder-tender"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Chuck Shoulder Tender Medallions",         "Tasty.", "nobsc-chuck-shoulder-tender-medallions"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Chuck Shoulder Top Blade Roast",           "Tasty.", "nobsc-chuck-shoulder-top-blade-roast-boneless"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Chuck Shoulder Top Blade Steak",           "Tasty.", "nobsc-chuck-shoulder-top-blade-steak-boneless"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Chuck Shoulder Top Blade Steak Flat Iron", "Tasty.", "nobsc-chuck-shoulder-top-blade-steak-flat-iron"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Chuck Top Blade Roast",                    "Tasty.", "nobsc-chuck-top-blade-roast"),
+("Beef",      "NOBSC", "NOBSC", "Bone In",            "Chuck Top Blade Steak",                    "Tasty.", "nobsc-chuck-top-blade-steak-bone-in"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Chuck Under Blade Roast",                  "Tasty.", "nobsc-chuck-under-blade-roast"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Chuck Under Blade Roast",                  "Tasty.", "nobsc-chuck-under-blade-roast-boneless"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Chuck Under Blade Steak",                  "Tasty.", "nobsc-chuck-under-blade-steak"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Chuck Under Blade Steak",                  "Tasty.", "nobsc-chuck-under-blade-steak-boneless"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Round Bottom Round Roast",                 "Tasty.", "nobsc-round-bottom-round-roast"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Round Bottom Round Roast Triangle Roast",  "Tasty.", "nobsc-round-bottom-round-roast-triangle-roast"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Round Bottom Round Rump Roast",            "Tasty.", "nobsc-round-bottom-round-rump-roast"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Round Bottom Round Steak",                 "Tasty.", "nobsc-round-bottom-round-steak"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Round Bottom Round Steak Western Griller", "Tasty.", "nobsc-round-bottom-round-steak-western-griller"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Round Eye Round Roast",                    "Tasty.", "nobsc-round-eye-round-roast"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Round Eye Round Steak",                    "Tasty.", "nobsc-round-eye-round-steak"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Round Heel of Round",                      "Tasty.", "nobsc-round-heel-of-round"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Round Sirloin Tip Center Roast",           "Tasty.", "nobsc-round-sirloin-tip-center-roast"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Round Sirloin Tip Center Steak",           "Tasty.", "nobsc-round-sirloin-tip-center-steak"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Round Sirloin Tip Side Steak",             "Tasty.", "nobsc-round-sirloin-tip-side-steak"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Round Steak",                              "Tasty.", "nobsc-round-steak"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Round Steak",                              "Tasty.", "nobsc-round-steak-boneless"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Round Tip Roast",                          "Tasty.", "nobsc-round-tip-roast"),
+("Beef",      "NOBSC", "NOBSC", "Cap Off",            "Round Tip Roast",                          "Tasty.", "nobsc-round-tip-roast-cap-off"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Round Tip Steak",                          "Tasty.", "nobsc-round-tip-steak"),
+("Beef",      "NOBSC", "NOBSC", "Cap Off",            "Round Tip Steak",                          "Tasty.", "nobsc-round-tip-steak-cap-off"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Round Top Round Roast",                    "Tasty.", "nobsc-round-top-round-roast"),
+("Beef",      "NOBSC", "NOBSC", "Cap Off",            "Round Top Round Roast",                    "Tasty.", "nobsc-round-top-round-roast-cap-off"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Round Top Round Steak",                    "Tasty.", "nobsc-round-top-round-steak"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Round Top Round Steak Butterflied",        "Tasty.", "nobsc-round-top-round-steak-butterflied"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Round Top Round Steak First Cut",          "Tasty.", "nobsc-round-top-round-steak-first-cut"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Loin Ball Tip Roast",                      "Tasty.", "nobsc-loin-ball-tip-roast"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Loin Ball Tip Steak",                      "Tasty.", "nobsc-loin-ball-tip-steak"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Loin Flap Meat Steak",                     "Tasty.", "nobsc-loin-flap-meat-steak"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Loin Porterhouse Steak",                   "Tasty.", "nobsc-loin-porterhouse-steak"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Loin Shell Sirloin Steak",                 "Tasty.", "nobsc-loin-shell-sirloin-steak"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Loin Sirloin Steak",                       "Tasty.", "nobsc-loin-sirloin-steak"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Loin T Bone Steak",                        "Tasty.", "nobsc-loin-t-bone-steak"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Loin Tenderloin Roast",                    "Tasty.", "nobsc-loin-tenderloin-roast"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Loin Tenderloin Steak",                    "Tasty.", "nobsc-loin-tenderloin-steak"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Loin Top Loin Roast",                      "Tasty.", "nobsc-loin-top-loin-roast"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Loin Top Loin Roast",                      "Tasty.", "nobsc-loin-top-loin-roast-boneless"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Loin Top Loin Steak",                      "Tasty.", "nobsc-loin-top-loin-steak"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Loin Top Loin Steak",                      "Tasty.", "nobsc-loin-top-loin-steak-boneless"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Loin Top Sirloin Roast",                   "Tasty.", "nobsc-loin-top-sirloin-roast-boneless"),
+("Beef",      "NOBSC", "NOBSC", "Boneless Cap Off",   "Loin Top Sirloin Roast",                   "Tasty.", "nobsc-loin-top-sirloin-roast-boneless-cap-off"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Loin Top Sirloin Steak",                   "Tasty.", "nobsc-loin-top-sirloin-steak-boneless"),
+("Beef",      "NOBSC", "NOBSC", "Boneless Cap Off",   "Loin Top Sirloin Steak",                   "Tasty.", "nobsc-loin-top-sirloin-steak-boneless-cap-off"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Loin Tri Tip Roast",                       "Tasty.", "nobsc-loin-tri-tip-roast"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Loin Tri Tip Steak",                       "Tasty.", "nobsc-loin-tri-tip-steak"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Shank Cross Cut",                          "Tasty.", "nobsc-shank-cross-cut"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Shank Cross Cut",                          "Tasty.", "nobsc-shank-cross-cut-boneless"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Plate Skirt Steak",                        "Tasty.", "nobsc-plate-skirt-steak"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Flank Steak",                              "Tasty.", "nobsc-flank-flank-steak"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Ground Beef",                              "Tasty.", "nobsc-ground-beef"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Back Ribs",                                "Tasty.", "nobsc-back-ribs"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Rib Cap Meat",                             "Tasty.", "nobsc-rib-cap-meat-boneless"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Rib Extra Trim Roast Large End",           "Tasty.", "nobsc-rib-extra-trim-roast-large-end"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Ribeye Roast",                             "Tasty.", "nobsc-ribeye-roast"),
+("Beef",      "NOBSC", "NOBSC", "Lip On Bone In",     "Ribeye Roast",                             "Tasty.", "nobsc-ribeye-roast-lip-on-bone-in"),
+("Beef",      "NOBSC", "NOBSC", "Lip On Boneless",    "Ribeye Roast",                             "Tasty.", "nobsc-ribeye-roast-lip-on-boneless"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Ribeye Steak",                             "Tasty.", "nobsc-ribeye-steak"),
+("Beef",      "NOBSC", "NOBSC", "Lip On Bone In",     "Ribeye Steak",                             "Tasty.", "nobsc-ribeye-steak-lip-on-bone-in"),
+("Beef",      "NOBSC", "NOBSC", "Lip On Boneless",    "Ribeye Steak",                             "Tasty.", "nobsc-ribeye-steak-lip-on-boneless"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Rib Roast Large End",                      "Tasty.", "nobsc-rib-roast-large-end"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Rib Roast Large End",                      "Tasty.", "nobsc-rib-roast-large-end-boneless"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Rib Roast Small End",                      "Tasty.", "nobsc-rib-roast-small-end"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Rib Roast Small End",                      "Tasty.", "nobsc-rib-roast-small-end-boneless"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Rib Rolled Cap Pot Roast",                 "Tasty.", "nobsc-rib-rolled-cap-pot-roast-boneless"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Rib Short Ribs",                           "Tasty.", "nobsc-rib-short-ribs"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Rib Short Ribs",                           "Tasty.", "nobsc-rib-short-ribs-boneless"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Rib Steak Large End",                      "Tasty.", "nobsc-rib-steak-large-end"),
+("Beef",      "NOBSC", "NOBSC", "",                   "Rib Steak Small End",                      "Tasty.", "nobsc-rib-steak-small-end"),
+("Beef",      "NOBSC", "NOBSC", "Boneless",           "Rib Steak Small End",                      "Tasty.", "nobsc-rib-steak-small-end-boneless"),
 
-("Pork", "NOBSC", "NOBSC", "",                    "Bacon",                                    "Tasty.", "nobsc-bacon"),
+("Pork",      "NOBSC", "NOBSC", "",                   "Bacon",                                    "Tasty.", "nobsc-bacon"),
 
-("Poultry", "NOBSC", "NOBSC", "Bone In",             "Chicken Breasts",                          "Tasty.", "nobsc-raw-chicken-wings"),
-("Poultry", "NOBSC", "NOBSC", "Boneless",            "Chicken Breasts",                          "Tasty.", "nobsc-raw-chicken-wings"),
-("Poultry", "NOBSC", "NOBSC", "",                    "Chicken Breasts",                          "Tasty.", "nobsc-raw-chicken-wings"),
-("Poultry", "NOBSC", "NOBSC", "",                    "Chicken Tenderloins",                      "Tasty.", "nobsc-raw-chicken-wings"),
-("Poultry", "NOBSC", "NOBSC", "Bone In",             "Chicken Thighs",                           "Tasty.", "nobsc-raw-chicken-wings"),
-("Poultry", "NOBSC", "NOBSC", "Boneless",            "Chicken Thighs",                           "Tasty.", "nobsc-raw-chicken-wings"),
-("Poultry", "NOBSC", "NOBSC", "",                    "Chicken Thighs",                           "Tasty.", "nobsc-raw-chicken-wings"),
-("Poultry", "NOBSC", "NOBSC", "",                    "Chicken Wings",                            "Tasty.", "nobsc-raw-chicken-wings"),
+("Poultry",   "NOBSC", "NOBSC", "Bone In",            "Chicken Breasts",                          "Tasty.", "nobsc-raw-chicken-wings"),
+("Poultry",   "NOBSC", "NOBSC", "Boneless",           "Chicken Breasts",                          "Tasty.", "nobsc-raw-chicken-wings"),
+("Poultry",   "NOBSC", "NOBSC", "",                   "Chicken Breasts",                          "Tasty.", "nobsc-raw-chicken-wings"),
+("Poultry",   "NOBSC", "NOBSC", "",                   "Chicken Tenderloins",                      "Tasty.", "nobsc-raw-chicken-wings"),
+("Poultry",   "NOBSC", "NOBSC", "Bone In",            "Chicken Thighs",                           "Tasty.", "nobsc-raw-chicken-wings"),
+("Poultry",   "NOBSC", "NOBSC", "Boneless",           "Chicken Thighs",                           "Tasty.", "nobsc-raw-chicken-wings"),
+("Poultry",   "NOBSC", "NOBSC", "",                   "Chicken Thighs",                           "Tasty.", "nobsc-raw-chicken-wings"),
+("Poultry",   "NOBSC", "NOBSC", "",                   "Chicken Wings",                            "Tasty.", "nobsc-raw-chicken-wings"),
 
-("Egg", "NOBSC", "NOBSC", "",                    "Extra Large Eggs",                         "Tasty.", "nobsc-eggs"),
-("Egg", "NOBSC", "NOBSC", "",                    "Large Eggs",                               "Tasty.", "nobsc-eggs"),
-("Egg", "NOBSC", "NOBSC", "",                    "Medium Eggs",                              "Tasty.", "nobsc-eggs"),
+("Egg",       "NOBSC", "NOBSC", "",                   "Extra Large Eggs",                         "Tasty.", "nobsc-eggs"),
+("Egg",       "NOBSC", "NOBSC", "",                   "Large Eggs",                               "Tasty.", "nobsc-eggs"),
+("Egg",       "NOBSC", "NOBSC", "",                   "Medium Eggs",                              "Tasty.", "nobsc-eggs"),
 
-("Dairy", "NOBSC", "NOBSC", "Salted",              "Butter",                                   "Tasty.", "nobsc-butter"),
-("Dairy", "NOBSC", "NOBSC", "Unsalted",            "Butter",                                   "Tasty.", "nobsc-butter"),
-("Dairy", "NOBSC", "NOBSC", "",                    "Cream",                                    "Tasty.", "nobsc-cream"),
+("Dairy",     "NOBSC", "NOBSC", "Salted",             "Butter",                                   "Tasty.", "nobsc-butter"),
+("Dairy",     "NOBSC", "NOBSC", "Unsalted",           "Butter",                                   "Tasty.", "nobsc-butter"),
+("Dairy",     "NOBSC", "NOBSC", "",                   "Cream",                                    "Tasty.", "nobsc-cream"),
+      
+("Oil",       "NOBSC", "NOBSC", "",                   "Coconut",                                  "Tasty.", "nobsc-coconut"),
 
-("Oil", "NOBSC", "NOBSC", "",                    "Coconut",                                  "Tasty.", "nobsc-coconut"),
+("Grain",     "NOBSC", "NOBSC", "Corn",               "Starch",                                   "Tasty.", "nobsc-eggs"),
+("Grain",     "NOBSC", "NOBSC", "Potato",             "Starch",                                   "Tasty.", "nobsc-eggs"),
+("Grain",     "NOBSC", "NOBSC", "All-Purpose",        "Flour",                                    "Tasty.", "nobsc-eggs"),
 
-("Grain", "NOBSC", "NOBSC", "Corn",                "Starch",                                   "Tasty.", "nobsc-eggs"),
-("Grain", "NOBSC", "NOBSC", "Potato",              "Starch",                                   "Tasty.", "nobsc-eggs"),
-("Grain", "NOBSC", "NOBSC", "All-Purpose",         "Flour",                                    "Tasty.", "nobsc-eggs"),
-
-("Bean", "NOBSC", "NOBSC", "Black Turtle",       "Beans",                                    "Tasty.", "nobsc-black-turtle-beans"),
-("Bean", "NOBSC", "NOBSC", "Garbanzo",           "Beans",                                    "Tasty.", "nobsc-garbanzo-beans-chickpeas"),
-("Bean", "NOBSC", "NOBSC", "Great Northern",     "Beans",                                    "Tasty.", "nobsc-great-northern-beans"),
-("Bean", "NOBSC", "NOBSC", "Pinto",              "Beans",                                    "Tasty.", "nobsc-pinto-beans"),
-("Bean", "NOBSC", "NOBSC", "Red Kidney",         "Beans",                                    "Tasty.", "nobsc-red-kidney-beans"),
-("Bean", "NOBSC", "NOBSC", "",                   "Split Peas",                               "Tasty.", "nobsc-split-peas"),
+("Bean",      "NOBSC", "NOBSC", "Black Turtle",       "Beans",                                    "Tasty.", "nobsc-black-turtle-beans"),
+("Bean",      "NOBSC", "NOBSC", "Garbanzo",           "Beans",                                    "Tasty.", "nobsc-garbanzo-beans-chickpeas"),
+("Bean",      "NOBSC", "NOBSC", "Great Northern",     "Beans",                                    "Tasty.", "nobsc-great-northern-beans"),
+("Bean",      "NOBSC", "NOBSC", "Pinto",              "Beans",                                    "Tasty.", "nobsc-pinto-beans"),
+("Bean",      "NOBSC", "NOBSC", "Red Kidney",         "Beans",                                    "Tasty.", "nobsc-red-kidney-beans"),
+("Bean",      "NOBSC", "NOBSC", "",                   "Split Peas",                               "Tasty.", "nobsc-split-peas"),
 
 ("Vegetable", "NOBSC", "NOBSC", "All Blue",           "Potatoes",                                 "Tasty.", "nobsc-potatoes"),
 ("Vegetable", "NOBSC", "NOBSC", "Austrian Crescent",  "Potatoes",                                 "Tasty.", "nobsc-potatoes"),
@@ -925,7 +1077,6 @@ VALUES
 ("Vegetable", "NOBSC", "NOBSC", "Sweet",              "Onion",                                    "Tasty.", "nobsc-sweet-onion"),
 ("Vegetable", "NOBSC", "NOBSC", "",                   "Onion",                                    "Tasty.", "nobsc-onion"),
 ("Vegetable", "NOBSC", "NOBSC", "Pearl",              "Onions",                                   "Tasty.", "nobsc-pearl-onions"),
-("Vegetable", "NOBSC", "NOBSC", "",                   "Garlic",                                   "Tasty.", "nobsc-garlic"),
 ("Vegetable", "NOBSC", "NOBSC", "",                   "Shallots",                                 "Tasty.", "nobsc-shallots"),
 ("Vegetable", "NOBSC", "NOBSC", "",                   "Leek",                                     "Tasty.", "nobsc-leek"),
 ("Vegetable", "NOBSC", "NOBSC", "Bell",               "Pepper",                                   "Tasty.", "nobsc-bell-pepper"),
@@ -967,147 +1118,147 @@ VALUES
 ("Vegetable", "NOBSC", "NOBSC", "Grape",              "Tomatoes",                                 "Tasty.", "nobsc-grape-tomatoes"),
 ("Vegetable", "NOBSC", "NOBSC", "",                   "Tomatoes",                                 "Tasty.", "nobsc-cherry-tomatoes"),
 
-("Fruit", "NOBSC", "NOBSC", "Ambrosia",           "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Baldwin",            "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Braeburn",           "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Cameo",              "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Cortland",           "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Cosmic Crisp",       "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Empire",             "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Enterprise",         "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Fuji",               "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Gala",               "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Golden Delicious",   "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Granny Smith",       "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Honeycrisp",         "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Idared",             "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Jazz",               "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Jonagold",           "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Jonathan",           "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Liberty",            "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Macoun",             "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "McIntosh Red",       "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Melrose",            "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Opal",               "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Ozark Gold",         "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Pinata",             "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Pink Lady",          "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Pristine",           "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Red Delicious",      "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Rome",               "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Spartan",            "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Stayman",            "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "SweeTango",          "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "Winesap",            "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Apple",                                    "Tasty.", "nobsc-apple"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Apricot",                                  "Tasty.", "nobsc-apricot"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Banana",                                   "Tasty.", "nobsc-banana"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Blackberries",                             "Tasty.", "nobsc-blackberries"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Blueberries",                              "Tasty.", "nobsc-blueberries"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Cherries",                                 "Tasty.", "nobsc-cherries"),
-("Fruit", "NOBSC", "NOBSC", "Dried",              "Cranberries",                              "Tasty.", "nobsc-cranberries"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Cranberries",                              "Tasty.", "nobsc-cranberries"),
-("Fruit", "NOBSC", "NOBSC", "Concord",            "Grapes",                                   "Tasty.", "nobsc-grapes"),
-("Fruit", "NOBSC", "NOBSC", "Flame",              "Grapes",                                   "Tasty.", "nobsc-grapes"),
-("Fruit", "NOBSC", "NOBSC", "Moon Drop",          "Grapes",                                   "Tasty.", "nobsc-grapes"),
-("Fruit", "NOBSC", "NOBSC", "Ruby",               "Grapes",                                   "Tasty.", "nobsc-grapes"),
-("Fruit", "NOBSC", "NOBSC", "Thompson",           "Grapes",                                   "Tasty.", "nobsc-grapes"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Grapes",                                   "Tasty.", "nobsc-grapes"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Guava",                                    "Tasty.", "nobsc-guava"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Kiwi",                                     "Tasty.", "nobsc-kiwi"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Mango",                                    "Tasty.", "nobsc-mango"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Watermelon",                               "Tasty.", "nobsc-watermelon"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Nectarine",                                "Tasty.", "nobsc-nectarine"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Papaya",                                   "Tasty.", "nobsc-papaya"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Peach",                                    "Tasty.", "nobsc-peach"),
-("Fruit", "NOBSC", "NOBSC", "Anjou Green",        "Pear",                                     "Tasty.", "nobsc-pear"),
-("Fruit", "NOBSC", "NOBSC", "Anjou Red",          "Pear",                                     "Tasty.", "nobsc-pear"),
-("Fruit", "NOBSC", "NOBSC", "Asian",              "Pear",                                     "Tasty.", "nobsc-pear"),
-("Fruit", "NOBSC", "NOBSC", "Bartlett",           "Pear",                                     "Tasty.", "nobsc-pear"),
-("Fruit", "NOBSC", "NOBSC", "Bosc",               "Pear",                                     "Tasty.", "nobsc-pear"),
-("Fruit", "NOBSC", "NOBSC", "Comice",             "Pear",                                     "Tasty.", "nobsc-pear"),
-("Fruit", "NOBSC", "NOBSC", "Concord",            "Pear",                                     "Tasty.", "nobsc-pear"),
-("Fruit", "NOBSC", "NOBSC", "Forelle",            "Pear",                                     "Tasty.", "nobsc-pear"),
-("Fruit", "NOBSC", "NOBSC", "French Butter",      "Pear",                                     "Tasty.", "nobsc-pear"),
-("Fruit", "NOBSC", "NOBSC", "Seckel",             "Pear",                                     "Tasty.", "nobsc-pear"),
-("Fruit", "NOBSC", "NOBSC", "Taylor\'s Gold",     "Pear",                                     "Tasty.", "nobsc-pear"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Pear",                                     "Tasty.", "nobsc-pear"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Pineapple",                                "Tasty.", "nobsc-pineapple"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Orange",                                   "Tasty.", "nobsc-orange"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Raspberries",                              "Tasty.", "nobsc-raspberries"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Strawberries",                             "Tasty.", "nobsc-strawberries"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Tangerine",                                "Tasty.", "nobsc-tangerine"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Tangelo",                                  "Tasty.", "nobsc-tangelo"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Blood Orange",                             "Tasty.", "nobsc-blood-orange"),
-("Fruit", "NOBSC", "NOBSC", "",                   "White Grapefruit",                         "Tasty.", "nobsc-white-grapefruit"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Pink Grapefruit",                          "Tasty.", "nobsc-pink-grapefruit"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Honeydew",                                 "Tasty.", "nobsc-honeydew"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Cantaloupe",                               "Tasty.", "nobsc-cantaloupe"),
-("Fruit", "NOBSC", "NOBSC", "Italian",            "Plum",                                     "Tasty.", "nobsc-italian-plum"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Plum",                                     "Tasty.", "nobsc-plum"),
-("Fruit", "NOBSC", "NOBSC", "",                   "Pomegranate",                              "Tasty.", "nobsc-pomegranate"),
+("Fruit",     "NOBSC", "NOBSC", "Ambrosia",           "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Baldwin",            "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Braeburn",           "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Cameo",              "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Cortland",           "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Cosmic Crisp",       "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Empire",             "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Enterprise",         "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Fuji",               "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Gala",               "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Golden Delicious",   "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Granny Smith",       "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Honeycrisp",         "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Idared",             "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Jazz",               "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Jonagold",           "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Jonathan",           "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Liberty",            "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Macoun",             "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "McIntosh Red",       "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Melrose",            "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Opal",               "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Ozark Gold",         "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Pinata",             "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Pink Lady",          "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Pristine",           "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Red Delicious",      "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Rome",               "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Spartan",            "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Stayman",            "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "SweeTango",          "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "Winesap",            "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Apple",                                    "Tasty.", "nobsc-apple"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Apricot",                                  "Tasty.", "nobsc-apricot"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Banana",                                   "Tasty.", "nobsc-banana"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Blackberries",                             "Tasty.", "nobsc-blackberries"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Blueberries",                              "Tasty.", "nobsc-blueberries"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Cherries",                                 "Tasty.", "nobsc-cherries"),
+("Fruit",     "NOBSC", "NOBSC", "Dried",              "Cranberries",                              "Tasty.", "nobsc-cranberries"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Cranberries",                              "Tasty.", "nobsc-cranberries"),
+("Fruit",     "NOBSC", "NOBSC", "Concord",            "Grapes",                                   "Tasty.", "nobsc-grapes"),
+("Fruit",     "NOBSC", "NOBSC", "Flame",              "Grapes",                                   "Tasty.", "nobsc-grapes"),
+("Fruit",     "NOBSC", "NOBSC", "Moon Drop",          "Grapes",                                   "Tasty.", "nobsc-grapes"),
+("Fruit",     "NOBSC", "NOBSC", "Ruby",               "Grapes",                                   "Tasty.", "nobsc-grapes"),
+("Fruit",     "NOBSC", "NOBSC", "Thompson",           "Grapes",                                   "Tasty.", "nobsc-grapes"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Grapes",                                   "Tasty.", "nobsc-grapes"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Guava",                                    "Tasty.", "nobsc-guava"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Kiwi",                                     "Tasty.", "nobsc-kiwi"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Mango",                                    "Tasty.", "nobsc-mango"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Watermelon",                               "Tasty.", "nobsc-watermelon"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Nectarine",                                "Tasty.", "nobsc-nectarine"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Papaya",                                   "Tasty.", "nobsc-papaya"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Peach",                                    "Tasty.", "nobsc-peach"),
+("Fruit",     "NOBSC", "NOBSC", "Anjou Green",        "Pear",                                     "Tasty.", "nobsc-pear"),
+("Fruit",     "NOBSC", "NOBSC", "Anjou Red",          "Pear",                                     "Tasty.", "nobsc-pear"),
+("Fruit",     "NOBSC", "NOBSC", "Asian",              "Pear",                                     "Tasty.", "nobsc-pear"),
+("Fruit",     "NOBSC", "NOBSC", "Bartlett",           "Pear",                                     "Tasty.", "nobsc-pear"),
+("Fruit",     "NOBSC", "NOBSC", "Bosc",               "Pear",                                     "Tasty.", "nobsc-pear"),
+("Fruit",     "NOBSC", "NOBSC", "Comice",             "Pear",                                     "Tasty.", "nobsc-pear"),
+("Fruit",     "NOBSC", "NOBSC", "Concord",            "Pear",                                     "Tasty.", "nobsc-pear"),
+("Fruit",     "NOBSC", "NOBSC", "Forelle",            "Pear",                                     "Tasty.", "nobsc-pear"),
+("Fruit",     "NOBSC", "NOBSC", "French Butter",      "Pear",                                     "Tasty.", "nobsc-pear"),
+("Fruit",     "NOBSC", "NOBSC", "Seckel",             "Pear",                                     "Tasty.", "nobsc-pear"),
+("Fruit",     "NOBSC", "NOBSC", "Taylor\'s Gold",     "Pear",                                     "Tasty.", "nobsc-pear"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Pear",                                     "Tasty.", "nobsc-pear"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Pineapple",                                "Tasty.", "nobsc-pineapple"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Orange",                                   "Tasty.", "nobsc-orange"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Raspberries",                              "Tasty.", "nobsc-raspberries"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Strawberries",                             "Tasty.", "nobsc-strawberries"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Tangerine",                                "Tasty.", "nobsc-tangerine"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Tangelo",                                  "Tasty.", "nobsc-tangelo"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Blood Orange",                             "Tasty.", "nobsc-blood-orange"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "White Grapefruit",                         "Tasty.", "nobsc-white-grapefruit"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Pink Grapefruit",                          "Tasty.", "nobsc-pink-grapefruit"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Honeydew",                                 "Tasty.", "nobsc-honeydew"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Cantaloupe",                               "Tasty.", "nobsc-cantaloupe"),
+("Fruit",     "NOBSC", "NOBSC", "Italian",            "Plum",                                     "Tasty.", "nobsc-italian-plum"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Plum",                                     "Tasty.", "nobsc-plum"),
+("Fruit",     "NOBSC", "NOBSC", "",                   "Pomegranate",                              "Tasty.", "nobsc-pomegranate"),
 
-("Nut", "NOBSC", "NOBSC", "",                   "Almonds",                                  "Tasty.", "nobsc-almonds"),
-("Nut", "NOBSC", "NOBSC", "",                   "Brazil Nuts",                              "Tasty.", "nobsc-almonds"),
-("Nut", "NOBSC", "NOBSC", "",                   "Cashews",                                  "Tasty.", "nobsc-cashews"),
-("Nut", "NOBSC", "NOBSC", "",                   "Hazelnuts",                                "Tasty.", "nobsc-almonds"),
-("Nut", "NOBSC", "NOBSC", "",                   "Macadamia Nuts",                           "Tasty.", "nobsc-almonds"),
-("Nut", "NOBSC", "NOBSC", "",                   "Peacans",                                  "Tasty.", "nobsc-almonds"),
-("Nut", "NOBSC", "NOBSC", "",                   "Peanuts",                                  "Tasty.", "nobsc-almonds"),
-("Nut", "NOBSC", "NOBSC", "",                   "Pine Nuts",                                "Tasty.", "nobsc-almonds"),
-("Nut", "NOBSC", "NOBSC", "",                   "Pistachios",                               "Tasty.", "nobsc-pistachios"),
-("Nut", "NOBSC", "NOBSC", "",                   "Walnuts",                                  "Tasty.", "nobsc-almonds"),
+("Nut",       "NOBSC", "NOBSC", "",                   "Almonds",                                  "Tasty.", "nobsc-almonds"),
+("Nut",       "NOBSC", "NOBSC", "",                   "Brazil Nuts",                              "Tasty.", "nobsc-almonds"),
+("Nut",       "NOBSC", "NOBSC", "",                   "Cashews",                                  "Tasty.", "nobsc-cashews"),
+("Nut",       "NOBSC", "NOBSC", "",                   "Hazelnuts",                                "Tasty.", "nobsc-almonds"),
+("Nut",       "NOBSC", "NOBSC", "",                   "Macadamia Nuts",                           "Tasty.", "nobsc-almonds"),
+("Nut",       "NOBSC", "NOBSC", "",                   "Peacans",                                  "Tasty.", "nobsc-almonds"),
+("Nut",       "NOBSC", "NOBSC", "",                   "Peanuts",                                  "Tasty.", "nobsc-almonds"),
+("Nut",       "NOBSC", "NOBSC", "",                   "Pine Nuts",                                "Tasty.", "nobsc-almonds"),
+("Nut",       "NOBSC", "NOBSC", "",                   "Pistachios",                               "Tasty.", "nobsc-pistachios"),
+("Nut",       "NOBSC", "NOBSC", "",                   "Walnuts",                                  "Tasty.", "nobsc-almonds"),
 
-("Seed", "NOBSC", "NOBSC", "",                   "Chia Seeds",                               "Tasty.", "nobsc-sesame-seeds"),
-("Seed", "NOBSC", "NOBSC", "",                   "Hemp Seeds",                               "Tasty.", "nobsc-sesame-seeds"),
-("Seed", "NOBSC", "NOBSC", "",                   "Poppy Seeds",                              "Tasty.", "nobsc-sesame-seeds"),
-("Seed", "NOBSC", "NOBSC", "",                   "Pumpkin Seeds",                            "Tasty.", "nobsc-pumpkin-seeds"),
-("Seed", "NOBSC", "NOBSC", "",                   "Sesame Seeds",                             "Tasty.", "nobsc-sesame-seeds"),
-("Seed", "NOBSC", "NOBSC", "",                   "Quinoa",                                   "Tasty.", "nobsc-sesame-seeds"),
+("Seed",      "NOBSC", "NOBSC", "",                   "Chia Seeds",                               "Tasty.", "nobsc-sesame-seeds"),
+("Seed",      "NOBSC", "NOBSC", "",                   "Hemp Seeds",                               "Tasty.", "nobsc-sesame-seeds"),
+("Seed",      "NOBSC", "NOBSC", "",                   "Poppy Seeds",                              "Tasty.", "nobsc-sesame-seeds"),
+("Seed",      "NOBSC", "NOBSC", "",                   "Pumpkin Seeds",                            "Tasty.", "nobsc-pumpkin-seeds"),
+("Seed",      "NOBSC", "NOBSC", "",                   "Sesame Seeds",                             "Tasty.", "nobsc-sesame-seeds"),
+("Seed",      "NOBSC", "NOBSC", "",                   "Quinoa",                                   "Tasty.", "nobsc-sesame-seeds"),
 
-("Spice", "NOBSC", "NOBSC", "Ancho",              "Pepper",                                   "Tasty.", "nobsc-ancho-pepper"),
-("Spice", "NOBSC", "NOBSC", "Arbol",              "Pepper",                                   "Tasty.", "nobsc-arbol-pepper"),
-("Spice", "NOBSC", "NOBSC", "Cascabel",           "Pepper",                                   "Tasty.", "nobsc-cascabel-pepper"),
-("Spice", "NOBSC", "NOBSC", "Guajillo",           "Pepper",                                   "Tasty.", "nobsc-guajillo-pepper"),
-("Spice", "NOBSC", "NOBSC", "Morita",             "Pepper",                                   "Tasty.", "nobsc-morita-pepper"),
-("Spice", "NOBSC", "NOBSC", "Mulato",             "Pepper",                                   "Tasty.", "nobsc-mulato-pepper"),
-("Spice", "NOBSC", "NOBSC", "Pasilla",            "Pepper",                                   "Tasty.", "nobsc-pasilla-pepper"),
-("Spice", "NOBSC", "NOBSC", "Pulla",              "Pepper",                                   "Tasty.", "nobsc-pulla-pepper"),
-("Spice", "NOBSC", "NOBSC", "",                   "Celery Seeds",                             "Tasty.", "nobsc-celery-seeds"),
-("Spice", "NOBSC", "NOBSC", "",                   "Cinnamon",                                 "Tasty.", "nobsc-cinnamon"),
-("Spice", "NOBSC", "NOBSC", "",                   "Ground Cinnamon",                          "Tasty.", "nobsc-ground-cinnamon"),
-("Spice", "NOBSC", "NOBSC", "",                   "Cloves",                                   "Tasty.", "nobsc-cloves"),
-("Spice", "NOBSC", "NOBSC", "",                   "Ground Cloves",                            "Tasty.", "nobsc-ground-cloves"),
-("Spice", "NOBSC", "NOBSC", "",                   "Caraway Seeds",                            "Tasty.", "nobsc-cumin-seeds"),
-("Spice", "NOBSC", "NOBSC", "",                   "Cumin Seeds",                              "Tasty.", "nobsc-cumin-seeds"),
-("Spice", "NOBSC", "NOBSC", "",                   "Cumin Powder",                             "Tasty.", "nobsc-cumin-powder"),
-("Spice", "NOBSC", "NOBSC", "",                   "Fennel Seeds",                             "Tasty.", "nobsc-fennel-seeds"),
-("Spice", "NOBSC", "NOBSC", "",                   "Garlic",                                   "Tasty.", "nobsc-garlic"),
-("Spice", "NOBSC", "NOBSC", "",                   "Garlic Powder",                            "Tasty.", "nobsc-garlic-powder"),
-("Spice", "NOBSC", "NOBSC", "",                   "Ginger",                                   "Tasty.", "nobsc-ginger"),
-("Spice", "NOBSC", "NOBSC", "",                   "Ginger Powder",                            "Tasty.", "nobsc-ginger-powder"),
-("Spice", "NOBSC", "NOBSC", "",                   "Shallots",                                 "Tasty.", "nobsc-shallots"),
-("Spice", "NOBSC", "NOBSC", "",                   "Turmeric",                                 "Tasty.", "nobsc-turmeric"),
-("Spice", "NOBSC", "NOBSC", "",                   "Turmeric Powder",                          "Tasty.", "nobsc-turmeric-powder"),
+("Spice",     "NOBSC", "NOBSC", "Ancho",              "Pepper",                                   "Tasty.", "nobsc-ancho-pepper"),
+("Spice",     "NOBSC", "NOBSC", "Arbol",              "Pepper",                                   "Tasty.", "nobsc-arbol-pepper"),
+("Spice",     "NOBSC", "NOBSC", "Cascabel",           "Pepper",                                   "Tasty.", "nobsc-cascabel-pepper"),
+("Spice",     "NOBSC", "NOBSC", "Guajillo",           "Pepper",                                   "Tasty.", "nobsc-guajillo-pepper"),
+("Spice",     "NOBSC", "NOBSC", "Morita",             "Pepper",                                   "Tasty.", "nobsc-morita-pepper"),
+("Spice",     "NOBSC", "NOBSC", "Mulato",             "Pepper",                                   "Tasty.", "nobsc-mulato-pepper"),
+("Spice",     "NOBSC", "NOBSC", "Pasilla",            "Pepper",                                   "Tasty.", "nobsc-pasilla-pepper"),
+("Spice",     "NOBSC", "NOBSC", "Pulla",              "Pepper",                                   "Tasty.", "nobsc-pulla-pepper"),
+("Spice",     "NOBSC", "NOBSC", "",                   "Celery Seeds",                             "Tasty.", "nobsc-celery-seeds"),
+("Spice",     "NOBSC", "NOBSC", "",                   "Cinnamon",                                 "Tasty.", "nobsc-cinnamon"),
+("Spice",     "NOBSC", "NOBSC", "",                   "Ground Cinnamon",                          "Tasty.", "nobsc-ground-cinnamon"),
+("Spice",     "NOBSC", "NOBSC", "",                   "Cloves",                                   "Tasty.", "nobsc-cloves"),
+("Spice",     "NOBSC", "NOBSC", "",                   "Ground Cloves",                            "Tasty.", "nobsc-ground-cloves"),
+("Spice",     "NOBSC", "NOBSC", "",                   "Caraway Seeds",                            "Tasty.", "nobsc-cumin-seeds"),
+("Spice",     "NOBSC", "NOBSC", "",                   "Cumin Seeds",                              "Tasty.", "nobsc-cumin-seeds"),
+("Spice",     "NOBSC", "NOBSC", "",                   "Cumin Powder",                             "Tasty.", "nobsc-cumin-powder"),
+("Spice",     "NOBSC", "NOBSC", "",                   "Fennel Seeds",                             "Tasty.", "nobsc-fennel-seeds"),
+("Spice",     "NOBSC", "NOBSC", "",                   "Garlic",                                   "Tasty.", "nobsc-garlic"),
+("Spice",     "NOBSC", "NOBSC", "",                   "Garlic Powder",                            "Tasty.", "nobsc-garlic-powder"),
+("Spice",     "NOBSC", "NOBSC", "",                   "Ginger",                                   "Tasty.", "nobsc-ginger"),
+("Spice",     "NOBSC", "NOBSC", "",                   "Ginger Powder",                            "Tasty.", "nobsc-ginger-powder"),
+("Spice",     "NOBSC", "NOBSC", "",                   "Shallots",                                 "Tasty.", "nobsc-shallots"),
+("Spice",     "NOBSC", "NOBSC", "",                   "Turmeric",                                 "Tasty.", "nobsc-turmeric"),
+("Spice",     "NOBSC", "NOBSC", "",                   "Turmeric Powder",                          "Tasty.", "nobsc-turmeric-powder"),
 
-("Herb", "NOBSC", "NOBSC", "",                   "Basil",                                    "Tasty.", "nobsc-basil"),
-("Herb", "NOBSC", "NOBSC", "",                   "Cilantro",                                 "Tasty.", "nobsc-cilantro"),
-("Herb", "NOBSC", "NOBSC", "",                   "Fenugreek",                                "Tasty.", "nobsc-fenugreek"),
-("Herb", "NOBSC", "NOBSC", "",                   "Parsley",                                  "Tasty.", "nobsc-parsley"),
-("Herb", "NOBSC", "NOBSC", "",                   "Rosemary",                                 "Tasty.", "nobsc-rosemary"),
-("Herb", "NOBSC", "NOBSC", "",                   "Sage",                                     "Tasty.", "nobsc-sage"),
-("Herb", "NOBSC", "NOBSC", "",                   "Thyme",                                    "Tasty.", "nobsc-thyme"),
+("Herb",      "NOBSC", "NOBSC", "",                   "Basil",                                    "Tasty.", "nobsc-basil"),
+("Herb",      "NOBSC", "NOBSC", "",                   "Cilantro",                                 "Tasty.", "nobsc-cilantro"),
+("Herb",      "NOBSC", "NOBSC", "",                   "Fenugreek",                                "Tasty.", "nobsc-fenugreek"),
+("Herb",      "NOBSC", "NOBSC", "",                   "Parsley",                                  "Tasty.", "nobsc-parsley"),
+("Herb",      "NOBSC", "NOBSC", "",                   "Rosemary",                                 "Tasty.", "nobsc-rosemary"),
+("Herb",      "NOBSC", "NOBSC", "",                   "Sage",                                     "Tasty.", "nobsc-sage"),
+("Herb",      "NOBSC", "NOBSC", "",                   "Thyme",                                    "Tasty.", "nobsc-thyme"),
 
-("Acid", "NOBSC", "NOBSC", "Apple Cider",        "Vinegar",                                  "Tasty.", "nobsc-balsamic-vinegar"),
-("Acid", "NOBSC", "NOBSC", "Balsamic",           "Vinegar",                                  "Tasty.", "nobsc-balsamic-vinegar"),
-("Acid", "NOBSC", "NOBSC", "Rice",               "Vinegar",                                  "Tasty.", "nobsc-balsamic-vinegar"),
+("Acid",      "NOBSC", "NOBSC", "Apple Cider",        "Vinegar",                                  "Tasty.", "nobsc-balsamic-vinegar"),
+("Acid",      "NOBSC", "NOBSC", "Balsamic",           "Vinegar",                                  "Tasty.", "nobsc-balsamic-vinegar"),
+("Acid",      "NOBSC", "NOBSC", "Rice",               "Vinegar",                                  "Tasty.", "nobsc-balsamic-vinegar"),
 
-("Product", "NOBSC", "NOBSC", "",                   "Fish Sauce",                               "Tasty.", "nobsc-tobasco-sauce"),
-("Product", "NOBSC", "NOBSC", "Dark",               "Soy Sauce",                                "Tasty.", "nobsc-tobasco-sauce"),
-("Product", "NOBSC", "NOBSC", "Light",              "Soy Sauce",                                "Tasty.", "nobsc-tobasco-sauce");
+("Product",   "NOBSC", "NOBSC", "",                   "Fish Sauce",                               "Tasty.", "nobsc-tobasco-sauce"),
+("Product",   "NOBSC", "NOBSC", "Dark",               "Soy Sauce",                                "Tasty.", "nobsc-tobasco-sauce"),
+("Product",   "NOBSC", "NOBSC", "Light",              "Soy Sauce",                                "Tasty.", "nobsc-tobasco-sauce");
 
 INSERT INTO ingredients
-(type, author, owner, brand, name, description, image)
+(type,      author,  owner,   brand,                name,                                       description, image)
 VALUES
 ("Product", "NOBSC", "NOBSC", "Tobasco",            "Hot Sauce",                                "Tasty.", "nobsc-tobasco-sauce");
 
@@ -1164,61 +1315,65 @@ INSERT INTO recipe_types (name) VALUES
 ("Condiment");
 
 INSERT INTO recipes
-(type, cuisine, author, owner, title, description, active_time, total_time, directions)
+(type,        cuisine,       author,  owner,   title,                                description,        active_time, total_time, directions)
 VALUES
-("Drink",     "Afgan",       "NOBSC", "NOBSC", "Borscht",                            "Excellent",        "00:30:00", "04:00:00", "Chop beets and onions..."),
-("Appetizer", "Albanian",    "NOBSC", "NOBSC", "Soft Buttery Pretzle",               "Melting goodness", "00:20:00", "01:20:00", "Set oven to 400 F. Mix dough..."),
-("Main",      "Algerian",    "NOBSC", "NOBSC", "Grilled Chicken and Seasoned Rice",  "Yum",              "01:00:00", "02:00:00", "Marinate chicken in a..."),
-("Side",      "Catalan",     "NOBSC", "NOBSC", "Mixed Root Vegetables",              "Satisfying",       "00:15:00", "01:00:00", "Chop vegetables into about 2 inch by 2 inch pieces..."),
-("Dessert",   "Angolan",     "NOBSC", "NOBSC", "Coffee Vanilla Icecream Cake",       "Special",          "00:30:00", "01:00:00", "Set oven to 275 F. Mix dough..."),
-("Soup",      "Bajan",       "NOBSC", "NOBSC", "Fish Carrot and Potato Soup",        "Nice.",            "00:45:00", "01:00:00", "Heat stock..."),
-("Salad",     "Argentine",   "NOBSC", "NOBSC", "Possibly Greek Salad",               "Who Knows",        "00:08:00", "00:08:00", "Mix olive oil and red wine vinegar in bowl..."),
-("Stew",      "Armenian",    "NOBSC", "NOBSC", "Irish Guinness Beef Stew",           "Calming",          "00:45:00", "04:00:00", "Sear well just one side of the beef pieces..."),
-("Casserole", "Australian",  "NOBSC", "NOBSC", "Northern Chinese Seafood Casserole", "Excellent",        "00:45:00", "01:30:00", "Heat stock..."),
-("Sauce",     "Austrian",    "NOBSC", "NOBSC", "Sweet Coconut Lime Sauce",           "Interesting",      "00:20:00", "00:20:00", "Mix..."),
-("Dressing",  "Azerbaijani", "NOBSC", "NOBSC", "Carrot Ginger Dressing",             "Tasty",            "00:20:00", "00:20:00", "Blend carrots and..."),
-("Condiment", "Bahamian",    "NOBSC", "NOBSC", "Some Kind Of Chutney",               "Not Bad",          "00:30:00", "01:00:00", "Mix...");
+("Drink",     "Afgan",       "NOBSC", "NOBSC", "Borscht",                            "Excellent",        "00:30:00",  "04:00:00", "Chop beets and onions..."),
+("Appetizer", "Albanian",    "NOBSC", "NOBSC", "Soft Buttery Pretzle",               "Melting goodness", "00:20:00",  "01:20:00", "Set oven to 400 F. Mix dough..."),
+("Main",      "Algerian",    "NOBSC", "NOBSC", "Grilled Chicken and Seasoned Rice",  "Yum",              "01:00:00",  "02:00:00", "Marinate chicken in a..."),
+("Side",      "Catalan",     "NOBSC", "NOBSC", "Mixed Root Vegetables",              "Satisfying",       "00:15:00",  "01:00:00", "Chop vegetables into about 2 inch by 2 inch pieces..."),
+("Dessert",   "Angolan",     "NOBSC", "NOBSC", "Coffee Vanilla Icecream Cake",       "Special",          "00:30:00",  "01:00:00", "Set oven to 275 F. Mix dough..."),
+("Soup",      "Bajan",       "NOBSC", "NOBSC", "Fish Carrot and Potato Soup",        "Nice.",            "00:45:00",  "01:00:00", "Heat stock..."),
+("Salad",     "Argentine",   "NOBSC", "NOBSC", "Possibly Greek Salad",               "Who Knows",        "00:08:00",  "00:08:00", "Mix olive oil and red wine vinegar in bowl..."),
+("Stew",      "Armenian",    "NOBSC", "NOBSC", "Irish Guinness Beef Stew",           "Calming",          "00:45:00",  "04:00:00", "Sear well just one side of the beef pieces..."),
+("Casserole", "Australian",  "NOBSC", "NOBSC", "Northern Chinese Seafood Casserole", "Excellent",        "00:45:00",  "01:30:00", "Heat stock..."),
+("Sauce",     "Austrian",    "NOBSC", "NOBSC", "Sweet Coconut Lime Sauce",           "Interesting",      "00:20:00",  "00:20:00", "Mix..."),
+("Dressing",  "Azerbaijani", "NOBSC", "NOBSC", "Carrot Ginger Dressing",             "Tasty",            "00:20:00",  "00:20:00", "Blend carrots and..."),
+("Condiment", "Bahamian",    "NOBSC", "NOBSC", "Some Kind Of Chutney",               "Not Bad",          "00:30:00",  "01:00:00", "Mix...");
 
-INSERT INTO recipe_equipment (recipe_id, equipment_id, amount) VALUES
-(1, 1, 1),
-(2, 1, 1),
-(3, 1, 1),
-(4, 1, 1),
-(5, 1, 1),
-(6, 1, 1),
-(7, 1, 1),
-(8, 1, 1),
-(9, 1, 1),
-(10, 1, 1),
-(11, 1, 1),
-(12, 1, 1);
+INSERT INTO recipe_equipment
+(recipe,                                     equipment,       amount)
+VALUES
+("NOBSC Borscht",                            "NOBSC Tea Pot", 1),
+("NOBSC Soft Buttery Pretzle",               "NOBSC Tea Pot", 1),
+("NOBSC Grilled Chicken and Seasoned Rice",  "NOBSC Tea Pot", 1),
+("NOBSC Mixed Root Vegetables",              "NOBSC Tea Pot", 1),
+("NOBSC Coffee Vanilla Icecream Cake",       "NOBSC Tea Pot", 1),
+("NOBSC Fish Carrot and Potato Soup",        "NOBSC Tea Pot", 1),
+("NOBSC Possibly Greek Salad",               "NOBSC Tea Pot", 1),
+("NOBSC Irish Guinness Beef Stew",           "NOBSC Tea Pot", 1),
+("NOBSC Northern Chinese Seafood Casserole", "NOBSC Tea Pot", 1),
+("NOBSC Sweet Coconut Lime Sauce",           "NOBSC Tea Pot", 1),
+("NOBSC Carrot Ginger Dressing",             "NOBSC Tea Pot", 1),
+("NOBSC Some Kind of Chutney",               "NOBSC Tea Pot", 1);
 
 INSERT INTO recipe_ingredients
-(recipe_id, ingredient_id, amount, measurement)
+(recipe,                                     ingredient,     amount, measurement)
 VALUES
-(1, 116, 4, "teaspoon"),
-(2, 209, 2, "Tablespoon"),
-(3, 153, 1, "cup"),
-(4, 159, 1, "ounce"),
-(5, 165, 7, "pound"),
-(6, 176, 1, "milliliter"),
-(7, 142, 3, "liter"),
-(8, 230, 1, "gram"),
-(9, 202, 9, "kilogram"),
-(10, 100, 20, "NA"),
-(11, 122, 10, "teaspoon"),
-(12, 138, 13, "Tablespoon");
+("NOBSC Borscht",                            "NOBSC Garlic", 4,      "teaspoon"),
+("NOBSC Soft Buttery Pretzle",               "NOBSC Garlic", 2,      "Tablespoon"),
+("NOBSC Grilled Chicken and Seasoned Rice",  "NOBSC Garlic", 1,      "cup"),
+("NOBSC Mixed Root Vegetables",              "NOBSC Garlic", 1,      "ounce"),
+("NOBSC Coffee Vanilla Icecream Cake",       "NOBSC Garlic", 7,      "pound"),
+("NOBSC Fish Carrot and Potato Soup",        "NOBSC Garlic", 1,      "milliliter"),
+("NOBSC Possibly Greek Salad",               "NOBSC Garlic", 3,      "liter"),
+("NOBSC Irish Guinness Beef Stew",           "NOBSC Garlic", 1,      "gram"),
+("NOBSC Northern Chinese Seafood Casserole", "NOBSC Garlic", 9,      "kilogram"),
+("NOBSC Sweet Coconut Lime Sauce",           "NOBSC Garlic", 20,     "NA"),
+("NOBSC Carrot Ginger Dressing",             "NOBSC Garlic", 10,     "teaspoon"),
+("NOBSC Some Kind of Chutney",               "NOBSC Garlic", 13,     "Tablespoon");
 
-INSERT INTO recipe_methods (recipe_id, method) VALUES
-(1, "Microwave"),
-(2, "Toast"),
-(3, "Steam"),
-(4, "Poach"),
-(5, "Simmer"),
-(6, "Boil"),
-(7, "Blanch"),
-(8, "Stew"),
-(9, "Braise"),
-(10, "Bake"),
-(11, "Roast"),
-(12, "Broil");
+INSERT INTO recipe_methods
+(recipe,                                     method)
+VALUES
+("NOBSC Borscht",                            "Microwave"),
+("NOBSC Soft Buttery Pretzle",               "Toast"),
+("NOBSC Grilled Chicken and Seasoned Rice",  "Steam"),
+("NOBSC Mixed Root Vegetables",              "Poach"),
+("NOBSC Coffee Vanilla Icecream Cake",       "Simmer"),
+("NOBSC Fish Carrot and Potato Soup",        "Boil"),
+("NOBSC Possibly Greek Salad",               "Blanch"),
+("NOBSC Irish Guinness Beef Stew",           "Stew"),
+("NOBSC Northern Chinese Seafood Casserole", "Braise"),
+("NOBSC Sweet Coconut Lime Sauce",           "Bake"),
+("NOBSC Carrot Ginger Dressing",             "Roast"),
+("NOBSC Some Kind of Chutney",               "Broil");

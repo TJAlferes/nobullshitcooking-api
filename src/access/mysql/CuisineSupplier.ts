@@ -5,50 +5,49 @@ export class CuisineSupplier implements ICuisineSupplier {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewByCuisineId = this.viewByCuisineId.bind(this);
+    this.viewByCuisine = this.viewByCuisine.bind(this);
     this.create = this.create.bind(this);
     this.delete = this.delete.bind(this);
-    this.deleteBySupplierId = this.deleteBySupplierId.bind(this);
+    this.deleteBySupplier = this.deleteBySupplier.bind(this);
   }
 
-  async viewByCuisineId(cuisineId: number) {
+  async viewByCuisine(cuisine: string) {
     const sql = `
-      SELECT cs.supplier_id, s.name AS supplier_name
-      FROM cuisine_suppliers cs
-      INNER JOIN suppliers s ON s.id = cs.supplier_id
-      WHERE cs.cuisine_id = ?
-      ORDER BY s.name ASC
+      SELECT supplier
+      FROM cuisine_suppliers
+      WHERE cs.cuisine = ?
+      ORDER BY supplier ASC
     `;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [cuisineId]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [cuisine]);
     return rows;
   }
 
-  async create(cuisineId: number, supplierId: number) {
+  async create(cuisine: string, supplier: string) {
     // to prevent duplicates?
-    await this.delete(cuisineId, supplierId);  // ?
+    await this.delete(cuisine, supplier);  // ?
     const sql = `
-      INSERT INTO cuisine_suppliers (cuisine_id, supplier_id) VALUES (?, ?)
+      INSERT INTO cuisine_suppliers (cuisine, supplier) VALUES (?, ?)
     `;
     const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [cuisineId, supplierId]);
+      .execute<RowDataPacket[]>(sql, [cuisine, supplier]);
     return row;
   }
 
   // used when deleting a cuisine-supplier relationship
-  async delete(cuisineId: number, supplierId: number) {
+  async delete(cuisine: string, supplier: string) {
     const sql = `
-      DELETE FROM cuisine_suppliers WHERE cuisine_id = ? AND supplier_id = ?
+      DELETE FROM cuisine_suppliers WHERE cuisine = ? AND supplier = ?
     `;
     const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [cuisineId, supplierId]);
+      .execute<RowDataPacket[]>(sql, [cuisine, supplier]);
     return row;
   }
 
   // used when deleting a supplier
-  async deleteBySupplierId(supplierId: number) {
-    const sql = `DELETE FROM cuisine_suppliers WHERE supplier_id = ?`;
+  async deleteBySupplier(supplier: string) {
+    const sql = `DELETE FROM cuisine_suppliers WHERE supplier = ?`;
     const [ rows ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [supplierId]);
+      .execute<RowDataPacket[]>(sql, [supplier]);
     return rows;
   }
 }
@@ -57,8 +56,8 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface ICuisineSupplier {
   pool: Pool;
-  viewByCuisineId(cuisineId: number): Data;
-  create(cuisineId: number, supplierId: number): Data;
-  delete(cuisineId: number, supplierId: number): Data;
-  deleteBySupplierId(supplierId: number): Data;
+  viewByCuisine(cuisine: string): Data;
+  create(cuisine: string, supplier: string): Data;
+  delete(cuisine: string, supplier: string): Data;
+  deleteBySupplier(supplier: string): Data;
 }

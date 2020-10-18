@@ -5,73 +5,48 @@ export class Content implements IContent {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.getLinksByContentTypeName = this.getLinksByContentTypeName.bind(this);
+    this.getLinksByType = this.getLinksByType.bind(this);
     this.view = this.view.bind(this);
     this.viewById = this.viewById.bind(this);
     this.create = this.create.bind(this);
     this.update = this.update.bind(this);
     this.delete = this.delete.bind(this);
-    this.deleteAllByOwnerId = this.deleteAllByOwnerId.bind(this);
   }
 
-  async getLinksByContentTypeName(contentTypeName: string) {
-    const authorId = 1;
+  async getLinksByType(type: string) {
+    const author = "NOBSC";
     const sql = `
-      SELECT
-        c.id,
-        c.content_type_id,
-        t.name AS content_type_name,
-        c.published,
-        c.title
-      FROM content c
-      INNER JOIN content_types t ON c.content_type_id = t.id
-      WHERE
-        c.author_id = ? AND
-        t.name = ? AND
-        c.published IS NOT NULL
+      SELECT id, type, published, title
+      FROM content
+      WHERE author = ? AND type = ? AND published IS NOT NULL
     `;
     const [ rows ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [authorId, contentTypeName]);
-    //await this.pool.end();
+      .execute<RowDataPacket[]>(sql, [author, type]);
     return rows;
   }
 
   // TO DO: finish
-  async view(authorId: number) {
+  async view(author: string) {
     const sql = `
-      SELECT
-        id,
-        content_type_id,
-        author_id,
-        created,
-        published,
-        title,
-        items
+      SELECT id, type, author, created, published, title, items
       FROM content
-      WHERE author_id = ?
+      WHERE author = ?
     `;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [authorId]);
-    //await this.pool.end();
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [author]);
     return row;
   }
 
   // TO DO: also make ByDate, ByAuthor, etc.
-  async viewById(id: number, authorId: number) {
-    const sql = `
-      SELECT content_type_id, items
-      FROM content
-      WHERE id = ? AND author_id = ?
-    `;
-    const [ row ] =
-      await this.pool.execute<RowDataPacket[]>(sql, [id, authorId]);
-    //await this.pool.end();
+  async viewById(id: string, author: string) {
+    const sql = `SELECT type, items FROM content WHERE id = ? AND author = ?`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id, author]);
     return row;
   }
 
   async create({
-    contentTypeId,
-    authorId,
-    ownerId,
+    type,
+    author,
+    owner,
     created,
     published,
     title,
@@ -79,9 +54,9 @@ export class Content implements IContent {
   }: ICreatingContent) {
     const sql = `
       INSERT INTO content (
-        content_type_id,
-        author_id,
-        owner_id,
+        type,
+        author,
+        owner,
         created,
         published,
         title,
@@ -89,61 +64,46 @@ export class Content implements IContent {
       ) VALUES (?, ?, ?, ?, ?, ?)
     `;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [
-      contentTypeId,
-      authorId,
-      ownerId,
+      type,
+      author,
+      owner,
       created,
       published,
       title,
       items
     ]);
-    //await this.pool.end();
     return row;
   }
 
   async update({
     id,
-    ownerId,
-    contentTypeId,
+    owner,
+    type,
     published,
     title,
     items
   }: IUpdatingContent) {
     const sql = `
       UPDATE content
-      SET content_type_id = ?, published = ?, title = ?, items = ?
-      WHERE owner_id = ? AND id = ?
+      SET type = ?, published = ?, title = ?, items = ?
+      WHERE owner = ? AND id = ?
       LIMIT 1
     `;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [
-      contentTypeId,
+      type,
       published,
       title,
       items,
-      ownerId,
+      owner,
       id
     ]);
-    //await this.pool.end();
     return row;
   }
 
-  async delete(ownerId: number, id: number) {
-    const sql = `
-      DELETE
-      FROM content
-      WHERE owner_id = ? AND id = ?
-      LIMIT 1
-    `;
-    const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [ownerId, id]);
-    //await this.pool.end();
+  async delete(owner: string, id: string) {
+    const sql = `DELETE FROM content WHERE owner = ? AND id = ? LIMIT 1`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [owner, id]);
     return row;
-  }
-
-  async deleteAllByOwnerId(ownerId: number) {
-    const sql = `DELETE FROM content WHERE owner_id = ?`;
-    await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
-    //await this.pool.end();
   }
 }
 
@@ -151,13 +111,13 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IContent {
   pool: Pool;
-  getLinksByContentTypeName(contentTypeName: string): Data;
-  view(authorId: number): Data;
-  viewById(id: number, authorId: number): Data;
+  getLinksByType(type: string): Data;
+  view(author: string): Data;
+  viewById(id: string, author: string): Data;
   create({
-    contentTypeId,
-    authorId,
-    ownerId,
+    type,
+    author,
+    owner,
     created,
     published,
     title,
@@ -165,20 +125,19 @@ export interface IContent {
   }: ICreatingContent): Data;
   update({
     id,
-    ownerId,
-    contentTypeId,
+    owner,
+    type,
     published,
     title,
     items
   }: IUpdatingContent): Data;
-  delete(ownerId: number, id: number): Data;
-  deleteAllByOwnerId(ownerId: number): void;
+  delete(owner: string, id: string): Data;
 }
 
 interface ICreatingContent {
-  contentTypeId: number;
-  authorId: number;
-  ownerId: number;
+  type: string;
+  author: string;
+  owner: string;
   created: string;
   published: string | null;
   title: string;
@@ -186,9 +145,9 @@ interface ICreatingContent {
 }
 
 interface IUpdatingContent {
-  id: number;
-  ownerId: number;
-  contentTypeId: number;
+  id: string;
+  owner: string;
+  type: string;
   published: string | null;
   title: string;
   items: any[];

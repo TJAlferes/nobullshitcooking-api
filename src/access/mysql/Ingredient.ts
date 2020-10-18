@@ -14,29 +14,26 @@ export class Ingredient implements IIngredient {
     this.delete = this.delete.bind(this);
     this.createPrivate = this.createPrivate.bind(this);
     this.updatePrivate = this.updatePrivate.bind(this);
-    this.deleteByOwnerId = this.deleteByOwnerId.bind(this);
-    this.deleteAllByOwnerId = this.deleteAllByOwnerId.bind(this);
+    this.deleteByOwner = this.deleteByOwner.bind(this);
   }
 
   async getAllForElasticSearch() {
-    const ownerId = 1;  // only public ingredients goes into ElasticSearch
+    const owner = "NOBSC";  // only public ingredients goes into ElasticSearch
     const sql = `
       SELECT
-        CAST(i.id AS CHAR),
-        i.ingredient_type_id,
-        i.owner_id,
-        t.name AS ingredient_type_name,
-        i.brand,
-        i.variety,
-        i.name,
-        i.fullname,
-        i.description,
-        i.image
-      FROM ingredients i
-      INNER JOIN ingredient_types t ON t.id = i.ingredient_type_id
-      WHERE i.owner_id = ?
+        CAST(id AS CHAR),
+        owner,
+        type,
+        brand,
+        variety,
+        name,
+        fullname,
+        description,
+        image
+      FROM ingredients
+      WHERE owner = ?
     `;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [owner]);
     let final = [];
     for (let row of rows) {
       final.push({index: {_index: 'ingredients', _id: row.id}}, {...row});
@@ -44,28 +41,25 @@ export class Ingredient implements IIngredient {
     return final;
   }
 
-  async getForElasticSearch(id: number) {
-    const ownerId = 1;  // only public ingredients goes into ElasticSearch
+  async getForElasticSearch(id: string) {
+    const owner = "NOBSC";  // only public ingredients goes into ElasticSearch
     const sql = `
       SELECT
-        CAST(i.id AS CHAR),
-        i.ingredient_type_id,
-        i.owner_id,
-        t.name AS ingredient_type_name,
-        i.brand,
-        i.variety,
-        i.name,
-        i.fullname,
-        i.description,
-        i.image
-      FROM ingredients i
-      INNER JOIN ingredient_types t ON t.id = i.ingredient_type_id
-      WHERE i.id = ? i.owner_id = ?
+        CAST(id AS CHAR),
+        owner,
+        type,
+        brand,
+        variety,
+        name,
+        fullname,
+        description,
+        image
+      FROM ingredients
+      WHERE id = ? owner = ?
     `;
-    const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [id, ownerId]);
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id, owner]);
     let {
-      ingredient_type_name,
+      type,
       brand,
       variety,
       name,
@@ -74,7 +68,7 @@ export class Ingredient implements IIngredient {
     } = row[0];
     return {
       id: row[0].id,
-      ingredient_type_name,
+      type,
       fullname,
       brand,
       variety,
@@ -83,53 +77,50 @@ export class Ingredient implements IIngredient {
     };
   }
 
-  async view(authorId: number, ownerId: number) {
+  async view(author: string, owner: string) {
     const sql = `
       SELECT
-        i.id,
-        i.ingredient_type_id,
-        i.owner_id,
-        t.name AS ingredient_type_name,
-        i.brand,
-        i.variety,
-        i.name,
-        i.fullname,
-        i.description,
-        i.image
-      FROM ingredients i
-      INNER JOIN ingredient_types t ON i.ingredient_type_id = t.id
-      WHERE i.author_id = ? AND i.owner_id = ?
-      ORDER BY i.name ASC
+        id,
+        owner,
+        type,
+        brand,
+        variety,
+        name,
+        fullname,
+        description,
+        image
+      FROM ingredients
+      WHERE author = ? AND owner = ?
+      ORDER BY name ASC
     `;
     const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [authorId, ownerId]);
+      .execute<RowDataPacket[]>(sql, [author, owner]);
     return row;
   }
 
-  async viewById(id: number, authorId: number, ownerId: number) {
+  async viewById(id: string, author: string, owner: string) {
     const sql = `
       SELECT
-        i.id,
-        t.name AS ingredient_type_name,
-        i.brand,
-        i.variety,
-        i.name,
-        i.fullname,
-        i.description,
-        i.image
-      FROM ingredients i
-      INNER JOIN ingredient_types t ON i.ingredient_type_id = t.id
-      WHERE owner_id = 1 AND i.id = ?
+        id,
+        type,
+        brand,
+        variety,
+        name,
+        fullname,
+        description,
+        image
+      FROM ingredients
+      WHERE id = ? AND author = ? AND owner = ?
     `;
     const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [id, authorId, ownerId]);
+      .execute<RowDataPacket[]>(sql, [id, author, owner]);
     return row;
   }
 
   async create({
-    ingredientTypeId,
-    authorId,
-    ownerId,
+    type,
+    author,
+    owner,
     brand,
     variety,
     name,
@@ -138,9 +129,9 @@ export class Ingredient implements IIngredient {
   }: ICreatingIngredient) {
     const sql = `
       INSERT INTO ingredients (
-        ingredient_type_id,
-        author_id,
-        owner_id,
+        type,
+        author,
+        owner,
         brand,
         variety,
         name,
@@ -150,9 +141,9 @@ export class Ingredient implements IIngredient {
     `;
     const [ row ] = await this.pool
       .execute<RowDataPacket[] & ResultSetHeader>(sql, [
-        ingredientTypeId,
-        authorId,
-        ownerId,
+        type,
+        author,
+        owner,
         brand,
         variety,
         name,
@@ -164,9 +155,7 @@ export class Ingredient implements IIngredient {
 
   async update({
     id,
-    ingredientTypeId,
-    authorId,
-    ownerId,
+    type,
     brand,
     variety,
     name,
@@ -176,7 +165,7 @@ export class Ingredient implements IIngredient {
     const sql = `
       UPDATE ingredients
       SET
-        ingredient_type_id = ?,
+        type = ?,
         brand = ?,
         variety = ?,
         name = ?,
@@ -186,7 +175,7 @@ export class Ingredient implements IIngredient {
       LIMIT 1
     `;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [
-      ingredientTypeId,
+      type,
       brand,
       variety,
       name,
@@ -197,16 +186,16 @@ export class Ingredient implements IIngredient {
     return row;
   }
 
-  async delete(id: number) {
+  async delete(id: string) {
     const sql = `DELETE FROM ingredients WHERE id = ? LIMIT 1`;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
     return row;
   }
 
   async createPrivate({
-    ingredientTypeId,
-    authorId,
-    ownerId,
+    type,
+    author,
+    owner,
     brand,
     variety,
     name,
@@ -215,9 +204,9 @@ export class Ingredient implements IIngredient {
   }: ICreatingIngredient) {
     const sql = `
       INSERT INTO ingredients (
-        ingredient_type_id,
-        author_id,
-        owner_id,
+        type,
+        author,
+        owner,
         brand,
         variety,
         name,
@@ -226,9 +215,9 @@ export class Ingredient implements IIngredient {
       ) VALUES (?, ?, ?, ?, ?, ?)
     `;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [
-      ingredientTypeId,
-      authorId,
-      ownerId,
+      type,
+      author,
+      owner,
       brand,
       variety,
       name,
@@ -240,9 +229,9 @@ export class Ingredient implements IIngredient {
 
   async updatePrivate({
     id,
-    ingredientTypeId,
-    authorId,
-    ownerId,
+    type,
+    author,
+    owner,
     brand,
     variety,
     name,
@@ -252,42 +241,36 @@ export class Ingredient implements IIngredient {
     const sql = `
       UPDATE ingredients
       SET
-        ingredient_type_id = ?,
-        author_id = ?,
-        owner_id = ?,
+        type = ?,
+        author = ?,
+        owner = ?,
         brand = ?,
         variety =?,
         name = ?,
         description = ?,
         image = ?
-      WHERE owner_id = ? AND id = ?
+      WHERE owner = ? AND id = ?
       LIMIT 1
     `;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [
-      ingredientTypeId,
-      authorId,
-      ownerId,
+      type,
+      author,
+      owner,
       brand,
       variety,
       name,
       description,
       image,
-      ownerId,
+      owner,
       id
     ]);
     return row;
   }
 
-  async deleteByOwnerId(id: number, ownerId: number) {
-    const sql = `DELETE FROM ingredients WHERE owner_id = ? AND id = ? LIMIT 1`;
-    const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [ownerId, id]);
+  async deleteByOwner(id: string, owner: string) {
+    const sql = `DELETE FROM ingredients WHERE owner = ? AND id = ? LIMIT 1`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [owner, id]);
     return row;
-  }
-
-  async deleteAllByOwnerId(ownerId: number) {
-    const sql = `DELETE FROM ingredients WHERE owner_id = ?`;
-    await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
   }
 }
 
@@ -298,13 +281,13 @@ type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
 export interface IIngredient {
   pool: Pool;
   getAllForElasticSearch(): any;  // finish
-  getForElasticSearch(id: number): any;  // finish
-  view(authorId: number, ownerId: number): Data;
-  viewById(id: number, authorId: number, ownerId: number): Data;
+  getForElasticSearch(id: string): any;  // finish
+  view(author: string, owner: string): Data;
+  viewById(id: string, author: string, owner: string): Data;
   create({
-    ingredientTypeId,
-    authorId,
-    ownerId,
+    type,
+    author,
+    owner,
     brand,
     variety,
     name,
@@ -313,20 +296,20 @@ export interface IIngredient {
   }: ICreatingIngredient): DataWithHeader;
   update({
     id,
-    ingredientTypeId,
-    authorId,
-    ownerId,
+    type,
+    author,
+    owner,
     brand,
     variety,
     name,
     description,
     image
   }: IUpdatingIngredient): Data;
-  delete(id: number): Data;
+  delete(id: string): Data;
   createPrivate({
-    ingredientTypeId,
-    authorId,
-    ownerId,
+    type,
+    author,
+    owner,
     brand,
     variety,
     name,
@@ -335,23 +318,22 @@ export interface IIngredient {
   }: ICreatingIngredient): Data;
   updatePrivate({
     id,
-    ingredientTypeId,
-    authorId,
-    ownerId,
+    type,
+    author,
+    owner,
     brand,
     variety,
     name,
     description,
     image
   }: IUpdatingIngredient): Data;
-  deleteByOwnerId(id: number, ownerId: number): Data;
-  deleteAllByOwnerId(ownerId: number): void;
+  deleteByOwner(id: string, owner: string): Data;
 }
 
 interface ICreatingIngredient {
-  ingredientTypeId: number;
-  authorId: number;
-  ownerId: number;
+  type: string;
+  author: string;
+  owner: string;
   brand: string;
   variety: string;
   name: string;
@@ -360,5 +342,5 @@ interface ICreatingIngredient {
 }
 
 interface IUpdatingIngredient extends ICreatingIngredient {
-  id: number;
+  id: string;
 }
