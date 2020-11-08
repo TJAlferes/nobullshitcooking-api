@@ -19,8 +19,8 @@ export function staffCuisineIngredientRouter(pool: Pool) {
     '/create',
     staffIsAuth,
     [
-      body('cuisineId').not().isEmpty().trim().escape(),
-      body('ingredientId').not().isEmpty().trim().escape()
+      body('cuisine').not().isEmpty().trim().escape(),
+      body('ingredient').not().isEmpty().trim().escape()
     ],
     catchExceptions(controller.create)
   );
@@ -29,8 +29,8 @@ export function staffCuisineIngredientRouter(pool: Pool) {
     '/delete',
     staffIsAuth,
     [
-      body('cuisineId').not().isEmpty().trim().escape(),
-      body('ingredientId').not().isEmpty().trim().escape()
+      body('cuisine').not().isEmpty().trim().escape(),
+      body('ingredient').not().isEmpty().trim().escape()
     ],
     catchExceptions(controller.delete)
   );

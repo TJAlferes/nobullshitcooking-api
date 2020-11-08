@@ -17,7 +17,7 @@ export function staffContentRouter(pool: Pool) {
     '/create',
     staffIsAuth,
     [
-      body('contentTypeId').not().isEmpty().trim().escape(),
+      body('type').not().isEmpty().trim().escape(),
       body('published').not().isEmpty().trim().escape(),
       body('title').not().isEmpty().trim().escape(),
       body('items').not().isEmpty().trim().escape()
@@ -30,7 +30,7 @@ export function staffContentRouter(pool: Pool) {
     staffIsAuth,
     [
       body('id').not().isEmpty().trim().escape(),
-      body('contentTypeId').not().isEmpty().trim().escape(),
+      body('type').not().isEmpty().trim().escape(),
       body('published').not().isEmpty().trim().escape(),
       body('title').not().isEmpty().trim().escape(),
       body('items').not().isEmpty().trim().escape()

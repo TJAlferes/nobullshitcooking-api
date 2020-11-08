@@ -18,8 +18,8 @@ export function userRecipeRouter(esClient: Client, pool: Pool) {
     '/create',
     userIsAuth,
     [
-      body('recipeTypeId').not().isEmpty().trim().escape(),
-      body('cuisineId').not().isEmpty().trim().escape(),
+      body('type').not().isEmpty().trim().escape(),
+      body('cuisine').not().isEmpty().trim().escape(),
       body('title').not().isEmpty().trim().escape(),
       body('description').not().isEmpty().trim().escape(),
       body('activeTime').not().isEmpty().trim().escape(),
@@ -29,7 +29,8 @@ export function userRecipeRouter(esClient: Client, pool: Pool) {
       body('equipmentImage').not().isEmpty().trim().escape(),
       body('ingredientsImage').not().isEmpty().trim().escape(),
       body('cookingImage').not().isEmpty().trim().escape(),
-      body('ownership').not().isEmpty().trim().escape()
+      body('ownership').not().isEmpty().trim().escape(),
+      body('video').not().isEmpty().trim().escape()
     ],
     catchExceptions(controller.create)
   );
@@ -39,8 +40,8 @@ export function userRecipeRouter(esClient: Client, pool: Pool) {
     userIsAuth,
     [
       body('id').not().isEmpty().trim().escape(),
-      body('recipeTypeId').not().isEmpty().trim().escape(),
-      body('cuisineId').not().isEmpty().trim().escape(),
+      body('type').not().isEmpty().trim().escape(),
+      body('cuisine').not().isEmpty().trim().escape(),
       body('title').not().isEmpty().trim().escape(),
       body('description').not().isEmpty().trim().escape(),
       body('activeTime').not().isEmpty().trim().escape(),
@@ -50,7 +51,8 @@ export function userRecipeRouter(esClient: Client, pool: Pool) {
       body('equipmentImage').not().isEmpty().trim().escape(),
       body('ingredientsImage').not().isEmpty().trim().escape(),
       body('cookingImage').not().isEmpty().trim().escape(),
-      body('ownership').not().isEmpty().trim().escape()
+      body('ownership').not().isEmpty().trim().escape(),
+      body('video').not().isEmpty().trim().escape()
     ],
     catchExceptions(controller.update)
   );

@@ -16,7 +16,7 @@ export function userSavedRecipeRouter(pool: Pool) {
   router.post(
     '/',
     userIsAuth,
-    catchExceptions(controller.viewByUserId)
+    catchExceptions(controller.viewByUser)
   );
 
   router.post(

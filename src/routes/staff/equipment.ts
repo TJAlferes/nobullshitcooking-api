@@ -18,7 +18,7 @@ export function staffEquipmentRouter(esClient: Client, pool: Pool) {
     '/create',
     staffIsAuth,
     [
-      body('equipmentTypeId').not().isEmpty().trim().escape(),
+      body('type').not().isEmpty().trim().escape(),
       body('name').not().isEmpty().trim().escape(),
       body('description').not().isEmpty().trim().escape(),
       body('image').not().isEmpty().trim().escape()
@@ -31,7 +31,7 @@ export function staffEquipmentRouter(esClient: Client, pool: Pool) {
     staffIsAuth,
     [
       body('id').not().isEmpty().trim().escape(),
-      body('equipmentTypeId').not().isEmpty().trim().escape(),
+      body('type').not().isEmpty().trim().escape(),
       body('name').not().isEmpty().trim().escape(),
       body('description').not().isEmpty().trim().escape(),
       body('image').not().isEmpty().trim().escape()

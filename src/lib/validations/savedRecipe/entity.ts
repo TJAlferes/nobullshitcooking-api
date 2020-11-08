@@ -1,6 +1,6 @@
-import { number, object } from 'superstruct';
+import { string, object } from 'superstruct';
 
 export const validSavedRecipeEntity = object({
-  userId: number(),
-  recipeId: number()
+  user: string(),
+  recipe: string()
 });

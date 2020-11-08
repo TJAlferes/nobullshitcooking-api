@@ -20,7 +20,7 @@ export function contentRouter(pool: Pool) {
   router.get(
     '/links/:name',
     [param('name').not().isEmpty().trim().escape()],
-    catchExceptions(controller.getLinksByContentTypeName)
+    catchExceptions(controller.getLinksByType)
   );
   
   router.get(

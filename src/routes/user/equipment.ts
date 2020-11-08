@@ -30,7 +30,7 @@ export function userEquipmentRouter(pool: Pool) {
     '/create',
     userIsAuth,
     [
-      body('equipmentTypeId').not().isEmpty().trim().escape(),
+      body('type').not().isEmpty().trim().escape(),
       body('name').not().isEmpty().trim().escape(),
       body('description').not().isEmpty().trim().escape(),
       body('image').not().isEmpty().trim().escape()
@@ -42,8 +42,8 @@ export function userEquipmentRouter(pool: Pool) {
     '/update',
     userIsAuth,
     [
-      body('equipmentId').not().isEmpty().trim().escape(),
-      body('equipmentTypeId').not().isEmpty().trim().escape(),
+      body('id').not().isEmpty().trim().escape(),
+      body('type').not().isEmpty().trim().escape(),
       body('name').not().isEmpty().trim().escape(),
       body('description').not().isEmpty().trim().escape(),
       body('image').not().isEmpty().trim().escape()

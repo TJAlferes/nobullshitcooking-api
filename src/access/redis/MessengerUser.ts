@@ -10,13 +10,13 @@ export class MessengerUser implements IMessengerUser {
     this.remove = this.remove.bind(this);
   }
 
-  async getSocketId(id: number) {
+  async getSocketId(id: string) {
     const foundUserSocketId = await this.client.hget(`user:${id}`, 'socketid');
     return foundUserSocketId;
   }
 
   async add(
-    id: number,
+    id: string,
     username: string,
     avatar: string,
     sid: string,
@@ -32,7 +32,7 @@ export class MessengerUser implements IMessengerUser {
       .exec();
   }
 
-  async remove(id: number) {
+  async remove(id: string) {
     await this.client
       .multi()
       .zrem('users', id)
@@ -43,13 +43,13 @@ export class MessengerUser implements IMessengerUser {
 
 export interface IMessengerUser {
   client: Redis;
-  getSocketId(id: number): Promise<string|null>;
+  getSocketId(id: string): Promise<string|null>;
   add(
-    id: number,
+    id: string,
     username: string,
     avatar: string,
     sid: string,
     socketid: string
   ): void;
-  remove(id: number): void;
+  remove(id: string): void;
 }

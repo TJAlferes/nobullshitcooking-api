@@ -1,3 +1,3 @@
-import { object, string } from 'superstruct';
+import { string } from 'superstruct';
 
-export const validProfileRequest = object({username: string()});
+export const validProfileRequest = string();

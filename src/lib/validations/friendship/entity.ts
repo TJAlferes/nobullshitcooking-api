@@ -1,8 +1,8 @@
-import { number, object, string} from 'superstruct';
+import { object, string} from 'superstruct';
 
 export const validFriendshipEntity = object({
-  userId: number(),
-  friendId: number(),
+  user: string(),
+  friend: string(),
   status1: string(),
   status2: string()
 });

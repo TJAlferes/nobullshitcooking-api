@@ -19,8 +19,8 @@ export function staffCuisineEquipmentRouter(pool: Pool) {
     '/create',
     staffIsAuth,
     [
-      body('cuisineId').not().isEmpty().trim().escape(),
-      body('equipmentId').not().isEmpty().trim().escape()
+      body('cuisine').not().isEmpty().trim().escape(),
+      body('equipment').not().isEmpty().trim().escape()
     ],
     catchExceptions(controller.create)
   );
@@ -29,8 +29,8 @@ export function staffCuisineEquipmentRouter(pool: Pool) {
     '/delete',
     staffIsAuth,
     [
-      body('cuisineId').not().isEmpty().trim().escape(),
-      body('equipmentId').not().isEmpty().trim().escape()
+      body('cuisine').not().isEmpty().trim().escape(),
+      body('equipment').not().isEmpty().trim().escape()
     ],
     catchExceptions(controller.delete)
   );

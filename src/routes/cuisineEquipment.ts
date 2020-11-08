@@ -13,9 +13,9 @@ export function cuisineEquipmentRouter(pool: Pool) {
   const controller = new CuisineEquipmentController(pool);
 
   router.get(
-    '/:id',
-    [param('id').not().isEmpty().trim().escape()],
-    catchExceptions(controller.viewByCuisineId)
+    '/:cuisine',
+    [param('cuisine').not().isEmpty().trim().escape()],
+    catchExceptions(controller.viewByCuisine)
   );
 
   return router;

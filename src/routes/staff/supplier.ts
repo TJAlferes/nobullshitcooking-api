@@ -23,17 +23,14 @@ export function staffSupplierRouter(pool: Pool) {
   router.put(
     '/update',
     staffIsAuth,
-    [
-      body('id').not().isEmpty().trim().escape(),
-      body('name').not().isEmpty().trim().escape()
-    ],
+    [body('name').not().isEmpty().trim().escape()],
     catchExceptions(controller.update)
   );
   
   router.delete(
     '/delete',
     staffIsAuth,
-    [body('id').not().isEmpty().trim().escape()],
+    [body('name').not().isEmpty().trim().escape()],
     catchExceptions(controller.delete)
   );
 

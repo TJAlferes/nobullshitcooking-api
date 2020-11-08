@@ -1,10 +1,10 @@
-import { number, object, optional, string } from 'superstruct';
+import { object, string } from 'superstruct';
 
 export const validNotificationEntity = object({
-  senderId: number(),
-  receiverId: number(),
-  read: number(),
+  sender: string(),
+  receiver: string(),
+  read: string(),
   type: string(),
   note: string(),
-  createdOn: string()
+  created: string()
 });

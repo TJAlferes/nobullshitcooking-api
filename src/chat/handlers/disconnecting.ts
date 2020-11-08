@@ -38,7 +38,7 @@ export async function disconnecting({
 
 interface IDisconnecting {
   reason: any;
-  id: number;
+  id: string;
   username: string;
   avatar: string;
   socket: Socket;

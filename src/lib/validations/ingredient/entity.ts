@@ -1,9 +1,9 @@
-import { array, defaulted, number, object, optional, string } from 'superstruct';
+import { array, defaulted, object, optional, string } from 'superstruct';
 
 export const validIngredientEntity = object({
-  ingredientTypeId: number(),
-  authorId: number(),
-  ownerId: number(),
+  type: string(),
+  author: string(),
+  owner: string(),
   brand: defaulted(string(), ''),
   variety: defaulted(string(), ''),
   name: string(),

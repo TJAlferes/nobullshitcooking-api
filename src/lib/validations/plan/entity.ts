@@ -1,8 +1,8 @@
-import { defaulted, number, object, string } from 'superstruct';
+import { defaulted, object, string } from 'superstruct';
 
 export const validPlanEntity = object({
-  authorId: number(),
-  ownerId: number(),
+  author: string(),
+  owner: string(),
   name: string(),
   data: defaulted(
     string(),

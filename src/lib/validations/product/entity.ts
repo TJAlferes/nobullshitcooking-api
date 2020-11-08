@@ -1,8 +1,8 @@
-import { defaulted, number, object, string } from 'superstruct';
+import { defaulted, object, string } from 'superstruct';
 
 export const validProductEntity = object({
-  productCategoryId: number(),
-  productTypeId: number(),
+  category: string(),
+  type: string(),
   brand: defaulted(string(), ''),
   variety: defaulted(string(), ''),
   name: string(),

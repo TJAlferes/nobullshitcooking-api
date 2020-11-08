@@ -1,6 +1,3 @@
-import { number, object, optional, string } from 'superstruct';
+import { string } from 'superstruct';
 
-export const validEquipmentTypeRequest = object({
-  id: number(),
-  name: optional(string())
-});
+export const validEquipmentTypeRequest = string();

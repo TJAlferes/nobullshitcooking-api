@@ -1,7 +1,7 @@
 import { IChatUser } from './types';
 
 export function ChatUser(
-  id: number,
+  id: string,
   username: string,
   avatar: string
 ): IChatUser {

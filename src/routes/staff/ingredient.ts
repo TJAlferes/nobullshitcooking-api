@@ -18,7 +18,7 @@ export function staffIngredientRouter(esClient: Client, pool: Pool) {
     '/create',
     staffIsAuth,
     [
-      body('ingredientTypeId').not().isEmpty().trim().escape(),
+      body('type').not().isEmpty().trim().escape(),
       body('brand').not().isEmpty().trim().escape(),
       body('variety').not().isEmpty().trim().escape(),
       body('name').not().isEmpty().trim().escape(),
@@ -33,7 +33,7 @@ export function staffIngredientRouter(esClient: Client, pool: Pool) {
     staffIsAuth,
     [
       body('id').not().isEmpty().trim().escape(),
-      body('ingredientTypeId').not().isEmpty().trim().escape(),
+      body('type').not().isEmpty().trim().escape(),
       body('brand').not().isEmpty().trim().escape(),
       body('variety').not().isEmpty().trim().escape(),
       body('name').not().isEmpty().trim().escape(),

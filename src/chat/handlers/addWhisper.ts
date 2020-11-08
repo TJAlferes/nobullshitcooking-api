@@ -35,7 +35,7 @@ export async function addWhisper({
 interface IAddWhisper {
   text: string;
   to: string;
-  id: number;
+  id: string;
   username: string;
   avatar: string;
   socket: Socket;

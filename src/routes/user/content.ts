@@ -26,17 +26,17 @@ export function userContentRouter(pool: Pool) {
     catchExceptions(controller.viewById)
   );
 
-  router.post(
+  /*router.post(
     '/subscribed/all',
     userIsAuth,
     catchExceptions(controller.viewAllMySubcribedContent)
-  );
+  );*/
 
   router.post(
     '/create',
     userIsAuth,
     [
-      body('contentTypeId').not().isEmpty().trim().escape(),
+      body('type').not().isEmpty().trim().escape(),
       body('published').not().isEmpty().trim().escape(),
       body('title').not().isEmpty().trim().escape(),
       body('items').not().isEmpty().trim().escape()
@@ -49,7 +49,7 @@ export function userContentRouter(pool: Pool) {
     userIsAuth,
     [
       body('id').not().isEmpty().trim().escape(),
-      body('contentTypeId').not().isEmpty().trim().escape(),
+      body('type').not().isEmpty().trim().escape(),
       body('published').not().isEmpty().trim().escape(),
       body('title').not().isEmpty().trim().escape(),
       body('items').not().isEmpty().trim().escape()

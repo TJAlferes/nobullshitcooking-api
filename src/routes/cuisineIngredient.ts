@@ -13,9 +13,9 @@ export function cuisineIngredientRouter(pool: Pool) {
   const controller = new CuisineIngredientController(pool);
 
   router.get(
-    '/:id',
-    [param('id').not().isEmpty().trim().escape()],
-    catchExceptions(controller.viewByCuisineId)
+    '/:cuisine',
+    [param('cuisine').not().isEmpty().trim().escape()],
+    catchExceptions(controller.viewByCuisine)
   );
 
   return router;

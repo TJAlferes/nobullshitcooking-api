@@ -1,5 +1,3 @@
-import { array, number, object, optional } from 'superstruct';
+import { array, optional, string } from 'superstruct';
 
-export const validRecipeTitlesRequest = object({
-  recipeIds: array(optional(number()))
-});
+export const validRecipeTitlesRequest = array(optional(string()));

@@ -64,10 +64,10 @@ export async function bulkUp(esClient: Client, pool: Pool) {
           settings,
           mappings: {
             properties: {
-              id: {type: 'integer'},
+              id: {type: 'keyword'},
               author: {type: 'keyword'},
-              recipe_type_name: {type: 'keyword'},
-              cuisine_name: {type: 'keyword'},
+              type: {type: 'keyword'},
+              cuisine: {type: 'keyword'},
               title: textSearch,
               description: {type: 'text'},
               directions: {type: 'text'},
@@ -85,8 +85,8 @@ export async function bulkUp(esClient: Client, pool: Pool) {
           settings,
           mappings: {
             properties: {
-              id: {type: 'integer'},
-              ingredient_type_name: {type: 'keyword'},
+              id: {type: 'keyword'},
+              type: {type: 'keyword'},
               fullname: textSearch
             }
           }
@@ -98,8 +98,8 @@ export async function bulkUp(esClient: Client, pool: Pool) {
           settings,
           mappings: {
             properties: {
-              id: {type: 'integer'},
-              equipment_type_name: {type: 'keyword'},
+              id: {type: 'keyword'},
+              type: {type: 'keyword'},
               name: textSearch
             }
           }
@@ -111,9 +111,9 @@ export async function bulkUp(esClient: Client, pool: Pool) {
           settings,
           mappings: {
             properties: {
-              id: {type: 'integer'},
-              product_category_name: {type: 'keyword'},
-              product_type_name: {type: 'keyword'},
+              id: {type: 'keyword'},
+              category: {type: 'keyword'},
+              type: {type: 'keyword'},
               fullname: textSearch
             }
           }
@@ -149,7 +149,7 @@ export async function bulkUp(esClient: Client, pool: Pool) {
   }
 
   /*
-  This should all be moved to some sort of (integration?) test file.
+  This should all be moved to some sort of integration test file.
 
   // sample analyzers
 

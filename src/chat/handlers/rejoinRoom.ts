@@ -22,7 +22,7 @@ export async function rejoinRoom({
 
 interface IRejoinRoom {
   room: string;
-  id: number;
+  id: string;
   username: string;
   avatar: string;
   socket: Socket;

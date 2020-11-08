@@ -14,9 +14,9 @@ router.post(
   '/create',
   staffIsAuth,
   [
-    body('contentTypeId').not().isEmpty().trim().escape(),
+    body('type').not().isEmpty().trim().escape(),
     body('published').not().isEmpty().trim().escape(),
-    body('contentItems').not().isEmpty().trim().escape()
+    body('items').not().isEmpty().trim().escape()
   ],
   catchExceptions(staffContentController.createContent)
 );
@@ -25,10 +25,10 @@ router.put(
   '/update',
   staffIsAuth,
   [
-    body('contentId').not().isEmpty().trim().escape(),
-    body('contentTypeId').not().isEmpty().trim().escape(),
+    body('id').not().isEmpty().trim().escape(),
+    body('type').not().isEmpty().trim().escape(),
     body('published').not().isEmpty().trim().escape(),
-    body('contentItems').not().isEmpty().trim().escape()
+    body('items').not().isEmpty().trim().escape()
   ],
   catchExceptions(staffContentController.updateContent)
 );

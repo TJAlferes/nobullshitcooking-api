@@ -2,15 +2,15 @@ import { Router } from 'express';
 import { param } from 'express-validator';
 import { Pool } from 'mysql2/promise';
 
-import { SupplierController } from '../controllers/supplier';
+import { ProductController } from '../controllers/product';
 import { catchExceptions } from '../lib/utils/catchExceptions';
 
 const router = Router();
 
-// for /supplier/...
+// for /product/...
 
-export function supplierRouter(pool: Pool) {
-  const controller = new SupplierController(pool);
+export function methodRouter(pool: Pool) {
+  const controller = new ProductController(pool);
 
   router.get(
     '/',
@@ -18,9 +18,9 @@ export function supplierRouter(pool: Pool) {
   );
   
   router.get(
-    '/:name',
-    [param('name').not().isEmpty().trim().escape()],
-    catchExceptions(controller.viewByName)
+    '/:id',
+    [param('id').not().isEmpty().trim().escape()],
+    catchExceptions(controller.viewById)
   );
 
   return router;

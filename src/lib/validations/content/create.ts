@@ -1,11 +1,11 @@
-import { defaulted, number, object, string } from 'superstruct';
+import { defaulted, object, string } from 'superstruct';
 
 export const validContentCreation = object({
-  contentTypeId: number(),
-  authorId: number(),
-  ownerId: number(),
+  type: string(),
+  author: string(),
+  owner: string(),
   created: string(),
   published: defaulted(string(), null),
   title: string(),
-  contentItems: string()
+  items: string()
 });

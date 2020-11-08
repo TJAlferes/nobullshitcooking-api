@@ -30,7 +30,7 @@ export function userIngredientRouter(pool: Pool) {
     '/create',
     userIsAuth,
     [
-      body('ingredientTypeId').not().isEmpty().trim().escape(),
+      body('type').not().isEmpty().trim().escape(),
       body('brand').not().isEmpty().trim().escape(),
       body('variety').not().isEmpty().trim().escape(),
       body('name').not().isEmpty().trim().escape(),
@@ -45,7 +45,7 @@ export function userIngredientRouter(pool: Pool) {
     userIsAuth,
     [
       body('id').not().isEmpty().trim().escape(),
-      body('ingredientTypeId').not().isEmpty().trim().escape(),
+      body('type').not().isEmpty().trim().escape(),
       body('brand').not().isEmpty().trim().escape(),
       body('variety').not().isEmpty().trim().escape(),
       body('name').not().isEmpty().trim().escape(),

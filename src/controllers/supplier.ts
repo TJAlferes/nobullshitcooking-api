@@ -14,14 +14,19 @@ export class SupplierController {
 
   async view(req: Request, res: Response) {
     const supplier = new Supplier(this.pool);
+
     const rows = await supplier.view();
+
     return res.send(rows);
   }
 
   async viewByName(req: Request, res: Response) {
     const { name } = req.params;
+
     const supplier = new Supplier(this.pool);
+
     const [ row ] = await supplier.viewByName(name);
+    
     return res.send(row);
   }
 }

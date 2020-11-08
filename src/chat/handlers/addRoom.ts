@@ -33,7 +33,7 @@ export async function addRoom({
 
 interface IAddRoom {
   room: string;
-  id: number;
+  id: string;
   username: string;
   avatar: string;
   socket: Socket;

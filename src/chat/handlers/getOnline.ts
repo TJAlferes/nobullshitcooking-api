@@ -26,7 +26,7 @@ export async function getOnline({
 }
 
 interface IGetOnline {
-  id: number;
+  id: string;
   username: string;
   avatar: string;
   socket: Socket;

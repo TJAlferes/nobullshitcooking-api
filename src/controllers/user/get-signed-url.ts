@@ -21,7 +21,7 @@ export const getSignedUrl = {
   avatar: async function(req: Request, res: Response) {
     const fullName = `${req.session!.userInfo.username}`;
     const tinyName = `${fullName}-tiny`;
-    const fileType = req.body.fileType;
+    const { fileType } = req.body;
 
     const s3 = new S3({
       accessKeyId: process.env.AWS_S3_AVATAR_ACCESS_KEY_ID,
@@ -47,7 +47,7 @@ export const getSignedUrl = {
   content: async function(req: Request, res: Response) {
     const fullName = `${req.session!.userInfo.username}-${uuidv4()}`;
     const thumbName = `${fullName}-thumb`;
-    const fileType = req.body.fileType;
+    const { fileType } = req.body;
   
     const s3 = new S3({
       accessKeyId: process.env.AWS_S3_CONTENT_ACCESS_KEY_ID,
@@ -73,7 +73,7 @@ export const getSignedUrl = {
   equipment: async function(req: Request, res: Response) {
     const fullName = `${req.session!.userInfo.username}-${uuidv4()}`;
     const tinyName = `${fullName}-tiny`;
-    const fileType = req.body.fileType;
+    const { fileType } = req.body;
   
     const s3 = new S3({
       accessKeyId: process.env.AWS_S3_EQUIPMENT_ACCESS_KEY_ID,
@@ -99,7 +99,7 @@ export const getSignedUrl = {
   ingredient: async function(req: Request, res: Response) {
     const fullName = `${req.session!.userInfo.username}-${uuidv4()}`;
     const tinyName = `${fullName}-tiny`;
-    const fileType = req.body.fileType;
+    const { fileType } = req.body;
   
     const s3 = new S3({
       accessKeyId: process.env.AWS_S3_INGREDIENT_ACCESS_KEY_ID,
@@ -126,7 +126,7 @@ export const getSignedUrl = {
     const fullName = `${req.session!.userInfo.username}-${uuidv4()}`;
     const thumbName = `${fullName}-thumb`;
     const tinyName = `${fullName}-tiny`;
-    const fileType = req.body.fileType;
+    const { fileType } = req.body;
   
     const s3 = new S3({
       accessKeyId: process.env.AWS_S3_RECIPE_ACCESS_KEY_ID,
@@ -164,7 +164,7 @@ export const getSignedUrl = {
   },
   recipeCooking: async function(req: Request, res: Response) {
     const fullName = `${req.session!.userInfo.username}-${uuidv4()}`;
-    const fileType = req.body.fileType;
+    const { fileType } = req.body;
   
     const s3 = new S3({
       accessKeyId: process.env.AWS_S3_RECIPE_COOKING_ACCESS_KEY_ID,
@@ -182,7 +182,7 @@ export const getSignedUrl = {
   },
   recipeEquipment: async function(req: Request, res: Response) {
     const fullName = `${req.session!.userInfo.username}-${uuidv4()}`;
-    const fileType = req.body.fileType;
+    const { fileType } = req.body;
   
     const s3 = new S3({
       accessKeyId: process.env.AWS_S3_RECIPE_EQUIPMENT_ACCESS_KEY_ID,
@@ -200,7 +200,7 @@ export const getSignedUrl = {
   },
   recipeIngredients: async function(req: Request, res: Response) {
     const fullName = `${req.session!.userInfo.username}-${uuidv4()}`;
-    const fileType = req.body.fileType;
+    const { fileType } = req.body;
   
     const s3 = new S3({
       accessKeyId: process.env.AWS_S3_RECIPE_INGREDIENTS_ACCESS_KEY_ID,

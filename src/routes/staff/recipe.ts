@@ -18,8 +18,8 @@ export function staffRecipeRouter(esClient: Client, pool: Pool) {
     '/create',
     staffIsAuth,
     [
-      body('recipeTypeId').not().isEmpty().trim().escape(),
-      body('cuisineId').not().isEmpty().trim().escape(),
+      body('type').not().isEmpty().trim().escape(),
+      body('cuisine').not().isEmpty().trim().escape(),
       body('title').not().isEmpty().trim().escape(),
       body('description').not().isEmpty().trim().escape(),
       body('activeTime').not().isEmpty().trim().escape(),
@@ -29,7 +29,7 @@ export function staffRecipeRouter(esClient: Client, pool: Pool) {
       body('equipmentImage').not().isEmpty().trim().escape(),
       body('ingredientsImage').not().isEmpty().trim().escape(),
       body('cookingImage').not().isEmpty().trim().escape(),
-      body('ownership').not().isEmpty().trim().escape()
+      body('video').not().isEmpty().trim().escape()
     ],
     catchExceptions(controller.create)
   );
@@ -39,8 +39,8 @@ export function staffRecipeRouter(esClient: Client, pool: Pool) {
     staffIsAuth,
     [
       body('id').not().isEmpty().trim().escape(),
-      body('recipeTypeId').not().isEmpty().trim().escape(),
-      body('cuisineId').not().isEmpty().trim().escape(),
+      body('type').not().isEmpty().trim().escape(),
+      body('cuisine').not().isEmpty().trim().escape(),
       body('title').not().isEmpty().trim().escape(),
       body('description').not().isEmpty().trim().escape(),
       body('activeTime').not().isEmpty().trim().escape(),
@@ -49,7 +49,8 @@ export function staffRecipeRouter(esClient: Client, pool: Pool) {
       body('recipeImage').not().isEmpty().trim().escape(),
       body('equipmentImage').not().isEmpty().trim().escape(),
       body('ingredientsImage').not().isEmpty().trim().escape(),
-      body('cookingImage').not().isEmpty().trim().escape()
+      body('cookingImage').not().isEmpty().trim().escape(),
+      body('video').not().isEmpty().trim().escape()
     ],
     catchExceptions(controller.update)
   );
