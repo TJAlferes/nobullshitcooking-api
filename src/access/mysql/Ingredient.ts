@@ -21,7 +21,7 @@ export class Ingredient implements IIngredient {
     const owner = "NOBSC";  // only public ingredients goes into ElasticSearch
     const sql = `
       SELECT
-        CAST(id AS CHAR),
+        id,
         owner,
         type,
         brand,
@@ -36,7 +36,7 @@ export class Ingredient implements IIngredient {
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [owner]);
     let final = [];
     for (let row of rows) {
-      final.push({index: {_index: 'ingredients', _id: row.id}}, {...row});
+      final.push({index: {_index: 'ingredients', _id: row.id}}, row);
     }
     return final;
   }
@@ -45,7 +45,7 @@ export class Ingredient implements IIngredient {
     const owner = "NOBSC";  // only public ingredients goes into ElasticSearch
     const sql = `
       SELECT
-        CAST(id AS CHAR),
+        id,
         owner,
         type,
         brand,

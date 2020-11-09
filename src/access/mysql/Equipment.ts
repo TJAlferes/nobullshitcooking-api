@@ -21,7 +21,7 @@ export class Equipment implements IEquipment {
     const owner = "NOBSC";  // only public equipment goes into ElasticSearch
     const sql = `
       SELECT
-        CAST(id AS CHAR),
+        id,
         owner,
         type
         name,
@@ -42,7 +42,7 @@ export class Equipment implements IEquipment {
     const owner = "NOBSC";  // only public equipment goes into ElasticSearch
     const sql = `
       SELECT
-        CAST(id AS CHAR),
+        id,
         owner,
         type
         name,

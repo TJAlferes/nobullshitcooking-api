@@ -30,26 +30,26 @@ const textSearch = {
 
 // TO DO: rename this
 export async function bulkUp(esClient: Client, pool: Pool) {
-  const recipe = new Recipe(pool);
+  const equipment = new Equipment(pool);
   const ingredient = new Ingredient(pool);
   const product = new Product(pool);
-  const equipment = new Equipment(pool);
+  const recipe = new Recipe(pool);
   
   const [ bulkRecipes, bulkIngredients, bulkProducts, bulkEquipment ] =
     await Promise.all([
-      recipe.getAllForElasticSearch(),
+      equipment.getAllForElasticSearch(),
       ingredient.getAllForElasticSearch(),
       product.getAllForElasticSearch(),
-      equipment.getAllForElasticSearch()
+      recipe.getAllForElasticSearch()
     ]);
 
   // delete
   try {
     await Promise.all([
-      esClient.indices.delete({index: "recipes"}),
+      esClient.indices.delete({index: "equipment"}),
       esClient.indices.delete({index: "ingredients"}),
       esClient.indices.delete({index: "products"}),
-      esClient.indices.delete({index: "equipment"})
+      esClient.indices.delete({index: "recipes"})
     ]);
   } catch (e) {
     console.error(e);
@@ -58,6 +58,46 @@ export async function bulkUp(esClient: Client, pool: Pool) {
   // create
   try {
     await Promise.all([
+      esClient.indices.create({
+        index: "equipment",
+        body: {
+          settings,
+          mappings: {
+            properties: {
+              id: {type: 'keyword'},
+              type: {type: 'keyword'},
+              name: textSearch
+            }
+          }
+        }
+      }),
+      esClient.indices.create({
+        index: "ingredients",
+        body: {
+          settings,
+          mappings: {
+            properties: {
+              id: {type: 'keyword'},
+              type: {type: 'keyword'},
+              fullname: textSearch
+            }
+          }
+        }
+      }),
+      esClient.indices.create({
+        index: "products",
+        body: {
+          settings,
+          mappings: {
+            properties: {
+              id: {type: 'keyword'},
+              category: {type: 'keyword'},
+              type: {type: 'keyword'},
+              fullname: textSearch
+            }
+          }
+        }
+      }),
       esClient.indices.create({
         index: "recipes",
         body: {
@@ -79,46 +119,6 @@ export async function bulkUp(esClient: Client, pool: Pool) {
           }
         }
       }),
-      esClient.indices.create({
-        index: "ingredients",
-        body: {
-          settings,
-          mappings: {
-            properties: {
-              id: {type: 'keyword'},
-              type: {type: 'keyword'},
-              fullname: textSearch
-            }
-          }
-        }
-      }),
-      esClient.indices.create({
-        index: "equipment",
-        body: {
-          settings,
-          mappings: {
-            properties: {
-              id: {type: 'keyword'},
-              type: {type: 'keyword'},
-              name: textSearch
-            }
-          }
-        }
-      }),
-      esClient.indices.create({
-        index: "products",
-        body: {
-          settings,
-          mappings: {
-            properties: {
-              id: {type: 'keyword'},
-              category: {type: 'keyword'},
-              type: {type: 'keyword'},
-              fullname: textSearch
-            }
-          }
-        }
-      })
     ]);
   } catch (e) {
     console.error(e);
@@ -127,10 +127,10 @@ export async function bulkUp(esClient: Client, pool: Pool) {
   // bulk insert
   try {
     await Promise.all([
-      esClient.bulk({index: "recipes", body: bulkRecipes, refresh: true}),
-      esClient.bulk({index: "ingredients", body: bulkIngredients, refresh: true}),
       esClient.bulk({index: "equipment", body: bulkEquipment, refresh: true}),
-      esClient.bulk({index: "products", body: bulkProducts, refresh: true})
+      esClient.bulk({index: "ingredients", body: bulkIngredients, refresh: true}),
+      esClient.bulk({index: "products", body: bulkProducts, refresh: true}),
+      esClient.bulk({index: "recipes", body: bulkRecipes, refresh: true})
     ]);
   } catch (e) {
     console.error(e);
@@ -139,10 +139,10 @@ export async function bulkUp(esClient: Client, pool: Pool) {
   // refresh
   try {
     await Promise.all([
-      esClient.indices.refresh({index: "recipes"}),
-      esClient.indices.refresh({index: "ingredients"}),
       esClient.indices.refresh({index: "equipment"}),
-      esClient.indices.refresh({index: "products"})
+      esClient.indices.refresh({index: "ingredients"}),
+      esClient.indices.refresh({index: "products"}),
+      esClient.indices.refresh({index: "recipes"})
     ]);
   } catch (e) {
     console.error(e);

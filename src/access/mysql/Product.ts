@@ -17,7 +17,7 @@ export class Product implements IProduct {
   async getAllForElasticSearch() {
     const sql = `
       SELECT
-        CAST(id AS CHAR),
+        id,
         category,
         type,
         brand,
@@ -32,7 +32,7 @@ export class Product implements IProduct {
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql);
     let final = [];
     for (let row of rows) {
-      final.push({index: {_index: 'products', _id: row.id}}, {...row});
+      final.push({index: {_index: 'products', _id: row.id}}, row);
     }
     return final;
   }
@@ -40,7 +40,7 @@ export class Product implements IProduct {
   async getForElasticSearch(id: string) {
     const sql = `
       SELECT
-        CAST(id AS CHAR),
+        id,
         category,
         type,
         brand,

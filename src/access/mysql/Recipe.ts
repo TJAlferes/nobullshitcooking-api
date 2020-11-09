@@ -25,7 +25,7 @@ export class Recipe implements IRecipe {
     const owner = "NOBSC";  // only public recipes goes into ElasticSearch
     const sql = `
       SELECT
-        CAST(r.id AS CHAR),
+        r.id,
         r.author,
         r.type,
         r.cuisine,
@@ -62,7 +62,7 @@ export class Recipe implements IRecipe {
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [owner]);
     let final = [];
     for (let row of rows) {
-      final.push({index: {_index: 'recipes', _id: row.id}}, {...row});
+      final.push({index: {_index: 'recipes', _id: row.id}}, row);
     }
     return final;
   }
@@ -71,7 +71,7 @@ export class Recipe implements IRecipe {
     const owner = "NOBSC";  // only public recipes goes into ElasticSearch
     const sql = `
       SELECT
-        CAST(r.id AS CHAR),
+        r.id,
         r.author,
         r.type,
         r.cuisine,

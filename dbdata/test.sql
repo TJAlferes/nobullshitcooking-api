@@ -20,7 +20,7 @@ CREATE TABLE `content_types` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `cuisines` (
-  `name` varchar(40) UNIQUE NOT NULL,
+  `name` varchar(40) NOT NULL,
   `nation` varchar(40) UNIQUE NOT NULL,
   `wiki` varchar(60) NOT NULL DEFAULT '',
   `intro` text NOT NULL,
@@ -182,7 +182,7 @@ CREATE TABLE `notifications` (
   `type` varchar(45) NOT NULL,
   `note` varchar(255) NOT NULL,
   `created` char(10) NOT NULL,
-  `id` varchar(52) GENERATED ALWAYS AS (CONCAT(sender, ' ', receiver, ' ', created)) STORED UNIQUE,
+  `id` varchar(52) GENERATED ALWAYS AS (CONCAT(sender, ' ', receiver, ' ', created)) STORED,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`sender`) REFERENCES `users` (`username`),
   FOREIGN KEY (`receiver`) REFERENCES `users` (`username`)
@@ -192,7 +192,7 @@ CREATE TABLE `orders` (
   `customer` varchar(60) NOT NULL,
   `staff` varchar(20) NOT NULL,
   `created` char(10) NOT NULL,
-  `id` varchar(92) GENERATED ALWAYS AS (CONCAT(customer, ' ', staff, ' ', created)) STORED UNIQUE,
+  `id` varchar(92) GENERATED ALWAYS AS (CONCAT(customer, ' ', staff, ' ', created)) STORED,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`customer`) REFERENCES `customers` (`email`),
   FOREIGN KEY (`staff`) REFERENCES `staff` (`staffname`)
@@ -204,12 +204,13 @@ CREATE TABLE `products` (
   `brand` varchar(50) NOT NULL,
   `variety` varchar(50) NOT NULL,
   `name` varchar(50) NOT NULL,
-  `fullname` varchar(152) GENERATED ALWAYS AS (CONCAT(brand, ' ', variety, ' ', name)) STORED UNIQUE,
+  `fullname` varchar(152) GENERATED ALWAYS AS (CONCAT(brand, ' ', variety, ' ', name)) STORED,
   `alt_names` json DEFAULT NULL,
   `description` text NOT NULL,
   `specs` json DEFAULT NULL,
   `image` varchar(100) NOT NULL DEFAULT 'nobsc-product-default',
-  PRIMARY KEY (`fullname`),
+  `id` varchar(173) GENERATED ALWAYS AS (fullname) STORED,
+  PRIMARY KEY (`id`),
   FOREIGN KEY (`category`) REFERENCES `product_categories` (`name`) ON UPDATE CASCADE,
   FOREIGN KEY (`type`) REFERENCES `product_types` (`name`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -218,7 +219,7 @@ CREATE TABLE `order_products` (
   `order` varchar(92) NOT NULL,
   `product` varchar(152) NOT NULL,
   FOREIGN KEY (`order`) REFERENCES `orders` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (`product`) REFERENCES `products` (`fullname`) ON DELETE CASCADE ON UPDATE CASCADE
+  FOREIGN KEY (`product`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `plans` (
@@ -226,7 +227,7 @@ CREATE TABLE `plans` (
   `owner` varchar(20) NOT NULL,
   `name` varchar(100) NOT NULL,
   `data` json DEFAULT NULL,
-  `id` varchar(120) GENERATED ALWAYS AS (CONCAT(author, name)) STORED UNIQUE,
+  `id` varchar(120) GENERATED ALWAYS AS (CONCAT(author, name)) STORED,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`author`) REFERENCES `users` (`username`),
   FOREIGN KEY (`owner`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -235,13 +236,13 @@ CREATE TABLE `plans` (
 CREATE TABLE `product_suppliers` (
   `product` varchar(152) NOT NULL,
   `supplier` varchar(60) NOT NULL,
-  FOREIGN KEY (`product`) REFERENCES `products` (`fullname`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`product`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`supplier`) REFERENCES `suppliers` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `recipes` (
   `type` varchar(25) NOT NULL,
-  `cuisine` varchar(40),
+  `cuisine` varchar(40) NOT NULL,
   `author` varchar(20) NOT NULL,
   `owner` varchar(20) NOT NULL,
   `title` varchar(100) NOT NULL,
@@ -254,7 +255,7 @@ CREATE TABLE `recipes` (
   `ingredients_image` varchar(100) NOT NULL DEFAULT 'nobsc-recipe-ingredients-default',
   `cooking_image` varchar(100) NOT NULL DEFAULT 'nobsc-recipe-cooking-default',
   `video` varchar(100) NOT NULL DEFAULT '',
-  `id` varchar(121) GENERATED ALWAYS AS (CONCAT(author, ' ', title)) STORED UNIQUE,
+  `id` varchar(121) GENERATED ALWAYS AS (CONCAT(author, ' ', title)) STORED,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`type`) REFERENCES `recipe_types` (`name`) ON UPDATE CASCADE,
   FOREIGN KEY (`cuisine`) REFERENCES `cuisines` (`name`) ON UPDATE CASCADE,
@@ -351,19 +352,19 @@ to not place duplicate constraints on the same foreign key in the same table.
 
 */
 
-/* customer table triggers */
+/* customers table triggers */
 
 DELIMITER $$
-CRATE TRIGGER customer_email_on_delete
-AFTER DELETE ON `customer` FOR EACH ROW
+CREATE TRIGGER `customers_email_on_delete`
+AFTER DELETE ON `customers` FOR EACH ROW
 BEGIN
   DELETE FROM orders WHERE customer = OLD.email;
 END; $$
 DELIMITER ;
 
 DELIMITER $$
-CRATE TRIGGER customer_email_on_update
-AFTER UPDATE ON `customer` FOR EACH ROW
+CREATE TRIGGER `customers_email_on_update`
+AFTER UPDATE ON `customers` FOR EACH ROW
 BEGIN
   UPDATE orders SET customer = NEW.email WHERE customer = OLD.email;
 END; $$
@@ -372,7 +373,7 @@ DELIMITER ;
 /* staff table triggers */
 
 DELIMITER $$
-CRATE TRIGGER staff_staffname_on_delete
+CREATE TRIGGER `staff_staffname_on_delete`
 AFTER DELETE ON `staff` FOR EACH ROW
 BEGIN
   DELETE FROM orders WHERE staff = OLD.staffname;
@@ -380,7 +381,7 @@ END; $$
 DELIMITER ;
 
 DELIMITER $$
-CRATE TRIGGER staff_staffname_on_update
+CREATE TRIGGER `staff_staffname_on_update`
 AFTER UPDATE ON `staff` FOR EACH ROW
 BEGIN
   UPDATE orders SET staff = NEW.staffname WHERE staff = OLD.staffname;
@@ -390,7 +391,7 @@ DELIMITER ;
 /* users table triggers */
 
 DELIMITER $$
-CREATE TRIGGER users_username_on_delete
+CREATE TRIGGER `users_username_on_delete`
 AFTER DELETE ON `users` FOR EACH ROW
 BEGIN
   DELETE FROM content WHERE author = OLD.username;
@@ -407,7 +408,7 @@ END; $$
 DELIMITER ;
 
 DELIMITER $$
-CREATE TRIGGER users_username_on_update
+CREATE TRIGGER `users_username_on_update`
 AFTER UPDATE ON `users` FOR EACH ROW
 BEGIN
   UPDATE content SET author = NEW.username WHERE author = OLD.username;
@@ -426,7 +427,7 @@ DELIMITER ;
 /* recipes table triggers */
 
 DELIMITER $$
-CREATE TRIGGER recipes_id_on_delete
+CREATE TRIGGER `recipes_id_on_delete`
 AFTER DELETE ON `recipes` FOR EACH ROW
 BEGIN
   DELETE FROM recipe_subrecipes WHERE recipe = OLD.id;
@@ -435,7 +436,7 @@ END; $$
 DELIMITER ;
 
 DELIMITER $$
-CREATE TRIGGER recipes_id_on_update
+CREATE TRIGGER `recipes_id_on_update`
 AFTER UPDATE ON `recipes` FOR EACH ROW
 BEGIN
   UPDATE recipe_subrecipes SET recipe = NEW.id WHERE recipe = OLD.id;
@@ -1316,7 +1317,7 @@ INSERT INTO recipe_types (name) VALUES
 INSERT INTO recipes
 (type,        cuisine,       author,  owner,   title,                                description,        active_time, total_time, directions)
 VALUES
-("Drink",     "Afgan",       "NOBSC", "NOBSC", "Borscht",                            "Excellent",        "00:30:00",  "04:00:00", "Chop beets and onions..."),
+("Drink",     "Afghan",      "NOBSC", "NOBSC", "Borscht",                            "Excellent",        "00:30:00",  "04:00:00", "Chop beets and onions..."),
 ("Appetizer", "Albanian",    "NOBSC", "NOBSC", "Soft Buttery Pretzle",               "Melting goodness", "00:20:00",  "01:20:00", "Set oven to 400 F. Mix dough..."),
 ("Main",      "Algerian",    "NOBSC", "NOBSC", "Grilled Chicken and Seasoned Rice",  "Yum",              "01:00:00",  "02:00:00", "Marinate chicken in a..."),
 ("Side",      "Catalan",     "NOBSC", "NOBSC", "Mixed Root Vegetables",              "Satisfying",       "00:15:00",  "01:00:00", "Chop vegetables into about 2 inch by 2 inch pieces..."),
@@ -1348,18 +1349,18 @@ VALUES
 INSERT INTO recipe_ingredients
 (recipe,                                     ingredient,     amount, measurement)
 VALUES
-("NOBSC Borscht",                            "NOBSC Garlic", 4,      "teaspoon"),
-("NOBSC Soft Buttery Pretzle",               "NOBSC Garlic", 2,      "Tablespoon"),
-("NOBSC Grilled Chicken and Seasoned Rice",  "NOBSC Garlic", 1,      "cup"),
-("NOBSC Mixed Root Vegetables",              "NOBSC Garlic", 1,      "ounce"),
-("NOBSC Coffee Vanilla Icecream Cake",       "NOBSC Garlic", 7,      "pound"),
-("NOBSC Fish Carrot and Potato Soup",        "NOBSC Garlic", 1,      "milliliter"),
-("NOBSC Possibly Greek Salad",               "NOBSC Garlic", 3,      "liter"),
-("NOBSC Irish Guinness Beef Stew",           "NOBSC Garlic", 1,      "gram"),
-("NOBSC Northern Chinese Seafood Casserole", "NOBSC Garlic", 9,      "kilogram"),
-("NOBSC Sweet Coconut Lime Sauce",           "NOBSC Garlic", 20,     "NA"),
-("NOBSC Carrot Ginger Dressing",             "NOBSC Garlic", 10,     "teaspoon"),
-("NOBSC Some Kind of Chutney",               "NOBSC Garlic", 13,     "Tablespoon");
+("NOBSC Borscht",                            "NOBSC   Garlic", 4,      "teaspoon"),
+("NOBSC Soft Buttery Pretzle",               "NOBSC   Garlic", 2,      "Tablespoon"),
+("NOBSC Grilled Chicken and Seasoned Rice",  "NOBSC   Garlic", 1,      "cup"),
+("NOBSC Mixed Root Vegetables",              "NOBSC   Garlic", 1,      "ounce"),
+("NOBSC Coffee Vanilla Icecream Cake",       "NOBSC   Garlic", 7,      "pound"),
+("NOBSC Fish Carrot and Potato Soup",        "NOBSC   Garlic", 1,      "milliliter"),
+("NOBSC Possibly Greek Salad",               "NOBSC   Garlic", 3,      "liter"),
+("NOBSC Irish Guinness Beef Stew",           "NOBSC   Garlic", 1,      "gram"),
+("NOBSC Northern Chinese Seafood Casserole", "NOBSC   Garlic", 9,      "kilogram"),
+("NOBSC Sweet Coconut Lime Sauce",           "NOBSC   Garlic", 20,     "NA"),
+("NOBSC Carrot Ginger Dressing",             "NOBSC   Garlic", 10,     "teaspoon"),
+("NOBSC Some Kind of Chutney",               "NOBSC   Garlic", 13,     "Tablespoon");
 
 INSERT INTO recipe_methods
 (recipe,                                     method)
