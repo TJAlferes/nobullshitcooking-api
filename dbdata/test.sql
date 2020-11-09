@@ -155,21 +155,21 @@ CREATE TABLE `ingredients` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `cuisine_equipment` (
-  `cuisine` varchar(60),
+  `cuisine` varchar(40),
   `equipment` varchar(121),
   FOREIGN KEY (`cuisine`) REFERENCES `cuisines` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`equipment`) REFERENCES `equipment` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `cuisine_ingredients` (
-  `cuisine` varchar(60) NOT NULL,
+  `cuisine` varchar(40) NOT NULL,
   `ingredient` varchar(173) NOT NULL,
   FOREIGN KEY (`cuisine`) REFERENCES `cuisines` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`ingredient`) REFERENCES `ingredients` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `cuisine_suppliers` (
-  `cuisine` varchar(60) NOT NULL,
+  `cuisine` varchar(40) NOT NULL,
   `supplier` varchar(60) NOT NULL,
   FOREIGN KEY (`cuisine`) REFERENCES `cuisines` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`supplier`) REFERENCES `suppliers` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -241,7 +241,7 @@ CREATE TABLE `product_suppliers` (
 
 CREATE TABLE `recipes` (
   `type` varchar(25) NOT NULL,
-  `cuisine` varchar(40) NOT NULL,
+  `cuisine` varchar(40),
   `author` varchar(20) NOT NULL,
   `owner` varchar(20) NOT NULL,
   `title` varchar(100) NOT NULL,
@@ -1078,7 +1078,6 @@ VALUES
 ("Vegetable", "NOBSC", "NOBSC", "Sweet",              "Onion",                                    "Tasty.", "nobsc-sweet-onion"),
 ("Vegetable", "NOBSC", "NOBSC", "",                   "Onion",                                    "Tasty.", "nobsc-onion"),
 ("Vegetable", "NOBSC", "NOBSC", "Pearl",              "Onions",                                   "Tasty.", "nobsc-pearl-onions"),
-("Vegetable", "NOBSC", "NOBSC", "",                   "Shallots",                                 "Tasty.", "nobsc-shallots"),
 ("Vegetable", "NOBSC", "NOBSC", "",                   "Leek",                                     "Tasty.", "nobsc-leek"),
 ("Vegetable", "NOBSC", "NOBSC", "Bell",               "Pepper",                                   "Tasty.", "nobsc-bell-pepper"),
 ("Vegetable", "NOBSC", "NOBSC", "Poblano",            "Pepper",                                   "Tasty.", "nobsc-poblano-pepper"),
@@ -1107,7 +1106,6 @@ VALUES
 ("Vegetable", "NOBSC", "NOBSC", "",                   "Daikon",                                   "Tasty.", "nobsc-daikon"),
 ("Vegetable", "NOBSC", "NOBSC", "",                   "Horseradish",                              "Tasty.", "nobsc-horseradish"),
 ("Vegetable", "NOBSC", "NOBSC", "",                   "Rutabaga",                                 "Tasty.", "nobsc-rutabaga"),
-("Vegetable", "NOBSC", "NOBSC", "",                   "Ginger",                                   "Tasty.", "nobsc-ginger"),
 ("Vegetable", "NOBSC", "NOBSC", "",                   "Sunchoke Jerusalem Artichoke",             "Tasty.", "nobsc-sunchoke-jerusalem-artichoke"),
 ("Vegetable", "NOBSC", "NOBSC", "",                   "Fennel",                                   "Tasty.", "nobsc-fennel"),
 ("Vegetable", "NOBSC", "NOBSC", "",                   "Tomatillo",                                "Tasty.", "nobsc-tomatillo"),
