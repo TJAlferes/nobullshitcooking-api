@@ -6,7 +6,7 @@ import { IngredientController } from '../../../src/controllers/ingredient';
 const pool: Partial<Pool> = {};
 const controller = new IngredientController(<Pool>pool);
 
-const rows = [{id: 1, name: "Name"}];
+const rows = [{id: "NOBSC Ingredient"}];
 jest.mock('../../../src/access/mysql/Ingredient', () => ({
   Ingredient: jest.fn().mockImplementation(() => ({
     view: mockView,
@@ -41,12 +41,13 @@ describe('ingredient controller', () => {
   });
   
   describe('viewById method', () => {
-    const req: Partial<Request> = {params: {id: "1"}};
+    const req: Partial<Request> = {params: {id: "NOBSC Ingredient"}};
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
     it('uses viewById correctly', async () => {
       await controller.viewById(<Request>req, <Response>res);
-      expect(mockViewById).toHaveBeenCalledWith(1, 1, 1);
+      expect(mockViewById)
+        .toHaveBeenCalledWith("NOBSC Ingredient", "NOBSC", "NOBSC");
     });
 
     it('sends data correctly', async () => {

@@ -10,7 +10,7 @@ import {
 const pool: Partial<Pool> = {};
 const controller = new ProfileController(<Pool>pool);
 
-const rows = [{id: 1, name: "Name"}];
+const rows = [{id: "Name23 Title"}];
 
 jest.mock('../../../src/access/mysql/FavoriteRecipe', () => ({
   FavoriteRecipe: jest.fn().mockImplementation(() => ({
@@ -28,7 +28,7 @@ jest.mock('../../../src/access/mysql/User', () => ({
   User: jest.fn().mockImplementation(() => ({viewByName: mockViewByName}))
 }));
 let mockViewByName =
-  jest.fn().mockResolvedValue([{user_id: 1, avatar: "Name23"}]);
+  jest.fn().mockResolvedValue([{username: "Name23", avatar: "Name23"}]);
 
 jest.mock('superstruct');
 

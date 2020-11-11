@@ -8,15 +8,15 @@ import {
 const pool: Partial<Pool> = {};
 const controller = new IngredientTypeController(<Pool>pool);
 
-const rows = [{id: 1, name: "Name"}];
+const rows = [{name: "Name"}];
 jest.mock('../../../src/access/mysql/IngredientType', () => ({
   IngredientType: jest.fn().mockImplementation(() => ({
     view: mockView,
-    viewById: mockViewById
+    viewByName: mockViewByName
   }))
 }));
 let mockView = jest.fn().mockResolvedValue([rows]);
-let mockViewById = jest.fn().mockResolvedValue([rows]);
+let mockViewByName = jest.fn().mockResolvedValue([rows]);
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -42,22 +42,22 @@ describe('ingredientType controller', () => {
     });
   });
   
-  describe('viewById method', () => {
-    const req: Partial<Request> = {params: {id: "1"}};
+  describe('viewByName method', () => {
+    const req: Partial<Request> = {params: {name: "Name"}};
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
-    it('uses viewById correctly', async () => {
-      await controller.viewById(<Request>req, <Response>res);
-      expect(mockViewById).toHaveBeenCalledWith(1);
+    it('uses viewByName correctly', async () => {
+      await controller.viewByName(<Request>req, <Response>res);
+      expect(mockViewByName).toHaveBeenCalledWith("Name");
     });
 
     it('sends data correctly', async () => {
-      await controller.viewById(<Request>req, <Response>res);
+      await controller.viewByName(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith(rows);
     });
 
     it('returns correctly', async () => {
-      const actual = await controller.viewById(<Request>req, <Response>res);
+      const actual = await controller.viewByName(<Request>req, <Response>res);
       expect(actual).toEqual(rows);
     });
   });

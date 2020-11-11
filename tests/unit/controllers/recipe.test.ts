@@ -1,16 +1,16 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
-import { assert } from 'superstruct';
+//import { assert } from 'superstruct';
 
 import { RecipeController } from '../../../src/controllers/recipe';
-import {
+/*import {
   validRecipeRequest
-} from '../../../src/lib/validations/recipe/recipeRequest';
+} from '../../../src/lib/validations/recipe/recipeRequest';*/
 
 const pool: Partial<Pool> = {};
 const controller = new RecipeController(<Pool>pool);
 
-const rows = [{id: 1, name: "Name"}];
+const rows = [{id: "NOBSC Title"}];
 jest.mock('../../../src/access/mysql/Recipe', () => ({
   Recipe: jest.fn().mockImplementation(() => ({
     view: mockView,
@@ -47,17 +47,18 @@ describe('recipe controller', () => {
   });
   
   describe('viewById method', () => {
-    const req: Partial<Request> = {params: {id: "1"}};
+    const req: Partial<Request> = {params: {id: "NOBSC Title"}};
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
     /*it('uses assert correctly', async () => {
       await controller.viewById(<Request>req, <Response>res);
-      expect(assert).toHaveBeenCalledWith({id: 1}, validRecipeRequest);
+      expect(assert).toHaveBeenCalledWith({id: "NOBSC Title"}, validRecipeRequest);
     });*/
 
     it('uses viewById correctly', async () => {
       await controller.viewById(<Request>req, <Response>res);
-      expect(mockViewById).toHaveBeenCalledWith(1, 1, 1);
+      expect(mockViewById)
+        .toHaveBeenCalledWith("NOBSC Title", "NOBSC", "NOBSC");
     });
 
     it('sends data correctly', async () => {

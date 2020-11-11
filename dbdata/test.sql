@@ -105,11 +105,11 @@ CREATE TABLE `content` (
   `title` varchar(100) NOT NULL,
   `image` varchar(100) NOT NULL DEFAULT 'nobsc-content-default',
   `items` json DEFAULT NULL,
+  `id` varchar(121) GENERATED ALWAYS AS (CONCAT(author, ' ', title)) STORED,
+  PRIMARY KEY (`id`),
   FOREIGN KEY (`type`) REFERENCES `content_types` (`name`) ON UPDATE CASCADE,
   FOREIGN KEY (`author`) REFERENCES `users` (`username`),
-  FOREIGN KEY (`owner`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE,
-  `id` varchar(121) GENERATED ALWAYS AS (CONCAT(author, ' ', title)) STORED,
-  PRIMARY KEY (`id`)
+  FOREIGN KEY (`owner`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `equipment` (
