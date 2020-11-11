@@ -33,8 +33,9 @@ jest.mock('../../../../src/access/mysql/Equipment', () => ({
     delete: mockDelete
   }))
 }));
-let mockGetForElasticSearch = jest.fn().mockResolvedValue([[{id: 321}]]);
-let mockCreate = jest.fn().mockResolvedValue({insertId: 321});
+let mockGetForElasticSearch =
+  jest.fn().mockResolvedValue([[{id: "NOBSC Equipment"}]]);
+let mockCreate = jest.fn();
 let mockUpdate = jest.fn();
 let mockDelete = jest.fn();
 
@@ -43,17 +44,17 @@ afterEach(() => {
 });
 
 describe ('staff equipment controller', () => {
-  const session = {...<Express.Session>{}, staffInfo: {id: 15}};
+  const session = {...<Express.Session>{}, staffInfo: {staffname: "Name"}};
 
   describe('create method', () => {
     const req: Partial<Request> = {
       session,
       body: {
         equipmentInfo: {
-          equipmentTypeId: 3,
-          name: "My Equipment",
-          description: "Some description.",
-          image: "some-image"
+          type: "Cooking",
+          name: "Equipment",
+          description: "Description.",
+          image: "image"
         }
       }
     };
@@ -64,12 +65,12 @@ describe ('staff equipment controller', () => {
       await controller.create(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith(
         {
-          equipmentTypeId: 3,
-          authorId: 1,
-          ownerId: 1,
-          name: "My Equipment",
-          description: "Some description.",
-          image: "some-image"
+          type: "Cooking",
+          author: "NOBSC",
+          owner: "NOBSC",
+          name: "Equipment",
+          description: "Description.",
+          image: "image"
         },
         validEquipmentEntity
       );
@@ -78,12 +79,12 @@ describe ('staff equipment controller', () => {
     it('uses create correctly', async () => {
       await controller.create(<Request>req, <Response>res);
       expect(mockCreate).toHaveBeenCalledWith({
-        equipmentTypeId: 3,
-        authorId: 1,
-        ownerId: 1,
-        name: "My Equipment",
-        description: "Some description.",
-        image: "some-image"
+        type: "Cooking",
+        author: "NOBSC",
+        owner: "NOBSC",
+        name: "Equipment",
+        description: "Description.",
+        image: "image"
       });
     });
 
@@ -103,11 +104,11 @@ describe ('staff equipment controller', () => {
       session,
       body: {
         equipmentInfo: {
-          id: 321,
-          equipmentTypeId: 3,
-          name: "My Equipment",
-          description: "Some description.",
-          image: "some-image"
+          id: "NOBSC Equipment",
+          type: "Cooking",
+          name: "Equipment",
+          description: "Description.",
+          image: "image"
         }
       }
     };
@@ -118,12 +119,12 @@ describe ('staff equipment controller', () => {
       await controller.update(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith(
         {
-          equipmentTypeId: 3,
-          authorId: 1,
-          ownerId: 1,
-          name: "My Equipment",
-          description: "Some description.",
-          image: "some-image"
+          type: "Cooking",
+          author: "NOBSC",
+          owner: "NOBSC",
+          name: "Equipment",
+          description: "Description.",
+          image: "image"
         },
         validEquipmentEntity
       );
@@ -132,13 +133,13 @@ describe ('staff equipment controller', () => {
     it('uses update correctly', async () => {
       await controller.update(<Request>req, <Response>res);
       expect(mockUpdate).toHaveBeenCalledWith({
-        id: 321,
-        equipmentTypeId: 3,
-        authorId: 1,
-        ownerId: 1,
-        name: "My Equipment",
-        description: "Some description.",
-        image: "some-image"
+        id: "NOBSC Equipment",
+        type: "Cooking",
+        author: "NOBSC",
+        owner: "NOBSC",
+        name: "Equipment",
+        description: "Description.",
+        image: "image"
       });
     });
 
@@ -154,18 +155,18 @@ describe ('staff equipment controller', () => {
   });
 
   describe('delete method', () => {
-    const req: Partial<Request> = {session, body: {id: 321}};
+    const req: Partial<Request> = {session, body: {id: "NOBSC Equipment"}};
     const res: Partial<Response> =
       {send: jest.fn().mockResolvedValue({message: 'Equipment deleted.'})};
 
     it('uses delete correctly', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockDelete).toHaveBeenCalledWith(321);
+      expect(mockDelete).toHaveBeenCalledWith("NOBSC Equipment");
     });
 
     it('uses ElasticSearch delete correctly', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockESDelete).toHaveBeenCalledWith(String(321));
+      expect(mockESDelete).toHaveBeenCalledWith("NOBSC Equipment");
     });
 
     it('sends data correctly', async () => {

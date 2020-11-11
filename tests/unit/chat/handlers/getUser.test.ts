@@ -4,8 +4,8 @@ import { IMessengerRoom } from '../../../../src/access/redis/MessengerRoom';
 import { getUser } from '../../../../src/chat/handlers/getUser';
 
 const mockGetUsers = jest.fn().mockResolvedValue([
-  {id: 48, username: "Jack", avatar: "Jack123"},
-  {id: 84, username: "Jill", avatar: "Jill123"}
+  {username: "Jack", avatar: "Jack123"},
+  {username: "Jill", avatar: "Jill123"}
 ]);
 const mockMessengerRoom: Partial<IMessengerRoom> = {getUsers: mockGetUsers};
 
@@ -29,8 +29,8 @@ describe('getUser handler', () => {
   it ('uses socket.emit with GetUser event correctly', async () => {
     await getUser(params);
     expect (params.socket.emit).toHaveBeenCalledWith('GetUser', [
-      {id: 48, username: "Jack", avatar: "Jack123"},
-      {id: 84, username: "Jill", avatar: "Jill123"}
+      {username: "Jack", avatar: "Jack123"},
+      {username: "Jill", avatar: "Jill123"}
     ]);
   });
 });

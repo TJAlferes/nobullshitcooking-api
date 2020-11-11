@@ -1,7 +1,7 @@
 'use strict';
 
 import { Pool } from 'mysql2/promise';
-import { Socket } from 'socket.io';
+import { Socket } from 'socket.io';  // TO DO: replace uws with eiows?
 
 import { Friendship as NOBSCFriendship } from '../access/mysql/Friendship';
 import { User as NOBSCUser } from '../access/mysql/User';
@@ -19,7 +19,11 @@ import { rejoinRoom } from './handlers/rejoinRoom';
 
 export function socketConnection(pool: Pool, redisClients: RedisClients) {
   return async function(socket: Socket) {
-    const { id, username, avatar } = socket.request.userInfo;
+    //const { id, username, avatar } = socket.request.userInfo;  // OLD, read-only now
+    // 3 possible NEW:
+    //const { username, avatar } = socket.handshake.headers.userInfo;
+    //const { username, avatar } = socket.handshake.query.userInfo;
+    //const { username, avatar } = socket.request.headers.userInfo;  // and just change to separate strings?
     const { pubClient, subClient } = redisClients;
     const nobscUser = new NOBSCUser(pool);
     const nobscFriendship = new NOBSCFriendship(pool);
@@ -41,7 +45,6 @@ export function socketConnection(pool: Pool, redisClients: RedisClients) {
     // rename
     socket.on('GetOnline', async function() {
       await getOnline({
-        id,
         username,
         avatar,
         socket,
@@ -63,7 +66,6 @@ export function socketConnection(pool: Pool, redisClients: RedisClients) {
     socket.on('AddMessage', async function(text: string) {
       await addMessage({
         text,
-        id,
         username,
         avatar,
         socket,
@@ -75,7 +77,6 @@ export function socketConnection(pool: Pool, redisClients: RedisClients) {
       await addWhisper({
         text,
         to,
-        id,
         username,
         avatar,
         socket,
@@ -94,7 +95,6 @@ export function socketConnection(pool: Pool, redisClients: RedisClients) {
     socket.on('AddRoom', async function(room: string) {
       await addRoom({
         room,
-        id,
         username,
         avatar,
         socket,
@@ -105,7 +105,6 @@ export function socketConnection(pool: Pool, redisClients: RedisClients) {
     socket.on('RejoinRoom', async function(room: string) {
       await rejoinRoom({
         room,
-        id,
         username,
         avatar,
         socket,
@@ -124,7 +123,6 @@ export function socketConnection(pool: Pool, redisClients: RedisClients) {
     socket.on('disconnecting', async function(reason: any) {
       await disconnecting({
         reason,
-        id,
         username,
         avatar,
         socket,

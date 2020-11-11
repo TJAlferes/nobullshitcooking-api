@@ -5,7 +5,7 @@ import { IFriendship, Friendship } from '../../../../src/access/mysql/Friendship
 import { IMessengerRoom } from '../../../../src/access/redis/MessengerRoom';
 import { IMessengerUser } from '../../../../src/access/redis/MessengerUser';
 import { ChatUser  } from '../../../../src/chat/entities/ChatUser';
-import { disconnecting } from '../../../../src/chat/handlers/disconnecting';
+import { IDisconnecting, disconnecting } from '../../../../src/chat/handlers/disconnecting';
 
 jest.mock('../../../../src/access/mysql/Friendship', () => ({
   Friendship: jest.fn().mockImplementation(() => ({
@@ -28,17 +28,18 @@ const mockBroadcast: any = {
   to: jest.fn((room: string) => mockBroadcast)
 };
 
+const rooms = new Set<string>();
+rooms.add("someRoom");
 const mockSocket: Partial<Socket> = {
   broadcast: <Socket>mockBroadcast,
   emit: jest.fn().mockReturnValue(true),
   join: jest.fn(),
   leave: jest.fn(),
-  rooms: {"someRoom": "someRoom"}
+  rooms
 };
 
 const params = {
   reason: "Some reason.",
-  id: 150,
   username: "Name",
   avatar: "Name123",
   socket: <Socket>mockSocket
@@ -46,6 +47,8 @@ const params = {
 
 let mockMessengerUser: Partial<IMessengerUser>;
 let mockNobscFriendship: IFriendship;
+
+let currParams: IDisconnecting;
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -57,70 +60,46 @@ describe('disconnecting handler', () => {
     beforeAll(() => {
       mockGetSocketId = jest.fn().mockResolvedValue(undefined);
       mockViewAccepted =
-        jest.fn().mockResolvedValue([{user_id: 48}, {user_id: 84}]);
+        jest.fn().mockResolvedValue([{username: "Jack"}, {username: "Jill"}]);
       mockMessengerUser = {getSocketId: mockGetSocketId, remove: mockRemove};
       mockNobscFriendship = new Friendship(pool);
-    });
-
-    it('uses socket.broadcast.to with RemoveUser event correctly', async () => {
-      await disconnecting({
+      currParams = {
         ...params,
         messengerRoom: <IMessengerRoom>mockMessengerRoom,
         messengerUser: <IMessengerUser>mockMessengerUser,
         nobscFriendship: <IFriendship>mockNobscFriendship
-      });
+      };
+    });
+
+    it('uses socket.broadcast.to with RemoveUser event correctly', async () => {
+      await disconnecting(currParams);
       expect(params.socket.broadcast.to).toHaveBeenCalledWith("someRoom");
     });
 
     it('uses socket.broadcast.to.emit with RemoveUser event correctly', async () => {
-      await disconnecting({
-        ...params,
-        messengerRoom: <IMessengerRoom>mockMessengerRoom,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship
-      });
+      await disconnecting(currParams);
       expect(params.socket.broadcast.emit)
-      .toHaveBeenCalledWith('RemoveUser', ChatUser(150, "Name", "Name123"));
+        .toHaveBeenCalledWith('RemoveUser', ChatUser("Name", "Name123"));
     });
 
     it('uses removeUser correctly', async () => {
-      await disconnecting({
-        ...params,
-        messengerRoom: <IMessengerRoom>mockMessengerRoom,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship
-      });
-      expect(mockRemoveUser).toHaveBeenCalledWith(150, "someRoom");
+      await disconnecting(currParams);
+      expect(mockRemoveUser).toHaveBeenCalledWith("Name", "someRoom");
     });
 
     it('uses viewMyAcceptedFriendships correctly', async () => {
-      await disconnecting({
-        ...params,
-        messengerRoom: <IMessengerRoom>mockMessengerRoom,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship
-      });
+      await disconnecting(currParams);
       expect(mockViewAccepted).toHaveBeenCalledWith(150);
     });
 
     it('uses getSocketId correctly', async () => {
-      await disconnecting({
-        ...params,
-        messengerRoom: <IMessengerRoom>mockMessengerRoom,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship
-      });
-      expect(mockGetSocketId).toHaveBeenCalledWith(48);
-      expect(mockGetSocketId).toHaveBeenCalledWith(84);
+      await disconnecting(currParams);
+      expect(mockGetSocketId).toHaveBeenCalledWith("Jack");
+      expect(mockGetSocketId).toHaveBeenCalledWith("Jill");
     });
 
     it('uses remove correctly', async () => {
-      await disconnecting({
-        ...params,
-        messengerRoom: <IMessengerRoom>mockMessengerRoom,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship
-      });
+      await disconnecting(currParams);
       expect(mockRemove).toHaveBeenCalledWith(150);
     });
   });
@@ -129,91 +108,57 @@ describe('disconnecting handler', () => {
     beforeAll(() => {
       mockGetSocketId = jest.fn().mockResolvedValue("123456789");
       mockViewAccepted = jest.fn()
-        .mockResolvedValue([{user_id: 48}, {user_id: 84}]);
+        .mockResolvedValue([{username: "Jack"}, {username: "Jill"}]);
       mockMessengerUser = {getSocketId: mockGetSocketId, remove: mockRemove};
       mockNobscFriendship = new Friendship(pool);
-    });
-
-    it ('uses socket.broadcast.to with RemoveUser event correctly', async () => {
-      await disconnecting({
+      currParams = {
         ...params,
         messengerRoom: <IMessengerRoom>mockMessengerRoom,
         messengerUser: <IMessengerUser>mockMessengerUser,
         nobscFriendship: <IFriendship>mockNobscFriendship
-      });
+      };
+    });
+
+    it ('uses socket.broadcast.to with RemoveUser event correctly', async () => {
+      await disconnecting(currParams);
       expect(params.socket.broadcast.to).toHaveBeenCalledWith("someRoom");
     });
 
     it ('uses socket.broadcast.to.emit with RemoveUser event correctly', async () => {
-      await disconnecting({
-        ...params,
-        messengerRoom: <IMessengerRoom>mockMessengerRoom,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship
-      });
+      await disconnecting(currParams);
       expect(params.socket.broadcast.emit)
-      .toHaveBeenCalledWith('RemoveUser', ChatUser(150, "Name", "Name123"));
+        .toHaveBeenCalledWith('RemoveUser', ChatUser("Name", "Name123"));
     });
 
     it('uses removeUser correctly', async () => {
-      await disconnecting({
-        ...params,
-        messengerRoom: <IMessengerRoom>mockMessengerRoom,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship
-      });
-      expect(mockRemoveUser).toHaveBeenCalledWith(150, "someRoom");
+      await disconnecting(currParams);
+      expect(mockRemoveUser).toHaveBeenCalledWith("Name", "someRoom");
     });
 
     it('uses viewAccepted correctly', async () => {
-      await disconnecting({
-        ...params,
-        messengerRoom: <IMessengerRoom>mockMessengerRoom,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship
-      });
-      expect(mockViewAccepted).toHaveBeenCalledWith(150);
+      await disconnecting(currParams);
+      expect(mockViewAccepted).toHaveBeenCalledWith("Name");
     });
 
     it('uses getSocketId correctly', async () => {
-      await disconnecting({
-        ...params,
-        messengerRoom: <IMessengerRoom>mockMessengerRoom,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship
-      });
-      expect(mockGetSocketId).toHaveBeenCalledWith(48);
-      expect(mockGetSocketId).toHaveBeenCalledWith(84);
+      await disconnecting(currParams);
+      expect(mockGetSocketId).toHaveBeenCalledWith("Jack");
+      expect(mockGetSocketId).toHaveBeenCalledWith("Jill");
     });
 
     it ('uses socket.broadcast.to with ShowOffline event correctly', async () => {
-      await disconnecting({
-        ...params,
-        messengerRoom: <IMessengerRoom>mockMessengerRoom,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship
-      });
+      await disconnecting(currParams);
       expect(params.socket.broadcast.to).toHaveBeenCalledWith("123456789");
     });
 
     it ('uses socket.broadcast.to.emit with ShowOffline event correctly', async () => {
-      await disconnecting({
-        ...params,
-        messengerRoom: <IMessengerRoom>mockMessengerRoom,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship
-      });
+      await disconnecting(currParams);
       expect(params.socket.broadcast.emit)
-      .toHaveBeenCalledWith('ShowOffline', ChatUser(150, "Name", "Name123"));
+        .toHaveBeenCalledWith('ShowOffline', ChatUser("Name", "Name123"));
     });
 
     it('uses remove correctly', async () => {
-      await disconnecting({
-        ...params,
-        messengerRoom: <IMessengerRoom>mockMessengerRoom,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship
-      });
+      await disconnecting(currParams);
       expect(mockRemove).toHaveBeenCalledWith(150);
     });
   });

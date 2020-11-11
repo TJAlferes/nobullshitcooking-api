@@ -21,15 +21,16 @@ const mockBroadcast: any = {
   to: jest.fn((room: string) => mockBroadcast)
 };
 
+const rooms = new Set<string>();
+rooms.add("someRoom");
 const mockSocket: Partial<Socket> = {
   broadcast: <Socket>mockBroadcast,
   emit: jest.fn(),
-  rooms: {"someRoom": "someRoom"}
+  rooms
 };
 
 const params = {
   text: "howdy",
-  id: 150,
   username: "Name",
   avatar: "Name123",
   socket: <Socket>mockSocket,
@@ -43,20 +44,20 @@ afterEach(() => {
 describe ('addMessage handler', () => {
   it('uses ChatUser correctly', async () => {
     await addMessage(params);
-    expect(mockChatUser).toHaveBeenCalledWith(150, "Name", "Name123");
+    expect(mockChatUser).toHaveBeenCalledWith("Name", "Name123");
   });
 
   it('uses ChatMessage correctly', async () => {
     await addMessage(params);
     expect(mockChatMessage).toHaveBeenCalledWith(
-      "howdy", "someRoom", ChatUser(150, "Name", "Name123")
+      "howdy", "someRoom", ChatUser("Name", "Name123")
     );
   });
 
   it('uses addMessage correctly', async () => {
     await addMessage(params);
     expect(mockAddMessage).toHaveBeenCalledWith(
-      ChatMessage("howdy", "someRoom", ChatUser(150, "Name", "Name123"))
+      ChatMessage("howdy", "someRoom", ChatUser("Name", "Name123"))
     );
   });
 
@@ -69,7 +70,7 @@ describe ('addMessage handler', () => {
     await addMessage(params);
     expect(params.socket.broadcast.emit).toHaveBeenCalledWith(
       'AddMessage',
-      ChatMessage("howdy", "someRoom", ChatUser(150, "Name", "Name123"))
+      ChatMessage("howdy", "someRoom", ChatUser("Name", "Name123"))
     );
   });
 
@@ -77,7 +78,7 @@ describe ('addMessage handler', () => {
     await addMessage(params);
     expect(params.socket.emit).toHaveBeenCalledWith(
       'AddMessage',
-      ChatMessage("howdy", "someRoom", ChatUser(150, "Name", "Name123"))
+      ChatMessage("howdy", "someRoom", ChatUser("Name", "Name123"))
     );
   });
 });

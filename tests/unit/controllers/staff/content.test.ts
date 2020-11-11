@@ -41,7 +41,7 @@ afterEach(() => {
 });
 
 describe('staff content controller', () => {
-  const session = {...<Express.Session>{}, staffInfo: {id: 15}};
+  const session = {...<Express.Session>{}, staffInfo: {staffname: "Name"}};
 
   mockDate = new Date(1466424490000);
   spyDate = jest
@@ -53,9 +53,9 @@ describe('staff content controller', () => {
       session,
       body: {
         contentInfo: {
-          contentTypeId: 7,
+          type: "Type",
           published: null,
-          title: "Some Title",
+          title: "Title",
           items: "[]"
         }
       }
@@ -67,12 +67,12 @@ describe('staff content controller', () => {
       await controller.create(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith(
         coerce({
-          contentTypeId: 7,
-          authorId: 1,
-          ownerId: 1,
+          type: "Type",
+          author: "NOBSC",
+          owner: "NOBSC",
           created: ((mockDate).toISOString()).split("T")[0],
           published: null,
-          title: "Some Title",
+          title: "Title",
           items: "[]"
         }, validContentCreation),
         validContentCreation
@@ -82,12 +82,12 @@ describe('staff content controller', () => {
     it('uses create correctly', async () => {
       await controller.create(<Request>req, <Response>res);
       expect(mockCreate).toHaveBeenCalledWith({
-        contentTypeId: 7,
-        authorId: 1,
-        ownerId: 1,
+        type: "Type",
+        author: "NOBSC",
+        owner: "NOBSC",
         created: ((mockDate).toISOString()).split("T")[0],
         published: null,
-        title: "Some Title",
+        title: "Title",
         items: "[]"
       });
     });
@@ -108,10 +108,10 @@ describe('staff content controller', () => {
       session,
       body: {
         contentInfo: {
-          id: 35,
-          contentTypeId: 7,
+          id: "NOBSC Title",
+          type: "Type",
           published: null,
-          title: "Some Title",
+          title: "Title",
           items: "[]"
         }
       }
@@ -123,10 +123,10 @@ describe('staff content controller', () => {
       await controller.update(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith(
         coerce({
-          contentTypeId: 7,
-          ownerId: 1,
+          type: "Type",
+          owner: "NOBSC",
           published: null,
-          title: "Some Title",
+          title: "Title",
           items: "[]"
         }, validContentUpdate),
         validContentUpdate
@@ -136,11 +136,11 @@ describe('staff content controller', () => {
     it('uses update correctly', async () => {
       await controller.update(<Request>req, <Response>res);
       expect(mockUpdate).toHaveBeenCalledWith({
-        id: 35,
-        contentTypeId: 7,
-        ownerId: 1,
+        id: "NOBSC Title",
+        type: "Type",
+        owner: "NOBSC",
         published: null,
-        title: "Some Title",
+        title: "Title",
         items: "[]"
       });
     });
@@ -157,7 +157,7 @@ describe('staff content controller', () => {
   });
 
   describe('delete method', () => {
-    const req: Partial<Request> = {session, body: {id: 35}};
+    const req: Partial<Request> = {session, body: {id: "NOBSC Title"}};
     const res: Partial<Response> =
       {send: jest.fn().mockResolvedValue({message: 'Content deleted.'})};
 

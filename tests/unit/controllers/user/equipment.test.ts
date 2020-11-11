@@ -20,68 +20,77 @@ jest.mock('../../../../src/access/mysql/Equipment', () => ({
     viewById: mockViewById,
     createPrivate: mockCreatePrivate,
     updatePrivate: mockUpdatePrivate,
-    deleteByOwnerId: mockDeleteByOwnerId
+    deleteByOwner: mockDeleteByOwner
   }))
 }));
-let mockView = jest.fn().mockResolvedValue([[{id: 383}, {id: 5432}]]);
-let mockViewById = jest.fn().mockResolvedValue([[{id: 5432}]]);
+let mockView = jest.fn().mockResolvedValue(
+  [[{id: "Name My Equipment 1"}, {id: "Name My Equipment 2"}]]
+);
+let mockViewById = jest.fn().mockResolvedValue([[{id: "Name My Equipment 2"}]]);
 let mockCreatePrivate = jest.fn();
 let mockUpdatePrivate = jest.fn();
-let mockDeleteByOwnerId = jest.fn();
+let mockDeleteByOwner = jest.fn();
 
 jest.mock('../../../../src/access/mysql/RecipeEquipment', () => ({
   RecipeEquipment: jest.fn().mockImplementation(() => ({
-    deleteByEquipmentId: mockDeleteByEquipmentId
+    deleteByEquipment: mockDeleteByEquipment
   }))
 }));
-let mockDeleteByEquipmentId = jest.fn();
+let mockDeleteByEquipment = jest.fn();
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 describe('user equipment controller', () => {
-  const session = {...<Express.Session>{}, userInfo: {id: 150}};
+  const session = {...<Express.Session>{}, userInfo: {username: "Name"}};
 
   describe('view method', () => {
     const req: Partial<Request> = {session};
-    const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue([[{id: 383}, {id: 5432}]])};
+    const res: Partial<Response> = {
+      send: jest.fn().mockResolvedValue(
+        [[{id: "Name My Equipment 1"}, {id: "Name My Equipment 2"}]]
+      )
+    };
 
     it('uses view correctly', async () => {
       await controller.view(<Request>req, <Response>res);
-      expect(mockView).toHaveBeenCalledWith(150, 150);
+      expect(mockView).toHaveBeenCalledWith("Name", "Name");
     });
 
     it('sends data corectly', async () => {
       await controller.view(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith([[{id: 383}, {id: 5432}]]);
+      expect(res.send).toHaveBeenCalledWith(
+        [[{id: "Name My Equipment 1"}, {id: "Name My Equipment 2"}]]
+      );
     });
 
     it('returns correctly', async () => {
       const actual = await controller.view(<Request>req, <Response>res);
-      expect(actual).toEqual([[{id: 383}, {id: 5432}]]);
+      expect(actual)
+        .toEqual([[{id: "Name My Equipment 1"}, {id: "Name My Equipment 2"}]]);
     });
   });
 
   describe('viewById method', () => {
-    const req: Partial<Request> = {session, body: {id: 5432}};
+    const req: Partial<Request> = {session, body: {id: "Name My Equipment 2"}};
     const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue([{id: 5432}])};
+      {send: jest.fn().mockResolvedValue([{id: "Name My Equipment 2"}])};
 
     it('uses viewById correctly', async () => {
       await controller.viewById(<Request>req, <Response>res);
-      expect(mockViewById).toHaveBeenCalledWith(5432, 150, 150);
+      expect(mockViewById)
+        .toHaveBeenCalledWith("Name My Equipment 2", "Name", "Name");
     });
 
     it('sends data correctly', async () => {
       await controller.viewById(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith([{id: 5432}]);
+      expect(res.send).toHaveBeenCalledWith([{id: "Name My Equipment 2"}]);
     });
 
     it('returns correctly', async () => {
       const actual = await controller.viewById(<Request>req, <Response>res);
-      expect(actual).toEqual([{id: 5432}]);
+      expect(actual).toEqual([{id: "Name My Equipment 2"}]);
     });
   });
 
@@ -90,7 +99,7 @@ describe('user equipment controller', () => {
       session,
       body: {
         equipmentInfo: {
-          equipmentTypeId: 2,
+          type: "Type",
           name: "My Equipment",
           description: "It works.",
           image: "nobsc-equipment-default"
@@ -104,9 +113,9 @@ describe('user equipment controller', () => {
       await controller.create(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith(
         {
-          equipmentTypeId: 2,
-          authorId: 150,
-          ownerId: 150,
+          type: "Type",
+          author: "Name",
+          owner: "Name",
           name: "My Equipment",
           description: "It works.",
           image: "nobsc-equipment-default"
@@ -118,9 +127,9 @@ describe('user equipment controller', () => {
     it('uses create correctly', async () => {
       await controller.create(<Request>req, <Response>res);
       expect(mockCreatePrivate).toHaveBeenCalledWith({
-        equipmentTypeId: 2,
-        authorId: 150,
-        ownerId: 150,
+        type: "Type",
+        author: "Name",
+        owner: "Name",
         name: "My Equipment",
         description: "It works.",
         image: "nobsc-equipment-default"
@@ -143,8 +152,8 @@ describe('user equipment controller', () => {
       session,
       body: {
         equipmentInfo: {
-          id: 5432,
-          equipmentTypeId: 2,
+          id: "Name My Equipment 2",
+          type: "Type",
           name: "My Equipment",
           description: "It works.",
           image: "nobsc-equipment-default"
@@ -158,9 +167,9 @@ describe('user equipment controller', () => {
       await controller.update(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith(
         {
-          equipmentTypeId: 2,
-          authorId: 150,
-          ownerId: 150,
+          type: "Type",
+          author: "Name",
+          owner: "Name",
           name: "My Equipment",
           description: "It works.",
           image: "nobsc-equipment-default"
@@ -172,10 +181,10 @@ describe('user equipment controller', () => {
     it('uses update correctly', async () => {
       await controller.update(<Request>req, <Response>res);
       expect(mockUpdatePrivate).toHaveBeenCalledWith({
-        id: 5432,
-        equipmentTypeId: 2,
-        authorId: 150,
-        ownerId: 150,
+        id: "Name My Equipment 2",
+        type: "Type",
+        author: "Name",
+        owner: "Name",
         name: "My Equipment",
         description: "It works.",
         image: "nobsc-equipment-default"
@@ -194,18 +203,20 @@ describe('user equipment controller', () => {
   });
 
   describe('delete method', () => {
-    const req: Partial<Request> = {session, body: {id: 5432}};
+    const req: Partial<Request> = {session, body: {id: "Name My Equipment 2"}};
     const res: Partial<Response> =
       {send: jest.fn().mockResolvedValue({message: 'Equipment deleted.'})};
 
     it('uses deleteByEquipmentId correctly', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockDeleteByEquipmentId).toHaveBeenCalledWith(5432);
+      expect(mockDeleteByEquipment)
+        .toHaveBeenCalledWith("Name My Equipment 2");
     });
 
     it('uses delete correctly', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockDeleteByOwnerId).toHaveBeenCalledWith(5432, 150);
+      expect(mockDeleteByOwner)
+        .toHaveBeenCalledWith("Name My Equipment 2", "Name");
     });
 
     it('sends data correctly', async () => {

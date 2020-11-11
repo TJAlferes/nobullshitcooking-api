@@ -3,7 +3,7 @@
 import { RedisStore } from 'connect-redis';
 import { Server } from 'http';
 import { Pool } from 'mysql2/promise';
-import socketIO from 'socket.io';
+const SocketIO = require('socket.io');
 import redisAdapter from 'socket.io-redis';
 
 import { useSocketAuth } from '../../chat/socketAuth';
@@ -17,15 +17,33 @@ export function socketInit(
   redisSession: RedisStore,
   server: Server
 ) {
-  const io = socketIO(server, {pingTimeout: 60000});
+  const io = new SocketIO(server, {
+    cors: {
+      //allowedHeaders: ["sid", "userInfo"],
+      //credentials: true,
+      methods: ["GET", "POST"],
+      origin: ["https://nobullshitcooking.com", "http://localhost:8080"]
+    },
+    pingTimeout: 60000
+  });
+
   const handler = socketConnection(pool, redisClients);
+
   const { pubClient, subClient, workerClient } = redisClients;
+
   io.adapter(redisAdapter({pubClient, subClient}));
+
   useSocketAuth(io, pubClient, redisSession);
+
   io.on('connection', handler);
+
   // move this to separate server/lambda?
+
   const job = () => cleanUp(workerClient);
+
   const INTERVAL = 60 * 60 * 1000 * 3;  // 3 hours
+
   if (process.env.NODE_ENV !== "test") setInterval(job, INTERVAL);
+
   //return io;
 }

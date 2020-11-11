@@ -22,18 +22,18 @@ afterEach(() => {
 });
 
 describe('staff cuisine equipment controller', () => {
-  const session = {...<Express.Session>{}, staffInfo: {id: 15}};
+  const session = {...<Express.Session>{}, staffInfo: {staffname: "Name"}};
 
   describe('create method', () => {
     const req: Partial<Request> =
-      {session, body: {cuisineId: 4, equipmentId: 4}};
+      {session, body: {cuisine: "Cuisine", equipment: "Equipment"}};
     const res: Partial<Response> = {
       send: jest.fn().mockResolvedValue({message: 'Cuisine equipment created.'})
     };
 
     it('uses create correctly', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(mockCreate).toHaveBeenCalledWith(4, 4);
+      expect(mockCreate).toHaveBeenCalledWith("Cuisine", "Equipment");
     });
 
     it('sends data correctly', async () => {
@@ -50,14 +50,14 @@ describe('staff cuisine equipment controller', () => {
 
   describe('delete method', () => {
     const req: Partial<Request> =
-      {session, body: {cuisineId: 4, equipmentId: 4}};
+      {session, body: {cuisine: "Cuisine", equipment: "Equipment"}};
     const res: Partial<Response> = {
       send: jest.fn().mockResolvedValue({message: 'Cuisine equipment deleted.'})
     };
 
     it('uses delete correctly', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockDelete).toHaveBeenCalledWith(4, 4);
+      expect(mockDelete).toHaveBeenCalledWith("Cuisine", "Equipment");
     });
 
     it('sends data correctly', async () => {

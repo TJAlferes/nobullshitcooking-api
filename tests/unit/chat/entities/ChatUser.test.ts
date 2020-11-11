@@ -1,12 +1,8 @@
 import { ChatUser } from '../../../../src/chat/entities/ChatUser';
 
-const user = ChatUser(7, 'Lucky', 'Lucky');
+const user = ChatUser('Lucky', 'Lucky');
 
 describe('User', () => {
-  it('returns the id', () => {
-    expect(user.id).toEqual(7);
-  });
-
   it('returns the username', () => {
     expect(user.username).toEqual('Lucky');
   });

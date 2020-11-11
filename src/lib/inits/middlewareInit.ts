@@ -28,6 +28,7 @@ export function middlewareInit(
     corsOptions.origin = ['https://nobullshitcooking.com'];
   }
   const session = sessionInit(app, pool, redisClients, server);
+  
   //app.use(expressPinoLogger());
   app.use(express.json());
   app.use(express.urlencoded({extended: false}));

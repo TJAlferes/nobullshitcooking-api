@@ -16,7 +16,6 @@ export class MessengerUser implements IMessengerUser {
   }
 
   async add(
-    id: string,
     username: string,
     avatar: string,
     sid: string,
@@ -24,19 +23,19 @@ export class MessengerUser implements IMessengerUser {
   ) {
     await this.client
       .multi()
-      .hset(`user:${id}`, 'username', username)
-      .hset(`user:${id}`, 'avatar', avatar)
-      .hset(`user:${id}`, 'sid', sid)
-      .hset(`user:${id}`, 'socketid', socketid)
-      .zadd('users', `${Date.now()}`, `${id}`)
+      .hset(`user:${username}`, 'username', username)
+      .hset(`user:${username}`, 'avatar', avatar)
+      .hset(`user:${username}`, 'sid', sid)
+      .hset(`user:${username}`, 'socketid', socketid)
+      .zadd('users', `${Date.now()}`, `${username}`)
       .exec();
   }
 
-  async remove(id: string) {
+  async remove(username: string) {
     await this.client
       .multi()
-      .zrem('users', id)
-      .del(`user:${id}`)
+      .zrem('users', username)
+      .del(`user:${username}`)
       .exec();
   }
 }
@@ -45,11 +44,10 @@ export interface IMessengerUser {
   client: Redis;
   getSocketId(id: string): Promise<string|null>;
   add(
-    id: string,
     username: string,
     avatar: string,
     sid: string,
     socketid: string
   ): void;
-  remove(id: string): void;
+  remove(username: string): void;
 }

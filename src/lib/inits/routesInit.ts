@@ -50,6 +50,7 @@ export function routesInit(app: Application, pool: Pool, esClient: Client) {
   const recipeTypeRoutes = recipeTypeRouter(pool);
   const searchRoutes = searchRouter(esClient);
   const supplierRoutes = supplierRouter(pool);
+  
   app.get('/', (req, res) => {
     res.send(`
       No Bullshit Cooking Backend API.

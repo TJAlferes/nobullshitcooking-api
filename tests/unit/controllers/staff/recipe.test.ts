@@ -28,22 +28,22 @@ let mockESDelete = jest.fn();
 jest.mock('../../../../src/access/mysql/Recipe', () => ({
   Recipe: jest.fn().mockImplementation(() => ({
     getForElasticSearch: mockGetForElasticSearch,
-    view: mockView,
-    viewById: mockViewById,
+    //view: mockView,
+    //viewById: mockViewById,
     getInfoToEdit: mockGetInfoToEdit,
     create: mockCreate,
     update: mockUpdate,
-    disownById: mockDisownById,
+    //disownById: mockDisownById,
     deleteById: mockDeleteById
   }))
 }));
-let mockGetForElasticSearch = jest.fn().mockResolvedValue([[{id: 5432}]]);
-let mockView = jest.fn().mockResolvedValue([[{id: 383}, {id: 5432}]]);
-let mockViewById = jest.fn().mockResolvedValue([[{id: 5432}]]);
-let mockGetInfoToEdit = jest.fn().mockResolvedValue([[{id: 5432}]]);
-let mockCreate = jest.fn().mockResolvedValue({insertId: 5432});
+let mockGetForElasticSearch = jest.fn().mockResolvedValue([[{id: "NOBSC Title"}]]);
+//let mockView = jest.fn().mockResolvedValue([[{id: "NOBSC Title 1"}, {id: "NOBSC Title 2"}]]);
+//let mockViewById = jest.fn().mockResolvedValue([[{id: "NOBSC Title"}]]);
+let mockGetInfoToEdit = jest.fn().mockResolvedValue([[{id: "NOBSC Title"}]]);
+let mockCreate = jest.fn();
 let mockUpdate = jest.fn();
-let mockDisownById = jest.fn();
+//let mockDisownById = jest.fn();
 let mockDeleteById = jest.fn();
 
 jest.mock('../../../../src/access/mysql/RecipeEquipment', () => ({
@@ -106,117 +106,112 @@ jest.mock('../../../../src/access/mysql/SavedRecipe', () => ({
 }));
 let mockSRDeleteAllByRecipeId = jest.fn();
 
+const createRecipeInfo = {
+  type: "Type",
+  cuisine: "Cuisine",
+  author: "NOBSC",
+  owner: "NOBSC",
+  title: "Title",
+  description: "Description.",
+  activeTime: "00:00:30",
+  totalTime: "00:07:00",
+  directions: "Directions.",
+  recipeImage: "nobsc-recipe-default",
+  equipmentImage: "nobsc-recipe-equipment-default",
+  ingredientsImage: "nobsc-recipe-ingredients-default",
+  cookingImage: "nobsc-recipe-cooking-default",
+  video: "video"
+};
+const bodyRecipeInfo = {
+  ...createRecipeInfo,
+  methods: [{method: "Method 1"}, {method: "Method 2"}],
+  equipment: [
+    {amount: 3, equipment: "NOBSC Equipment 1"},
+    {amount: 6, equipment: "NOBSC Equipment 2"}
+  ],
+  ingredients: [
+    {amount: 3, unit: "teaspoon", ingredient: "NOBSC Ingredient 1"},
+    {amount: 6, unit: "Tablespoon", ingredient: "NOBSC Ingredient 2"}
+  ],
+  subrecipes: [
+    {amount: 3, unit: "teaspoon", subrecipe: "NOBSC Recipe 1"},
+    {amount: 6, unit: "Tablespoon", subrecipe: "NOBSC Recipe 2"}
+  ]
+};
+
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 describe('staff recipe controller', () => {
-  const session = {...<Express.Session>{}, staffInfo: {id: 15}};
+  const session = {...<Express.Session>{}, staffInfo: {staffname: "Name"}};
 
   //getInfoToEdit?
 
   describe ('create method', () => {
-    const req: Partial<Request> = {
-      session,
-      body: {
-        recipeInfo: {
-          recipeTypeId: 2,
-          cuisineId: 2,
-          title: "My Recipe",
-          description: "Tasty.",
-          directions: "Do this, then that.",
-          requiredMethods: [{methodId: 2}, {methodId: 5}],
-          requiredEquipment: [
-            {amount: 1, equipment: 2},
-            {amount: 3, equipment: 5}
-          ],
-          requiredIngredients: [
-            {amount: 5, unit: 4, ingredient: 2},
-            {amount: 2, unit: 4, ingredient: 5}
-          ],
-          requiredSubrecipes: [{amount: 1, unit: 1, subrecipe: 48}],
-          recipeImage: "nobsc-recipe-default",
-          equipmentImage: "nobsc-recipe-equipment-default",
-          ingredientsImage: "nobsc-recipe-ingredients-default",
-          cookingImage: "nobsc-recipe-cooking-default",
-          ownership: "public"
-        }
-      }
-    };
+    const req: Partial<Request> = {session, body: {recipeInfo: bodyRecipeInfo}};
     const res: Partial<Response> =
       {send: jest.fn().mockResolvedValue({message: 'Recipe created.'})};
 
     it('uses assert correctly', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(assert).toHaveBeenCalledWith(
-        {
-          recipeTypeId: 2,
-          cuisineId: 2,
-          authorId: 1,
-          ownerId: 1,
-          title: "My Recipe",
-          description: "Tasty.",
-          directions: "Do this, then that.",
-          recipeImage: "nobsc-recipe-default",
-          equipmentImage: "nobsc-recipe-equipment-default",
-          ingredientsImage: "nobsc-recipe-ingredients-default",
-          cookingImage: "nobsc-recipe-cooking-default"
-        },
-        validRecipeEntity
-      );
+      expect(assert).toHaveBeenCalledWith(createRecipeInfo, validRecipeEntity);
     });
 
     it('uses createRecipe correctly', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(mockCreate).toHaveBeenCalledWith({
-        recipeTypeId: 2,
-        cuisineId: 2,
-        authorId: 1,
-        ownerId: 1,
-        title: "My Recipe",
-        description: "Tasty.",
-        directions: "Do this, then that.",
-        recipeImage: "nobsc-recipe-default",
-        equipmentImage: "nobsc-recipe-equipment-default",
-        ingredientsImage: "nobsc-recipe-ingredients-default",
-        cookingImage: "nobsc-recipe-cooking-default"
-      });
+      expect(mockCreate).toHaveBeenCalledWith(createRecipeInfo);
     });
 
     it('uses RecipeMethods.create correctly', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(mockRMCreate)
-        .toHaveBeenCalledWith([5432, 2, 5432, 5], '(?, ?),(?, ?)');
+      expect(mockRMCreate).toHaveBeenCalledWith(
+        ["NOBSC Title", "Method 1", "NOBSC Title", "Method 2"],
+        '(?, ?),(?, ?)'
+      );
     });
 
     it('uses RecipeEquipment.create correctly', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(mockRECreate)
-        .toHaveBeenCalledWith([5432, 2, 1, 5432, 5, 3], '(?, ?, ?),(?, ?, ?)');
+      expect(mockRECreate).toHaveBeenCalledWith(
+        [
+          "NOBSC Title", "NOBSC Equipment 1", 3,
+          "NOBSC Title", "NOBSC Equipment 2", 6
+        ],
+        '(?, ?, ?),(?, ?, ?)'
+      );
     });
 
     it('uses RecipeIngredients.create correctly', async () => {
       await controller.create(<Request>req, <Response>res);
       expect(mockRICreate).toHaveBeenCalledWith(
-        [5432, 2, 5, 4, 5432, 5, 2, 4],
+        [
+          "NOBSC Title", "NOBSC Ingredient 1", 3, "teaspoon",
+          "NOBSC Title", "NOBSC Ingredient 2", 6, "Tablespoon"
+        ],
         '(?, ?, ?, ?),(?, ?, ?, ?)'
       );
     });
 
     it('uses RecipeSubrecipes.create correctly', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(mockRSCreate)
-        .toHaveBeenCalledWith([5432, 48, 1, 1], '(?, ?, ?, ?)');
+      expect(mockRSCreate).toHaveBeenCalledWith(
+        [
+          "NOBSC Title", "NOBSC Recipe 1", 3, "teaspoon",
+          "NOBSC Title", "NOBSC Recipe 2", 6, "Tablespoon"
+        ],
+        '(?, ?, ?, ?),(?, ?, ?, ?)'
+      );
     });
 
     it('uses getForElasticSearch correctly', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(mockGetForElasticSearch).toHaveBeenCalledWith(5432);
+      expect(mockGetForElasticSearch).toHaveBeenCalledWith("NOBSC Title");
     });
 
     it('uses RecipeSearch.save correctly', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(mockESSave).toHaveBeenCalledWith({id: 5432});
+      expect(mockESSave).toHaveBeenCalledWith({id: "NOBSC Title"});
     });
 
     it('sends data correctly', async () => {
@@ -231,113 +226,73 @@ describe('staff recipe controller', () => {
   });
 
   describe ('update method', () => {
-    const req: Partial<Request> = {
-      session,
-      body: {
-        recipeInfo: {
-          id: 5432,
-          recipeTypeId: 2,
-          cuisineId: 2,
-          title: "My Recipe",
-          description: "Tasty.",
-          directions: "Do this, then that.",
-          requiredMethods: [{methodId: 2}, {methodId: 5}],
-          requiredEquipment: [
-            {amount: 1, equipment: 2},
-            {amount: 3, equipment: 5}
-          ],
-          requiredIngredients: [
-            {amount: 5, unit: 4, ingredient: 2},
-            {amount: 2, unit: 4, ingredient: 5}
-          ],
-          requiredSubrecipes: [{amount: 1, unit: 1, subrecipe: 49}],
-          recipeImage: "nobsc-recipe-default",
-          equipmentImage: "nobsc-recipe-equipment-default",
-          ingredientsImage: "nobsc-recipe-ingredients-default",
-          cookingImage: "nobsc-recipe-cooking-default",
-          ownership: "public"
-        }
-      }
-    };
+    const req: Partial<Request> = {session, body: {recipeInfo: bodyRecipeInfo}};
     const res: Partial<Response> =
       {send: jest.fn().mockResolvedValue({message: 'Recipe updated.'})};
 
     it('uses assert correctly', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(assert).toHaveBeenCalledWith(
-        {
-          recipeTypeId: 2,
-          cuisineId: 2,
-          authorId: 1,
-          ownerId: 1,
-          title: "My Recipe",
-          description: "Tasty.",
-          directions: "Do this, then that.",
-          recipeImage: "nobsc-recipe-default",
-          equipmentImage: "nobsc-recipe-equipment-default",
-          ingredientsImage: "nobsc-recipe-ingredients-default",
-          cookingImage: "nobsc-recipe-cooking-default"
-        },
-        validRecipeEntity
-      );
+      expect(assert).toHaveBeenCalledWith(createRecipeInfo, validRecipeEntity);
     });
 
     it ('uses update correctly', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(mockUpdate).toHaveBeenCalledWith({
-        id: 5432,
-        recipeTypeId: 2,
-        cuisineId: 2,
-        authorId: 1,
-        ownerId: 1,
-        title: "My Recipe",
-        description: "Tasty.",
-        directions: "Do this, then that.",
-        recipeImage: "nobsc-recipe-default",
-        equipmentImage: "nobsc-recipe-equipment-default",
-        ingredientsImage: "nobsc-recipe-ingredients-default",
-        cookingImage: "nobsc-recipe-cooking-default"
-      });
+      expect(mockUpdate).toHaveBeenCalledWith(createRecipeInfo);
     });
 
     it('uses RecipeMethods.update correctly', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(mockRMUpdate)
-        .toHaveBeenCalledWith([5432, 2, 5432, 5], '(?, ?),(?, ?)', 5432);
+      expect(mockRMUpdate).toHaveBeenCalledWith(
+        ["NOBSC Title", "Method 1", "NOBSC Title", "Method 2"],
+        '(?, ?),(?, ?)',
+        "NOBSC Title"
+      );
     });
 
     it('uses RecipeEquipment.update correctly', async () => {
       await controller.update(<Request>req, <Response>res);
       expect(mockREUpdate).toHaveBeenCalledWith(
-        [5432, 2, 1, 5432, 5, 3],
+        [
+          "NOBSC Title", "NOBSC Equipment 1", 3,
+          "NOBSC Title", "NOBSC Equipment 2", 6
+        ],
         '(?, ?, ?),(?, ?, ?)',
-        5432
+        "NOBSC Title"
       );
     });
 
     it('uses RecipeIngredients.update correctly', async () => {
       await controller.update(<Request>req, <Response>res);
       expect(mockRIUpdate).toHaveBeenCalledWith(
-        [5432, 2, 5, 4, 5432, 5, 2, 4],
+        [
+          "NOBSC Title", "NOBSC Ingredient 1", 3, "teaspoon",
+          "NOBSC Title", "NOBSC Ingredient 2", 6, "Tablespoon"
+        ],
         '(?, ?, ?, ?),(?, ?, ?, ?)',
-        5432
+        "NOBSC Title"
       );
     });
 
     it('uses RecipeSubrecipes.update correctly', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(mockRSUpdate)
-        .toHaveBeenCalledWith([5432, 49, 1, 1], '(?, ?, ?, ?)', 5432);
+      expect(mockRSUpdate).toHaveBeenCalledWith(
+        [
+          "NOBSC Title", "NOBSC Recipe 1", 3, "teaspoon",
+          "NOBSC Title", "NOBSC Recipe 2", 6, "Tablespoon"
+        ],
+        '(?, ?, ?, ?)',
+        "NOBSC Title"
+      );
     });
 
     it('uses getForElasticSearch correctly', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(mockGetForElasticSearch).toHaveBeenCalledWith(5432);
+      expect(mockGetForElasticSearch).toHaveBeenCalledWith("NOBSC Title");
     });
 
     it('uses RecipeSearch.save correctly', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(mockESSave).toHaveBeenCalledWith({id: 5432});
+      expect(mockESSave).toHaveBeenCalledWith({id: "NOBSC Title"});
     });
 
     it('sends data correctly', async () => {
@@ -346,60 +301,59 @@ describe('staff recipe controller', () => {
     });
 
     it('returns correctly', async () => {
-      const actual =
-        await controller.update(<Request>req, <Response>res);
+      const actual = await controller.update(<Request>req, <Response>res);
       expect(actual).toEqual({message: 'Recipe updated.'});
     });
   });
 
   describe ('delete method', () => {
-    const req: Partial<Request> = {session, body: {id: 5432}};
+    const req: Partial<Request> = {session, body: {id: "NOBSC Title"}};
     const res: Partial<Response> =
       {send: jest.fn().mockResolvedValue({message: 'Recipe deleted.'})};
 
     it('uses FavoritedRecipe.deleteAllByRecipeId correctly', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockFRDeleteAllByRecipeId).toHaveBeenCalledWith(5432);
+      expect(mockFRDeleteAllByRecipeId).toHaveBeenCalledWith("NOBSC Title");
     });
 
     it('uses SavedRecipe.deleteAllByRecipeId correctly', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockSRDeleteAllByRecipeId).toHaveBeenCalledWith(5432);
+      expect(mockSRDeleteAllByRecipeId).toHaveBeenCalledWith("NOBSC Title");
     });
 
     it('uses RecipeEquipment.deleteByRecipeId correctly', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockREDeleteByRecipeId).toHaveBeenCalledWith(5432);
+      expect(mockREDeleteByRecipeId).toHaveBeenCalledWith("NOBSC Title");
     });
 
     it('uses RecipeIngredients.deleteByRecipeId correctly', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockRIDeleteByRecipeId).toHaveBeenCalledWith(5432);
+      expect(mockRIDeleteByRecipeId).toHaveBeenCalledWith("NOBSC Title");
     });
 
     it('uses RecipeMethods.deleteByRecipeId correctly', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockRMDeleteByRecipeId).toHaveBeenCalledWith(5432);
+      expect(mockRMDeleteByRecipeId).toHaveBeenCalledWith("NOBSC Title");
     });
 
     it('uses RecipeSubrecipes.deleteByRecipeId correctly', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockRSDeleteByRecipeId).toHaveBeenCalledWith(5432);
+      expect(mockRSDeleteByRecipeId).toHaveBeenCalledWith("NOBSC Title");
     });
 
     it('uses RecipeSubrecipes.deleteBySubrecipeId correctly', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockRSDeleteBySubrecipeId).toHaveBeenCalledWith(5432);
+      expect(mockRSDeleteBySubrecipeId).toHaveBeenCalledWith("NOBSC Title");
     });
 
     it('uses deleteById correctly', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockDeleteById).toHaveBeenCalledWith(5432);
+      expect(mockDeleteById).toHaveBeenCalledWith("NOBSC Title");
     });
 
     it('uses RecipeSearch.delete correctly', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockESDelete).toHaveBeenCalledWith(String(5432));
+      expect(mockESDelete).toHaveBeenCalledWith(String("NOBSC Title"));
     });
 
     it('sends data correctly', async () => {

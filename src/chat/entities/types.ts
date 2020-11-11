@@ -20,7 +20,6 @@ export interface IChatWhisper {
 }
 
 export interface IChatUser {
-  id: string;
   username: string;
   avatar: string;
 }

@@ -33,8 +33,9 @@ jest.mock('../../../../src/access/mysql/Ingredient', () => ({
     delete: mockDelete
   }))
 }));
-let mockGetForElasticSearch = jest.fn().mockResolvedValue([[{id: 321}]]);
-let mockCreate = jest.fn().mockResolvedValue({insertId: 321});
+let mockGetForElasticSearch =
+  jest.fn().mockResolvedValue([[{id: "NOBSC Ingredient"}]]);
+let mockCreate = jest.fn();
 let mockUpdate = jest.fn();
 let mockDelete = jest.fn();
 
@@ -43,19 +44,19 @@ afterEach(() => {
 });
 
 describe ('staff ingredient controller', () => {
-  const session = {...<Express.Session>{}, staffInfo: {id: 15}};
+  const session = {...<Express.Session>{}, staffInfo: {staffname: "Name"}};
 
   describe('create method', () => {
     const req: Partial<Request> = {
       session,
       body: {
         ingredientInfo: {
-          ingredientTypeId: 3,
-          brand: "Some Brand",
-          variety: "Some Variety",
-          name: "My Ingredient",
-          description: "Some description.",
-          image: "some-image"
+          type: "Cooking",
+          brand: "Brand",
+          variety: "Variety",
+          name: "Ingredient",
+          description: "Description.",
+          image: "image"
         }
       }
     };
@@ -66,14 +67,14 @@ describe ('staff ingredient controller', () => {
       await controller.create(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith(
         {
-          ingredientTypeId: 3,
-          authorId: 1,
-          ownerId: 1,
-          brand: "Some Brand",
-          variety: "Some Variety",
-          name: "My Ingredient",
-          description: "Some description.",
-          image: "some-image"
+          type: "Cooking",
+          author: "NOBSC",
+          owner: "NOBSC",
+          brand: "Brand",
+          variety: "Variety",
+          name: "Ingredient",
+          description: "Description.",
+          image: "image"
         },
         validIngredientEntity
       );
@@ -82,14 +83,14 @@ describe ('staff ingredient controller', () => {
     it('uses create correctly', async () => {
       await controller.create(<Request>req, <Response>res);
       expect(mockCreate).toHaveBeenCalledWith({
-        ingredientTypeId: 3,
-        authorId: 1,
-        ownerId: 1,
-        brand: "Some Brand",
-        variety: "Some Variety",
-        name: "My Ingredient",
-        description: "Some description.",
-        image: "some-image"
+        type: "Cooking",
+        author: "NOBSC",
+        owner: "NOBSC",
+        brand: "Brand",
+        variety: "Variety",
+        name: "Ingredient",
+        description: "Description.",
+        image: "image"
       });
     });
 
@@ -109,13 +110,13 @@ describe ('staff ingredient controller', () => {
       session,
       body: {
         ingredientInfo: {
-          id: 321,
-          ingredientTypeId: 3,
-          brand: "Some Brand",
-          variety: "Some Variety",
-          name: "My Ingredient",
-          description: "Some description.",
-          image: "some-image"
+          id: "NOBSC Ingredient",
+          type: "Cooking",
+          brand: "Brand",
+          variety: "Variety",
+          name: "Ingredient",
+          description: "Description.",
+          image: "image"
         }
       }
     };
@@ -126,14 +127,14 @@ describe ('staff ingredient controller', () => {
       await controller.update(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith(
         {
-          ingredientTypeId: 3,
-          authorId: 1,
-          ownerId: 1,
-          brand: "Some Brand",
-          variety: "Some Variety",
-          name: "My Ingredient",
-          description: "Some description.",
-          image: "some-image"
+          type: "Cooking",
+          author: "NOBSC",
+          owner: "NOBSC",
+          brand: "Brand",
+          variety: "Variety",
+          name: "Ingredient",
+          description: "Description.",
+          image: "image"
         },
         validIngredientEntity
       );
@@ -142,15 +143,15 @@ describe ('staff ingredient controller', () => {
     it('uses update correctly', async () => {
       await controller.update(<Request>req, <Response>res);
       expect(mockUpdate).toHaveBeenCalledWith({
-        id: 321,
-        ingredientTypeId: 3,
-        authorId: 1,
-        ownerId: 1,
-        brand: "Some Brand",
-        variety: "Some Variety",
-        name: "My Ingredient",
-        description: "Some description.",
-        image: "some-image"
+        id: "NOBSC Ingredient",
+        type: "Cooking",
+        author: "NOBSC",
+        owner: "NOBSC",
+        brand: "Brand",
+        variety: "Variety",
+        name: "Ingredient",
+        description: "Description.",
+        image: "image"
       });
     });
 
@@ -166,13 +167,13 @@ describe ('staff ingredient controller', () => {
   });
 
   describe('delete method', () => {
-    const req: Partial<Request> = {session, body: {id: 321}};
+    const req: Partial<Request> = {session, body: {id: "NOBSC Ingredient"}};
     const res: Partial<Response> =
       {send: jest.fn().mockResolvedValue({message: 'Ingredient deleted.'})};
 
     it('uses delete correctly', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockDelete).toHaveBeenCalledWith(321);
+      expect(mockDelete).toHaveBeenCalledWith("NOBSC Ingredient");
     });
 
     it('uses ElasticSearch delete correctly', async () => {

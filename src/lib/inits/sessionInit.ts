@@ -25,6 +25,7 @@ export function sessionInit(
     store: redisSession,
     unset: "destroy"
   };
+
   if (app.get('env') === 'production') {
     // new Chrome requirements:
     /*sessionOptions.cookie = {
@@ -45,6 +46,8 @@ export function sessionInit(
       secure: false
     };
   }
+
   socketInit(pool, redisClients, redisSession, server);
+  
   return expressSession(sessionOptions);
 }

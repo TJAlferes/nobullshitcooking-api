@@ -24,26 +24,29 @@ export class MessengerRoom implements IMessengerRoom {
     const data = await this.pubClient.zrange(`rooms:${room}`, 0, -1);
     const pubClient = this.pubClient;
     let users = [];
-    for (let id of data){
-      const userHash = await pubClient.hgetall(`user:${id}`);
-      users.push(ChatUser(id, userHash.username, userHash.avatar));
+
+    // TO DO: do some renaming here
+    for (let username of data){
+      const userHash = await pubClient.hgetall(`user:${username}`);
+      users.push(ChatUser(userHash.username, userHash.avatar));
     }
+    
     return users;
   }
   
-  async addUser(id: string, room: string) {
+  async addUser(username: string, room: string) {
     await this.pubClient
       .multi()
-      .zadd(`rooms:${room}`, `${Date.now()}`, `${id}`)
-      .set(`user:${id}:room`, room)
+      .zadd(`rooms:${room}`, `${Date.now()}`, `${username}`)
+      .set(`user:${username}:room`, room)
       .exec();
   }
   
-  async removeUser(id: string, room: string) {
+  async removeUser(username: string, room: string) {
     await this.pubClient
       .multi()
-      .zrem(`rooms:${room}`, id)
-      .del(`user:${id}:room`)
+      .zrem(`rooms:${room}`, username)
+      .del(`user:${username}:room`)
       .exec();
   }
 }
@@ -53,6 +56,6 @@ export interface IMessengerRoom {
   subClient: Redis;
   add(room: string): void;
   getUsers(room: string): Promise<IChatUser[]>;
-  addUser(id: string, room: string): void;
-  removeUser(id: string, room: string): void;
+  addUser(username: string, room: string): void;
+  removeUser(username: string, room: string): void;
 }

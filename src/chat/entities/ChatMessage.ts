@@ -7,7 +7,7 @@ export function ChatMessage(
 ): IChatMessage {
   return {
     kind: KMessage,
-    id: user.id + (new Date).getTime().toString(),
+    id: user.username + (new Date).getTime().toString(),
     text,
     room,
     user

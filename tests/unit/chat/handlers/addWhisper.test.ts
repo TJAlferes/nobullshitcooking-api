@@ -6,7 +6,7 @@ import { IUser, User } from '../../../../src/access/mysql/User';
 import { IMessengerUser } from '../../../../src/access/redis/MessengerUser';
 import { ChatUser } from '../../../../src/chat/entities/ChatUser';
 import { ChatWhisper } from '../../../../src/chat/entities/ChatWhisper';
-import { addWhisper } from '../../../../src/chat/handlers/addWhisper';
+import { IAddWhisper, addWhisper } from '../../../../src/chat/handlers/addWhisper';
 
 let mockGetSocketId = jest.fn();
 let mockMessengerUser: Partial<IMessengerUser>;
@@ -31,6 +31,8 @@ const mockChatUser = ChatUser as jest.Mocked<typeof ChatUser>;
 jest.mock('../../../../src/chat/entities/ChatWhisper');
 const mockChatWhisper = ChatWhisper as jest.Mocked<typeof ChatWhisper>;
 
+const rooms = new Set<string>();
+rooms.add("someRoom");
 const mockBroadcast: any =
   {emit: jest.fn(), to: jest.fn((room: string) => mockBroadcast)};
 const mockSocket: Partial<Socket> = {
@@ -38,16 +40,17 @@ const mockSocket: Partial<Socket> = {
   emit: jest.fn().mockReturnValue(true),
   join: jest.fn(),
   leave: jest.fn(),
-  rooms: {"someRoom": "someRoom"}
+  rooms
 };
 const params = {
   text: "howdy",
   to: "Buddy",
-  id: 150,
   username: "Name",
   avatar: "Name123",
   socket: <Socket>mockSocket
 };
+
+let currParams: IAddWhisper;
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -63,37 +66,29 @@ describe('addWhisper handler', () => {
 
       mockGetByName = jest.fn().mockResolvedValue([[]]);
       mockNobscUser = new User(pool);
-    });
 
-    it('uses getUserByName correctly', async () => {
-      await addWhisper({
+      currParams = {
         ...params,
         messengerUser: <IMessengerUser>mockMessengerUser,
         nobscFriendship: <IFriendship>mockNobscFriendship,
         nobscUser: <IUser>mockNobscUser
-      });
+      };
+    });
+
+    it('uses getUserByName correctly', async () => {
+      await addWhisper(currParams);
       expect(mockGetByName).toHaveBeenCalledWith("Buddy");
     });
 
     it('uses socket.emit', async () => {
-      await addWhisper({
-        ...params,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship,
-        nobscUser: <IUser>mockNobscUser
-      });
+      await addWhisper(currParams);
       expect(params.socket.emit)
         .toHaveBeenCalledWith('FailedWhisper', 'User not found.');
     });
 
     // these may be wrong...
     it('returns correctly', async () => {
-      const actual = await addWhisper({
-        ...params,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship,
-        nobscUser: <IUser>mockNobscUser
-      });
+      const actual = await addWhisper(currParams);
       expect(actual).toEqual(true);
     });
   });
@@ -102,41 +97,33 @@ describe('addWhisper handler', () => {
     beforeAll(() => {
       mockMessengerUser = {getSocketId: mockGetSocketId};
 
-      mockViewBlocked = jest.fn().mockResolvedValue([[{user_id: 150}]]);
+      mockViewBlocked = jest.fn().mockResolvedValue([[{username: "Buddy"}]]);
       mockNobscFriendship = new Friendship(pool);
 
-      mockGetByName = jest.fn().mockResolvedValue([[{id: 999}]]);
+      mockGetByName = jest.fn().mockResolvedValue([[{username: "Buddy"}]]);
       mockNobscUser = new User(pool);
+
+      currParams = {
+        ...params,
+        messengerUser: <IMessengerUser>mockMessengerUser,
+        nobscFriendship: <IFriendship>mockNobscFriendship,
+        nobscUser: <IUser>mockNobscUser
+      };
     });
 
     it('uses viewMyBlockedUsers correctly', async () => {
-      await addWhisper({
-        ...params,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship,
-        nobscUser: <IUser>mockNobscUser
-      });
-      expect(mockViewBlocked).toHaveBeenCalledWith(999);
+      await addWhisper(currParams);
+      expect(mockViewBlocked).toHaveBeenCalledWith("Buddy");
     });
 
     it('uses socket.emit', async () => {
-      await addWhisper({
-        ...params,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship,
-        nobscUser: <IUser>mockNobscUser
-      });
+      await addWhisper(currParams);
       expect(params.socket.emit)
         .toHaveBeenCalledWith('FailedWhisper', 'User not found.');
     });
 
     it('returns correctly', async () => {
-      const actual = await addWhisper({
-        ...params,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship,
-        nobscUser: <IUser>mockNobscUser
-      });
+      const actual = await addWhisper(currParams);
       expect(actual).toEqual(true);
     });
   });
@@ -149,38 +136,30 @@ describe('addWhisper handler', () => {
       mockViewBlocked = jest.fn().mockResolvedValue([[]]);
       mockNobscFriendship = new Friendship(pool);
 
-      mockGetByName = jest.fn().mockResolvedValue([[{id: 999}]]);
+      mockGetByName = jest.fn().mockResolvedValue([[{username: "Buddy"}]]);
       mockNobscUser = new User(pool);
+
+      currParams = {
+        ...params,
+        messengerUser: <IMessengerUser>mockMessengerUser,
+        nobscFriendship: <IFriendship>mockNobscFriendship,
+        nobscUser: <IUser>mockNobscUser
+      };
     });
 
     it('uses getSocketId correctly', async () => {
-      await addWhisper({
-        ...params,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship,
-        nobscUser: <IUser>mockNobscUser
-      });
-      expect(mockGetSocketId).toHaveBeenCalledWith(999);
+      await addWhisper(currParams);
+      expect(mockGetSocketId).toHaveBeenCalledWith("Buddy");
     });
 
     it('uses socket.emit', async () => {
-      await addWhisper({
-        ...params,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship,
-        nobscUser: <IUser>mockNobscUser
-      });
+      await addWhisper(currParams);
       expect(params.socket.emit)
         .toHaveBeenCalledWith('FailedWhisper', 'User not found.');
     });
 
     it('returns correctly', async () => {
-      const actual = await addWhisper({
-        ...params,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship,
-        nobscUser: <IUser>mockNobscUser
-      });
+      const actual = await addWhisper(currParams);
       expect(actual).toEqual(true);
     });
   });
@@ -193,65 +172,47 @@ describe('addWhisper handler', () => {
       mockViewBlocked = jest.fn().mockResolvedValue([[]]);
       mockNobscFriendship = new Friendship(pool);
 
-      mockGetByName = jest.fn().mockResolvedValue([[{id: 999}]]);
+      mockGetByName = jest.fn().mockResolvedValue([[{username: "Buddy"}]]);
       mockNobscUser = new User(pool);
+
+      currParams = {
+        ...params,
+        messengerUser: <IMessengerUser>mockMessengerUser,
+        nobscFriendship: <IFriendship>mockNobscFriendship,
+        nobscUser: <IUser>mockNobscUser
+      };
     });
 
     it('uses ChatUser correctly', async () => {
-      await addWhisper({
-        ...params,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship,
-        nobscUser: <IUser>mockNobscUser
-      });
-      expect(mockChatUser).toHaveBeenCalledWith(150, "Name", "Name123");
+      await addWhisper(currParams);
+      expect(mockChatUser).toHaveBeenCalledWith("Name", "Name123");
     });
   
     it('uses Whisper correctly', async () => {
-      await addWhisper({
-        ...params,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship,
-        nobscUser: <IUser>mockNobscUser
-      });
+      await addWhisper(currParams);
       expect(mockChatWhisper).toHaveBeenCalledWith(
-        "howdy", "Buddy", ChatUser(150, "Name", "Name123")
+        "howdy", "Buddy", ChatUser("Name", "Name123")
       );
     });
 
     it ('uses socket.broadcast.to correctly', async () => {
-      await addWhisper({
-        ...params,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship,
-        nobscUser: <IUser>mockNobscUser
-      });
+      await addWhisper(currParams);
       expect(params.socket.broadcast.to).toHaveBeenCalledWith("123456789");
     });
 
     it ('uses socket.broadcast.to.emit correctly', async () => {
-      await addWhisper({
-        ...params,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship,
-        nobscUser: <IUser>mockNobscUser
-      });
+      await addWhisper(currParams);
       expect(params.socket.broadcast.emit).toHaveBeenCalledWith(
         'AddWhisper',
-        ChatWhisper("howdy", "Buddy", ChatUser(150, "Name", "Name123"))
+        ChatWhisper("howdy", "Buddy", ChatUser("Name", "Name123"))
       );
     });
 
     it ('uses socket.emit with AddWhisper event correctly', async () => {
-      await addWhisper({
-        ...params,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship,
-        nobscUser: <IUser>mockNobscUser
-      });
+      await addWhisper(currParams);
       expect(params.socket.emit).toHaveBeenCalledWith(
         'AddWhisper',
-        ChatWhisper("howdy", "Buddy", ChatUser(150, "Name", "Name123"))
+        ChatWhisper("howdy", "Buddy", ChatUser("Name", "Name123"))
       );
     });
   });

@@ -12,30 +12,32 @@ async function cleanUpRooms(workerClient: Redis) {
     function(err, rooms) {
       if (err !== null) {
         console.log(err);
-      } else {
-        rooms.forEach(function(room) {
-          workerClient
-          .multi()
-          .zrem('rooms', room)
-          .del(`rooms:${room}:chats`)
-          .exec();
-
-          workerClient.zrangebyscore(
-            'users',
-            '-inf',
-            ((new Date).getTime() - DELTA),
-            function(err, users) {
-              if (err !== null) {
-                console.log(err);
-              } else {
-                users.forEach(function(user) {
-                  workerClient.zrem(`rooms:${room}`, user);
-                });
-              }
-            }
-          );
-        });
+        return;
       }
+
+      rooms.forEach(function(room) {
+        workerClient
+        .multi()
+        .zrem('rooms', room)
+        .del(`rooms:${room}:chats`)
+        .exec();
+
+        workerClient.zrangebyscore(
+          'users',
+          '-inf',
+          ((new Date).getTime() - DELTA),
+          function(err, users) {
+            if (err !== null) {
+              console.log(err);
+              return;
+            }
+
+            users.forEach(function(user) {
+              workerClient.zrem(`rooms:${room}`, user);
+            });
+          }
+        );
+      });
     }
   );
 }
@@ -54,15 +56,16 @@ async function cleanUpChats(workerClient: Redis) {
         function(err, rooms) {
           if (err !== null) {
             console.log(err);
-          } else {
-            rooms.forEach(function(room) {
-              workerClient.zremrangebyscore(
-                `rooms:${room}:chats`,
-                '-inf',
-                ((new Date).getTime() - DELTA)
-              );
-            });
+            return;
           }
+
+          rooms.forEach(function(room) {
+            workerClient.zremrangebyscore(
+              `rooms:${room}:chats`,
+              '-inf',
+              ((new Date).getTime() - DELTA)
+            );
+          });
         }
       );
     }

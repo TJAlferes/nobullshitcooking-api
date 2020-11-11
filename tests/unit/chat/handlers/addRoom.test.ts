@@ -23,17 +23,18 @@ const mockBroadcast: any = {
   to: jest.fn((room: string) => mockBroadcast)
 };
 
+const rooms = new Set<string>();
+rooms.add("someRoom");
 const mockSocket: Partial<Socket> = {
   broadcast: <Socket>mockBroadcast,
   emit: jest.fn(),
   join: jest.fn(),
   leave: jest.fn(),
-  rooms: {"someRoom": "someRoom"}
+  rooms
 };
 
 const params = {
   room: "nextRoom",
-  id: 150,
   username: "Name",
   avatar: "Name123",
   socket: <Socket>mockSocket,
@@ -47,7 +48,7 @@ afterEach(() => {
 describe ('addRoom handler', () => {
   it('uses ChatUser correctly', async () => {
     await addRoom(params);
-    expect(mockChatUser).toHaveBeenCalledWith(150, "Name", "Name123");
+    expect(mockChatUser).toHaveBeenCalledWith("Name", "Name123");
     expect(mockChatUser).toHaveBeenCalledTimes(2);
   });
 
@@ -58,7 +59,7 @@ describe ('addRoom handler', () => {
 
   it('uses removeUser correctly', async () => {
     await addRoom(params);
-    expect(mockRemoveUser).toHaveBeenCalledWith(150, "someRoom");
+    expect(mockRemoveUser).toHaveBeenCalledWith("Name", "someRoom");
   });
 
   it('uses socket.broadcast.to with Remove user event correctly', async () => {
@@ -71,7 +72,7 @@ describe ('addRoom handler', () => {
     async () => {
       await addRoom(params);
       expect(params.socket.broadcast.emit)
-        .toHaveBeenCalledWith('RemoveUser', ChatUser(150, "Name", "Name123"));
+        .toHaveBeenCalledWith('RemoveUser', ChatUser("Name", "Name123"));
     }
   );
 
@@ -87,7 +88,7 @@ describe ('addRoom handler', () => {
 
   it('uses addUser correctly', async () => {
     await addRoom(params);
-    expect(mockAddUser).toHaveBeenCalledWith(150, "nextRoom");
+    expect(mockAddUser).toHaveBeenCalledWith("Name", "nextRoom");
   });
 
   it('uses socket.broadcast.to with AddUser event correctly', async () => {
@@ -98,7 +99,7 @@ describe ('addRoom handler', () => {
   it('uses socket.broadcast.to.emit with AddUser event correctly', async () => {
     await addRoom(params);
     expect(params.socket.broadcast.emit)
-      .toHaveBeenCalledWith('AddUser', ChatUser(150, "Name", "Name123"));
+      .toHaveBeenCalledWith('AddUser', ChatUser("Name", "Name123"));
   });
 
   it('uses getUsers correctly', async () => {

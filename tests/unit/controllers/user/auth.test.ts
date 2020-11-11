@@ -46,108 +46,18 @@ jest.mock('../../../../src/access/mysql/User', () => ({
   User: jest.fn().mockImplementation(() => ({
     getByEmail: mockGetByEmail,
     getByName: mockGetByName,
-    create: mockCreateUser,
-    verify: mockVerifyUser,
-    update: mockUpdateUser,
-    delete: mockDeleteUser
+    create: mockCreate,
+    verify: mockVerify,
+    update: mockUpdate,
+    delete: mockDelete
   }))
 }));
 let mockGetByEmail = jest.fn();
 let mockGetByName = jest.fn();
-let mockCreateUser = jest.fn();
-let mockVerifyUser = jest.fn();
-let mockUpdateUser = jest.fn();
-let mockDeleteUser = jest.fn();
-
-jest.mock('../../../../src/access/mysql/Content', () => ({
-  Content: jest.fn().mockImplementation(() => ({
-    deleteAllByOwnerId: mockContentDeleteAllByOwnerId
-  }))
-}));
-let mockContentDeleteAllByOwnerId = jest.fn();
-
-jest.mock('../../../../src/access/mysql/Friendship', () => ({
-  Friendship: jest.fn().mockImplementation(() => ({
-    deleteAllByUserId: mockDeleteAllFriendshipsByUserId
-  }))
-}));
-let mockDeleteAllFriendshipsByUserId = jest.fn();
-
-jest.mock('../../../../src/access/mysql/Plan', () => ({
-  Plan: jest.fn().mockImplementation(() => ({
-    deleteAllByOwnerId: mockDeleteAllPlansByOwnerId
-  }))
-}));
-let mockDeleteAllPlansByOwnerId = jest.fn();
-
-jest.mock('../../../../src/access/mysql/FavoriteRecipe', () => ({
-  FavoriteRecipe: jest.fn().mockImplementation(() => ({
-    deleteAllByUserId: mockDeleteAllFavoriteRecipesByUserId
-  }))
-}));
-let mockDeleteAllFavoriteRecipesByUserId = jest.fn();
-
-jest.mock('../../../../src/access/mysql/SavedRecipe', () => ({
-  SavedRecipe: jest.fn().mockImplementation(() => ({
-    deleteAllByUserId: mockDeleteAllSavedRecipesByUserId
-  }))
-}));
-let mockDeleteAllSavedRecipesByUserId = jest.fn();
-
-jest.mock('../../../../src/access/mysql/Recipe', () => ({
-  Recipe: jest.fn().mockImplementation(() => ({
-    getAllPrivateIdsByUserId: mockGetAllPrivateIdsByUserId,
-    disown: mockDisown,
-    deletePrivate: mockDeletePrivate
-  }))
-}));
-let mockGetAllPrivateIdsByUserId = jest.fn().mockResolvedValue([273, 837, 941]);
-let mockDisown = jest.fn();
-let mockDeletePrivate = jest.fn();
-
-jest.mock('../../../../src/access/mysql/RecipeEquipment', () => ({
-  RecipeEquipment: jest.fn().mockImplementation(() => ({
-    deleteByRecipeIds: mockDeleteRecipeEquipmentByRecipeIds
-  }))
-}));
-let mockDeleteRecipeEquipmentByRecipeIds = jest.fn();
-
-jest.mock('../../../../src/access/mysql/RecipeIngredient', () => ({
-  RecipeIngredient: jest.fn().mockImplementation(() => ({
-    deleteByRecipeIds: mockDeleteRecipeIngredientsByRecipeIds
-  }))
-}));
-let mockDeleteRecipeIngredientsByRecipeIds = jest.fn();
-
-jest.mock('../../../../src/access/mysql/RecipeMethod', () => ({
-  RecipeMethod: jest.fn().mockImplementation(() => ({
-    deleteByRecipeIds: mockDeleteRecipeMethodsByRecipeIds
-  }))
-}));
-let mockDeleteRecipeMethodsByRecipeIds = jest.fn();
-
-jest.mock('../../../../src/access/mysql/RecipeSubrecipe', () => ({
-  RecipeSubrecipe: jest.fn().mockImplementation(() => ({
-    deleteByRecipeIds: mockDeleteRecipeSubrecipesByRecipeIds,
-    deleteBySubrecipeIds: mockDeleteRecipeSubrecipesBySubrecipeIds
-  }))
-}));
-let mockDeleteRecipeSubrecipesByRecipeIds = jest.fn();
-let mockDeleteRecipeSubrecipesBySubrecipeIds = jest.fn();
-
-jest.mock('../../../../src/access/mysql/Equipment', () => ({
-  Equipment: jest.fn().mockImplementation(() => ({
-    deleteAllByOwnerId: mockDeleteAllEquipmentByOwnerId
-  }))
-}));
-let mockDeleteAllEquipmentByOwnerId = jest.fn();
-
-jest.mock('../../../../src/access/mysql/Ingredient', () => ({
-  Ingredient: jest.fn().mockImplementation(() => ({
-    deleteAllByOwnerId: mockDeleteAllIngredientsByOwnerId
-  }))
-}));
-let mockDeleteAllIngredientsByOwnerId = jest.fn();
+let mockCreate = jest.fn();
+let mockVerify = jest.fn();
+let mockUpdate = jest.fn();
+let mockDelete = jest.fn();
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -343,7 +253,7 @@ describe('user auth controller', () => {
       };
 
       beforeAll(() => {
-        mockGetByName = jest.fn().mockResolvedValue([{id: 150}]);
+        mockGetByName = jest.fn().mockResolvedValue([{username: "NameIsGood"}]);
       });
 
       it('uses assert on request correctly', async () => {
@@ -386,7 +296,7 @@ describe('user auth controller', () => {
 
       beforeAll(() => {
         mockGetByName = jest.fn().mockResolvedValue([]);
-        mockGetByEmail = jest.fn().mockResolvedValue([{id: 150}]);
+        mockGetByEmail = jest.fn().mockResolvedValue([{username: "NameIsGood"}]);
       });
 
       it('uses assert on request correctly', async () => {
@@ -469,7 +379,7 @@ describe('user auth controller', () => {
 
       it('uses createUser correctly', async () => {
         await controller.register(<Request>req, <Response>res);
-        expect(mockCreateUser).toHaveBeenCalledWith({
+        expect(mockCreate).toHaveBeenCalledWith({
           email: "person@person.com",
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           username: "NameIsGood",
@@ -641,7 +551,7 @@ describe('user auth controller', () => {
 
       beforeAll(() => {
         mockGetByEmail = jest.fn().mockResolvedValue([{
-          id: 150,
+          email: "person@person.com",
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           confirmation_code: "123XYZ"
         }]);
@@ -689,7 +599,7 @@ describe('user auth controller', () => {
 
       beforeAll(() => {
         mockGetByEmail = jest.fn().mockResolvedValue([{
-          id: 150,
+          email: "person@person.com",
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           confirmation_code: "123XYZ"
         }]);
@@ -739,7 +649,7 @@ describe('user auth controller', () => {
 
       beforeAll(() => {
         mockGetByEmail = jest.fn().mockResolvedValue([{
-          id: 150,
+          email: "person@person.com",
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           confirmation_code: "123XYZ"
         }]);
@@ -760,7 +670,7 @@ describe('user auth controller', () => {
 
       it ('uses verifyUser correctly', async () => {
         await controller.verify(<Request>req, <Response>res);
-        expect(mockVerifyUser).toHaveBeenCalledWith("person@person.com");
+        expect(mockVerify).toHaveBeenCalledWith("person@person.com");
       });
 
       it('sends data correctly', async () => {
@@ -911,7 +821,7 @@ describe('user auth controller', () => {
 
       beforeAll(() => {
         mockGetByEmail = jest.fn().mockResolvedValue([{
-          id: 150,
+          email: "person@person.com",
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           confirmation_code: "123XYZ"
         }]);
@@ -955,7 +865,7 @@ describe('user auth controller', () => {
 
       beforeAll(() => {
         mockGetByEmail = jest.fn().mockResolvedValue([{
-          id: 150,
+          email: "person@person.com",
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           confirmation_code: null
         }]);
@@ -998,7 +908,7 @@ describe('user auth controller', () => {
 
       beforeAll(() => {
         mockGetByEmail = jest.fn().mockResolvedValue([{
-          id: 150,
+          email: "person@person.com",
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           confirmation_code: "123XYZ"
         }]);
@@ -1148,7 +1058,7 @@ describe('user auth controller', () => {
 
       beforeAll(() => {
         mockGetByEmail = jest.fn().mockResolvedValue([{
-          id: 150,
+          email: "person@person.com",
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           confirmation_code: "123XYZ"
         }]);
@@ -1187,7 +1097,7 @@ describe('user auth controller', () => {
 
       beforeAll(() => {
         mockGetByEmail = jest.fn().mockResolvedValue([{
-          id: 150,
+          email: "person@person.com",
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           confirmation_code: "123XYZ"
         }]);
@@ -1235,7 +1145,7 @@ describe('user auth controller', () => {
 
       beforeAll(() => {
         mockGetByEmail = jest.fn().mockResolvedValue([{
-          id: 150,
+          email: "person@person.com",
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           username: "NameIsGood",
           avatar: "NameIsGood",
@@ -1255,7 +1165,7 @@ describe('user auth controller', () => {
       it('attaches userInfo object to session object', async () => {
         await controller.login(<Request>req, <Response>res);
         expect(req.session!.userInfo)
-          .toEqual({id: 150, username: "NameIsGood", avatar: "NameIsGood"});
+          .toEqual({username: "NameIsGood", avatar: "NameIsGood"});
       });
 
       it('sends data correctly', async () => {
@@ -1285,7 +1195,7 @@ describe('user auth controller', () => {
       session: {
         ...<Express.Session>{},
         destroy: mockDestroy,
-        userInfo: {id: 150}
+        userInfo: {username: "Name"}
       }
     };
     const res: Partial<Response> = {end: jest.fn()};
@@ -1303,13 +1213,13 @@ describe('user auth controller', () => {
 
   describe('update method', () => {
     const req: Partial<Request> = {
-      session: {...<Express.Session>{}, userInfo: {id: 150}},
+      session: {...<Express.Session>{}, userInfo: {username: "Name"}},
       body: {
         userInfo: {
           email: "person@person.com",
           password: "Password99$",
-          username: "NameIsGood",
-          avatar: "NameIsGood"
+          username: "Name",
+          avatar: "Name"
         }
       }
     };
@@ -1322,8 +1232,8 @@ describe('user auth controller', () => {
         {
           email: "person@person.com",
           pass: "Password99$",
-          username: "NameIsGood",
-          avatar: "NameIsGood"
+          username: "Name",
+          avatar: "Name"
         },
         validUserUpdate
       );
@@ -1331,12 +1241,11 @@ describe('user auth controller', () => {
 
     it ('uses updateUser correctly', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(mockUpdateUser).toHaveBeenCalledWith({
-        id: 150,
+      expect(mockUpdate).toHaveBeenCalledWith({
         email: "person@person.com",
         pass: "Password99$",
-        username: "NameIsGood",
-        avatar: "NameIsGood"
+        username: "Name",
+        avatar: "Name"
       });
     });
 
@@ -1353,96 +1262,13 @@ describe('user auth controller', () => {
 
   describe('delete method', () => {
     const req: Partial<Request> =
-      {session: {...<Express.Session>{}, userInfo: {id: 150}}};
+      {session: {...<Express.Session>{}, userInfo: {name: "Name"}}};
     const res: Partial<Response> =
       {send: jest.fn().mockResolvedValue({message: 'Account deleted.'})};
 
-    // figure out how to test if the deletes are called in the correct order
-    // (would you have to make it a generator function?)
-
-    it('uses Content.deleteAllByOwnerId correctly', async () => {
-      await controller.delete(<Request>req, <Response>res);
-      expect(mockContentDeleteAllByOwnerId).toHaveBeenCalledWith(150);
-    });
-
-    it('uses Friendships correctly', async () => {
-      await controller.delete(<Request>req, <Response>res);
-      expect(mockDeleteAllFriendshipsByUserId).toHaveBeenCalledWith(150);
-    });
-
-    it('uses Plan correctly', async () => {
-      await controller.delete(<Request>req, <Response>res);
-      expect(mockDeleteAllPlansByOwnerId).toHaveBeenCalledWith(150);
-    });
-
-    it('uses FavoriteRecipe correctly', async () => {
-      await controller.delete(<Request>req, <Response>res);
-      expect(mockDeleteAllFavoriteRecipesByUserId).toHaveBeenCalledWith(150);
-    });
-
-    it('uses SavedRecipe correctly', async () => {
-      await controller.delete(<Request>req, <Response>res);
-      expect(mockDeleteAllSavedRecipesByUserId).toHaveBeenCalledWith(150);
-    });
-
-    it('uses Recipe.disown correctly', async () => {
-      await controller.delete(<Request>req, <Response>res);
-      expect(mockDisown).toHaveBeenCalledWith(150);
-    });
-
-    it('uses Recipe.getAllPrivateIdsByUserId correctly', async () => {
-      await controller.delete(<Request>req, <Response>res);
-      expect(mockGetAllPrivateIdsByUserId).toHaveBeenCalledWith(150);
-    });
-
-    it('uses RecipeEquipment.deleteByRecipeIds correctly', async () => {
-      await controller.delete(<Request>req, <Response>res);
-      expect(mockDeleteRecipeEquipmentByRecipeIds)
-        .toHaveBeenCalledWith([273, 837, 941]);
-    });
-
-    it('uses RecipeIngredients.deleteByRecipeIds correctly', async () => {
-      await controller.delete(<Request>req, <Response>res);
-      expect(mockDeleteRecipeIngredientsByRecipeIds)
-        .toHaveBeenCalledWith([273, 837, 941]);
-    });
-
-    it('uses RecipeMethods.deleteByRecipeIds correctly', async () => {
-      await controller.delete(<Request>req, <Response>res);
-      expect(mockDeleteRecipeMethodsByRecipeIds)
-        .toHaveBeenCalledWith([273, 837, 941]);
-    });
-
-    it('uses RecipeSubrecipes.deleteByRecipeIds correctly', async () => {
-      await controller.delete(<Request>req, <Response>res);
-      expect(mockDeleteRecipeSubrecipesByRecipeIds)
-        .toHaveBeenCalledWith([273, 837, 941]);
-    });
-
-    it('uses RecipeSubrecipes.deleteBySubrecipeIds correctly', async () => {
-      await controller.delete(<Request>req, <Response>res);
-      expect(mockDeleteRecipeSubrecipesBySubrecipeIds)
-        .toHaveBeenCalledWith([273, 837, 941]);
-    });
-
-    it('uses Recipe.deletePrivate correctly', async () => {
-      await controller.delete(<Request>req, <Response>res);
-      expect(mockDeletePrivate).toHaveBeenCalledWith(150, 150);
-    });
-
-    it('uses Equipment.deleteAllByOwnerId correctly', async () => {
-      await controller.delete(<Request>req, <Response>res);
-      expect(mockDeleteAllEquipmentByOwnerId).toHaveBeenCalledWith(150);
-    });
-
-    it('uses Ingredient.deleteAllByOwnerId correctly', async () => {
-      await controller.delete(<Request>req, <Response>res);
-      expect(mockDeleteAllIngredientsByOwnerId).toHaveBeenCalledWith(150);
-    });
-
     it('uses User.delete correctly', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockDeleteUser).toHaveBeenCalledWith(150);
+      expect(mockDelete).toHaveBeenCalledWith("Name");
     });
 
     it('sends data correctly', async () => {

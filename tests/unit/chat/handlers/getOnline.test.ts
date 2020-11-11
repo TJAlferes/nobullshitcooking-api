@@ -3,33 +3,36 @@ import { Socket } from 'socket.io';
 import { IFriendship } from '../../../../src/access/mysql/Friendship';
 import { IMessengerUser } from '../../../../src/access/redis/MessengerUser';
 import { ChatUser } from '../../../../src/chat/entities/ChatUser';
-import { getOnline } from '../../../../src/chat/handlers/getOnline';
+import { IGetOnline, getOnline } from '../../../../src/chat/handlers/getOnline';
 
 const mockViewAccepted = jest.fn().mockResolvedValue([
-  {user_id: 48, username: "Jack", avatar: "Jack123"},
-  {user_id: 84, username: "Jill", avatar: "Jill123"}
+  {username: "Jack", avatar: "Jack123"},
+  {username: "Jill", avatar: "Jill123"}
 ]);
 const mockNobscFriendship: Partial<IFriendship> =
   {viewAccepted: mockViewAccepted};
 
+const rooms = new Set<string>();
+rooms.add("someRoom");
 const mockBroadcast: any =
   {emit: jest.fn(), to: jest.fn((room: string) => mockBroadcast)};
 const mockSocket: Partial<Socket> = {
   broadcast: <Socket>mockBroadcast,
   emit: jest.fn().mockReturnValue(true),
-  rooms: {"someRoom": "someRoom"}
+  rooms
 };
 
 let mockGetSocketId = jest.fn();
 let mockMessengerUser: Partial<IMessengerUser>;
 
 const params = {
-  id: 150,
   username: "Name",
   avatar: "Name123",
   socket: <Socket>mockSocket,
   nobscFriendship: <IFriendship>mockNobscFriendship
 };
+
+let currParams: IGetOnline;
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -41,30 +44,25 @@ describe('getOnline handler', () => {
     beforeAll(() => {
       mockGetSocketId = jest.fn().mockResolvedValue(undefined);
       mockMessengerUser = {getSocketId: mockGetSocketId};
+      currParams = {
+        ...params,
+        messengerUser: <IMessengerUser>mockMessengerUser
+      };
     });
 
     it ('uses viewMyAcceptedFriendships correctly', async () => {
-      await getOnline({
-        ...params,
-        messengerUser: <IMessengerUser>mockMessengerUser
-      });
+      await getOnline(currParams);
       expect(mockViewAccepted).toHaveBeenCalledWith(150);
     });
 
     it ('uses getSocketId correctly', async () => {
-      await getOnline({
-        ...params,
-        messengerUser: <IMessengerUser>mockMessengerUser
-      });
-      expect(mockGetSocketId).toHaveBeenCalledWith(48);
-      expect(mockGetSocketId).toHaveBeenCalledWith(84);
+      await getOnline(currParams);
+      expect(mockGetSocketId).toHaveBeenCalledWith("Jack");
+      expect(mockGetSocketId).toHaveBeenCalledWith("Jill");
     });
 
     it ('uses socket.emit with GetOnline event correctly', async () => {
-      await getOnline({
-        ...params,
-        messengerUser: <IMessengerUser>mockMessengerUser
-      });
+      await getOnline(currParams);
       // finish
     });
   });
@@ -73,32 +71,27 @@ describe('getOnline handler', () => {
     beforeAll(() => {
       mockGetSocketId = jest.fn().mockResolvedValue("123456789");
       mockMessengerUser = {getSocketId: mockGetSocketId};
+      currParams = {
+        ...params,
+        messengerUser: <IMessengerUser>mockMessengerUser
+      };
     });
 
     it ('uses viewMyAcceptedFriendships correctly', async () => {
-      await getOnline({
-        ...params,
-        messengerUser: <IMessengerUser>mockMessengerUser
-      });
+      await getOnline(currParams);
       expect(mockViewAccepted).toHaveBeenCalledWith(150);
     });
 
     it ('uses getSocketId correctly', async () => {
-      await getOnline({
-        ...params,
-        messengerUser: <IMessengerUser>mockMessengerUser
-      });
-      expect(mockGetSocketId).toHaveBeenCalledWith(48);
-      expect(mockGetSocketId).toHaveBeenCalledWith(84);
+      await getOnline(currParams);
+      expect(mockGetSocketId).toHaveBeenCalledWith("Jack");
+      expect(mockGetSocketId).toHaveBeenCalledWith("Jill");
     });
 
     it (
       'uses socket.broadcast.to with ShowOnline event correctly',
       async () => {
-        await getOnline({
-          ...params,
-          messengerUser: <IMessengerUser>mockMessengerUser
-        });
+        await getOnline(currParams);
         expect(params.socket.broadcast.to).toHaveBeenCalledWith("123456789");
       }
     );
@@ -106,23 +99,17 @@ describe('getOnline handler', () => {
     it (
       'uses socket.broadcast.emit with ShowOnline event correctly',
       async () => {
-        await getOnline({
-          ...params,
-          messengerUser: <IMessengerUser>mockMessengerUser
-        });
+        await getOnline(currParams);
         expect(params.socket.broadcast.emit)
-        .toHaveBeenCalledWith('ShowOnline', ChatUser(150, "Name", "Name123"));
+        .toHaveBeenCalledWith('ShowOnline', ChatUser("Name", "Name123"));
       }
     );
 
     it ('uses socket.emit with GetOnline event correctly', async () => {
-      await getOnline({
-        ...params,
-        messengerUser: <IMessengerUser>mockMessengerUser
-      });
+      await getOnline(currParams);
       expect(params.socket.emit).toHaveBeenCalledWith('GetOnline', [
-        {id: 48, username: "Jack", avatar: "Jack123"},
-        {id: 84, username: "Jill", avatar: "Jill123"}
+        {username: "Jack", avatar: "Jack123"},
+        {username: "Jill", avatar: "Jill123"}
       ]);
     });
   });

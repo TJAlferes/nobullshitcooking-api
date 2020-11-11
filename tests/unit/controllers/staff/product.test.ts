@@ -33,30 +33,31 @@ jest.mock('../../../../src/access/mysql/Product', () => ({
     delete: mockDelete
   }))
 }));
-let mockGetForElasticSearch = jest.fn().mockResolvedValue([[{id: 321}]]);
-let mockCreate = jest.fn().mockResolvedValue({insertId: 321});
+let mockGetForElasticSearch =
+  jest.fn().mockResolvedValue([[{id: "NOBSC Product"}]]);
+let mockCreate = jest.fn();
 let mockUpdate = jest.fn();
 let mockDelete = jest.fn();
 
 const productCreation = {
-  productCategoryId: 3,
-  productTypeId: 3,
-  brand: "Some Brand",
-  variety: "Some Variety",
-  name: "My Product",
+  category: "Category",
+  type: "Type",
+  brand: "Brand",
+  variety: "Variety",
+  name: "Product",
   altNames: [],
-  description: "Some description.",
+  description: "Description.",
   specs: {},
-  image: "some-image"
+  image: "image"
 };
-const productUpdate = {id: 321, ...productCreation};
+const productUpdate = {id: "Brand Variety Product", ...productCreation};
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 describe ('staff product controller', () => {
-  const session = {...<Express.Session>{}, staffInfo: {id: 15}};
+  const session = {...<Express.Session>{}, staffInfo: {staffname: "Name"}};
 
   describe('create method', () => {
     const req: Partial<Request> =
@@ -97,7 +98,7 @@ describe ('staff product controller', () => {
 
     it('uses update correctly', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(mockUpdate).toHaveBeenCalledWith({id: 321, ...productCreation});
+      expect(mockUpdate).toHaveBeenCalledWith(productUpdate);
     });
 
     it('sends data correctly', async () => {
@@ -112,18 +113,18 @@ describe ('staff product controller', () => {
   });
 
   describe('delete method', () => {
-    const req: Partial<Request> = {session, body: {id: 321}};
+    const req: Partial<Request> = {session, body: {id: "Brand Variety Product"}};
     const res: Partial<Response> =
       {send: jest.fn().mockResolvedValue({message: 'Product deleted.'})};
 
     it('uses delete correctly', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockDelete).toHaveBeenCalledWith(321);
+      expect(mockDelete).toHaveBeenCalledWith("Brand Variety Product");
     });
 
     it('uses ElasticSearch delete correctly', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockESDelete).toHaveBeenCalledWith(String(321));
+      expect(mockESDelete).toHaveBeenCalledWith("Brand Variety Product");
     });
 
     it('sends data correctly', async () => {

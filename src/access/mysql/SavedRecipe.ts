@@ -13,7 +13,7 @@ export class SavedRecipe implements ISavedRecipe {
   async viewByUser(user: string) {
     const sql = `
       SELECT 
-        s.recipe,
+        r.id,
         r.title,
         r.recipe_image,
         r.owner,
@@ -22,7 +22,7 @@ export class SavedRecipe implements ISavedRecipe {
       FROM saved_recipes s
       INNER JOIN recipes r ON r.id = s.recipe
       WHERE user = ?
-      ORDER BY title
+      ORDER BY r.title
     `;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [user]);
     return rows;

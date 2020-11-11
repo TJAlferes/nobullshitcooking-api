@@ -7,7 +7,7 @@ export function ChatWhisper(
 ): IChatWhisper {
   return {
     kind: KWhisper,
-    id: user.id + (new Date).getTime().toString(),
+    id: user.username + (new Date).getTime().toString(),
     text,
     to,
     user

@@ -1,11 +1,11 @@
 import { ChatMessage } from '../../../../src/chat/entities/ChatMessage';
 
 const message =
-  ChatMessage('hello', '5067', {id: 7, username: 'Lucky', avatar: 'Lucky'});
+  ChatMessage('hello', '5067', {username: 'Lucky', avatar: 'Lucky'});
 
 describe('ChatMessage', () => {
-  it('returns a id as current time appended to the id', () => {
-    expect(message.id[0]).toEqual('7');
+  it('returns a id as current time appended to the username', () => {
+    expect(message.id[0]).toEqual('L');
   });
 
   it('returns the text', () => {
@@ -17,6 +17,6 @@ describe('ChatMessage', () => {
   });
 
   it('returns the user', () => {
-    expect(message.user).toEqual({id: 7, username: 'Lucky', avatar: 'Lucky'});
+    expect(message.user).toEqual({username: 'Lucky', avatar: 'Lucky'});
   });
 });

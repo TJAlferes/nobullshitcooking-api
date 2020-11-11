@@ -230,7 +230,7 @@ describe('staff auth controller', () => {
       };
 
       beforeAll(() => {
-        mockGetByName = jest.fn().mockResolvedValue([{id: 150}]);
+        mockGetByName = jest.fn().mockResolvedValue([{staffname: "NameIsGood"}]);
       });
 
       it('uses assert on request correctly', async () => {
@@ -273,7 +273,7 @@ describe('staff auth controller', () => {
 
       beforeAll(() => {
         mockGetByName = jest.fn().mockResolvedValue([]);
-        mockGetByEmail = jest.fn().mockResolvedValue([{id: 150}]);
+        mockGetByEmail = jest.fn().mockResolvedValue([{staffname: "NameIsGood"}]);
       });
 
       it('uses assert on request correctly', async () => {
@@ -485,7 +485,7 @@ describe('staff auth controller', () => {
 
       beforeAll(() => {
         mockGetByEmail = jest.fn().mockResolvedValue([{
-          id: 150,
+          email: "person@person.com",
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u"
         }]);
         mockBcrypt.compare.mockResolvedValue(false);
@@ -529,7 +529,6 @@ describe('staff auth controller', () => {
 
       beforeAll(() => {
         mockGetByEmail = jest.fn().mockResolvedValue([{
-          id: 150,
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           staffname: "NameIsGood",
           avatar: "NameIsGood"
@@ -548,7 +547,7 @@ describe('staff auth controller', () => {
       it('attaches staffInfo object to session object', async () => {
         await controller.login(<Request>req, <Response>res);
         expect(req.session!.staffInfo)
-          .toEqual({id: 150, staffname: "NameIsGood", avatar: "NameIsGood"});
+          .toEqual({staffname: "NameIsGood", avatar: "NameIsGood"});
       });
 
       it('sends data correctly', async () => {
@@ -578,7 +577,7 @@ describe('staff auth controller', () => {
       session: {
         ...<Express.Session>{},
         destroy: mockDestroy,
-        staffInfo: {id: 15}
+        staffInfo: {staffname: "NameIsGood"}
       }
     };
     const res: Partial<Response> = {end: jest.fn()};
@@ -597,7 +596,7 @@ describe('staff auth controller', () => {
   describe('update method', () => {
     // finish
     const req: Partial<Request> = {
-      session: {...<Express.Session>{}, staffInfo: {id: 150}},
+      session: {...<Express.Session>{}, staffInfo: {staffname: "NameIsGood"}},
       body: {
         staffInfo: {
           email: "person@person.com",
@@ -626,7 +625,6 @@ describe('staff auth controller', () => {
     it ('uses update correctly', async () => {
       await controller.update(<Request>req, <Response>res);
       expect(mockUpdate).toHaveBeenCalledWith({
-        id: 150,
         email: "person@person.com",
         pass: "Password99$",
         staffname: "NameIsGood",
