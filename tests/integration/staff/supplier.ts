@@ -14,7 +14,7 @@ export function staffSupplierTests() {
   describe('PUT /staff/supplier/update', () => {
     it('updates supplier', async () => {
       const { body } = await request(server).put('/staff/supplier/update')
-        .send({id: 88, name: "Name"});
+        .send({name: "Name"});
       expect(body).toEqual({message: 'Supplier updated.'});
     });
   });
@@ -22,7 +22,7 @@ export function staffSupplierTests() {
   describe('DELETE /staff/supplier/delete', () => {
     it('deletes supplier', async () => {
       const { body } = await request(server).delete('/staff/supplier/delete')
-        .send({id: 88});
+        .send({name: "Name"});
       expect(body).toEqual({message: 'Supplier deleted.'});
     });
   });

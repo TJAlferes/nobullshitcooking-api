@@ -7,7 +7,7 @@ export function staffCuisineEquipmentTests() {
     it('creates cuisineEquipment', async () => {
       const { body } = await request(server)
         .post('/staff/cuisine-equipment/create')
-        .send({cuisineId: 4, equipmentId: 4});
+        .send({cuisine: "French", equipment: "NOBSC Ceramic Stone"});
       expect(body).toEqual({message: 'Cuisine equipment created.'});
     });
   });
@@ -16,7 +16,7 @@ export function staffCuisineEquipmentTests() {
     it('deletes cuisineEquipment', async () => {
       const { body } = await request(server)
         .delete('/staff/cuisine-equipment/delete')
-        .send({cuisineId: 4, equipmentId: 4});
+        .send({cuisine: "French", equipment: "NOBSC Ceramic Stone"});
       expect(body).toEqual({message: 'Cuisine equipment deleted.'});
     });
   });

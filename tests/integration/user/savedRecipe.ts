@@ -6,7 +6,7 @@ export function userSavedRecipeTests() {
   describe('POST /user/saved-recipe/create', () => {
     it('creates plan', async () => {
       const { body } = await request(server).post('/user/saved-recipe/create')
-        .send({id: 1});
+        .send({id: "Username Title"});
       expect(body).toEqual({message: 'Saved.'});
     });
   });
@@ -14,7 +14,7 @@ export function userSavedRecipeTests() {
   describe('DELETE /user/saved-recipe/delete', () => {
     it('deletes plan', async () => {
       const { body } = await request(server).delete('/user/saved-recipe/delete')
-        .send({id: 1});
+        .send({id: "Username Title"});
       expect(body).toEqual({message: 'Unsaved.'});
     });
   });

@@ -7,7 +7,7 @@ export function userFavoriteRecipeTests() {
     it('creates plan', async () => {
       const { body } = await request(server)
         .post('/user/favorite-recipe/create')
-        .send({id: 1});
+        .send({id: "Username Title"});
       expect(body).toEqual({message: 'Favorited.'});
     });
   });
@@ -16,7 +16,7 @@ export function userFavoriteRecipeTests() {
     it('deletes plan', async () => {
       const { body } = await request(server)
         .delete('/user/favorite-recipe/delete')
-        .send({id: 1});
+        .send({id: "Username Title"});
       expect(body).toEqual({message: 'Unfavorited.'}); 
     });
   });

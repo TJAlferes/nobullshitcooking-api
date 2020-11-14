@@ -28,7 +28,7 @@ describe('addMessengerUser helper', () => {
     };
     const sid = '123456789';
     const session: Partial<Express.SessionData> =
-      {userInfo: {id: 150, username: "Name", avatar: "Name123"}};
+      {userInfo: {username: "Name", avatar: "Name123"}};
     await addMessengerUser(
       <Redis>pubClient,
       <Socket>socket,
@@ -46,7 +46,7 @@ describe('addMessengerUser helper', () => {
     };
     const sid = '123456789';
     const session: Partial<Express.SessionData> =
-      {userInfo: {id: 150, username: "Name", avatar: "Name123"}};
+      {userInfo: {username: "Name", avatar: "Name123"}};
       await addMessengerUser(
         <Redis>pubClient,
         <Socket>socket,
@@ -54,7 +54,7 @@ describe('addMessengerUser helper', () => {
         <Express.SessionData>session
       );
     expect(socket.request.userInfo)
-      .toEqual({id: 150, username: "Name", avatar: "Name123"});
+      .toEqual({username: "Name", avatar: "Name123"});
   });
 
   it ('uses addUser correctly', async () => {
@@ -65,7 +65,7 @@ describe('addMessengerUser helper', () => {
     };
     const sid = '123456789';
     const session: Partial<Express.SessionData> =
-      {userInfo: {id: 150, username: "Name", avatar: "Name123"}};
+      {userInfo: {username: "Name", avatar: "Name123"}};
       await addMessengerUser(
         <Redis>pubClient,
         <Socket>socket,
@@ -73,7 +73,7 @@ describe('addMessengerUser helper', () => {
         <Express.SessionData>session
       );
     expect(mockAdd)
-      .toHaveBeenCalledWith(150, "Name", "Name123", '123456789', '123456789');
+      .toHaveBeenCalledWith("Name", "Name123", '123456789', '123456789');
   });
 });
 
@@ -113,7 +113,7 @@ describe('addMessengerUser helper', () => {
 
   it('should copy the session.userInfo to the socket.request', () => {
     const session: Partial<Express.SessionData> = {
-      userInfo: {id: 150, username: "Name", avatar: "Name123"}
+      userInfo: {username: "Name", avatar: "Name123"}
     };
     const socket: Partial<Socket> = {
       request: {headers: {cookie: {'connect.sid': '123456789'}}}

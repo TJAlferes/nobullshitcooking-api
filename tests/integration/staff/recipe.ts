@@ -7,8 +7,8 @@ export function staffRecipeTests() {
     it('creates recipe', async () => {
       const { body } = await request(server).post('/staff/recipe/create')
         .send({
-          recipeTypeId: 4,
-          cuisineId: 4,
+          type: "Main",
+          cuisine: "Italian",
           title: "Title",
           description: "Description.",
           activeTime: "00:00:04",
@@ -18,7 +18,7 @@ export function staffRecipeTests() {
           equipmentImage: "equipmentImage",
           ingredientsImage: "ingredientsImage",
           cookingImage: "cookingImage",
-          ownership: "public"
+          video: "video"
         });
       expect(body).toEqual({message: 'Recipe created.'});
     });
@@ -28,9 +28,9 @@ export function staffRecipeTests() {
     it('updates recipe', async () => {
       const { body } = await request(server).put('/staff/recipe/update')
         .send({
-          id: 88,
-          recipeTypeId: 4,
-          cuisineId: 4,
+          id: "NOBSC Title",
+          type: "Main",
+          cuisine: "Italian",
           title: "Title",
           description: "Description.",
           activeTime: "00:00:04",
@@ -39,7 +39,8 @@ export function staffRecipeTests() {
           recipeImage: "recipeImage",
           equipmentImage: "equipmentImage",
           ingredientsImage: "ingredientsImage",
-          cookingImage: "cookingImage"
+          cookingImage: "cookingImage",
+          video: "video"
         });
       expect(body).toEqual({message: 'Recipe updated.'}); 
     });
@@ -48,7 +49,7 @@ export function staffRecipeTests() {
   describe('DELETE /staff/recipe/delete', () => {
     it('deletes recipe', async () => {
       const { body } = await request(server).delete('/staff/recipe/delete')
-        .send({id: 88});
+        .send({id: "NOBSC Title"});
       expect(body).toEqual({message: 'Recipe deleted.'});
     });
   });

@@ -7,7 +7,7 @@ export function staffCuisineIngredientTests() {
     it('creates cuisineIngredient', async () => {
       const { body } = await request(server)
         .post('/staff/cuisine-ingredient/create')
-        .send({cuisineId: 4, ingredientId: 4});
+        .send({cuisine: "French", ingredient: "NOBSC Shallots"});
       expect(body).toEqual({message: 'Cuisine ingredient created.'});
     });
   });
@@ -16,7 +16,7 @@ export function staffCuisineIngredientTests() {
     it('deletes cuisineIngredient', async () => {
       const { body } = await request(server)
         .delete('/staff/cuisine-ingredient/delete')
-        .send({cuisineId: 4, ingredientId: 4});
+        .send({cuisine: "French", ingredient: "NOBSC Shallots"});
       expect(body).toEqual({message: 'Cuisine ingredient deleted.'});
     });
   });

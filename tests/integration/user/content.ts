@@ -6,7 +6,7 @@ export function userContentTests() {
   describe('POST /user/content/create', () => {
     it('creates content', async () => {
       const { body } = await request(server).post('/user/content/create')
-        .send({contentTypeId: 4, published: null, title: "Title", items: []});
+        .send({type: "Type", published: null, title: "Title", items: []});
       expect(body).toEqual({message: 'Content created.'}); 
     });
   });
@@ -15,8 +15,8 @@ export function userContentTests() {
     it('updates content', async () => {
       const { body } = await request(server).put('/user/content/update')
         .send({
-          id: 88,
-          contentTypeId: 4,
+          id: "Username Title",
+          type: "Type",
           published: null,
           title: "Title",
           items: []
@@ -28,7 +28,7 @@ export function userContentTests() {
   describe('DELETE /user/content/delete', () => {
     it('deletes content', async () => {
       const { body } = await request(server).delete('/user/content/delete')
-        .send({id: 88});
+        .send({id: "Username Title"});
       expect(body).toEqual({message: 'Content deleted.'}); 
     });
   });

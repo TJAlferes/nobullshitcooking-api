@@ -6,7 +6,7 @@ export function staffContentTests() {
   describe('POST /staff/content/create', () => {
     it('creates content', async () => {
       const { body } = await request(server).post('/staff/content/create')
-        .send({contentTypeId: 4, published: null, title: "Title", items: []});
+        .send({type: "Type", published: null, title: "Title", items: []});
       expect(body).toEqual({message: 'Content created.'});
     });
   });
@@ -15,8 +15,8 @@ export function staffContentTests() {
     it('updates content', async () => {
       const { body } = await request(server).put('/staff/content/update')
         .send({
-          id: 88,
-          contentTypeId: 4,
+          id: "NOBSC Title",
+          type: "Type",
           published: null,
           title: "Title",
           items: []
@@ -28,7 +28,7 @@ export function staffContentTests() {
   describe('DELETE /staff/content/delete', () => {
     it('deletes content', async () => {
       const { body } = await request(server).delete('/staff/content/delete')
-        .send({id: 88});
+        .send({id: "NOBSC Title"});
       expect(body).toEqual({message: 'Content deleted.'});
     });
   });

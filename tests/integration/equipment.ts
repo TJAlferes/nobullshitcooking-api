@@ -3,17 +3,17 @@ import request from 'supertest';
 import { server } from './index.test';
 
 export function equipmentTests() {
-  describe('GET /equipment/1', () => {
+  describe('GET /equipment/:id', () => {
     it('returns data correctly', async () => {
-      const { body } = await request(server).get('/equipment/1');
+      const { body } = await request(server)
+        .get('/equipment/NOBSC%20Cutting%20Board');
       expect(body).toEqual({
-        id: 1,
-        owner_id: 1,
-        equipment_type_id: 2,
-        equipment_type_name: "Preparing",
+        id: "NOBSC Cutting Board",
+        owner: "NOBSC",
+        type: "Preparing",
         name: "Cutting Board",
         description: "It works.",
-        image: "nobsc-ceramic-stone"
+        image: "nobsc-cutting-board"
       });
     });
   });

@@ -3,49 +3,43 @@ import request from 'supertest';
 import { server } from './index.test';
 
 export function contentTests() {
-  describe('GET /content/links/:contentTypeName', () => {
+  describe('GET /content/links/:type', () => {
     it('returns data correctly', async () => {
-      const { body } = await request(server).get('/content/links/exercises');
+      const { body } = await request(server).get('/content/links/Exercises');
       expect(body).toEqual([
         {
-          id: 1,
-          content_type_id: 8,
-          content_type_name: "Exercises",
+          id: "NOBSC Bike",
+          type: "Exercises",
           published: "2020-04-14",
           title: "Bike"
         },
         {
-          id: 2,
-          content_type_id: 8,
-          content_type_name: "Exercises",
+          id: "NOBSC Pullup",
+          type: "Exercises",
           published: "2020-04-14",
           title: "Pullup"
         },
         {
-          id: 3,
-          content_type_id: 8,
-          content_type_name: "Exercises",
+          id: "NOBSC Pushup",
+          type: "Exercises",
           published: "2020-04-14",
           title: "Pushup"
         },
         {
-          id: 4,
-          content_type_id: 8,
-          content_type_name: "Exercises",
+          id: "NOBSC Run",
+          type: "Exercises",
           published: "2020-04-14",
           title: "Run"
         },
         {
-          id: 5,
-          content_type_id: 8,
-          content_type_name: "Exercises",
+          id: "NOBSC Squat",
+          type: "Exercises",
           published: "2020-04-14",
           title: "Squat"
         },
         {
-          id: 6,
-          content_type_id: 8,
-          content_type_name: "Exercises",
+          id: "NOBSC Walk",
+          type: "Exercises",
           published: "2020-04-14",
           title: "Walk"
         },
@@ -53,10 +47,10 @@ export function contentTests() {
     });
   });
 
-  describe('GET /content/:contentId', () => {
+  describe('GET /content/:id', () => {
     it('returns data correctly', async () => {
-      const { body } = await request(server).get('/content/1');
-      expect(body).toEqual({content_type_id: 8, items: []});
+      const { body } = await request(server).get('/content/NOBSC%20Walk');
+      expect(body).toEqual({items: []});
     });
   });
 }

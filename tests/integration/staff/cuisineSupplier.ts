@@ -7,7 +7,7 @@ export function staffCuisineSupplierTests() {
     it('creates cuisineSupplier', async () => {
       const { body } = await request(server)
         .post('/staff/cuisine-supplier/create')
-        .send({cuisineId: 4, supplierId: 4});
+        .send({cuisine: "French", supplier: "Name"});
       expect(body).toEqual({message: 'Cuisine supplier created.'});
     });
   });
@@ -16,7 +16,7 @@ export function staffCuisineSupplierTests() {
     it('deletes cuisineSupplier', async () => {
       const { body } = await request(server)
         .delete('/staff/cuisine-supplier/delete')
-        .send({cuisineId: 4, supplierId: 4});
+        .send({cuisine: "French", supplier: "Name"});
       expect(body).toEqual({message: 'Cuisine supplier deleted.'});
     });
   });

@@ -4,7 +4,7 @@ import { RedisStore } from 'connect-redis';
 import { Server } from 'http';
 import { Pool } from 'mysql2/promise';
 const SocketIO = require('socket.io');
-import redisAdapter from 'socket.io-redis';
+import { createAdapter } from 'socket.io-redis';
 
 import { useSocketAuth } from '../../chat/socketAuth';
 import { socketConnection } from '../../chat/socketConnection';
@@ -31,7 +31,7 @@ export function socketInit(
 
   const { pubClient, subClient, workerClient } = redisClients;
 
-  io.adapter(redisAdapter({pubClient, subClient}));
+  io.adapter(createAdapter({pubClient, subClient}));
 
   useSocketAuth(io, pubClient, redisSession);
 
