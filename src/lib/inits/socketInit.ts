@@ -15,12 +15,12 @@ export function socketInit(
   pool: Pool,
   redisClients: RedisClients,
   redisSession: RedisStore,
-  server: Server
+  httpServer: Server
 ) {
-  const io = new SocketIO(server, {
+  const io = new SocketIO(httpServer, {
     cors: {
       //allowedHeaders: ["sid", "userInfo"],
-      //credentials: true,
+      credentials: true,
       methods: ["GET", "POST"],
       origin: ["https://nobullshitcooking.com", "http://localhost:8080"]
     },
@@ -30,7 +30,7 @@ export function socketInit(
   const handler = socketConnection(pool, redisClients);
 
   const { pubClient, subClient, workerClient } = redisClients;
-
+  //pubClient.duplicate()
   io.adapter(createAdapter({pubClient, subClient}));
 
   useSocketAuth(io, pubClient, redisSession);

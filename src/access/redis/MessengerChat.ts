@@ -1,6 +1,6 @@
 import { Redis } from 'ioredis';
 
-import { IChatMessage } from '../../chat/entities/types';
+import { IMessage } from '../../chat/entities/types';
 
 export class MessengerChat implements IMessengerChat {
   client: Redis;
@@ -10,20 +10,20 @@ export class MessengerChat implements IMessengerChat {
     this.addMessage = this.addMessage.bind(this);
   }
   
-  async addMessage(message: IChatMessage) {
+  async addMessage(message: IMessage) {
     await this.client
       .multi()
       .zadd(
-        `rooms:${message.room}:chats`,
+        `rooms:${message.to}:chats`,
         `${Date.now()}`,
         JSON.stringify(message)
       )
-      .zadd('rooms', `${(new Date).getTime()}`, JSON.stringify(message.room))
+      .zadd('rooms', `${(new Date).getTime()}`, JSON.stringify(message.to))
       .exec();
   }
 }
 
 export interface IMessengerChat {
   client: Redis;
-  addMessage(message: IChatMessage): void;
+  addMessage(message: IMessage): void;
 }

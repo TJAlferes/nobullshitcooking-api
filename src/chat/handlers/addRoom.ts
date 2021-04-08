@@ -1,12 +1,10 @@
 import { Socket } from 'socket.io';
 
 import { IMessengerRoom } from '../../access/redis/MessengerRoom';
-import { ChatUser } from '../entities/ChatUser';
 
 export async function addRoom({
   room,
   username,
-  avatar,
   socket,
   messengerRoom
 }: IAddRoom) {
@@ -21,8 +19,7 @@ export async function addRoom({
 
       messengerRoom.removeUser(username, currentRoom);
 
-      socket.broadcast.to(currentRoom)
-        .emit('RemoveUser', ChatUser(username, avatar));
+      socket.broadcast.to(currentRoom).emit('RemoveUser', username);
     }
   }
 
@@ -32,7 +29,7 @@ export async function addRoom({
 
   await messengerRoom.addUser(username, room);
 
-  socket.broadcast.to(room).emit('AddUser', ChatUser(username, avatar));
+  socket.broadcast.to(room).emit('AddUser', username);
 
   const users = await messengerRoom.getUsers(room);
   
@@ -42,7 +39,6 @@ export async function addRoom({
 interface IAddRoom {
   room: string;
   username: string;
-  avatar: string;
   socket: Socket;
   messengerRoom: IMessengerRoom;
 }

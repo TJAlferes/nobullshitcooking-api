@@ -13,7 +13,7 @@ export function sessionInit(
   app: Application,
   pool: Pool,
   redisClients: RedisClients,
-  server: Server
+  httpServer: Server
 ) {
   const RedisStore = connectRedis(expressSession);
   const redisSession = new RedisStore({client: redisClients.sessClient});
@@ -47,7 +47,7 @@ export function sessionInit(
     };
   }
 
-  socketInit(pool, redisClients, redisSession, server);
+  socketInit(pool, redisClients, redisSession, httpServer);
   
   return expressSession(sessionOptions);
 }

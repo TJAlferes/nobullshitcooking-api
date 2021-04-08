@@ -3,12 +3,10 @@ import { Socket } from 'socket.io';
 import { IFriendship } from '../../access/mysql/Friendship';
 import { IMessengerRoom } from '../../access/redis/MessengerRoom';
 import { IMessengerUser } from '../../access/redis/MessengerUser';
-import { ChatUser } from '../entities/ChatUser';
 
 export async function disconnecting({
   reason,
   username,
-  avatar,
   socket,
   messengerRoom,
   messengerUser,
@@ -20,8 +18,7 @@ export async function disconnecting({
 
   for (let room in clonedSocket.rooms) {
     if (room !== clonedSocket.id) {
-      socket.broadcast.to(room)
-        .emit('RemoveUser', ChatUser(username, avatar));
+      socket.broadcast.to(room).emit('RemoveUser', username);
       
       messengerRoom.removeUser(username, room);
     }
@@ -35,8 +32,7 @@ export async function disconnecting({
 
       if (!onlineFriend) continue;
       
-      socket.broadcast.to(onlineFriend)
-        .emit('ShowOffline', ChatUser(username, avatar));
+      socket.broadcast.to(onlineFriend).emit('ShowOffline', username);
     }
   }
 
@@ -46,7 +42,6 @@ export async function disconnecting({
 export interface IDisconnecting {
   reason: any;
   username: string;
-  avatar: string;
   socket: Socket;
   messengerRoom: IMessengerRoom;
   messengerUser: IMessengerUser;

@@ -1,12 +1,10 @@
 import { Socket } from 'socket.io';
 
 import { IMessengerRoom } from '../../access/redis/MessengerRoom';
-import { ChatUser } from '../entities/ChatUser';
 
 export async function rejoinRoom({
   room,
   username,
-  avatar,
   socket,
   messengerRoom
 }: IRejoinRoom) {
@@ -18,7 +16,7 @@ export async function rejoinRoom({
 
   await messengerRoom.addUser(username, room);
 
-  socket.broadcast.to(room).emit('AddUser', ChatUser(username, avatar));
+  socket.broadcast.to(room).emit('AddUser', username);
 
   const users = await messengerRoom.getUsers(room);
   
@@ -28,7 +26,6 @@ export async function rejoinRoom({
 interface IRejoinRoom {
   room: string;
   username: string;
-  avatar: string;
   socket: Socket;
   messengerRoom: IMessengerRoom;
 }

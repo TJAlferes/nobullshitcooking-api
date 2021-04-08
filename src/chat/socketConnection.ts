@@ -9,9 +9,9 @@ import { MessengerChat } from '../access/redis/MessengerChat';
 import { MessengerRoom } from '../access/redis/MessengerRoom';
 import { MessengerUser } from '../access/redis/MessengerUser';
 import { RedisClients } from '../app';
-import { addMessage } from './handlers/addMessage';
+import { addPublicMessage } from './handlers/addPublicMessage';
 import { addRoom } from './handlers/addRoom';
-import { addWhisper } from './handlers/addWhisper';
+import { addPrivateMessage } from './handlers/addPrivateMessage';
 import { disconnecting } from './handlers/disconnecting';
 import { getOnline } from './handlers/getOnline';
 import { getUser } from './handlers/getUser';
@@ -46,7 +46,6 @@ export function socketConnection(pool: Pool, redisClients: RedisClients) {
     socket.on('GetOnline', async function() {
       await getOnline({
         username,
-        avatar,
         socket,
         messengerUser,
         nobscFriendship
@@ -64,21 +63,19 @@ export function socketConnection(pool: Pool, redisClients: RedisClients) {
     */
 
     socket.on('AddMessage', async function(text: string) {
-      await addMessage({
-        text,
+      await addPublicMessage({
         username,
-        avatar,
+        text,
         socket,
         messengerChat
       });
     });
 
     socket.on('AddWhisper', async function(text: string, to: string) {
-      await addWhisper({
-        text,
+      await addPrivateMessage({
         to,
         username,
-        avatar,
+        text,
         socket,
         messengerUser,
         nobscFriendship,
@@ -96,7 +93,6 @@ export function socketConnection(pool: Pool, redisClients: RedisClients) {
       await addRoom({
         room,
         username,
-        avatar,
         socket,
         messengerRoom
       });
@@ -106,7 +102,6 @@ export function socketConnection(pool: Pool, redisClients: RedisClients) {
       await rejoinRoom({
         room,
         username,
-        avatar,
         socket,
         messengerRoom
       });
@@ -124,7 +119,6 @@ export function socketConnection(pool: Pool, redisClients: RedisClients) {
       await disconnecting({
         reason,
         username,
-        avatar,
         socket,
         messengerRoom,
         messengerUser,

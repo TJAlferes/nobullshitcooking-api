@@ -1,25 +1,10 @@
-export type Message = IChatMessage | IChatWhisper;
+export const PRIVATE = "private" as const;
+export const PUBLIC = "public" as const;
 
-export const KMessage = "message" as const;
-export const KWhisper = "whisper" as const;
-
-export interface IChatMessage {
-  kind: typeof KMessage;
+export interface IMessage {
+  kind: typeof PRIVATE | typeof PUBLIC;
   id: string;
-  text: string;
-  room: string;
-  user: IChatUser;
-}
-
-export interface IChatWhisper {
-  kind: typeof KWhisper;
-  id: string;
-  text: string;
   to: string;
-  user: IChatUser;
-}
-
-export interface IChatUser {
-  username: string;
-  avatar: string;
+  from: string;
+  text: string;
 }

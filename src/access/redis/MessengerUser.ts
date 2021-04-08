@@ -15,16 +15,10 @@ export class MessengerUser implements IMessengerUser {
     return foundUserSocketId;
   }
 
-  async add(
-    username: string,
-    avatar: string,
-    sid: string,
-    socketid: string
-  ) {
+  async add(username: string, sid: string, socketid: string) {
     await this.client
       .multi()
       .hset(`user:${username}`, 'username', username)
-      .hset(`user:${username}`, 'avatar', avatar)
       .hset(`user:${username}`, 'sid', sid)
       .hset(`user:${username}`, 'socketid', socketid)
       .zadd('users', `${Date.now()}`, `${username}`)
@@ -43,11 +37,6 @@ export class MessengerUser implements IMessengerUser {
 export interface IMessengerUser {
   client: Redis;
   getSocketId(id: string): Promise<string|null>;
-  add(
-    username: string,
-    avatar: string,
-    sid: string,
-    socketid: string
-  ): void;
+  add(username: string, sid: string, socketid: string): void;
   remove(username: string): void;
 }

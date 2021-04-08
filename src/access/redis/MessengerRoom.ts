@@ -1,8 +1,5 @@
 import { Redis } from 'ioredis';
 
-import { ChatUser } from '../../chat/entities/ChatUser';
-import { IChatUser } from '../../chat/entities/types';
-
 export class MessengerRoom implements IMessengerRoom {
   pubClient: Redis;
   subClient: Redis;
@@ -28,7 +25,7 @@ export class MessengerRoom implements IMessengerRoom {
     // TO DO: do some renaming here
     for (let username of data){
       const userHash = await pubClient.hgetall(`user:${username}`);
-      users.push(ChatUser(userHash.username, userHash.avatar));
+      users.push(userHash.username);
     }
     
     return users;
@@ -55,7 +52,7 @@ export interface IMessengerRoom {
   pubClient: Redis;
   subClient: Redis;
   add(room: string): void;
-  getUsers(room: string): Promise<IChatUser[]>;
+  getUsers(room: string): Promise<string[]>;
   addUser(username: string, room: string): void;
   removeUser(username: string, room: string): void;
 }

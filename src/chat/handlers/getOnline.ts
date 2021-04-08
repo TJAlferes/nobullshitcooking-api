@@ -2,7 +2,6 @@ import { Socket } from 'socket.io';
 
 import { IFriendship } from '../../access/mysql/Friendship';
 import { IMessengerUser } from '../../access/redis/MessengerUser';
-import { ChatUser } from '../entities/ChatUser';
 
 export async function getOnline({
   username,
@@ -22,10 +21,9 @@ export async function getOnline({
 
     if (!onlineFriend) continue;
 
-    socket.broadcast.to(onlineFriend)
-      .emit('ShowOnline', ChatUser(username, avatar));
+    socket.broadcast.to(onlineFriend).emit('ShowOnline', username);
     
-    online.push(ChatUser(f.username, f.avatar));
+    online.push(f.username);
   }
   
   socket.emit('GetOnline', online);

@@ -18,16 +18,19 @@ export function middlewareInit(
   app: Application,
   pool: Pool,
   redisClients: RedisClients,
-  server: Server
+  httpServer: Server
 ) {
   // limit each IP requests per minute:
   const rateLimiterOptions = {windowMs: 1 * 60 * 1000, max: 100};  // 1000?
+
   let corsOptions = {origin: ['http://localhost:8080'], credentials: true};
+
   if (app.get('env') === 'production') {
     app.set('trust proxy', 1);  // trust first proxy
     corsOptions.origin = ['https://nobullshitcooking.com'];
   }
-  const session = sessionInit(app, pool, redisClients, server);
+
+  const session = sessionInit(app, pool, redisClients, httpServer);
   
   //app.use(expressPinoLogger());
   app.use(express.json());
