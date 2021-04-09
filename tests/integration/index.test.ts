@@ -7,9 +7,6 @@ import { appServer } from '../../src/app';
 import {
   staffAuthTests,
   staffContentTests,
-  staffCuisineEquipmentTests,
-  staffCuisineIngredientTests,
-  staffCuisineSupplierTests,
   staffEquipmentTests,
   staffGetSignedUrlTests,
   staffIngredientTests,
@@ -32,9 +29,6 @@ import {
   contentTests,
   contentTypeTests,
   cuisineTests,
-  cuisineEquipmentTests,
-  cuisineIngredientTests,
-  cuisineSupplierTests,
   dataInitTests,
   equipmentTests,
   equipmentTypeTests,
@@ -88,9 +82,6 @@ describe ('NOBSC API', () => {
   describe('content', contentTests);
   describe('contentType', contentTypeTests);
   describe('cuisine', cuisineTests);
-  describe('cuisineEquipment', cuisineEquipmentTests);
-  describe('cuisineIngredient', cuisineIngredientTests);
-  describe('cuisineSupplier', cuisineSupplierTests);
   describe('dataInit', dataInitTests);
   describe('equipment', equipmentTests);
   describe('equipmentType', equipmentTypeTests);
@@ -106,9 +97,6 @@ describe ('NOBSC API', () => {
   describe('supplier', supplierTests);
   describe('staffAuth', staffAuthTests);
   describe('staffContent', staffContentTests);
-  describe('staffEquipment', staffCuisineEquipmentTests);
-  describe('staffIngredient', staffCuisineIngredientTests);
-  describe('staffSupplier', staffCuisineSupplierTests);
   describe('staffEquipment', staffEquipmentTests);
   describe('staffGetSignedUrl', staffGetSignedUrlTests);
   describe('staffIngredient', staffIngredientTests);

@@ -4,9 +4,8 @@ import { pool } from '../../../../src/lib/connections/mysql';  // just mock like
 import { IFriendship, Friendship } from '../../../../src/access/mysql/Friendship';
 import { IUser, User } from '../../../../src/access/mysql/User';
 import { IMessengerUser } from '../../../../src/access/redis/MessengerUser';
-import { ChatUser } from '../../../../src/chat/entities/ChatUser';
-import { ChatWhisper } from '../../../../src/chat/entities/ChatWhisper';
-import { IAddWhisper, addWhisper } from '../../../../src/chat/handlers/addWhisper';
+import { PrivateMessage } from '../../../../src/chat/entities/PrivateMessage';
+import { IAddPrivateMessage, addPrivateMessage } from '../../../../src/chat/handlers/addPrivateMessage';
 
 let mockGetSocketId = jest.fn();
 let mockMessengerUser: Partial<IMessengerUser>;
@@ -25,14 +24,11 @@ jest.mock('../../../../src/access/mysql/User', () => ({
 let mockGetByName = jest.fn();
 let mockNobscUser: IUser;
 
-jest.mock('../../../../src/chat/entities/ChatUser');
-const mockChatUser = ChatUser as jest.Mocked<typeof ChatUser>;
-
-jest.mock('../../../../src/chat/entities/ChatWhisper');
-const mockChatWhisper = ChatWhisper as jest.Mocked<typeof ChatWhisper>;
+jest.mock('../../../../src/chat/entities/PrivateMessage');
+const mockPrivateMessage = PrivateMessage as jest.Mocked<typeof PrivateMessage>;
 
 const rooms = new Set<string>();
-rooms.add("someRoom");
+rooms.add("room");
 const mockBroadcast: any =
   {emit: jest.fn(), to: jest.fn((room: string) => mockBroadcast)};
 const mockSocket: Partial<Socket> = {
@@ -43,22 +39,21 @@ const mockSocket: Partial<Socket> = {
   rooms
 };
 const params = {
-  text: "howdy",
-  to: "Buddy",
-  username: "Name",
-  avatar: "Name123",
+  to: "other",
+  from: "self",
+  text: "hello",
   socket: <Socket>mockSocket
 };
 
-let currParams: IAddWhisper;
+let currParams: IAddPrivateMessage;
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
-describe('addWhisper handler', () => {
+describe('addPrivateMessage handler', () => {
 
-  describe('when user being whispered does not exist', () => {
+  describe('when user being messaged does not exist', () => {
     beforeAll(() => {
       mockMessengerUser = {getSocketId: mockGetSocketId};
 
@@ -76,31 +71,31 @@ describe('addWhisper handler', () => {
     });
 
     it('uses getUserByName correctly', async () => {
-      await addWhisper(currParams);
-      expect(mockGetByName).toHaveBeenCalledWith("Buddy");
+      await addPrivateMessage(currParams);
+      expect(mockGetByName).toHaveBeenCalledWith("other");
     });
 
     it('uses socket.emit', async () => {
-      await addWhisper(currParams);
+      await addPrivateMessage(currParams);
       expect(params.socket.emit)
-        .toHaveBeenCalledWith('FailedWhisper', 'User not found.');
+        .toHaveBeenCalledWith('FailedPrivateMessage', 'User not found.');
     });
 
     // these may be wrong...
     it('returns correctly', async () => {
-      const actual = await addWhisper(currParams);
+      const actual = await addPrivateMessage(currParams);
       expect(actual).toEqual(true);
     });
   });
 
-  describe('when user being whispered blocked you', () => {
+  describe('when user being messaged blocked you', () => {
     beforeAll(() => {
       mockMessengerUser = {getSocketId: mockGetSocketId};
 
-      mockViewBlocked = jest.fn().mockResolvedValue([[{username: "Buddy"}]]);
+      mockViewBlocked = jest.fn().mockResolvedValue([[{username: "other"}]]);
       mockNobscFriendship = new Friendship(pool);
 
-      mockGetByName = jest.fn().mockResolvedValue([[{username: "Buddy"}]]);
+      mockGetByName = jest.fn().mockResolvedValue([[{username: "other"}]]);
       mockNobscUser = new User(pool);
 
       currParams = {
@@ -112,23 +107,23 @@ describe('addWhisper handler', () => {
     });
 
     it('uses viewMyBlockedUsers correctly', async () => {
-      await addWhisper(currParams);
-      expect(mockViewBlocked).toHaveBeenCalledWith("Buddy");
+      await addPrivateMessage(currParams);
+      expect(mockViewBlocked).toHaveBeenCalledWith("other");
     });
 
     it('uses socket.emit', async () => {
-      await addWhisper(currParams);
+      await addPrivateMessage(currParams);
       expect(params.socket.emit)
-        .toHaveBeenCalledWith('FailedWhisper', 'User not found.');
+        .toHaveBeenCalledWith('FailedPrivateMessage', 'User not found.');
     });
 
     it('returns correctly', async () => {
-      const actual = await addWhisper(currParams);
+      const actual = await addPrivateMessage(currParams);
       expect(actual).toEqual(true);
     });
   });
 
-  describe('when user being whispered is offline', () => {
+  describe('when user being messaged is offline', () => {
     beforeAll(() => {
       mockGetSocketId = jest.fn().mockResolvedValue(undefined);
       mockMessengerUser = {getSocketId: mockGetSocketId};
@@ -136,7 +131,7 @@ describe('addWhisper handler', () => {
       mockViewBlocked = jest.fn().mockResolvedValue([[]]);
       mockNobscFriendship = new Friendship(pool);
 
-      mockGetByName = jest.fn().mockResolvedValue([[{username: "Buddy"}]]);
+      mockGetByName = jest.fn().mockResolvedValue([[{username: "other"}]]);
       mockNobscUser = new User(pool);
 
       currParams = {
@@ -148,18 +143,18 @@ describe('addWhisper handler', () => {
     });
 
     it('uses getSocketId correctly', async () => {
-      await addWhisper(currParams);
-      expect(mockGetSocketId).toHaveBeenCalledWith("Buddy");
+      await addPrivateMessage(currParams);
+      expect(mockGetSocketId).toHaveBeenCalledWith("other");
     });
 
     it('uses socket.emit', async () => {
-      await addWhisper(currParams);
+      await addPrivateMessage(currParams);
       expect(params.socket.emit)
-        .toHaveBeenCalledWith('FailedWhisper', 'User not found.');
+        .toHaveBeenCalledWith('FailedPrivateMessage', 'User not found.');
     });
 
     it('returns correctly', async () => {
-      const actual = await addWhisper(currParams);
+      const actual = await addPrivateMessage(currParams);
       expect(actual).toEqual(true);
     });
   });
@@ -172,7 +167,7 @@ describe('addWhisper handler', () => {
       mockViewBlocked = jest.fn().mockResolvedValue([[]]);
       mockNobscFriendship = new Friendship(pool);
 
-      mockGetByName = jest.fn().mockResolvedValue([[{username: "Buddy"}]]);
+      mockGetByName = jest.fn().mockResolvedValue([[{username: "other"}]]);
       mockNobscUser = new User(pool);
 
       currParams = {
@@ -182,37 +177,28 @@ describe('addWhisper handler', () => {
         nobscUser: <IUser>mockNobscUser
       };
     });
-
-    it('uses ChatUser correctly', async () => {
-      await addWhisper(currParams);
-      expect(mockChatUser).toHaveBeenCalledWith("Name", "Name123");
-    });
   
-    it('uses Whisper correctly', async () => {
-      await addWhisper(currParams);
-      expect(mockChatWhisper).toHaveBeenCalledWith(
-        "howdy", "Buddy", ChatUser("Name", "Name123")
-      );
+    it('uses PrivateMessage correctly', async () => {
+      await addPrivateMessage(currParams);
+      expect(mockPrivateMessage).toHaveBeenCalledWith("other", "self", "hello");
     });
 
     it ('uses socket.broadcast.to correctly', async () => {
-      await addWhisper(currParams);
+      await addPrivateMessage(currParams);
       expect(params.socket.broadcast.to).toHaveBeenCalledWith("123456789");
     });
 
     it ('uses socket.broadcast.to.emit correctly', async () => {
-      await addWhisper(currParams);
+      await addPrivateMessage(currParams);
       expect(params.socket.broadcast.emit).toHaveBeenCalledWith(
-        'AddWhisper',
-        ChatWhisper("howdy", "Buddy", ChatUser("Name", "Name123"))
+        'AddPrivateMessage', PrivateMessage("other", "self", "hello")
       );
     });
 
-    it ('uses socket.emit with AddWhisper event correctly', async () => {
-      await addWhisper(currParams);
+    it ('uses socket.emit with AddPrivateMessage event correctly', async () => {
+      await addPrivateMessage(currParams);
       expect(params.socket.emit).toHaveBeenCalledWith(
-        'AddWhisper',
-        ChatWhisper("howdy", "Buddy", ChatUser("Name", "Name123"))
+        'AddPrivateMessage', PrivateMessage("other", "self", "hello")
       );
     });
   });

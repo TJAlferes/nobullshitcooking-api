@@ -4,7 +4,6 @@ import { pool } from '../../../../src/lib/connections/mysql';  // just mock like
 import { IFriendship, Friendship } from '../../../../src/access/mysql/Friendship';
 import { IMessengerRoom } from '../../../../src/access/redis/MessengerRoom';
 import { IMessengerUser } from '../../../../src/access/redis/MessengerUser';
-import { ChatUser  } from '../../../../src/chat/entities/ChatUser';
 import { IDisconnecting, disconnecting } from '../../../../src/chat/handlers/disconnecting';
 
 jest.mock('../../../../src/access/mysql/Friendship', () => ({
@@ -20,16 +19,13 @@ const mockMessengerRoom: Partial<IMessengerRoom> = {removeUser: mockRemoveUser};
 let mockGetSocketId = jest.fn();
 const mockRemove = jest.fn();
 
-jest.mock('../../../../src/chat/entities/ChatUser');  // ?
-//const mockChatUser = ChatUser as jest.Mocked<typeof ChatUser>;  // ?
-
 const mockBroadcast: any = {
   emit: jest.fn(),
   to: jest.fn((room: string) => mockBroadcast)
 };
 
 const rooms = new Set<string>();
-rooms.add("someRoom");
+rooms.add("room");
 const mockSocket: Partial<Socket> = {
   broadcast: <Socket>mockBroadcast,
   emit: jest.fn().mockReturnValue(true),
@@ -39,9 +35,8 @@ const mockSocket: Partial<Socket> = {
 };
 
 const params = {
-  reason: "Some reason.",
-  username: "Name",
-  avatar: "Name123",
+  reason: "reason",
+  username: "self",
   socket: <Socket>mockSocket
 };
 
@@ -73,18 +68,18 @@ describe('disconnecting handler', () => {
 
     it('uses socket.broadcast.to with RemoveUser event correctly', async () => {
       await disconnecting(currParams);
-      expect(params.socket.broadcast.to).toHaveBeenCalledWith("someRoom");
+      expect(params.socket.broadcast.to).toHaveBeenCalledWith("room");
     });
 
     it('uses socket.broadcast.to.emit with RemoveUser event correctly', async () => {
       await disconnecting(currParams);
       expect(params.socket.broadcast.emit)
-        .toHaveBeenCalledWith('RemoveUser', ChatUser("Name", "Name123"));
+        .toHaveBeenCalledWith('RemoveUser', "self");
     });
 
     it('uses removeUser correctly', async () => {
       await disconnecting(currParams);
-      expect(mockRemoveUser).toHaveBeenCalledWith("Name", "someRoom");
+      expect(mockRemoveUser).toHaveBeenCalledWith("self", "room");
     });
 
     it('uses viewMyAcceptedFriendships correctly', async () => {
@@ -121,23 +116,23 @@ describe('disconnecting handler', () => {
 
     it ('uses socket.broadcast.to with RemoveUser event correctly', async () => {
       await disconnecting(currParams);
-      expect(params.socket.broadcast.to).toHaveBeenCalledWith("someRoom");
+      expect(params.socket.broadcast.to).toHaveBeenCalledWith("room");
     });
 
     it ('uses socket.broadcast.to.emit with RemoveUser event correctly', async () => {
       await disconnecting(currParams);
       expect(params.socket.broadcast.emit)
-        .toHaveBeenCalledWith('RemoveUser', ChatUser("Name", "Name123"));
+        .toHaveBeenCalledWith('RemoveUser', "self");
     });
 
     it('uses removeUser correctly', async () => {
       await disconnecting(currParams);
-      expect(mockRemoveUser).toHaveBeenCalledWith("Name", "someRoom");
+      expect(mockRemoveUser).toHaveBeenCalledWith("self", "room");
     });
 
     it('uses viewAccepted correctly', async () => {
       await disconnecting(currParams);
-      expect(mockViewAccepted).toHaveBeenCalledWith("Name");
+      expect(mockViewAccepted).toHaveBeenCalledWith("self");
     });
 
     it('uses getSocketId correctly', async () => {
@@ -154,7 +149,7 @@ describe('disconnecting handler', () => {
     it ('uses socket.broadcast.to.emit with ShowOffline event correctly', async () => {
       await disconnecting(currParams);
       expect(params.socket.broadcast.emit)
-        .toHaveBeenCalledWith('ShowOffline', ChatUser("Name", "Name123"));
+        .toHaveBeenCalledWith('ShowOffline', "self");
     });
 
     it('uses remove correctly', async () => {

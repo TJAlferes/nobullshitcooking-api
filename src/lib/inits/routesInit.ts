@@ -10,9 +10,6 @@ import {
   contentRouter,
   contentTypeRouter,
   cuisineRouter,
-  cuisineEquipmentRouter,
-  cuisineIngredientRouter,
-  cuisineSupplierRouter,
   dataInitRouter,
   equipmentRouter,
   equipmentTypeRouter,
@@ -34,9 +31,6 @@ export function routesInit(app: Application, pool: Pool, esClient: Client) {
   const contentRoutes = contentRouter(pool);
   const contentTypeRoutes = contentTypeRouter(pool);
   const cuisineRoutes = cuisineRouter(pool);
-  const cuisineEquipmentRoutes = cuisineEquipmentRouter(pool);
-  const cuisineIngredientRoutes = cuisineIngredientRouter(pool);
-  const cuisineSupplierRoutes = cuisineSupplierRouter(pool);
   const dataInitRoutes = dataInitRouter(pool);
   const equipmentRoutes = equipmentRouter(pool);
   const equipmentTypeRoutes = equipmentTypeRouter(pool);
@@ -62,9 +56,6 @@ export function routesInit(app: Application, pool: Pool, esClient: Client) {
   app.use('/content', contentRoutes);
   app.use('/content-type', contentTypeRoutes);
   app.use('/cuisine', cuisineRoutes);
-  app.use('/cuisine-equipment', cuisineEquipmentRoutes);
-  app.use('/cuisine-ingredient', cuisineIngredientRoutes);
-  app.use('/cuisine-supplier', cuisineSupplierRoutes);
   app.use('/data-init', dataInitRoutes);
   app.use('/equipment', equipmentRoutes);
   app.use('/equipment-type', equipmentTypeRoutes);

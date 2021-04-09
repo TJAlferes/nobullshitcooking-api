@@ -1,9 +1,6 @@
 export { contentTests } from './content';
 export { contentTypeTests } from './contentType';
 export { cuisineTests } from './cuisine';
-export { cuisineEquipmentTests } from './cuisineEquipment';
-export { cuisineIngredientTests } from './cuisineIngredient';
-export { cuisineSupplierTests } from './cuisineSupplier';
 export { dataInitTests } from './dataInit';
 export { equipmentTests } from './equipment';
 export { equipmentTypeTests } from './equipmentType';

@@ -31,21 +31,6 @@ export class Cuisine implements ICuisine {
       c.wiki,
       c.intro,
       (
-        SELECT supplier FROM cuisine_suppliers cs WHERE cs.cuisine = c.name
-      ) cuisine_suppliers,
-      (
-        SELECT ce.equipment, e.name
-        FROM equipment e
-        INNER JOIN cuisine_equipment ce ON ce.equipment = e.id
-        WHERE ce.cuisine = c.name
-      ) cuisine_equipment,
-      (
-        SELECT ci.ingredient, i.fullname
-        FROM ingredients i
-        INNER JOIN cuisine_ingredients ci ON ci.ingredient = i.id
-        WHERE ci.cuisine = c.name
-      ) cuisine_ingredients,
-      (
         SELECT r.id, r.title, r.recipe_image
         FROM recipes r
         WHERE r.owner = ? AND r.cuisine = c.name

@@ -28,7 +28,7 @@ describe('addMessengerUser helper', () => {
     };
     const sid = '123456789';
     const session: Partial<Express.SessionData> =
-      {userInfo: {username: "Name", avatar: "Name123"}};
+      {userInfo: {username: "self"}};
     await addMessengerUser(
       <Redis>pubClient,
       <Socket>socket,
@@ -46,15 +46,14 @@ describe('addMessengerUser helper', () => {
     };
     const sid = '123456789';
     const session: Partial<Express.SessionData> =
-      {userInfo: {username: "Name", avatar: "Name123"}};
+      {userInfo: {username: "self"}};
       await addMessengerUser(
         <Redis>pubClient,
         <Socket>socket,
         sid,
         <Express.SessionData>session
       );
-    expect(socket.request.userInfo)
-      .toEqual({username: "Name", avatar: "Name123"});
+    expect(socket.request.userInfo).toEqual({username: "self"});
   });
 
   it ('uses addUser correctly', async () => {
@@ -65,7 +64,7 @@ describe('addMessengerUser helper', () => {
     };
     const sid = '123456789';
     const session: Partial<Express.SessionData> =
-      {userInfo: {username: "Name", avatar: "Name123"}};
+      {userInfo: {username: "self"}};
       await addMessengerUser(
         <Redis>pubClient,
         <Socket>socket,
@@ -73,7 +72,7 @@ describe('addMessengerUser helper', () => {
         <Express.SessionData>session
       );
     expect(mockAdd)
-      .toHaveBeenCalledWith("Name", "Name123", '123456789', '123456789');
+      .toHaveBeenCalledWith("self", '123456789', '123456789');
   });
 });
 
@@ -113,7 +112,7 @@ describe('addMessengerUser helper', () => {
 
   it('should copy the session.userInfo to the socket.request', () => {
     const session: Partial<Express.SessionData> = {
-      userInfo: {username: "Name", avatar: "Name123"}
+      userInfo: {username: "self"}
     };
     const socket: Partial<Socket> = {
       request: {headers: {cookie: {'connect.sid': '123456789'}}}

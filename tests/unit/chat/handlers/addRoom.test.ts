@@ -1,7 +1,6 @@
 import { Socket } from 'socket.io';
 
 import { IMessengerRoom } from '../../../../src/access/redis/MessengerRoom';
-import { ChatUser } from '../../../../src/chat/entities/ChatUser';
 import { addRoom } from '../../../../src/chat/handlers/addRoom';
 
 const mockAdd = jest.fn();
@@ -15,16 +14,13 @@ const mockMessengerRoom: Partial<IMessengerRoom> = {
   removeUser: mockRemoveUser,
 };
 
-jest.mock('../../../../src/chat/entities/ChatUser');
-const mockChatUser = ChatUser as jest.Mocked<typeof ChatUser>;
-
 const mockBroadcast: any = {
   emit: jest.fn(),
   to: jest.fn((room: string) => mockBroadcast)
 };
 
 const rooms = new Set<string>();
-rooms.add("someRoom");
+rooms.add("room");
 const mockSocket: Partial<Socket> = {
   broadcast: <Socket>mockBroadcast,
   emit: jest.fn(),
@@ -35,8 +31,7 @@ const mockSocket: Partial<Socket> = {
 
 const params = {
   room: "nextRoom",
-  username: "Name",
-  avatar: "Name123",
+  username: "self",
   socket: <Socket>mockSocket,
   messengerRoom: <IMessengerRoom>mockMessengerRoom
 };
@@ -46,33 +41,27 @@ afterEach(() => {
 });
 
 describe ('addRoom handler', () => {
-  it('uses ChatUser correctly', async () => {
-    await addRoom(params);
-    expect(mockChatUser).toHaveBeenCalledWith("Name", "Name123");
-    expect(mockChatUser).toHaveBeenCalledTimes(2);
-  });
-
   it('uses socket.leave correctly', async () => {
     await addRoom(params);
-    expect(params.socket.leave).toHaveBeenCalledWith("someRoom");
+    expect(params.socket.leave).toHaveBeenCalledWith("room");
   });
 
   it('uses removeUser correctly', async () => {
     await addRoom(params);
-    expect(mockRemoveUser).toHaveBeenCalledWith("Name", "someRoom");
+    expect(mockRemoveUser).toHaveBeenCalledWith("self", "room");
   });
 
   it('uses socket.broadcast.to with Remove user event correctly', async () => {
     await addRoom(params);
-    expect(params.socket.broadcast.to).toHaveBeenCalledWith("someRoom");
+    expect(params.socket.broadcast.to).toHaveBeenCalledWith("room");
   });
 
   it(
-    'uses socket.broadcast.to.emit with Remove user event correctly',
+    'uses socket.broadcast.to.emit with RemoveUser event correctly',
     async () => {
       await addRoom(params);
       expect(params.socket.broadcast.emit)
-        .toHaveBeenCalledWith('RemoveUser', ChatUser("Name", "Name123"));
+        .toHaveBeenCalledWith('RemoveUser', "self");
     }
   );
 
@@ -88,7 +77,7 @@ describe ('addRoom handler', () => {
 
   it('uses addUser correctly', async () => {
     await addRoom(params);
-    expect(mockAddUser).toHaveBeenCalledWith("Name", "nextRoom");
+    expect(mockAddUser).toHaveBeenCalledWith("self", "nextRoom");
   });
 
   it('uses socket.broadcast.to with AddUser event correctly', async () => {
@@ -99,7 +88,7 @@ describe ('addRoom handler', () => {
   it('uses socket.broadcast.to.emit with AddUser event correctly', async () => {
     await addRoom(params);
     expect(params.socket.broadcast.emit)
-      .toHaveBeenCalledWith('AddUser', ChatUser("Name", "Name123"));
+      .toHaveBeenCalledWith('AddUser', "self");
   });
 
   it('uses getUsers correctly', async () => {
@@ -109,7 +98,6 @@ describe ('addRoom handler', () => {
 
   it('uses socket.emit with GetUser event correctly', async () => {
     await addRoom(params);
-    expect(params.socket.emit)
-      .toHaveBeenCalledWith('GetUser', [], "nextRoom");
+    expect(params.socket.emit).toHaveBeenCalledWith('GetUser', [], "nextRoom");
   });
 });
