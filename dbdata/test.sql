@@ -13,85 +13,85 @@ Create parent tables
 */
 
 CREATE TABLE `content_types` (
-  `id` char(36) UNIQUE NOT NULL,
+  `id` VARBINARY(16) NOT NULL,
   `name` varchar(60) UNIQUE NOT NULL,
   `parent` varchar(60),
   `path` varchar(255) UNIQUE NOT NULL,
   PRIMARY KEY (`id`)
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `cuisines` (
-  `id` char(36) UNIQUE NOT NULL,
+  `id` VARBINARY(16) NOT NULL,
   `name` varchar(40) NOT NULL,
   `nation` varchar(40) UNIQUE NOT NULL,
   `wiki` varchar(60) NOT NULL DEFAULT '',
   `intro` text NOT NULL,
   PRIMARY KEY (`id`)
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `customers` (
-  `id` char(36) UNIQUE NOT NULL,
+  `id` VARBINARY(16) NOT NULL,
   `email` varchar(60) UNIQUE NOT NULL,
   PRIMARY KEY (`id`)
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `equipment_types` (
   `name` varchar(25) UNIQUE NOT NULL,
   PRIMARY KEY (`name`)
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `ingredient_types` (
   `name` varchar(25) UNIQUE NOT NULL,
   PRIMARY KEY (`name`)
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `measurements` (
   `name` varchar(25) UNIQUE NOT NULL,
   PRIMARY KEY (`name`)
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `methods` (
   `name` varchar(25) UNIQUE NOT NULL,
   PRIMARY KEY (`name`)
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `product_categories` (
   `name` varchar(50) UNIQUE NOT NULL,
   PRIMARY KEY (`name`)
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `product_types` (
   `name` varchar(50) UNIQUE NOT NULL,
   PRIMARY KEY (`name`)
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `recipe_types` (
   `name` varchar(25) UNIQUE NOT NULL,
   PRIMARY KEY (`name`)
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `staff` (
-  `id` char(36) UNIQUE NOT NULL,
+  `id` VARBINARY(16) NOT NULL,
   `email` varchar(60) UNIQUE NOT NULL,
   `pass` char(60) NOT NULL,
   `staffname` varchar(20) NOT NULL,
   PRIMARY KEY (`id`)
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `suppliers` (
-  `id` char(36) UNIQUE NOT NULL,
+  `id` VARBINARY(16) NOT NULL,
   `name` varchar(60) UNIQUE NOT NULL,
   PRIMARY KEY (`id`)
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `users` (
-  `id` char(36) UNIQUE NOT NULL,
+  `id` VARBINARY(16) NOT NULL,
   `email` varchar(60) UNIQUE NOT NULL,
   `pass` char(60) NOT NULL,
   `username` varchar(20) NOT NULL,
   `confirmation_code` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*
 
@@ -100,7 +100,7 @@ Create child tables
 */
 
 CREATE TABLE `content` (
-  `id` char(36) UNIQUE NOT NULL,
+  `id` VARBINARY(16) NOT NULL,
   `type` varchar(60) NOT NULL,
   `author` varchar(20) NOT NULL,
   `owner` varchar(20) NOT NULL,
@@ -113,10 +113,10 @@ CREATE TABLE `content` (
   FOREIGN KEY (`type`) REFERENCES `content_types` (`name`) ON UPDATE CASCADE,
   FOREIGN KEY (`author`) REFERENCES `users` (`username`),
   FOREIGN KEY (`owner`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `equipment` (
-  `id` char(36) UNIQUE NOT NULL,
+  `id` VARBINARY(16) NOT NULL,
   `type` varchar(25) NOT NULL,
   `author` varchar(20) NOT NULL,
   `owner` varchar(20) NOT NULL,
@@ -127,20 +127,20 @@ CREATE TABLE `equipment` (
   FOREIGN KEY (`type`) REFERENCES `equipment_types` (`name`) ON UPDATE CASCADE,
   FOREIGN KEY (`author`) REFERENCES `users` (`username`),
   FOREIGN KEY (`owner`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `grocers` (
-  `id` char(36) UNIQUE NOT NULL,
+  `id` VARBINARY(16) NOT NULL,
   `owner` varchar(20) NOT NULL,
   `name` varchar(100) NOT NULL,
   `address` varchar(100) NOT NULL,
   `notes` text NOT NULL,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`owner`) REFERENCES `users` (`username`)
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `ingredients` (
-  `id` char(36) UNIQUE NOT NULL,
+  `id` VARBINARY(16) NOT NULL,
   `type` varchar(25) NOT NULL,
   `author` varchar(20) NOT NULL,
   `owner` varchar(20) NOT NULL,
@@ -155,33 +155,20 @@ CREATE TABLE `ingredients` (
   FOREIGN KEY (`type`) REFERENCES `ingredient_types` (`name`) ON UPDATE CASCADE,
   FOREIGN KEY (`author`) REFERENCES `users` (`username`),
   FOREIGN KEY (`owner`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
-) DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `notifications` (
-  `id` char(36) UNIQUE NOT NULL,
-  `sender` varchar(20) NOT NULL,
-  `receiver` varchar(20) NOT NULL,
-  `read` tinyint NOT NULL DEFAULT '0',
-  `type` varchar(45) NOT NULL,
-  `note` varchar(255) NOT NULL,
-  `created` char(10) NOT NULL,
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (`sender`) REFERENCES `users` (`username`),
-  FOREIGN KEY (`receiver`) REFERENCES `users` (`username`)
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `orders` (
-  `id` char(36) UNIQUE NOT NULL,
+  `id` VARBINARY(16) NOT NULL,
   `customer` varchar(60) NOT NULL,
   `staff` varchar(20) NOT NULL,
   `created` char(10) NOT NULL,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`customer`) REFERENCES `customers` (`email`),
   FOREIGN KEY (`staff`) REFERENCES `staff` (`staffname`)
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `products` (
-  `id` char(36) UNIQUE NOT NULL,
+  `id` VARBINARY(16) NOT NULL,
   `category` varchar(50) NOT NULL,
   `type` varchar(50) NOT NULL,
   `brand` varchar(50) NOT NULL,
@@ -195,17 +182,17 @@ CREATE TABLE `products` (
   PRIMARY KEY (`id`),
   FOREIGN KEY (`category`) REFERENCES `product_categories` (`name`) ON UPDATE CASCADE,
   FOREIGN KEY (`type`) REFERENCES `product_types` (`name`) ON UPDATE CASCADE
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `order_products` (
   `order` char(36) UNIQUE NOT NULL,
   `product` char(36) UNIQUE NOT NULL,
   FOREIGN KEY (`order`) REFERENCES `orders` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`product`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `plans` (
-  `id` char(36) UNIQUE NOT NULL,
+  `id` VARBINARY(16) NOT NULL,
   `author` varchar(20) NOT NULL,
   `owner` varchar(20) NOT NULL,
   `name` varchar(100) NOT NULL,
@@ -213,17 +200,17 @@ CREATE TABLE `plans` (
   PRIMARY KEY (`id`),
   FOREIGN KEY (`author`) REFERENCES `users` (`username`),
   FOREIGN KEY (`owner`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `product_suppliers` (
   `product` char(36) UNIQUE NOT NULL,
   `supplier` char(36) UNIQUE NOT NULL,
   FOREIGN KEY (`product`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`supplier`) REFERENCES `suppliers` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `recipes` (
-  `id` char(36) UNIQUE NOT NULL,
+  `id` VARBINARY(16) NOT NULL,
   `type` varchar(25) NOT NULL,
   `cuisine` varchar(40) NOT NULL,
   `author` varchar(20) NOT NULL,
@@ -243,7 +230,7 @@ CREATE TABLE `recipes` (
   FOREIGN KEY (`cuisine`) REFERENCES `cuisines` (`name`) ON UPDATE CASCADE,
   FOREIGN KEY (`author`) REFERENCES `users` (`username`),
   FOREIGN KEY (`owner`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `recipe_equipment` (
   `recipe` char(36) UNIQUE NOT NULL,
@@ -251,7 +238,7 @@ CREATE TABLE `recipe_equipment` (
   `amount` tinyint unsigned NOT NULL,
   FOREIGN KEY (`recipe`) REFERENCES `recipes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`equipment`) REFERENCES `equipment` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `recipe_ingredients` (
   `recipe` char(36) UNIQUE NOT NULL,
@@ -261,14 +248,14 @@ CREATE TABLE `recipe_ingredients` (
   FOREIGN KEY (`recipe`) REFERENCES `recipes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`ingredient`) REFERENCES `ingredients` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`measurement`) REFERENCES `measurements` (`name`) ON UPDATE CASCADE
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `recipe_methods` (
   `recipe` char(36) UNIQUE NOT NULL,
   `method` char(36) UNIQUE NOT NULL,
   FOREIGN KEY (`recipe`) REFERENCES `recipes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`method`) REFERENCES `methods` (`name`) ON UPDATE CASCADE
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `recipe_subrecipes` (
   `recipe` char(36) UNIQUE NOT NULL,
@@ -278,21 +265,21 @@ CREATE TABLE `recipe_subrecipes` (
   FOREIGN KEY (`recipe`) REFERENCES `recipes` (`id`),
   FOREIGN KEY (`subrecipe`) REFERENCES `recipes` (`id`),
   FOREIGN KEY (`measurement`) REFERENCES `measurements` (`name`) ON UPDATE CASCADE
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `favorite_recipes` (
   `user` varchar(20) NOT NULL,
   `recipe` char(36) UNIQUE NOT NULL,
   FOREIGN KEY (`user`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`recipe`) REFERENCES `recipes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `saved_recipes` (
   `user` varchar(20) NOT NULL,
   `recipe` char(36) UNIQUE NOT NULL,
   FOREIGN KEY (`user`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`recipe`) REFERENCES `recipes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `friendships` (
   `user` varchar(20) NOT NULL,
@@ -300,7 +287,7 @@ CREATE TABLE `friendships` (
   `status` varchar(20) NOT NULL,
   FOREIGN KEY (`user`) REFERENCES `users` (`username`),
   FOREIGN KEY (`friend`) REFERENCES `users` (`username`)
-) DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*
 
@@ -458,22 +445,24 @@ INSERT INTO users (email, pass, username) VALUES
   "Testman"
 );
 
-INSERT INTO content_types (name, parent, path) VALUES
-("Page",        NULL,      "/page"),
-("Post",        NULL,      "/post"),
-("Guide",       "Page",    "/page/guide"),
-("Promo",       "Page",    "/page/promo"),
-("Site",        "Page",    "/page/site"),
-("Fitness",     "Guide",   "/page/guide/fitness"),
-("Food",        "Guide",   "/page/guide/food"),
-("Exercises",   "Fitness", "/page/guide/fitness/exercises"),
-("Principles",  "Fitness", "/page/guide/fitness/principles"),
-("Recipes",     "Food",    "/page/guide/food/recipes"),
-("Cuisines",    "Food",    "/page/guide/food/cuisines"),
-("Ingredients", "Food",    "/page/guide/food/ingredients"),
-("Nutrition",   "Food",    "/page/guide/food/nutrition"),
-("Equipment",   "Food",    "/page/guide/food/equipment"),
-("Methods",     "Food",    "/page/guide/food/methods");
+INSERT INTO content_types
+(id,                 name,          parent,    path)
+VALUES
+(UUID_TO_BIN("puttheuuidv6stringhere"), "Page",        NULL,      "/page"),
+(UUID_TO_BIN("puttheuuidv6stringhere"), "Post",        NULL,      "/post"),
+(UUID_TO_BIN("puttheuuidv6stringhere"), "Guide",       "Page",    "/page/guide"),
+(UUID_TO_BIN("puttheuuidv6stringhere"), "Promo",       "Page",    "/page/promo"),
+(UUID_TO_BIN("puttheuuidv6stringhere"), "Site",        "Page",    "/page/site"),
+(UUID_TO_BIN("puttheuuidv6stringhere"), "Fitness",     "Guide",   "/page/guide/fitness"),
+(UUID_TO_BIN("puttheuuidv6stringhere"), "Food",        "Guide",   "/page/guide/food"),
+(UUID_TO_BIN("puttheuuidv6stringhere"), "Exercises",   "Fitness", "/page/guide/fitness/exercises"),
+(UUID_TO_BIN("puttheuuidv6stringhere"), "Principles",  "Fitness", "/page/guide/fitness/principles"),
+(UUID_TO_BIN("puttheuuidv6stringhere"), "Recipes",     "Food",    "/page/guide/food/recipes"),
+(UUID_TO_BIN("puttheuuidv6stringhere"), "Cuisines",    "Food",    "/page/guide/food/cuisines"),
+(UUID_TO_BIN("puttheuuidv6stringhere"), "Ingredients", "Food",    "/page/guide/food/ingredients"),
+(UUID_TO_BIN("puttheuuidv6stringhere"), "Nutrition",   "Food",    "/page/guide/food/nutrition"),
+(UUID_TO_BIN("puttheuuidv6stringhere"), "Equipment",   "Food",    "/page/guide/food/equipment"),
+(UUID_TO_BIN("puttheuuidv6stringhere"), "Methods",     "Food",    "/page/guide/food/methods");
 
 INSERT INTO content
 (type,          author,  owner,   created,      published,    title,                                items)
