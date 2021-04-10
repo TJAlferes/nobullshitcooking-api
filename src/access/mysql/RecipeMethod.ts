@@ -5,27 +5,27 @@ export class RecipeMethod implements IRecipeMethod {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewByRecipe = this.viewByRecipe.bind(this);
+    this.viewByRecipeId = this.viewByRecipeId.bind(this);
     this.create = this.create.bind(this);
     this.update = this.update.bind(this);
-    this.deleteByRecipe = this.deleteByRecipe.bind(this);
-    this.deleteByRecipes = this.deleteByRecipes.bind(this);
+    this.deleteByRecipeId = this.deleteByRecipeId.bind(this);
+    this.deleteByRecipeIds = this.deleteByRecipeIds.bind(this);
   }
 
-  async viewByRecipe(recipe: string) {
+  async viewByRecipeId(recipeId: string) {
     const sql = `
       SELECT method FROM recipe_methods rm WHERE rm.recipe = ? ORDER BY method
     `;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [recipe]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [recipeId]);
     return rows;
   }
 
   async create(recipeMethods: string[], placeholders: string) {
     const sql = `
-      INSERT INTO recipe_methods (recipe, method) VALUES ${placeholders} 
+      INSERT INTO recipe_methods (recipeId, method) VALUES ${placeholders} 
     `;
-    const [ rows ] = await this.pool
-      .execute<RowDataPacket[]>(sql, recipeMethods);
+    const [ rows ] =
+      await this.pool.execute<RowDataPacket[]>(sql, recipeMethods);
     return rows;
   }
 
@@ -33,7 +33,7 @@ export class RecipeMethod implements IRecipeMethod {
   async update(
     recipeMethods: string[],
     placeholders: string,
-    recipe: string
+    recipeId: string
   ) {
     const sql1 = `DELETE FROM recipe_methods WHERE recipe = ?`;
     const sql2 = (recipeMethods.length)
@@ -44,7 +44,7 @@ export class RecipeMethod implements IRecipeMethod {
     await connection.beginTransaction();
 
     try {
-      await connection.query(sql1, [recipe]);
+      await connection.query(sql1, [recipeId]);
 
       if (sql2 !== "none") {
         const [ rows ] = await connection.query(sql2, recipeMethods);
@@ -61,15 +61,15 @@ export class RecipeMethod implements IRecipeMethod {
     }
   }
 
-  async deleteByRecipe(recipe: string) {
-    const sql = `DELETE FROM recipe_methods WHERE recipe = ?`;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [recipe]);
+  async deleteByRecipeId(recipeId: string) {
+    const sql = `DELETE FROM recipe_methods WHERE recipeId = ?`;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [recipeId]);
     return rows;
   }
 
-  async deleteByRecipes(recipes: string[]) {
-    const sql = `DELETE FROM recipe_methods WHERE recipe = ANY(?)`;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, recipes);
+  async deleteByRecipeIds(recipeIds: string[]) {
+    const sql = `DELETE FROM recipe_methods WHERE recipeId = ANY(?)`;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, recipeIds);
     return rows;
   }
 }
@@ -87,15 +87,15 @@ type DataWithExtra = Promise<
 
 export interface IRecipeMethod {
   pool: Pool;
-  viewByRecipe(recipe: string): Data;
+  viewByRecipeId(recipeId: string): Data;
   create(recipeMethods: string[], placeholders: string): Data;
   update(
     recipeMethods: string[],
     placeholders: string,
-    recipe: string
+    recipeId: string
   ): DataWithExtra;  // | finish
-  deleteByRecipe(recipe: string): Data;
-  deleteByRecipes(recipes: string[]): Data;
+  deleteByRecipeId(recipeId: string): Data;
+  deleteByRecipeIds(recipeIds: string[]): Data;
 }
 
 export interface IMakeRecipeMethod {

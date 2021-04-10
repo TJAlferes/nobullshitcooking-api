@@ -6,6 +6,47 @@ CREATE DATABASE nobsc;
 
 USE nobsc;
 
+-- just wait to see what happens
+-- https://github.com/uuid6/uuid6-ietf-draft/blob/master/draft-peabody-dispatch-new-uuid-format-01.txt
+
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` FUNCTION `uuidv1atov6b`(u1 BINARY(36))
+RETURNS BINARY(16) DETERMINISTIC
+RETURN UNHEX(CONCAT(
+  SUBSTR(u1, 16, 3),
+  SUBSTR(u1, 10, 4),
+  SUBSTR(u1, 1, 5),
+  '6',
+  SUBSTR(u1, 6, 3),
+  SUBSTR(u1, 20, 4),
+  SUBSTR(u1, 25)
+  ));
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE DEFINER=`root`@`localhost` FUNCTION `uuidbtoa`(u BINARY(16))
+RETURNS BINARY(36) DETERMINISTIC
+RETURN CONCAT(
+  HEX(SUBSTR(u, 1, 4)),
+  "-",
+  HEX(SUBSTR(u, 5, 2)),
+  "-",
+  HEX(SUBSTR(u, 7, 2)),
+  '-',
+  HEX(SUBSTR(u, 9, 2)),
+  "-",
+  HEX(SUBSTR(u, 11, 6))
+  );
+//
+DELIMITER ;
+
+-- for use as primary key:
+select uuidv1atov6b(uuid());
+
+-- to display:
+select uuidbtoa(uuidv1atov6b(uuid()));
+
 /*
 
 Create parent tables
@@ -13,80 +54,67 @@ Create parent tables
 */
 
 CREATE TABLE `content_types` (
-  `id` varbinary(16) NOT NULL,
+  `id` varbinary(16) NOT NULL PRIMARY KEY,
   `name` varchar(60) UNIQUE NOT NULL,
   `parent` varchar(60),
   `path` varchar(255) UNIQUE NOT NULL,
-  PRIMARY KEY (`id`)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `cuisines` (
-  `name` varchar(40) UNIQUE NOT NULL,
-  PRIMARY KEY (`name`)
+  `name` varchar(40) UNIQUE NOT NULL PRIMARY KEY
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `customers` (
-  `id` varbinary(16) NOT NULL,
-  `email` varchar(60) UNIQUE NOT NULL,
-  PRIMARY KEY (`id`)
+  `id` varbinary(16) NOT NULL PRIMARY KEY,
+  `email` varchar(60) UNIQUE NOT NULL
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `equipment_types` (
-  `name` varchar(25) UNIQUE NOT NULL,
-  PRIMARY KEY (`name`)
+  `name` varchar(25) UNIQUE NOT NULL PRIMARY KEY
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `ingredient_types` (
-  `name` varchar(25) UNIQUE NOT NULL,
-  PRIMARY KEY (`name`)
+  `name` varchar(25) UNIQUE NOT NULL PRIMARY KEY
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `measurements` (
-  `name` varchar(25) UNIQUE NOT NULL,
-  PRIMARY KEY (`name`)
+  `name` varchar(25) UNIQUE NOT NULL PRIMARY KEY
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `methods` (
-  `name` varchar(25) UNIQUE NOT NULL,
-  PRIMARY KEY (`name`)
+  `name` varchar(25) UNIQUE NOT NULL PRIMARY KEY
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `product_categories` (
-  `name` varchar(50) UNIQUE NOT NULL,
-  PRIMARY KEY (`name`)
+  `name` varchar(50) UNIQUE NOT NULL PRIMARY KEY
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `product_types` (
-  `name` varchar(50) UNIQUE NOT NULL,
-  PRIMARY KEY (`name`)
+  `name` varchar(50) UNIQUE NOT NULL PRIMARY KEY
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `recipe_types` (
-  `name` varchar(25) UNIQUE NOT NULL,
-  PRIMARY KEY (`name`)
+  `name` varchar(25) UNIQUE NOT NULL PRIMARY KEY
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `staff` (
-  `id` varbinary(16) NOT NULL,
+  `id` varbinary(16) NOT NULL PRIMARY KEY
   `email` varchar(60) UNIQUE NOT NULL,
   `pass` char(60) NOT NULL,
-  `staffname` varchar(20) NOT NULL,
-  PRIMARY KEY (`id`)
+  `staffname` varchar(20) NOT NULL
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `suppliers` (
-  `id` varbinary(16) NOT NULL,
-  `name` varchar(60) UNIQUE NOT NULL,
-  PRIMARY KEY (`id`)
+  `id` varbinary(16) NOT NULL PRIMARY KEY
+  `name` varchar(60) UNIQUE NOT NULL
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `users` (
-  `id` varbinary(16) NOT NULL,
+  `id` varbinary(16) NOT NULL PRIMARY KEY
   `email` varchar(60) UNIQUE NOT NULL,
   `pass` char(60) NOT NULL,
   `username` varchar(20) NOT NULL,
-  `confirmation_code` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `confirmation_code` varchar(255) DEFAULT NULL
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*
@@ -96,7 +124,7 @@ Create child tables
 */
 
 CREATE TABLE `content` (
-  `id` varbinary(16) NOT NULL,
+  `id` varbinary(16) NOT NULL PRIMARY KEY,
   `type` varchar(60) NOT NULL,
   `authorId` varbinary(16) NOT NULL,
   `ownerId` varbinary(16) NOT NULL,
@@ -105,38 +133,35 @@ CREATE TABLE `content` (
   `title` varchar(100) NOT NULL,
   `image` varchar(100) NOT NULL DEFAULT 'nobsc-content-default',
   `items` json DEFAULT NULL,
-  PRIMARY KEY (`id`),
   FOREIGN KEY (`type`) REFERENCES `content_types` (`name`) ON UPDATE CASCADE,
   FOREIGN KEY (`authorId`) REFERENCES `users` (`id`),
   FOREIGN KEY (`ownerId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `equipment` (
-  `id` varbinary(16) NOT NULL,
+  `id` varbinary(16) NOT NULL PRIMARY KEY,
   `type` varchar(25) NOT NULL,
   `authorId` varbinary(16) NOT NULL,
   `ownerId` varbinary(16) NOT NULL,
   `name` varchar(100) NOT NULL,
   `description` text NOT NULL,
   `image` varchar(100) NOT NULL DEFAULT 'nobsc-equipment-default',
-  PRIMARY KEY (`id`),
   FOREIGN KEY (`type`) REFERENCES `equipment_types` (`name`) ON UPDATE CASCADE,
   FOREIGN KEY (`authorId`) REFERENCES `users` (`id`),
   FOREIGN KEY (`ownerId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `grocers` (
-  `id` varbinary(16) NOT NULL,
+  `id` varbinary(16) NOT NULL PRIMARY KEY,
   `ownerId` varbinary(16) NOT NULL,
   `name` varchar(100) NOT NULL,
   `address` varchar(100) NOT NULL,
   `notes` text NOT NULL,
-  PRIMARY KEY (`id`),
   FOREIGN KEY (`ownerId`) REFERENCES `users` (`id`)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `ingredients` (
-  `id` varbinary(16) NOT NULL,
+  `id` varbinary(16) NOT NULL PRIMARY KEY,
   `type` varchar(25) NOT NULL,
   `authorId` varbinary(16) NOT NULL,
   `ownerId` varbinary(16) NOT NULL,
@@ -147,24 +172,22 @@ CREATE TABLE `ingredients` (
   `alt_names` json DEFAULT NULL,
   `description` text NOT NULL,
   `image` varchar(100) NOT NULL DEFAULT 'nobsc-ingredient-default',
-  PRIMARY KEY (`id`),
   FOREIGN KEY (`type`) REFERENCES `ingredient_types` (`name`) ON UPDATE CASCADE,
   FOREIGN KEY (`authorId`) REFERENCES `users` (`id`),
   FOREIGN KEY (`ownerId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `orders` (
-  `id` varbinary(16) NOT NULL,
-  `customer` varchar(60) NOT NULL,
-  `staff` varbinary(16) NOT NULL,
+  `id` varbinary(16) NOT NULL PRIMARY KEY,
+  `customerId` varchar(60) NOT NULL,
+  `staffId` varbinary(16) NOT NULL,
   `created` char(10) NOT NULL,
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (`customer`) REFERENCES `customers` (`email`),
-  FOREIGN KEY (`staff`) REFERENCES `staff` (`id`)
+  FOREIGN KEY (`customerId`) REFERENCES `customers` (`id`),
+  FOREIGN KEY (`staffId`) REFERENCES `staff` (`id`)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `products` (
-  `id` varbinary(16) NOT NULL,
+  `id` varbinary(16) NOT NULL PRIMARY KEY,
   `category` varchar(50) NOT NULL,
   `type` varchar(50) NOT NULL,
   `brand` varchar(50) NOT NULL,
@@ -175,25 +198,23 @@ CREATE TABLE `products` (
   `description` text NOT NULL,
   `specs` json DEFAULT NULL,
   `image` varchar(100) NOT NULL DEFAULT 'nobsc-product-default',
-  PRIMARY KEY (`id`),
   FOREIGN KEY (`category`) REFERENCES `product_categories` (`name`) ON UPDATE CASCADE,
   FOREIGN KEY (`type`) REFERENCES `product_types` (`name`) ON UPDATE CASCADE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `order_products` (
-  `order` varbinary(16) NOT NULL,
-  `product` varbinary(16) NOT NULL,
-  FOREIGN KEY (`order`) REFERENCES `orders` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (`product`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  `orderId` varbinary(16) NOT NULL,
+  `productId` varbinary(16) NOT NULL,
+  FOREIGN KEY (`orderId`) REFERENCES `orders` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`productId`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `plans` (
-  `id` varbinary(16) NOT NULL,
+  `id` varbinary(16) NOT NULL PRIMARY KEY,
   `authorId` varbinary(16) NOT NULL,
   `ownerId` varbinary(16) NOT NULL,
   `name` varchar(100) NOT NULL,
   `data` json DEFAULT NULL,
-  PRIMARY KEY (`id`),
   FOREIGN KEY (`authorId`) REFERENCES `users` (`id`),
   FOREIGN KEY (`ownerId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -206,7 +227,7 @@ CREATE TABLE `product_suppliers` (
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `recipes` (
-  `id` varbinary(16) NOT NULL,
+  `id` varbinary(16) NOT NULL PRIMARY KEY,
   `type` varchar(25) NOT NULL,
   `cuisine` varchar(40) NOT NULL,
   `authorId` varbinary(16) NOT NULL,
@@ -221,7 +242,6 @@ CREATE TABLE `recipes` (
   `ingredients_image` varchar(100) NOT NULL DEFAULT 'nobsc-recipe-ingredients-default',
   `cooking_image` varchar(100) NOT NULL DEFAULT 'nobsc-recipe-cooking-default',
   `video` varchar(100) NOT NULL DEFAULT '',
-  PRIMARY KEY (`id`),
   FOREIGN KEY (`type`) REFERENCES `recipe_types` (`name`) ON UPDATE CASCADE,
   FOREIGN KEY (`cuisine`) REFERENCES `cuisines` (`name`) ON UPDATE CASCADE,
   FOREIGN KEY (`authorId`) REFERENCES `users` (`id`),
@@ -249,7 +269,7 @@ CREATE TABLE `recipe_ingredients` (
 CREATE TABLE `recipe_methods` (
   `recipeId` varbinary(16) NOT NULL,
   `method` varchar(25) NOT NULL,
-  FOREIGN KEY (`recipe`) REFERENCES `recipes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`recipeId`) REFERENCES `recipes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`method`) REFERENCES `methods` (`name`) ON UPDATE CASCADE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -417,8 +437,9 @@ Inserts
 
 */
 
-INSERT INTO staff (email, pass, staffname) VALUES
+INSERT INTO staff (id, email, pass, staffname) VALUES
 (
+  (UUID_TO_BIN("puttheuuidv6stringhere"),
   "tjalferes@tjalferes.com",
   "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u",
   "T. J. Alferes"
@@ -426,16 +447,19 @@ INSERT INTO staff (email, pass, staffname) VALUES
 
 INSERT INTO users (email, pass, username) VALUES
 (
+  (UUID_TO_BIN("puttheuuidv6stringhere"),
   "tjalferes@tjalferes.com",
   "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u",
   "NOBSC"
 ),
 (
+  (UUID_TO_BIN("puttheuuidv6stringhere"),
   "tjalferes@gmail.com",
   "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u",
   "Unknown"
 ),
 (
+  (UUID_TO_BIN("puttheuuidv6stringhere"),
   "testman@testman.com",
   "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u",
   "Testman"

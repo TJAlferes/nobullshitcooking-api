@@ -5,43 +5,42 @@ export class SavedRecipe implements ISavedRecipe {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewByUser = this.viewByUser.bind(this);
+    this.viewByUserId = this.viewByUserId.bind(this);
     this.create = this.create.bind(this);
     this.delete = this.delete.bind(this);
   }
 
-  async viewByUser(user: string) {
+  async viewByUserId(userId: string) {
     const sql = `
       SELECT 
         r.id,
         r.title,
         r.recipe_image,
-        r.owner,
+        r.ownerId,
         r.type,
         r.cuisine
       FROM saved_recipes s
-      INNER JOIN recipes r ON r.id = s.recipe
-      WHERE user = ?
+      INNER JOIN recipes r ON r.id = s.recipeId
+      WHERE s.userId = ?
       ORDER BY r.title
     `;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [user]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [userId]);
     return rows;
   }
 
-  async create(user: string, recipe: string) {
-    await this.delete(user, recipe);
-    const sql = `INSERT INTO saved_recipes (user, recipe) VALUES (?, ?)`;
-    const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [user, recipe]);
+  async create(userId: string, recipeId: string) {
+    await this.delete(userId, recipeId);
+    const sql = `INSERT INTO saved_recipes (userId, recipeId) VALUES (?, ?)`;
+    const [ row ] =
+      await this.pool.execute<RowDataPacket[]>(sql, [userId, recipeId]);
     return row;
   }
 
-  async delete(user: string, recipe: string) {
-    const sql = `
-      DELETE FROM saved_recipes WHERE user = ? AND recipe = ? LIMIT 1
-    `;
-    const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [user, recipe]);
+  async delete(userId: string, recipeId: string) {
+    const sql =
+      `DELETE FROM saved_recipes WHERE userId = ? AND recipeId = ? LIMIT 1`;
+    const [ row ] =
+      await this.pool.execute<RowDataPacket[]>(sql, [userId, recipeId]);
     return row;
   }
 }
@@ -50,7 +49,7 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface ISavedRecipe {
   pool: Pool;
-  viewByUser(user: string): Data;
-  create(user: string, recipe: string): Data;
-  delete(user: string, recipe: string): Data;
+  viewByUserId(userId: string): Data;
+  create(userId: string, recipeId: string): Data;
+  delete(userId: string, recipeId: string): Data;
 }

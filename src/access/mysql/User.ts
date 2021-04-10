@@ -17,7 +17,7 @@ export class User implements IUser {
   // sensitive
   async getByEmail(email: string) {
     const sql = `
-      SELECT email, pass, username, avatar, confirmation_code
+      SELECT email, pass, username, confirmation_code
       FROM users
       WHERE email = ?
     `;
@@ -33,7 +33,7 @@ export class User implements IUser {
   }
 
   async viewByName(username: string) {
-    const sql = `SELECT username, avatar FROM users WHERE username = ?`;
+    const sql = `SELECT username FROM users WHERE username = ?`;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [username]);
     return row;
   }
@@ -49,22 +49,21 @@ export class User implements IUser {
   }
 
   async verify(email: string) {
-    const sql = `
-      UPDATE users SET confirmation_code = NULL WHERE email = ? LIMIT 1
-    `;
+    const sql =
+      `UPDATE users SET confirmation_code = NULL WHERE email = ? LIMIT 1`;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [email]);
     return row;
   }
 
-  async update({ email, pass, username, avatar }: IUpdatingUser) {
+  async update({ email, pass, username }: IUpdatingUser) {
     const sql = `
       UPDATE users
-      SET email = ?, pass = ?, username = ?, avatar = ?
+      SET email = ?, pass = ?, username = ?
       WHERE username = ?
       LIMIT 1
     `;
     const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [email, pass, username, avatar]);
+      .execute<RowDataPacket[]>(sql, [email, pass, username]);
     return row;
   }
 
@@ -84,7 +83,7 @@ export interface IUser {
   viewByName(username: string): Data;
   create({email, pass, username, confirmationCode}: ICreatingUser): Data;
   verify(email: string): Data;
-  update({email, pass, username, avatar}: IUpdatingUser): Data;
+  update({email, pass, username}: IUpdatingUser): Data;
   delete(username: string): Data;
 }
 
@@ -99,5 +98,4 @@ interface IUpdatingUser {
   email: string;
   pass: string;
   username: string;
-  avatar: string;
 }

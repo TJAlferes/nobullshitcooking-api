@@ -15,32 +15,27 @@ export class Staff implements IStaff {
   }
 
   async getByEmail(email: string) {
-    const sql = `
-      SELECT staffname, email, pass, avatar FROM staff WHERE email = ?
-    `;
+    const sql = `SELECT staffname, email, pass FROM staff WHERE email = ?`;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [email]);
     return row;
   }
 
   async getByName(staffname: string) {
-    const sql = `
-      SELECT staffname, email, pass, avatar FROM staff WHERE staffname = ?
-    `;
+    const sql =
+      `SELECT staffname, email, pass FROM staff WHERE staffname = ?`;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [staffname]);
     return row;
   }
 
   async view(starting: number, display: number) {
-    const sql = `
-      SELECT staffname, avatar FROM staff ORDER BY staffname ASC LIMIT ?, ?
-    `;
+    const sql = `SELECT staffname FROM staff ORDER BY staffname ASC LIMIT ?, ?`;
     const [ rows ] = await this.pool
       .execute<RowDataPacket[]>(sql, [starting, display]);
     return rows;
   }
 
   async viewByName(staffname: string) {
-    const sql = `SELECT staffname, avatar FROM staff WHERE staffname = ?`;
+    const sql = `SELECT staffname FROM staff WHERE staffname = ?`;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [staffname]);
     return row;
   }
@@ -52,15 +47,15 @@ export class Staff implements IStaff {
     return row;
   }
 
-  async update({ email, pass, staffname, avatar }: IUpdatingStaff) {
+  async update({ email, pass, staffname }: IUpdatingStaff) {
     const sql = `
       UPDATE staff
-      SET email = ?, pass = ?, staffname = ?, avatar = ?
+      SET email = ?, pass = ?, staffname = ?
       WHERE staffname = ?
       LIMIT 1
     `;
     const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [email, pass, staffname, avatar]);
+      .execute<RowDataPacket[]>(sql, [email, pass, staffname]);
     return row;
   }
 
@@ -80,7 +75,7 @@ export interface IStaff {
   view(starting: number, display: number): Data;
   viewByName(staffname: string): Data;
   create({email, pass, staffname}: ICreatingStaff): Data;
-  update({email, pass, staffname, avatar}: IUpdatingStaff): Data;
+  update({email, pass, staffname}: IUpdatingStaff): Data;
   delete(staffname: string): Data;
 }
 
@@ -90,6 +85,4 @@ interface ICreatingStaff {
   staffname: string;
 }
 
-interface IUpdatingStaff extends ICreatingStaff {
-  avatar: string;
-}
+interface IUpdatingStaff extends ICreatingStaff {}

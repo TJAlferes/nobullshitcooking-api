@@ -25,11 +25,10 @@ export class ContentType implements IContentType {
   }
 
   async create({ name, parent, path }: ICreatingContentType) {
-    const sql = `
-      INSERT INTO content_types (name, parent, path) VALUES (?, ?, ?)
-    `;
-    const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [name, parent, path]);
+    const sql =
+      `INSERT INTO content_types (name, parent, path) VALUES (?, ?, ?)`;
+    const [ row ] =
+      await this.pool.execute<RowDataPacket[]>(sql, [name, parent, path]);
     return row;
   }
 
@@ -40,8 +39,8 @@ export class ContentType implements IContentType {
       WHERE name = ?
       LIMIT 1
     `;
-    const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [name, parent, path]);
+    const [ row ] =
+      await this.pool.execute<RowDataPacket[]>(sql, [name, parent, path]);
     return row;
   }
 

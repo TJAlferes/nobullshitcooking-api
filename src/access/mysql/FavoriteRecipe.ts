@@ -5,24 +5,24 @@ export class FavoriteRecipe implements IFavoriteRecipe {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewByUser = this.viewByUser.bind(this);
+    this.viewByUserId = this.viewByUserId.bind(this);
     //this.viewMost = this.viewMost.bind(this);
     this.create = this.create.bind(this);
     this.delete = this.delete.bind(this);
   }
 
-  async viewByUser(user: string) {
+  async viewByUserId(user: string) {
     const sql = `
       SELECT 
         r.id,
         r.title,
         r.recipe_image,
-        r.owner,
+        r.ownerId,
         r.type,
         r.cuisine
       FROM favorite_recipes f
-      INNER JOIN recipes r ON r.id = f.recipe
-      WHERE f.user = ?
+      INNER JOIN recipes r ON r.id = f.recipeId
+      WHERE f.userId = ?
       ORDER BY r.title
     `;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [user]);
@@ -47,20 +47,19 @@ export class FavoriteRecipe implements IFavoriteRecipe {
     return rows;
   }*/
 
-  async create(user: string, recipe: string) {
-    await this.delete(user, recipe);
-    const sql = `INSERT INTO favorite_recipes (user, recipe) VALUES (?, ?)`;
-    const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [user, recipe]);
+  async create(userId: string, recipeId: string) {
+    await this.delete(userId, recipeId);
+    const sql = `INSERT INTO favorite_recipes (userId, recipeId) VALUES (?, ?)`;
+    const [ row ] =
+      await this.pool.execute<RowDataPacket[]>(sql, [userId, recipeId]);
     return row;
   }
 
-  async delete(user: string, recipe: string) {
-    const sql = `
-      DELETE FROM favorite_recipes WHERE user = ? AND recipe = ? LIMIT 1
-    `;
-    const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [user, recipe]);
+  async delete(userId: string, recipeId: string) {
+    const sql =
+      `DELETE FROM favorite_recipes WHERE userId = ? AND recipeId = ? LIMIT 1`;
+    const [ row ] =
+      await this.pool.execute<RowDataPacket[]>(sql, [userId, recipeId]);
     return row;
   }
 }
@@ -69,8 +68,8 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IFavoriteRecipe {
   pool: Pool;
+  viewByUserId(userId: string): Data;
   //viewMost(): Data;
-  viewByUser(user: string): Data;
-  create(user: string, recipe: string): Data;
-  delete(user: string, recipe: string): Data;
+  create(userId: string, recipeId: string): Data;
+  delete(userId: string, recipeId: string): Data;
 }
