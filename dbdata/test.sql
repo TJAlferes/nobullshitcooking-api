@@ -13,7 +13,7 @@ Create parent tables
 */
 
 CREATE TABLE `content_types` (
-  `id` VARBINARY(16) NOT NULL,
+  `id` varbinary(16) NOT NULL,
   `name` varchar(60) UNIQUE NOT NULL,
   `parent` varchar(60),
   `path` varchar(255) UNIQUE NOT NULL,
@@ -21,16 +21,12 @@ CREATE TABLE `content_types` (
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `cuisines` (
-  `id` VARBINARY(16) NOT NULL,
-  `name` varchar(40) NOT NULL,
-  `nation` varchar(40) UNIQUE NOT NULL,
-  `wiki` varchar(60) NOT NULL DEFAULT '',
-  `intro` text NOT NULL,
-  PRIMARY KEY (`id`)
+  `name` varchar(40) UNIQUE NOT NULL,
+  PRIMARY KEY (`name`)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `customers` (
-  `id` VARBINARY(16) NOT NULL,
+  `id` varbinary(16) NOT NULL,
   `email` varchar(60) UNIQUE NOT NULL,
   PRIMARY KEY (`id`)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -71,7 +67,7 @@ CREATE TABLE `recipe_types` (
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `staff` (
-  `id` VARBINARY(16) NOT NULL,
+  `id` varbinary(16) NOT NULL,
   `email` varchar(60) UNIQUE NOT NULL,
   `pass` char(60) NOT NULL,
   `staffname` varchar(20) NOT NULL,
@@ -79,13 +75,13 @@ CREATE TABLE `staff` (
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `suppliers` (
-  `id` VARBINARY(16) NOT NULL,
+  `id` varbinary(16) NOT NULL,
   `name` varchar(60) UNIQUE NOT NULL,
   PRIMARY KEY (`id`)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `users` (
-  `id` VARBINARY(16) NOT NULL,
+  `id` varbinary(16) NOT NULL,
   `email` varchar(60) UNIQUE NOT NULL,
   `pass` char(60) NOT NULL,
   `username` varchar(20) NOT NULL,
@@ -100,10 +96,10 @@ Create child tables
 */
 
 CREATE TABLE `content` (
-  `id` VARBINARY(16) NOT NULL,
+  `id` varbinary(16) NOT NULL,
   `type` varchar(60) NOT NULL,
-  `author` varchar(20) NOT NULL,
-  `owner` varchar(20) NOT NULL,
+  `authorId` varbinary(16) NOT NULL,
+  `ownerId` varbinary(16) NOT NULL,
   `created` char(10) NOT NULL,
   `published` char(10),
   `title` varchar(100) NOT NULL,
@@ -111,39 +107,39 @@ CREATE TABLE `content` (
   `items` json DEFAULT NULL,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`type`) REFERENCES `content_types` (`name`) ON UPDATE CASCADE,
-  FOREIGN KEY (`author`) REFERENCES `users` (`username`),
-  FOREIGN KEY (`owner`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
+  FOREIGN KEY (`authorId`) REFERENCES `users` (`id`),
+  FOREIGN KEY (`ownerId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `equipment` (
-  `id` VARBINARY(16) NOT NULL,
+  `id` varbinary(16) NOT NULL,
   `type` varchar(25) NOT NULL,
-  `author` varchar(20) NOT NULL,
-  `owner` varchar(20) NOT NULL,
+  `authorId` varbinary(16) NOT NULL,
+  `ownerId` varbinary(16) NOT NULL,
   `name` varchar(100) NOT NULL,
   `description` text NOT NULL,
   `image` varchar(100) NOT NULL DEFAULT 'nobsc-equipment-default',
   PRIMARY KEY (`id`),
   FOREIGN KEY (`type`) REFERENCES `equipment_types` (`name`) ON UPDATE CASCADE,
-  FOREIGN KEY (`author`) REFERENCES `users` (`username`),
-  FOREIGN KEY (`owner`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
+  FOREIGN KEY (`authorId`) REFERENCES `users` (`id`),
+  FOREIGN KEY (`ownerId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `grocers` (
-  `id` VARBINARY(16) NOT NULL,
-  `owner` varchar(20) NOT NULL,
+  `id` varbinary(16) NOT NULL,
+  `ownerId` varbinary(16) NOT NULL,
   `name` varchar(100) NOT NULL,
   `address` varchar(100) NOT NULL,
   `notes` text NOT NULL,
   PRIMARY KEY (`id`),
-  FOREIGN KEY (`owner`) REFERENCES `users` (`username`)
+  FOREIGN KEY (`ownerId`) REFERENCES `users` (`id`)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `ingredients` (
-  `id` VARBINARY(16) NOT NULL,
+  `id` varbinary(16) NOT NULL,
   `type` varchar(25) NOT NULL,
-  `author` varchar(20) NOT NULL,
-  `owner` varchar(20) NOT NULL,
+  `authorId` varbinary(16) NOT NULL,
+  `ownerId` varbinary(16) NOT NULL,
   `brand` varchar(50) NOT NULL DEFAULT '',
   `variety` varchar(50) NOT NULL DEFAULT '',
   `name` varchar(50) NOT NULL,
@@ -153,22 +149,22 @@ CREATE TABLE `ingredients` (
   `image` varchar(100) NOT NULL DEFAULT 'nobsc-ingredient-default',
   PRIMARY KEY (`id`),
   FOREIGN KEY (`type`) REFERENCES `ingredient_types` (`name`) ON UPDATE CASCADE,
-  FOREIGN KEY (`author`) REFERENCES `users` (`username`),
-  FOREIGN KEY (`owner`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
+  FOREIGN KEY (`authorId`) REFERENCES `users` (`id`),
+  FOREIGN KEY (`ownerId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `orders` (
-  `id` VARBINARY(16) NOT NULL,
+  `id` varbinary(16) NOT NULL,
   `customer` varchar(60) NOT NULL,
-  `staff` varchar(20) NOT NULL,
+  `staff` varbinary(16) NOT NULL,
   `created` char(10) NOT NULL,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`customer`) REFERENCES `customers` (`email`),
-  FOREIGN KEY (`staff`) REFERENCES `staff` (`staffname`)
+  FOREIGN KEY (`staff`) REFERENCES `staff` (`id`)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `products` (
-  `id` VARBINARY(16) NOT NULL,
+  `id` varbinary(16) NOT NULL,
   `category` varchar(50) NOT NULL,
   `type` varchar(50) NOT NULL,
   `brand` varchar(50) NOT NULL,
@@ -185,36 +181,36 @@ CREATE TABLE `products` (
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `order_products` (
-  `order` char(36) UNIQUE NOT NULL,
-  `product` char(36) UNIQUE NOT NULL,
+  `order` varbinary(16) NOT NULL,
+  `product` varbinary(16) NOT NULL,
   FOREIGN KEY (`order`) REFERENCES `orders` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`product`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `plans` (
-  `id` VARBINARY(16) NOT NULL,
-  `author` varchar(20) NOT NULL,
-  `owner` varchar(20) NOT NULL,
+  `id` varbinary(16) NOT NULL,
+  `authorId` varbinary(16) NOT NULL,
+  `ownerId` varbinary(16) NOT NULL,
   `name` varchar(100) NOT NULL,
   `data` json DEFAULT NULL,
   PRIMARY KEY (`id`),
-  FOREIGN KEY (`author`) REFERENCES `users` (`username`),
-  FOREIGN KEY (`owner`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
+  FOREIGN KEY (`authorId`) REFERENCES `users` (`id`),
+  FOREIGN KEY (`ownerId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `product_suppliers` (
-  `product` char(36) UNIQUE NOT NULL,
-  `supplier` char(36) UNIQUE NOT NULL,
-  FOREIGN KEY (`product`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (`supplier`) REFERENCES `suppliers` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
+  `productId` varbinary(16) NOT NULL,
+  `supplierId` varbinary(16) NOT NULL,
+  FOREIGN KEY (`productId`) REFERENCES `products` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`supplierId`) REFERENCES `suppliers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `recipes` (
-  `id` VARBINARY(16) NOT NULL,
+  `id` varbinary(16) NOT NULL,
   `type` varchar(25) NOT NULL,
   `cuisine` varchar(40) NOT NULL,
-  `author` varchar(20) NOT NULL,
-  `owner` varchar(20) NOT NULL,
+  `authorId` varbinary(16) NOT NULL,
+  `ownerId` varbinary(16) NOT NULL,
   `title` varchar(100) NOT NULL,
   `description` varchar(150) NOT NULL DEFAULT '',
   `active_time` time NOT NULL,
@@ -228,65 +224,65 @@ CREATE TABLE `recipes` (
   PRIMARY KEY (`id`),
   FOREIGN KEY (`type`) REFERENCES `recipe_types` (`name`) ON UPDATE CASCADE,
   FOREIGN KEY (`cuisine`) REFERENCES `cuisines` (`name`) ON UPDATE CASCADE,
-  FOREIGN KEY (`author`) REFERENCES `users` (`username`),
-  FOREIGN KEY (`owner`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
+  FOREIGN KEY (`authorId`) REFERENCES `users` (`id`),
+  FOREIGN KEY (`ownerId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `recipe_equipment` (
-  `recipe` char(36) UNIQUE NOT NULL,
-  `equipment` char(36) UNIQUE NOT NULL,
+  `recipeId` varbinary(16) NOT NULL,
+  `equipmentId` varbinary(16) NOT NULL,
   `amount` tinyint unsigned NOT NULL,
-  FOREIGN KEY (`recipe`) REFERENCES `recipes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (`equipment`) REFERENCES `equipment` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  FOREIGN KEY (`recipeId`) REFERENCES `recipes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`equipmentId`) REFERENCES `equipment` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `recipe_ingredients` (
-  `recipe` char(36) UNIQUE NOT NULL,
-  `ingredient` char(36) UNIQUE NOT NULL,
+  `recipeId` varbinary(16) NOT NULL,
+  `ingredientId` varbinary(16) NOT NULL,
   `amount` decimal(5,2) NOT NULL,
   `measurement` varchar(25) NOT NULL,
-  FOREIGN KEY (`recipe`) REFERENCES `recipes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (`ingredient`) REFERENCES `ingredients` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`recipeId`) REFERENCES `recipes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`ingredientId`) REFERENCES `ingredients` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`measurement`) REFERENCES `measurements` (`name`) ON UPDATE CASCADE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `recipe_methods` (
-  `recipe` char(36) UNIQUE NOT NULL,
-  `method` char(36) UNIQUE NOT NULL,
+  `recipeId` varbinary(16) NOT NULL,
+  `method` varchar(25) NOT NULL,
   FOREIGN KEY (`recipe`) REFERENCES `recipes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`method`) REFERENCES `methods` (`name`) ON UPDATE CASCADE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `recipe_subrecipes` (
-  `recipe` char(36) UNIQUE NOT NULL,
-  `subrecipe` char(36) UNIQUE NOT NULL,
+  `recipeId` varbinary(16) NOT NULL,
+  `subrecipeId` varbinary(16) NOT NULL,
   `amount` decimal(5,2) NOT NULL,
   `measurement` varchar(25) NOT NULL,
-  FOREIGN KEY (`recipe`) REFERENCES `recipes` (`id`),
-  FOREIGN KEY (`subrecipe`) REFERENCES `recipes` (`id`),
+  FOREIGN KEY (`recipeId`) REFERENCES `recipes` (`id`),
+  FOREIGN KEY (`subrecipeId`) REFERENCES `recipes` (`id`),
   FOREIGN KEY (`measurement`) REFERENCES `measurements` (`name`) ON UPDATE CASCADE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `favorite_recipes` (
-  `user` varchar(20) NOT NULL,
-  `recipe` char(36) UNIQUE NOT NULL,
-  FOREIGN KEY (`user`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (`recipe`) REFERENCES `recipes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  `userId` varbinary(16) NOT NULL,
+  `recipeId` varbinary(16) NOT NULL,
+  FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`recipeId`) REFERENCES `recipes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `saved_recipes` (
-  `user` varchar(20) NOT NULL,
-  `recipe` char(36) UNIQUE NOT NULL,
-  FOREIGN KEY (`user`) REFERENCES `users` (`username`) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY (`recipe`) REFERENCES `recipes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  `userId` varbinary(16) NOT NULL,
+  `recipeId` varbinary(16) NOT NULL,
+  FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`recipeId`) REFERENCES `recipes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `friendships` (
-  `user` varchar(20) NOT NULL,
-  `friend` varchar(20) NOT NULL,
+  `userId` varbinary(16) NOT NULL,
+  `friendId` varbinary(16) NOT NULL,
   `status` varchar(20) NOT NULL,
-  FOREIGN KEY (`user`) REFERENCES `users` (`username`),
-  FOREIGN KEY (`friend`) REFERENCES `users` (`username`)
+  FOREIGN KEY (`userId`) REFERENCES `users` (`id`),
+  FOREIGN KEY (`friendId`) REFERENCES `users` (`id`)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*
@@ -522,228 +518,226 @@ VALUES
 ("Methods",     "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Steam Poach Simmer Boil and Blanch", "[]"),
 ("Methods",     "NOBSC", "NOBSC", "2020-04-14", "2020-04-14", "Stew and Braise",                    "[]");
 
-INSERT INTO cuisines
-(name,                       nation,                              wiki, intro)
-VALUES
-("Afghan",                   "Afghanistan",                       "Afghan_cuisine", ""),
-("Albanian",                 "Albania",                           "Albanian_cuisine", ""),
-("Algerian",                 "Algeria",                           "Algerian_cuisine", ""),
-("Catalan",                  "Andorra",                           "Catalan_cuisine", ""),
-("Angolan",                  "Angola",                            "Angolan_cuisine", ""),
-("Antigua and Barbuda",      "Antigua and Barbuda",               "Antigua_and_Barbuda_cuisine", ""),
-("Argentine",                "Argentina",                         "Argentine_cuisine", ""),
-("Armenian",                 "Armenia",                           "Armenian_cuisine", ""),
-("Australian",               "Australia",                         "Australian_cuisine", ""),
-("Austrian",                 "Austria",                           "Austrian_cuisine", ""),
-("Azerbaijani",              "Azerbaijan",                        "Azerbaijani_cuisine", ""),
+INSERT INTO cuisines (name) VALUES
+("Afghan"),
+("Albanian"),
+("Algerian"),
+("Catalan"),
+("Angolan"),
+("Antigua and Barbuda"),
+("Argentine"),
+("Armenian"),
+("Australian"),
+("Austrian"),
+("Azerbaijani"),
 
-("Bahamian",                 "Bahamas",                           "Bahamian_cuisine", ""),
-("Bahraini",                 "Bahrain",                           "Bahraini_cuisine", ""),
-("Bangladeshi",              "Bangladesh",                        "Bangladeshi_cuisine", ""),
-("Bajan",                    "Barbados",                          "Barbadian_cuisine", ""),
-("Belarusian",               "Belarus",                           "Belarusian_cuisine", ""),
-("Belgian",                  "Belgium",                           "Belgian_cuisine", ""),
-("Belizean",                 "Belize",                            "Belizean_cuisine", ""),
-("Benin",                    "Benin",                             "Benin_cuisine", ""),
-("Bhutanese",                "Bhutan",                            "Bhutanese_cuisine", ""),
-("Bolivian",                 "Bolivia",                           "Bolivian_cuisine", ""),
-("Bosnia and Herzegovina",   "Bosnia and Herzegovina",            "Bosnia_and_Herzegovina_cuisine", ""),
-("Botswana",                 "Botswana",                          "Botswana_cuisine", ""),
-("Brazilian",                "Brazil",                            "Brazilian_cuisine", ""),
-("Bruneian",                 "Brunei",                            "Bruneian_cuisine", ""),
-("Bulgarian",                "Bulgaria",                          "Bulgarian_cuisine", ""),
-("Burkinabe",                "Burkina Faso",                      "Burkinabe_cuisine", ""),
-("Burundian",                "Burundi",                           "Burundian_cuisine", ""),
+("Bahamian"),
+("Bahraini"),
+("Bangladeshi"),
+("Bajan"),
+("Belarusian"),
+("Belgian"),
+("Belizean"),
+("Benin"),
+("Bhutanese"),
+("Bolivian"),
+("Bosnia and Herzegovina"),
+("Botswana"),
+("Brazilian"),
+("Bruneian"),
+("Bulgarian"),
+("Burkinabe"),
+("Burundian"),
 
-("Ivorian",                  "Côte d'Ivoire",                     "Ivorian_cuisine", ""),
-("Cape Verdean",             "Cabo Verde",                        "Cape_Verdean_cuisine", ""),
-("Cambodian",                "Cambodia",                          "Cambodian_cuisine", ""),
-("Cameroonian",              "Cameroon",                          "Cameroonian_cuisine", ""),
-("Canadian",                 "Canada",                            "Canadian_cuisine", ""),
-("Central African Republic", "Central African Republic",          "Cuisine_of_the_Central_African_Republic", ""),
-("Chadian",                  "Chad",                              "Chadian_cuisine", ""),
-("Chilean",                  "Chile",                             "Chilean_cuisine", ""),
-("Chinese",                  "China",                             "Chinese_cuisine", ""),
-("Colombian",                "Colombia",                          "Colombian_cuisine", ""),
-("Comoros",                  "Comoros",                           "NA", ""),
-("Congolese, Democratic",    "Congo, Democratic Republic of the", "Congolese_cuisine", ""),
-("Congolese",                "Congo, Republic of the",            "Congolese_cuisine", ""),
-("Costa Rican",              "Costa Rica",                        "Costa_Rican_cuisine", ""),
-("Croatian",                 "Croatia",                           "Croatian_cuisine", ""),
-("Cuban",                    "Cuba",                              "Cuban_cuisine", ""),
-("Cypriot",                  "Cyprus",                            "Cypriot_cuisine", ""),
-("Czech",                    "Czechia",                           "Czech_cuisine", ""),
+("Ivorian"),
+("Cape Verdean"),
+("Cambodian"),
+("Cameroonian"),
+("Canadian"),
+("Central African Republic"),
+("Chadian"),
+("Chilean"),
+("Chinese"),
+("Colombian"),
+("Comoros"),
+("Congolese, Democratic"),
+("Congolese"),
+("Costa Rican"),
+("Croatian"),
+("Cuban"),
+("Cypriot"),
+("Czech"),
 
-("Danish",                   "Denmark",                           "Danish_cuisine", ""),
-("Djiboutian",               "Djibouti",                          "Djiboutian_cuisine", ""),
-("Dominica",                 "Dominica",                          "Dominica_cuisine", ""),
-("Dominican Republic",       "Dominican Republic",                "Dominican_Republic_cuisine", ""),
+("Danish"),
+("Djiboutian"),
+("Dominica"),
+("Dominican Republic"),
 
-("Ecuadorian",               "Ecuador",                           "Ecuadorian_cuisine", ""),
-("Egyptian",                 "Egypt",                             "Egyptian_cuisine", ""),
-("Salvadoran",               "El Salvador",                       "Salvadoran_cuisine", ""),
-("Equatorial Guinea",        "Equatorial Guinea",                 "Cuisine_of_Equatorial_Guinea", ""),
-("Eritrean",                 "Eritrea",                           "Eritrean_cuisine", ""),
-("Estonian",                 "Estonia",                           "Estonian_cuisine", ""),
-("Eswatini",                 "Eswatini",                          "Cuisine_of_Eswatini", ""),
-("Ethiopian",                "Ethiopia",                          "Ethiopian_cuisine", ""),
+("Ecuadorian"),
+("Egyptian"),
+("Salvadoran"),
+("Equatorial Guinea"),
+("Eritrean"),
+("Estonian"),
+("Eswatini"),
+("Ethiopian"),
 
-("Fijian",                   "Fiji",                              "Fijian_cuisine", ""),
-("Finnish",                  "Finland",                           "Finnish_cuisine", ""),
-("French",                   "France",                            "French_cuisine", ""),
+("Fijian"),
+("Finnish"),
+("French"),
 
-("Gabonese",                 "Gabon",                             "Gabonese_cuisine", ""),
-("Gambian",                  "Gambia",                            "Gambian_cuisine", ""),
-("Georgian",                 "Georgia",                           "Georgian_cuisine", ""),
-("German",                   "Germany",                           "German_cuisine", ""),
-("Ghanaian",                 "Ghana",                             "Ghanaian_cuisine", ""),
-("Greek",                    "Greece",                            "Greek_cuisine", ""),
-("Grenada",                  "Grenada",                           "Grenada", ""),
-("Guatemalan",               "Guatemala",                         "Guatemalan_cuisine", ""),
-("Guinea",                   "Guinea",                            "Cuisine_of_Guinea", ""),
-("Guinea-Bissauan",          "Guinea-Bissau",                     "Guinea-Bissauan_cuisine", ""),
-("Guyanese",                 "Guyana",                            "Culture_of_Guyana#Cuisine", ""),
+("Gabonese"),
+("Gambian"),
+("Georgian"),
+("German"),
+("Ghanaian"),
+("Greek"),
+("Grenada"),
+("Guatemalan"),
+("Guinea"),
+("Guinea-Bissauan"),
+("Guyanese"),
 
-("Haitian",                  "Haiti",                             "Haitian_cuisine", ""),
-("Honduran",                 "Honduras",                          "Honduran_cuisine", ""),
-("Hungarian",                "Hungary",                           "Hungarian_cuisine", ""),
+("Haitian"),
+("Honduran"),
+("Hungarian"),
 
-("Icelandic",                "Iceland",                           "Icelandic_cuisine", ""),
-("Indian",                   "India",                             "Indian_cuisine", ""),
-("Indonesian",               "Indonesia",                         "Indonesian_cuisine", ""),
-("Iranian",                  "Iran",                              "Iranian_cuisine", ""),
-("Iraqi",                    "Iraq",                              "Iraqi_cuisine", ""),
-("Irish",                    "Ireland",                           "Irish_cuisine", ""),
-("Israeli",                  "Israel",                            "Israeli_cuisine", ""),
-("Italian",                  "Italy",                             "Italian_cuisine", ""),
+("Icelandic"),
+("Indian"),
+("Indonesian"),
+("Iranian"),
+("Iraqi"),
+("Irish"),
+("Israeli"),
+("Italian"),
 
-("Jamaican",                 "Jamaica",                           "Jamaican_cuisine", ""),
-("Japanese",                 "Japan",                             "Japanese_cuisine", ""),
-("Jordanian",                "Jordan",                            "Jordanian_cuisine", ""),
+("Jamaican"),
+("Japanese"),
+("Jordanian"),
 
-("Kazakh",                   "Kazakhstan",                        "Kazakh_cuisine", ""),
-("Kenyan",                   "Kenya",                             "Culture_of_Kenya#Cuisine", ""),
-("Kiribati",                 "Kiribati",                          "Kiribati", ""),
-("Kosovan",                  "Kosovo",                            "Kosovan_cuisine", ""),
-("Kuwaiti",                  "Kuwait",                            "Kuwaiti_cuisine", ""),
-("Kyrgyz",                   "Kyrgyzstan",                        "Kyrgyz_cuisine", ""),
+("Kazakh"),
+("Kenyan"),
+("Kiribati"),
+("Kosovan"),
+("Kuwaiti"),
+("Kyrgyz"),
 
-("Lao",                      "Laos",                              "Lao_cuisine", ""),
-("Latvian",                  "Latvia",                            "Latvian_cuisine", ""),
-("Lebanese",                 "Lebanon",                           "Lebanese_cuisine", ""),
-("Basotho",                  "Lesotho",                           "Cuisine_of_Lesotho", ""),
-("Liberian",                 "Liberia",                           "Liberian_cuisine", ""),
-("Libyan",                   "Libya",                             "Libyan_cuisine", ""),
-("Liechtensteiner",          "Liechtenstein",                     "Liechtenstein_cuisine", ""),
-("Lithuanian",               "Lithuania",                         "Lithuanian_cuisine", ""),
-("Luxembourg",               "Luxembourg",                        "Luxembourg%27s_cuisine", ""),
+("Lao"),
+("Latvian"),
+("Lebanese"),
+("Basotho"),
+("Liberian"),
+("Libyan"),
+("Liechtensteiner"),
+("Lithuanian"),
+("Luxembourg"),
 
-("Malagasy",                 "Madagascar",                        "Malagasy_cuisine", ""),
-("Malawian",                 "Malawi",                            "Malawian_cuisine", ""),
-("Malaysian",                "Malaysia",                          "Malaysian_cuisine", ""),
-("Maldivian",                "Maldives",                          "Maldivian_cuisine", ""),
-("Malian",                   "Mali",                              "Malian_cuisine", ""),
-("Maltese",                  "Malta",                             "Maltese_cuisine", ""),
-("Marshall Islands",         "Marshall Islands",                  "NA", ""),
-("Mauritanian",              "Mauritania",                        "Mauritanian_cuisine", ""),
-("Mauritius",                "Mauritius",                         "Cuisine_of_Mauritius", ""),
-("Mexican",                  "Mexico",                            "Mexican_cuisine", ""),
-("Micronesian",              "Micronesia",                        "NA", ""),
-("Moldovan",                 "Moldova",                           "Moldovan_cuisine", ""),
-("Monégasque",               "Monaco",                            "Monégasque_cuisine", ""),
-("Mongolian",                "Mongolia",                          "Mongolian_cuisine", ""),
-("Montenegrin",              "Montenegro",                        "Montenegrin_cuisine", ""),
-("Moroccan",                 "Morocco",                           "Moroccan_cuisine", ""),
-("Mozambique",               "Mozambique",                        "Cuisine_of_Mozambique", ""),
-("Burmese",                  "Myanmar",                           "Burmese_cuisine", ""),
+("Malagasy"),
+("Malawian"),
+("Malaysian"),
+("Maldivian"),
+("Malian"),
+("Maltese"),
+("Marshall Islands"),
+("Mauritanian"),
+("Mauritius"),
+("Mexican"),
+("Micronesian"),
+("Moldovan"),
+("Monégasque"),
+("Mongolian"),
+("Montenegrin"),
+("Moroccan"),
+("Mozambique"),
+("Burmese"),
 
-("Namibian",                 "Namibia",                           "Namibian_cuisine", ""),
-("Nauru",                    "Nauru",                             "NA", ""),
-("Nepalese",                 "Nepal",                             "Nepalese_cuisine", ""),
-("Dutch",                    "Netherlands",                       "Dutch_cuisine", ""),
-("New Zealand",              "New Zealand",                       "New_Zealand_cuisine", ""),
-("Nicaraguan",               "Nicaragua",                         "Nicaraguan_cuisine", ""),
-("Niger",                    "Niger",                             "Cuisine_of_Niger", ""),
-("Nigerian",                 "Nigeria",                           "Nigerian_cuisine", ""),
-("North Korean",             "North Korea",                       "North_Korean_cuisine", ""),
-("Macedonian",               "North Macedonia",                   "Macedonian_cuisine", ""),
-("Norwegian",                "Norway",                            "Norwegian_cuisine", ""),
+("Namibian"),
+("Nauru"),
+("Nepalese"),
+("Dutch"),
+("New Zealand"),
+("Nicaraguan"),
+("Niger"),
+("Nigerian"),
+("North Korean"),
+("Macedonian"),
+("Norwegian"),
 
-("Omani",                    "Oman",                              "Omani_cuisine", ""),
+("Omani"),
 
-("Pakistani",                "Pakistan",                          "Pakistani_cuisine", ""),
-("Palauan",                  "Palau",                             "Palau#Cuisine", ""),
-("Palestinian",              "Palestine",                         "Palestinian_cuisine", ""),
-("Panamanian",               "Panama",                            "Panamanian_cuisine", ""),
-("Papua New Guinean",        "Papua New Guinea",                  "Papua_New_Guinean_cuisine", ""),
-("Paraguayan",               "Paraguay",                          "Paraguayan_cuisine", ""),
-("Peruvian",                 "Peru",                              "Peruvian_cuisine", ""),
-("Filipino",                 "Philippines",                       "Filipino_cuisine", ""),
-("Polish",                   "Poland",                            "Polish_cuisine", ""),
-("Portuguese",               "Portugal",                          "Portuguese_cuisine", ""),
+("Pakistani"),
+("Palauan"),
+("Palestinian"),
+("Panamanian"),
+("Papua New Guinean"),
+("Paraguayan"),
+("Peruvian"),
+("Filipino"),
+("Polish"),
+("Portuguese"),
 
-("Qatari",                   "Qatar",                             "Qatari_cuisine", ""),
+("Qatari"),
 
-("Romanian",                 "Romania",                           "Romanian_cuisine", ""),
-("Russian",                  "Russia",                            "Russian_cuisine", ""),
-("Rwandan",                  "Rwanda",                            "Rwandan_cuisine", ""),
+("Romanian"),
+("Russian"),
+("Rwandan"),
 
-("Saint Kitts and Nevis",    "Saint Kitts and Nevis",             "NA", ""),
-("Saint Lucian",             "Saint Lucia",                       "Saint_Lucian_cuisine", ""),
-("Grenadine",                "Saint Vincent and the Grenadines",  "NA", ""),
-("Samoan",                   "Samoa",                             "NA", ""),
-("Sammarinese",              "San Marino",                        "Sammarinese_cuisine", ""),
-("Sao Tome and Principe",    "Sao Tome and Principe",             "Cuisine_of_São_Tomé_and_Príncipe", ""),
-("Saudi Arabian",            "Saudi Arabia",                      "Saudi_Arabian_cuisine", ""),
-("Senegalese",               "Senegal",                           "Senegalese_cuisine", ""),
-("Serbian",                  "Serbia",                            "Serbian_cuisine", ""),
-("Seychellois",              "Seychelles",                        "Seychellois_cuisine", ""),
-("Sierra Leonean",           "Sierra Leone",                      "Sierra_Leonean_cuisine", ""),
-("Singaporean",              "Singapore",                         "Singaporean_cuisine", ""),
-("Slovak",                   "Slovakia",                          "Slovak_cuisine", ""),
-("Slovenian",                "Slovenia",                          "Slovenian_cuisine", ""),
-("Solomon Islands",          "Solomon Islands",                   "NA", ""),
-("Somali",                   "Somalia",                           "Somali_cuisine", ""),
-("South African",            "South Africa",                      "South_African_cuisine", ""),
-("South Korean",             "South Korea",                       "Korean_cuisine", ""),
-("South Sudan",              "South Sudan",                       "South_African_cuisine", ""),
-("Spanish",                  "Spain",                             "Spanish_cuisine", ""),
-("Sri Lankan",               "Sri Lanka",                         "Sri_Lankan_cuisine", ""),
-("Sudanese",                 "Sudan",                             "Sudanese_cuisine", ""),
-("Surinamese",               "Suriname",                          "Culture_of_Suriname#Cuisine", ""),
-("Swedish",                  "Sweden",                            "Swedish_cuisine", ""),
-("Swiss",                    "Switzerland",                       "Swiss_cuisine", ""),
-("Syrian",                   "Syria",                             "Syrian_cuisine", ""),
+("Saint Kitts and Nevis"),
+("Saint Lucian"),
+("Grenadine"),
+("Samoan"),
+("Sammarinese"),
+("Sao Tome and Principe"),
+("Saudi Arabian"),
+("Senegalese"),
+("Serbian"),
+("Seychellois"),
+("Sierra Leonean"),
+("Singaporean"),
+("Slovak"),
+("Slovenian"),
+("Solomon Islands"),
+("Somali"),
+("South African"),
+("South Korean"),
+("South Sudan"),
+("Spanish"),
+("Sri Lankan"),
+("Sudanese"),
+("Surinamese"),
+("Swedish"),
+("Swiss"),
+("Syrian"),
 
-("Taiwanese",                "Taiwan",                            "Taiwanese_cuisine", ""),
-("Tajik",                    "Tajikistan",                        "Tajik_cuisine", ""),
-("Tanzanian",                "Tanzania",                          "Culture_of_Tanzania#Cuisine", ""),
-("Thai",                     "Thailand",                          "Thai_cuisine", ""),
-("Timorese",                 "Timor-Leste",                       "East_Timor", ""),
-("Togolese",                 "Togo",                              "Togolese_cuisine", ""),
-("Tongan",                   "Tonga",                             "Culture_of_Tonga#Cuisine", ""),
-("Trinidad and Tobago",      "Trinidad and Tobago",               "Trinidad_and_Tobago_cuisine", ""),
-("Tunisian",                 "Tunisia",                           "Tunisian_cuisine", ""),
-("Turkish",                  "Turkey",                            "Turkish_cuisine", ""),
-("Turkmen",                  "Turkmenistan",                      "Turkmen_cuisine", ""),
-("Tuvaluan",                 "Tuvalu",                            "Cuisine_of_Tuvalu", ""),
+("Taiwanese"),
+("Tajik"),
+("Tanzanian"),
+("Thai"),
+("Timorese"),
+("Togolese"),
+("Tongan"),
+("Trinidad and Tobago"),
+("Tunisian"),
+("Turkish"),
+("Turkmen"),
+("Tuvaluan"),
 
-("Ugandan",                  "Uganda",                            "Ugandan_cuisine", ""),
-("Ukrainian",                "Ukraine",                           "Ukrainian_cuisine", ""),
-("Emirati",                  "United Arab Emirates",              "Emirati_cuisine", ""),
-("British",                  "United Kingdom",                    "British_cuisine", ""),
-("American",                 "United States of America",          "American_cuisine", ""),
-("Uruguayan",                "Uruguay",                           "Uruguayan_cuisine", ""),
-("Uzbek",                    "Uzbekistan",                        "Uzbek_cuisine", ""),
+("Ugandan"),
+("Ukrainian"),
+("Emirati"),
+("British"),
+("American"),
+("Uruguayan"),
+("Uzbek"),
 
-("Vanuatuan",                "Vanuatu",                           "Vanuatuan_cuisine", ""),
-("Venezuelan",               "Venezuala",                         "Venezuelan_cuisine", ""),
-("Vietnamese",               "Vietnam",                           "Vietnamese_cuisine", ""),
+("Vanuatuan"),
+("Venezuelan"),
+("Vietnamese"),
 
-("Yemeni",                   "Yemen",                             "Yemeni_cuisine", ""),
+("Yemeni"),
 
-("Zambian",                  "Zambia",                            "Zambian_cuisine", ""),
-("Zimbabwean",               "Zimbabwe",                          "Zimbabwe#Cuisine", "");
+("Zambian"),
+("Zimbabwean");
 
 INSERT INTO equipment_types (name) VALUES
 ("Cleaning"),
