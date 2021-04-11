@@ -2,7 +2,7 @@ import { Redis } from 'ioredis';
 
 import { IMessage } from '../../chat/entities/types';
 
-export class MessengerChat implements IMessengerChat {
+export class ChatMessage implements IChatMessage {
   client: Redis;
 
   constructor(client: Redis) {
@@ -23,7 +23,7 @@ export class MessengerChat implements IMessengerChat {
   }
 }
 
-export interface IMessengerChat {
+export interface IChatMessage {
   client: Redis;
   addMessage(message: IMessage): void;
 }

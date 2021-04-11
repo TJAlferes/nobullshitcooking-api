@@ -1,6 +1,6 @@
 import { Redis } from 'ioredis';
 
-export class MessengerUser implements IMessengerUser {
+export class ChatUser implements IChatUser {
   client: Redis;
 
   constructor(client: Redis) {
@@ -34,7 +34,7 @@ export class MessengerUser implements IMessengerUser {
   }
 }
 
-export interface IMessengerUser {
+export interface IChatUser {
   client: Redis;
   getSocketId(id: string): Promise<string|null>;
   add(username: string, sid: string, socketid: string): void;

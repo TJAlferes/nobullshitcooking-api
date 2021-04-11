@@ -2,7 +2,7 @@ import { Socket } from 'socket.io';
 
 import { IFriendship } from '../../access/mysql/Friendship';
 import { IUser } from '../../access/mysql/User';
-import { IMessengerUser } from '../../access/redis/MessengerUser';
+import { IChatUser } from '../../access/redis/ChatUser';
 import { PrivateMessage } from '../entities/PrivateMessage';
 
 export async function addPrivateMessage({
@@ -10,7 +10,7 @@ export async function addPrivateMessage({
   from,
   text,
   socket,
-  messengerUser,
+  chatUser,
   nobscFriendship,
   nobscUser
 }: IAddPrivateMessage) {
@@ -29,7 +29,7 @@ export async function addPrivateMessage({
     return socket.emit('FailedPrivateMessage', 'User not found.');
   }
 
-  const onlineUser = await messengerUser.getSocketId(userExists[0].id);  // ?
+  const onlineUser = await chatUser.getSocketId(userExists[0].id);  // ?
 
   if (!onlineUser) {
     return socket.emit('FailedPrivateMessage', 'User not found.');
@@ -47,7 +47,7 @@ export interface IAddPrivateMessage {
   from: string;
   text: string;
   socket: Socket;
-  messengerUser: IMessengerUser;
+  chatUser: IChatUser;
   nobscFriendship: IFriendship;
   nobscUser: IUser;
 }

@@ -1,24 +1,24 @@
 import { Socket } from 'socket.io';
 
-import { IMessengerRoom } from '../../access/redis/MessengerRoom';
+import { IChatRoom } from '../../access/redis/ChatRoom';
 
 export async function rejoinRoom({
   room,
   username,
   socket,
-  messengerRoom
+  chatRoom
 }: IRejoinRoom) {
   if (room === '') return;
 
   socket.join(room);
 
-  await messengerRoom.add(room);  // ?
+  await chatRoom.add(room);  // ?
 
-  await messengerRoom.addUser(username, room);
+  await chatRoom.addUser(username, room);
 
   socket.broadcast.to(room).emit('AddUser', username);
 
-  const users = await messengerRoom.getUsers(room);
+  const users = await chatRoom.getUsers(room);
   
   socket.emit('RegetUser', users, room);
 }
@@ -27,5 +27,5 @@ interface IRejoinRoom {
   room: string;
   username: string;
   socket: Socket;
-  messengerRoom: IMessengerRoom;
+  chatRoom: IChatRoom;
 }

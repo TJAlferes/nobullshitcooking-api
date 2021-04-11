@@ -1,14 +1,14 @@
 import { Socket } from 'socket.io';
 
-import { IMessengerRoom } from '../../access/redis/MessengerRoom';
+import { IChatRoom } from '../../access/redis/ChatRoom';
 
-export async function getUser({ room, socket, messengerRoom, }: IGetUser) {
-  const users = await messengerRoom.getUsers(room);
+export async function getUser({ room, socket, chatRoom, }: IGetUser) {
+  const users = await chatRoom.getUsers(room);
   socket.emit('GetUser', users);
 }
 
 interface IGetUser {
   room: string;
   socket: Socket;
-  messengerRoom: IMessengerRoom;
+  chatRoom: IChatRoom;
 }

@@ -8,9 +8,9 @@ import { Redis } from 'ioredis';
 import { Server, Socket } from 'socket.io';
 import { ExtendedError } from 'socket.io/dist/namespace';  // NEW
 
-import { MessengerUser } from '../access/redis/MessengerUser';
+import { ChatUser } from '../access/redis/ChatUser';
 
-export async function addMessengerUser(
+export async function addChatUser(
   pubClient: Redis,
   socket: Socket,
   sid: string,
@@ -22,9 +22,9 @@ export async function addMessengerUser(
   //socket.request.userInfo = session.userInfo;  // OLD (now read-only)
   socket.handshake.query = {sid, userInfo: session.userInfo};  // NEW
 
-  const messengerUser = new MessengerUser(pubClient);
+  const chatUser = new ChatUser(pubClient);
 
-  await messengerUser.add(username, avatar, sid, socket.id);
+  await chatUser.add(username, sid, socket.id);
 }
 
 export function sessionIdsAreEqual(socket: Socket) {
@@ -54,7 +54,7 @@ export function useSocketAuth(
         return next(new Error('Not authenticated.'));
       }
 
-      await addMessengerUser(pubClient, socket, sid, session);
+      await addChatUser(pubClient, socket, sid, session);
 
       return next();
     });

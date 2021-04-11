@@ -1,13 +1,13 @@
 import { Socket } from 'socket.io';
 
 import { IFriendship } from '../../access/mysql/Friendship';
-import { IMessengerUser } from '../../access/redis/MessengerUser';
+import { IChatUser } from '../../access/redis/ChatUser';
 
 export async function getOnline({
   username,
   avatar,
   socket,
-  messengerUser,
+  chatUser,
   nobscFriendship
 }: IGetOnline) {
   const acceptedFriends = await nobscFriendship.viewAccepted(username);
@@ -17,7 +17,7 @@ export async function getOnline({
   let online = [];
 
   for (let f of acceptedFriends) {
-    const onlineFriend = await messengerUser.getSocketId(f.user_id);
+    const onlineFriend = await chatUser.getSocketId(f.user_id);
 
     if (!onlineFriend) continue;
 
@@ -33,6 +33,6 @@ export interface IGetOnline {
   username: string;
   avatar: string;
   socket: Socket;
-  messengerUser: IMessengerUser;
+  chatUser: IChatUser;
   nobscFriendship: IFriendship;
 }

@@ -1,15 +1,15 @@
 import { Socket } from 'socket.io';
 
 import { IFriendship } from '../../access/mysql/Friendship';
-import { IMessengerRoom } from '../../access/redis/MessengerRoom';
-import { IMessengerUser } from '../../access/redis/MessengerUser';
+import { IChatRoom } from '../../access/redis/ChatRoom';
+import { IChatUser } from '../../access/redis/ChatUser';
 
 export async function disconnecting({
   reason,
   username,
   socket,
-  messengerRoom,
-  messengerUser,
+  chatRoom,
+  chatUser,
   nobscFriendship,
 }: IDisconnecting) {
   const clonedSocket: Partial<Socket> = {...socket};
@@ -20,7 +20,7 @@ export async function disconnecting({
     if (room !== clonedSocket.id) {
       socket.broadcast.to(room).emit('RemoveUser', username);
       
-      messengerRoom.removeUser(username, room);
+      chatRoom.removeUser(username, room);
     }
   }
 
@@ -28,7 +28,7 @@ export async function disconnecting({
 
   if (acceptedFriends.length) {
     for (let f of acceptedFriends) {
-      const onlineFriend = await messengerUser.getSocketId(f.username);
+      const onlineFriend = await chatUser.getSocketId(f.username);
 
       if (!onlineFriend) continue;
       
@@ -36,14 +36,14 @@ export async function disconnecting({
     }
   }
 
-  await messengerUser.remove(username);
+  await chatUser.remove(username);
 }
 
 export interface IDisconnecting {
   reason: any;
   username: string;
   socket: Socket;
-  messengerRoom: IMessengerRoom;
-  messengerUser: IMessengerUser;
+  chatRoom: IChatRoom;
+  chatUser: IChatUser;
   nobscFriendship: IFriendship;
 }

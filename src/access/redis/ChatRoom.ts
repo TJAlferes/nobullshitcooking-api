@@ -1,6 +1,6 @@
 import { Redis } from 'ioredis';
 
-export class MessengerRoom implements IMessengerRoom {
+export class ChatRoom implements IChatRoom {
   pubClient: Redis;
   subClient: Redis;
 
@@ -48,7 +48,7 @@ export class MessengerRoom implements IMessengerRoom {
   }
 }
 
-export interface IMessengerRoom {
+export interface IChatRoom {
   pubClient: Redis;
   subClient: Redis;
   add(room: string): void;
