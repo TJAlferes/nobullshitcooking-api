@@ -16,6 +16,7 @@ import { disconnecting } from './handlers/disconnecting';
 import { getOnline } from './handlers/getOnline';
 import { getUser } from './handlers/getUser';
 import { rejoinRoom } from './handlers/rejoinRoom';
+import session from 'express-session';
 
 export function socketConnection(pool: Pool, redisClients: RedisClients) {
   return async function(socket: Socket) {
@@ -30,6 +31,10 @@ export function socketConnection(pool: Pool, redisClients: RedisClients) {
     const chatUser = new ChatUser(pubClient);
     const chatRoom = new ChatRoom(pubClient, subClient);
     const chatMessage = new ChatMessage(pubClient);
+
+    socket.emit('session', {sessionId: socket.sessionId, userId: socket.userId});
+
+    socket.join(socket.userId);
 
     /*
     
@@ -106,8 +111,20 @@ export function socketConnection(pool: Pool, redisClients: RedisClients) {
       });
     });
 
-    /*socket.on('disconnect', function(reason) {
-      console.log('disconnect; reason: ', reason);
-    });*/
+    socket.on('disconnect', async function() {
+      //console.log('disconnect; reason: ', reason);
+      const matchingSockets = await io.in(socket.userId).allSockets();
+      const disconnected = matchingSockets.size === 0;
+      
+      if (disconnected) {
+        socket.broadcast.emit('user disconnected', socket.userId);
+
+        sessionStore.saveSession(socket.sessionId, {
+          userId: socket.userId,
+          username: socket.username,
+          connected: false
+        });
+      }
+    });
   }
 }

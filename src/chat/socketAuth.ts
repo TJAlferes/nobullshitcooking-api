@@ -7,6 +7,7 @@ import { RedisStore } from 'connect-redis';
 import { Redis } from 'ioredis';
 import { Server, Socket } from 'socket.io';
 import { ExtendedError } from 'socket.io/dist/namespace';  // NEW
+import { v4 as uuidv4 } from 'uuid';
 
 import { ChatUser } from '../access/redis/ChatUser';
 
@@ -45,7 +46,30 @@ export function useSocketAuth(
     socket: Socket,
     next: (err?: ExtendedError | undefined) => void
   ) {
-    const sid = sessionIdsAreEqual(socket);
+    const sessionId = socket.handshake.auth.sessionId;
+    
+    if (sessionId) {
+      const session = sessionStore.findSession(sessionId);
+
+      if (session) {
+        socket.sessionId = sessionId;
+        socket.userId = session.userId;
+        socket.username = session.username;
+        return next();
+      }
+    }
+
+    const username = socket.handshake.auth.username;
+
+    if (!username) return next(new Error('Invalid username.'));
+
+    socket.sessionId = uuidv4();
+    socket.userId = uuidv4();
+    socket.username = username;
+
+    next();
+
+    /*const sid = sessionIdsAreEqual(socket);
 
     if (sid === false) return next(new Error('Not authenticated.'));
 
@@ -57,8 +81,9 @@ export function useSocketAuth(
       await addChatUser(pubClient, socket, sid, session);
 
       return next();
-    });
+    });*/
   }
 
   io.use(socketAuth);
 }
+
