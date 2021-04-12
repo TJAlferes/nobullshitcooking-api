@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
-import { Grocer } from '../../access/mysql/Grocer';
+import { Grocer } from '../../access/mysql';
 
 export class UserGrocerController {
   pool: Pool;

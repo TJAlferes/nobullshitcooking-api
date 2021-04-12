@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { body } from 'express-validator';
 import { Pool } from 'mysql2/promise';
 
-import { UserFriendshipController } from '../../controllers/user/friendship';
+import { UserFriendshipController } from '../../controllers/user';
 import { catchExceptions } from '../../lib/utils/catchExceptions';
 import { userIsAuth } from '../../lib/utils/userIsAuth';
 

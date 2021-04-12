@@ -2,9 +2,7 @@ import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
-import {
-  UserEquipmentController
-} from '../../../../src/controllers/user/equipment';
+import { UserEquipmentController } from '../../../../src/controllers/user';
 import {
   validEquipmentEntity
 } from '../../../../src/lib/validations/equipment/entity';
@@ -14,13 +12,16 @@ const controller = new UserEquipmentController(<Pool>pool);
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/access/mysql/Equipment', () => ({
+jest.mock('../../../../src/access/mysql', () => ({
   Equipment: jest.fn().mockImplementation(() => ({
     view: mockView,
     viewById: mockViewById,
     createPrivate: mockCreatePrivate,
     updatePrivate: mockUpdatePrivate,
     deleteByOwner: mockDeleteByOwner
+  })),
+  RecipeEquipment: jest.fn().mockImplementation(() => ({
+    deleteByEquipment: mockDeleteByEquipment
   }))
 }));
 let mockView = jest.fn().mockResolvedValue(
@@ -31,11 +32,6 @@ let mockCreatePrivate = jest.fn();
 let mockUpdatePrivate = jest.fn();
 let mockDeleteByOwner = jest.fn();
 
-jest.mock('../../../../src/access/mysql/RecipeEquipment', () => ({
-  RecipeEquipment: jest.fn().mockImplementation(() => ({
-    deleteByEquipment: mockDeleteByEquipment
-  }))
-}));
 let mockDeleteByEquipment = jest.fn();
 
 afterEach(() => {

@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 
-import { ProductController } from '../../../src/controllers/product';
+import { ProductController } from '../../../src/controllers';
 
 const pool: Partial<Pool> = {};
 const controller = new ProductController(<Pool>pool);
 
 const rows = [{id: "Brand Variety Name"}];
-jest.mock('../../../src/access/mysql/Product', () => ({
+jest.mock('../../../src/access/mysql', () => ({
   Product: jest.fn().mockImplementation(() => ({
     view: mockView,
     viewById: mockViewById

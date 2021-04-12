@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 
-import { ContentController } from '../../../src/controllers/content';
+import { ContentController } from '../../../src/controllers';
 
 const pool: Partial<Pool> = {};
 const controller = new ContentController(<Pool>pool);
 
 const rows = [{id: "Name Title"}];
-jest.mock('../../../src/access/mysql/Content', () => ({
+jest.mock('../../../src/access/mysql', () => ({
   Content: jest.fn().mockImplementation(() => ({
     view: mockView,
     viewById: mockViewById,

@@ -3,8 +3,8 @@ import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 import { Client } from '@elastic/elasticsearch';
 
-import { IngredientSearch } from '../../access/elasticsearch/IngredientSearch';
-import { Ingredient } from '../../access/mysql/Ingredient';
+import { IngredientSearch } from '../../access/elasticsearch';
+import { Ingredient } from '../../access/mysql';
 import { validIngredientEntity } from '../../lib/validations/ingredient/entity';
 
 export class StaffIngredientController {

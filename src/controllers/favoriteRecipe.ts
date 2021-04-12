@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 
-//import { FavoriteRecipe } from '../access/mysql/FavoriteRecipe';
+//import { FavoriteRecipe } from '../access/mysql';
 
 export class FavoriteRecipeController {
   pool: Pool;

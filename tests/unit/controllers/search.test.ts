@@ -1,46 +1,37 @@
 import { Request, Response } from 'express';
 import { Client } from '@elastic/elasticsearch';
 
-import { SearchController } from '../../../src/controllers/search';
+import { SearchController } from '../../../src/controllers';
 
 const esClient: Partial<Client> = {};
 const controller = new SearchController(<Client>esClient);
 
 const found = {some: "value"};
 
-jest.mock('../../../src/access/elasticsearch/EquipmentSearch', () => ({
+jest.mock('../../../src/access/elasticsearch', () => ({
   EquipmentSearch: jest.fn().mockImplementation(() => ({
     auto: mockAutoEquipment,
     find: mockFindEquipment
-  }))
-}));
-let mockAutoEquipment = jest.fn().mockResolvedValue(found);
-let mockFindEquipment = jest.fn().mockResolvedValue(found);
-
-jest.mock('../../../src/access/elasticsearch/IngredientSearch', () => ({
+  })),
   IngredientSearch: jest.fn().mockImplementation(() => ({
     auto: mockAutoIngredients,
     find: mockFindIngredients
-  }))
-}));
-let mockAutoIngredients = jest.fn().mockResolvedValue(found);
-let mockFindIngredients = jest.fn().mockResolvedValue(found);
-
-jest.mock('../../../src/access/elasticsearch/ProductSearch', () => ({
+  })),
   ProductSearch: jest.fn().mockImplementation(() => ({
     auto: mockAutoProducts,
     find: mockFindProducts
-  }))
-}));
-let mockAutoProducts = jest.fn().mockResolvedValue(found);
-let mockFindProducts = jest.fn().mockResolvedValue(found);
-
-jest.mock('../../../src/access/elasticsearch/RecipeSearch', () => ({
+  })),
   RecipeSearch: jest.fn().mockImplementation(() => ({
     auto: mockAutoRecipes,
     find: mockFindRecipes
   }))
 }));
+let mockAutoEquipment = jest.fn().mockResolvedValue(found);
+let mockFindEquipment = jest.fn().mockResolvedValue(found);
+let mockAutoIngredients = jest.fn().mockResolvedValue(found);
+let mockFindIngredients = jest.fn().mockResolvedValue(found);
+let mockAutoProducts = jest.fn().mockResolvedValue(found);
+let mockFindProducts = jest.fn().mockResolvedValue(found);
 let mockAutoRecipes = jest.fn().mockResolvedValue(found);
 let mockFindRecipes = jest.fn().mockResolvedValue(found);
 

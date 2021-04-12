@@ -3,38 +3,75 @@
 import { Pool } from 'mysql2/promise';
 import { Socket } from 'socket.io';  // TO DO: replace uws with eiows?
 
-import { Friendship as NOBSCFriendship } from '../access/mysql/Friendship';
-import { User as NOBSCUser } from '../access/mysql/User';
+import { Friendship, User } from '../access/mysql';
 import { ChatMessage } from '../access/redis/ChatMessage';
 import { ChatRoom } from '../access/redis/ChatRoom';
 import { ChatUser } from '../access/redis/ChatUser';
+import { MessageStore } from '../access/redis/MessageStore';
+import { RoomStore } from '../access/redis/RoomStore';
+import { SessionStore } from '../access/redis/SessionStore';
 import { RedisClients } from '../app';
-import { addPublicMessage } from './handlers/addPublicMessage';
-import { addRoom } from './handlers/addRoom';
-import { addPrivateMessage } from './handlers/addPrivateMessage';
-import { disconnecting } from './handlers/disconnecting';
-import { getOnline } from './handlers/getOnline';
-import { getUser } from './handlers/getUser';
-import { rejoinRoom } from './handlers/rejoinRoom';
-import session from 'express-session';
+import {
+  addPrivateMessage,
+  addPublicMessage,
+  addRoom,
+  disconnecting,
+  getOnline,
+  getUser,
+  rejoinRoom
+} from './handlers';
 
-export function socketConnection(pool: Pool, redisClients: RedisClients) {
+export function socketConnection(
+  pool: Pool,
+  { pubClient, subClient }: RedisClients
+) {
   return async function(socket: Socket) {
-    //const { id, username, avatar } = socket.request.userInfo;  // OLD, read-only now
-    // 3 possible NEW:
-    //const { username, avatar } = socket.handshake.headers.userInfo;
-    //const { username, avatar } = socket.handshake.query.userInfo;
-    //const { username, avatar } = socket.request.headers.userInfo;  // and just change to separate strings?
-    const { pubClient, subClient } = redisClients;
-    const nobscUser = new NOBSCUser(pool);
-    const nobscFriendship = new NOBSCFriendship(pool);
-    const chatUser = new ChatUser(pubClient);
-    const chatRoom = new ChatRoom(pubClient, subClient);
-    const chatMessage = new ChatMessage(pubClient);
+    const user = new User(pool);
+    const friendship = new Friendship(pool);
 
-    socket.emit('session', {sessionId: socket.sessionId, userId: socket.userId});
+    const chatMessage = new ChatMessage(pubClient);
+    const chatRoom = new ChatRoom(pubClient, subClient);
+    const chatUser = new ChatUser(pubClient);
+    const messageStore = new MessageStore(pubClient);  // change client?
+    const roomStore = new RoomStore(pubClient, subClient);          // ?
+    const sessionStore = new SessionStore(pubClient);  // change client?
+
+    sessionStore.saveSession(socket.sessionId, {
+      userId: socket.userId,
+      username: socket.username,
+      connected: "true"
+    });
+
+    socket
+      .emit('session', {sessionId: socket.sessionId, userId: socket.userId});
 
     socket.join(socket.userId);
+
+    // fetch existing users (similar to GetOnline?)
+    const users = [];
+    const [ messages, sessions ] = await Promise.all([
+      messageStore.findMessagesForUser(socket.userId),
+      sessionStore.findAllSessions()
+    ]);
+    const messagesPerUser = new Map();
+
+    messages.forEach(message => {
+      const { from, to } = message;
+      const otherUser = socket.userId === from ? to : from;
+
+      if (messagesPerUser.has(otherUser)) {
+        messagesPerUser.get(otherUser).push(message);
+        return;
+      }
+
+      messagesPerUser.set(otherUser, [message]);
+    });
+
+    sessions.forEach(({ userId, username, connected }) => {
+      users.push({userId, username, connected, messages: messagesPerUser.get(userId) || []})
+    });
+
+    socket.emit('users', users);
 
     /*
     
@@ -49,7 +86,7 @@ export function socketConnection(pool: Pool, redisClients: RedisClients) {
     
     // rename
     socket.on('GetOnline', async function() {
-      await getOnline({username, socket, chatUser, nobscFriendship});
+      await getOnline({username, socket, chatUser, friendship});
     });
 
     socket.on('GetUser', async function(room: string) {
@@ -62,19 +99,19 @@ export function socketConnection(pool: Pool, redisClients: RedisClients) {
 
     */
 
-    socket.on('AddMessage', async function(text: string) {
+    socket.on('AddPublicMessage', async function(text: string) {
       await addPublicMessage({username, text, socket, chatMessage});
     });
 
-    socket.on('AddWhisper', async function(text: string, to: string) {
+    socket.on('AddPrivateMessage', async function(text: string, to: string) {
       await addPrivateMessage({
         to,
-        username,
+        socket.username,
         text,
         socket,
         chatUser,
-        nobscFriendship,
-        nobscUser
+        friendship,
+        user
       });
     });
 
@@ -107,12 +144,12 @@ export function socketConnection(pool: Pool, redisClients: RedisClients) {
         socket,
         chatRoom,
         chatUser,
-        nobscFriendship
+        friendship
       });
     });
 
-    socket.on('disconnect', async function() {
-      //console.log('disconnect; reason: ', reason);
+    socket.on('disconnect', async function(/*reason*/) {
+      //console.log('disconnect reason: ', reason);
       const matchingSockets = await io.in(socket.userId).allSockets();
       const disconnected = matchingSockets.size === 0;
       

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
-import { UserPlanController } from '../../../../src/controllers/user/plan';
+import { UserPlanController } from '../../../../src/controllers/user';
 import { validPlanEntity } from '../../../../src/lib/validations/plan/entity';
 
 const pool: Partial<Pool> = {};
@@ -10,7 +10,7 @@ const controller = new UserPlanController(<Pool>pool);
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/access/mysql/Plan', () => ({
+jest.mock('../../../../src/access/mysql', () => ({
   Plan: jest.fn().mockImplementation(() => ({
     view: mockView,
     viewById: mockViewById,

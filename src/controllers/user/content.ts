@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert, coerce } from 'superstruct';
 
-import { Content } from '../../access/mysql/Content';
+import { Content } from '../../access/mysql';
 import { validContentCreation } from '../../lib/validations/content/create';
 import { validContentUpdate } from '../../lib/validations/content/update';
 

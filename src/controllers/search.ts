@@ -1,11 +1,13 @@
 import { Request, Response } from 'express';
 import { Client } from '@elastic/elasticsearch';
 
-//import { AllSearch } from '../access/elasticsearch/AllSearch';
-import { EquipmentSearch } from '../access/elasticsearch/EquipmentSearch';
-import { IngredientSearch } from '../access/elasticsearch/IngredientSearch';
-import { ProductSearch } from '../access/elasticsearch/ProductSearch';
-import { RecipeSearch } from '../access/elasticsearch/RecipeSearch';
+import {
+  //AllSearch,
+  EquipmentSearch,
+  IngredientSearch,
+  ProductSearch,
+  RecipeSearch
+} from '../access/elasticsearch';
 
 export class SearchController {
   esClient: Client;

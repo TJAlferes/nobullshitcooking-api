@@ -2,9 +2,7 @@ import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
-import { FavoriteRecipe } from '../access/mysql/FavoriteRecipe';
-import { Recipe } from '../access/mysql/Recipe';
-import { User } from '../access/mysql/User';
+import { FavoriteRecipe, Recipe, User } from '../access/mysql';
 import { validProfileRequest } from '../lib/validations/profile/request';
 
 export class ProfileController {

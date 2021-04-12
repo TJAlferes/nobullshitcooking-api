@@ -3,8 +3,8 @@ import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 import { Client } from '@elastic/elasticsearch';
 
-import { ProductSearch } from '../../access/elasticsearch/ProductSearch';
-import { Product } from '../../access/mysql/Product';
+import { ProductSearch } from '../../access/elasticsearch';
+import { Product } from '../../access/mysql';
 import { validProductEntity } from '../../lib/validations/product/entity';
 
 export class StaffProductController {

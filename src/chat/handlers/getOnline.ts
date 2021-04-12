@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 
-import { IFriendship } from '../../access/mysql/Friendship';
+import { IFriendship } from '../../access/mysql';
 import { IChatUser } from '../../access/redis/ChatUser';
 
 export async function getOnline({
@@ -8,9 +8,9 @@ export async function getOnline({
   avatar,
   socket,
   chatUser,
-  nobscFriendship
+  friendship
 }: IGetOnline) {
-  const acceptedFriends = await nobscFriendship.viewAccepted(username);
+  const acceptedFriends = await friendship.viewAccepted(username);
 
   if (!acceptedFriends.length) return;  // ?
 
@@ -34,5 +34,5 @@ export interface IGetOnline {
   avatar: string;
   socket: Socket;
   chatUser: IChatUser;
-  nobscFriendship: IFriendship;
+  friendship: IFriendship;
 }

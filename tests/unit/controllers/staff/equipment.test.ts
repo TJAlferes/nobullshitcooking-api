@@ -3,9 +3,7 @@ import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 import { Client } from '@elastic/elasticsearch';
 
-import {
-  StaffEquipmentController
-} from '../../../../src/controllers/staff/equipment';
+import { StaffEquipmentController } from '../../../../src/controllers/staff';
 import {
   validEquipmentEntity
 } from '../../../../src/lib/validations/equipment/entity';
@@ -16,7 +14,7 @@ const esClient: Partial<Client> = {};
 const pool: Partial<Pool> = {};
 const controller = new StaffEquipmentController(<Client>esClient, <Pool>pool);
 
-jest.mock('../../../../src/access/elasticsearch/EquipmentSearch', () => ({
+jest.mock('../../../../src/access/elasticsearch', () => ({
   EquipmentSearch: jest.fn().mockImplementation(() => ({
     save: mockESSave,
     delete: mockESDelete
@@ -25,7 +23,7 @@ jest.mock('../../../../src/access/elasticsearch/EquipmentSearch', () => ({
 let mockESSave = jest.fn();
 let mockESDelete = jest.fn();
 
-jest.mock('../../../../src/access/mysql/Equipment', () => ({
+jest.mock('../../../../src/access/mysql', () => ({
   Equipment: jest.fn().mockImplementation(() => ({
     getForElasticSearch: mockGetForElasticSearch,
     create: mockCreate,

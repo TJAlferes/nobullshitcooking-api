@@ -3,12 +3,12 @@ import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
-import { StaffAuthController } from '../../../../src/controllers/staff/auth';
+import { StaffAuthController } from '../../../../src/controllers/staff';
 import {
   validLoginRequest,
   validRegisterRequest,
   validStaffCreation
-} from '../../../../src/lib/validations/staff/index';
+} from '../../../../src/lib/validations/staff';
 
 const pool: Partial<Pool> = {};
 const controller = new StaffAuthController(<Pool>pool);
@@ -21,7 +21,7 @@ mockBcrypt.hash.mockResolvedValue(
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/access/mysql/Staff', () => ({
+jest.mock('../../../../src/access/mysql', () => ({
   Staff: jest.fn().mockImplementation(() => ({
     getByEmail: mockGetByEmail,
     getByName: mockGetByName,

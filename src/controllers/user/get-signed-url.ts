@@ -5,17 +5,16 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { getSignedUrlPromise } from '../../lib/utils/getSignedUrlPromise';
 
-const AWS_S3_AVATAR_BUCKET: string = process.env.AWS_S3_AVATAR_BUCKET!;
-const AWS_S3_CONTENT_BUCKET: string = process.env.AWS_S3_CONTENT_BUCKET!;
-const AWS_S3_EQUIPMENT_BUCKET: string = process.env.AWS_S3_EQUIPMENT_BUCKET!;
-const AWS_S3_INGREDIENT_BUCKET: string = process.env.AWS_S3_INGREDIENT_BUCKET!;
-const AWS_S3_RECIPE_BUCKET: string = process.env.AWS_S3_RECIPE_BUCKET!;
-const AWS_S3_RECIPE_COOKING_BUCKET: string =
-  process.env.AWS_S3_RECIPE_COOKING_BUCKET!;
-const AWS_S3_RECIPE_EQUIPMENT_BUCKET: string =
-  process.env.AWS_S3_RECIPE_EQUIPMENT_BUCKET!;
-const AWS_S3_RECIPE_INGREDIENTS_BUCKET: string =
-  process.env.AWS_S3_RECIPE_INGREDIENTS_BUCKET!;
+const AWS_S3_BUCKETS = {
+  AVATAR: process.env.AWS_S3_AVATAR_BUCKET!,
+  CONTENT: process.env.AWS_S3_CONTENT_BUCKET!,
+  EQUIPMENT: process.env.AWS_S3_EQUIPMENT_BUCKET!,
+  INGREDIENT: process.env.AWS_S3_INGREDIENT_BUCKET!,
+  RECIPE: process.env.AWS_S3_RECIPE_BUCKET!,
+  RECIPE_COOKING: process.env.AWS_S3_RECIPE_COOKING_BUCKET!,
+  RECIPE_EQUIPMENT: process.env.AWS_S3_RECIPE_EQUIPMENT_BUCKET!,
+  RECIPE_INGREDIENTS: process.env.AWS_S3_RECIPE_INGREDIENTS_BUCKET!
+};
 
 export const getSignedUrl = {
   avatar: async function(req: Request, res: Response) {
@@ -29,14 +28,14 @@ export const getSignedUrl = {
     });
 
     const fullSignature = await getSignedUrlPromise(s3, 'putObject', {
-      Bucket: AWS_S3_AVATAR_BUCKET,
+      Bucket: AWS_S3_BUCKETS.AVATAR,
       Key: fullName,
       ContentType: fileType,
       Expires: 50
     });
 
     const tinySignature = await getSignedUrlPromise(s3, 'putObject', {
-      Bucket: AWS_S3_AVATAR_BUCKET,
+      Bucket: AWS_S3_BUCKETS.AVATAR,
       Key: tinyName,
       ContentType: fileType,
       Expires: 50
@@ -55,14 +54,14 @@ export const getSignedUrl = {
     });
   
     const fullSignature = await getSignedUrlPromise(s3, 'putObject', {
-      Bucket: AWS_S3_CONTENT_BUCKET,
+      Bucket: AWS_S3_BUCKETS.CONTENT,
       Key: fullName,
       ContentType: fileType,
       Expires: 50
     });
   
     const thumbSignature = await getSignedUrlPromise(s3, 'putObject', {
-      Bucket: AWS_S3_CONTENT_BUCKET,
+      Bucket: AWS_S3_BUCKETS.CONTENT,
       Key: thumbName,
       ContentType: fileType,
       Expires: 50
@@ -81,14 +80,14 @@ export const getSignedUrl = {
     });
   
     const fullSignature = await getSignedUrlPromise(s3, 'putObject', {
-      Bucket: AWS_S3_EQUIPMENT_BUCKET,
+      Bucket: AWS_S3_BUCKETS.EQUIPMENT,
       Key: fullName,
       ContentType: fileType,
       Expires: 50
     });
   
     const tinySignature = await getSignedUrlPromise(s3, 'putObject', {
-      Bucket: AWS_S3_EQUIPMENT_BUCKET,
+      Bucket: AWS_S3_BUCKETS.EQUIPMENT,
       Key: tinyName,
       ContentType: fileType,
       Expires: 50
@@ -107,14 +106,14 @@ export const getSignedUrl = {
     });
   
     const fullSignature = await getSignedUrlPromise(s3, 'putObject', {
-      Bucket: AWS_S3_INGREDIENT_BUCKET,
+      Bucket: AWS_S3_BUCKETS.INGREDIENT,
       Key: fullName,
       ContentType: fileType,
       Expires: 50
     });
   
     const tinySignature = await getSignedUrlPromise(s3, 'putObject', {
-      Bucket: AWS_S3_INGREDIENT_BUCKET,
+      Bucket: AWS_S3_BUCKETS.INGREDIENT,
       Key: tinyName,
       ContentType: fileType,
       Expires: 50
@@ -134,21 +133,21 @@ export const getSignedUrl = {
     });
   
     const fullSignature = await getSignedUrlPromise(s3, 'putObject', {
-      Bucket: AWS_S3_RECIPE_BUCKET,
+      Bucket: AWS_S3_BUCKETS.RECIPE,
       Key: fullName,
       ContentType: fileType,
       Expires: 50
     });
   
     const thumbSignature = await getSignedUrlPromise(s3, 'putObject', {
-      Bucket: AWS_S3_RECIPE_BUCKET,
+      Bucket: AWS_S3_BUCKETS.RECIPE,
       Key: thumbName,
       ContentType: fileType,
       Expires: 50
     });
   
     const tinySignature = await getSignedUrlPromise(s3, 'putObject', {
-      Bucket: AWS_S3_RECIPE_BUCKET,
+      Bucket: AWS_S3_BUCKETS.RECIPE,
       Key: tinyName,
       ContentType: fileType,
       Expires: 50
@@ -172,7 +171,7 @@ export const getSignedUrl = {
     });
   
     const fullSignature = await getSignedUrlPromise(s3, 'putObject', {
-      Bucket: AWS_S3_RECIPE_COOKING_BUCKET,
+      Bucket: AWS_S3_BUCKETS.RECIPE_COOKING,
       Key: fullName,
       ContentType: fileType,
       Expires: 50
@@ -190,7 +189,7 @@ export const getSignedUrl = {
     });
   
     const fullSignature = await getSignedUrlPromise(s3, 'putObject', {
-      Bucket: AWS_S3_RECIPE_EQUIPMENT_BUCKET,
+      Bucket: AWS_S3_BUCKETS.RECIPE_EQUIPMENT,
       Key: fullName,
       ContentType: fileType,
       Expires: 50
@@ -208,7 +207,7 @@ export const getSignedUrl = {
     });
   
     const fullSignature = await getSignedUrlPromise(s3, 'putObject', {
-      Bucket: AWS_S3_RECIPE_INGREDIENTS_BUCKET,
+      Bucket: AWS_S3_BUCKETS.RECIPE_INGREDIENTS,
       Key: fullName,
       ContentType: fileType,
       Expires: 50

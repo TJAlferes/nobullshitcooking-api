@@ -1,14 +1,14 @@
 import { Socket } from 'socket.io';
 
-import { IMessengerRoom } from '../../../../src/access/redis/MessengerRoom';
+import { IChatRoom } from '../../../../src/access/redis/ChatRoom';
 import { rejoinRoom } from '../../../../src/chat/handlers/rejoinRoom';
 
 const mockAdd = jest.fn();
 const mockAddUser = jest.fn();
-const mockGetUsers = jest.fn()
-  .mockResolvedValue([{username: "Jack"}, {username: "Jill"}]);
+const mockGetUsers =
+  jest.fn().mockResolvedValue([{username: "Jack"}, {username: "Jill"}]);
 
-const mockMessengerRoom: Partial<IMessengerRoom> = {
+const mockChatRoom: Partial<IChatRoom> = {
   add: mockAdd,
   addUser: mockAddUser,
   getUsers: mockGetUsers
@@ -29,7 +29,7 @@ const params = {
   room: "room",
   username: "self",
   socket: <Socket>mockSocket,
-  messengerRoom: <IMessengerRoom>mockMessengerRoom
+  chatRoom: <IChatRoom>mockChatRoom
 };
 
 afterEach(() => {

@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 
-import { MethodController } from '../../../src/controllers/method';
+import { MethodController } from '../../../src/controllers';
 
 const pool: Partial<Pool> = {};
 const controller = new MethodController(<Pool>pool);
 
 const rows = [{name: "Name"}];
-jest.mock('../../../src/access/mysql/Method', () => ({
+jest.mock('../../../src/access/mysql', () => ({
   Method: jest.fn().mockImplementation(() => ({
     view: mockView,
     viewByName: mockViewByName

@@ -1,11 +1,14 @@
 import { Socket } from 'socket.io';
 
-import { IMessengerChat } from '../../../../src/access/redis/MessengerChat';
+import { IChatMessage } from '../../../../src/access/redis/ChatMessage';
 import { PublicMessage } from '../../../../src/chat/entities/PublicMessage';
-import { addPublicMessage } from '../../../../src/chat/handlers/addPublicMessage';
+import {
+  addPublicMessage
+} from '../../../../src/chat/handlers/addPublicMessage';
 
 const mockAddPublicMessage = jest.fn();
-const mockMessengerChat: Partial<IMessengerChat> = {addMessage: mockAddPublicMessage};
+const mockChatMessage: Partial<IChatMessage> =
+  {addMessage: mockAddPublicMessage};
 
 jest.mock('../../../../src/chat/entities/PublicMessage');
 const mockPublicMessage = PublicMessage as jest.Mocked<typeof PublicMessage>;
@@ -29,7 +32,7 @@ const params = {
   from: "self",
   text: "hello",
   socket: <Socket>mockSocket,
-  messengerChat: <IMessengerChat>mockMessengerChat
+  messengerChat: <IChatMessage>mockChatMessage
 };
 
 afterEach(() => {

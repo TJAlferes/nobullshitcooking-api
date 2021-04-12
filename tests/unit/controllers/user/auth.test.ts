@@ -5,7 +5,7 @@ import { assert } from 'superstruct';
 import * as uuid from 'uuid';
 import { v4 as uuidv4 } from 'uuid';
 
-import { UserAuthController } from '../../../../src/controllers/user/auth';
+import { UserAuthController } from '../../../../src/controllers/user';
 import {
   emailConfirmationCode
 } from '../../../../src/lib/services/email-confirmation-code';
@@ -19,7 +19,7 @@ import {
   validUserUpdate,
   validVerify,
   validVerifyRequest,
-} from '../../../../src/lib/validations/user/index';
+} from '../../../../src/lib/validations/user';
 
 const pool: Partial<Pool> = {};
 const controller = new UserAuthController(<Pool>pool);
@@ -42,7 +42,7 @@ jest.mock('../../../../src/lib/services/email-confirmation-code', () => {
   return {...originalModule, emailConfirmationCode: jest.fn()};
 });
 
-jest.mock('../../../../src/access/mysql/User', () => ({
+jest.mock('../../../../src/access/mysql', () => ({
   User: jest.fn().mockImplementation(() => ({
     getByEmail: mockGetByEmail,
     getByName: mockGetByName,

@@ -1,14 +1,13 @@
 import { Socket } from 'socket.io';
 
-import { IFriendship } from '../../../../src/access/mysql/Friendship';
-import { IMessengerUser } from '../../../../src/access/redis/MessengerUser';
+import { IFriendship } from '../../../../src/access/mysql';
+import { IChatUser } from '../../../../src/access/redis/ChatUser';
 import { IGetOnline, getOnline } from '../../../../src/chat/handlers/getOnline';
 
 const mockViewAccepted = jest.fn()
   .mockResolvedValue([{username: "Jack"}, {username: "Jill"}]);
 
-const mockNobscFriendship: Partial<IFriendship> =
-  {viewAccepted: mockViewAccepted};
+const mockFriendship: Partial<IFriendship> = {viewAccepted: mockViewAccepted};
 
 const rooms = new Set<string>();
 rooms.add("room");
@@ -23,12 +22,12 @@ const mockSocket: Partial<Socket> = {
 };
 
 let mockGetSocketId = jest.fn();
-let mockMessengerUser: Partial<IMessengerUser>;
+let mockChatUser: Partial<IChatUser>;
 
 const params = {
   username: "self",
   socket: <Socket>mockSocket,
-  nobscFriendship: <IFriendship>mockNobscFriendship
+  nobscFriendship: <IFriendship>mockFriendship
 };
 
 let currParams: IGetOnline;
@@ -42,10 +41,10 @@ describe('getOnline handler', () => {
   describe('when friends are offline', () => {
     beforeAll(() => {
       mockGetSocketId = jest.fn().mockResolvedValue(undefined);
-      mockMessengerUser = {getSocketId: mockGetSocketId};
+      mockChatUser = {getSocketId: mockGetSocketId};
       currParams = {
         ...params,
-        messengerUser: <IMessengerUser>mockMessengerUser
+        chatUser: <IChatUser>mockChatUser
       };
     });
 
@@ -69,10 +68,10 @@ describe('getOnline handler', () => {
   describe('when friends are online', () => {
     beforeAll(() => {
       mockGetSocketId = jest.fn().mockResolvedValue("123456789");
-      mockMessengerUser = {getSocketId: mockGetSocketId};
+      mockChatUser = {getSocketId: mockGetSocketId};
       currParams = {
         ...params,
-        messengerUser: <IMessengerUser>mockMessengerUser
+        chatUser: <IChatUser>mockChatUser
       };
     });
 

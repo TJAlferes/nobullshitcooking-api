@@ -2,9 +2,7 @@ import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert, coerce } from 'superstruct';
 
-import {
-  UserContentController
-} from '../../../../src/controllers/user/content';
+import { UserContentController } from '../../../../src/controllers/user';
 import {
   validContentCreation
 } from '../../../../src/lib/validations/content/create';
@@ -17,7 +15,7 @@ const controller = new UserContentController(<Pool>pool);
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/access/mysql/Content', () => ({
+jest.mock('../../../../src/access/mysql', () => ({
   Content: jest.fn().mockImplementation(() => ({
     create: mockCreate,
     update: mockUpdate,

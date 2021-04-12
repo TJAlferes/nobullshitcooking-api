@@ -3,23 +3,18 @@
 import { assert } from 'superstruct';
 
 import { IRecipeSearch } from '../../access/elasticsearch/RecipeSearch';
-import { ICreatingRecipe, IRecipe } from '../../access/mysql/Recipe';
 import {
+  ICreatingRecipe,
+  IRecipe,
   IMakeRecipeEquipment,
-  IRecipeEquipment
-} from '../../access/mysql/RecipeEquipment';
-import {
+  IRecipeEquipment,
   IMakeRecipeIngredient,
-  IRecipeIngredient
-} from '../../access/mysql/RecipeIngredient';
-import {
+  IRecipeIngredient,
   IMakeRecipeMethod,
-  IRecipeMethod
-} from '../../access/mysql/RecipeMethod';
-import {
+  IRecipeMethod,
   IMakeRecipeSubrecipe,
   IRecipeSubrecipe
-} from '../../access/mysql/RecipeSubrecipe';
+} from '../../access/mysql';
 import {
   validRecipeEquipmentEntity
 } from '../validations/recipeEquipment/entity';
@@ -73,13 +68,13 @@ export async function updateRecipeService({
   let recipeEquipmentToUpdateWith: (string|number)[] = [];
   let recipeEquipmentPlaceholders = "none";
   if (requiredEquipment.length) {
-    requiredEquipment.map(({ equipment, amount }) => assert({
+    requiredEquipment.map(({ equipmentId, amount }) => assert({
       recipe: id,
-      equipment,
+      equipmentId,
       amount
     }, validRecipeEquipmentEntity));
-    requiredEquipment.map(({ equipment, amount }) => {
-      recipeEquipmentToUpdateWith.push(id, equipment, amount)
+    requiredEquipment.map(({ equipmentId, amount }) => {
+      recipeEquipmentToUpdateWith.push(id, equipmentId, amount)
     });
     recipeEquipmentPlaceholders =
       '(?, ?, ?),'.repeat(requiredEquipment.length).slice(0, -1);
@@ -91,14 +86,14 @@ export async function updateRecipeService({
   let recipeIngredientsToUpdateWith: (string|number)[] = [];
   let recipeIngredientsPlaceholders = "none";
   if (requiredIngredients.length) {
-    requiredIngredients.map(({ ingredient, amount, unit }) => assert({
+    requiredIngredients.map(({ ingredientId, amount, measurement }) => assert({
       recipe: id,
-      ingredient,
+      ingredientId,
       amount,
-      measurement: unit
+      measurement
     }, validRecipeIngredientEntity));
-    requiredIngredients.map(({ ingredient, amount, unit }) => {
-      recipeIngredientsToUpdateWith.push(id, ingredient, amount, unit);
+    requiredIngredients.map(({ ingredientId, amount, measurement }) => {
+      recipeIngredientsToUpdateWith.push(id, ingredientId, amount, measurement);
     });
     recipeIngredientsPlaceholders =
       '(?, ?, ?, ?),'.repeat(requiredIngredients.length).slice(0, -1);
@@ -110,14 +105,14 @@ export async function updateRecipeService({
   let recipeSubrecipesToUpdateWith: (string|number)[] = [];
   let recipeSubrecipesPlaceholders = "none";
   if (requiredSubrecipes.length) {
-    requiredSubrecipes.map(({ subrecipe, amount, unit }) => assert({
+    requiredSubrecipes.map(({ subrecipeId, amount, measurement }) => assert({
       recipe: id,
-      subrecipe,
+      subrecipeId,
       amount,
-      measurement: unit
+      measurement
     }, validRecipeSubrecipeEntity));
-    requiredSubrecipes.map(({ subrecipe, amount, unit }) => {
-      recipeSubrecipesToUpdateWith.push(id, subrecipe, amount, unit);
+    requiredSubrecipes.map(({ subrecipeId, amount, measurement }) => {
+      recipeSubrecipesToUpdateWith.push(id, subrecipeId, amount, measurement);
     });
     recipeSubrecipesPlaceholders =
       '(?, ?, ?, ?),'.repeat(requiredSubrecipes.length).slice(0, -1);

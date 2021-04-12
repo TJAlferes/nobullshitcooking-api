@@ -1,12 +1,15 @@
 import { Socket } from 'socket.io';
 
 import { pool } from '../../../../src/lib/connections/mysql';  // just mock like in others?
-import { IFriendship, Friendship } from '../../../../src/access/mysql/Friendship';
-import { IMessengerRoom } from '../../../../src/access/redis/MessengerRoom';
-import { IMessengerUser } from '../../../../src/access/redis/MessengerUser';
-import { IDisconnecting, disconnecting } from '../../../../src/chat/handlers/disconnecting';
+import { Friendship, IFriendship } from '../../../../src/access/mysql';
+import { IChatRoom } from '../../../../src/access/redis/ChatRoom';
+import { IChatUser } from '../../../../src/access/redis/ChatUser';
+import {
+  disconnecting,
+  IDisconnecting
+} from '../../../../src/chat/handlers/disconnecting';
 
-jest.mock('../../../../src/access/mysql/Friendship', () => ({
+jest.mock('../../../../src/access/mysql', () => ({
   Friendship: jest.fn().mockImplementation(() => ({
     viewAccepted: mockViewAccepted
   }))
@@ -14,7 +17,7 @@ jest.mock('../../../../src/access/mysql/Friendship', () => ({
 let mockViewAccepted = jest.fn();
 
 const mockRemoveUser = jest.fn();
-const mockMessengerRoom: Partial<IMessengerRoom> = {removeUser: mockRemoveUser};
+const mockChatRoom: Partial<IChatRoom> = {removeUser: mockRemoveUser};
 
 let mockGetSocketId = jest.fn();
 const mockRemove = jest.fn();
@@ -40,8 +43,8 @@ const params = {
   socket: <Socket>mockSocket
 };
 
-let mockMessengerUser: Partial<IMessengerUser>;
-let mockNobscFriendship: IFriendship;
+let mockChatUser: Partial<IChatUser>;
+let mockFriendship: IFriendship;
 
 let currParams: IDisconnecting;
 
@@ -56,13 +59,13 @@ describe('disconnecting handler', () => {
       mockGetSocketId = jest.fn().mockResolvedValue(undefined);
       mockViewAccepted =
         jest.fn().mockResolvedValue([{username: "Jack"}, {username: "Jill"}]);
-      mockMessengerUser = {getSocketId: mockGetSocketId, remove: mockRemove};
-      mockNobscFriendship = new Friendship(pool);
+      mockChatUser = {getSocketId: mockGetSocketId, remove: mockRemove};
+      mockFriendship = new Friendship(pool);
       currParams = {
         ...params,
-        messengerRoom: <IMessengerRoom>mockMessengerRoom,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship
+        chatRoom: <IChatRoom>mockChatRoom,
+        chatUser: <IChatUser>mockChatUser,
+        friendship: <IFriendship>mockFriendship
       };
     });
 
@@ -104,13 +107,13 @@ describe('disconnecting handler', () => {
       mockGetSocketId = jest.fn().mockResolvedValue("123456789");
       mockViewAccepted = jest.fn()
         .mockResolvedValue([{username: "Jack"}, {username: "Jill"}]);
-      mockMessengerUser = {getSocketId: mockGetSocketId, remove: mockRemove};
-      mockNobscFriendship = new Friendship(pool);
+      mockChatUser = {getSocketId: mockGetSocketId, remove: mockRemove};
+      mockFriendship = new Friendship(pool);
       currParams = {
         ...params,
-        messengerRoom: <IMessengerRoom>mockMessengerRoom,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship
+        chatRoom: <IChatRoom>mockChatRoom,
+        chatUser: <IChatUser>mockChatUser,
+        friendship: <IFriendship>mockFriendship
       };
     });
 

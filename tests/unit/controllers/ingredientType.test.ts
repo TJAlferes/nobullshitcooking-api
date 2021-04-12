@@ -1,15 +1,13 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 
-import {
-  IngredientTypeController
-} from '../../../src/controllers/ingredientType';
+import { IngredientTypeController } from '../../../src/controllers';
 
 const pool: Partial<Pool> = {};
 const controller = new IngredientTypeController(<Pool>pool);
 
 const rows = [{name: "Name"}];
-jest.mock('../../../src/access/mysql/IngredientType', () => ({
+jest.mock('../../../src/access/mysql', () => ({
   IngredientType: jest.fn().mockImplementation(() => ({
     view: mockView,
     viewByName: mockViewByName

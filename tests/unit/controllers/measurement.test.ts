@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 
-import { MeasurementController } from '../../../src/controllers/measurement';
+import { MeasurementController } from '../../../src/controllers';
 
 const pool: Partial<Pool> = {};
 const controller = new MeasurementController(<Pool>pool);
 
 const rows = [{name: "Name"}];
-jest.mock('../../../src/access/mysql/Measurement', () => ({
+jest.mock('../../../src/access/mysql', () => ({
   Measurement: jest.fn().mockImplementation(() => ({
     view: mockView,
     viewByName: mockViewByName

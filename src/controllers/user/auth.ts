@@ -4,7 +4,7 @@ import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 import { v4 as uuidv4 } from 'uuid';
 
-import { User } from '../../access/mysql/User';
+import { User } from '../../access/mysql';
 import {
   emailConfirmationCode
 } from '../../lib/services/email-confirmation-code';

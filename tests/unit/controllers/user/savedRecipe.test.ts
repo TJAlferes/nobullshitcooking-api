@@ -2,9 +2,7 @@ import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
-import {
-  UserSavedRecipeController
-} from '../../../../src/controllers/user/savedRecipe';
+import { UserSavedRecipeController } from '../../../../src/controllers/user';
 import {
   validSavedRecipeEntity
 } from '../../../../src/lib/validations/savedRecipe/entity';
@@ -14,7 +12,7 @@ const controller = new UserSavedRecipeController(<Pool>pool);
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/access/mysql/SavedRecipe', () => ({
+jest.mock('../../../../src/access/mysql', () => ({
   SavedRecipe: jest.fn().mockImplementation(() => ({
     viewByUser: mockViewByUser,
     create: mockCreate,

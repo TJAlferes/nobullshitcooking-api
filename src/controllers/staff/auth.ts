@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
-import { Staff } from '../../access/mysql/Staff';
+import { Staff } from '../../access/mysql';
 import {
   validLogin,
   validLoginRequest,

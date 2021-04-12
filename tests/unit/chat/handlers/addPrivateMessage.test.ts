@@ -1,28 +1,32 @@
 import { Socket } from 'socket.io';
 
 import { pool } from '../../../../src/lib/connections/mysql';  // just mock like in others?
-import { IFriendship, Friendship } from '../../../../src/access/mysql/Friendship';
-import { IUser, User } from '../../../../src/access/mysql/User';
-import { IMessengerUser } from '../../../../src/access/redis/MessengerUser';
+import {
+  Friendship,
+  User,
+  IFriendship,
+  IUser
+} from '../../../../src/access/mysql';
+import { IChatUser } from '../../../../src/access/redis/ChatUser';
 import { PrivateMessage } from '../../../../src/chat/entities/PrivateMessage';
-import { IAddPrivateMessage, addPrivateMessage } from '../../../../src/chat/handlers/addPrivateMessage';
+import {
+  addPrivateMessage,
+  IAddPrivateMessage
+} from '../../../../src/chat/handlers/addPrivateMessage';
 
 let mockGetSocketId = jest.fn();
-let mockMessengerUser: Partial<IMessengerUser>;
+let mockChatUser: Partial<IChatUser>;
 
-jest.mock('../../../../src/access/mysql/Friendship', () => ({
+jest.mock('../../../../src/access/mysql', () => ({
   Friendship: jest.fn().mockImplementation(() => ({
     viewBlocked: mockViewBlocked
-  }))
-}));
-let mockViewBlocked = jest.fn();
-let mockNobscFriendship: IFriendship;
-
-jest.mock('../../../../src/access/mysql/User', () => ({
+  })),
   User: jest.fn().mockImplementation(() => ({getByName: mockGetByName}))
 }));
+let mockFriendship: IFriendship;
+let mockViewBlocked = jest.fn();
+let mockUser: IUser;
 let mockGetByName = jest.fn();
-let mockNobscUser: IUser;
 
 jest.mock('../../../../src/chat/entities/PrivateMessage');
 const mockPrivateMessage = PrivateMessage as jest.Mocked<typeof PrivateMessage>;
@@ -55,18 +59,18 @@ describe('addPrivateMessage handler', () => {
 
   describe('when user being messaged does not exist', () => {
     beforeAll(() => {
-      mockMessengerUser = {getSocketId: mockGetSocketId};
+      mockChatUser = {getSocketId: mockGetSocketId};
 
-      mockNobscFriendship = new Friendship(pool);
+      mockFriendship = new Friendship(pool);
 
       mockGetByName = jest.fn().mockResolvedValue([[]]);
-      mockNobscUser = new User(pool);
+      mockUser = new User(pool);
 
       currParams = {
         ...params,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship,
-        nobscUser: <IUser>mockNobscUser
+        chatUser: <IChatUser>mockChatUser,
+        friendship: <IFriendship>mockFriendship,
+        user: <IUser>mockUser
       };
     });
 
@@ -90,19 +94,19 @@ describe('addPrivateMessage handler', () => {
 
   describe('when user being messaged blocked you', () => {
     beforeAll(() => {
-      mockMessengerUser = {getSocketId: mockGetSocketId};
+      mockChatUser = {getSocketId: mockGetSocketId};
 
       mockViewBlocked = jest.fn().mockResolvedValue([[{username: "other"}]]);
-      mockNobscFriendship = new Friendship(pool);
+      mockFriendship = new Friendship(pool);
 
       mockGetByName = jest.fn().mockResolvedValue([[{username: "other"}]]);
-      mockNobscUser = new User(pool);
+      mockUser = new User(pool);
 
       currParams = {
         ...params,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship,
-        nobscUser: <IUser>mockNobscUser
+        chatUser: <IChatUser>mockChatUser,
+        friendship: <IFriendship>mockFriendship,
+        user: <IUser>mockUser
       };
     });
 
@@ -126,19 +130,19 @@ describe('addPrivateMessage handler', () => {
   describe('when user being messaged is offline', () => {
     beforeAll(() => {
       mockGetSocketId = jest.fn().mockResolvedValue(undefined);
-      mockMessengerUser = {getSocketId: mockGetSocketId};
+      mockChatUser = {getSocketId: mockGetSocketId};
 
       mockViewBlocked = jest.fn().mockResolvedValue([[]]);
-      mockNobscFriendship = new Friendship(pool);
+      mockFriendship = new Friendship(pool);
 
       mockGetByName = jest.fn().mockResolvedValue([[{username: "other"}]]);
-      mockNobscUser = new User(pool);
+      mockUser = new User(pool);
 
       currParams = {
         ...params,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship,
-        nobscUser: <IUser>mockNobscUser
+        chatUser: <IChatUser>mockChatUser,
+        friendship: <IFriendship>mockFriendship,
+        user: <IUser>mockUser
       };
     });
 
@@ -162,19 +166,19 @@ describe('addPrivateMessage handler', () => {
   describe('when okay', () => {
     beforeAll(() => {
       mockGetSocketId = jest.fn().mockResolvedValue("123456789");
-      mockMessengerUser = {getSocketId: mockGetSocketId};
+      mockChatUser = {getSocketId: mockGetSocketId};
 
       mockViewBlocked = jest.fn().mockResolvedValue([[]]);
-      mockNobscFriendship = new Friendship(pool);
+      mockFriendship = new Friendship(pool);
 
       mockGetByName = jest.fn().mockResolvedValue([[{username: "other"}]]);
-      mockNobscUser = new User(pool);
+      mockUser = new User(pool);
 
       currParams = {
         ...params,
-        messengerUser: <IMessengerUser>mockMessengerUser,
-        nobscFriendship: <IFriendship>mockNobscFriendship,
-        nobscUser: <IUser>mockNobscUser
+        chatUser: <IChatUser>mockChatUser,
+        friendship: <IFriendship>mockFriendship,
+        user: <IUser>mockUser
       };
     });
   

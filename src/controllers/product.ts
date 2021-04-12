@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 
-import { Product } from '../access/mysql/Product';
+import { Product } from '../access/mysql';
 
 export class ProductController {
   pool: Pool;

@@ -2,9 +2,7 @@ import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 //import { assert } from 'superstruct';
 
-import {
-  StaffSupplierController
-} from '../../../../src/controllers/staff/supplier';
+import { StaffSupplierController } from '../../../../src/controllers/staff';
 //import { validSupplierEntity } from '../../../../src/lib/validations/supplier/entity';
 
 const pool: Partial<Pool> = {};
@@ -12,7 +10,7 @@ const controller = new StaffSupplierController(<Pool>pool);
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/access/mysql/Recipe', () => ({
+jest.mock('../../../../src/access/mysql', () => ({
   Recipe: jest.fn().mockImplementation(() => ({
     view: mockView,
     viewByName: mockViewByName,

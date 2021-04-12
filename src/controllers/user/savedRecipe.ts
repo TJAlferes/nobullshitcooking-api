@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
-import { SavedRecipe } from '../../access/mysql/SavedRecipe';
+import { SavedRecipe } from '../../access/mysql';
 import {
   validSavedRecipeEntity
 } from '../../lib/validations/savedRecipe/entity';

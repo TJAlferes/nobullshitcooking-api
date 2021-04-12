@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
-import { Plan } from '../../access/mysql/Plan';
+import { Plan } from '../../access/mysql';
 import { validPlanEntity } from '../../lib/validations/plan/entity';
 
 export class UserPlanController {

@@ -4,7 +4,7 @@ import { Pool } from 'mysql2/promise';
 
 import {
   UserFavoriteRecipeController
-} from '../../controllers/user/favoriteRecipe';
+} from '../../controllers/user';
 import { catchExceptions } from '../../lib/utils/catchExceptions';
 import { userIsAuth } from '../../lib/utils/userIsAuth';
 

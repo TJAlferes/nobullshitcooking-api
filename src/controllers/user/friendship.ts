@@ -2,8 +2,7 @@ import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
-import { Friendship } from '../../access/mysql/Friendship';
-import { User } from '../../access/mysql/User';
+import { Friendship, User } from '../../access/mysql';
 import { validFriendshipEntity } from '../../lib/validations/friendship/entity';
 
 export class UserFriendshipController {

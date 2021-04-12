@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { body } from 'express-validator';
 import { Pool } from 'mysql2/promise';
 
-import { StaffSupplierController } from '../../controllers/staff/supplier';
+import { StaffSupplierController } from '../../controllers/staff';
 import { catchExceptions } from '../../lib/utils/catchExceptions';
 import { staffIsAuth } from '../../lib/utils/staffIsAuth';
 

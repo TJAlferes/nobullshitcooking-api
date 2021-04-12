@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 //import { assert } from 'superstruct';
 
-import { RecipeController } from '../../../src/controllers/recipe';
+import { RecipeController } from '../../../src/controllers';
 /*import {
   validRecipeRequest
 } from '../../../src/lib/validations/recipe/recipeRequest';*/
@@ -11,7 +11,7 @@ const pool: Partial<Pool> = {};
 const controller = new RecipeController(<Pool>pool);
 
 const rows = [{id: "NOBSC Title"}];
-jest.mock('../../../src/access/mysql/Recipe', () => ({
+jest.mock('../../../src/access/mysql', () => ({
   Recipe: jest.fn().mockImplementation(() => ({
     view: mockView,
     viewById: mockViewById

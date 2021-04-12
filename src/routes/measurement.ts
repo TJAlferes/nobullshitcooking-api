@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { param } from 'express-validator';
 import { Pool } from 'mysql2/promise';
 
-import { MeasurementController } from '../controllers/measurement';
+import { MeasurementController } from '../controllers';
 import { catchExceptions } from '../lib/utils/catchExceptions';
 
 const router = Router();

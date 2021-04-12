@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 
-import { IFriendship } from '../../access/mysql/Friendship';
+import { IFriendship } from '../../access/mysql';
 import { IChatRoom } from '../../access/redis/ChatRoom';
 import { IChatUser } from '../../access/redis/ChatUser';
 
@@ -10,7 +10,7 @@ export async function disconnecting({
   socket,
   chatRoom,
   chatUser,
-  nobscFriendship,
+  friendship,
 }: IDisconnecting) {
   const clonedSocket: Partial<Socket> = {...socket};
 
@@ -24,7 +24,7 @@ export async function disconnecting({
     }
   }
 
-  const acceptedFriends = await nobscFriendship.viewAccepted(username);
+  const acceptedFriends = await friendship.viewAccepted(username);
 
   if (acceptedFriends.length) {
     for (let f of acceptedFriends) {
@@ -45,5 +45,5 @@ export interface IDisconnecting {
   socket: Socket;
   chatRoom: IChatRoom;
   chatUser: IChatUser;
-  nobscFriendship: IFriendship;
+  friendship: IFriendship;
 }

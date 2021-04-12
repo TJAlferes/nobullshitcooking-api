@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { Client } from '@elastic/elasticsearch';
 
-import { SearchController } from '../controllers/search';
+import { SearchController } from '../controllers';
 import { catchExceptions } from '../lib/utils/catchExceptions';
 
 const router = Router();

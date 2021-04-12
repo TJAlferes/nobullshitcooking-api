@@ -2,8 +2,7 @@ import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
-import { Ingredient } from '../../access/mysql/Ingredient';
-import { RecipeIngredient } from '../../access/mysql/RecipeIngredient';
+import { Ingredient, RecipeIngredient } from '../../access/mysql';
 import { validIngredientEntity } from '../../lib/validations/ingredient/entity';
 
 export class UserIngredientController {

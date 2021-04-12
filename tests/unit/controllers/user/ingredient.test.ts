@@ -2,9 +2,7 @@ import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
-import {
-  UserIngredientController
-} from '../../../../src/controllers/user/ingredient';
+import { UserIngredientController } from '../../../../src/controllers/user';
 import {
   validIngredientEntity
 } from '../../../../src/lib/validations/ingredient/entity';
@@ -21,6 +19,9 @@ jest.mock('../../../../src/access/mysql/Ingredient', () => ({
     create: mockCreate,
     update: mockUpdate,
     deleteByOwner: mockDeleteByOwner
+  })),
+  RecipeIngredient: jest.fn().mockImplementation(() => ({
+    deleteByIngredient: mockDeleteByIngredient
   }))
 }));
 let mockView = jest.fn().mockResolvedValue(
@@ -33,11 +34,6 @@ let mockCreate = jest.fn();
 let mockUpdate = jest.fn();
 let mockDeleteByOwner = jest.fn();
 
-jest.mock('../../../../src/access/mysql/RecipeIngredient', () => ({
-  RecipeIngredient: jest.fn().mockImplementation(() => ({
-    deleteByIngredient: mockDeleteByIngredient
-  }))
-}));
 let mockDeleteByIngredient = jest.fn();
 
 afterEach(() => {

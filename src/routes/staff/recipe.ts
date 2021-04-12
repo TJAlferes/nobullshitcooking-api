@@ -3,7 +3,7 @@ import { body } from 'express-validator';
 import { Pool } from 'mysql2/promise';
 import { Client } from '@elastic/elasticsearch';
 
-import { StaffRecipeController } from '../../controllers/staff/recipe';
+import { StaffRecipeController } from '../../controllers/staff';
 import { catchExceptions } from '../../lib/utils/catchExceptions';
 import { staffIsAuth } from '../../lib/utils/staffIsAuth';
 

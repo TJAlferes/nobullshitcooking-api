@@ -2,9 +2,7 @@ import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
-import {
-  UserFriendshipController
-} from '../../../../src/controllers/user/friendship';
+import { UserFriendshipController } from '../../../../src/controllers/user';
 import {
   validFriendshipEntity
 } from '../../../../src/lib/validations/friendship/entity';
@@ -14,7 +12,7 @@ const controller = new UserFriendshipController(<Pool>pool);
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/access/mysql/Friendship', () => ({
+jest.mock('../../../../src/access/mysql', () => ({
   Friendship: jest.fn().mockImplementation(() => ({
     getByFriend:  mockGetByFriend,
     checkIfBlockedBy:  mockCheckIfBlockedBy,
@@ -25,7 +23,8 @@ jest.mock('../../../../src/access/mysql/Friendship', () => ({
     delete: mockDelete,
     block: mockBlock,
     unblock: mockUnblock
-  }))
+  })),
+  User: jest.fn().mockImplementation(() => ({viewByName: mockViewByName}))
 }));
 let mockGetByFriend = jest.fn();
 let mockCheckIfBlockedBy = jest.fn();
@@ -37,9 +36,6 @@ let mockDelete = jest.fn();
 let mockBlock = jest.fn();
 let mockUnblock = jest.fn();
 
-jest.mock('../../../../src/access/mysql/User', () => ({
-  User: jest.fn().mockImplementation(() => ({viewByName: mockViewByName}))
-}));
 let mockViewByName = jest.fn();
 
 afterEach(() => {

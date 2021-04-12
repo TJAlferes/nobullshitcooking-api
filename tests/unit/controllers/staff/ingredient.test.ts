@@ -3,9 +3,7 @@ import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 import { Client } from '@elastic/elasticsearch';
 
-import {
-  StaffIngredientController
-} from '../../../../src/controllers/staff/ingredient';
+import { StaffIngredientController } from '../../../../src/controllers/staff';
 import {
   validIngredientEntity
 } from '../../../../src/lib/validations/ingredient/entity';
@@ -16,7 +14,7 @@ const esClient: Partial<Client> = {};
 const pool: Partial<Pool> = {};
 const controller = new StaffIngredientController(<Client>esClient, <Pool>pool);
 
-jest.mock('../../../../src/access/elasticsearch/IngredientSearch', () => ({
+jest.mock('../../../../src/access/elasticsearch', () => ({
   IngredientSearch: jest.fn().mockImplementation(() => ({
     save: mockESSave,
     delete: mockESDelete
@@ -25,7 +23,7 @@ jest.mock('../../../../src/access/elasticsearch/IngredientSearch', () => ({
 let mockESSave = jest.fn();
 let mockESDelete = jest.fn();
 
-jest.mock('../../../../src/access/mysql/Ingredient', () => ({
+jest.mock('../../../../src/access/mysql', () => ({
   Ingredient: jest.fn().mockImplementation(() => ({
     getForElasticSearch: mockGetForElasticSearch,
     create: mockCreate,

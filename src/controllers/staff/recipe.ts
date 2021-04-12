@@ -3,12 +3,14 @@ import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 import { Client } from '@elastic/elasticsearch';
 
-import { RecipeSearch } from '../../access/elasticsearch/RecipeSearch';
-import { Recipe } from '../../access/mysql/Recipe';
-import { RecipeEquipment } from '../../access/mysql/RecipeEquipment';
-import { RecipeIngredient } from '../../access/mysql/RecipeIngredient';
-import { RecipeMethod } from '../../access/mysql/RecipeMethod';
-import { RecipeSubrecipe } from '../../access/mysql/RecipeSubrecipe';
+import { RecipeSearch } from '../../access/elasticsearch';
+import {
+  Recipe,
+  RecipeEquipment,
+  RecipeIngredient,
+  RecipeMethod,
+  RecipeSubrecipe
+} from '../../access/mysql';
 import { createRecipeService } from '../../lib/services/create-recipe';
 import { updateRecipeService } from '../../lib/services/update-recipe';
 import { validRecipeEntity } from '../../lib/validations/recipe/entity';

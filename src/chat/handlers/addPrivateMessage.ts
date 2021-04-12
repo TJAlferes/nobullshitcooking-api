@@ -1,7 +1,6 @@
 import { Socket } from 'socket.io';
 
-import { IFriendship } from '../../access/mysql/Friendship';
-import { IUser } from '../../access/mysql/User';
+import { IFriendship, IUser } from '../../access/mysql';
 import { IChatUser } from '../../access/redis/ChatUser';
 import { PrivateMessage } from '../entities/PrivateMessage';
 
@@ -11,17 +10,16 @@ export async function addPrivateMessage({
   text,
   socket,
   chatUser,
-  nobscFriendship,
-  nobscUser
+  friendship,
+  user
 }: IAddPrivateMessage) {
-  const [ userExists ] = await nobscUser.getByName(to);
+  const [ userExists ] = await user.getByName(to);
 
   if (!userExists.length) {
     return socket.emit('FailedPrivateMessage', 'User not found.');
   }
 
-  const [ blockedUsers ] =
-    await nobscFriendship.viewBlocked(userExists[0].username);
+  const [ blockedUsers ] = await friendship.viewBlocked(userExists[0].username);
     
   const blockedByUser = blockedUsers.find((u: any) => u.username === from);
 
@@ -37,6 +35,8 @@ export async function addPrivateMessage({
 
   const privateMessage = PrivateMessage(to, from, text);
 
+  //socket.to(to).to(from).emit('AddPrivateMessage', privateMessage);
+
   socket.broadcast.to(onlineUser).emit('AddPrivateMessage', privateMessage);
 
   socket.emit('AddPrivateMessage', privateMessage);
@@ -48,6 +48,6 @@ export interface IAddPrivateMessage {
   text: string;
   socket: Socket;
   chatUser: IChatUser;
-  nobscFriendship: IFriendship;
-  nobscUser: IUser;
+  friendship: IFriendship;
+  user: IUser;
 }

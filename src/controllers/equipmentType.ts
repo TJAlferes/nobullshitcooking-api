@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 
-import { EquipmentType } from '../access/mysql/EquipmentType';
+import { EquipmentType } from '../access/mysql';
 
 export class EquipmentTypeController {
   pool: Pool;

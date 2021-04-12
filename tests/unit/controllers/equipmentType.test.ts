@@ -1,15 +1,13 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 
-import {
-  EquipmentTypeController
-} from '../../../src/controllers/equipmentType';
+import { EquipmentTypeController } from '../../../src/controllers';
 
 const pool: Partial<Pool> = {};
 const controller = new EquipmentTypeController(<Pool>pool);
 
 const rows = [{name: "Name"}];
-jest.mock('../../../src/access/mysql/EquipmentType', () => ({
+jest.mock('../../../src/access/mysql', () => ({
   EquipmentType: jest.fn().mockImplementation(() => ({
     view: mockView,
     viewByName: mockViewByName

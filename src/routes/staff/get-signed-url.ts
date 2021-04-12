@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
 
-import { getSignedUrl } from '../../controllers/user/get-signed-url';
+import { getSignedUrl } from '../../controllers/user';
 import { catchExceptions } from '../../lib/utils/catchExceptions';
 import { staffIsAuth } from '../../lib/utils/staffIsAuth';
 

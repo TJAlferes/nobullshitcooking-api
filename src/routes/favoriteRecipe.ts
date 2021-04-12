@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { Pool } from 'mysql2/promise';
 
-import { FavoriteRecipeController } from '../controllers/favoriteRecipe';
+import { FavoriteRecipeController } from '../controllers';
 import { catchExceptions } from '../lib/utils/catchExceptions';
 
 export const router = Router();

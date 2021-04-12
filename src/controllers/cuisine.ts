@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 
-import { Cuisine } from '../access/mysql/Cuisine';
+import { Cuisine } from '../access/mysql';
 
 export class CuisineController {
   pool: Pool;
@@ -28,15 +28,5 @@ export class CuisineController {
     const [ row ] = await cuisine.viewByName(name);
 
     return res.send(row);
-  }
-
-  async viewDetailByName(req: Request, res: Response) {
-    const { name } = req.params;
-
-    const cuisine = new Cuisine(this.pool);
-
-    const detail = await cuisine.viewDetailByName(name);
-    
-    return res.send(detail);
   }
 }
