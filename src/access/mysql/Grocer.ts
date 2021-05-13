@@ -6,48 +6,47 @@ export class Grocer implements IGrocer {
   constructor(pool: Pool) {
     this.pool = pool;
     this.view = this.view.bind(this);
-    //this.viewById = this.viewById.bind(this);
     this.create = this.create.bind(this);
     this.update = this.update.bind(this);
     this.delete = this.delete.bind(this);
   }
 
-  async view(owner: string) {
+  async view(ownerId: number) {
     const sql = `
       SELECT id, name, address, notes
       FROM grocers
-      WHERE owner = ?
+      WHERE owner_id = ?
       ORDER BY name ASC
     `;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [owner]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
     return rows;
   }
 
-  async create({ owner, name, address, notes }: ICreatingGrocer) {
+  async create({ ownerId, name, address, notes }: ICreatingGrocer) {
     const sql = `
-      INSERT INTO grocers (owner, name, address, notes) VALUES (?, ?, ?, ?)
+      INSERT INTO grocers (owner_id, name, address, notes) VALUES (?, ?, ?, ?)
     `;
     const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [owner, name, address, notes]);
+      .execute<RowDataPacket[]>(sql, [ownerId, name, address, notes]);
     return row;
   }
 
-  async update({ id, owner, name, address, notes }: IUpdatingGrocer) {
+  async update({ id, ownerId, name, address, notes }: IUpdatingGrocer) {
     const sql = `
       UPDATE grocers
       SET name = ?, address = ?, notes = ?
-      WHERE id = ? AND owner = ?
+      WHERE id = ? AND owner_id = ?
       LIMIT 1
     `;
     const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [name, address, notes, owner, id]);
+      .execute<RowDataPacket[]>(sql, [name, address, notes, ownerId, id]);
     return row;
   }
 
-  async delete(id: string, owner: string) {
-    const sql = `DELETE FROM grocers WHERE owner = ? AND id = ? LIMIT 1`;
-    const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [owner, id]);
+  async delete(id: number, ownerId: number) {
+    const sql = `DELETE FROM grocers WHERE owner_id = ? AND id = ? LIMIT 1`;
+    const [ row ] =
+      await this.pool.execute<RowDataPacket[]>(sql, [ownerId, id]);
     return row;
   }
 }
@@ -56,19 +55,19 @@ type Data = Promise<RowDataPacket[]>;
 
 export interface IGrocer {
   pool: Pool;
-  view(owner: string): Data;
-  create({owner, name, address, notes}: ICreatingGrocer): Data;
-  update({id, owner, name, address, notes}: IUpdatingGrocer): Data;
-  delete(id: string, owner: string): Data;
+  view(ownerId: number): Data;
+  create(grocer: ICreatingGrocer): Data;
+  update(grocer: IUpdatingGrocer): Data;
+  delete(id: number, ownerId: number): Data;
 }
 
 interface ICreatingGrocer {
-  owner: string;
+  ownerId: number;
   name: string;
   address: string;
   notes: string;
 }
 
 interface IUpdatingGrocer extends ICreatingGrocer {
-  id: string;
+  id: number;
 }

@@ -6,18 +6,18 @@ export class RecipeType implements IRecipeType {
   constructor(pool: Pool) {
     this.pool = pool;
     this.view = this.view.bind(this);
-    this.viewByName = this.viewByName.bind(this);
+    this.viewById = this.viewById.bind(this);
   }
 
   async view() {
-    const sql = `SELECT name FROM recipe_types`;
+    const sql = `SELECT id, name FROM recipe_types`;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql);
     return rows;
   }
 
-  async viewByName(name: string) {
-    const sql = `SELECT name FROM recipe_types WHERE name = ?`;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [name]);
+  async viewById(id: number) {
+    const sql = `SELECT id, name FROM recipe_types WHERE id = ?`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
     return row;
   }
 }
@@ -27,5 +27,5 @@ type Data = Promise<RowDataPacket[]>;
 export interface IRecipeType {
   pool: Pool;
   view(): Data;
-  viewByName(name: string): Data;
+  viewById(id: number): Data;
 }

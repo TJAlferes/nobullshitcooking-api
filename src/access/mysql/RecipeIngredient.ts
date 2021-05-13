@@ -1,4 +1,4 @@
-import { Pool, OkPacket, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
+import { OkPacket, Pool, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
 export class RecipeIngredient implements IRecipeIngredient {
   pool: Pool;
@@ -13,22 +13,23 @@ export class RecipeIngredient implements IRecipeIngredient {
     this.deleteByRecipeIds = this.deleteByRecipeIds.bind(this);
   }
 
-  async viewByRecipeId(recipeId: string) {
+  async viewByRecipeId(recipeId: number) {
     const sql = `
-      SELECT ri.amount, ri.measurement, i.name AS ingredient
+      SELECT ri.amount, m.name AS measurement_name, i.name AS ingredient_name
       FROM recipe_ingredients ri
-      INNER JOIN ingredients i ON i.id = ri.ingredientId
-      WHERE ri.recipeId = ?
-      ORDER BY i.type
+      INNER JOIN measurements m ON m.id = ri.measurement_id
+      INNER JOIN ingredients i ON i.id = ri.ingredient_id
+      WHERE ri.recipe_id = ?
+      ORDER BY i.ingredient_type_id
     `;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [recipeId]);
     return rows;
   }
 
-  async create(recipeIngredients: string[], placeholders: string) {
+  async create(recipeIngredients: number[], placeholders: string) {
     const sql = `
       INSERT INTO recipe_ingredients
-      (recipeId, ingredientId, amount, measurement)
+      (recipe_id, ingredient_id, amount, measurement_id)
       VALUES ${placeholders}
     `;
     const [ row ] =
@@ -36,26 +37,26 @@ export class RecipeIngredient implements IRecipeIngredient {
     return row;
   }
 
-  // finish
+  // TO DO: finish
   async update(
-    recipeIngredients: string[],
+    recipeIngredients: number[],
     placeholders: string,
-    recipeId: string
+    recipeId: number
   ) {
-    const sql1 = `DELETE FROM recipe_ingredients WHERE recipe = ?`;
+    const sql1 = `DELETE FROM recipe_ingredients WHERE recipe_id = ?`;
     const sql2 = (recipeIngredients.length)
       ? `
         INSERT INTO recipe_ingredients
-        (recipeId, ingredientId, amount, measurement)
+        (recipe_id, ingredient_id, amount, measurement_id)
         VALUES ${placeholders} 
       `
       : "none";
-
     const connection = await this.pool.getConnection();
 
     await connection.beginTransaction();
 
     try {
+
       await connection.query(sql1, [recipeId]);
 
       if (sql2 !== "none") {
@@ -65,29 +66,34 @@ export class RecipeIngredient implements IRecipeIngredient {
       } else {
         await connection.commit();
       }
+
     } catch (err) {
+
       await connection.rollback();
       throw err;
+
     } finally {
+
       connection.release();
+
     }
   }
 
-  async deleteByIngredientId(ingredientId: string) {
-    const sql = `DELETE FROM recipe_ingredients WHERE ingredientId = ?`;
+  async deleteByIngredientId(ingredientId: number) {
+    const sql = `DELETE FROM recipe_ingredients WHERE ingredient_id = ?`;
     const [ rows ] =
       await this.pool.execute<RowDataPacket[]>(sql, [ingredientId]);
     return rows;
   }
 
-  async deleteByRecipeId(recipeId: string) {
-    const sql = `DELETE FROM recipe_ingredients WHERE recipeId = ?`;
+  async deleteByRecipeId(recipeId: number) {
+    const sql = `DELETE FROM recipe_ingredients WHERE recipe_id = ?`;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [recipeId]);
     return rows;
   }
 
-  async deleteByRecipeIds(recipeIds: string[]) {
-    const sql = `DELETE FROM recipe_ingredients WHERE recipeId = ANY(?)`;
+  async deleteByRecipeIds(recipeIds: number[]) {
+    const sql = `DELETE FROM recipe_ingredients WHERE recipe_id = ANY(?)`;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, recipeIds);
     return rows;
   }
@@ -106,20 +112,20 @@ type DataWithExtra = Promise<
 
 export interface IRecipeIngredient {
   pool: Pool;
-  viewByRecipeId(recipeId: string): Data;
-  create(recipeIngredients: (string|number)[], placeholders: string): Data;
+  viewByRecipeId(recipeId: number): Data;
+  create(recipeIngredients: number[], placeholders: string): Data;
   update(
-    recipeIngredients: (string|number)[],
+    recipeIngredients: number[],
     placeholders: string,
-    recipeId: string
+    recipeId: number
   ): DataWithExtra;  // | finish
-  deleteByIngredientId(ingredientId: string): Data;
-  deleteByRecipeId(recipeId: string): Data;
-  deleteByRecipeIds(recipeIds: string[]): Data;
+  deleteByIngredientId(ingredientId: number): Data;
+  deleteByRecipeId(recipeId: number): Data;
+  deleteByRecipeIds(recipeIds: number[]): Data;
 }
 
 export interface IMakeRecipeIngredient {
-  ingredientId: string;
   amount: number;
-  measurement: string;
+  ingredientId: number;
+  measurementId: number;
 }

@@ -6,47 +6,48 @@ export class ContentType implements IContentType {
   constructor(pool: Pool) {
     this.pool = pool;
     this.view = this.view.bind(this);
-    this.viewByName = this.viewByName.bind(this);
+    this.viewById = this.viewById.bind(this);
     this.create = this.create.bind(this);
     this.update = this.update.bind(this);
     this.delete = this.delete.bind(this);
   }
 
   async view() {
-    const sql = `SELECT name, parent, path FROM content_types`;
+    const sql = `SELECT id, parent_id, name, path FROM content_types`;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql);
     return rows;
   }
 
-  async viewByName(name: string) {
-    const sql = `SELECT name, parent, path FROM content_types WHERE name = ?`;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [name]);
-    return row;
-  }
-
-  async create({ name, parent, path }: ICreatingContentType) {
+  async viewById(id: number) {
     const sql =
-      `INSERT INTO content_types (name, parent, path) VALUES (?, ?, ?)`;
-    const [ row ] =
-      await this.pool.execute<RowDataPacket[]>(sql, [name, parent, path]);
+      `SELECT id, parent_id, name, path FROM content_types WHERE id = ?`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
     return row;
   }
 
-  async update({ name, parent, path }: IUpdatingContentType) {
+  async create({ parentId, name, path }: ICreatingContentType) {
+    const sql =
+      `INSERT INTO content_types (parent_id, name, path) VALUES (?, ?, ?)`;
+    const [ row ] =
+      await this.pool.execute<RowDataPacket[]>(sql, [parentId, name, path]);
+    return row;
+  }
+
+  async update({ id, parentId, name, path }: IUpdatingContentType) {
     const sql = `
       UPDATE content_types
-      SET name = ?, parent = ?, path = ?
-      WHERE name = ?
+      SET parent_id = ?, name = ?, path = ?
+      WHERE id = ?
       LIMIT 1
     `;
     const [ row ] =
-      await this.pool.execute<RowDataPacket[]>(sql, [name, parent, path]);
+      await this.pool.execute<RowDataPacket[]>(sql, [parentId, name, path, id]);
     return row;
   }
 
-  async delete(name: string) {
-    const sql = `DELETE FROM content_types WHERE name = ? LIMIT 1`;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [name]);
+  async delete(id: number) {
+    const sql = `DELETE FROM content_types WHERE id = ? LIMIT 1`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
     return row;
   }
 }
@@ -56,20 +57,18 @@ type Data = Promise<RowDataPacket[]>;
 export interface IContentType {
   pool: Pool;
   view(): Data;
-  viewByName(name: string): Data;
-  create({name, parent, path}: ICreatingContentType): Data;
-  update({name, parent, path}: IUpdatingContentType): Data;
-  delete(name: string): Data;
+  viewById(id: number): Data;
+  create(contentType: ICreatingContentType): Data;
+  update(contentType: IUpdatingContentType): Data;
+  delete(id: number): Data;
 }
 
 interface ICreatingContentType {
+  parentId: number;
   name: string;
-  parent: string;
   path: string;
 }
 
-interface IUpdatingContentType {
-  name: string;
-  parent: string;
-  path: string;
+interface IUpdatingContentType extends ICreatingContentType {
+  id: number;
 }
