@@ -32,8 +32,7 @@ export class RecipeMethod implements IRecipeMethod {
       await this.pool.execute<RowDataPacket[]>(sql, recipeMethods);
     return rows;
   }
-
-  // TO DO: finish
+  
   async update(
     recipeMethods: number[],
     placeholders: string,
@@ -42,35 +41,26 @@ export class RecipeMethod implements IRecipeMethod {
     const sql1 = `DELETE FROM recipe_methods WHERE recipe_id = ?`;
     const sql2 = (recipeMethods.length)
       ? `
-        INSERT INTO recipe_methods (recipe_id, method_id)
-        VALUES ${placeholders} 
+        INSERT INTO recipe_methods (recipe_id, method_id) VALUES ${placeholders} 
       `
       : "none";
-    const connection = await this.pool.getConnection();
-
-    await connection.beginTransaction();
-
+    const conn = await this.pool.getConnection();
+    await conn.beginTransaction();
     try {
-
-      await connection.query(sql1, [recipeId]);
-
+      // Rather than updating current values in the database, we delete them,
+      // and, if there are new values, we insert them.
+      await conn.query(sql1, [recipeId]);
       if (sql2 !== "none") {
-        const [ rows ] = await connection.query(sql2, recipeMethods);
-        await connection.commit();
+        const [ rows ] = await conn.query(sql2, recipeMethods);
+        await conn.commit();
         return rows;
-      } else {
-        await connection.commit();
       }
-
+      await conn.commit();
     } catch (err) {
-
-      await connection.rollback();
+      await conn.rollback();
       throw err;
-
     } finally {
-
-      connection.release();
-
+      conn.release();
     }
   }
 

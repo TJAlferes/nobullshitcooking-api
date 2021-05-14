@@ -37,8 +37,7 @@ export class RecipeSubrecipe implements IRecipeSubrecipe {
       await this.pool.execute<RowDataPacket[]>(sql, recipeSubrecipes);
     return rows;
   }
-
-  // TO DO: finish
+  
   async update(
     recipeSubrecipes: number[],
     placeholders: string,
@@ -52,32 +51,24 @@ export class RecipeSubrecipe implements IRecipeSubrecipe {
         VALUES ${placeholders} 
       `
       : "none";
-    const connection = await this.pool.getConnection();
-
-    await connection.beginTransaction();
-
+    const conn = await this.pool.getConnection();
+    await conn.beginTransaction();
     try {
-
-      await connection.query(sql1, [recipeId]);
-
+      // Rather than updating current values in the database, we delete them,
+      // and, if there are new values, we insert them.
+      await conn.query(sql1, [recipeId]);
       if (sql2 !== "none") {
-        const [ rows ] = await connection
+        const [ rows ] = await conn
         .query(sql2, recipeSubrecipes);
-        await connection.commit();
+        await conn.commit();
         return rows;
-      } else {
-        await connection.commit();
       }
-
+      await conn.commit();
     } catch (err) {
-
-      await connection.rollback();
+      await conn.rollback();
       throw err;
-
     } finally {
-
-      connection.release();
-
+      conn.release();
     }
   }
 

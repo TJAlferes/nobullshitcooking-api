@@ -18,7 +18,7 @@ export class ProductSearch implements IProductSearch {
     return body;
   }
 
-  async auto(searchTerm: string) {
+  async auto(term: string) {
     const { body } = await this.client.search({
       index: "products",
       body: {
@@ -28,20 +28,7 @@ export class ProductSearch implements IProductSearch {
           fields: {fullname: {}}
         },
         query: {
-          bool: {
-            must: [
-              {
-                match: {
-                  fullname: {query: searchTerm, operator: "and"}
-                }
-                /*multi_match: {
-                  fields: ["brand", "variety", "name"],
-                  type: "cross_fields",
-                  query: searchTerm
-                }*/
-              }
-            ],
-          }
+          bool: {must: [{match: {fullname: {query: term, operator: "and"}}}]}
         }
       },
       from: 0,
@@ -53,50 +40,42 @@ export class ProductSearch implements IProductSearch {
   // (staff only)
   async save({
     id,
-    type,
+    product_type_name,
     fullname,
     brand,
     variety,
     name,
     image
   }: ISavingProduct) {
-    const saved = await this.client.index({
+    const row = await this.client.index({
       index: 'products',
       id,
-      body: {id, type, fullname, brand, variety, name, image}
+      body: {id, product_type_name, fullname, brand, variety, name, image}
     });
     await this.client.indices.refresh({index: 'products'});
-    return saved;
+    return row;
   }
 
   // (staff only)
   async delete(id: string) {
-    const deleted =
+    const row =
       await this.client.delete({index: 'products', id}, {ignore: [404]});
     await this.client.indices.refresh({index: 'products'});
-    return deleted;
+    return row;
   }
 }
 
 export interface IProductSearch {
   client: Client;
   find(searchBody: any): any;  // finish
-  auto(searchTerm: string): any;  // finish
-  save({
-    id,
-    type,
-    fullname,
-    brand,
-    variety,
-    name,
-    image
-  }: ISavingProduct): void;
+  auto(term: string): any;  // finish
+  save(product: ISavingProduct): void;
   delete(id: string): void;
 }
 
 interface ISavingProduct {
   id: string;
-  type: string;
+  product_type_name: string;
   fullname: string;
   brand: string;
   variety: string;

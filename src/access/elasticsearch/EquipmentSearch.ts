@@ -18,7 +18,7 @@ export class EquipmentSearch implements IEquipmentSearch {
     return body;
   }
 
-  async auto(searchTerm: string) {
+  async auto(term: string) {
     const { body } = await this.client.search({
       index: "equipment",
       body: {
@@ -27,17 +27,7 @@ export class EquipmentSearch implements IEquipmentSearch {
           number_of_fragments: 1,
           fields: {name: {}}
         },
-        query: {
-          bool: {
-            must: [
-              {
-                match: {
-                  name: {query: searchTerm, operator: "and"}
-                }
-              }
-            ],
-          }
-        }
+        query: {bool: {must: [{match: {name: {query: term, operator: "and"}}}]}}
       },
       from: 0,
       size: 5
@@ -46,36 +36,36 @@ export class EquipmentSearch implements IEquipmentSearch {
   }
 
   // (staff only)
-  async save({ id, type, name, image }: ISavingEquipment) {
-    const savedEquipment = await this.client.index({
+  async save({ id, equipment_type_name, name, image }: ISavingEquipment) {
+    const row = await this.client.index({
       index: 'equipment',
       id,
-      body: {id, type, name, image}
+      body: {id, equipment_type_name, name, image}
     });
     await this.client.indices.refresh({index: 'equipment'});
-    return savedEquipment;
+    return row;
   }
 
   // (staff only)
   async delete(id: string) {
-    const deletedEquipment =
+    const row =
       await this.client.delete({index: 'equipment', id}, {ignore: [404]});
     await this.client.indices.refresh({index: 'equipment'});
-    return deletedEquipment;
+    return row;
   }
 }
 
 export interface IEquipmentSearch {
   client: Client;
   find(searchBody: any): any;  // finish
-  auto(searchTerm: string): any;  // finish
-  save({id, type, name, image}: ISavingEquipment): void;
+  auto(term: string): any;  // finish
+  save(equipment: ISavingEquipment): void;
   delete(id: string): void;
 }
 
 interface ISavingEquipment {
   id: string;
-  type: string;
+  equipment_type_name: string;
   name: string;
   image: string;
 }

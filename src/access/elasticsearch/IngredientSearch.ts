@@ -18,7 +18,7 @@ export class IngredientSearch implements IIngredientSearch {
     return body;
   }
 
-  async auto(searchTerm: string) {
+  async auto(term: string) {
     const { body } = await this.client.search({
       index: "ingredients",
       body: {
@@ -28,20 +28,7 @@ export class IngredientSearch implements IIngredientSearch {
           fields: {fullname: {}}
         },
         query: {
-          bool: {
-            must: [
-              {
-                match: {
-                  fullname: {query: searchTerm, operator: "and"}
-                }
-                /*multi_match: {
-                  fields: ["brand", "variety", "name"],
-                  type: "cross_fields",
-                  query: searchTerm
-                }*/
-              }
-            ],
-          }
+          bool: {must: [{match: {fullname: {query: term, operator: "and"}}}]}
         }
       },
       from: 0,
@@ -53,50 +40,42 @@ export class IngredientSearch implements IIngredientSearch {
   // (staff only)
   async save({
     id,
-    type,
+    ingredient_type_name,
     fullname,
     brand,
     variety,
     name,
     image
   }: ISavingIngredient) {
-    const savedIngredient = await this.client.index({
+    const row = await this.client.index({
       index: 'ingredients',
       id,
-      body: {id, type, fullname, brand, variety, name, image}
+      body: {id, ingredient_type_name, fullname, brand, variety, name, image}
     });
     await this.client.indices.refresh({index: 'ingredients'});
-    return savedIngredient;
+    return row;
   }
 
   // (staff only)
   async delete(id: string) {
-    const deletedIngredient =
+    const row =
       await this.client.delete({index: 'ingredients', id}, {ignore: [404]});
     await this.client.indices.refresh({index: 'ingredients'});
-    return deletedIngredient;
+    return row;
   }
 }
 
 export interface IIngredientSearch {
   client: Client;
   find(searchBody: any): any;  // finish
-  auto(searchTerm: string): any;  // finish
-  save({
-    id,
-    type,
-    fullname,
-    brand,
-    variety,
-    name,
-    image
-  }: ISavingIngredient): void;
+  auto(term: string): any;  // finish
+  save(ingredient: ISavingIngredient): void;
   delete(id: string): void;
 }
 
 interface ISavingIngredient {
   id: string;
-  type: string;
+  ingredient_type_name: string;
   fullname: string;
   brand: string;
   variety: string;
