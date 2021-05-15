@@ -13,25 +13,19 @@ export class EquipmentController {
   }
 
   async view(req: Request, res: Response) {
-    const author = "NOBSC";
-    const owner = "NOBSC";
-
+    const authorId = 1;
+    const ownerId = 1;
     const equipment = new Equipment(this.pool);
-
-    const rows = await equipment.view(author, owner);
-
+    const rows = await equipment.view(authorId, ownerId);
     return res.send(rows);
   }
 
   async viewById(req: Request, res: Response) {
-    const { id } = req.params;
-    const author = "NOBSC";
-    const owner = "NOBSC";
-
+    const id = Number(req.params.id);
+    const authorId = 1;
+    const ownerId = 1;
     const equipment = new Equipment(this.pool);
-
-    const [ row ] = await equipment.viewById(id, author, owner);
-    
+    const [ row ] = await equipment.viewById(id, authorId, ownerId);
     return res.send(row);
   }
 }

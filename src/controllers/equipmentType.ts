@@ -9,24 +9,19 @@ export class EquipmentTypeController {
   constructor(pool: Pool) {
     this.pool = pool;
     this.view = this.view.bind(this);
-    this.viewByName = this.viewByName.bind(this);
+    this.viewById = this.viewById.bind(this);
   }
 
   async view(req: Request, res: Response) {
     const equipmentType = new EquipmentType(this.pool);
-
     const rows = await equipmentType.view();
-
     return res.send(rows);
   }
 
-  async viewByName(req: Request, res: Response) {
-    const { name } = req.params;
-
+  async viewById(req: Request, res: Response) {
+    const id = Number(req.params.id);
     const equipmentType = new EquipmentType(this.pool);
-
-    const [ row ] = await equipmentType.viewByName(name);
-    
+    const [ row ] = await equipmentType.viewById(id);
     return res.send(row);
   }
 }

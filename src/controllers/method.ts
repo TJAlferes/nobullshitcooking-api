@@ -9,24 +9,19 @@ export class MethodController {
   constructor(pool: Pool) {
     this.pool = pool;
     this.view = this.view.bind(this);
-    this.viewByName = this.viewByName.bind(this);
+    this.viewById = this.viewById.bind(this);
   }
 
   async view(req: Request, res: Response) {
     const method = new Method(this.pool);
-
     const rows = await method.view();
-
     return res.send(rows);
   }
 
-  async viewByName(req: Request, res: Response) {
-    const { name } = req.params;
-
+  async viewById(req: Request, res: Response) {
+    const id = Number(req.params.id);
     const method = new Method(this.pool);
-
-    const [ row ] = await method.viewByName(name);
-    
+    const [ row ] = await method.viewById(id);
     return res.send(row);
   }
 }

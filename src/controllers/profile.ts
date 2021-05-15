@@ -24,18 +24,16 @@ export class ProfileController {
 
     if (!userExists) return res.send({message: 'User does not exist.'});
 
-    const avatar = userExists.avatar;
-    const owner = "NOBSC";
+    const id = userExists.user_id;
 
     const recipe = new Recipe(this.pool);
 
-    const publicRecipes = await recipe.view(username, owner);
+    const publicRecipes = await recipe.view(id, 1);
 
     const favoriteRecipe = new FavoriteRecipe(this.pool);
-
-    const favoriteRecipes = await favoriteRecipe.viewByUser(username);
     
-    return res
-      .send({message: 'Success.', avatar, publicRecipes, favoriteRecipes});
+    const favoriteRecipes = await favoriteRecipe.viewByUserId(id);
+    
+    return res.send({message: 'Success.', publicRecipes, favoriteRecipes});
   }
 }

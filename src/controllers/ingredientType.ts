@@ -9,24 +9,19 @@ export class IngredientTypeController {
   constructor(pool: Pool) {
     this.pool = pool;
     this.view = this.view.bind(this);
-    this.viewByName = this.viewByName.bind(this);
+    this.viewById = this.viewById.bind(this);
   }
 
   async view(req: Request, res: Response) {
     const ingredientType = new IngredientType(this.pool);
-
     const rows = await ingredientType.view();
-
     return res.send(rows);
   }
 
-  async viewByName(req: Request, res: Response) {
-    const { name } = req.params;
-
+  async viewById(req: Request, res: Response) {
+    const id = Number(req.params.id);
     const ingredientType = new IngredientType(this.pool);
-
-    const [ row ] = await ingredientType.viewByName(name);
-    
+    const [ row ] = await ingredientType.viewById(id);
     return res.send(row);
   }
 }

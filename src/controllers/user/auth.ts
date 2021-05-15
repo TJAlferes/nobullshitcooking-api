@@ -18,7 +18,7 @@ import {
   validUserUpdate,
   validVerify,
   validVerifyRequest
-} from '../../lib/validations/user/index';
+} from '../../lib/validations/user';
 
 const SALT_ROUNDS = 10;
 

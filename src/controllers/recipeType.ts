@@ -11,26 +11,20 @@ export class RecipeTypeController {
   constructor(pool: Pool) {
     this.pool = pool;
     this.view = this.view.bind(this);
-    this.viewByName = this.viewByName.bind(this);
+    this.viewById = this.viewById.bind(this);
   }
 
   async view(req: Request, res: Response) {
     const recipeType = new RecipeType(this.pool);
-
     const rows = await recipeType.view();
-
     return res.send(rows);
   }
 
-  async viewByName(req: Request, res: Response) {
-    const { name } = req.params;
-
-    //assert({id}, validRecipeTypeRequest);
-
+  async viewById(req: Request, res: Response) {
+    const id = Number(req.params.id);
+    assert({id}, validRecipeTypeRequest);
     const recipeType = new RecipeType(this.pool);
-
-    const [ row ] = await recipeType.viewByName(name);
-    
+    const [ row ] = await recipeType.viewById(id);
     return res.send(row);
   }
 }

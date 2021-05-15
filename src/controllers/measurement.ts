@@ -9,24 +9,19 @@ export class MeasurementController {
   constructor(pool: Pool) {
     this.pool = pool;
     this.view = this.view.bind(this);
-    this.viewByName = this.viewByName.bind(this);
+    this.viewById = this.viewById.bind(this);
   }
 
   async view(req: Request, res: Response) {
     const measurement = new Measurement(this.pool);
-
     const rows = await measurement.view();
-
     return res.send(rows);
   }
 
-  async viewByName(req: Request, res: Response) {
-    const { name } = req.params;
-
+  async viewById(req: Request, res: Response) {
+    const id = Number(req.params.id);
     const measurement = new Measurement(this.pool);
-
-    const [ row ] = await measurement.viewByName(name);
-    
+    const [ row ] = await measurement.viewById(id);
     return res.send(row);
   }
 }

@@ -15,28 +15,21 @@ export class RecipeController {
   }
 
   async view(req: Request, res: Response) {
-    const author = "NOBSC";
-    const owner = "NOBSC";
-
+    const authorId = 1;
+    const ownerId = 1;
     const recipe = new Recipe(this.pool);
-
-    const rows = await recipe.view(author, owner);
-
+    const rows = await recipe.view(authorId, ownerId);
     return res.send(rows);
   }
 
   async viewById(req: Request, res: Response) {
-    const { id } = req.params;
-    const author = "NOBSC";
-    const owner = "NOBSC";
-
+    const id = Number(req.params.id);
+    const authorId = 1;
+    const ownerId = 1;
     // defaulted?
     //assert({recipeId}, validRecipeRequest);
-
     const recipe = new Recipe(this.pool);
-
-    const [ row ] = await recipe.viewById(id, author, owner);
-    
+    const [ row ] = await recipe.viewById(id, authorId, ownerId);
     return res.send(row);
   }
 }

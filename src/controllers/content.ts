@@ -14,35 +14,25 @@ export class ContentController {
   }
 
   async view(req: Request, res: Response) {
-    const author = "NOBSC";
-
+    const authorId = 1;
     const content = new Content(this.pool);
-
-    const rows = await content.view(author);
-
+    const rows = await content.view(authorId);
     return res.send(rows);
   }
 
   async viewById(req: Request, res: Response) {
-    const { id }  = req.params;
-    const author = "NOBSC";
-
+    const id = Number(req.params.id);
+    const authorId = 1;
     const content = new Content(this.pool);
-
-    const [ row ] = await content.viewById(id, author);
-
+    const [ row ] = await content.viewById(id, authorId);
     return res.send(row);
   }
 
   async getLinksByType(req: Request, res: Response) {
     const { name } = req.params;
-
     const capitalized = name.charAt(0).toUpperCase() + name.slice(1);
-
     const content = new Content(this.pool);
-
-    const rows = await content.getLinksByType(capitalized);
-    
+    const rows = await content.getLinksByContentTypeName(capitalized);
     return res.send(rows);
   }
 }
