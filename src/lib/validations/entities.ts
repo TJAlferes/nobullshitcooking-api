@@ -7,11 +7,19 @@ import {
   string
 } from 'superstruct';
 
-export const validContent = object({
+export const validCreatingContent = object({
   contentTypeId: number(),
   authorId: number(),
   ownerId: number(),
   created: string(),
+  published: defaulted(string(), null),
+  title: string(),
+  items: string()
+});
+
+export const validUpdatingContent = object({
+  contentTypeId: number(),
+  ownerId: number(),
   published: defaulted(string(), null),
   title: string(),
   items: string()
@@ -115,7 +123,7 @@ export const validRecipeSubrecipe = object({
 export const validSavedRecipe = object({userId: number(), recipeId: number()});
 
 export const validStaff =
-  object({email: string(), pass: string(), staffname: string()});
+  object({email: string(), encryptedPass: string(), staffname: string()});
 
 export const validUser = object({
   email: string(),

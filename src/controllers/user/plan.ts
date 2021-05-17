@@ -3,7 +3,7 @@ import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
 import { Plan } from '../../access/mysql';
-import { validPlanEntity } from '../../lib/validations/plan/entity';
+import { validPlan } from '../../lib/validations/entities';
 
 export class UserPlanController {
   pool: Pool;
@@ -18,66 +18,47 @@ export class UserPlanController {
   }
 
   async view(req: Request, res: Response) {
-    const owner = req.session!.userInfo.username;
-
+    const ownerId = req.session!.userInfo.id;
     const plan = new Plan(this.pool);
-
-    const rows = await plan.view(owner);
-
+    const rows = await plan.view(ownerId);
     return res.send(rows);
   }
 
   async viewById(req: Request, res: Response) {
-    const { id } = req.body;
-    const owner = req.session!.userInfo.username;
-
+    const id = Number(req.body.id);
+    const ownerId = req.session!.userInfo.id;
     const plan = new Plan(this.pool);
-
-    const [ row ] = await plan.viewById(id, owner);
-
+    const [ row ] = await plan.viewById(id, ownerId);
     return res.send(row);
   }
 
   async create(req: Request, res: Response) {
     const { name, data } = req.body.planInfo;
-    const author = req.session!.userInfo.username;
-    const owner = req.session!.userInfo.username;
-
-    const planCreation = {author, owner, name, data};
-
-    assert(planCreation, validPlanEntity);
-
+    const authorId = req.session!.userInfo.id;
+    const ownerId = req.session!.userInfo.id;
+    const args = {authorId, ownerId, name, data};
+    assert(args, validPlan);
     const plan = new Plan(this.pool);
-
-    await plan.create(planCreation);
-
+    await plan.create(args);
     return res.send({message: 'Plan created.'});
   }
 
   async update(req: Request, res: Response) {
     const { id, name, data } = req.body.planInfo;
-    const author = req.session!.userInfo.username;
-    const owner = req.session!.userInfo.username;
-
-    const planUpdate = {author, owner, name, data};
-
-    assert(planUpdate, validPlanEntity);
-
+    const authorId = req.session!.userInfo.id;
+    const ownerId = req.session!.userInfo.id;
+    const args = {authorId, ownerId, name, data};
+    assert(args, validPlan);
     const plan = new Plan(this.pool);
-
-    await plan.update({id, ...planUpdate});
-
+    await plan.update({id, ...args});
     return res.send({message: 'Plan updated.'});
   }
 
   async deleteById(req: Request, res: Response) {
-    const { id } = req.body;
-    const owner = req.session!.userInfo.username;
-
+    const id = Number(req.body.id);
+    const ownerId = req.session!.userInfo.id;
     const plan = new Plan(this.pool);
-
-    await plan.delete(id, owner);
-
+    await plan.deleteById(id, ownerId);
     return res.send({message: 'Plan deleted.'});
   }
 }

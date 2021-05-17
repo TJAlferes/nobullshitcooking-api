@@ -3,7 +3,7 @@ import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
 import { Ingredient, RecipeIngredient } from '../../access/mysql';
-import { validIngredientEntity } from '../../lib/validations/ingredient/entity';
+import { validIngredient } from '../../lib/validations/entities';
 
 export class UserIngredientController {
   pool: Pool;
@@ -18,45 +18,32 @@ export class UserIngredientController {
   }
 
   async view(req: Request, res: Response) {
-    const author = req.session!.userInfo.username;
-    const owner = req.session!.userInfo.username;
-
+    const authorId = req.session!.userInfo.id;
+    const ownerId = req.session!.userInfo.id;
     const ingredient = new Ingredient(this.pool);
-
-    const rows = await ingredient.view(author, owner);
-
+    const rows = await ingredient.view(authorId, ownerId);
     return res.send(rows);
   }
 
   async viewById(req: Request, res: Response) {
-    const { id } = req.body;
-    const author = req.session!.userInfo.username;
-    const owner = req.session!.userInfo.username;
-
+    const id = Number(req.body.id);
+    const authorId = req.session!.userInfo.id;
+    const ownerId = req.session!.userInfo.id;
     const ingredient = new Ingredient(this.pool);
-
-    const [ row ] = await ingredient.viewById(id, author, owner);
-
+    const [ row ] = await ingredient.viewById(id, authorId, ownerId);
     return res.send(row);
   }
 
   async create(req: Request, res: Response) {
-    const {
-      type,
-      brand,
-      variety,
-      name,
-      altNames,
-      description,
-      image
-    } = req.body.ingredientInfo;
-    const author = req.session!.userInfo.username;
-    const owner = req.session!.userInfo.username;
-
-    const ingredientCreation = {
-      type,
-      author,
-      owner,
+    const ingredientTypeId = Number(req.body.ingredientInfo.ingredientTypeId);
+    const { brand, variety, name, altNames, description, image } =
+      req.body.ingredientInfo;
+    const authorId = req.session!.userInfo.id;
+    const ownerId = req.session!.userInfo.id;
+    const args = {
+      ingredientTypeId,
+      authorId,
+      ownerId,
       brand,
       variety,
       name,
@@ -64,34 +51,23 @@ export class UserIngredientController {
       description,
       image
     };
-
-    assert(ingredientCreation, validIngredientEntity);
-
+    assert(args, validIngredient);
     const ingredient = new Ingredient(this.pool);
-
-    await ingredient.create(ingredientCreation);
-
+    await ingredient.create(args);
     return res.send({message: 'Ingredient created.'});
   }
 
   async update(req: Request, res: Response) {
-    const {
-      id,
-      type,
-      brand,
-      variety,
-      name,
-      altNames,
-      description,
-      image
-    } = req.body.ingredientInfo;
-    const author = req.session!.userInfo.username;
-    const owner = req.session!.userInfo.username;
-
-    const ingredientUpdate = {
-      type,
-      author,
-      owner,
+    const id = Number(req.body.ingredientInfo.id);
+    const ingredientTypeId = Number(req.body.ingredientInfo.ingredientTypeId);
+    const { brand, variety, name, altNames, description, image } =
+      req.body.ingredientInfo;
+    const authorId = req.session!.userInfo.id;
+    const ownerId = req.session!.userInfo.id;
+    const args = {
+      ingredientTypeId,
+      authorId,
+      ownerId,
       brand,
       variety,
       name,
@@ -99,26 +75,19 @@ export class UserIngredientController {
       description,
       image
     };
-
-    assert(ingredientUpdate, validIngredientEntity);
-
+    assert(args, validIngredient);
     const ingredient = new Ingredient(this.pool);
-
-    await ingredient.update({id, ...ingredientUpdate});
-
+    await ingredient.update({id, ...args});
     return res.send({message: 'Ingredient updated.'});
   }
 
   async delete(req: Request, res: Response) {
-    const { id } = req.body;
-    const owner = req.session!.userInfo.username;
-
+    const id = Number(req.body.id);
+    const ownerId = req.session!.userInfo.id;
     const recipeIngredient = new RecipeIngredient(this.pool);
     const ingredient = new Ingredient(this.pool);
-
-    await recipeIngredient.deleteByIngredient(id);
-    await ingredient.deleteByOwner(id, owner);
-
+    await recipeIngredient.deleteByIngredientId(id);
+    await ingredient.deleteByOwnerId(id, ownerId);
     return res.send({message: 'Ingredient deleted.'});
   }
 }

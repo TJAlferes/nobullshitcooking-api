@@ -3,7 +3,7 @@ import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
 import { Equipment, RecipeEquipment } from '../../access/mysql';
-import { validEquipmentEntity } from '../../lib/validations/equipment/entity';
+import { validEquipment } from '../../lib/validations/entities';
 
 export class UserEquipmentController {
   pool: Pool;
@@ -18,70 +18,53 @@ export class UserEquipmentController {
   }
 
   async view(req: Request, res: Response) {
-    const author = req.session!.userInfo.username;
-    const owner = req.session!.userInfo.username;
-
+    const authorId = req.session!.userInfo.id;
+    const ownerId = req.session!.userInfo.id;
     const equipment = new Equipment(this.pool);
-
-    const rows = await equipment.view(author, owner);
-
+    const rows = await equipment.view(authorId, ownerId);
     return res.send(rows);
   }
 
   async viewById(req: Request, res: Response) {
-    const { id } = req.body;
-    const author = req.session!.userInfo.username;
-    const owner = req.session!.userInfo.username;
-
+    const id = Number(req.body.id);
+    const authorId = req.session!.userInfo.id;
+    const ownerId = req.session!.userInfo.id;
     const equipment = new Equipment(this.pool);
-
-    const [ row ] = await equipment.viewById(id, author, owner);
-
+    const [ row ] = await equipment.viewById(id, authorId, ownerId);
     return res.send(row);
   }
 
   async create(req: Request, res: Response) {
-    const { type, name, description, image } = req.body.equipmentInfo;
-    const author = req.session!.userInfo.username;
-    const owner = req.session!.userInfo.username;
-
-    const equipmentCreation = {type, author, owner, name, description, image};
-
-    assert(equipmentCreation, validEquipmentEntity);
-
+    const equipmentTypeId = Number(req.body.equipmentInfo.equipmentTypeId);
+    const { name, description, image } = req.body.equipmentInfo;
+    const authorId = req.session!.userInfo.id;
+    const ownerId = req.session!.userInfo.id;
+    const args = {equipmentTypeId, authorId, ownerId, name, description, image};
+    assert(args, validEquipment);
     const equipment = new Equipment(this.pool);
-
-    await equipment.createPrivate(equipmentCreation);
-
-    return res.send({message: 'Equipment created.'});
+    await equipment.create(args);
   }
 
   async update(req: Request, res: Response) {
-    const { id, type, name, description, image } = req.body.equipmentInfo;
-    const author = req.session!.userInfo.username;
-    const owner = req.session!.userInfo.username;
-
-    const equipmentUpdate = {type, author, owner, name, description, image};
-
-    assert(equipmentUpdate, validEquipmentEntity);
-
+    const id = Number(req.body.equipmentInfo.id);
+    const equipmentTypeId = Number(req.body.equipmentInfo.equipmentTypeId);
+    const { name, description, image } = req.body.equipmentInfo;
+    const authorId = req.session!.userInfo.id;
+    const ownerId = req.session!.userInfo.id;
+    const args = {equipmentTypeId, authorId, ownerId, name, description, image};
+    assert(args, validEquipment);
     const equipment = new Equipment(this.pool);
-
-    await equipment.updatePrivate({id, ...equipmentUpdate});
-
+    await equipment.update({id, ...args});
     return res.send({message: 'Equipment updated.'});
   }
 
   async delete(req: Request, res: Response) {
-    const { id } = req.body;
-    const owner = req.session!.userInfo.username;
-
+    const id = Number(req.body.id);
+    const ownerId = req.session!.userInfo.id;
     const recipeEquipment = new RecipeEquipment(this.pool);
     const equipment = new Equipment(this.pool);
-
-    await recipeEquipment.deleteByEquipment(id);
-    await equipment.deleteByOwner(id, owner);
-
+    await recipeEquipment.deleteByEquipmentId(id);
+    await equipment.deleteByOwnerId(id, ownerId);
     return res.send({message: 'Equipment deleted.'});
   }
 }
