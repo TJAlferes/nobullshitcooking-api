@@ -10,7 +10,7 @@ import {
   validRegister,
   validRegisterRequest,
   validStaffCreation
-} from '../../lib/validations/staff/index';
+} from '../../lib/validations/staff';
 
 const SALT_ROUNDS = 10;
 
@@ -27,47 +27,35 @@ export class StaffAuthController {
   }
 
   async register(req: Request, res: Response) {
-    const { email, password: pass, staffname } = req.body.staffInfo;
-
+    const { email, pass, staffname } = req.body.staffInfo;
     assert({email, pass, staffname}, validRegisterRequest);
 
     const staff = new Staff(this.pool);
-
     const { valid, feedback } =
       await validRegister({email, pass, staffname}, staff);
-    
     if (!valid) return res.send({message: feedback});
 
     const encryptedPassword = await bcrypt.hash(pass, SALT_ROUNDS);
-
-    const staffCreation = {email, pass: encryptedPassword, staffname};
-
-    assert(staffCreation, validStaffCreation);
-
-    await staff.create(staffCreation);
-
+    const args = {email, pass: encryptedPassword, staffname};
+    assert(args, validStaffCreation);
+    await staff.create(args);
     return res.send({message: 'Staff account created.'});
   }
 
   async login(req: Request, res: Response) {
-    const { email, password: pass } = req.body.staffInfo;
-
+    const { email, pass } = req.body.staffInfo;
     assert({email, pass}, validLoginRequest);
 
     const staff = new Staff(this.pool);
-
     const { valid, feedback, staffExists } =
       await validLogin({email, pass}, staff);
-    
     if (!valid || !staffExists) return res.send({message: feedback});
 
-    const { staffname, avatar } = staffExists;
-
+    const { id, staffname } = staffExists;
     req.session!.staffInfo = {};
+    req.session!.staffInfo.id = id;
     req.session!.staffInfo.staffname = staffname;
-    req.session!.staffInfo.avatar = avatar;
-
-    return res.json({message: 'Signed in.', staffname, avatar});
+    return res.json({message: 'Signed in.', staffname});
   }
 
   async logout(req: Request, res: Response) {
@@ -76,21 +64,19 @@ export class StaffAuthController {
   }
 
   async update(req: Request, res: Response) {
-    // finish
-    const { email, password: pass, staffname, avatar } = req.body.staffInfo;
-
+    // TO DO: finish
+    const { email, pass, staffname, avatar } = req.body.staffInfo;
+    const id = req.session!.staffInfo.id;
     const staffToUpdateWith = {email, pass, staffname, avatar};
-
     //assert(staffToUpdateWith, validStaffUpdate);
 
     const staff = new Staff(this.pool);
-
-    await staff.update(staffToUpdateWith);
-    
+    await staff.update({id, ...staffToUpdateWith});
+    // should it send the updated values back? const [ updatedStaff ] = await
     return res.send({message: 'Account updated.'});
   }
 
   /*async delete(req: Request, res: Response) {
-    // finish
+    // TO DO: finish
   }*/
 }

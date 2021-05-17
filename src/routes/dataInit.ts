@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { Pool } from 'mysql2/promise';
 
 import { DataInitController } from '../controllers';
-import { catchExceptions } from '../lib/utils/catchExceptions';
+import { catchExceptions } from '../lib/utils';
 
 const router = Router();
 

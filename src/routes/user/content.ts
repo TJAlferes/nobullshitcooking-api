@@ -3,8 +3,7 @@ import { body } from 'express-validator';
 import { Pool } from 'mysql2/promise';
 
 import { UserContentController } from '../../controllers/user';
-import { catchExceptions } from '../../lib/utils/catchExceptions';
-import { userIsAuth } from '../../lib/utils/userIsAuth';
+import { catchExceptions, userIsAuth } from '../../lib/utils';
 
 const router = Router();
 
@@ -36,7 +35,7 @@ export function userContentRouter(pool: Pool) {
     '/create',
     userIsAuth,
     [
-      body('type').not().isEmpty().trim().escape(),
+      body('contentTypeId').not().isEmpty().trim().escape(),
       body('published').not().isEmpty().trim().escape(),
       body('title').not().isEmpty().trim().escape(),
       body('items').not().isEmpty().trim().escape()
@@ -49,7 +48,7 @@ export function userContentRouter(pool: Pool) {
     userIsAuth,
     [
       body('id').not().isEmpty().trim().escape(),
-      body('type').not().isEmpty().trim().escape(),
+      body('contentTypeId').not().isEmpty().trim().escape(),
       body('published').not().isEmpty().trim().escape(),
       body('title').not().isEmpty().trim().escape(),
       body('items').not().isEmpty().trim().escape()

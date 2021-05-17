@@ -4,8 +4,7 @@ import { Pool } from 'mysql2/promise';
 import { Client } from '@elastic/elasticsearch';
 
 import { UserRecipeController } from '../../controllers/user';
-import { catchExceptions } from '../../lib/utils/catchExceptions';
-import { userIsAuth } from '../../lib/utils/userIsAuth';
+import { catchExceptions, userIsAuth } from '../../lib/utils';
 
 const router = Router();
 
@@ -18,8 +17,8 @@ export function userRecipeRouter(esClient: Client, pool: Pool) {
     '/create',
     userIsAuth,
     [
-      body('type').not().isEmpty().trim().escape(),
-      body('cuisine').not().isEmpty().trim().escape(),
+      body('recipeTypeId').not().isEmpty().trim().escape(),
+      body('cuisineId').not().isEmpty().trim().escape(),
       body('title').not().isEmpty().trim().escape(),
       body('description').not().isEmpty().trim().escape(),
       body('activeTime').not().isEmpty().trim().escape(),
@@ -40,8 +39,8 @@ export function userRecipeRouter(esClient: Client, pool: Pool) {
     userIsAuth,
     [
       body('id').not().isEmpty().trim().escape(),
-      body('type').not().isEmpty().trim().escape(),
-      body('cuisine').not().isEmpty().trim().escape(),
+      body('recipeTypeId').not().isEmpty().trim().escape(),
+      body('cuisineId').not().isEmpty().trim().escape(),
       body('title').not().isEmpty().trim().escape(),
       body('description').not().isEmpty().trim().escape(),
       body('activeTime').not().isEmpty().trim().escape(),
@@ -101,14 +100,14 @@ export function userRecipeRouter(esClient: Client, pool: Pool) {
     '/edit/private',
     userIsAuth,
     [body('id').not().isEmpty().trim().escape()],
-    catchExceptions(controller.getInfoToEditPrivate)
+    catchExceptions(controller.editPrivate)
   );
 
   router.post(
     '/edit/public',
     userIsAuth,
     [body('id').not().isEmpty().trim().escape()],
-    catchExceptions(controller.getInfoToEditPublic)
+    catchExceptions(controller.editPublic)
   );
 
   return router;

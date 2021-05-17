@@ -3,8 +3,7 @@ import { body } from 'express-validator';
 import { Pool } from 'mysql2/promise';
 
 import { StaffAuthController } from '../../controllers/staff';
-import { catchExceptions } from '../../lib/utils/catchExceptions';
-import { staffIsAuth } from '../../lib/utils/staffIsAuth';
+import { catchExceptions, staffIsAuth } from '../../lib/utils';
 
 const router = Router();
 
@@ -17,7 +16,7 @@ export function staffAuthRouter(pool: Pool) {
     '/register',
     [
       body('email').not().isEmpty().trim().escape(),
-      body('password').not().isEmpty().trim().escape(),
+      body('pass').not().isEmpty().trim().escape(),
       body('staffname').not().isEmpty().trim().escape()
     ],
     catchExceptions(controller.register)
@@ -27,7 +26,7 @@ export function staffAuthRouter(pool: Pool) {
     '/login',
     [
       body('email').not().isEmpty().trim().escape(),
-      body('password').not().isEmpty().trim().escape()
+      body('pass').not().isEmpty().trim().escape()
     ],
     catchExceptions(controller.login)
   );

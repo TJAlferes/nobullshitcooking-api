@@ -54,12 +54,12 @@ export class UserAuthController {
   async verify(req: Request, res: Response) {
     const { email, pass, confirmationCode } = req.body.userInfo;
     assert({email, pass, confirmationCode}, validVerifyRequest);
+
     const user = new User(this.pool);
-    const isValidVerify =
+    const { valid, feedback } =
       await validVerify({email, pass, confirmationCode}, user);
-    if (!isValidVerify.valid) {
-      return res.send({message: isValidVerify.feedback});
-    }
+    if (!valid) return res.send({message: feedback});
+
     user.verify(email);
     return res.send({message: 'User account verified.'});
   }
@@ -67,9 +67,11 @@ export class UserAuthController {
   async resendConfirmationCode(req: Request, res: Response) {
     const { email, pass } = req.body.userInfo;
     assert({email, pass}, validLoginRequest);
+
     const user = new User(this.pool);
     const { valid, feedback } = await validResend({email, pass}, user);
     if (!valid) return res.send({message: feedback});
+    
     const confirmationCode = uuidv4();
     emailConfirmationCode(email, confirmationCode);
     return res.send({message: 'Confirmation code re-sent.'});
@@ -78,10 +80,12 @@ export class UserAuthController {
   async login(req: Request, res: Response) {
     const { email, pass } = req.body.userInfo;
     assert({email, pass}, validLoginRequest);
+
     const user = new User(this.pool);
     const { valid, feedback, userExists } =
       await validLogin({email, pass}, user);
     if (!valid || !userExists) return res.send({message: feedback});
+
     const { id, username } = userExists;
     req.session!.userInfo = {};
     req.session!.userInfo.id = id;

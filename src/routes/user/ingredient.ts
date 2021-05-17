@@ -3,8 +3,7 @@ import { body } from 'express-validator';
 import { Pool } from 'mysql2/promise';
 
 import { UserIngredientController } from '../../controllers/user';
-import { catchExceptions } from '../../lib/utils/catchExceptions';
-import { userIsAuth } from '../../lib/utils/userIsAuth';
+import { catchExceptions, userIsAuth } from '../../lib/utils';
 
 const router = Router();
 
@@ -30,7 +29,7 @@ export function userIngredientRouter(pool: Pool) {
     '/create',
     userIsAuth,
     [
-      body('type').not().isEmpty().trim().escape(),
+      body('ingredientTypeId').not().isEmpty().trim().escape(),
       body('brand').not().isEmpty().trim().escape(),
       body('variety').not().isEmpty().trim().escape(),
       body('name').not().isEmpty().trim().escape(),
@@ -45,7 +44,7 @@ export function userIngredientRouter(pool: Pool) {
     userIsAuth,
     [
       body('id').not().isEmpty().trim().escape(),
-      body('type').not().isEmpty().trim().escape(),
+      body('ingredientTypeId').not().isEmpty().trim().escape(),
       body('brand').not().isEmpty().trim().escape(),
       body('variety').not().isEmpty().trim().escape(),
       body('name').not().isEmpty().trim().escape(),

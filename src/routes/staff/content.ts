@@ -3,8 +3,7 @@ import { body } from 'express-validator';
 import { Pool } from 'mysql2/promise';
 
 import { StaffContentController } from '../../controllers/staff';
-import { catchExceptions } from '../../lib/utils/catchExceptions';
-import { staffIsAuth } from '../../lib/utils/staffIsAuth';
+import { catchExceptions, staffIsAuth } from '../../lib/utils';
 
 const router = Router();
 
@@ -17,7 +16,7 @@ export function staffContentRouter(pool: Pool) {
     '/create',
     staffIsAuth,
     [
-      body('type').not().isEmpty().trim().escape(),
+      body('contentTypeId').not().isEmpty().trim().escape(),
       body('published').not().isEmpty().trim().escape(),
       body('title').not().isEmpty().trim().escape(),
       body('items').not().isEmpty().trim().escape()
@@ -30,7 +29,7 @@ export function staffContentRouter(pool: Pool) {
     staffIsAuth,
     [
       body('id').not().isEmpty().trim().escape(),
-      body('type').not().isEmpty().trim().escape(),
+      body('contentTypeId').not().isEmpty().trim().escape(),
       body('published').not().isEmpty().trim().escape(),
       body('title').not().isEmpty().trim().escape(),
       body('items').not().isEmpty().trim().escape()

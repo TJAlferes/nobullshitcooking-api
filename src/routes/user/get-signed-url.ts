@@ -2,8 +2,7 @@ import { Router } from 'express';
 import { body } from 'express-validator';
 
 import { getSignedUrl } from '../../controllers/user';
-import { catchExceptions } from '../../lib/utils/catchExceptions';
-import { userIsAuth } from '../../lib/utils/userIsAuth';
+import { catchExceptions, userIsAuth } from '../../lib/utils';
 
 const router = Router();
 

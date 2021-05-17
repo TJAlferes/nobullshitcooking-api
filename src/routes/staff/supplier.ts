@@ -3,8 +3,7 @@ import { body } from 'express-validator';
 import { Pool } from 'mysql2/promise';
 
 import { StaffSupplierController } from '../../controllers/staff';
-import { catchExceptions } from '../../lib/utils/catchExceptions';
-import { staffIsAuth } from '../../lib/utils/staffIsAuth';
+import { catchExceptions, staffIsAuth } from '../../lib/utils';
 
 const router = Router();
 
@@ -23,14 +22,17 @@ export function staffSupplierRouter(pool: Pool) {
   router.put(
     '/update',
     staffIsAuth,
-    [body('name').not().isEmpty().trim().escape()],
+    [
+      body('id').not().isEmpty().trim().escape(),
+      body('name').not().isEmpty().trim().escape()
+    ],
     catchExceptions(controller.update)
   );
   
   router.delete(
     '/delete',
     staffIsAuth,
-    [body('name').not().isEmpty().trim().escape()],
+    [body('id').not().isEmpty().trim().escape()],
     catchExceptions(controller.delete)
   );
 

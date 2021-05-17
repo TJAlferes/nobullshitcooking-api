@@ -3,7 +3,7 @@ import S3 from 'aws-sdk/clients/s3';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 
-import { getSignedUrlPromise } from '../../lib/utils/getSignedUrlPromise';
+import { getSignedUrlPromise } from '../../lib/utils';
 
 const AWS_S3_CONTENT_BUCKET: string = process.env.AWS_S3_CONTENT_BUCKET!;
 

@@ -5,7 +5,7 @@ import { Client } from '@elastic/elasticsearch';
 
 import { EquipmentSearch } from '../../access/elasticsearch';
 import { Equipment } from '../../access/mysql';
-import { validEquipmentEntity } from '../../lib/validations/equipment/entity';
+import { validEquipment } from '../../lib/validations/entities';
 
 export class StaffEquipmentController {
   esClient: Client;
@@ -20,61 +20,52 @@ export class StaffEquipmentController {
   }
   
   async create(req: Request, res: Response) {
-    const { type, name, description, image } = req.body.equipmentInfo;
-    const author = "NOBSC";
-    const owner = "NOBSC";
+    const equipmentTypeId = Number(req.body.equipmentInfo.equipmentTypeId);
+    const { name, description, image } = req.body.equipmentInfo;
+    const authorId = 1;
+    const ownerId = 1;
 
-    const equipmentCreation = {type, author, owner, name, description, image};
-
-    assert(equipmentCreation, validEquipmentEntity);
+    const args = {equipmentTypeId, authorId, ownerId, name, description, image};
+    assert(args, validEquipment);
 
     const equipment = new Equipment(this.pool);
-
-    await equipment.create(equipmentCreation);
-
-    const generatedId = `${author} ${name}`;
-
+    const createdEquipment = await equipment.create(args);
+    const generatedId = createdEquipment.insertId;
     const [ equipmentForInsert ] =
-      await equipment.getForElasticSearch(generatedId);
-    
-    const equipmentSearch = new EquipmentSearch(this.esClient);
+      await equipment.getForElasticSearchById(generatedId);
 
+    const equipmentSearch = new EquipmentSearch(this.esClient);
     await equipmentSearch.save(equipmentForInsert[0]);
 
     return res.send({message: 'Equipment created.'});
   }
 
   async update(req: Request, res: Response) {
-    const { id, type, name, description, image } = req.body.equipmentInfo;
-    const author = "NOBSC";
-    const owner = "NOBSC";
+    const id = Number(req.body.equipmentInfo.id);
+    const equipmentTypeId = Number(req.body.equipmentInfo.equipmentTypeId);
+    const { name, description, image } = req.body.equipmentInfo;
+    const authorId = 1;
+    const ownerId = 1;
 
-    const equipmentUpdate = {type, author, owner, name, description, image};
-
-    assert(equipmentUpdate, validEquipmentEntity);
+    const args = {equipmentTypeId, authorId, ownerId, name, description, image};
+    assert(args, validEquipment);
 
     const equipment = new Equipment(this.pool);
-
-    await equipment.update({id, ...equipmentUpdate});
-
-    const [ equipmentForInsert ] = await equipment.getForElasticSearch(id);
+    await equipment.update({id, ...args});
+    const [ equipmentForInsert ] = await equipment.getForElasticSearchById(id);
 
     const equipmentSearch = new EquipmentSearch(this.esClient);
-
     await equipmentSearch.save(equipmentForInsert[0]);
-    
+
     return res.send({message: 'Equipment updated.'});
   }
 
   async delete(req: Request, res: Response) {
-    const { id } = req.body;
-
+    const id = Number(req.body.id);
     const equipment = new Equipment(this.pool);
     const equipmentSearch = new EquipmentSearch(this.esClient);
-
     await equipment.delete(id);
-    await equipmentSearch.delete(id);
-
+    await equipmentSearch.delete(String(id));
     return res.send({message: 'Equipment deleted.'});
   }
 }

@@ -4,8 +4,7 @@ import { Pool } from 'mysql2/promise';
 import { Client } from '@elastic/elasticsearch';
 
 import { StaffEquipmentController } from '../../controllers/staff';
-import { catchExceptions } from '../../lib/utils/catchExceptions';
-import { staffIsAuth } from '../../lib/utils/staffIsAuth';
+import { catchExceptions, staffIsAuth } from '../../lib/utils';
 
 const router = Router();
 
@@ -18,7 +17,7 @@ export function staffEquipmentRouter(esClient: Client, pool: Pool) {
     '/create',
     staffIsAuth,
     [
-      body('type').not().isEmpty().trim().escape(),
+      body('equipmentTypeId').not().isEmpty().trim().escape(),
       body('name').not().isEmpty().trim().escape(),
       body('description').not().isEmpty().trim().escape(),
       body('image').not().isEmpty().trim().escape()
@@ -31,7 +30,7 @@ export function staffEquipmentRouter(esClient: Client, pool: Pool) {
     staffIsAuth,
     [
       body('id').not().isEmpty().trim().escape(),
-      body('type').not().isEmpty().trim().escape(),
+      body('equipmentTypeId').not().isEmpty().trim().escape(),
       body('name').not().isEmpty().trim().escape(),
       body('description').not().isEmpty().trim().escape(),
       body('image').not().isEmpty().trim().escape()

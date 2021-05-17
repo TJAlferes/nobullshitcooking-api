@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { Client } from '@elastic/elasticsearch';
 
 import { SearchController } from '../controllers';
-import { catchExceptions } from '../lib/utils/catchExceptions';
+import { catchExceptions } from '../lib/utils';
 
 const router = Router();
 
@@ -12,43 +12,43 @@ export function searchRouter(esClient: Client) {
   const controller = new SearchController(esClient);
 
   /*router.post(
-    '/autocomplete/all',
-    catchExceptions(controller.autocompletePublicAll)
+    '/auto/all',
+    catchExceptions(controller.autoAll)
   );*/
 
   router.post(
-    '/autocomplete/equipment',
-    catchExceptions(controller.autocompletePublicEquipment)
+    '/auto/equipment',
+    catchExceptions(controller.autoEquipment)
   );
 
   router.post(
-    '/autocomplete/ingredients',
-    catchExceptions(controller.autocompletePublicIngredients)
+    '/auto/ingredients',
+    catchExceptions(controller.autoIngredients)
   );
 
   router.post(
-    '/autocomplete/recipes',
-    catchExceptions(controller.autocompletePublicRecipes)
+    '/auto/recipes',
+    catchExceptions(controller.autoRecipes)
   );
 
   /*router.post(
     '/find/all',
-    catchExceptions(controller.findPublicAll)
+    catchExceptions(controller.findAll)
   );*/
 
   router.post(
     '/find/equipment',
-    catchExceptions(controller.findPublicEquipment)
+    catchExceptions(controller.findEquipment)
   );
 
   router.post(
     '/find/ingredients',
-    catchExceptions(controller.findPublicIngredients)
+    catchExceptions(controller.findIngredients)
   );
 
   router.post(
     '/find/recipes',
-    catchExceptions(controller.findPublicRecipes)
+    catchExceptions(controller.findRecipes)
   );
 
   return router;

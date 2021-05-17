@@ -4,8 +4,7 @@ import { Pool } from 'mysql2/promise';
 import { Client } from '@elastic/elasticsearch';
 
 import { StaffRecipeController } from '../../controllers/staff';
-import { catchExceptions } from '../../lib/utils/catchExceptions';
-import { staffIsAuth } from '../../lib/utils/staffIsAuth';
+import { catchExceptions, staffIsAuth } from '../../lib/utils';
 
 const router = Router();
 
@@ -18,8 +17,8 @@ export function staffRecipeRouter(esClient: Client, pool: Pool) {
     '/create',
     staffIsAuth,
     [
-      body('type').not().isEmpty().trim().escape(),
-      body('cuisine').not().isEmpty().trim().escape(),
+      body('recipeTypeId').not().isEmpty().trim().escape(),
+      body('cuisineId').not().isEmpty().trim().escape(),
       body('title').not().isEmpty().trim().escape(),
       body('description').not().isEmpty().trim().escape(),
       body('activeTime').not().isEmpty().trim().escape(),
@@ -39,8 +38,8 @@ export function staffRecipeRouter(esClient: Client, pool: Pool) {
     staffIsAuth,
     [
       body('id').not().isEmpty().trim().escape(),
-      body('type').not().isEmpty().trim().escape(),
-      body('cuisine').not().isEmpty().trim().escape(),
+      body('recipeTypeId').not().isEmpty().trim().escape(),
+      body('cuisineId').not().isEmpty().trim().escape(),
       body('title').not().isEmpty().trim().escape(),
       body('description').not().isEmpty().trim().escape(),
       body('activeTime').not().isEmpty().trim().escape(),

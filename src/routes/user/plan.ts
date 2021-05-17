@@ -3,8 +3,7 @@ import { body } from 'express-validator';
 import { Pool } from 'mysql2/promise';
 
 import { UserPlanController } from '../../controllers/user';
-import { catchExceptions } from '../../lib/utils/catchExceptions';
-import { userIsAuth } from '../../lib/utils/userIsAuth';
+import { catchExceptions, userIsAuth } from '../../lib/utils';
 
 const router = Router();
 
@@ -29,7 +28,10 @@ export function userPlanRouter(pool: Pool) {
   router.post(
     '/create',
     userIsAuth,
-    [body('name').not().isEmpty().trim().escape()],
+    [
+      body('name').not().isEmpty().trim().escape(),
+      body('data').not().isEmpty()
+    ],
     catchExceptions(controller.create)
   );
 
@@ -38,7 +40,8 @@ export function userPlanRouter(pool: Pool) {
     userIsAuth,
     [
       body('id').not().isEmpty().trim().escape(),
-      body('name').not().isEmpty().trim().escape()
+      body('name').not().isEmpty().trim().escape(),
+      body('data').not().isEmpty()
     ],
     catchExceptions(controller.update)
   );

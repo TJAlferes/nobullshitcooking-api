@@ -3,7 +3,7 @@ import { param } from 'express-validator';
 import { Pool } from 'mysql2/promise';
 
 import { ProductController } from '../controllers';
-import { catchExceptions } from '../lib/utils/catchExceptions';
+import { catchExceptions } from '../lib/utils';
 
 const router = Router();
 

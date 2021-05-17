@@ -5,15 +5,19 @@ import { Client } from '@elastic/elasticsearch';
 
 import { RecipeSearch } from '../../access/elasticsearch';
 import {
+  FavoriteRecipe,
   Recipe,
   RecipeEquipment,
   RecipeIngredient,
   RecipeMethod,
-  RecipeSubrecipe
+  RecipeSubrecipe,
+  SavedRecipe
 } from '../../access/mysql';
-import { createRecipeService } from '../../lib/services/create-recipe';
-import { updateRecipeService } from '../../lib/services/update-recipe';
-import { validRecipeEntity } from '../../lib/validations/recipe/entity';
+import {
+  createRecipeService,
+  updateRecipeService
+} from '../../lib/services';
+import { validRecipe } from '../../lib/validations/entities';
 
 export class StaffRecipeController {
   esClient: Client;
@@ -28,9 +32,9 @@ export class StaffRecipeController {
   }
   
   async create(req: Request, res: Response) {
+    const recipeTypeId = Number(req.body.recipeInfo.recipeTypeId);
+    const cuisineId = Number(req.body.recipeInfo.cuisineId);
     const {
-      type,
-      cuisine,
       title,
       description,
       activeTime,
@@ -46,14 +50,14 @@ export class StaffRecipeController {
       cookingImage,
       video
     } = req.body.recipeInfo;
-    const author = "NOBSC";
-    const owner = "NOBSC";
+    const authorId = 1;
+    const ownerId = 1;
 
-    const recipeCreation = {
-      type,
-      cuisine,
-      author,
-      owner,
+    const args = {
+      recipeTypeId,
+      cuisineId,
+      authorId,
+      ownerId,
       title,
       description,
       activeTime,
@@ -65,8 +69,7 @@ export class StaffRecipeController {
       cookingImage,
       video
     };
-
-    assert(recipeCreation, validRecipeEntity);
+    assert(args, validRecipe);
 
     const recipe = new Recipe(this.pool);
     const recipeMethod = new RecipeMethod(this.pool);
@@ -74,10 +77,9 @@ export class StaffRecipeController {
     const recipeIngredient = new RecipeIngredient(this.pool);
     const recipeSubrecipe = new RecipeSubrecipe(this.pool);
     const recipeSearch = new RecipeSearch(this.esClient);
-
     await createRecipeService({
-      owner,
-      recipeCreation,
+      ownerId,
+      recipeCreation: args,
       requiredMethods,
       requiredEquipment,
       requiredIngredients,
@@ -89,15 +91,14 @@ export class StaffRecipeController {
       recipeSubrecipe,
       recipeSearch
     });
-
     return res.send({message: 'Recipe created.'});
   }
 
   async update(req: Request, res: Response) {
+    const id = Number(req.body.recipeInfo.id);
+    const recipeTypeId = Number(req.body.recipeInfo.recipeTypeId);
+    const cuisineId = Number(req.body.recipeInfo.cuisineId);
     const {
-      id,
-      type,
-      cuisine,
       title,
       description,
       activeTime,
@@ -113,18 +114,17 @@ export class StaffRecipeController {
       cookingImage,
       video
     } = req.body.recipeInfo;
-    const author = "NOBSC";
-    const owner = "NOBSC";
-
+    const authorId = 1;
+    const ownerId = 1;
     if (typeof id === "undefined") {
       return res.send({message: 'Invalid recipe ID!'});
     }
 
-    const recipeUpdate = {
-      type,
-      cuisine,
-      author,
-      owner,
+    const args = {
+      recipeTypeId,
+      cuisineId,
+      authorId,
+      ownerId,
       title,
       description,
       activeTime,
@@ -136,8 +136,7 @@ export class StaffRecipeController {
       cookingImage,
       video
     };
-
-    assert(recipeUpdate, validRecipeEntity);
+    assert(args, validRecipe);
 
     const recipe = new Recipe(this.pool);
     const recipeMethod = new RecipeMethod(this.pool);
@@ -145,12 +144,11 @@ export class StaffRecipeController {
     const recipeIngredient = new RecipeIngredient(this.pool);
     const recipeSubrecipe = new RecipeSubrecipe(this.pool);
     const recipeSearch = new RecipeSearch(this.esClient);
-
     await updateRecipeService({
       id,
-      author,
-      owner,
-      recipeUpdate,
+      authorId,
+      ownerId,
+      recipeUpdate: args,
       requiredMethods,
       requiredEquipment,
       requiredIngredients,
@@ -162,19 +160,32 @@ export class StaffRecipeController {
       recipeSubrecipe,
       recipeSearch
     });
-    
     return res.send({message: 'Recipe updated.'});
   }
 
   async delete(req: Request, res: Response) {
-    const { id } = req.body;
-
+    const id = Number(req.body.id);
+    // transaction(s)?: TO DO: TRIGGERS
+    const favoriteRecipe = new FavoriteRecipe(this.pool);
+    const savedRecipe = new SavedRecipe(this.pool);
+    const recipeMethod = new RecipeMethod(this.pool);
+    const recipeEquipment = new RecipeEquipment(this.pool);
+    const recipeIngredient = new RecipeIngredient(this.pool);
+    const recipeSubrecipe = new RecipeSubrecipe(this.pool);
     const recipe = new Recipe(this.pool);
     const recipeSearch = new RecipeSearch(this.esClient);
-
-    // TO DO: what about deleting from plans???
-    await recipe.deleteById(id);
-    await recipeSearch.delete(id);
+    // what about plans???
+    await Promise.all([
+      favoriteRecipe.deleteAllByRecipeId(id),
+      savedRecipe.deleteAllByRecipeId(id),
+      recipeMethod.deleteByRecipeId(id),
+      recipeEquipment.deleteByRecipeId(id),
+      recipeIngredient.deleteByRecipeId(id),
+      recipeSubrecipe.deleteByRecipeId(id),
+      recipeSubrecipe.deleteBySubrecipeId(id)
+    ]);
+    await recipe.deleteById(id);  // TO DO: solve
+    await recipeSearch.delete(String(id));
 
     return res.send({message: 'Recipe deleted.'});
   }

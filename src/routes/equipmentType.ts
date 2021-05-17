@@ -3,7 +3,7 @@ import { param } from 'express-validator';
 import { Pool } from 'mysql2/promise';
 
 import { EquipmentTypeController } from '../controllers';
-import { catchExceptions } from '../lib/utils/catchExceptions';
+import { catchExceptions } from '../lib/utils';
 
 const router = Router();
 
@@ -18,9 +18,9 @@ export function equipmentTypeRouter(pool: Pool) {
   );
   
   router.get(
-    '/:name',
-    [param('name').not().isEmpty().trim().escape()],
-    catchExceptions(controller.viewByName)
+    '/:id',
+    [param('id').not().isEmpty().trim().escape()],
+    catchExceptions(controller.viewById)
   );
 
   return router;

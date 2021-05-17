@@ -3,8 +3,7 @@ import { body } from 'express-validator';
 import { Pool } from 'mysql2/promise';
 
 import { UserAuthController } from '../../controllers/user';
-import { catchExceptions } from '../../lib/utils/catchExceptions';
-import { userIsAuth } from '../../lib/utils/userIsAuth';
+import { catchExceptions, userIsAuth } from '../../lib/utils';
 
 const router = Router();
 
@@ -17,7 +16,7 @@ export function userAuthRouter(pool: Pool) {
     '/register',
     [
       body('email').not().isEmpty().trim().escape(),
-      body('password').not().isEmpty().trim().escape(),
+      body('pass').not().isEmpty().trim().escape(),
       body('username').not().isEmpty().trim().escape()
     ],
     catchExceptions(controller.register)
@@ -27,7 +26,7 @@ export function userAuthRouter(pool: Pool) {
     '/verify',
     [
       body('email').not().isEmpty().trim().escape(),
-      body('password').not().isEmpty().trim().escape(),
+      body('pass').not().isEmpty().trim().escape(),
       body('confirmationCode').not().isEmpty().trim().escape()
     ],
     catchExceptions(controller.verify)
@@ -37,7 +36,7 @@ export function userAuthRouter(pool: Pool) {
     '/resend-confirmation-code',
     [
       body('email').not().isEmpty().trim().escape(),
-      body('password').not().isEmpty().trim().escape()
+      body('pass').not().isEmpty().trim().escape()
     ],
     catchExceptions(controller.resendConfirmationCode)
   );
@@ -46,7 +45,7 @@ export function userAuthRouter(pool: Pool) {
     '/login',
     [
       body('email').not().isEmpty().trim().escape(),
-      body('password').not().isEmpty().trim().escape()
+      body('pass').not().isEmpty().trim().escape()
     ],
     catchExceptions(controller.login)
   );
@@ -57,20 +56,21 @@ export function userAuthRouter(pool: Pool) {
     catchExceptions(controller.logout)
   );
 
+  // why POST?
   router.post(
-    '/update-account',
+    '/update',
     userIsAuth,
     [
       body('email').not().isEmpty().trim().escape(),
-      body('password').not().isEmpty().trim().escape(),
-      body('username').not().isEmpty().trim().escape(),
-      body('avatar').not().isEmpty().trim().escape()
+      body('pass').not().isEmpty().trim().escape(),
+      body('username').not().isEmpty().trim().escape()
     ],
     catchExceptions(controller.update)
   );
 
+  // why POST?
   router.post(
-    '/delete-account',
+    '/delete',
     userIsAuth,
     catchExceptions(controller.delete)
   );

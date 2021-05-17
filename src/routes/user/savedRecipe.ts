@@ -3,8 +3,7 @@ import { body } from 'express-validator';
 import { Pool } from 'mysql2/promise';
 
 import { UserSavedRecipeController } from '../../controllers/user';
-import { catchExceptions } from '../../lib/utils/catchExceptions';
-import { userIsAuth } from '../../lib/utils/userIsAuth';
+import { catchExceptions, userIsAuth } from '../../lib/utils';
 
 const router = Router();
 
@@ -16,7 +15,7 @@ export function userSavedRecipeRouter(pool: Pool) {
   router.post(
     '/',
     userIsAuth,
-    catchExceptions(controller.viewByUser)
+    catchExceptions(controller.viewByUserId)
   );
 
   router.post(
