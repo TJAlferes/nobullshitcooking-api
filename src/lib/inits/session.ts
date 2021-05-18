@@ -7,7 +7,7 @@ import { Server } from 'http';
 import { Pool } from 'mysql2/promise';
 
 import { RedisClients } from '../../app';
-import { socketInit } from './socketInit';
+import { socketInit } from '.';
 
 export function sessionInit(
   app: Application,
@@ -25,7 +25,6 @@ export function sessionInit(
     store: redisSession,
     unset: "destroy"
   };
-
   if (app.get('env') === 'production') {
     // new Chrome requirements:
     /*sessionOptions.cookie = {
@@ -46,8 +45,6 @@ export function sessionInit(
       secure: false
     };
   }
-
   socketInit(pool, redisClients, redisSession, httpServer);
-  
   return expressSession(sessionOptions);
 }

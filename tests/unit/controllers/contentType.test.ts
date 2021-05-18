@@ -6,15 +6,12 @@ import { ContentTypeController } from '../../../src/controllers';
 const pool: Partial<Pool> = {};
 const controller = new ContentTypeController(<Pool>pool);
 
-const rows = [{name: "Name"}];
+const rows = [{id: 1, name: "Name"}];
 jest.mock('../../../src/access/mysql', () => ({
-  ContentType: jest.fn().mockImplementation(() => ({
-    view: mockView,
-    viewByName: mockViewByName
-  }))
+  ContentType: jest.fn().mockImplementation(() => ({view, viewById}))
 }));
-let mockView = jest.fn().mockResolvedValue([rows]);
-let mockViewByName = jest.fn().mockResolvedValue([rows]);
+let view = jest.fn().mockResolvedValue([rows]);
+let viewById = jest.fn().mockResolvedValue([rows]);
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -26,36 +23,28 @@ describe('contentType controller', () => {
 
     it('uses view correctly', async () => {
       await controller.view(<Request>{}, <Response>res);
-      expect(mockView).toHaveBeenCalledTimes(1);
+      expect(view).toHaveBeenCalledTimes(1);
     });
 
-    it('sends data correctly', async () => {
-      await controller.view(<Request>{}, <Response>res);
-      expect(res.send).toHaveBeenCalledWith([rows]);
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent rows', async () => {
       const actual = await controller.view(<Request>{}, <Response>res);
+      expect(res.send).toHaveBeenCalledWith([rows]);
       expect(actual).toEqual([rows]);
     });
   });
   
-  describe('viewByName method', () => {
-    const req: Partial<Request> = {params: {name: "Name"}};
+  describe('viewById method', () => {
+    const req: Partial<Request> = {params: {id: "1"}};
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
-    it('uses viewByName correctly', async () => {
-      await controller.viewByName(<Request>req, <Response>res);
-      expect(mockViewByName).toHaveBeenCalledWith("Name");
+    it('uses viewById correctly', async () => {
+      await controller.viewById(<Request>req, <Response>res);
+      expect(viewById).toHaveBeenCalledWith(1);
     });
 
-    it('sends data correctly', async () => {
-      await controller.viewByName(<Request>req, <Response>res);
+    it('returns sent rows', async () => {
+      const actual = await controller.viewById(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith(rows);
-    });
-
-    it('returns correctly', async () => {
-      const actual = await controller.viewByName(<Request>req, <Response>res);
       expect(actual).toEqual(rows);
     });
   });

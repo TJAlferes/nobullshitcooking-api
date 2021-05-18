@@ -12,7 +12,7 @@ import { Server } from 'http';
 import { Pool } from 'mysql2/promise';
 
 import { RedisClients } from '../../app';
-import { sessionInit } from './sessionInit';
+import { sessionInit } from '.';
 
 export function middlewareInit(
   app: Application,
@@ -22,16 +22,12 @@ export function middlewareInit(
 ) {
   // limit each IP requests per minute:
   const rateLimiterOptions = {windowMs: 1 * 60 * 1000, max: 100};  // 1000?
-
   let corsOptions = {origin: ['http://localhost:8080'], credentials: true};
-
   if (app.get('env') === 'production') {
     app.set('trust proxy', 1);  // trust first proxy
     corsOptions.origin = ['https://nobullshitcooking.com'];
   }
-
   const session = sessionInit(app, pool, redisClients, httpServer);
-  
   //app.use(expressPinoLogger());
   app.use(express.json());
   app.use(express.urlencoded({extended: false}));

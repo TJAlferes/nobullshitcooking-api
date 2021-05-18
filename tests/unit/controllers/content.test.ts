@@ -6,17 +6,17 @@ import { ContentController } from '../../../src/controllers';
 const pool: Partial<Pool> = {};
 const controller = new ContentController(<Pool>pool);
 
-const rows = [{id: "Name Title"}];
+const rows = [{id: 1, name: "Name"}];
 jest.mock('../../../src/access/mysql', () => ({
   Content: jest.fn().mockImplementation(() => ({
-    view: mockView,
-    viewById: mockViewById,
-    getLinksByType: mockGetLinksByType
+    view,
+    viewById,
+    getLinksByType
   }))
 }));
-let mockView = jest.fn().mockResolvedValue([rows]);
-let mockViewById = jest.fn().mockResolvedValue([rows]);
-let mockGetLinksByType = jest.fn().mockResolvedValue([rows]);
+let view = jest.fn().mockResolvedValue([rows]);
+let viewById = jest.fn().mockResolvedValue([rows]);
+let getLinksByType = jest.fn().mockResolvedValue([rows]);
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -28,36 +28,28 @@ describe('content controller', () => {
 
     it('uses view correctly', async () => {
       await controller.view(<Request>{}, <Response>res);
-      expect(mockView).toHaveBeenCalledWith(1);
+      expect(view).toHaveBeenCalledWith(1);
     });
 
-    it('sends data correctly', async () => {
-      await controller.view(<Request>{}, <Response>res);
-      expect(res.send).toHaveBeenCalledWith([rows]);
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent rows', async () => {
       const actual = await controller.view(<Request>{}, <Response>res);
+      expect(res.send).toHaveBeenCalledWith([rows]);
       expect(actual).toEqual([rows]);
     });
   });
   
   describe('viewById method', () => {
-    const req: Partial<Request> = {params: {id: "NOBSC Title"}};
+    const req: Partial<Request> = {params: {id: "1"}};
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
-    it('uses viewById correctly', async () => {
+    it('uses viewById', async () => {
       await controller.viewById(<Request>req, <Response>res);
-      expect(mockViewById).toHaveBeenCalledWith("NOBSC Title", "NOBSC");
+      expect(viewById).toHaveBeenCalledWith(1, 1);
     });
 
-    it('sends data correctly', async () => {
-      await controller.viewById(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith(rows);
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent rows', async () => {
       const actual = await controller.viewById(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith(rows);
       expect(actual).toEqual(rows);
     });
   });
@@ -66,19 +58,15 @@ describe('content controller', () => {
     const req: Partial<Request> = {params: {name: "Name"}};
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue([rows])};
 
-    it('uses getLinksByType correctly', async () => {
+    it('uses getLinksByType', async () => {
       await controller.getLinksByType(<Request>req, <Response>res);
-      expect(mockGetLinksByType).toHaveBeenCalledWith("Name");
+      expect(getLinksByType).toHaveBeenCalledWith("Name");
     });
 
-    it('sends data', async () => {
-      await controller.getLinksByType(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith([rows]);
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent rows', async () => {
       const actual =
         await controller.getLinksByType(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith([rows]);
       expect(actual).toEqual([rows]);
     });
   });
