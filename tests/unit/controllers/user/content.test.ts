@@ -1,14 +1,12 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
-import { assert, coerce } from 'superstruct';
+import { assert } from 'superstruct';
 
 import { UserContentController } from '../../../../src/controllers/user';
 import {
-  validContentCreation
-} from '../../../../src/lib/validations/content/create';
-import {
-  validContentUpdate
-} from '../../../../src/lib/validations/content/update';
+  validCreatingContent,
+  validUpdatingContent
+} from '../../../../src/lib/validations/entities';
 
 const pool: Partial<Pool> = {};
 const controller = new UserContentController(<Pool>pool);
@@ -17,13 +15,11 @@ jest.mock('superstruct');
 
 jest.mock('../../../../src/access/mysql', () => ({
   Content: jest.fn().mockImplementation(() => ({
-    create: mockCreate,
-    update: mockUpdate,
-    delete: mockDelete
+    create, update, delete: mockDelete
   }))
 }));
-let mockCreate = jest.fn();
-let mockUpdate = jest.fn();
+let create = jest.fn();
+let update = jest.fn();
 let mockDelete = jest.fn();
 
 afterAll(() => {
@@ -46,141 +42,101 @@ describe('user content controller', () => {
     .spyOn(global, 'Date')
     .mockImplementation(() => mockDate as unknown as string);
 
-  /*describe('view method', () => {
+  /*describe('view method', () => {});
 
-  });
-
-  describe('viewById method', () => {
-
-  });*/
+  describe('viewById method', () => {});*/
 
   describe('create method', () => {
+    const args = {
+      contentTypeId: 1,
+      authorId: 1,
+      ownerId: 1,
+      created: ((mockDate).toISOString()).split("T")[0],
+      published: null,
+      title: "Title",
+      items: "[]"
+    };
+    const message = 'Content created.';
     const req: Partial<Request> = {
       session,
       body: {
         contentInfo: {
-          type: "Type",
-          published: null,
-          title: "Title",
-          items: "[]"
+          contentTypeId: 1, published: null, title: "Title", items: "[]"
         }
       }
     };
     const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue({message: 'Content created.'})};
+      {send: jest.fn().mockResolvedValue({message})};
 
-    it('uses assert correctly', async () => {
+    it('uses assert', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(assert).toHaveBeenCalledWith(
-        coerce({
-          type: "Type",
-          author: "Name",
-          owner: "Name",
-          created: ((mockDate).toISOString()).split("T")[0],
-          published: null,
-          title: "Title",
-          items: "[]"
-        }, validContentCreation),
-        validContentCreation
-      );
+      expect(assert).toHaveBeenCalledWith(args, validCreatingContent);
     });
 
-    it('uses create correctly', async () => {
+    it('uses create', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(mockCreate).toHaveBeenCalledWith({
-        type: "Type",
-        author: "Name",
-        owner: "Name",
-        created: ((mockDate).toISOString()).split("T")[0],
-        published: null,
-        title: "Title",
-        items: "[]"
-      });
+      expect(create).toHaveBeenCalledWith(args);
     });
 
-    it('sends data correctly', async () => {
-      await controller.create(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith({message: 'Content created.'});
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.create(<Request>req, <Response>res);
-      expect(actual).toEqual({message: 'Content created.'});
+      expect(res.send).toHaveBeenCalledWith({message});
+      expect(actual).toEqual({message});
     });
   });
 
   describe('update method', () => {
+    const args = {
+      contentTypeId: 1,
+      ownerId: 1,
+      published: null,
+      title: "Title",
+      items: "[]"
+    };
+    const message = 'Content updated.';
     const req: Partial<Request> = {
       session,
       body: {
         contentInfo: {
-          id: "Name Title",
-          type: "Type",
-          published: null,
-          title: "Title",
-          items: "[]"
+          id: 1, contentTypeId: 1, published: null, title: "Title", items: "[]"
         }
       }
     };
     const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue({message: 'Content updated.'})};
+      {send: jest.fn().mockResolvedValue({message})};
 
-    it('uses assert correctly', async () => {
+    it('uses assert', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(assert).toHaveBeenCalledWith(
-        coerce({
-          type: "Type",
-          owner: "Name",
-          published: null,
-          title: "Title",
-          items: "[]"
-        }, validContentUpdate),
-        validContentUpdate
-      );
+      expect(assert).toHaveBeenCalledWith(args, validUpdatingContent);
     });
 
-    it('uses update correctly', async () => {
+    it('uses update', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(mockUpdate).toHaveBeenCalledWith({
-        id: "Name Title",
-        type: "Type",
-        owner: "Name",
-        published: null,
-        title: "Title",
-        items: "[]"
-      });
+      expect(update).toHaveBeenCalledWith(args);
     });
 
-    it('sends data correctly', async () => {
-      await controller.update(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith({message: 'Content updated.'});
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.update(<Request>req, <Response>res);
-      expect(actual).toEqual({message: 'Content updated.'});
+      expect(res.send).toHaveBeenCalledWith({message});
+      expect(actual).toEqual({message});
     });
   });
 
   describe('delete method', () => {
-    const req: Partial<Request> = {session, body: {id: "Name Title"}};
+    const message = 'Content deleted.';
+    const req: Partial<Request> = {session, body: {id: 1}};
     const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue({message: 'Content deleted.'})};
+      {send: jest.fn().mockResolvedValue({message})};
 
-    it('uses delete correctly', async () => {
+    it('uses delete', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockDelete).toHaveBeenCalledWith(1, 35);
+      expect(mockDelete).toHaveBeenCalledWith(1, 1);
     });
 
-    it('sends data correctly', async () => {
-      await controller.delete(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith({message: 'Content deleted.'});
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.delete(<Request>req, <Response>res);
-      expect(actual).toEqual({message: 'Content deleted.'});
+      expect(res.send).toHaveBeenCalledWith({message});
+      expect(actual).toEqual({message});
     });
   });
-
 });

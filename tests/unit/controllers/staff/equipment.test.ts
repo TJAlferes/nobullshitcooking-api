@@ -4,9 +4,7 @@ import { assert } from 'superstruct';
 import { Client } from '@elastic/elasticsearch';
 
 import { StaffEquipmentController } from '../../../../src/controllers/staff';
-import {
-  validEquipmentEntity
-} from '../../../../src/lib/validations/equipment/entity';
+import { validEquipment } from '../../../../src/lib/validations/entities';
 
 jest.mock('superstruct');
 
@@ -16,25 +14,21 @@ const controller = new StaffEquipmentController(<Client>esClient, <Pool>pool);
 
 jest.mock('../../../../src/access/elasticsearch', () => ({
   EquipmentSearch: jest.fn().mockImplementation(() => ({
-    save: mockESSave,
-    delete: mockESDelete
+    save: ESSave,
+    delete: ESDelete
   }))
 }));
-let mockESSave = jest.fn();
-let mockESDelete = jest.fn();
+let ESSave = jest.fn();
+let ESDelete = jest.fn();
 
 jest.mock('../../../../src/access/mysql', () => ({
   Equipment: jest.fn().mockImplementation(() => ({
-    getForElasticSearch: mockGetForElasticSearch,
-    create: mockCreate,
-    update: mockUpdate,
-    delete: mockDelete
+    getForElasticSearchById, create, update, delete: mockDelete
   }))
 }));
-let mockGetForElasticSearch =
-  jest.fn().mockResolvedValue([[{id: "NOBSC Equipment"}]]);
-let mockCreate = jest.fn();
-let mockUpdate = jest.fn();
+let getForElasticSearchById = jest.fn().mockResolvedValue([[{id: "1"}]]);
+let create = jest.fn();
+let update = jest.fn();
 let mockDelete = jest.fn();
 
 afterEach(() => {
@@ -42,140 +36,125 @@ afterEach(() => {
 });
 
 describe ('staff equipment controller', () => {
+  const args = {
+    equipmentTypeId: 1,
+    authorId: 1,
+    ownerId: 1,
+    name: "Name",
+    description: "Description.",
+    image: "image"
+  };
+  const forInsert =
+    {id: "1", equipmentTypeName: "Name", name: "Name", image: "image"};
   const session = {...<Express.Session>{}, staffInfo: {staffname: "Name"}};
 
   describe('create method', () => {
+    const message = 'Equipment created.';
     const req: Partial<Request> = {
       session,
       body: {
         equipmentInfo: {
-          type: "Cooking",
-          name: "Equipment",
+          equipmentTypeId: 1,
+          name: "Name",
           description: "Description.",
           image: "image"
         }
       }
     };
     const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue({message: 'Equipment created.'})};
+      {send: jest.fn().mockResolvedValue({message})};
 
-    it('uses assert correctly', async () => {
+    it('uses assert', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(assert).toHaveBeenCalledWith(
-        {
-          type: "Cooking",
-          author: "NOBSC",
-          owner: "NOBSC",
-          name: "Equipment",
-          description: "Description.",
-          image: "image"
-        },
-        validEquipmentEntity
-      );
+      expect(assert).toHaveBeenCalledWith(args, validEquipment);
     });
 
-    it('uses create correctly', async () => {
+    it('uses create', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(mockCreate).toHaveBeenCalledWith({
-        type: "Cooking",
-        author: "NOBSC",
-        owner: "NOBSC",
-        name: "Equipment",
-        description: "Description.",
-        image: "image"
-      });
+      expect(create).toHaveBeenCalledWith(args);
     });
 
-    it('sends data correctly', async () => {
+    it('uses getForElasticSearchById', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith({message: 'Equipment created.'});
+      expect(getForElasticSearchById).toHaveBeenCalledWith(1);
     });
 
-    it('returns correctly', async () => {
+    it('uses ElasticSearch save', async () => {
+      await controller.create(<Request>req, <Response>res);
+      expect(ESSave).toHaveBeenCalledWith(forInsert);
+    });
+
+    it('returns sent data', async () => {
       const actual = await controller.create(<Request>req, <Response>res);
-      expect(actual).toEqual({message: 'Equipment created.'});
+      expect(res.send).toHaveBeenCalledWith({message});
+      expect(actual).toEqual({message});
     });
   });
 
   describe('update method', () => {
+    const message = 'Equipment updated.';
     const req: Partial<Request> = {
       session,
       body: {
         equipmentInfo: {
-          id: "NOBSC Equipment",
-          type: "Cooking",
-          name: "Equipment",
+          id: 1,
+          equipmentTypeId: 1,
+          name: "Name",
           description: "Description.",
           image: "image"
         }
       }
     };
     const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue({message: 'Equipment updated.'})};
+      {send: jest.fn().mockResolvedValue({message})};
 
-    it('uses assert correctly', async () => {
+    it('uses assert', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(assert).toHaveBeenCalledWith(
-        {
-          type: "Cooking",
-          author: "NOBSC",
-          owner: "NOBSC",
-          name: "Equipment",
-          description: "Description.",
-          image: "image"
-        },
-        validEquipmentEntity
-      );
+      expect(assert).toHaveBeenCalledWith(args, validEquipment);
     });
 
-    it('uses update correctly', async () => {
+    it('uses update', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(mockUpdate).toHaveBeenCalledWith({
-        id: "NOBSC Equipment",
-        type: "Cooking",
-        author: "NOBSC",
-        owner: "NOBSC",
-        name: "Equipment",
-        description: "Description.",
-        image: "image"
-      });
+      expect(update).toHaveBeenCalledWith(args);
     });
 
-    it('sends data correctly', async () => {
-      await controller.update(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith({message: 'Equipment updated.'});
+    it('uses getForElasticSearchById', async () => {
+      await controller.create(<Request>req, <Response>res);
+      expect(getForElasticSearchById).toHaveBeenCalledWith(1);
     });
 
-    it('returns correctly', async () => {
+    it('uses ElasticSearch save', async () => {
+      await controller.create(<Request>req, <Response>res);
+      expect(ESSave).toHaveBeenCalledWith(forInsert);
+    });
+
+    it('returns sent data', async () => {
       const actual = await controller.update(<Request>req, <Response>res);
-      expect(actual).toEqual({message: 'Equipment updated.'});
+      expect(res.send).toHaveBeenCalledWith({message});
+      expect(actual).toEqual({message});
     });
   });
 
   describe('delete method', () => {
-    const req: Partial<Request> = {session, body: {id: "NOBSC Equipment"}};
+    const message = 'Equipment deleted.';
+    const req: Partial<Request> = {session, body: {id: "1"}};
     const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue({message: 'Equipment deleted.'})};
+      {send: jest.fn().mockResolvedValue({message})};
 
-    it('uses delete correctly', async () => {
+    it('uses delete', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockDelete).toHaveBeenCalledWith("NOBSC Equipment");
+      expect(mockDelete).toHaveBeenCalledWith(1);
     });
 
-    it('uses ElasticSearch delete correctly', async () => {
+    it('uses ElasticSearch delete', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockESDelete).toHaveBeenCalledWith("NOBSC Equipment");
+      expect(ESDelete).toHaveBeenCalledWith("1");
     });
 
-    it('sends data correctly', async () => {
-      await controller.delete(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith({message: 'Equipment deleted.'});
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.delete(<Request>req, <Response>res);
-      expect(actual).toEqual({message: 'Equipment deleted.'});
+      expect(res.send).toHaveBeenCalledWith({message});
+      expect(actual).toEqual({message});
     });
   });
-
 });

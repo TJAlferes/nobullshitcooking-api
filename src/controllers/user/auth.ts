@@ -37,15 +37,18 @@ export class UserAuthController {
   async register(req: Request, res: Response) {
     const { email, pass, username } = req.body.userInfo;
     assert({email, pass, username}, validRegisterRequest);
+
     // why here? why not in the service/validation?
     const user = new User(this.pool);
     const { valid, feedback } =
       await validRegister({email, pass, username}, user);
     if (!valid) return res.send({message: feedback});
+
     const encryptedPass = await bcrypt.hash(pass, SALT_ROUNDS);
     const confirmationCode = uuidv4();
     const args = {email, pass: encryptedPass, username, confirmationCode};
     assert(args, validUser);
+    
     await user.create(args);
     emailConfirmationCode(email, confirmationCode);
     return res.send({message: 'User account created.'});

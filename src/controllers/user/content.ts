@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
-import { assert, coerce } from 'superstruct';
+import { assert } from 'superstruct';
 
 import { Content } from '../../access/mysql';
 import {
@@ -46,8 +46,7 @@ export class UserContentController {
 
     const args =
       {contentTypeId, authorId, ownerId, created, published, title, items};
-    // you need to understand coerce and defaulted better
-    assert(coerce({args}, validCreatingContent), validCreatingContent);
+    assert(args, validCreatingContent);
 
     const content = new Content(this.pool);
     await content.create(args);
@@ -61,8 +60,7 @@ export class UserContentController {
     const ownerId = req.session!.userInfo.id;
 
     const args = {contentTypeId, ownerId, published, title, items};
-    // you need to understand coerce and defaulted better
-    assert(coerce({args}, validUpdatingContent), validUpdatingContent);
+    assert(args, validUpdatingContent);
 
     const content = new Content(this.pool);
     await content.update({id, ...args});
@@ -73,7 +71,7 @@ export class UserContentController {
     const id = Number(req.body.id);
     const ownerId = req.session!.userInfo.id;
     const content = new Content(this.pool);
-    await content.delete(ownerId, id);
+    await content.delete(ownerId, id);  // TO DO: switch order?
     return res.send({message: 'Content deleted.'});
   }
 }

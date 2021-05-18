@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
-import { assert, coerce } from 'superstruct';
+import { assert } from 'superstruct';
 
 import { Content } from '../../access/mysql';
 import {
@@ -34,8 +34,7 @@ export class StaffContentController {
       title,
       items
     };
-    // you need to understand coerce and defaulted better
-    assert(coerce({args}, validCreatingContent), validCreatingContent);
+    assert(args, validCreatingContent);
 
     const content = new Content(this.pool);
     await content.create(args);
@@ -49,8 +48,7 @@ export class StaffContentController {
     const ownerId = 1;
 
     const args = {contentTypeId, ownerId, published, title, items};
-    // you need to understand coerce and defaulted better
-    assert(coerce({args}, validUpdatingContent), validUpdatingContent);
+    assert(args, validUpdatingContent);
 
     const content = new Content(this.pool);
     await content.update({id, ...args});

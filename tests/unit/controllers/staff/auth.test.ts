@@ -24,11 +24,7 @@ jest.mock('superstruct');
 
 jest.mock('../../../../src/access/mysql', () => ({
   Staff: jest.fn().mockImplementation(() => ({
-    getByEmail,
-    getByName,
-    create,
-    update,
-    //delete
+    getByEmail, getByName, create, update, //delete
   }))
 }));
 let getByEmail = jest.fn();
@@ -49,25 +45,15 @@ describe('staff auth controller', () => {
         password: "Password99$",
         staffname: "Name"
       };
+      const message = 'Staffname must be at least 6 characters.';
       const req: Partial<Request> = {body: {staffInfo}};
-      const res: Partial<Response> = {
-        send: jest.fn().mockResolvedValue({
-          message: 'Staffname must be at least 6 characters.'
-        })
-      };
-
-      it('uses assert on request', async () => {
-        await controller.register(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(staffInfo, validRegisterRequest);
-      });
+      const res: Partial<Response> =
+        {send: jest.fn().mockResolvedValue({message})};
   
       it('returns sent data', async () => {
         const actual = await controller.register(<Request>req, <Response>res);
-        expect(res.send).toHaveBeenCalledWith({
-          message: 'Staffname must be at least 6 characters.'
-        });
-        expect(actual)
-          .toEqual({message: 'Staffname must be at least 6 characters.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
 
@@ -77,25 +63,15 @@ describe('staff auth controller', () => {
         password: "Password99$",
         staffname: "NameLongerThanTwentyCharacters"
       };
+      const message = 'Staffname must be no more than 20 characters.';
       const req: Partial<Request> = {body: {staffInfo}};
-      const res: Partial<Response> = {
-        send: jest.fn().mockResolvedValue({
-          message: 'Staffname must be no more than 20 characters.'
-        })
-      };
-
-      it('uses assert on request', async () => {
-        await controller.register(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(staffInfo, validRegisterRequest);
-      });
+      const res: Partial<Response> =
+        {send: jest.fn().mockResolvedValue({message})};
   
       it('returns sent data', async () => {
         const actual = await controller.register(<Request>req, <Response>res);
-        expect(res.send).toHaveBeenCalledWith({
-          message: 'Staffname must be no more than 20 characters.'
-        });
-        expect(actual)
-          .toEqual({message: 'Staffname must be no more than 20 characters.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
 
@@ -108,25 +84,15 @@ describe('staff auth controller', () => {
         password: "Pa99$",
         staffname: "NameIsGood"
       };
+      const message = 'Password must be at least 6 characters.';
       const req: Partial<Request> = {body: {staffInfo}};
-      const res: Partial<Response> = {
-        send: jest.fn().mockResolvedValue({
-          message: 'Password must be at least 6 characters.'
-        })
-      };
-
-      it('uses assert on request', async () => {
-        await controller.register(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(staffInfo, validRegisterRequest);
-      });
+      const res: Partial<Response> =
+        {send: jest.fn().mockResolvedValue({message})};
   
       it('returns sent data', async () => {
         const actual = await controller.register(<Request>req, <Response>res);
-        expect(res.send).toHaveBeenCalledWith({
-          message: 'Password must be at least 6 characters.'
-        });
-        expect(actual)
-          .toEqual({message: 'Password must be at least 6 characters.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
 
@@ -136,25 +102,15 @@ describe('staff auth controller', () => {
         password: "PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$",
         staffname: "NameIsGood"
       };
+      const message = 'Password must be no more than 54 characters.';
       const req: Partial<Request> = {body: {staffInfo}};
-      const res: Partial<Response> = {
-        send: jest.fn().mockResolvedValue({
-          message: 'Password must be no more than 54 characters.'
-        })
-      };
-
-      it('uses assert on request', async () => {
-        await controller.register(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(staffInfo, validRegisterRequest);
-      });
+      const res: Partial<Response> =
+        {send: jest.fn().mockResolvedValue({message})};
   
       it('returns sent data', async () => {
         const actual = await controller.register(<Request>req, <Response>res);
-        expect(res.send).toHaveBeenCalledWith({
-          message: 'Password must be no more than 54 characters.'
-        });
-        expect(actual)
-          .toEqual({message: 'Password must be no more than 54 characters.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
 
@@ -164,25 +120,19 @@ describe('staff auth controller', () => {
         password: "Password99$",
         staffname: "NameIsGood"
       };
+      const message = 'Staffname already taken.';
       const req: Partial<Request> = {body: {staffInfo}};
-      const res: Partial<Response> = {
-        send: jest.fn().mockResolvedValue({message: 'Staffname already taken.'})
-      };
+      const res: Partial<Response> =
+        {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
         getByName = jest.fn().mockResolvedValue([{staffname: "NameIsGood"}]);
       });
-
-      it('uses assert on request', async () => {
-        await controller.register(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(staffInfo, validRegisterRequest);
-      });
   
       it('returns correctly', async () => {
         const actual = await controller.register(<Request>req, <Response>res);
-        expect(res.send)
-          .toHaveBeenCalledWith({message: 'Staffname already taken.'});
-        expect(actual).toEqual({message: 'Staffname already taken.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
 
@@ -192,26 +142,20 @@ describe('staff auth controller', () => {
         password: "Password99$",
         staffname: "NameIsGood"
       };
+      const message = 'Email already in use.';
       const req: Partial<Request> = {body: {staffInfo}};
-      const res: Partial<Response> = {
-        send: jest.fn().mockResolvedValue({message: 'Email already in use.'})
-      };
+      const res: Partial<Response> =
+        {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
         getByName = jest.fn().mockResolvedValue([]);
         getByEmail = jest.fn().mockResolvedValue([{staffname: "NameIsGood"}]);
       });
-
-      it('uses assert on request', async () => {
-        await controller.register(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(staffInfo, validRegisterRequest);
-      });
   
       it('returns sent data', async () => {
         const actual = await controller.register(<Request>req, <Response>res);
-        expect(res.send)
-          .toHaveBeenCalledWith({message: 'Email already in use.'});
-        expect(actual).toEqual({message: 'Email already in use.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
 
@@ -226,10 +170,10 @@ describe('staff auth controller', () => {
         pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
         staffname: "NameIsGood"
       };
+      const message = 'Staff account created.';
       const req: Partial<Request> = {body: {staffInfo}};
-      const res: Partial<Response> = {
-        send: jest.fn().mockResolvedValue({message: 'Staff account created.'})
-      };
+      const res: Partial<Response> =
+        {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
         getByName = jest.fn().mockResolvedValue([]);
@@ -258,9 +202,8 @@ describe('staff auth controller', () => {
   
       it('returns sent data', async () => {
         const actual = await controller.register(<Request>req, <Response>res);
-        expect(res.send)
-          .toHaveBeenCalledWith({message: 'Staff account created.'});
-        expect(actual).toEqual({message: 'Staff account created.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
   });
@@ -271,19 +214,15 @@ describe('staff auth controller', () => {
 
     describe('when password is shorter than 6 chars', () => {
       const staffInfo = {email: "person@person.com", password: "Pa99$"};
+      const message = 'Invalid password.';
       const req: Partial<Request> = {body: {staffInfo}};
       const res: Partial<Response> =
-        {send: jest.fn().mockResolvedValue({message: 'Invalid password.'})};
-      
-      it('uses assert on request', async () => {
-        await controller.login(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(staffInfo, validLoginRequest);
-      });
+        {send: jest.fn().mockResolvedValue({message})};
   
       it('returns sent data', async () => {
         const actual = await controller.login(<Request>req, <Response>res);
-        expect(res.send).toHaveBeenCalledWith({message: 'Invalid password.'});
-        expect(actual).toEqual({message: 'Invalid password.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
 
@@ -292,58 +231,43 @@ describe('staff auth controller', () => {
         email: "person@person.com",
         password: "PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$"
       };
+      const message = 'Invalid password.';
       const req: Partial<Request> = {body: {staffInfo}};
-      const res: Partial<Response> = {
-        send: jest.fn().mockResolvedValue({message: 'Invalid password.'})
-      };
-
-      it('uses assert on request', async () => {
-        await controller.login(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(staffInfo, validLoginRequest);
-      });
+      const res: Partial<Response> =
+        {send: jest.fn().mockResolvedValue({message})};
   
       it('returns sent data', async () => {
         const actual = await controller.login(<Request>req, <Response>res);
-        expect(res.send).toHaveBeenCalledWith({message: 'Invalid password.'});
-        expect(actual).toEqual({message: 'Invalid password.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
 
     describe('when email does not exist', () => {
       const staffInfo = {email: "person@person.com", password: "Password99$"};
+      const message = 'Incorrect email or password.';
       const req: Partial<Request> = {body: {staffInfo}};
-      const res: Partial<Response> = {
-        send: jest.fn().mockResolvedValue({
-          message: 'Incorrect email or password.'
-        })
-      };
+      const res: Partial<Response> =
+        {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
         getByEmail = jest.fn().mockResolvedValue([]);
       });
-
-      it('uses assert on request', async () => {
-        await controller.login(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(staffInfo, validLoginRequest);
-      });
   
       it('returns sent data', async () => {
         const actual = await controller.login(<Request>req, <Response>res);
-        expect(res.send)
-          .toHaveBeenCalledWith({message: 'Incorrect email or password.'});
-        expect(actual).toEqual({message: 'Incorrect email or password.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
 
     describe('when password is incorrect', () => {
       const staffInfo =
         {email: "person@person.com", password: "WrongPassword99$"};
+      const message = 'Incorrect email or password.';
       const req: Partial<Request> = {body: {staffInfo}};
-      const res: Partial<Response> = {
-        send: jest.fn().mockResolvedValue({
-          message: 'Incorrect email or password.'
-        })
-      };
+      const res: Partial<Response> =
+        {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
         getByEmail = jest.fn().mockResolvedValue([{
@@ -353,28 +277,20 @@ describe('staff auth controller', () => {
         mockBcrypt.compare.mockResolvedValue(false);
       });
 
-      it('uses assert on request', async () => {
-        await controller.login(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(staffInfo, validLoginRequest);
-      });
-
       it('returns correctly', async () => {
         const actual = await controller.login(<Request>req, <Response>res);
-        expect(res.send)
-          .toHaveBeenCalledWith({message: 'Incorrect email or password.'});
-        expect(actual).toEqual({message: 'Incorrect email or password.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
 
     describe ('when ok', () => {
       const staffInfo = {email: "person@person.com", password: "Password99$"};
-      const args = {message: 'Signed in.', staffname: "NameIsGood"};
+      const data = {message: 'Signed in.', staffname: "NameIsGood"};
       const req: Partial<Request> =
         {session: {...<Express.Session>{}}, body: {staffInfo}};
-      const res: Partial<Response> = {
-        json: jest.fn().mockResolvedValue(args),
-        send: jest.fn()
-      };
+      const res: Partial<Response> =
+        {json: jest.fn().mockResolvedValue(data), send: jest.fn()};
 
       beforeAll(() => {
         getByEmail = jest.fn().mockResolvedValue([{
@@ -396,8 +312,8 @@ describe('staff auth controller', () => {
 
       it('returns sent data', async () => {
         const actual = await controller.login(<Request>req, <Response>res);
-        expect(res.json).toHaveBeenCalledWith(args);
-        expect(actual).toEqual(args);
+        expect(res.json).toHaveBeenCalledWith(data);
+        expect(actual).toEqual(data);
       });
     });
   });

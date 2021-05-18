@@ -6,9 +6,7 @@ import * as uuid from 'uuid';
 import { v4 as uuidv4 } from 'uuid';
 
 import { UserAuthController } from '../../../../src/controllers/user';
-import {
-  emailConfirmationCode
-} from '../../../../src/lib/services/email-confirmation-code';
+import { emailConfirmationCode } from '../../../../src/lib/services';
 import {
   validLogin,
   validLoginRequest,
@@ -36,9 +34,8 @@ jest.mock('uuid');
 const mockUUID = uuid as jest.Mocked<typeof uuid>;
 mockUUID.v4.mockReturnValue("123XYZ");
 
-jest.mock('../../../../src/lib/services/email-confirmation-code', () => {
-  const originalModule = jest
-    .requireActual('../../../../src/lib/services/email-confirmation-code');
+jest.mock('../../../../src/lib/services', () => {
+  const originalModule = jest.requireActual('../../../../src/lib/services');
   return {...originalModule, emailConfirmationCode: jest.fn()};
 });
 
@@ -62,16 +59,11 @@ describe('user auth controller', () => {
   describe('register method', () => {
     describe('when username is shorter than 6 chars', () => {
       const userInfo =
-        {email: "person@person.com", password: "Password99$", username: "Name"};
+        {email: "person@person.com", pass: "Password99$", username: "Name"};
       const message = 'Username must be at least 6 characters.';
       const req: Partial<Request> = {body: {userInfo}};
       const res: Partial<Response> =
         {send: jest.fn().mockResolvedValue({message})};
-
-      it('uses assert on request', async () => {
-        await controller.register(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(userInfo, validRegisterRequest);
-      });
   
       it('returns sent data', async () => {
         const actual = await controller.register(<Request>req, <Response>res);
@@ -83,18 +75,13 @@ describe('user auth controller', () => {
     describe('when username is longer than 20 chars', () => {
       const userInfo = {
         email: "person@person.com",
-        password: "Password99$",
+        pass: "Password99$",
         username: "NameLongerThanTwentyCharacters"
       };
       const message = 'Username must be no more than 20 characters.';
       const req: Partial<Request> = {body: {userInfo}};
       const res: Partial<Response> =
         {send: jest.fn().mockResolvedValue({message})};
-
-      it('uses assert on request', async () => {
-        await controller.register(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(userInfo, validRegisterRequest);
-      });
   
       it('returns sent data', async () => {
         const actual = await controller.register(<Request>req, <Response>res);
@@ -107,20 +94,12 @@ describe('user auth controller', () => {
     //describe('when email', () => {});
 
     describe('when password is shorter than 6 chars', () => {
-      const userInfo = {
-        email: "person@person.com",
-        password: "Pa99$",
-        username: "NameIsGood"
-      };
+      const userInfo =
+        {email: "person@person.com", pass: "Pa99$", username: "NameIsGood"};
       const message = 'Password must be at least 6 characters.';
       const req: Partial<Request> = {body: {userInfo}};
       const res: Partial<Response> =
         {send: jest.fn().mockResolvedValue({message})};
-
-      it('uses assert on request', async () => {
-        await controller.register(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(userInfo, validRegisterRequest);
-      });
   
       it('returns sent data', async () => {
         const actual = await controller.register(<Request>req, <Response>res);
@@ -132,18 +111,13 @@ describe('user auth controller', () => {
     describe('when password is longer than 54 chars', () => {
       const userInfo = {
         email: "person@person.com",
-        password: "PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$",
+        pass: "PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$",
         username: "NameIsGood"
       };
       const message = 'Password must be no more than 54 characters.';
       const req: Partial<Request> = {body: {userInfo}};
       const res: Partial<Response> =
         {send: jest.fn().mockResolvedValue({message})};
-
-      it('uses assert on request', async () => {
-        await controller.register(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(userInfo, validRegisterRequest);
-      });
   
       it('returns sent data', async () => {
         const actual = await controller.register(<Request>req, <Response>res);
@@ -155,7 +129,7 @@ describe('user auth controller', () => {
     describe('when username already taken', () => {
       const userInfo = {
         email: "person@person.com",
-        password: "Password99$",
+        pass: "Password99$",
         username: "NameIsGood"
       };
       const message = 'Username already taken.';
@@ -166,11 +140,6 @@ describe('user auth controller', () => {
 
       beforeAll(() => {
         getByName = jest.fn().mockResolvedValue([{username: "NameIsGood"}]);
-      });
-
-      it('uses assert on request', async () => {
-        await controller.register(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(userInfo, validRegisterRequest);
       });
   
       it('returns sent data', async () => {
@@ -183,7 +152,7 @@ describe('user auth controller', () => {
     describe('when email already in use', () => {
       const userInfo = {
         email: "person@person.com",
-        password: "Password99$",
+        pass: "Password99$",
         username: "NameIsGood"
       };
       const message = 'Email already in use.';
@@ -196,11 +165,6 @@ describe('user auth controller', () => {
         getByName = jest.fn().mockResolvedValue([]);
         getByEmail = jest.fn().mockResolvedValue([{username: "NameIsGood"}]);
       });
-
-      it('uses assert on request', async () => {
-        await controller.register(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(userInfo, validRegisterRequest);
-      });
   
       it('returns sent data', async () => {
         const actual = await controller.register(<Request>req, <Response>res);
@@ -212,7 +176,7 @@ describe('user auth controller', () => {
     describe('when ok', () => {
       const userInfo = {
         email: "person@person.com",
-        password: "Password99$",
+        pass: "Password99$",
         username: "NameIsGood"
       };
       const args = {
@@ -275,20 +239,12 @@ describe('user auth controller', () => {
     //describe('when email', () => {});
 
     describe('when password is shorter than 6 chars', () => {
-      const userInfo = {
-        email: "person@person.com",
-        password: "Pa99$",
-        confirmationCode: "123XYZ"
-      };
+      const userInfo =
+        {email: "person@person.com", pass: "Pa99$", confirmationCode: "123XYZ"};
       const message = 'Invalid password.';
       const req: Partial<Request> = {body: {userInfo}};
       const res: Partial<Response> =
         {send: jest.fn().mockResolvedValue({message})};
-
-      it('uses assert on request', async () => {
-        await controller.verify(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(userInfo, validVerifyRequest);
-      });
   
       it('returns sent data', async () => {
         const actual = await controller.verify(<Request>req, <Response>res);
@@ -307,11 +263,6 @@ describe('user auth controller', () => {
       const req: Partial<Request> = {body: {userInfo}};
       const res: Partial<Response> =
         {send: jest.fn().mockResolvedValue({message})};
-
-      it('uses assert on request', async () => {
-        await controller.verify(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(userInfo, validVerifyRequest);
-      });
   
       it('returns sent data', async () => {
         const actual = await controller.verify(<Request>req, <Response>res);
@@ -323,7 +274,7 @@ describe('user auth controller', () => {
     describe('when email does not exist', () => {
       const userInfo = {
         email: "person@person.com",
-        password: "Password99$",
+        pass: "Password99$",
         confirmationCode: "123XYZ"
       };
       const message =
@@ -334,11 +285,6 @@ describe('user auth controller', () => {
 
       beforeAll(() => {
         getByEmail = jest.fn().mockResolvedValue([]);
-      });
-
-      it('uses assert on request', async () => {
-        await controller.verify(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(userInfo, validVerifyRequest);
       });
   
       it('returns sent data', async () => {
@@ -351,7 +297,7 @@ describe('user auth controller', () => {
     describe('when password is incorrect', () => {
       const userInfo = {
         email: "person@person.com",
-        password: "WrongPassword99$",
+        pass: "WrongPassword99$",
         confirmationCode: "123XYZ"
       };
       const message = 'Incorrect email or password.';
@@ -366,11 +312,6 @@ describe('user auth controller', () => {
           confirmation_code: "123XYZ"
         }]);
       });
-
-      it('uses assert on request', async () => {
-        await controller.verify(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(userInfo, validVerifyRequest);
-      });
   
       it('returns sent data', async () => {
         const actual = await controller.verify(<Request>req, <Response>res);
@@ -382,7 +323,7 @@ describe('user auth controller', () => {
     describe('when the sent confirmation code is incorrect', () => {
       const userInfo = {
         email: "person@person.com",
-        password: "Password99$",
+        pass: "Password99$",
         confirmationCode: "456ABC"
       };
       const message =
@@ -399,11 +340,6 @@ describe('user auth controller', () => {
         }]);
         mockBcrypt.compare.mockResolvedValue(true);
       });
-
-      it('uses assert on request', async () => {
-        await controller.verify(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(userInfo, validVerifyRequest);
-      });
   
       it('returns sent data', async () => {
         const actual = await controller.verify(<Request>req, <Response>res);
@@ -415,7 +351,7 @@ describe('user auth controller', () => {
     describe('when ok', () => {
       const userInfo = {
         email: "person@person.com",
-        password: "Password99$",
+        pass: "Password99$",
         confirmationCode: "123XYZ"
       };
       const message = 'User account verified.';
@@ -455,16 +391,11 @@ describe('user auth controller', () => {
     //describe('when email', () => {});
 
     describe('when password is shorter than 6 chars', () => {
-      const userInfo = {email: "person@person.com", password: "Pa99$"};
+      const userInfo = {email: "person@person.com", pass: "Pa99$"};
       const message = 'Invalid password.';
       const req: Partial<Request> = {body: {userInfo}};
       const res: Partial<Response> =
         {send: jest.fn().mockResolvedValue({message})};
-
-      it('uses assert on request', async () => {
-        await controller.resendConfirmationCode(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(userInfo, validLoginRequest);
-      });
   
       it('returns sent data', async () => {
         const actual =
@@ -477,17 +408,12 @@ describe('user auth controller', () => {
     describe('when password is longer than 54 chars', () => {
       const userInfo = {
         email: "person@person.com",
-        password: "PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$"
+        pass: "PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$"
       };
       const message = 'Invalid password.';
       const req: Partial<Request> = {body: {userInfo}};
       const res: Partial<Response> =
         {send: jest.fn().mockResolvedValue({message})};
-
-      it('uses assert on request', async () => {
-        await controller.resendConfirmationCode(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(userInfo, validLoginRequest);
-      });
   
       it('returns sent data', async () => {
         const actual =
@@ -498,7 +424,7 @@ describe('user auth controller', () => {
     });
 
     describe('when email does not exist', () => {
-      const userInfo = {email: "person@person.com", password: "Password99$"};
+      const userInfo = {email: "person@person.com", pass: "Password99$"};
       const message = 'Incorrect email or password.';
       const req: Partial<Request> = {body: {userInfo}};
       const res: Partial<Response> =
@@ -506,11 +432,6 @@ describe('user auth controller', () => {
 
       beforeAll(() => {
         getByEmail = jest.fn().mockResolvedValue([]);
-      });
-
-      it('uses assert on request', async () => {
-        await controller.resendConfirmationCode(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(userInfo, validLoginRequest);
       });
   
       it('returns sent data', async () => {
@@ -523,7 +444,7 @@ describe('user auth controller', () => {
 
     describe('when password is incorrect', () => {
       const userInfo =
-        {email: "person@person.com", password: "WrongPassword99$"};
+        {email: "person@person.com", pass: "WrongPassword99$"};
       const message = 'Incorrect email or password.';
       const req: Partial<Request> = {body: {userInfo}};
       const res: Partial<Response> =
@@ -537,11 +458,6 @@ describe('user auth controller', () => {
         }]);
         mockBcrypt.compare.mockResolvedValue(false);
       });
-
-      it('uses assert on request', async () => {
-        await controller.resendConfirmationCode(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(userInfo, validLoginRequest);
-      });
   
       it('returns sent data', async () => {
         const actual =
@@ -552,7 +468,7 @@ describe('user auth controller', () => {
     });
 
     describe('when account is already verified', () => {
-      const userInfo = {email: "person@person.com", password: "Password99$"};
+      const userInfo = {email: "person@person.com", pass: "Password99$"};
       const message = 'Already verified.';
       const req: Partial<Request> = {body: {userInfo}};
       const res: Partial<Response> =
@@ -566,11 +482,6 @@ describe('user auth controller', () => {
         }]);
         mockBcrypt.compare.mockResolvedValue(true);
       });
-
-      it('uses assert on request', async () => {
-        await controller.resendConfirmationCode(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(userInfo, validLoginRequest);
-      });
   
       it('returns sent data', async () => {
         const actual =
@@ -581,7 +492,7 @@ describe('user auth controller', () => {
     });
 
     describe('when ok', () => {
-      const userInfo = {email: "person@person.com", password: "Password99$"};
+      const userInfo = {email: "person@person.com", pass: "Password99$"};
       const message = 'Confirmation code re-sent.';
       const req: Partial<Request> = {body: {userInfo}};
       const res: Partial<Response> =
@@ -621,16 +532,11 @@ describe('user auth controller', () => {
     //describe('when email', () => {});
 
     describe('when password is shorter than 6 chars', () => {
-      const userInfo = {email: "person@person.com", password: "Pa99$"};
+      const userInfo = {email: "person@person.com", pass: "Pa99$"};
       const message = 'Invalid password.';
       const req: Partial<Request> = {body: {userInfo}};
       const res: Partial<Response> =
         {send: jest.fn().mockResolvedValue({message})};
-      
-      it('uses assert on request', async () => {
-        await controller.resendConfirmationCode(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(userInfo, validLoginRequest);
-      });
   
       it('returns sent data', async () => {
         const actual =
@@ -643,17 +549,12 @@ describe('user auth controller', () => {
     describe('when password is longer than 54 chars', () => {
       const userInfo = {
         email: "person@person.com",
-        password: "PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$"
+        pass: "PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$PasswordLongerThanFiftyFourCharacters999999999$"
       };
       const message = 'Invalid password.';
       const req: Partial<Request> = {body: {userInfo}};
       const res: Partial<Response> =
         {send: jest.fn().mockResolvedValue({message})};
-      
-      it('uses assert on request', async () => {
-        await controller.resendConfirmationCode(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(userInfo, validLoginRequest);
-      });
   
       it('returns sent data', async () => {
         const actual =
@@ -664,7 +565,7 @@ describe('user auth controller', () => {
     });
 
     describe('when email does not exist', () => {
-      const userInfo = {email: "person@person.com", password: "Password99$"};
+      const userInfo = {email: "person@person.com", pass: "Password99$"};
       const message = 'Incorrect email or password.';
       const req: Partial<Request> = {body: {userInfo}};
       const res: Partial<Response> =
@@ -672,11 +573,6 @@ describe('user auth controller', () => {
 
       beforeAll(() => {
         getByEmail = jest.fn().mockResolvedValue([]);
-      });
-
-      it('uses assert on request', async () => {
-        await controller.resendConfirmationCode(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(userInfo, validLoginRequest);
       });
   
       it('returns sent data', async () => {
@@ -689,7 +585,7 @@ describe('user auth controller', () => {
 
     describe('when password is incorrect', () => {
       const userInfo =
-        {email: "person@person.com", password: "WrongPassword99$"};
+        {email: "person@person.com", pass: "WrongPassword99$"};
       const message = 'Incorrect email or password.';
       const req: Partial<Request> = {body: {userInfo}};
       const res: Partial<Response> =
@@ -703,11 +599,6 @@ describe('user auth controller', () => {
         }]);
         mockBcrypt.compare.mockResolvedValue(false);
       });
-
-      it('uses assert on request', async () => {
-        await controller.resendConfirmationCode(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(userInfo, validLoginRequest);
-      });
   
       it('returns sent data', async () => {
         const actual =
@@ -718,7 +609,7 @@ describe('user auth controller', () => {
     });
 
     describe('when account is not yet verified', () => {
-      const userInfo = {email: "person@person.com", password: "Password99$"};
+      const userInfo = {email: "person@person.com", pass: "Password99$"};
       const message = 'Please check your email for your confirmation code.';
       const req: Partial<Request> = {body: {userInfo}};
       const res: Partial<Response> =
@@ -731,11 +622,6 @@ describe('user auth controller', () => {
           confirmation_code: "123XYZ"
         }]);
         mockBcrypt.compare.mockResolvedValue(true);
-      })
-
-      it('uses assert on request', async () => {
-        await controller.resendConfirmationCode(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(userInfo, validLoginRequest);
       });
   
       it('returns sent data', async () => {
@@ -747,7 +633,7 @@ describe('user auth controller', () => {
     });
 
     describe ('when ok', () => {
-      const userInfo = {email: "person@person.com", password: "Password99$"};
+      const userInfo = {email: "person@person.com", pass: "Password99$"};
       const req: Partial<Request> = {
         session: {...<Express.Session>{}},
         body: {userInfo}
@@ -786,10 +672,7 @@ describe('user auth controller', () => {
           message: 'Signed in.',
           username: "NameIsGood"
         });
-        expect(actual).toEqual({
-          message: 'Signed in.',
-          username: "NameIsGood"
-        });
+        expect(actual).toEqual({message: 'Signed in.', username: "NameIsGood"});
       });
     });
   });
@@ -819,7 +702,7 @@ describe('user auth controller', () => {
   describe('update method', () => {
     const userInfo = {
       email: "person@person.com",
-      password: "Password99$",
+      pass: "Password99$",
       username: "Name"
     };
     //const args
