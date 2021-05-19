@@ -12,8 +12,7 @@ export class Equipment implements IEquipment {
     this.create = this.create.bind(this);
     this.update = this.update.bind(this);
     this.delete = this.delete.bind(this);
-    this.deleteByOwnerId = this.deleteByOwnerId.bind(this);
-    this.deleteAllByOwnerId = this.deleteAllByOwnerId.bind(this);
+    this.deleteById = this.deleteById.bind(this);
   }
 
   async getForElasticSearch() {
@@ -56,7 +55,8 @@ export class Equipment implements IEquipment {
     `;
     const [ row ] =
       await this.pool.execute<RowDataPacket[]>(sql, [id, ownerId]);
-    return row;
+    const { equipment_type_name, name, image } = row[0];
+    return {id: row[0].id, equipment_type_name, name, image};
   }
 
   async view(authorId: number, ownerId: number) {
@@ -138,22 +138,16 @@ export class Equipment implements IEquipment {
     return row;
   }
 
-  async delete(id: number) {
-    const sql = `DELETE FROM equipment WHERE id = ? LIMIT 1`;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
-    return row;
+  async delete(ownerId: number) {
+    const sql = `DELETE FROM equipment WHERE owner_id = ?`;
+    await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
   }
 
-  async deleteByOwnerId(id: number, ownerId: number) {
+  async deleteById(id: number, ownerId: number) {
     const sql = `DELETE FROM equipment WHERE owner_id = ? AND id = ? LIMIT 1`;
     const [ row ] =
       await this.pool.execute<RowDataPacket[]>(sql, [ownerId, id]);
     return row;
-  }
-
-  async deleteAllByOwnerId(ownerId: number) {
-    const sql = `DELETE FROM equipment WHERE owner_id = ?`;
-    await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
   }
 }
 
@@ -163,15 +157,14 @@ type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
 
 export interface IEquipment {
   pool: Pool;
-  getForElasticSearch(): any;  // finish
-  getForElasticSearchById(id: number): Data;
+  getForElasticSearch(): any;
+  getForElasticSearchById(id: number): Promise<ISavingEquipment>;
   view(authorId: number, ownerId: number): Data;
   viewById(id: number, authorId: number, ownerId: number): Data;
   create(equipment: ICreatingEquipment): DataWithHeader;
   update(equipment: IUpdatingEquipment): Data;
-  delete(id: number): Data;
-  deleteByOwnerId(id: number, ownerId: number): Data;
-  deleteAllByOwnerId(ownerId: number): void;
+  delete(ownerId: number): void;
+  deleteById(id: number, ownerId: number): Data;
 }
 
 interface ICreatingEquipment {
@@ -185,4 +178,11 @@ interface ICreatingEquipment {
 
 interface IUpdatingEquipment extends ICreatingEquipment {
   id: number;
+}
+
+interface ISavingEquipment {
+  id: string;
+  equipment_type_name: string;
+  name: string;
+  image: string;
 }

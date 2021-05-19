@@ -3,227 +3,171 @@ import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
 import { UserEquipmentController } from '../../../../src/controllers/user';
-import {
-  validEquipmentEntity
-} from '../../../../src/lib/validations/equipment/entity';
+import { validEquipment } from '../../../../src/lib/validations/entities';
 
 const pool: Partial<Pool> = {};
 const controller = new UserEquipmentController(<Pool>pool);
 
 jest.mock('superstruct');
 
+const row = [{id: 1}]
+const rows = [[{id: 1}, {id: 2}]];
 jest.mock('../../../../src/access/mysql', () => ({
   Equipment: jest.fn().mockImplementation(() => ({
-    view: mockView,
-    viewById: mockViewById,
-    createPrivate: mockCreatePrivate,
-    updatePrivate: mockUpdatePrivate,
-    deleteByOwner: mockDeleteByOwner
+    view, viewById, create, update, deleteById
   })),
-  RecipeEquipment: jest.fn().mockImplementation(() => ({
-    deleteByEquipment: mockDeleteByEquipment
-  }))
+  RecipeEquipment: jest.fn().mockImplementation(() => ({deleteByEquipmentId}))
 }));
-let mockView = jest.fn().mockResolvedValue(
-  [[{id: "Name My Equipment 1"}, {id: "Name My Equipment 2"}]]
-);
-let mockViewById = jest.fn().mockResolvedValue([[{id: "Name My Equipment 2"}]]);
-let mockCreatePrivate = jest.fn();
-let mockUpdatePrivate = jest.fn();
-let mockDeleteByOwner = jest.fn();
-
-let mockDeleteByEquipment = jest.fn();
+let view = jest.fn().mockResolvedValue(rows);
+let viewById = jest.fn().mockResolvedValue([row]);
+let create = jest.fn();
+let update = jest.fn();
+let deleteById = jest.fn();
+let deleteByEquipmentId = jest.fn();
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 describe('user equipment controller', () => {
-  const session = {...<Express.Session>{}, userInfo: {username: "Name"}};
+  const session = {...<Express.Session>{}, userInfo: {id: 1}};
 
   describe('view method', () => {
     const req: Partial<Request> = {session};
-    const res: Partial<Response> = {
-      send: jest.fn().mockResolvedValue(
-        [[{id: "Name My Equipment 1"}, {id: "Name My Equipment 2"}]]
-      )
-    };
+    const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
-    it('uses view correctly', async () => {
+    it('uses view', async () => {
       await controller.view(<Request>req, <Response>res);
-      expect(mockView).toHaveBeenCalledWith("Name", "Name");
+      expect(view).toHaveBeenCalledWith(1, 1);
     });
 
-    it('sends data corectly', async () => {
-      await controller.view(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith(
-        [[{id: "Name My Equipment 1"}, {id: "Name My Equipment 2"}]]
-      );
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.view(<Request>req, <Response>res);
-      expect(actual)
-        .toEqual([[{id: "Name My Equipment 1"}, {id: "Name My Equipment 2"}]]);
+      expect(res.send).toHaveBeenCalledWith(rows);
+      expect(actual).toEqual(rows);
     });
   });
 
   describe('viewById method', () => {
-    const req: Partial<Request> = {session, body: {id: "Name My Equipment 2"}};
-    const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue([{id: "Name My Equipment 2"}])};
+    const req: Partial<Request> = {session, body: {id: 1}};
+    const res: Partial<Response> = {send: jest.fn().mockResolvedValue(row)};
 
-    it('uses viewById correctly', async () => {
+    it('uses viewById', async () => {
       await controller.viewById(<Request>req, <Response>res);
-      expect(mockViewById)
-        .toHaveBeenCalledWith("Name My Equipment 2", "Name", "Name");
+      expect(viewById).toHaveBeenCalledWith(1, 1, 1);
     });
 
-    it('sends data correctly', async () => {
-      await controller.viewById(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith([{id: "Name My Equipment 2"}]);
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.viewById(<Request>req, <Response>res);
-      expect(actual).toEqual([{id: "Name My Equipment 2"}]);
+      expect(res.send).toHaveBeenCalledWith(row);
+      expect(actual).toEqual(row);
     });
   });
 
   describe('create method', () => {
+    const args = {
+      equipmentTypeId: 1,
+      authorId: 1,
+      ownerId: 1,
+      name: "Name",
+      description: "Description.",
+      image: "image"
+    };
+    const message = 'Equipment created.';
     const req: Partial<Request> = {
       session,
       body: {
         equipmentInfo: {
-          type: "Type",
-          name: "My Equipment",
-          description: "It works.",
-          image: "nobsc-equipment-default"
+          equipmentTypeId: 1,
+          name: "Name",
+          description: "Description.",
+          image: "image"
         }
       }
     };
     const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue({message: 'Equipment created.'})};
+      {send: jest.fn().mockResolvedValue({message})};
 
-    it('uses assert correctly', async () => {
+    it('uses assert', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(assert).toHaveBeenCalledWith(
-        {
-          type: "Type",
-          author: "Name",
-          owner: "Name",
-          name: "My Equipment",
-          description: "It works.",
-          image: "nobsc-equipment-default"
-        },
-        validEquipmentEntity
-      );
+      expect(assert).toHaveBeenCalledWith(args, validEquipment);
     });
 
-    it('uses create correctly', async () => {
+    it('uses create', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(mockCreatePrivate).toHaveBeenCalledWith({
-        type: "Type",
-        author: "Name",
-        owner: "Name",
-        name: "My Equipment",
-        description: "It works.",
-        image: "nobsc-equipment-default"
-      });
+      expect(create).toHaveBeenCalledWith(args);
     });
 
-    it('sends data correctly', async () => {
-      await controller.create(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith({message: 'Equipment created.'});
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.create(<Request>req, <Response>res);
-      expect(actual).toEqual({message: 'Equipment created.'});
+      expect(res.send).toHaveBeenCalledWith({message});
+      expect(actual).toEqual({message});
     });
   });
 
   describe('update method', () => {
+    const args = {
+      id: 1,
+      equipmentTypeId: 1,
+      authorId: 1,
+      ownerId: 1,
+      name: "Name",
+      description: "Description.",
+      image: "image"
+    };
+    const message = 'Equipment updated.';
     const req: Partial<Request> = {
       session,
       body: {
         equipmentInfo: {
-          id: "Name My Equipment 2",
-          type: "Type",
-          name: "My Equipment",
-          description: "It works.",
-          image: "nobsc-equipment-default"
+          id: 1,
+          equipmentTypeId: 1,
+          name: "Name",
+          description: "Description.",
+          image: "image"
         }
       }
     };
     const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue({message: 'Equipment updated.'})};
+      {send: jest.fn().mockResolvedValue({message})};
 
-    it('uses validation correctly', async () => {
+    it('uses assert', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(assert).toHaveBeenCalledWith(
-        {
-          type: "Type",
-          author: "Name",
-          owner: "Name",
-          name: "My Equipment",
-          description: "It works.",
-          image: "nobsc-equipment-default"
-        },
-        validEquipmentEntity
-      );
+      expect(assert).toHaveBeenCalledWith(args, validEquipment);
     });
 
-    it('uses update correctly', async () => {
+    it('uses update', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(mockUpdatePrivate).toHaveBeenCalledWith({
-        id: "Name My Equipment 2",
-        type: "Type",
-        author: "Name",
-        owner: "Name",
-        name: "My Equipment",
-        description: "It works.",
-        image: "nobsc-equipment-default"
-      });
+      expect(update).toHaveBeenCalledWith(args);
     });
 
-    it('sends data correctly', async () => {
-      await controller.update(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith({message: 'Equipment updated.'});
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.update(<Request>req, <Response>res);
-      expect(actual).toEqual({message: 'Equipment updated.'});
+      expect(res.send).toHaveBeenCalledWith({message});
+      expect(actual).toEqual({message});
     });
   });
 
   describe('delete method', () => {
-    const req: Partial<Request> = {session, body: {id: "Name My Equipment 2"}};
+    const message = 'Equipment deleted.';
+    const req: Partial<Request> = {session, body: {id: "1"}};
     const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue({message: 'Equipment deleted.'})};
+      {send: jest.fn().mockResolvedValue({message})};
 
-    it('uses deleteByEquipmentId correctly', async () => {
+    it('uses RecipeEquipment deleteByEquipmentId', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockDeleteByEquipment)
-        .toHaveBeenCalledWith("Name My Equipment 2");
+      expect(deleteByEquipmentId).toHaveBeenCalledWith(1);
     });
 
-    it('uses delete correctly', async () => {
+    it('uses deleteById', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockDeleteByOwner)
-        .toHaveBeenCalledWith("Name My Equipment 2", "Name");
+      expect(deleteById).toHaveBeenCalledWith(1, 1);
     });
 
-    it('sends data correctly', async () => {
-      await controller.delete(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith({message: 'Equipment deleted.'});
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.delete(<Request>req, <Response>res);
-      expect(actual).toEqual({message: 'Equipment deleted.'});
+      expect(res.send).toHaveBeenCalledWith({message});
+      expect(actual).toEqual({message});
     });
   });
-
 });

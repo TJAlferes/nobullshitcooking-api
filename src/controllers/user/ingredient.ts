@@ -40,6 +40,7 @@ export class UserIngredientController {
       req.body.ingredientInfo;
     const authorId = req.session!.userInfo.id;
     const ownerId = req.session!.userInfo.id;
+
     const args = {
       ingredientTypeId,
       authorId,
@@ -52,6 +53,7 @@ export class UserIngredientController {
       image
     };
     assert(args, validIngredient);
+
     const ingredient = new Ingredient(this.pool);
     await ingredient.create(args);
     return res.send({message: 'Ingredient created.'});
@@ -64,6 +66,7 @@ export class UserIngredientController {
       req.body.ingredientInfo;
     const authorId = req.session!.userInfo.id;
     const ownerId = req.session!.userInfo.id;
+    
     const args = {
       ingredientTypeId,
       authorId,
@@ -76,6 +79,7 @@ export class UserIngredientController {
       image
     };
     assert(args, validIngredient);
+
     const ingredient = new Ingredient(this.pool);
     await ingredient.update({id, ...args});
     return res.send({message: 'Ingredient updated.'});
@@ -84,10 +88,12 @@ export class UserIngredientController {
   async delete(req: Request, res: Response) {
     const id = Number(req.body.id);
     const ownerId = req.session!.userInfo.id;
+
     const recipeIngredient = new RecipeIngredient(this.pool);
-    const ingredient = new Ingredient(this.pool);
     await recipeIngredient.deleteByIngredientId(id);
-    await ingredient.deleteByOwnerId(id, ownerId);
+
+    const ingredient = new Ingredient(this.pool);
+    await ingredient.deleteById(id, ownerId);
     return res.send({message: 'Ingredient deleted.'});
   }
 }

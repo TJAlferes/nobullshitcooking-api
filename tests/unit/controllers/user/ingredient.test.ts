@@ -3,243 +3,177 @@ import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
 import { UserIngredientController } from '../../../../src/controllers/user';
-import {
-  validIngredientEntity
-} from '../../../../src/lib/validations/ingredient/entity';
+import { validIngredient } from '../../../../src/lib/validations/entities';
 
 const pool: Partial<Pool> = {};
 const controller = new UserIngredientController(<Pool>pool);
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/access/mysql/Ingredient', () => ({
+const row = [{id: 1}]
+const rows = [[{id: 1}, {id: 2}]];
+jest.mock('../../../../src/access/mysql', () => ({
   Ingredient: jest.fn().mockImplementation(() => ({
-    view: mockView,
-    viewById: mockViewById,
-    create: mockCreate,
-    update: mockUpdate,
-    deleteByOwner: mockDeleteByOwner
+    view, viewById, create, update, deleteById
   })),
-  RecipeIngredient: jest.fn().mockImplementation(() => ({
-    deleteByIngredient: mockDeleteByIngredient
-  }))
+  RecipeIngredient: jest.fn().mockImplementation(() => ({deleteByIngredientId}))
 }));
-let mockView = jest.fn().mockResolvedValue(
-  [[{id: "Name My Ingredient 1"}, {id: "Name My Ingredient 2"}]]
-);
-let mockViewById = jest.fn().mockResolvedValue(
-  [[{id: "Name My Ingredient 2"}]]
-);
-let mockCreate = jest.fn();
-let mockUpdate = jest.fn();
-let mockDeleteByOwner = jest.fn();
-
-let mockDeleteByIngredient = jest.fn();
+let view = jest.fn().mockResolvedValue(rows);
+let viewById = jest.fn().mockResolvedValue([row]);
+let create = jest.fn();
+let update = jest.fn();
+let deleteById = jest.fn();
+let deleteByIngredientId = jest.fn();
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 describe('user ingredient controller', () => {
-  const session = {...<Express.Session>{}, userInfo: {username: "Name"}};
+  const session = {...<Express.Session>{}, userInfo: {id: 1}};
 
   describe('view method', () => {
     const req: Partial<Request> = {session};
-    const res: Partial<Response> = {
-      send: jest.fn().mockResolvedValue(
-        [[{id: "Name My Ingredient 1"}, {id: "Name My Ingredient 2"}]]
-      )
-    };
+    const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
-    it('uses view correctly', async () => {
+    it('uses view', async () => {
       await controller.view(<Request>req, <Response>res);
-      expect(mockView).toHaveBeenCalledWith("Name", "Name");
+      expect(view).toHaveBeenCalledWith(1, 1);
     });
 
-    it('sends data correctly', async () => {
-      await controller.view(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith(
-        [[{id: "Name My Ingredient 1"}, {id: "Name My Ingredient 2"}]]
-      );
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.view(<Request>req, <Response>res);
-      expect(actual).toEqual(
-        [[{id: "Name My Ingredient 1"}, {id: "Name My Ingredient 2"}]]
-      );
+      expect(res.send).toHaveBeenCalledWith(rows);
+      expect(actual).toEqual(rows);
     });
   });
 
   describe('viewById method', () => {
-    const req: Partial<Request> = {session, body: {id: "Name My Ingredient 2"}};
-    const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue([{id: "Name My Ingredient 2"}])};
+    const req: Partial<Request> = {session, body: {id: 1}};
+    const res: Partial<Response> = {send: jest.fn().mockResolvedValue(row)};
 
-    it('uses viewById correctly', async () => {
+    it('uses viewById', async () => {
       await controller.viewById(<Request>req, <Response>res);
-      expect(mockViewById)
-        .toHaveBeenCalledWith("Name My Ingredient 2", "Name", "Name");
+      expect(viewById).toHaveBeenCalledWith(1, 1, 1);
     });
 
-    it('sends data correctly', async () => {
-      await controller.viewById(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith([{id: "Name My Ingredient 2"}]);
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.viewById(<Request>req, <Response>res);
-      expect(actual).toEqual([{id: "Name My Ingredient 2"}]);
+      expect(res.send).toHaveBeenCalledWith(row);
+      expect(actual).toEqual(row);
     });
   });
 
   describe('create method', () => {
+    const args = {
+      ingredientTypeId: 1,
+      authorId: 1,
+      ownerId: 1,
+      brand: "Brand",
+      variety: "Variety",
+      name: "Name",
+      description: "Description.",
+      image: "image"
+    };
+    const message = 'Ingredient created.';
     const req: Partial<Request> = {
       session,
       body: {
         ingredientInfo: {
-          type: "Type",
+          ingredientTypeId: 1,
           brand: "Brand",
           variety: "Variety",
-          name: "My Ingredient",
-          description: "Tasty.",
-          image: "nobsc-ingredient-default"
+          name: "Name",
+          description: "Description.",
+          image: "image"
         }
       }
     };
-    const res: Partial<Response> = {
-      send: jest.fn().mockResolvedValue({message: 'Ingredient created.'})
-    };
+    const res: Partial<Response> =
+      {send: jest.fn().mockResolvedValue({message})};
 
-    it('uses assert correctly', async () => {
+    it('uses assert', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(assert).toHaveBeenCalledWith(
-        {
-          type: "Type",
-          author: "Name",
-          owner: "Name",
-          brand: "Brand",
-          variety: "Variety",
-          name: "My Ingredient",
-          description: "Tasty.",
-          image: "nobsc-ingredient-default"
-        },
-        validIngredientEntity
-      );
+      expect(assert).toHaveBeenCalledWith(args, validIngredient);
     });
 
-    it('uses create correctly', async () => {
+    it('uses create', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(mockCreate).toHaveBeenCalledWith({
-        type: "Type",
-        author: "Name",
-        owner: "Name",
-        brand: "Brand",
-        variety: "Variety",
-        name: "My Ingredient",
-        description: "Tasty.",
-        image: "nobsc-ingredient-default"
-      });
+      expect(create).toHaveBeenCalledWith(args);
     });
 
-    it('sends data correctly', async () => {
-      await controller.create(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith({message: 'Ingredient created.'});
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.create(<Request>req, <Response>res);
-      expect(actual).toEqual({message: 'Ingredient created.'});
+      expect(res.send).toHaveBeenCalledWith({message});
+      expect(actual).toEqual({message});
     });
   });
 
   describe('update method', () => {
+    const args = {
+      ingredientTypeId: 1,
+      authorId: 1,
+      ownerId: 1,
+      brand: "Brand",
+      variety: "Variety",
+      name: "Name",
+      description: "Description.",
+      image: "image"
+    };
+    const message = 'Ingredient updated.';
     const req: Partial<Request> = {
       session,
       body: {
         ingredientInfo: {
-          id: "Name My Ingredient 2",
-          type: "Type",
+          ingredientTypeId: 1,
           brand: "Brand",
           variety: "Variety",
-          name: "My Ingredient",
-          description: "Tasty.",
-          image: "nobsc-ingredient-default"
+          name: "Name",
+          description: "Description.",
+          image: "image"
         }
       }
     };
     const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue({message: 'Ingredient updated.'})};
+      {send: jest.fn().mockResolvedValue({message})};
 
-    it('uses assert correctly', async () => {
+    it('uses assert', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(assert).toHaveBeenCalledWith(
-        {
-          type: "Type",
-          author: "Name",
-          owner: "Name",
-          brand: "Brand",
-          variety: "Variety",
-          name: "My Ingredient",
-          description: "Tasty.",
-          image: "nobsc-ingredient-default"
-        },
-        validIngredientEntity
-      );
+      expect(assert).toHaveBeenCalledWith(args, validIngredient);
     });
 
-    it('uses update correctly', async () => {
+    it('uses update', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(mockUpdate).toHaveBeenCalledWith({
-        id: "Name My Ingredient 2",
-        type: "Type",
-        author: "Name",
-        owner: "Name",
-        brand: "Brand",
-        variety: "Variety",
-        name: "My Ingredient",
-        description: "Tasty.",
-        image: "nobsc-ingredient-default"
-      });
+      expect(update).toHaveBeenCalledWith(args);
     });
 
-    it('sends data correctly', async () => {
-      await controller.update(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith({message: 'Ingredient updated.'});
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.update(<Request>req, <Response>res);
-      expect(actual).toEqual({message: 'Ingredient updated.'});
+      expect(res.send).toHaveBeenCalledWith({message});
+      expect(actual).toEqual({message});
     });
   });
 
   describe('delete method', () => {
-    const req: Partial<Request> = {session, body: {id: "Name My Ingredient 2"}};
+    const message = 'Ingredient deleted.';
+    const req: Partial<Request> = {session, body: {id: "1"}};
     const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue({message: 'Ingredient deleted.'})};
+      {send: jest.fn().mockResolvedValue({message})};
 
-    it('uses deleteByIngredient correctly', async () => {
+    it('uses RecipeIngredient deleteByIngredientId', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockDeleteByIngredient)
-        .toHaveBeenCalledWith("Name My Ingredient 2");
+      expect(deleteByIngredientId).toHaveBeenCalledWith(1);
     });
 
-    it('uses deleteByOwner correctly', async () => {
+    it('uses deleteById', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockDeleteByOwner)
-        .toHaveBeenCalledWith("Name My Ingredient 2", "Name");
+      expect(deleteById).toHaveBeenCalledWith(1, 1);
     });
 
-    it('sends data correctly', async () => {
-      await controller.delete(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith({message: 'Ingredient deleted.'});
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.delete(<Request>req, <Response>res);
-      expect(actual).toEqual({message: 'Ingredient deleted.'});
+      expect(res.send).toHaveBeenCalledWith({message});
+      expect(actual).toEqual({message});
     });
   });
-
 });

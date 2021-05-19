@@ -12,8 +12,7 @@ export class Ingredient implements IIngredient {
     this.create = this.create.bind(this);
     this.update = this.update.bind(this);
     this.delete = this.delete.bind(this);
-    this.deleteByOwnerId = this.deleteByOwnerId.bind(this);
-    this.deleteAllByOwnerId = this.deleteAllByOwnerId.bind(this);
+    this.deleteById = this.deleteById.bind(this);
   }
 
   async getForElasticSearch() {
@@ -62,7 +61,7 @@ export class Ingredient implements IIngredient {
     `;
     const [ row ] =
       await this.pool.execute<RowDataPacket[]>(sql, [id, ownerId]);
-    let {
+    const {
       ingredient_type_name,
       brand,
       variety,
@@ -176,22 +175,16 @@ export class Ingredient implements IIngredient {
     return row;
   }
 
-  async delete(id: number) {
-    const sql = `DELETE FROM ingredients WHERE id = ? LIMIT 1`;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
-    return row;
+  async delete(ownerId: number) {
+    const sql = `DELETE FROM ingredients WHERE owner_id = ?`;
+    await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
   }
 
-  async deleteByOwnerId(id: number, ownerId: number) {
+  async deleteById(id: number, ownerId: number) {
     const sql = `DELETE FROM ingredients WHERE owner_id = ? AND id = ? LIMIT 1`;
     const [ row ] =
       await this.pool.execute<RowDataPacket[]>(sql, [ownerId, id]);
     return row;
-  }
-
-  async deleteAllByOwnerId(ownerId: number) {
-    const sql = `DELETE FROM ingredients WHERE owner_id = ?`;
-    await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
   }
 }
 
@@ -201,15 +194,14 @@ type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
 
 export interface IIngredient {
   pool: Pool;
-  getForElasticSearch(): any;  // finish
-  getForElasticSearchById(id: number): any;  // finish
+  getForElasticSearch(): any;
+  getForElasticSearchById(id: number): Promise<ISavingIngredient>;
   view(authorId: number, ownerId: number): Data;
   viewById(id: number, authorId: number, ownerId: number): Data;
   create(ingredient: ICreatingIngredient): DataWithHeader;
   update(ingredient: IUpdatingIngredient): Data;
-  delete(id: number): Data;
-  deleteByOwnerId(id: number, ownerId: number): Data;
-  deleteAllByOwnerId(ownerId: number): void;
+  delete(ownerId: number): void;
+  deleteById(id: number, ownerId: number): Data;
 }
 
 interface ICreatingIngredient {
@@ -225,4 +217,14 @@ interface ICreatingIngredient {
 
 interface IUpdatingIngredient extends ICreatingIngredient {
   id: number;
+}
+
+interface ISavingIngredient {
+  id: string;
+  ingredient_type_name: string;
+  fullname: string;
+  brand: string;
+  variety: string;
+  name: string;
+  image: string;
 }

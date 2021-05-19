@@ -4,7 +4,7 @@ import { assert } from 'superstruct';
 import { Client } from '@elastic/elasticsearch';
 
 import { EquipmentSearch } from '../../access/elasticsearch';
-import { Equipment } from '../../access/mysql';
+import { Equipment, RecipeEquipment } from '../../access/mysql';
 import { validEquipment } from '../../lib/validations/entities';
 
 export class StaffEquipmentController {
@@ -29,13 +29,12 @@ export class StaffEquipmentController {
     assert(args, validEquipment);
 
     const equipment = new Equipment(this.pool);
-    const createdEquipment = await equipment.create(args);
-    const generatedId = createdEquipment.insertId;
-    const [ equipmentForInsert ] =
-      await equipment.getForElasticSearchById(generatedId);
+    const created = await equipment.create(args);
+    const generatedId = created.insertId;
+    const toSave = await equipment.getForElasticSearchById(generatedId);
 
     const equipmentSearch = new EquipmentSearch(this.esClient);
-    await equipmentSearch.save(equipmentForInsert[0]);
+    await equipmentSearch.save(toSave);
 
     return res.send({message: 'Equipment created.'});
   }
@@ -52,20 +51,27 @@ export class StaffEquipmentController {
 
     const equipment = new Equipment(this.pool);
     await equipment.update({id, ...args});
-    const [ equipmentForInsert ] = await equipment.getForElasticSearchById(id);
+    const toSave = await equipment.getForElasticSearchById(id);
 
     const equipmentSearch = new EquipmentSearch(this.esClient);
-    await equipmentSearch.save(equipmentForInsert[0]);
+    await equipmentSearch.save(toSave);
 
     return res.send({message: 'Equipment updated.'});
   }
 
   async delete(req: Request, res: Response) {
     const id = Number(req.body.id);
-    const equipment = new Equipment(this.pool);
+    const ownerId = 1;
+
     const equipmentSearch = new EquipmentSearch(this.esClient);
-    await equipment.delete(id);
     await equipmentSearch.delete(String(id));
+
+    const recipeEquipment = new RecipeEquipment(this.pool);
+    await recipeEquipment.deleteByEquipmentId(id);
+
+    const equipment = new Equipment(this.pool);
+    await equipment.deleteById(id, ownerId);
+
     return res.send({message: 'Equipment deleted.'});
   }
 }

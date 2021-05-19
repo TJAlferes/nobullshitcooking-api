@@ -39,10 +39,14 @@ export class UserEquipmentController {
     const { name, description, image } = req.body.equipmentInfo;
     const authorId = req.session!.userInfo.id;
     const ownerId = req.session!.userInfo.id;
+
     const args = {equipmentTypeId, authorId, ownerId, name, description, image};
     assert(args, validEquipment);
+
     const equipment = new Equipment(this.pool);
     await equipment.create(args);
+    
+    return res.send({message: 'Equipment created.'});
   }
 
   async update(req: Request, res: Response) {
@@ -51,20 +55,26 @@ export class UserEquipmentController {
     const { name, description, image } = req.body.equipmentInfo;
     const authorId = req.session!.userInfo.id;
     const ownerId = req.session!.userInfo.id;
+
     const args = {equipmentTypeId, authorId, ownerId, name, description, image};
     assert(args, validEquipment);
+
     const equipment = new Equipment(this.pool);
     await equipment.update({id, ...args});
+
     return res.send({message: 'Equipment updated.'});
   }
 
   async delete(req: Request, res: Response) {
     const id = Number(req.body.id);
     const ownerId = req.session!.userInfo.id;
+
     const recipeEquipment = new RecipeEquipment(this.pool);
-    const equipment = new Equipment(this.pool);
     await recipeEquipment.deleteByEquipmentId(id);
-    await equipment.deleteByOwnerId(id, ownerId);
+
+    const equipment = new Equipment(this.pool);
+    await equipment.deleteById(id, ownerId);
+
     return res.send({message: 'Equipment deleted.'});
   }
 }

@@ -14,22 +14,25 @@ const controller = new StaffEquipmentController(<Client>esClient, <Pool>pool);
 
 jest.mock('../../../../src/access/elasticsearch', () => ({
   EquipmentSearch: jest.fn().mockImplementation(() => ({
-    save: ESSave,
-    delete: ESDelete
+    save: ESSave, delete: ESDelete
   }))
 }));
 let ESSave = jest.fn();
 let ESDelete = jest.fn();
 
+const toSave =
+  {id: "1", equipment_type_name: "Name", name: "Name", image: "image"};
 jest.mock('../../../../src/access/mysql', () => ({
   Equipment: jest.fn().mockImplementation(() => ({
-    getForElasticSearchById, create, update, delete: mockDelete
-  }))
+    getForElasticSearchById, create, update, deleteById
+  })),
+  RecipeEquipment: jest.fn().mockImplementation(() => ({deleteByEquipmentId}))
 }));
-let getForElasticSearchById = jest.fn().mockResolvedValue([[{id: "1"}]]);
-let create = jest.fn();
+let getForElasticSearchById = jest.fn().mockResolvedValue(toSave);
+let create = jest.fn().mockResolvedValue({generatedId: 1});
 let update = jest.fn();
-let mockDelete = jest.fn();
+let deleteById = jest.fn();
+let deleteByEquipmentId = jest.fn();
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -44,9 +47,7 @@ describe ('staff equipment controller', () => {
     description: "Description.",
     image: "image"
   };
-  const forInsert =
-    {id: "1", equipmentTypeName: "Name", name: "Name", image: "image"};
-  const session = {...<Express.Session>{}, staffInfo: {staffname: "Name"}};
+  const session = {...<Express.Session>{}, staffInfo: {id: 1}};
 
   describe('create method', () => {
     const message = 'Equipment created.';
@@ -81,7 +82,7 @@ describe ('staff equipment controller', () => {
 
     it('uses ElasticSearch save', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(ESSave).toHaveBeenCalledWith(forInsert);
+      expect(ESSave).toHaveBeenCalledWith(toSave);
     });
 
     it('returns sent data', async () => {
@@ -115,7 +116,7 @@ describe ('staff equipment controller', () => {
 
     it('uses update', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(update).toHaveBeenCalledWith(args);
+      expect(update).toHaveBeenCalledWith({id: 1, ...args});
     });
 
     it('uses getForElasticSearchById', async () => {
@@ -125,7 +126,7 @@ describe ('staff equipment controller', () => {
 
     it('uses ElasticSearch save', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(ESSave).toHaveBeenCalledWith(forInsert);
+      expect(ESSave).toHaveBeenCalledWith(toSave);
     });
 
     it('returns sent data', async () => {
@@ -141,14 +142,19 @@ describe ('staff equipment controller', () => {
     const res: Partial<Response> =
       {send: jest.fn().mockResolvedValue({message})};
 
-    it('uses delete', async () => {
-      await controller.delete(<Request>req, <Response>res);
-      expect(mockDelete).toHaveBeenCalledWith(1);
-    });
-
     it('uses ElasticSearch delete', async () => {
       await controller.delete(<Request>req, <Response>res);
       expect(ESDelete).toHaveBeenCalledWith("1");
+    });
+
+    it('uses RecipeEquipment deleteByEquipmentId', async () => {
+      await controller.delete(<Request>req, <Response>res);
+      expect(deleteByEquipmentId).toHaveBeenCalledWith(1);
+    });
+
+    it('uses deleteById', async () => {
+      await controller.delete(<Request>req, <Response>res);
+      expect(deleteById).toHaveBeenCalledWith(1, 1);
     });
 
     it('returns sent data', async () => {

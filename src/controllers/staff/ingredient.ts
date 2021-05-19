@@ -4,7 +4,7 @@ import { assert } from 'superstruct';
 import { Client } from '@elastic/elasticsearch';
 
 import { IngredientSearch } from '../../access/elasticsearch';
-import { Ingredient } from '../../access/mysql';
+import { Ingredient, RecipeIngredient } from '../../access/mysql';
 import { validIngredient } from '../../lib/validations/entities';
 
 export class StaffIngredientController {
@@ -21,14 +21,8 @@ export class StaffIngredientController {
   
   async create(req: Request, res: Response) {
     const ingredientTypeId = Number(req.body.ingredientInfo.ingredientTypeId);
-    const {
-      brand,
-      variety,
-      name,
-      altNames,
-      description,
-      image
-    } = req.body.ingredientInfo;
+    const { brand, variety, name, altNames, description, image } =
+      req.body.ingredientInfo;
     const authorId = 1;
     const ownerId = 1;
 
@@ -46,27 +40,21 @@ export class StaffIngredientController {
     assert(args, validIngredient);
 
     const ingredient = new Ingredient(this.pool);
-    const createdIngredient = await ingredient.create(args);
-    const generatedId = createdIngredient.insertId;
-    const ingredientForInsert =
-      await ingredient.getForElasticSearchById(generatedId);
+    const created = await ingredient.create(args);
+    const generatedId = created.insertId;
+    const toSave = await ingredient.getForElasticSearchById(generatedId);
 
     const ingredientSearch = new IngredientSearch(this.esClient);
-    await ingredientSearch.save(ingredientForInsert);
+    await ingredientSearch.save(toSave);
+    
     return res.send({message: 'Ingredient created.'});
   }
 
   async update(req: Request, res: Response) {
     const id = Number(req.body.ingredientInfo.id);
     const ingredientTypeId = Number(req.body.ingredientInfo.ingredientTypeId);
-    const {
-      brand,
-      variety,
-      name,
-      altNames,
-      description,
-      image
-    } = req.body.ingredientInfo;
+    const { brand, variety, name, altNames, description, image } =
+      req.body.ingredientInfo;
     const authorId = 1;
     const ownerId = 1;
 
@@ -85,19 +73,27 @@ export class StaffIngredientController {
 
     const ingredient = new Ingredient(this.pool);
     await ingredient.update({id, ...args});
-    const ingredientForInsert = await ingredient.getForElasticSearchById(id);
+    const toSave = await ingredient.getForElasticSearchById(id);
 
     const ingredientSearch = new IngredientSearch(this.esClient);
-    await ingredientSearch.save(ingredientForInsert);
+    await ingredientSearch.save(toSave);
+
     return res.send({message: 'Ingredient updated.'});
   }
 
   async delete(req: Request, res: Response) {
     const id = Number(req.body.id);
-    const ingredient = new Ingredient(this.pool);
+    const ownerId = 1;
+
     const ingredientSearch = new IngredientSearch(this.esClient);
-    await ingredient.delete(id);
     await ingredientSearch.delete(String(id));
+
+    const recipeIngredient = new RecipeIngredient(this.pool);
+    await recipeIngredient.deleteByIngredientId(id);
+
+    const ingredient = new Ingredient(this.pool);
+    await ingredient.deleteById(id, ownerId);
+
     return res.send({message: 'Ingredient deleted.'});
   }
 }
