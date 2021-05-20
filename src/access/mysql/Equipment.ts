@@ -20,8 +20,6 @@ export class Equipment implements IEquipment {
     const sql = `
       SELECT
         CAST(e.id AS CHAR),
-        e.equipment_type_id,
-        e.owner_id,
         t.name AS equipment_type_name,
         e.name,
         e.description,
@@ -31,7 +29,7 @@ export class Equipment implements IEquipment {
       WHERE e.owner_id = ?
     `;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
-    let final = [];
+    const final = [];
     for (let row of rows) {
       final.push({index: {_index: 'equipment', _id: row.id}}, row);
     }
@@ -43,8 +41,6 @@ export class Equipment implements IEquipment {
     const sql = `
       SELECT
         CAST(e.id AS CHAR),
-        e.equipment_type_id,
-        e.owner_id,
         t.name AS equipment_type_name,
         e.name,
         e.description,
@@ -53,10 +49,9 @@ export class Equipment implements IEquipment {
       INNER JOIN equipment_types t ON t.id = e.equipment_type_id
       WHERE e.id = ? e.owner_id = ?
     `;
-    const [ row ] =
+    const [ [ row ] ] =
       await this.pool.execute<RowDataPacket[]>(sql, [id, ownerId]);
-    const { equipment_type_name, name, image } = row[0];
-    return {id: row[0].id, equipment_type_name, name, image};
+    return row as ISavingEquipment;
   }
 
   async view(authorId: number, ownerId: number) {
@@ -184,5 +179,6 @@ interface ISavingEquipment {
   id: string;
   equipment_type_name: string;
   name: string;
+  description: string;
   image: string;
 }

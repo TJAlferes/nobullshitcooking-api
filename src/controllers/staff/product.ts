@@ -39,12 +39,13 @@ export class StaffProductController {
     assert(args, validProduct);
 
     const product = new Product(this.pool);
-    const createdProduct = await product.create(args);
-    const generatedId = createdProduct.insertId;
-    const productForInsert = await product.getForElasticSearchById(generatedId);
+    const created = await product.create(args);
+    const generatedId = created.insertId;
+    const toSave = await product.getForElasticSearchById(generatedId);
 
     const productSearch = new ProductSearch(this.esClient);
-    await productSearch.save(productForInsert);
+    await productSearch.save(toSave);
+
     return res.send({message: 'Product created.'});
   }
 
@@ -70,19 +71,23 @@ export class StaffProductController {
 
     const product = new Product(this.pool);
     await product.update({id, ...args});
-    const productForInsert = await product.getForElasticSearchById(id);
+    const toSave = await product.getForElasticSearchById(id);
 
     const productSearch = new ProductSearch(this.esClient);
-    await productSearch.save(productForInsert);
+    await productSearch.save(toSave);
+
     return res.send({message: 'Product updated.'});
   }
 
   async delete(req: Request, res: Response) {
     const id = Number(req.body.id);
-    const product = new Product(this.pool);
+    
     const productSearch = new ProductSearch(this.esClient);
-    await product.delete(id);
     await productSearch.delete(String(id));
+
+    const product = new Product(this.pool);
+    await product.delete(id);
+
     return res.send({message: 'Product deleted.'});
   }
 }

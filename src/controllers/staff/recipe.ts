@@ -27,6 +27,7 @@ export class StaffRecipeController {
     this.esClient = esClient;
     this.pool = pool;
     this.create = this.create.bind(this);
+    this.edit = this.edit.bind(this);
     this.update = this.update.bind(this);
     this.delete = this.delete.bind(this);
   }
@@ -91,7 +92,17 @@ export class StaffRecipeController {
       recipeSubrecipe,
       recipeSearch
     });
+
     return res.send({message: 'Recipe created.'});
+  }
+
+  async edit(req: Request, res: Response) {
+    const id = Number(req.body.id);
+    const authorId = 1;
+    const ownerId = 1;
+    const recipe = new Recipe(this.pool);
+    const [ row ] = await recipe.edit(id, authorId, ownerId);
+    return res.send(row);
   }
 
   async update(req: Request, res: Response) {
@@ -160,21 +171,25 @@ export class StaffRecipeController {
       recipeSubrecipe,
       recipeSearch
     });
+
     return res.send({message: 'Recipe updated.'});
   }
 
   async delete(req: Request, res: Response) {
-    const id = Number(req.body.id);
     // transaction(s)?: TO DO: TRIGGERS
+    const id = Number(req.body.id);
+    const authorId = 1;
+    const ownerId = 1;
+
+    const recipeSearch = new RecipeSearch(this.esClient);
+    await recipeSearch.delete(String(id));
+
     const favoriteRecipe = new FavoriteRecipe(this.pool);
     const savedRecipe = new SavedRecipe(this.pool);
     const recipeMethod = new RecipeMethod(this.pool);
     const recipeEquipment = new RecipeEquipment(this.pool);
     const recipeIngredient = new RecipeIngredient(this.pool);
     const recipeSubrecipe = new RecipeSubrecipe(this.pool);
-    const recipe = new Recipe(this.pool);
-    const recipeSearch = new RecipeSearch(this.esClient);
-    // what about plans???
     await Promise.all([
       favoriteRecipe.deleteAllByRecipeId(id),
       savedRecipe.deleteAllByRecipeId(id),
@@ -184,8 +199,10 @@ export class StaffRecipeController {
       recipeSubrecipe.deleteByRecipeId(id),
       recipeSubrecipe.deleteBySubrecipeId(id)
     ]);
-    await recipe.deleteById(id);  // TO DO: solve
-    await recipeSearch.delete(String(id));
+
+    // TO DO: what about deleting from plans???
+    const recipe = new Recipe(this.pool);
+    await recipe.deleteById(id, authorId, ownerId);
 
     return res.send({message: 'Recipe deleted.'});
   }

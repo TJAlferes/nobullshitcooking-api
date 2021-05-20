@@ -119,8 +119,8 @@ export async function updateRecipeService({
 
   // if public recipe
   if (ownerId === 1) {
-    const [ row ] = await recipe.getForElasticSearchById(id);
-    await recipeSearch.save(row[0]);  // fix?
+    const toSave = await recipe.getForElasticSearchById(id);
+    await recipeSearch.save(toSave);
   }
 }
 

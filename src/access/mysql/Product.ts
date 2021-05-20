@@ -18,7 +18,6 @@ export class Product implements IProduct {
     const sql = `
       SELECT
         CAST(p.id AS CHAR),
-        p.product_type_id,
         c.name AS product_category_name,
         t.name AS product_type_name,
         p.brand,
@@ -33,7 +32,7 @@ export class Product implements IProduct {
       INNER JOIN product_types t ON t.id = p.product_type_id
     `;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql);
-    let final = [];
+    const final = [];
     for (let row of rows) {
       final.push({index: {_index: 'products', _id: row.id}}, row);
     }
@@ -44,7 +43,6 @@ export class Product implements IProduct {
     const sql = `
       SELECT
         CAST(p.id AS CHAR),
-        p.product_type_id,
         c.name AS product_category_name,
         t.name AS product_type_name,
         p.brand,
@@ -59,31 +57,8 @@ export class Product implements IProduct {
       INNER JOIN product_types t ON t.id = p.product_type_id
       WHERE p.id = ?
     `;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
-    // ?
-    const {
-      product_category_id,
-      product_type_id,
-      brand,
-      variety,
-      name,
-      fullname,
-      description,
-      specs,
-      image
-    } = row[0];
-    return {
-      id: row[0].id,
-      product_category_id,
-      product_type_id,
-      fullname,
-      brand,
-      variety,
-      name,
-      description,
-      specs,
-      image
-    };
+    const [ [ row ] ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
+    return row as ISavingProduct;
   }
 
   async view() {
@@ -203,8 +178,8 @@ type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
 
 export interface IProduct {
   pool: Pool;
-  getForElasticSearch(): any;  // finish
-  getForElasticSearchById(id: number): any;  // finish
+  getForElasticSearch(): any;
+  getForElasticSearchById(id: number): Promise<ISavingProduct>;
   view(): Data;
   viewById(id: number): Data;
   create(product: ICreatingProduct): DataWithHeader;
@@ -225,4 +200,17 @@ interface ICreatingProduct {
 
 interface IUpdatingProduct extends ICreatingProduct {
   id: number;
+}
+
+interface ISavingProduct {
+  id: string;
+  product_category_name: string;
+  product_type_name: string;
+  fullname: string;
+  brand: string;
+  variety: string;
+  name: string;
+  description: string;
+  specs: string;
+  image: string;
 }

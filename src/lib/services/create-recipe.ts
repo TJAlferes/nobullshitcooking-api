@@ -117,8 +117,8 @@ export async function createRecipeService({
 
   // if public recipe
   if (ownerId === 1) {
-    const [ row ] = await recipe.getForElasticSearchById(generatedId);
-    await recipeSearch.save(row[0]);  // fix?
+    const toSave = await recipe.getForElasticSearchById(generatedId);
+    await recipeSearch.save(toSave);
   }
 }
 

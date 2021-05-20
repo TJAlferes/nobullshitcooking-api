@@ -4,9 +4,7 @@ import { assert } from 'superstruct';
 import { Client } from '@elastic/elasticsearch';
 
 import { StaffProductController } from '../../../../src/controllers/staff';
-import {
-  validProductEntity
-} from '../../../../src/lib/validations/product/entity';
+import { validProduct } from '../../../../src/lib/validations/entities';
 
 jest.mock('superstruct');
 
@@ -16,124 +14,140 @@ const controller = new StaffProductController(<Client>esClient, <Pool>pool);
 
 jest.mock('../../../../src/access/elasticsearch', () => ({
   ProductSearch: jest.fn().mockImplementation(() => ({
-    save: mockESSave,
-    delete: mockESDelete
+    save: ESSave, delete: ESDelete
   }))
 }));
-let mockESSave = jest.fn();
-let mockESDelete = jest.fn();
+let ESSave = jest.fn();
+let ESDelete = jest.fn();
 
-jest.mock('../../../../src/access/mysql', () => ({
-  Product: jest.fn().mockImplementation(() => ({
-    getForElasticSearch: mockGetForElasticSearch,
-    create: mockCreate,
-    update: mockUpdate,
-    delete: mockDelete
-  }))
-}));
-let mockGetForElasticSearch =
-  jest.fn().mockResolvedValue([[{id: "NOBSC Product"}]]);
-let mockCreate = jest.fn();
-let mockUpdate = jest.fn();
-let mockDelete = jest.fn();
-
-const productCreation = {
-  category: "Category",
-  type: "Type",
+const toSave = {
+  id: "1",
+  product_category_name: "Name",
+  product_type_name: "Name",
+  fullname: "Brand Variety Name",
   brand: "Brand",
   variety: "Variety",
-  name: "Product",
-  altNames: [],
+  name: "Name",
   description: "Description.",
-  specs: {},
+  specs: "{specs}",
   image: "image"
 };
-const productUpdate = {id: "Brand Variety Product", ...productCreation};
+jest.mock('../../../../src/access/mysql', () => ({
+  Product: jest.fn().mockImplementation(() => ({
+    getForElasticSearchById, create, update, delete: mockDelete
+  }))
+}));
+let getForElasticSearchById = jest.fn().mockResolvedValue(toSave);
+let create = jest.fn();
+let update = jest.fn();
+let mockDelete = jest.fn();
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 describe ('staff product controller', () => {
-  const session = {...<Express.Session>{}, staffInfo: {staffname: "Name"}};
+  const args = {
+    productCategoryId: 1,
+    productTypeId: 1,
+    brand: "Brand",
+    variety: "Variety",
+    name: "Product",
+    altNames: [],
+    description: "Description.",
+    specs: {},
+    image: "image"
+  };
+  const session = {...<Express.Session>{}, staffInfo: {id: 1}};
 
   describe('create method', () => {
+    const message = 'Product created.';
     const req: Partial<Request> =
-      {session, body: {productInfo: productCreation}};
+      {session, body: {productInfo: args}};
     const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue({message: 'Product created.'})};
+      {send: jest.fn().mockResolvedValue({message})};
 
-    it('uses assert correctly', async () => {
+    it('uses assert', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(assert).toHaveBeenCalledWith(productCreation, validProductEntity);
+      expect(assert).toHaveBeenCalledWith(args, validProduct);
     });
 
-    it('uses create correctly', async () => {
+    it('uses create', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(mockCreate).toHaveBeenCalledWith(productCreation);
+      expect(create).toHaveBeenCalledWith(args);
     });
 
-    it('sends data correctly', async () => {
+    it('uses getForElasticSearchById', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith({message: 'Product created.'});
+      expect(getForElasticSearchById).toHaveBeenCalledWith(1);
     });
 
-    it('returns correctly', async () => {
+    it('uses ElasticSearch save', async () => {
+      await controller.create(<Request>req, <Response>res);
+      expect(ESSave).toHaveBeenCalledWith(toSave);
+    });
+
+    it('returns sent data', async () => {
       const actual = await controller.create(<Request>req, <Response>res);
-      expect(actual).toEqual({message: 'Product created.'});
+      expect(res.send).toHaveBeenCalledWith({message});
+      expect(actual).toEqual({message});
     });
   });
 
   describe('update method', () => {
-    const req: Partial<Request> = {session, body: {productInfo: productUpdate}};
+    const message = 'Product updated.';
+    const req: Partial<Request> =
+      {session, body: {productInfo: {id: 1, ...args}}};
     const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue({message: 'Product updated.'})};
+      {send: jest.fn().mockResolvedValue({message})};
 
-    it('uses assert correctly', async () => {
+    it('uses assert', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(assert).toHaveBeenCalledWith(productCreation, validProductEntity);
+      expect(assert).toHaveBeenCalledWith(args, validProduct);
     });
 
-    it('uses update correctly', async () => {
+    it('uses update ', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(mockUpdate).toHaveBeenCalledWith(productUpdate);
+      expect(update).toHaveBeenCalledWith({id: 1, ...args});
     });
 
-    it('sends data correctly', async () => {
-      await controller.update(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith({message: 'Product updated.'});
+    it('uses getForElasticSearchById', async () => {
+      await controller.create(<Request>req, <Response>res);
+      expect(getForElasticSearchById).toHaveBeenCalledWith(1);
     });
 
-    it('returns correctly', async () => {
+    it('uses ElasticSearch save', async () => {
+      await controller.create(<Request>req, <Response>res);
+      expect(ESSave).toHaveBeenCalledWith(toSave);
+    });
+
+    it('returns sent data', async () => {
       const actual = await controller.update(<Request>req, <Response>res);
-      expect(actual).toEqual({message: 'Product updated.'});
+      expect(res.send).toHaveBeenCalledWith({message});
+      expect(actual).toEqual({message});
     });
   });
 
   describe('delete method', () => {
-    const req: Partial<Request> = {session, body: {id: "Brand Variety Product"}};
+    const message = 'Product deleted.'
+    const req: Partial<Request> = {session, body: {id: "1"}};
     const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue({message: 'Product deleted.'})};
+      {send: jest.fn().mockResolvedValue({message})};
 
-    it('uses delete correctly', async () => {
+    it('uses ElasticSearch delete', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockDelete).toHaveBeenCalledWith("Brand Variety Product");
+      expect(ESDelete).toHaveBeenCalledWith("1");
     });
 
-    it('uses ElasticSearch delete correctly', async () => {
+    it('uses delete', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockESDelete).toHaveBeenCalledWith("Brand Variety Product");
+      expect(mockDelete).toHaveBeenCalledWith(1);
     });
 
-    it('sends data correctly', async () => {
-      await controller.delete(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith({message: 'Product deleted.'});
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.delete(<Request>req, <Response>res);
-      expect(actual).toEqual({message: 'Product deleted.'});
+      expect(res.send).toHaveBeenCalledWith({message});
+      expect(actual).toEqual({message});
     });
   });
-
 });

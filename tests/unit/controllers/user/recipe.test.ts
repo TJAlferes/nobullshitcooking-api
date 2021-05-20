@@ -1,12 +1,10 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
-import { assert, coerce } from 'superstruct';
+import { assert } from 'superstruct';
 import { Client } from '@elastic/elasticsearch';
 
 import { UserRecipeController } from '../../../../src/controllers/user';
-import {
-  validRecipeEntity
-} from '../../../../src/lib/validations/recipe/entity';
+import { validRecipe } from '../../../../src/lib/validations/entities';
 
 const esClient: Partial<Client> = {};
 const pool: Partial<Pool> = {};
@@ -19,276 +17,206 @@ jest.mock('../../../../src/lib/connections/elasticsearch');  // ?
 jest.mock('../../../../src/lib/connections/mysql');  // ?
 
 jest.mock('../../../../src/access/elasticsearch', () => ({
-  RecipeSearch: jest.fn().mockImplementation(() => ({save: mockESSave}))
+  RecipeSearch: jest.fn().mockImplementation(() => ({save: ESSave}))
 }));
-let mockESSave = jest.fn();
+let ESSave = jest.fn();
 
+const row = [{id: 1}];
+const rows = [[{id: 1}, {id: 2}]];
+const toSave = {
+  id: "1",
+  author: "Author",
+  recipe_type_name: "Name",
+  cuisine_name: "Name",
+  title: "Title",
+  description: "Description.",
+  directions: "Directions.",
+  recipe_image: "image",
+  method_names: ["Name", "Name"],
+  equipment_names: ["Name", "Name"],
+  ingredient_names: ["Name", "Name"],
+  subrecipe_titles: ["Title", "Title"]
+};
 jest.mock('../../../../src/access/mysql', () => ({
   Recipe: jest.fn().mockImplementation(() => ({
-    getForElasticSearch: mockGetForElasticSearch,
-    view: mockView,
-    viewById: mockViewById,
-    getInfoToEdit: mockGetInfoToEdit,
-    create: mockCreate,
-    updatePrivate: mockUpdatePrivate,
-    disownById: mockDisownById,
-    deletePrivateById: mockDeletePrivateById
+    getForElasticSearch,
+    view,
+    viewById,
+    create,
+    edit,
+    update,
+    deleteById,
+    disownById
   })),
   RecipeEquipment: jest.fn().mockImplementation(() => ({
-    create: mockRECreate,
-    update: mockREUpdate,
-    deleteByRecipeId: mockREDeleteByRecipeId
+    create: RECreate, update: REUpdate, deleteByRecipeId: REDeleteByRecipeId
   })),
   RecipeIngredient: jest.fn().mockImplementation(() => ({
-    create: mockRICreate,
-    update: mockRIUpdate,
-    deleteByRecipeId: mockRIDeleteByRecipeId
+    create: RICreate, update: RIUpdate, deleteByRecipeId: RIDeleteByRecipeId
   })),
   RecipeMethod: jest.fn().mockImplementation(() => ({
-    create: mockRMCreate,
-    update: mockRMUpdate,
-    deleteByRecipeId: mockRMDeleteByRecipeId
+    create: RMCreate, update: RMUpdate, deleteByRecipeId: RMDeleteByRecipeId
   })),
   RecipeSubrecipe: jest.fn().mockImplementation(() => ({
-    create: mockRSCreate,
-    update: mockRSUpdate,
-    deleteByRecipeId: mockRSDeleteByRecipeId,
-    deleteBySubrecipeId: mockRSDeleteBySubrecipeId
+    create: RSCreate,
+    update: RSUpdate,
+    deleteByRecipeId: RSDeleteByRecipeId,
+    deleteBySubrecipeId: RSDeleteBySubrecipeId
   }))
 }));
-let mockGetForElasticSearch = jest.fn().mockResolvedValue([[{id: "Name Title 2"}]]);
-let mockView = jest.fn().mockResolvedValue([[{id: "Name Title 1"}, {id: "Name Title 2"}]]);
-let mockViewById = jest.fn().mockResolvedValue([[{id: "Name Title 2"}]]);
-let mockGetInfoToEdit = jest.fn().mockResolvedValue([[{id: "Name Title 2"}]]);
-let mockCreate = jest.fn().mockResolvedValue({insertId: "Name Title 2"});
-let mockUpdatePrivate = jest.fn();
-let mockDisownById = jest.fn();
-let mockDeletePrivateById = jest.fn();
-
-let mockRECreate = jest.fn();
-let mockREUpdate = jest.fn();
-let mockREDeleteByRecipeId = jest.fn();
-
-let mockRICreate = jest.fn();
-let mockRIUpdate = jest.fn();
-let mockRIDeleteByRecipeId = jest.fn();
-
-let mockRMCreate = jest.fn();
-let mockRMUpdate = jest.fn();
-let mockRMDeleteByRecipeId = jest.fn();
-
-let mockRSCreate = jest.fn();
-let mockRSUpdate = jest.fn();
-let mockRSDeleteByRecipeId = jest.fn();
-let mockRSDeleteBySubrecipeId = jest.fn();
-
-const createRecipeInfo = {
-  type: "Type",
-  cuisine: "Cuisine",
-  author: "Name",
-  owner: "Name",
-  title: "Title 2",
-  description: "Description.",
-  activeTime: "00:00:30",
-  totalTime: "00:07:00",
-  directions: "Directions.",
-  recipeImage: "nobsc-recipe-default",
-  equipmentImage: "nobsc-recipe-equipment-default",
-  ingredientsImage: "nobsc-recipe-ingredients-default",
-  cookingImage: "nobsc-recipe-cooking-default",
-  video: "video"
-};
-const bodyRecipeInfo = {
-  ...createRecipeInfo,
-  methods: [{method: "Method 1"}, {method: "Method 2"}],
-  equipment: [
-    {amount: 3, equipment: "NOBSC Equipment 1"},
-    {amount: 6, equipment: "NOBSC Equipment 2"}
-  ],
-  ingredients: [
-    {amount: 3, unit: "teaspoon", ingredient: "NOBSC Ingredient 1"},
-    {amount: 6, unit: "Tablespoon", ingredient: "NOBSC Ingredient 2"}
-  ],
-  subrecipes: [
-    {amount: 3, unit: "teaspoon", subrecipe: "NOBSC Recipe 1"},
-    {amount: 6, unit: "Tablespoon", subrecipe: "NOBSC Recipe 2"}
-  ]
-};
+let getForElasticSearch = jest.fn().mockResolvedValue(toSave);
+let view = jest.fn().mockResolvedValue(rows);
+let viewById = jest.fn().mockResolvedValue([row]);
+let create = jest.fn().mockResolvedValue({insertId: 1});
+let edit = jest.fn().mockResolvedValue([row]);
+let update = jest.fn();
+let deleteById = jest.fn();
+let disownById = jest.fn();
+let RECreate = jest.fn();
+let REUpdate = jest.fn();
+let REDeleteByRecipeId = jest.fn();
+let RICreate = jest.fn();
+let RIUpdate = jest.fn();
+let RIDeleteByRecipeId = jest.fn();
+let RMCreate = jest.fn();
+let RMUpdate = jest.fn();
+let RMDeleteByRecipeId = jest.fn();
+let RSCreate = jest.fn();
+let RSUpdate = jest.fn();
+let RSDeleteByRecipeId = jest.fn();
+let RSDeleteBySubrecipeId = jest.fn();
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 describe('user recipe controller', () => {
-  const session = {...<Express.Session>{}, userInfo: {username: "Name"}};
+  const recipeInfo = {
+    recipeTypeId: 1,
+    cuisineId: 1,
+    authorId: 1,
+    ownerId: 1,
+    title: "Title",
+    description: "Description.",
+    activeTime: "00:00:30",
+    totalTime: "00:07:00",
+    directions: "Directions.",
+    recipeImage: "image",
+    equipmentImage: "image",
+    ingredientsImage: "image",
+    cookingImage: "image",
+    video: "video"
+  };
+  const allRecipeInfo = {
+    ...recipeInfo,
+    methods: [{methodId: 1}, {methodId: 2}],
+    equipment: [{amount: 3, equipmentId: 1}, {amount: 6, equipmentId: 2}],
+    ingredients: [
+      {amount: 3, measurementId: 1, ingredientId: 1},
+      {amount: 6, measurementId: 2, ingredientId: 2}
+    ],
+    subrecipes: [
+      {amount: 3, measurementId: 1, subrecipeId: 1},
+      {amount: 6, measurementId: 2, subrecipeId: 2}
+    ]
+  };
+  const session = {...<Express.Session>{}, userInfo: {id: 88}};
 
   describe('viewPrivate method', () => {
     const req: Partial<Request> = {session};
-    const res: Partial<Response> = {
-      send: jest.fn().mockResolvedValue(
-        [[{id: "Name Title 1"}, {id: "Name Title 2"}]]
-      )
-    };
+    const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
-    it('uses view correctly', async () => {
+    it('uses view', async () => {
       await controller.viewPrivate(<Request>req, <Response>res);
-      expect(mockView).toHaveBeenCalledWith("Name", "Name");
+      expect(view).toHaveBeenCalledWith(88, 88);
     });
 
-    it('sends data correctly', async () => {
-      await controller.viewPrivate(<Request>req, <Response>res);
-      expect(res.send)
-        .toHaveBeenCalledWith([[{id: "Name Title 1"}, {id: "Name Title 2"}]]);
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.viewPrivate(<Request>req, <Response>res);
-      expect(actual).toEqual([[{id: "Name Title 1"}, {id: "Name Title 2"}]]);
+      expect(res.send).toHaveBeenCalledWith(rows);
+      expect(actual).toEqual(rows);
     });
   });
 
   describe('viewPublic method', () => {
     const req: Partial<Request> = {session};
-    const res: Partial<Response> = {
-      send: jest.fn().mockResolvedValue(
-        [[{id: "Name Title 1"}, {id: "Name Title 2"}]]
-      )
-    };
+    const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
-    it('uses view correctly', async () => {
+    it('uses view', async () => {
       await controller.viewPublic(<Request>req, <Response>res);
-      expect(mockView).toHaveBeenCalledWith("Name", "NOBSC");
+      expect(view).toHaveBeenCalledWith(88, 1);
     });
 
-    it('sends data correctly', async () => {
-      await controller.viewPublic(<Request>req, <Response>res);
-      expect(res.send)
-        .toHaveBeenCalledWith([[{id: "Name Title 1"}, {id: "Name Title 2"}]]);
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.viewPublic(<Request>req, <Response>res);
-      expect(actual).toEqual([[{id: "Name Title 1"}, {id: "Name Title 2"}]]);
+      expect(res.send).toHaveBeenCalledWith(rows);
+      expect(actual).toEqual(rows);
     });
   });
 
   describe('viewPrivateById method', () => {
-    const req: Partial<Request> = {session, body: {id: "Name Title 2"}};
+    const req: Partial<Request> = {session, body: {id: "1"}};
     const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue([{id: "Name Title 2"}])};
+      {send: jest.fn().mockResolvedValue(row)};
 
     it('uses viewById correctly', async () => {
       await controller.viewPrivateById(<Request>req, <Response>res);
-      expect(mockViewById).toHaveBeenCalledWith("Name Title 2", "Name", "Name");
-    });
-
-    it('sends data correctly', async () => {
-      await controller.viewPrivateById(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith([{id: "Name Title 2"}]);
+      expect(viewById).toHaveBeenCalledWith(1, 88, 88);
     });
 
     it('returns correctly', async () => {
-      const actual = await controller
-        .viewPrivateById(<Request>req, <Response>res);
-      expect(actual).toEqual([{id: "Name Title 2"}]);
+      const actual =
+        await controller.viewPrivateById(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith(row);
+      expect(actual).toEqual(row);
     });
   });
 
   describe('viewPublicById method', () => {
-    const req: Partial<Request> = {session, body: {id: "Name Title 2"}};
+    const req: Partial<Request> = {session, body: {id: "1"}};
     const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue([{id: "Name Title 2"}])};
+      {send: jest.fn().mockResolvedValue(row)};
 
     it('uses viewById correctly', async () => {
-      await controller.viewPublicById(<Request>req, <Response>res);
-      expect(mockViewById).toHaveBeenCalledWith("Name Title 2", "Name", 1);
-    });
-
-    it('sends data correctly', async () => {
-      await controller.viewPublicById(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith([{id: "Name Title 2"}]);
+      await controller.viewPrivateById(<Request>req, <Response>res);
+      expect(viewById).toHaveBeenCalledWith(1, 1, 1);
     });
 
     it('returns correctly', async () => {
-      const actual = await controller
-        .viewPublicById(<Request>req, <Response>res);
-      expect(actual).toEqual([{id: "Name Title 2"}]);
-    });
-  });
-
-  describe('getInfoToEditPrivate method', () => {
-    const req: Partial<Request> = {session, body: {id: "Name Title 2"}};
-    const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue([{id: "Name Title 2"}])};
-
-    it('uses getInfoToEditMyUserRecipe correctly', async () => {
-      await controller
-        .getInfoToEditPrivate(<Request>req, <Response>res);
-      expect(mockGetInfoToEdit).toHaveBeenCalledWith("Name Title 2", "Name", "Name");
-    });
-
-    it('sends data correctly', async () => {
-      await controller.getInfoToEditPrivate(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith([{id: "Name Title 2"}]);
-    });
-
-    it('returns correctly', async () => {
-      const actual = await controller
-        .getInfoToEditPrivate(<Request>req, <Response>res);
-      expect(actual).toEqual([{id: "Name Title 2"}]);
-    });
-  });
-
-  describe('getInfoToEditPublic method', () => {
-    const req: Partial<Request> = {session, body: {id: "Name Title 2"}};
-    const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue([{id: "Name Title 2"}])};
-
-    it('uses getInfoToEditMyUserRecipe correctly', async () => {
-      await controller.getInfoToEditPublic(<Request>req, <Response>res);
-      expect(mockGetInfoToEdit)
-        .toHaveBeenCalledWith("Name Title 2", "Name", "NOBSC");
-    });
-
-    it('sends data correctly', async () => {
-      await controller.getInfoToEditPublic(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith([{id: "Name Title 2"}]);
-    });
-
-    it('returns correctly', async () => {
-      const actual = await controller
-        .getInfoToEditPublic(<Request>req, <Response>res);
-      expect(actual).toEqual([{id: "Name Title 2"}]);
+      const actual =
+        await controller.viewPrivateById(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith(row);
+      expect(actual).toEqual(row);
     });
   });
 
   describe ('create method', () => {
-    const req: Partial<Request> = {session, body: {recipeInfo: bodyRecipeInfo}};
+    const message = 'Recipe created.';
+    const req: Partial<Request> = {session, body: {recipeInfo: allRecipeInfo}};
     const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue({message: 'Recipe created.'})};
-
-    // TO DO: finish, coerce?
-    /*it('uses assert correctly', async () => {
+      {send: jest.fn().mockResolvedValue({message})};
+    
+    it('uses assert', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(assert).toHaveBeenCalledWith(createRecipeInfo, validRecipeEntity);
-    });*/
-
-    it('uses createRecipe correctly', async () => {
-      await controller.create(<Request>req, <Response>res);
-      expect(mockCreate).toHaveBeenCalledWith(createRecipeInfo);
+      expect(assert).toHaveBeenCalledWith(recipeInfo, validRecipe);
     });
 
-    it('uses RecipeMethods.create correctly', async () => {
+    it('uses createRecipe', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(mockRMCreate).toHaveBeenCalledWith(
+      expect(create).toHaveBeenCalledWith(recipeInfo);
+    });
+
+    it('uses RecipeMethods.create', async () => {
+      await controller.create(<Request>req, <Response>res);
+      expect(RMCreate).toHaveBeenCalledWith(
         ["Name Title 2", "Method 1", "Name Title 2", "Method 2"],
         '(?, ?),(?, ?)'
       );
     });
 
-    it('uses RecipeEquipment.create correctly', async () => {
+    it('uses RecipeEquipment.create', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(mockRECreate).toHaveBeenCalledWith(
+      expect(RECreate).toHaveBeenCalledWith(
         [
           "Name Title 2", "NOBSC Equipment 1", 3,
           "Name Title 2", "NOBSC Equipment 2", 6
@@ -297,9 +225,9 @@ describe('user recipe controller', () => {
       );
     });
 
-    it('uses RecipeIngredients.create correctly', async () => {
+    it('uses RecipeIngredients.create', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(mockRICreate).toHaveBeenCalledWith(
+      expect(RICreate).toHaveBeenCalledWith(
         [
           "Name Title 2", "NOBSC Ingredient 1", 3, "teaspoon",
           "Name Title 2", "NOBSC Ingredient 2", 6, "Tablespoon"
@@ -308,9 +236,9 @@ describe('user recipe controller', () => {
       );
     });
 
-    it('uses RecipeSubrecipes.create correctly', async () => {
+    it('uses RecipeSubrecipes.create', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(mockRSCreate).toHaveBeenCalledWith(
+      expect(RSCreate).toHaveBeenCalledWith(
         [
           "Name Title 2", "NOBSC Recipe 1", 3, "teaspoon",
           "Name Title 2", "NOBSC Recipe 2", 6, "Tablespoon"
@@ -319,56 +247,83 @@ describe('user recipe controller', () => {
       );
     });
 
-    it('uses getForElasticSearch correctly', async () => {
+    it('uses getForElasticSearch', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(mockGetForElasticSearch).toHaveBeenCalledWith("Name Title 2");
+      expect(getForElasticSearch).toHaveBeenCalledWith(1);
     });
 
-    it('uses RecipeSearch.save correctly', async () => {
+    it('uses RecipeSearch.save', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(mockESSave).toHaveBeenCalledWith({id: "Name Title 2"});
+      expect(ESSave).toHaveBeenCalledWith(toSave);
     });
 
-    it('sends data correctly', async () => {
-      await controller.create(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith({message: 'Recipe created.'});
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.create(<Request>req, <Response>res);
-      expect(actual).toEqual({message: 'Recipe created.'});
+      expect(res.send).toHaveBeenCalledWith({message});
+      expect(actual).toEqual({message});
     });
   });
 
-  describe ('updateMyUserRecipe method', () => {
-    const req: Partial<Request> = {session, body: {recipeInfo: bodyRecipeInfo}};
-    const res: Partial<Response> = {
-      send: jest.fn().mockResolvedValue({message: 'Recipe updated.'})
-    };
+  describe('editPrivate method', () => {
+    const req: Partial<Request> = {session, body: {id: "1"}};
+    const res: Partial<Response> = {send: jest.fn().mockResolvedValue(row)};
 
-    // TO DO: finish, coerce?
-    /*it('uses assert correctly', async () => {
-      await controller.update(<Request>req, <Response>res);
-      expect(assert).toHaveBeenCalledWith(createRecipeInfo, validRecipeEntity);
-    });*/
-
-    it ('uses update correctly', async () => {
-      await controller.update(<Request>req, <Response>res);
-      expect(mockUpdatePrivate).toHaveBeenCalledWith(createRecipeInfo);
+    it('uses edit', async () => {
+      await controller.editPrivate(<Request>req, <Response>res);
+      expect(edit).toHaveBeenCalledWith(1, 88, 88);
     });
 
-    it('uses RecipeMethods.update correctly', async () => {
+    it('returns sent data', async () => {
+      const actual = await controller.editPrivate(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith(row);
+      expect(actual).toEqual(row);
+    });
+  });
+
+  describe('editPublic method', () => {
+    const req: Partial<Request> = {session, body: {id: "1"}};
+    const res: Partial<Response> = {send: jest.fn().mockResolvedValue(row)};
+
+    it('uses edit', async () => {
+      await controller.editPublic(<Request>req, <Response>res);
+      expect(edit).toHaveBeenCalledWith(1, 88, 1);
+    });
+
+    it('returns sent data', async () => {
+      const actual = await controller.editPublic(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith(row);
+      expect(actual).toEqual(row);
+    });
+  });
+
+  describe ('update method', () => {
+    const message = 'Recipe updated.';
+    const req: Partial<Request> = {session, body: {recipeInfo: allRecipeInfo}};
+    const res: Partial<Response> =
+      {send: jest.fn().mockResolvedValue({message})};
+
+    it('uses assert', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(mockRMUpdate).toHaveBeenCalledWith(
+      expect(assert).toHaveBeenCalledWith(recipeInfo, validRecipe);
+    });
+
+    it ('uses update', async () => {
+      await controller.update(<Request>req, <Response>res);
+      expect(update).toHaveBeenCalledWith(recipeInfo);
+    });
+
+    it('uses RecipeMethods.update', async () => {
+      await controller.update(<Request>req, <Response>res);
+      expect(RMUpdate).toHaveBeenCalledWith(
         ["Name Title 2", "Method 1", "Name Title 2", "Method 2"],
         '(?, ?),(?, ?)',
         "Name Title 2"
       );
     });
 
-    it('uses RecipeEquipment.update correctly', async () => {
+    it('uses RecipeEquipment.update', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(mockREUpdate).toHaveBeenCalledWith(
+      expect(REUpdate).toHaveBeenCalledWith(
         [
           "Name Title 2", "NOBSC Equipment 1", 3,
           "Name Title 2", "NOBSC Equipment 2", 6
@@ -378,9 +333,9 @@ describe('user recipe controller', () => {
       );
     });
 
-    it('uses RecipeIngredients.update correctly', async () => {
+    it('uses RecipeIngredients.update', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(mockRIUpdate).toHaveBeenCalledWith(
+      expect(RIUpdate).toHaveBeenCalledWith(
         [
           "Name Title 2", "NOBSC Ingredient 1", 3, "teaspoon",
           "Name Title 2", "NOBSC Ingredient 2", 6, "Tablespoon"
@@ -390,9 +345,9 @@ describe('user recipe controller', () => {
       );
     });
 
-    it('uses RecipeSubrecipes.update correctly', async () => {
+    it('uses RecipeSubrecipes.update', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(mockRSUpdate).toHaveBeenCalledWith(
+      expect(RSUpdate).toHaveBeenCalledWith(
         [
           "Name Title 2", "NOBSC Recipe 1", 3, "teaspoon",
           "Name Title 2", "NOBSC Recipe 2", 6, "Tablespoon"
@@ -402,103 +357,91 @@ describe('user recipe controller', () => {
       );
     });
 
-    it('uses getForElasticSearch correctly', async () => {
+    it('uses getForElasticSearch', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(mockGetForElasticSearch).toHaveBeenCalledWith("Name Title 2");
+      expect(getForElasticSearch).toHaveBeenCalledWith(1);
     });
 
-    it('uses RecipeSearch.save correctly', async () => {
+    it('uses RecipeSearch.save', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(mockESSave).toHaveBeenCalledWith({id: "Name Title 2"});
+      expect(ESSave).toHaveBeenCalledWith(toSave);
     });
 
-    it('sends data correctly', async () => {
-      await controller.update(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith({message: 'Recipe updated.'});
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.update(<Request>req, <Response>res);
-      expect(actual).toEqual({message: 'Recipe updated.'});
+      expect(res.send).toHaveBeenCalledWith({message});
+      expect(actual).toEqual({message});
     });
   });
 
-  describe ('deletePrivateById method', () => {
-    const req: Partial<Request> = {session, body: {id: "Name Title 2"}};
+  describe ('delete method', () => {
+    const message = 'Recipe deleted.';
+    const req: Partial<Request> = {session, body: {id: "1"}};
     const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue({message: 'Recipe deleted.'})};
+      {send: jest.fn().mockResolvedValue({message})};
 
-    it('uses RecipeEquipment.deleteByRecipeId correctly', async () => {
-      await controller.deletePrivateById(<Request>req, <Response>res);
-      expect(mockREDeleteByRecipeId).toHaveBeenCalledWith("Name Title 2");
+    it('uses RecipeEquipment.deleteByRecipeId', async () => {
+      await controller.delete(<Request>req, <Response>res);
+      expect(REDeleteByRecipeId).toHaveBeenCalledWith(1);
     });
 
-    it('uses RecipeIngredients.deleteByRecipeId correctly', async () => {
-      await controller.deletePrivateById(<Request>req, <Response>res);
-      expect(mockRIDeleteByRecipeId).toHaveBeenCalledWith("Name Title 2");
+    it('uses RecipeIngredients.deleteByRecipeId', async () => {
+      await controller.delete(<Request>req, <Response>res);
+      expect(RIDeleteByRecipeId).toHaveBeenCalledWith(1);
     });
 
-    it('uses RecipeMethods.deleteByRecipeId correctly', async () => {
-      await controller.deletePrivateById(<Request>req, <Response>res);
-      expect(mockRMDeleteByRecipeId).toHaveBeenCalledWith("Name Title 2");
+    it('uses RecipeMethods.deleteByRecipeId', async () => {
+      await controller.delete(<Request>req, <Response>res);
+      expect(RMDeleteByRecipeId).toHaveBeenCalledWith(1);
     });
 
-    it('uses RecipeSubrecipes.deleteByRecipeId correctly', async () => {
-      await controller.deletePrivateById(<Request>req, <Response>res);
-      expect(mockRSDeleteByRecipeId).toHaveBeenCalledWith("Name Title 2");
+    it('uses RecipeSubrecipes.deleteByRecipeId', async () => {
+      await controller.delete(<Request>req, <Response>res);
+      expect(RSDeleteByRecipeId).toHaveBeenCalledWith(1);
     });
 
-    it('uses RecipeSubrecipes.deleteBySubrecipeId correctly', async () => {
-      await controller.deletePrivateById(<Request>req, <Response>res);
-      expect(mockRSDeleteBySubrecipeId).toHaveBeenCalledWith("Name Title 2");
+    it('uses RecipeSubrecipes.deleteBySubrecipeId', async () => {
+      await controller.delete(<Request>req, <Response>res);
+      expect(RSDeleteBySubrecipeId).toHaveBeenCalledWith(1);
     });
 
-    it('uses deletePrivateById correctly', async () => {
-      await controller.deletePrivateById(<Request>req, <Response>res);
-      expect(mockDeletePrivateById)
-        .toHaveBeenCalledWith("Name Title 2", "Name", "Name");
+    it('uses deleteById', async () => {
+      await controller.delete(<Request>req, <Response>res);
+      expect(deleteById).toHaveBeenCalledWith(1, 88, 88);
     });
 
-    it('sends data correctly', async () => {
-      await controller.deletePrivateById(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith({message: 'Recipe deleted.'});
-    });
-
-    it('returns correctly', async () => {
-      const actual = await controller
-        .deletePrivateById(<Request>req, <Response>res);
-      expect(actual).toEqual({message: 'Recipe deleted.'});
+    it('returns sent data', async () => {
+      const actual = await controller.delete(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith({message});
+      expect(actual).toEqual({message});
     });
   });
 
-  describe ('disownById method', () => {
-    const req: Partial<Request> = {session, body: {id: "Name Title 2"}};
+  describe ('disown method', () => {
+    const message = 'Recipe disowned.';
+    const req: Partial<Request> = {session, body: {id: "1"}};
     const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue({message: 'Recipe disowned.'})};
+      {send: jest.fn().mockResolvedValue({message})};
 
-    it('uses disownById correctly', async () => {
-      await controller.disownById(<Request>req, <Response>res);
-      expect(mockDisownById).toHaveBeenCalledWith("Name Title 2", "Name");
+    it('uses disownById', async () => {
+      await controller.disown(<Request>req, <Response>res);
+      expect(disownById).toHaveBeenCalledWith(1, 88);
     });
 
-    it('uses getForElasticSearch correctly', async () => {
-      await controller.disownById(<Request>req, <Response>res);
-      expect(mockGetForElasticSearch).toHaveBeenCalledWith("Name Title 2");
+    it('uses getForElasticSearch', async () => {
+      await controller.disown(<Request>req, <Response>res);
+      expect(getForElasticSearch).toHaveBeenCalledWith(1);
     });
 
-    it('uses RecipeSearch.save correctly', async () => {
-      await controller.disownById(<Request>req, <Response>res);
-      expect(mockESSave).toHaveBeenCalledWith({id: "Name Title 2"});
+    it('uses RecipeSearch.save', async () => {
+      await controller.disown(<Request>req, <Response>res);
+      expect(ESSave).toHaveBeenCalledWith(toSave);
     });
 
-    it('sends data correctly', async () => {
-      await controller.disownById(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith({message: 'Recipe disowned.'});
-    });
-
-    it('returns correctly', async () => {
-      const actual = await controller.disownById(<Request>req, <Response>res);
-      expect(actual).toEqual({message: 'Recipe disowned.'});
+    it('returns sent data', async () => {
+      const actual = await controller.disown(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith({message});
+      expect(actual).toEqual({message});
     });
   });
 });

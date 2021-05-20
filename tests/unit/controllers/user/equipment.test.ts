@@ -10,7 +10,7 @@ const controller = new UserEquipmentController(<Pool>pool);
 
 jest.mock('superstruct');
 
-const row = [{id: 1}]
+const row = [{id: 1}];
 const rows = [[{id: 1}, {id: 2}]];
 jest.mock('../../../../src/access/mysql', () => ({
   Equipment: jest.fn().mockImplementation(() => ({

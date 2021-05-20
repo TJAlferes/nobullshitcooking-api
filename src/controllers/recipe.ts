@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
-//import { assert } from 'superstruct';
 
-//import { validRecipeRequest } from '../lib/validations/recipe/recipeRequest';
 import { Recipe } from '../access/mysql';
 
 export class RecipeController {
@@ -26,8 +24,6 @@ export class RecipeController {
     const id = Number(req.params.id);
     const authorId = 1;
     const ownerId = 1;
-    // defaulted?
-    //assert({recipeId}, validRecipeRequest);
     const recipe = new Recipe(this.pool);
     const [ row ] = await recipe.viewById(id, authorId, ownerId);
     return res.send(row);

@@ -62,7 +62,7 @@ export class Recipe implements IRecipe {
       WHERE r.owner_id = ?
     `;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
-    let final = [];
+    const final = [];
     for (let row of rows) {
       final.push({index: {_index: 'recipes', _id: row.id}}, row);
     }
@@ -111,9 +111,9 @@ export class Recipe implements IRecipe {
       INNER JOIN cuisines c ON c.id = r.cuisine_id
       WHERE r.id = ? AND r.owner_id = ?
     `;
-    const [ row ] =
+    const [ [ row ] ] =
       await this.pool.execute<RowDataPacket[]>(sql, [id, ownerId]);
-    return row;
+    return row as ISavingRecipe;
   }
 
   async getPrivateIds(userId: number) {
@@ -392,7 +392,7 @@ type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
 export interface IRecipe {
   pool: Pool;
   getForElasticSearch(): any;
-  getForElasticSearchById(id: number): Data;
+  getForElasticSearchById(id: number): Promise<ISavingRecipe>;
   getPrivateIds(userId: number): Promise<number[]>;
   view(authorId: number, ownerId: number): Data;
   viewById(id: number, authorId: number, ownerId: number): Data;
@@ -425,4 +425,20 @@ export interface ICreatingRecipe {
 export interface IUpdatingRecipe extends ICreatingRecipe {
   id: number;
   //  what about prevImage ?
+}
+
+interface ISavingRecipe {
+  id: string;
+  author: string;
+  recipe_type_name: string;
+  cuisine_name: string;
+  title: string;
+  description: string;
+  directions: string;
+  recipe_image: string;
+  method_names: string[];
+  equipment_names: string[];
+  ingredient_names: string[];
+  subrecipe_titles: string[];
+  //video: string; ?
 }

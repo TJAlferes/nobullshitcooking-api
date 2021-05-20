@@ -20,8 +20,6 @@ export class Ingredient implements IIngredient {
     const sql = `
       SELECT
         CAST(i.id AS CHAR),
-        i.ingredient_type_id,
-        i.owner_id,
         t.name AS ingredient_type_name,
         i.brand,
         i.variety,
@@ -34,7 +32,7 @@ export class Ingredient implements IIngredient {
       WHERE i.owner_id = ?
     `;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
-    let final = [];
+    const final = [];
     for (let row of rows) {
       final.push({index: {_index: 'ingredients', _id: row.id}}, {...row});
     }
@@ -46,8 +44,6 @@ export class Ingredient implements IIngredient {
     const sql = `
       SELECT
         CAST(i.id AS CHAR),
-        i.ingredient_type_id,
-        i.owner_id,
         t.name AS ingredient_type_name,
         i.brand,
         i.variety,
@@ -59,25 +55,9 @@ export class Ingredient implements IIngredient {
       INNER JOIN ingredient_types t ON t.id = i.ingredient_type_id
       WHERE i.id = ? i.owner_id = ?
     `;
-    const [ row ] =
+    const [ [ row ] ] =
       await this.pool.execute<RowDataPacket[]>(sql, [id, ownerId]);
-    const {
-      ingredient_type_name,
-      brand,
-      variety,
-      name,
-      fullname,
-      image
-    } = row[0];
-    return {
-      id: row[0].id,
-      ingredient_type_name,
-      fullname,
-      brand,
-      variety,
-      name,
-      image
-    };
+    return row as ISavingIngredient;
   }
 
   async view(authorId: number, ownerId: number) {
@@ -226,5 +206,6 @@ interface ISavingIngredient {
   brand: string;
   variety: string;
   name: string;
+  description: string;
   image: string;
 }
