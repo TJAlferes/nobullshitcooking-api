@@ -27,10 +27,10 @@ export class RecipeSubrecipe implements IRecipeSubrecipe {
     return rows;
   }
 
-  async create(recipeSubrecipes: number[], placeholders: string) {
+  async create(placeholders: string, recipeSubrecipes: number[]) {
     const sql = `
       INSERT INTO recipe_subrecipes
-      (recipe_id, subrecipe_id, amount, measurement_id)
+      (recipe_id, amount, measurement_id, subrecipe_id)
       VALUES ${placeholders}
     `;
     const [ rows ] =
@@ -39,15 +39,15 @@ export class RecipeSubrecipe implements IRecipeSubrecipe {
   }
   
   async update(
-    recipeSubrecipes: number[],
+    recipeId: number,
     placeholders: string,
-    recipeId: number
+    recipeSubrecipes: number[]
   ) {
     const sql1 = `DELETE FROM recipe_subrecipes WHERE recipe_id = ?`;
     const sql2 = (recipeSubrecipes.length)
       ? `
         INSERT INTO recipe_subrecipes
-        (recipe_id, subrecipe_id, amount, measurement_id)
+        (recipe_id, amount, measurement_id, subrecipe_id)
         VALUES ${placeholders} 
       `
       : "none";
@@ -113,11 +113,11 @@ type DataWithExtra = Promise<
 export interface IRecipeSubrecipe {
   pool: Pool;
   viewByRecipeId(recipeId: number): Data;
-  create(recipeSubrecipes: number[], placeholders: string): Data;
+  create(placeholders: string, recipeSubrecipes: number[]): Data;
   update(
-    recipeSubrecipes: number[],
+    recipeId: number,
     placeholders: string,
-    recipeId: number
+    recipeSubrecipes: number[]
   ): DataWithExtra;  // | finish
   deleteByRecipeId(recipeId: number): Data;
   deleteByRecipeIds(recipeIds: number[]): Data;

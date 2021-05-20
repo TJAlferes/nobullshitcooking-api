@@ -116,6 +116,7 @@ export class Recipe implements IRecipe {
     return row as ISavingRecipe;
   }
 
+  // ???
   async getPrivateIds(userId: number) {
     const sql = `SELECT id FROM recipes WHERE author_id = ? AND owner_id = ?`;
     const [ rows ] =
@@ -305,7 +306,7 @@ export class Recipe implements IRecipe {
     return row;
   }
 
-  async update(recipe: IUpdatingRecipe) {
+  async update(recipe: IUpdatingRecipe, authorId: number, ownerId: number) {
     const sql = `
       UPDATE recipes
       SET
@@ -398,7 +399,7 @@ export interface IRecipe {
   viewById(id: number, authorId: number, ownerId: number): Data;
   create(recipe: ICreatingRecipe): DataWithHeader;
   edit(id: number, authorId: number, ownerId: number): Data;
-  update(recipe: IUpdatingRecipe): Data;
+  update(recipe: IUpdatingRecipe, authorId: number, ownerId: number): Data;
   disown(authorId: number): void;
   disownById(id: number, authorId: number): Data;
   delete(authorId: number, ownerId: number): void;

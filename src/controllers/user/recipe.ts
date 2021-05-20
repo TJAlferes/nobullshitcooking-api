@@ -87,7 +87,8 @@ export class UserRecipeController {
       recipeImage,
       equipmentImage,
       ingredientsImage,
-      cookingImage
+      cookingImage,
+      video
     }= req.body.recipeInfo;
     const authorId = req.session!.userInfo.id;
     const ownerId = (ownership === "private") ? req.session!.userInfo.id : 1;
@@ -105,7 +106,8 @@ export class UserRecipeController {
       recipeImage,
       equipmentImage,
       ingredientsImage,
-      cookingImage
+      cookingImage,
+      video
     };
     assert(args, validRecipe);
 
@@ -169,7 +171,8 @@ export class UserRecipeController {
       recipeImage,
       equipmentImage,
       ingredientsImage,
-      cookingImage
+      cookingImage,
+      video
     }= req.body.recipeInfo;
     const authorId = req.session!.userInfo.id;
     const ownerId = (ownership === "private") ? req.session!.userInfo.id : 1;
@@ -190,7 +193,8 @@ export class UserRecipeController {
       recipeImage,
       equipmentImage,
       ingredientsImage,
-      cookingImage
+      cookingImage,
+      video
     };
     assert(args, validRecipe);
 

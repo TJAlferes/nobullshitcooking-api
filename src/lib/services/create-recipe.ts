@@ -37,87 +37,77 @@ export async function createRecipeService({
   recipeSearch
 }: CreateRecipeService) {
   const createdRecipe = await recipe.create(recipeCreation);
+  const recipeId = createdRecipe.insertId;
 
-  const generatedId = createdRecipe.insertId;
+  /*
+  NOTE: order matters!
+
+  recipeId, methodId
+  recipeId, amount, equipmentId
+  recipeId, amount, measurementId, ingredientId
+  recipeId, amount, measurementId, subrecipeId
+  */
 
   if (requiredMethods.length) {
     requiredMethods.map(({ methodId }) =>
-      assert({recipeId: generatedId, methodId}, validRecipeMethod)
+      assert({recipeId, methodId}, validRecipeMethod)
     );
 
-    const values: number[] = [];
-
-    requiredMethods.map(({ methodId }) => values.push(generatedId, methodId));
-
     const placeholders = '(?, ?),'.repeat(requiredMethods.length).slice(0, -1);
-
-    await recipeMethod.create(values, placeholders);
+    const values: number[] = [];
+    requiredMethods.map(({ methodId }) => values.push(recipeId, methodId));
+    await recipeMethod.create(placeholders, values);
   }
 
   if (requiredEquipment.length) {
-    requiredEquipment.map(({ equipmentId, amount }) => assert({
-      recipeId: generatedId,
-      equipmentId,
-      amount
-    }, validRecipeEquipment));
-
-    const values: number[] = [];
-
-    requiredEquipment.map(({ equipmentId, amount }) =>
-      values.push(generatedId, equipmentId, amount)
+    requiredEquipment.map(({ amount, equipmentId }) =>
+      assert({recipeId, amount, equipmentId}, validRecipeEquipment)
     );
 
     const placeholders =
       '(?, ?, ?),'.repeat(requiredEquipment.length).slice(0, -1);
-
-    await recipeEquipment.create(values, placeholders);
+    const values: number[] = [];
+    requiredEquipment.map(({ amount, equipmentId }) =>
+      values.push(recipeId, amount, equipmentId)
+    );
+    await recipeEquipment.create(placeholders, values);
   }
 
   if (requiredIngredients.length) {
-    requiredIngredients.map(({ ingredientId, amount, measurementId }) =>
-      assert({
-        recipeId: generatedId,
-        ingredientId,
-        amount,
-        measurementId
-      }, validRecipeIngredient)
-    );
-
-    const values: number[] = [];
-
-    requiredIngredients.map(({ ingredientId, amount, measurementId }) =>
-      values.push(generatedId, ingredientId, amount, measurementId)
+    requiredIngredients.map(({ amount, measurementId, ingredientId }) =>
+      assert(
+        {recipeId, amount, measurementId, ingredientId}, validRecipeIngredient
+      )
     );
 
     const placeholders =
       '(?, ?, ?, ?),'.repeat(requiredIngredients.length).slice(0, -1);
-    
-    await recipeIngredient.create(values, placeholders);
+    const values: number[] = [];
+    requiredIngredients.map(({ amount, measurementId, ingredientId }) =>
+      values.push(recipeId, amount, measurementId, ingredientId)
+    );
+    await recipeIngredient.create(placeholders, values);
   }
 
   if (requiredSubrecipes.length) {
-    requiredSubrecipes.map(({ subrecipeId, amount, measurementId }) => assert({
-      recipeId: generatedId,
-      subrecipeId,
-      amount,
-      measurementId
-    }, validRecipeSubrecipe));
-
-    const values: number[] = [];
-
-    requiredSubrecipes.map(({ subrecipeId, amount, measurementId }) =>
-      values.push(generatedId, subrecipeId, amount, measurementId)
+    requiredSubrecipes.map(({ amount, measurementId, subrecipeId }) =>
+      assert(
+        {recipeId, amount, measurementId, subrecipeId}, validRecipeSubrecipe
+      )
     );
 
     const placeholders =
       '(?, ?, ?, ?),'.repeat(requiredSubrecipes.length).slice(0, -1);
-    
-    await recipeSubrecipe.create(values, placeholders);
+    const values: number[] = [];
+    requiredSubrecipes.map(({ amount, measurementId, subrecipeId }) =>
+      values.push(recipeId, amount, measurementId, subrecipeId)
+    );
+    await recipeSubrecipe.create(placeholders, values);
   }
 
   // if public recipe
   if (ownerId === 1) {
-    const toSave = await recipe.getForElasticSearchById(generatedId);
+    const toSave = await recipe.getForElasticSearchById(recipeId);
     await recipeSearch.save(toSave);
   }
 }

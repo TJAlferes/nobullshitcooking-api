@@ -26,10 +26,10 @@ export class RecipeIngredient implements IRecipeIngredient {
     return rows;
   }
 
-  async create(recipeIngredients: number[], placeholders: string) {
+  async create(placeholders: string, recipeIngredients: number[]) {
     const sql = `
       INSERT INTO recipe_ingredients
-      (recipe_id, ingredient_id, amount, measurement_id)
+      (recipe_id, amount, measurement_id, ingredient_id)
       VALUES ${placeholders}
     `;
     const [ row ] =
@@ -38,15 +38,15 @@ export class RecipeIngredient implements IRecipeIngredient {
   }
   
   async update(
-    recipeIngredients: number[],
+    recipeId: number,
     placeholders: string,
-    recipeId: number
+    recipeIngredients: number[]
   ) {
     const sql1 = `DELETE FROM recipe_ingredients WHERE recipe_id = ?`;
     const sql2 = (recipeIngredients.length)
       ? `
         INSERT INTO recipe_ingredients
-        (recipe_id, ingredient_id, amount, measurement_id)
+        (recipe_id, amount, measurement_id, ingredient_id)
         VALUES ${placeholders} 
       `
       : "none";
@@ -104,11 +104,11 @@ type DataWithExtra = Promise<
 export interface IRecipeIngredient {
   pool: Pool;
   viewByRecipeId(recipeId: number): Data;
-  create(recipeIngredients: number[], placeholders: string): Data;
+  create(placeholders: string, recipeIngredients: number[]): Data;
   update(
-    recipeIngredients: number[],
+    recipeId: number,
     placeholders: string,
-    recipeId: number
+    recipeIngredients: number[]
   ): DataWithExtra;  // | finish
   deleteByIngredientId(ingredientId: number): Data;
   deleteByRecipeId(recipeId: number): Data;

@@ -881,7 +881,7 @@ VALUES
 (11, 11, 1, 1, "Carrot Ginger Dressing",             "Tasty",            "00:20:00", "00:20:00", "Blend carrots and..."),
 (12, 12, 1, 1, "Some Kind Of Chutney",               "Not Bad",          "00:30:00", "01:00:00", "Mix...");
 
-INSERT INTO recipe_equipment (recipe_id, equipment_id, amount) VALUES
+INSERT INTO recipe_equipment (recipe_id, amount, equipment_id) VALUES
 (1, 1, 1),
 (2, 1, 1),
 (3, 1, 1),
@@ -896,20 +896,20 @@ INSERT INTO recipe_equipment (recipe_id, equipment_id, amount) VALUES
 (12, 1, 1);
 
 INSERT INTO recipe_ingredients
-(recipe_id, ingredient_id, amount, measurement_id)
+(recipe_id, amount, measurement_id, ingredient_id)
 VALUES
-(1, 116, 4, 1),
-(2, 209, 2, 2),
-(3, 153, 1, 3),
-(4, 159, 1, 4),
-(5, 165, 7, 5),
-(6, 176, 1, 6),
-(7, 142, 3, 7),
-(8, 230, 1, 8),
-(9, 202, 9, 9),
-(10, 100, 20, 10),
-(11, 122, 10, 1),
-(12, 138, 13, 2);
+(1, 4, 1, 116),
+(2, 2, 2, 209),
+(3, 1, 3, 153),
+(4, 1, 4, 159),
+(5, 7, 5, 165),
+(6, 1, 6, 176),
+(7, 3, 7, 142),
+(8, 1, 8, 230),
+(9, 9, 9, 202),
+(10, 20, 10, 100),
+(11, 10, 1, 122),
+(12, 13, 2, 138);
 
 INSERT INTO recipe_methods (recipe_id, method_id) VALUES
 (1, 6),

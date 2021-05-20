@@ -25,9 +25,9 @@ export class RecipeEquipment implements IRecipeEquipment {
     return rows;
   }
 
-  async create(recipeEquipment: number[], placeholders: string) {
+  async create(placeholders: string, recipeEquipment: number[]) {
     const sql = `
-      INSERT INTO recipe_equipment (recipe_id, equipment_id, amount)
+      INSERT INTO recipe_equipment (recipe_id, amount, equipment_id)
       VALUES ${placeholders} 
     `;
     const [ row ] =
@@ -36,14 +36,14 @@ export class RecipeEquipment implements IRecipeEquipment {
   }
 
   async update(
-    recipeEquipment: number[],
+    recipeId: number,
     placeholders: string,
-    recipeId: number
+    recipeEquipment: number[]
   ) {
     const sql1 = `DELETE FROM recipe_equipment WHERE recipe_id = ?`;
     const sql2 = (recipeEquipment.length)
       ? `
-        INSERT INTO recipe_equipment (recipe_id, equipment_id, amount)
+        INSERT INTO recipe_equipment (recipe_id, amount, equipment_id)
         VALUES ${placeholders} 
       `
       : "none";
@@ -101,11 +101,11 @@ type DataWithExtra = Promise<
 export interface IRecipeEquipment {
   pool: Pool;
   viewByRecipeId(recipeId: number): Data;
-  create(recipeEquipment: number[], placeholders: string): Data;
+  create(placeholders: string, recipeEquipment: number[]): Data;
   update(
-    recipeEquipment: number[],
+    recipeId: number,
     placeholders: string,
-    recipeId: number
+    recipeEquipment: number[]
   ): DataWithExtra;  // | finish
   deleteByEquipmentId(equipmentId: number): Data;
   deleteByRecipeId(recipeId: number): Data;

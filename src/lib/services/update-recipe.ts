@@ -38,84 +38,73 @@ export async function updateRecipeService({
   recipeSubrecipe,
   recipeSearch
 }: UpdateRecipeService) {
-  //if (authorId == 1 && ownerId === 1) {
-  //  await recipe.update({id, ...recipeUpdate});  // if staff
-  //} else {
-  //  await recipe.updatePrivate({id, ...recipeUpdate});  // if user
-  //}
-  await recipe.update({id, ...recipeUpdate});
+  await recipe.update({id, ...recipeUpdate}, authorId, ownerId);
 
-  let values: number[] = [];
+  /*
+  NOTE: order matters!
+  
+  id, methodId
+  id, amount, equipmentId
+  id, amount, measurementId, ingredientId
+  id, amount, measurementId, subrecipeId
+  */
+  //const recipeId = id;
+  
   let placeholders = "none";
-
+  let values: number[] = [];
   if (requiredMethods.length) {
     requiredMethods.map(({ methodId }) =>
       assert({id, methodId}, validRecipeMethod)
     );
 
-    requiredMethods.map(({ methodId }) => values.push(id, methodId));
-
     placeholders = '(?, ?),'.repeat(requiredMethods.length).slice(0, -1);
+    requiredMethods.map(({ methodId }) => values.push(id, methodId));
   }
-
-  await recipeMethod.update(values, placeholders, id);
+  await recipeMethod.update(id, placeholders, values);
   
-  values = [];
   placeholders = "none";
-
+  values = [];
   if (requiredEquipment.length) {
-    requiredEquipment.map(({ equipmentId, amount }) =>
-      assert({id, equipmentId, amount}, validRecipeEquipment)
+    requiredEquipment.map(({ amount, equipmentId }) =>
+      assert({id, amount, equipmentId}, validRecipeEquipment)
     );
-
-    requiredEquipment.map(({ equipmentId, amount }) =>
-      values.push(id, equipmentId, amount)
+    
+    placeholders = '(?, ?, ?),'.repeat(requiredEquipment.length).slice(0, -1);
+    requiredEquipment.map(({ amount, equipmentId }) =>
+      values.push(id, amount, equipmentId)
     );
-
-    placeholders =
-      '(?, ?, ?),'.repeat(requiredEquipment.length).slice(0, -1);
   }
-
-  await recipeEquipment.update(values, placeholders, id);
+  await recipeEquipment.update(id, placeholders, values);
   
-  values = [];
   placeholders = "none";
-
+  values = [];
   if (requiredIngredients.length) {
-    requiredIngredients.map(({ ingredientId, amount, measurementId }) =>
-      assert({id, ingredientId, amount, measurementId}, validRecipeIngredient)
-    );
-
-    requiredIngredients.map(({ ingredientId, amount, measurementId }) =>
-      values.push(id, ingredientId, amount, measurementId)
+    requiredIngredients.map(({ amount, measurementId, ingredientId }) =>
+      assert({id, amount, measurementId, ingredientId}, validRecipeIngredient)
     );
 
     placeholders =
       '(?, ?, ?, ?),'.repeat(requiredIngredients.length).slice(0, -1);
+    requiredIngredients.map(({ amount, measurementId, ingredientId }) =>
+      values.push(id, amount, measurementId, ingredientId)
+    );
   }
-
-  await recipeIngredient.update(values, placeholders, id);
+  await recipeIngredient.update(id, placeholders, values);
   
-  values = [];
   placeholders = "none";
-
+  values = [];
   if (requiredSubrecipes.length) {
-    requiredSubrecipes.map(({ subrecipeId, amount, measurementId }) => assert({
-      id,
-      subrecipeId,
-      amount,
-      measurementId
-    }, validRecipeSubrecipe));
-
-    requiredSubrecipes.map(({ subrecipeId, amount, measurementId }) =>
-      values.push(id, subrecipeId, amount, measurementId)
+    requiredSubrecipes.map(({ amount, measurementId, subrecipeId }) =>
+      assert({id, amount, measurementId, subrecipeId}, validRecipeSubrecipe)
     );
 
     placeholders =
       '(?, ?, ?, ?),'.repeat(requiredSubrecipes.length).slice(0, -1);
+    requiredSubrecipes.map(({ amount, measurementId, subrecipeId }) =>
+      values.push(id, amount, measurementId, subrecipeId)
+    );
   }
-
-  await recipeSubrecipe.update(values, placeholders, id);
+  await recipeSubrecipe.update(id, placeholders, values);
 
   // if public recipe
   if (ownerId === 1) {

@@ -4,7 +4,13 @@ import { assert } from 'superstruct';
 import { Client } from '@elastic/elasticsearch';
 
 import { StaffRecipeController } from '../../../../src/controllers/staff';
-import { validRecipe } from '../../../../src/lib/validations/entities';
+import {
+  validRecipe,
+  validRecipeEquipment,
+  validRecipeIngredient,
+  validRecipeMethod,
+  validRecipeSubrecipe
+} from '../../../../src/lib/validations/entities';
 
 const esClient: Partial<Client> = {};
 const pool: Partial<Pool> = {};
@@ -106,25 +112,40 @@ describe('staff recipe controller', () => {
   const allRecipeInfo = {
     ...recipeInfo,
     methods: [{methodId: 1}, {methodId: 2}],
-    equipment: [{amount: 3, equipmentId: 1}, {amount: 6, equipmentId: 2}],
+    equipment: [{amount: 1, equipmentId: 1}, {amount: 2, equipmentId: 2}],
     ingredients: [
-      {amount: 3, measurementId: 1, ingredientId: 1},
-      {amount: 6, measurementId: 2, ingredientId: 2}
+      {amount: 1, measurementId: 1, ingredientId: 1},
+      {amount: 2, measurementId: 2, ingredientId: 2}
     ],
     subrecipes: [
-      {amount: 3, measurementId: 1, subrecipeId: 1},
-      {amount: 6, measurementId: 2, subrecipeId: 2}
+      {amount: 1, measurementId: 1, subrecipeId: 1},
+      {amount: 2, measurementId: 2, subrecipeId: 2}
     ]
   };
+  // move into separate service unit test file?
+  const assertMethods =
+    [{recipeId: 1, methodId: 1}, {recipeId: 1, methodId: 2}];
+  const assertEquipment = [
+    {recipeId: 1, amount: 1, equipmentId: 1},
+    {recipeId: 1, amount: 2, equipmentId: 2}
+  ];
+  const assertIngredients = [
+    {recipeId: 1, amount: 1, measurementId: 1, ingredientId: 1},
+    {recipeId: 1, amount: 2, measurementId: 2, ingredientId: 2}
+  ];
+  const assertSubrecipes = [
+    {recipeId: 1, amount: 1, measurementId: 1, subrecipeId: 1},
+    {recipeId: 1, amount: 2, measurementId: 2, subrecipeId: 2}
+  ];
   const session = {...<Express.Session>{}, staffInfo: {id: 1}};
 
   describe('create method', () => {
     const message = 'Recipe created.';
-    const req: Partial<Request> = {session, body: {recipeInfo}};
+    const req: Partial<Request> = {session, body: {recipeInfo: allRecipeInfo}};
     const res: Partial<Response> =
       {send: jest.fn().mockResolvedValue({message})};
 
-    it('uses assert', async () => {
+    it('uses assert on recipe', async () => {
       await controller.create(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith(recipeInfo, validRecipe);
     });
@@ -134,30 +155,58 @@ describe('staff recipe controller', () => {
       expect(create).toHaveBeenCalledWith(recipeInfo);
     });
 
+    it('uses assert on recipe methods', async () => {
+      await controller.create(<Request>req, <Response>res);
+      expect(assert).toHaveBeenCalledWith(assertMethods[0], validRecipeMethod);
+      expect(assert).toHaveBeenCalledWith(assertMethods[1], validRecipeMethod);
+    });
+
     it('uses RecipeMethods.create', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(RMCreate).toHaveBeenCalledWith([1, 1, 1, 2], '(?, ?),(?, ?)');
+      expect(RMCreate).toHaveBeenCalledWith('(?, ?),(?, ?)', [1, 1, 1, 2]);
+    });
+
+    it('uses assert on recipe equipment', async () => {
+      await controller.create(<Request>req, <Response>res);
+      expect(assert)
+        .toHaveBeenCalledWith(assertEquipment[0], validRecipeEquipment);
+      expect(assert)
+        .toHaveBeenCalledWith(assertEquipment[1], validRecipeEquipment);
     });
 
     it('uses RecipeEquipment.create', async () => {
       await controller.create(<Request>req, <Response>res);
       expect(RECreate)
-        .toHaveBeenCalledWith([1, 1, 3, 1, 2, 6], '(?, ?, ?),(?, ?, ?)');
+        .toHaveBeenCalledWith('(?, ?, ?),(?, ?, ?)', [1, 1, 1, 1, 2, 2]);
+    });
+
+    it('uses assert on recipe ingredients', async () => {
+      await controller.create(<Request>req, <Response>res);
+      expect(assert)
+        .toHaveBeenCalledWith(assertIngredients[0], validRecipeIngredient);
+      expect(assert)
+        .toHaveBeenCalledWith(assertIngredients[1], validRecipeIngredient);
     });
 
     it('uses RecipeIngredients.create', async () => {
       await controller.create(<Request>req, <Response>res);
       expect(RICreate).toHaveBeenCalledWith(
-        [1, 1, 3, 1, 1, 1, 6, 1],
-        '(?, ?, ?, ?),(?, ?, ?, ?)'
+        '(?, ?, ?, ?),(?, ?, ?, ?)', [1, 1, 1, 1, 1, 2, 2, 2]
       );
+    });
+
+    it('uses assert on recipe subrecipes', async () => {
+      await controller.create(<Request>req, <Response>res);
+      expect(assert)
+        .toHaveBeenCalledWith(assertSubrecipes[0], validRecipeSubrecipe);
+      expect(assert)
+        .toHaveBeenCalledWith(assertSubrecipes[1], validRecipeSubrecipe);
     });
 
     it('uses RecipeSubrecipes.create', async () => {
       await controller.create(<Request>req, <Response>res);
       expect(RICreate).toHaveBeenCalledWith(
-        [1, 1, 3, 1, 1, 1, 6, 1],
-        '(?, ?, ?, ?),(?, ?, ?, ?)'
+        '(?, ?, ?, ?),(?, ?, ?, ?)', [1, 1, 1, 1, 1, 2, 2, 2]
       );
     });
 
@@ -178,66 +227,91 @@ describe('staff recipe controller', () => {
     });
   });
 
-  //describe('edit method', () => {});
+  describe('edit method', () => {
+    const req: Partial<Request> = {session, body: {id: "1"}};
+    const res: Partial<Response> = {send: jest.fn().mockResolvedValue(row)};
+
+    it('uses edit', async () => {
+      await controller.edit(<Request>req, <Response>res);
+      expect(edit).toHaveBeenCalledWith(1, 1, 1);
+    });
+
+    it('returns sent data', async () => {
+      const actual = await controller.edit(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith(row);
+      expect(actual).toEqual(row);
+    });
+  });
 
   describe('update method', () => {
     const message = 'Recipe updated.';
-    const req: Partial<Request> = {session, body: {recipeInfo: allRecipeInfo}};
+    const req: Partial<Request> =
+      {session, body: {recipeInfo: {id: "1", ...allRecipeInfo}}};
     const res: Partial<Response> =
       {send: jest.fn().mockResolvedValue({message})};
 
-    it('uses assert', async () => {
+    it('uses assert on recipe', async () => {
       await controller.update(<Request>req, <Response>res);
       expect(assert).toHaveBeenCalledWith(recipeInfo, validRecipe);
     });
 
     it ('uses update', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(update).toHaveBeenCalledWith(recipeInfo);
+      expect(update).toHaveBeenCalledWith({id: 1, recipeInfo}, 1, 1);
     });
 
-    it('uses RecipeMethods.update', async () => {
+    it('uses assert on recipe methods', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(RMUpdate).toHaveBeenCalledWith(
-        ["NOBSC Title", "Method 1", "NOBSC Title", "Method 2"],
-        '(?, ?),(?, ?)',
-        "NOBSC Title"
+      expect(assert).toHaveBeenCalledWith(assertMethods[0], validRecipeMethod);
+      expect(assert).toHaveBeenCalledWith(assertMethods[1], validRecipeMethod);
+    });
+
+    it('uses RecipeMethods.create', async () => {
+      await controller.update(<Request>req, <Response>res);
+      expect(RMCreate).toHaveBeenCalledWith('(?, ?),(?, ?)', [1, 1, 1, 2]);
+    });
+
+    it('uses assert on recipe equipment', async () => {
+      await controller.update(<Request>req, <Response>res);
+      expect(assert)
+        .toHaveBeenCalledWith(assertEquipment[0], validRecipeEquipment);
+      expect(assert)
+        .toHaveBeenCalledWith(assertEquipment[1], validRecipeEquipment);
+    });
+
+    it('uses RecipeEquipment.create', async () => {
+      await controller.update(<Request>req, <Response>res);
+      expect(RECreate)
+        .toHaveBeenCalledWith('(?, ?, ?),(?, ?, ?)', [1, 1, 1, 1, 2, 2]);
+    });
+
+    it('uses assert on recipe ingredients', async () => {
+      await controller.update(<Request>req, <Response>res);
+      expect(assert)
+        .toHaveBeenCalledWith(assertIngredients[0], validRecipeIngredient);
+      expect(assert)
+        .toHaveBeenCalledWith(assertIngredients[1], validRecipeIngredient);
+    });
+
+    it('uses RecipeIngredients.create', async () => {
+      await controller.update(<Request>req, <Response>res);
+      expect(RICreate).toHaveBeenCalledWith(
+        '(?, ?, ?, ?),(?, ?, ?, ?)', [1, 1, 1, 1, 1, 2, 2, 2]
       );
     });
 
-    it('uses RecipeEquipment.update', async () => {
+    it('uses assert on recipe subrecipes', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(REUpdate).toHaveBeenCalledWith(
-        [
-          "NOBSC Title", "NOBSC Equipment 1", 3,
-          "NOBSC Title", "NOBSC Equipment 2", 6
-        ],
-        '(?, ?, ?),(?, ?, ?)',
-        "NOBSC Title"
-      );
+      expect(assert)
+        .toHaveBeenCalledWith(assertSubrecipes[0], validRecipeSubrecipe);
+      expect(assert)
+        .toHaveBeenCalledWith(assertSubrecipes[1], validRecipeSubrecipe);
     });
 
-    it('uses RecipeIngredients.update', async () => {
+    it('uses RecipeSubrecipes.create', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(RIUpdate).toHaveBeenCalledWith(
-        [
-          "NOBSC Title", "NOBSC Ingredient 1", 3, "teaspoon",
-          "NOBSC Title", "NOBSC Ingredient 2", 6, "Tablespoon"
-        ],
-        '(?, ?, ?, ?),(?, ?, ?, ?)',
-        "NOBSC Title"
-      );
-    });
-
-    it('uses RecipeSubrecipes.update', async () => {
-      await controller.update(<Request>req, <Response>res);
-      expect(RSUpdate).toHaveBeenCalledWith(
-        [
-          "NOBSC Title", "NOBSC Recipe 1", 3, "teaspoon",
-          "NOBSC Title", "NOBSC Recipe 2", 6, "Tablespoon"
-        ],
-        '(?, ?, ?, ?)',
-        "NOBSC Title"
+      expect(RICreate).toHaveBeenCalledWith(
+        '(?, ?, ?, ?),(?, ?, ?, ?)', [1, 1, 1, 1, 1, 2, 2, 2]
       );
     });
 

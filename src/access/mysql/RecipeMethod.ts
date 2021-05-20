@@ -24,7 +24,7 @@ export class RecipeMethod implements IRecipeMethod {
     return rows;
   }
 
-  async create(recipeMethods: number[], placeholders: string) {
+  async create(placeholders: string, recipeMethods: number[]) {
     const sql = `
       INSERT INTO recipe_methods (recipe_id, method_id) VALUES ${placeholders} 
     `;
@@ -34,9 +34,9 @@ export class RecipeMethod implements IRecipeMethod {
   }
   
   async update(
-    recipeMethods: number[],
+    recipeId: number,
     placeholders: string,
-    recipeId: number
+    recipeMethods: number[]
   ) {
     const sql1 = `DELETE FROM recipe_methods WHERE recipe_id = ?`;
     const sql2 = (recipeMethods.length)
@@ -91,11 +91,11 @@ type DataWithExtra = Promise<
 export interface IRecipeMethod {
   pool: Pool;
   viewByRecipeId(recipeId: number): Data;
-  create(recipeMethods: number[], placeholders: string): Data;
+  create(placeholders: string, recipeMethods: number[]): Data;
   update(
-    recipeMethods: number[],
+    recipeId: number,
     placeholders: string,
-    recipeId: number
+    recipeMethods: number[]
   ): DataWithExtra;  // | finish
   deleteByRecipeId(recipeId: number): Data;
   deleteByRecipeIds(recipeIds: number[]): Data;

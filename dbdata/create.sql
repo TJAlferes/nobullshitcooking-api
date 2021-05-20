@@ -177,6 +177,7 @@ CREATE TABLE `recipes` (
   `equipment_image`   varchar(100)     NOT NULL DEFAULT '',
   `ingredients_image` varchar(100)     NOT NULL DEFAULT '',
   `cooking_image`     varchar(100)     NOT NULL DEFAULT '',
+  `video`             varchar(100)     NOT NULL DEFAULT '',
   FOREIGN KEY (`recipe_type_id`) REFERENCES `recipe_types` (`id`),
   FOREIGN KEY (`cuisine_id`)     REFERENCES `cuisines` (`id`),
   FOREIGN KEY (`author_id`)      REFERENCES `users` (`id`),
@@ -216,20 +217,20 @@ CREATE TABLE `product_suppliers` (
 
 CREATE TABLE `recipe_equipment` (
   `recipe_id`    int unsigned      NOT NULL,
-  `equipment_id` smallint unsigned NOT NULL,
   `amount`       tinyint unsigned  NOT NULL,
+  `equipment_id` smallint unsigned NOT NULL,
   FOREIGN KEY (`recipe_id`)    REFERENCES `recipes` (`id`),
   FOREIGN KEY (`equipment_id`) REFERENCES `equipment` (`id`)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `recipe_ingredients` (
   `recipe_id`      int unsigned      NOT NULL DEFAULT '0',
-  `ingredient_id`  smallint unsigned NOT NULL DEFAULT '0',
   `amount`         decimal(5,2)      NOT NULL,
   `measurement_id` tinyint unsigned  NOT NULL,
+  `ingredient_id`  smallint unsigned NOT NULL DEFAULT '0',
   FOREIGN KEY (`recipe_id`)      REFERENCES `recipes` (`id`),
-  FOREIGN KEY (`ingredient_id`)  REFERENCES `ingredients` (`id`),
-  FOREIGN KEY (`measurement_id`) REFERENCES `measurements` (`id`)
+  FOREIGN KEY (`measurement_id`) REFERENCES `measurements` (`id`),
+  FOREIGN KEY (`ingredient_id`)  REFERENCES `ingredients` (`id`)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `recipe_methods` (
@@ -241,12 +242,12 @@ CREATE TABLE `recipe_methods` (
 
 CREATE TABLE `recipe_subrecipes` (
   `recipe_id`      int unsigned     NOT NULL,
-  `subrecipe_id`   int unsigned     NOT NULL,
   `amount`         decimal(5,2)     NOT NULL,
   `measurement_id` tinyint unsigned NOT NULL,
+  `subrecipe_id`   int unsigned     NOT NULL,
   FOREIGN KEY (`recipe_id`)      REFERENCES `recipes` (`id`),
-  FOREIGN KEY (`subrecipe_id`)   REFERENCES `recipes` (`id`),
-  FOREIGN KEY (`measurement_id`) REFERENCES `measurements` (`id`)
+  FOREIGN KEY (`measurement_id`) REFERENCES `measurements` (`id`),
+  FOREIGN KEY (`subrecipe_id`)   REFERENCES `recipes` (`id`)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `saved_recipes` (
