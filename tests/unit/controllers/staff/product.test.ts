@@ -34,13 +34,16 @@ const toSave = {
 };
 jest.mock('../../../../src/access/mysql', () => ({
   Product: jest.fn().mockImplementation(() => ({
-    getForElasticSearchById, create, update, delete: mockDelete
+    getForElasticSearchById: mockgetForElasticSearchById,
+    create: mockcreate,
+    update: mockupdate,
+    delete: mockdelete
   }))
 }));
-let getForElasticSearchById = jest.fn().mockResolvedValue(toSave);
-let create = jest.fn();
-let update = jest.fn();
-let mockDelete = jest.fn();
+let mockgetForElasticSearchById = jest.fn().mockResolvedValue(toSave);
+let mockcreate = jest.fn();
+let mockupdate = jest.fn();
+let mockdelete = jest.fn();
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -74,12 +77,12 @@ describe ('staff product controller', () => {
 
     it('uses create', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(create).toHaveBeenCalledWith(args);
+      expect(mockcreate).toHaveBeenCalledWith(args);
     });
 
     it('uses getForElasticSearchById', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(getForElasticSearchById).toHaveBeenCalledWith(1);
+      expect(mockgetForElasticSearchById).toHaveBeenCalledWith(1);
     });
 
     it('uses ElasticSearch save', async () => {
@@ -108,12 +111,12 @@ describe ('staff product controller', () => {
 
     it('uses update ', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(update).toHaveBeenCalledWith({id: 1, ...args});
+      expect(mockupdate).toHaveBeenCalledWith({id: 1, ...args});
     });
 
     it('uses getForElasticSearchById', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(getForElasticSearchById).toHaveBeenCalledWith(1);
+      expect(mockgetForElasticSearchById).toHaveBeenCalledWith(1);
     });
 
     it('uses ElasticSearch save', async () => {
@@ -141,7 +144,7 @@ describe ('staff product controller', () => {
 
     it('uses delete', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockDelete).toHaveBeenCalledWith(1);
+      expect(mockdelete).toHaveBeenCalledWith(1);
     });
 
     it('returns sent data', async () => {

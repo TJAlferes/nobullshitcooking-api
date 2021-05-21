@@ -15,12 +15,12 @@ jest.mock('superstruct');
 
 jest.mock('../../../../src/access/mysql', () => ({
   Content: jest.fn().mockImplementation(() => ({
-    create, update, delete: mockDelete
+    create: mockcreate, update: mockupdate, delete: mockdelete
   }))
 }));
-let create = jest.fn();
-let update = jest.fn();
-let mockDelete = jest.fn();
+let mockcreate = jest.fn();
+let mockupdate = jest.fn();
+let mockdelete = jest.fn();
 
 afterAll(() => {
   mockDate = null;
@@ -35,7 +35,9 @@ afterEach(() => {
 });
 
 describe('staff content controller', () => {
-  const session = {...<Express.Session>{}, staffInfo: {staffname: "Name"}};
+  const contentInfo =
+    {contentTypeId: 1, published: null, title: "Title", items: "[]"};
+  const session = {...<Express.Session>{}, staffInfo: {id: 1}};
 
   mockDate = new Date(1466424490000);
   spyDate = jest
@@ -44,23 +46,13 @@ describe('staff content controller', () => {
 
   describe('create method', () => {
     const args = {
-      contentTypeId: 1,
       authorId: 1,
       ownerId: 1,
       created: ((mockDate).toISOString()).split("T")[0],
-      published: null,
-      title: "Title",
-      items: "[]"
+      ...contentInfo
     };
     const message = 'Content created.';
-    const req: Partial<Request> = {
-      session,
-      body: {
-        contentInfo: {
-          contentTypeId: 1, published: null, title: "Title", items: "[]"
-        }
-      }
-    };
+    const req: Partial<Request> = {session, body: {contentInfo}};
     const res: Partial<Response> =
       {send: jest.fn().mockResolvedValue({message})};
 
@@ -71,7 +63,7 @@ describe('staff content controller', () => {
 
     it('uses create', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(create).toHaveBeenCalledWith(args);
+      expect(mockcreate).toHaveBeenCalledWith(args);
     });
 
     it('returns sent data', async () => {
@@ -90,14 +82,7 @@ describe('staff content controller', () => {
       items: "[]"
     };
     const message = 'Content updated.';
-    const req: Partial<Request> = {
-      session,
-      body: {
-        contentInfo: {
-          id: 1, contentTypeId: 1, published: null, title: "Title", items: "[]"
-        }
-      }
-    };
+    const req: Partial<Request> = {session, body: {id: 1, ...contentInfo}};
     const res: Partial<Response> =
       {send: jest.fn().mockResolvedValue({message})};
 
@@ -108,7 +93,7 @@ describe('staff content controller', () => {
 
     it('uses update', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(update).toHaveBeenCalledWith(args);
+      expect(mockupdate).toHaveBeenCalledWith(args);
     });
 
     it('returns sent data', async () => {
@@ -120,13 +105,13 @@ describe('staff content controller', () => {
 
   describe('delete method', () => {
     const message = 'Content deleted.';
-    const req: Partial<Request> = {session, body: {id: 1}};
+    const req: Partial<Request> = {session, body: {id: "1"}};
     const res: Partial<Response> =
       {send: jest.fn().mockResolvedValue({message})};
 
     it('uses delete', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockDelete).toHaveBeenCalledWith(1, 1);
+      expect(mockdelete).toHaveBeenCalledWith(1, 1);
     });
 
     it('returns sent data', async () => {

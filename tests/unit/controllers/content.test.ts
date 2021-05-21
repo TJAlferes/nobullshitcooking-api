@@ -6,17 +6,16 @@ import { ContentController } from '../../../src/controllers';
 const pool: Partial<Pool> = {};
 const controller = new ContentController(<Pool>pool);
 
-const rows = [{id: 1, name: "Name"}];
+const row = {id: 1, name: "Name"};
+const rows = [{id: 1, name: "Name"}, {id: 2, name: "Name"}];
 jest.mock('../../../src/access/mysql', () => ({
   Content: jest.fn().mockImplementation(() => ({
-    view,
-    viewById,
-    getLinksByType
+    view: mockview, viewById: mockviewById, getLinksByType: mockgetLinksByType
   }))
 }));
-let view = jest.fn().mockResolvedValue([rows]);
-let viewById = jest.fn().mockResolvedValue([rows]);
-let getLinksByType = jest.fn().mockResolvedValue([rows]);
+let mockview = jest.fn().mockResolvedValue(rows);
+let mockviewById = jest.fn().mockResolvedValue([row]);
+let mockgetLinksByType = jest.fn().mockResolvedValue(rows);
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -24,33 +23,33 @@ afterEach(() => {
 
 describe('content controller', () => {
   describe('view method', () => {
-    const res: Partial<Response> = {send: jest.fn().mockResolvedValue([rows])};
+    const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
-    it('uses view correctly', async () => {
+    it('uses view', async () => {
       await controller.view(<Request>{}, <Response>res);
-      expect(view).toHaveBeenCalledWith(1);
+      expect(mockview).toHaveBeenCalledTimes(1);
     });
 
-    it('returns sent rows', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.view(<Request>{}, <Response>res);
-      expect(res.send).toHaveBeenCalledWith([rows]);
-      expect(actual).toEqual([rows]);
+      expect(res.send).toHaveBeenCalledWith(rows);
+      expect(actual).toEqual(rows);
     });
   });
   
   describe('viewById method', () => {
     const req: Partial<Request> = {params: {id: "1"}};
-    const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
+    const res: Partial<Response> = {send: jest.fn().mockResolvedValue(row)};
 
     it('uses viewById', async () => {
       await controller.viewById(<Request>req, <Response>res);
-      expect(viewById).toHaveBeenCalledWith(1, 1);
+      expect(mockviewById).toHaveBeenCalledWith(1, 1);
     });
 
-    it('returns sent rows', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.viewById(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith(rows);
-      expect(actual).toEqual(rows);
+      expect(res.send).toHaveBeenCalledWith(row);
+      expect(actual).toEqual(row);
     });
   });
 
@@ -60,7 +59,7 @@ describe('content controller', () => {
 
     it('uses getLinksByType', async () => {
       await controller.getLinksByType(<Request>req, <Response>res);
-      expect(getLinksByType).toHaveBeenCalledWith("Name");
+      expect(mockgetLinksByType).toHaveBeenCalledWith("Name");
     });
 
     it('returns sent rows', async () => {

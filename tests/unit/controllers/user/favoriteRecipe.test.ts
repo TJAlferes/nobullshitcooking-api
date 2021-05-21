@@ -3,112 +3,87 @@ import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
 import { UserFavoriteRecipeController } from '../../../../src/controllers/user';
-import {
-  validFavoriteRecipeEntity
-} from '../../../../src/lib/validations/favoriteRecipe/entity';
+import { validFavoriteRecipe } from '../../../../src/lib/validations/entities';
 
 const pool: Partial<Pool> = {};
 const controller = new UserFavoriteRecipeController(<Pool>pool);
 
 jest.mock('superstruct');
 
+const rows = [{id: 1, name: "Name"}, {id: 2, name: "Name"}];
 jest.mock('../../../../src/access/mysql', () => ({
   FavoriteRecipe: jest.fn().mockImplementation(() => ({
-    viewByUser: mockViewByUser,
-    create: mockCreate,
-    delete: mockDelete
+    viewByUserId: mockviewByUserId, create: mockcreate, delete: mockdelete
   }))
 }));
-let mockViewByUser = jest.fn().mockResolvedValue(
-  [[{id: "NOBSC Title 1"}, {id: "NOBSC Title 2"}]]
-);
-let mockCreate = jest.fn();
-let mockDelete = jest.fn();
+let mockviewByUserId = jest.fn().mockResolvedValue(rows);
+let mockcreate = jest.fn();
+let mockdelete = jest.fn();
 
 describe('user favorite recipes controller', () => {
-  const session = {...<Express.Session>{}, userInfo: {username: "Name"}};
+  const session = {...<Express.Session>{}, userInfo: {id: 1}};
 
-  describe('viewByUser method', () => {
+  describe('viewByUserId method', () => {
     const req: Partial<Request> = {session};
-    const res: Partial<Response> = {
-      send: jest.fn().mockResolvedValue(
-        [[{id: "NOBSC Title 1"}, {id: "NOBSC Title 2"}]]
-      )
-    };
+    const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
-    it('uses viewByUser correctly', async () => {
-      await controller.viewByUser(<Request>req, <Response>res);
-      expect(mockViewByUser).toHaveBeenCalledWith("Name");
+    it('uses viewByUserId', async () => {
+      await controller.viewByUserId(<Request>req, <Response>res);
+      expect(mockviewByUserId).toHaveBeenCalledWith("Name");
     });
 
-    it('sends data correctly', async () => {
-      await controller.viewByUser(<Request>req, <Response>res);
-      expect(res.send)
-        .toHaveBeenCalledWith([[{id: "NOBSC Title 1"}, {id: "NOBSC Title 2"}]]);
-    });
-
-    it('returns correctly', async () => {
-      const actual = await controller.viewByUser(<Request>req, <Response>res);
-      expect(actual).toEqual([[{id: "NOBSC Title 1"}, {id: "NOBSC Title 2"}]]);
+    it('returns sent data', async () => {
+      const actual = await controller.viewByUserId(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith(rows);
+      expect(actual).toEqual(rows);
     });
   });
 
   describe ('create method', () => {
-    const req: Partial<Request> = {session, body: {id: "NOBSC Title 2"}};
+    const message = 'Favorited.';
+    const req: Partial<Request> = {session, body: {id: "1"}};
     const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue({message: 'Favorited.'})};
+      {send: jest.fn().mockResolvedValue({message})};
 
-    it('uses assert correctly', async () => {
+    it('uses assert', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(assert).toHaveBeenCalledWith(
-        {user: "Name", recipe: "NOBSC Title 2"},
-        validFavoriteRecipeEntity
-      );
+      expect(assert)
+        .toHaveBeenCalledWith({userId: 1, recipeId: 1}, validFavoriteRecipe);
     });
 
-    it('uses create correctly', async () => {
+    it('uses create', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(mockCreate).toHaveBeenCalledWith("Name", "NOBSC Title 2");
+      expect(mockcreate).toHaveBeenCalledWith(1, 1);
     });
 
-    it('sends data correctly', async () => {
-      await controller.create(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith({message: 'Favorited.'});
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.create(<Request>req, <Response>res);
-      expect(actual).toEqual({message: 'Favorited.'});
+      expect(res.send).toHaveBeenCalledWith({message});
+      expect(actual).toEqual({message});
     });
   });
 
   describe ('delete method', () => {
-    const req: Partial<Request> = {session, body: {id: "NOBSC Title 2"}};
+    const message = 'Unfavorited.';
+    const req: Partial<Request> = {session, body: {id: "1"}};
     const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue({message: 'Unfavorited.'})};
+      {send: jest.fn().mockResolvedValue({message})};
 
-    it('uses assert correctly', async () => {
+    it('uses assert', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(assert).toHaveBeenCalledWith(
-        {user: "Name", recipe: "NOBSC Title 2"},
-        validFavoriteRecipeEntity
-      );
+      expect(assert)
+        .toHaveBeenCalledWith({userId: 1, recipeId: 1}, validFavoriteRecipe);
     });
 
-    it('uses delete correctly', async () => {
+    it('uses delete', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockDelete).toHaveBeenCalledWith("Name", "NOBSC Title 2");
+      expect(mockdelete).toHaveBeenCalledWith(1, 1);
     });
 
-    it('sends data correctly', async () => {
-      await controller.delete(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith({message: 'Unfavorited.'});
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.delete(<Request>req, <Response>res);
-      expect(actual).toEqual({message: 'Unfavorited.'});
+      expect(res.send).toHaveBeenCalledWith({message});
+      expect(actual).toEqual({message});
     });
   });
-
 });

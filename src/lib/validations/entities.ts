@@ -122,6 +122,8 @@ export const validRecipeSubrecipe = object({
 
 export const validSavedRecipe = object({userId: number(), recipeId: number()});
 
+export const validSupplier = object({name: string()});
+
 export const validStaff =
   object({email: string(), encryptedPass: string(), staffname: string()});
 

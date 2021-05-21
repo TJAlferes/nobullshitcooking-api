@@ -65,13 +65,13 @@ export class StaffAuthController {
 
   async update(req: Request, res: Response) {
     // TO DO: finish
-    const { email, pass, staffname, avatar } = req.body.staffInfo;
+    const { email, pass, staffname } = req.body.staffInfo;
     const id = req.session!.staffInfo.id;
-    const staffToUpdateWith = {email, pass, staffname, avatar};
-    //assert(staffToUpdateWith, validStaffUpdate);
+    const args = {email, pass, staffname};
+    //assert(args, validStaffUpdate);
 
     const staff = new Staff(this.pool);
-    await staff.update({id, ...staffToUpdateWith});
+    await staff.update({id, ...args});
     // should it send the updated values back? const [ updatedStaff ] = await
     return res.send({message: 'Account updated.'});
   }

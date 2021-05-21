@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
-//import { assert } from 'superstruct';
+import { assert } from 'superstruct';
 
 import { StaffSupplierController } from '../../../../src/controllers/staff';
-//import { validSupplierEntity } from '../../../../src/lib/validations/supplier/entity';
+import { validSupplier } from '../../../../src/lib/validations/entities';
 
 const pool: Partial<Pool> = {};
 const controller = new StaffSupplierController(<Pool>pool);
@@ -11,95 +11,82 @@ const controller = new StaffSupplierController(<Pool>pool);
 jest.mock('superstruct');
 
 jest.mock('../../../../src/access/mysql', () => ({
-  Recipe: jest.fn().mockImplementation(() => ({
-    view: mockView,
-    viewByName: mockViewByName,
-    create: mockCreate,
-    update: mockUpdate,
-    delete: mockDelete
+  Supplier: jest.fn().mockImplementation(() => ({
+    create: mockcreate, update: mockupdate, delete: mockdelete
   }))
 }));
-let mockView =
-  jest.fn().mockResolvedValue([[{name: "Name 1"}, {name: "Name 2"}]]);
-let mockViewByName = jest.fn().mockResolvedValue([[{name: "Name 1"}]]);
-let mockCreate = jest.fn();
-let mockUpdate = jest.fn();
-let mockDelete = jest.fn();
+let mockcreate = jest.fn();
+let mockupdate = jest.fn();
+let mockdelete = jest.fn();
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 describe('staff supplier controller', () => {
-  const session = {...<Express.Session>{}, staffInfo: {staffname: "Name"}};
-
-  //
+  const session = {...<Express.Session>{}, staffInfo: {id: "1"}};
 
   describe ('create method', () => {
+    const message = 'Supplier created.';
     const req: Partial<Request> = {session, body: {name: "Name"}};
     const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue({message: 'Supplier created.'})};
+      {send: jest.fn().mockResolvedValue({message})};
 
-    /*it('uses assert correctly', async () => {
+    it('uses assert', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(assert).toHaveBeenCalledWith();
-    });*/
-
-    it('uses create correctly', async () => {
-      await controller.create(<Request>req, <Response>res);
-      expect(mockCreate).toHaveBeenCalledWith("Name");
+      expect(assert).toHaveBeenCalledWith({name: "Name"}, validSupplier);
     });
 
-    it('sends data correctly', async () => {
+    it('uses create', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith({message: 'Supplier created.'});
+      expect(mockcreate).toHaveBeenCalledWith("Name");
     });
 
-    it('returns correctly', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.create(<Request>req, <Response>res);
-      expect(actual).toEqual({message: 'Supplier created.'});
+      expect(res.send).toHaveBeenCalledWith({message});
+      expect(actual).toEqual({message});
     });
   });
 
   describe ('update method', () => {
-    const req: Partial<Request> = {session, body: {name: "Name"}};
+    const message = 'Supplier updated.';
+    const req: Partial<Request> = {session, body: {id: "1", name: "Name"}};
     const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue({message: 'Supplier updated.'})};
+      {send: jest.fn().mockResolvedValue({message})};
 
-    /*it('uses assert correctly', async () => {
+    it('uses assert', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(assert).toHaveBeenCalledWith();
-    });*/
-
-    it ('uses update correctly', async () => {
-      await controller.update(<Request>req, <Response>res);
-      expect(mockUpdate).toHaveBeenCalledWith("Name");
+      expect(assert).toHaveBeenCalledWith({name: "Name"}, validSupplier);
     });
 
-    it('sends data correctly', async () => {
+    it('uses update', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith({message: 'Supplier updated.'});
+      expect(mockupdate).toHaveBeenCalledWith("Name");
     });
 
-    it('returns correctly', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.update(<Request>req, <Response>res);
-      expect(actual).toEqual({message: 'Supplier updated.'});
+      expect(res.send).toHaveBeenCalledWith({message});
+      expect(actual).toEqual({message});
     });
   });
 
   describe ('delete method', () => {
-    const req: Partial<Request> = {session, body: {name: "Name"}};
+    const message = 'Supplier deleted.';
+    const req: Partial<Request> = {session, body: {id: "1"}};
     const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue({message: 'Supplier deleted.'})};
+      {send: jest.fn().mockResolvedValue({message})};
 
-    it('sends data correctly', async () => {
+    it('uses delete', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith({message: 'Supplier deleted.'});
+      expect(mockdelete).toHaveBeenCalledWith(1);
     });
-
-    it('returns correctly', async () => {
+    
+    it('returns sent data', async () => {
       const actual = await controller.delete(<Request>req, <Response>res);
-      expect(actual).toEqual({message: 'Supplier deleted.'});
+      expect(res.send).toHaveBeenCalledWith({message});
+      expect(actual).toEqual({message});
     });
   });
 });

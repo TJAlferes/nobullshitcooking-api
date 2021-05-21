@@ -18,17 +18,15 @@ const controller = new UserRecipeController(<Client>esClient, <Pool>pool);
 
 jest.mock('superstruct');
 
-jest.mock('../../../../src/lib/connections/elasticsearch');  // ?
-
-jest.mock('../../../../src/lib/connections/mysql');  // ?
-
 jest.mock('../../../../src/access/elasticsearch', () => ({
   RecipeSearch: jest.fn().mockImplementation(() => ({save: ESSave}))
 }));
 let ESSave = jest.fn();
 
-const row = [{id: 1}];
-const rows = [[{id: 1}, {id: 2}]];
+//const row = [{id: 1}];
+//const rows = [[{id: 1}, {id: 2}]];
+const row = {id: 1, name: "Name"};
+const rows = [{id: 1, name: "Name"}, {id: 2, name: "Name"}];
 const toSave = {
   id: "1",
   author: "Author",
@@ -45,14 +43,14 @@ const toSave = {
 };
 jest.mock('../../../../src/access/mysql', () => ({
   Recipe: jest.fn().mockImplementation(() => ({
-    getForElasticSearch,
-    view,
-    viewById,
-    create,
-    edit,
-    update,
-    deleteById,
-    disownById
+    getForElasticSearch: mockgetForElasticSearch,
+    view: mockview,
+    viewById: mockviewById,
+    create: mockcreate,
+    edit: mockedit,
+    update: mockupdate,
+    deleteById: mockdeleteById,
+    disownById: mockdisownById
   })),
   RecipeEquipment: jest.fn().mockImplementation(() => ({
     create: RECreate, update: REUpdate, deleteByRecipeId: REDeleteByRecipeId
@@ -70,14 +68,14 @@ jest.mock('../../../../src/access/mysql', () => ({
     deleteBySubrecipeId: RSDeleteBySubrecipeId
   }))
 }));
-let getForElasticSearch = jest.fn().mockResolvedValue(toSave);
-let view = jest.fn().mockResolvedValue(rows);
-let viewById = jest.fn().mockResolvedValue([row]);
-let create = jest.fn().mockResolvedValue({insertId: 1});
-let edit = jest.fn().mockResolvedValue([row]);
-let update = jest.fn();
-let deleteById = jest.fn();
-let disownById = jest.fn();
+let mockgetForElasticSearch = jest.fn().mockResolvedValue(toSave);
+let mockview = jest.fn().mockResolvedValue(rows);
+let mockviewById = jest.fn().mockResolvedValue([row]);
+let mockcreate = jest.fn().mockResolvedValue({insertId: 1});
+let mockedit = jest.fn().mockResolvedValue([row]);
+let mockupdate = jest.fn();
+let mockdeleteById = jest.fn();
+let mockdisownById = jest.fn();
 let RECreate = jest.fn();
 let REUpdate = jest.fn();
 let REDeleteByRecipeId = jest.fn();
@@ -149,7 +147,7 @@ describe('user recipe controller', () => {
 
     it('uses view', async () => {
       await controller.viewPrivate(<Request>req, <Response>res);
-      expect(view).toHaveBeenCalledWith(88, 88);
+      expect(mockview).toHaveBeenCalledWith(88, 88);
     });
 
     it('returns sent data', async () => {
@@ -165,7 +163,7 @@ describe('user recipe controller', () => {
 
     it('uses view', async () => {
       await controller.viewPublic(<Request>req, <Response>res);
-      expect(view).toHaveBeenCalledWith(88, 1);
+      expect(mockview).toHaveBeenCalledWith(88, 1);
     });
 
     it('returns sent data', async () => {
@@ -182,7 +180,7 @@ describe('user recipe controller', () => {
 
     it('uses viewById', async () => {
       await controller.viewPrivateById(<Request>req, <Response>res);
-      expect(viewById).toHaveBeenCalledWith(1, 88, 88);
+      expect(mockviewById).toHaveBeenCalledWith(1, 88, 88);
     });
 
     it('returns sent data', async () => {
@@ -200,7 +198,7 @@ describe('user recipe controller', () => {
 
     it('uses viewById', async () => {
       await controller.viewPublicById(<Request>req, <Response>res);
-      expect(viewById).toHaveBeenCalledWith(1, 1, 1);
+      expect(mockviewById).toHaveBeenCalledWith(1, 1, 1);
     });
 
     it('returns sent data', async () => {
@@ -224,7 +222,7 @@ describe('user recipe controller', () => {
 
     it('uses create', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(create).toHaveBeenCalledWith(recipeInfo);
+      expect(mockcreate).toHaveBeenCalledWith(recipeInfo);
     });
 
     it('uses assert on recipe methods', async () => {
@@ -284,7 +282,7 @@ describe('user recipe controller', () => {
 
     it('uses getForElasticSearch', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(getForElasticSearch).toHaveBeenCalledWith(1);
+      expect(mockgetForElasticSearch).toHaveBeenCalledWith(1);
     });
 
     it('uses RecipeSearch.save', async () => {
@@ -305,7 +303,7 @@ describe('user recipe controller', () => {
 
     it('uses edit', async () => {
       await controller.editPrivate(<Request>req, <Response>res);
-      expect(edit).toHaveBeenCalledWith(1, 88, 88);
+      expect(mockedit).toHaveBeenCalledWith(1, 88, 88);
     });
 
     it('returns sent data', async () => {
@@ -321,7 +319,7 @@ describe('user recipe controller', () => {
 
     it('uses edit', async () => {
       await controller.editPublic(<Request>req, <Response>res);
-      expect(edit).toHaveBeenCalledWith(1, 88, 1);
+      expect(mockedit).toHaveBeenCalledWith(1, 88, 1);
     });
 
     it('returns sent data', async () => {
@@ -347,7 +345,7 @@ describe('user recipe controller', () => {
 
     it ('uses update', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(update).toHaveBeenCalledWith({id: 1, recipeInfo}, 88, 88);
+      expect(mockupdate).toHaveBeenCalledWith({id: 1, recipeInfo}, 88, 88);
     });
 
     it('uses assert on recipe methods', async () => {
@@ -407,7 +405,7 @@ describe('user recipe controller', () => {
 
     it('uses getForElasticSearch', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(getForElasticSearch).toHaveBeenCalledWith(1);
+      expect(mockgetForElasticSearch).toHaveBeenCalledWith(1);
     });
 
     it('uses RecipeSearch.save', async () => {
@@ -455,7 +453,7 @@ describe('user recipe controller', () => {
 
     it('uses deleteById', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(deleteById).toHaveBeenCalledWith(1, 88, 88);
+      expect(mockdeleteById).toHaveBeenCalledWith(1, 88, 88);
     });
 
     it('returns sent data', async () => {
@@ -473,12 +471,12 @@ describe('user recipe controller', () => {
 
     it('uses disownById', async () => {
       await controller.disown(<Request>req, <Response>res);
-      expect(disownById).toHaveBeenCalledWith(1, 88);
+      expect(mockdisownById).toHaveBeenCalledWith(1, 88);
     });
 
     it('uses getForElasticSearch', async () => {
       await controller.disown(<Request>req, <Response>res);
-      expect(getForElasticSearch).toHaveBeenCalledWith(1);
+      expect(mockgetForElasticSearch).toHaveBeenCalledWith(1);
     });
 
     it('uses RecipeSearch.save', async () => {

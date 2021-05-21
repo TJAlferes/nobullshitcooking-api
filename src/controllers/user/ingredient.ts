@@ -56,6 +56,7 @@ export class UserIngredientController {
 
     const ingredient = new Ingredient(this.pool);
     await ingredient.create(args);
+
     return res.send({message: 'Ingredient created.'});
   }
 
@@ -82,6 +83,7 @@ export class UserIngredientController {
 
     const ingredient = new Ingredient(this.pool);
     await ingredient.update({id, ...args});
+
     return res.send({message: 'Ingredient updated.'});
   }
 
@@ -94,6 +96,7 @@ export class UserIngredientController {
 
     const ingredient = new Ingredient(this.pool);
     await ingredient.deleteById(id, ownerId);
+    
     return res.send({message: 'Ingredient deleted.'});
   }
 }

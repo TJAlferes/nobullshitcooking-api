@@ -3,182 +3,129 @@ import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
 import { UserPlanController } from '../../../../src/controllers/user';
-import { validPlanEntity } from '../../../../src/lib/validations/plan/entity';
+import { validPlan } from '../../../../src/lib/validations/entities';
 
 const pool: Partial<Pool> = {};
 const controller = new UserPlanController(<Pool>pool);
 
 jest.mock('superstruct');
 
+const row = {id: 1, name: "Name"};
+const rows = [{id: 1, name: "Name"}, {id: 2, name: "Name"}];
 jest.mock('../../../../src/access/mysql', () => ({
   Plan: jest.fn().mockImplementation(() => ({
-    view: mockView,
-    viewById: mockViewById,
-    create: mockCreate,
-    update: mockUpdate,
-    deleteById: mockDeleteById
+    view: mockview,
+    viewById: mockviewById,
+    create: mockcreate,
+    update: mockupdate,
+    deleteById: mockdeleteById
   }))
 }));
-let mockView =
-  jest.fn().mockResolvedValue([[{id: "Name Plan 1"}, {id: "Name Plan 2"}]]);
-let mockViewById = jest.fn().mockResolvedValue([[{id: "Name Plan 2"}]]);
-let mockCreate = jest.fn();
-let mockUpdate = jest.fn();
-let mockDeleteById = jest.fn();
+let mockview = jest.fn().mockResolvedValue(rows);
+let mockviewById = jest.fn().mockResolvedValue([row]);
+let mockcreate = jest.fn();
+let mockupdate = jest.fn();
+let mockdeleteById = jest.fn();
 
 describe('user plan controller', () => {
-  const session = {...<Express.Session>{}, userInfo: {username: "Name"}};
+  const planInfo = {name: "Name", data: "{some: data}"};
+  const args = {authorId: 88, ownerId: 88, ...planInfo};
+  const session = {...<Express.Session>{}, userInfo: {id: 88}};
 
   describe('view method', () => {
     const req: Partial<Request> = {session};
-    const res: Partial<Response> = {
-      send: jest.fn().mockResolvedValue(
-        [[{id: "Name Plan 1"}, {id: "Name Plan 2"}]]
-      )
-    };
+    const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
     it('uses view correctly', async () => {
       await controller.view(<Request>req, <Response>res);
-      expect(mockView).toHaveBeenCalledWith("Name");
+      expect(mockview).toHaveBeenCalledWith("Name");
     });
 
-    it('sends data correctly', async () => {
-      await controller.view(<Request>req, <Response>res);
-      expect(res.send)
-        .toHaveBeenCalledWith([[{id: "Name Plan 1"}, {id: "Name Plan 2"}]]);
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.view(<Request>req, <Response>res);
-      expect(actual).toEqual([[{id: "Name Plan 1"}, {id: "Name Plan 2"}]]);
+      expect(res.send).toHaveBeenCalledWith(rows);
+      expect(actual).toEqual(rows);
     });
   });
 
   describe('viewById method', () => {
-    const req: Partial<Request> = {session, body: {id: "Name Plan 2"}};
-    const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue([{id: "Name Plan 2"}])};
+    const req: Partial<Request> = {session, body: {id: "1"}};
+    const res: Partial<Response> = {send: jest.fn().mockResolvedValue(row)};
 
     it('uses viewById correctly', async () => {
       await controller.viewById(<Request>req, <Response>res);
-      expect(mockViewById).toHaveBeenCalledWith("Name Plan 2", "Name");
+      expect(mockviewById).toHaveBeenCalledWith(1, 88);
     });
 
-    it('sends data correctly', async () => {
-      await controller.viewById(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith([{id: "Name Plan 2"}]);
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.viewById(<Request>req, <Response>res);
-      expect(actual).toEqual([{id: "Name Plan 2"}]);
+      expect(res.send).toHaveBeenCalledWith(rows);
+      expect(actual).toEqual(rows);
     });
   });
 
   describe('create method', () => {
-    const req: Partial<Request> =
-      {session, body: {planInfo: {name: "Name", data: "{some: data}"}}};
+    const message = 'Plan created.';
+    const req: Partial<Request> = {session, body: {planInfo}};
     const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue({message: 'Plan created.'})};
+      {send: jest.fn().mockResolvedValue({message})};
     
-    it('uses assert correctly', async () => {
+    it('uses assert', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(assert).toHaveBeenCalledWith(
-        {
-          author: "Name",
-          owner: "Name",
-          name: "Name",
-          data: "{some: data}"
-        },
-        validPlanEntity
-      );
+      expect(assert).toHaveBeenCalledWith(args, validPlan);
     });
 
-    it('uses create correctly', async () => {
+    it('uses create', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(mockCreate).toHaveBeenCalledWith({
-        author: "Name",
-        owner: "Name",
-        name: "Name",
-        data: "{some: data}"
-      });
+      expect(mockcreate).toHaveBeenCalledWith(args);
     });
 
-    it('sends data correctly', async () => {
-      await controller.create(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith({message: 'Plan created.'});
-    });
-
-    it('returns correctly', async () => {
-      const actual =
-        await controller.create(<Request>req, <Response>res);
-      expect(actual).toEqual({message: 'Plan created.'});
+    it('returns sent data', async () => {
+      const actual = await controller.create(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith({message});
+      expect(actual).toEqual({message});
     });
   });
 
   describe('update method', () => {
-    const req: Partial<Request> = {
-      session,
-      body: {planInfo: {id: "Name Plan 2", name: "Name", data: "{some: data}"}}
-    };
+    const message = 'Plan updated.';
+    const req: Partial<Request> =
+      {session, body: {planInfo: {id: 1, ...planInfo}}};
     const res: Partial<Response> =
-      {send: jest.fn().mockResolvedValue({message: 'Plan updated.'})};
+      {send: jest.fn().mockResolvedValue({message})};
 
-    it('uses assert correctly', async () => {
+    it('uses assert', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(assert).toHaveBeenCalledWith(
-        {
-          author: "Name",
-          owner: "Name",
-          name: "Name",
-          data: "{some: data}"
-        },
-        validPlanEntity
-      );
+      expect(assert).toHaveBeenCalledWith(args, validPlan);
     });
 
-    it('uses update correctly', async () => {
+    it('uses update', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(mockUpdate).toHaveBeenCalledWith({
-        id: "Name Plan 2",
-        author: "Name",
-        owner: "Name",
-        name: "Name",
-        data: "{some: data}"
-      });
+      expect(mockupdate).toHaveBeenCalledWith({id: 1, ...args});
     });
 
-    it('sends data correctly', async () => {
-      await controller.update(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith({message: 'Plan updated.'});
-    });
-
-    it('returns correctly', async () => {
-      const actual =
-        await controller.update(<Request>req, <Response>res);
-      expect(actual).toEqual({message: 'Plan updated.'});
+    it('returns sent data', async () => {
+      const actual = await controller.update(<Request>req, <Response>res);
+      expect(res.send).toHaveBeenCalledWith({message});
+      expect(actual).toEqual({message});
     });
   });
 
   describe('deleteById method', () => {
-    const req: Partial<Request> = {session, body: {id: "Name Plan 2"}};
+    const message = 'Plan deleted.';
+    const req: Partial<Request> = {session, body: {id: "1"}};
     const res: Partial<Response> =
       {send: jest.fn().mockResolvedValue({message: 'Plan deleted.'})};
 
-    it('uses deleteById correctly', async () => {
+    it('uses deleteById', async () => {
       await controller.deleteById(<Request>req, <Response>res);
-      expect(mockDeleteById).toHaveBeenCalledWith("Name Plan 2", "Name");
+      expect(mockdeleteById).toHaveBeenCalledWith(1, 88);
     });
 
-    it('sends data correctly', async () => {
-      await controller.deleteById(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith({message: 'Plan deleted.'});
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.deleteById(<Request>req, <Response>res);
-      expect(actual).toEqual({message: 'Plan deleted.'});
+      expect(res.send).toHaveBeenCalledWith({message});
+      expect(actual).toEqual({message});
     });
   });
-
 });

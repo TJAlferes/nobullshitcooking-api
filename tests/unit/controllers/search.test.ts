@@ -7,7 +7,6 @@ const esClient: Partial<Client> = {};
 const controller = new SearchController(<Client>esClient);
 
 const found = {some: "value"};
-
 jest.mock('../../../src/access/elasticsearch', () => ({
   EquipmentSearch: jest.fn().mockImplementation(() => ({
     auto: autoEquipment,

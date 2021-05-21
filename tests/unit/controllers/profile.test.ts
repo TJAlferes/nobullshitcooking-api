@@ -6,15 +6,18 @@ import { ProfileController } from '../../../src/controllers';
 const pool: Partial<Pool> = {};
 const controller = new ProfileController(<Pool>pool);
 
-const rows = [{id: 1, name: "Name"}];
+const row = {id: 1, name: "Name"};
+const rows = [{id: 1, name: "Name"}, {id: 2, name: "Name"}];
 jest.mock('../../../src/access/mysql', () => ({
-  FavoriteRecipe: jest.fn().mockImplementation(() => ({viewByUserId})),
-  Recipe: jest.fn().mockImplementation(() => ({view: view})),
-  User: jest.fn().mockImplementation(() => ({viewByName: viewByName}))
+  FavoriteRecipe: jest.fn().mockImplementation(() => ({
+    viewByUserId: mockviewByUserId
+  })),
+  Recipe: jest.fn().mockImplementation(() => ({view: mockview})),
+  User: jest.fn().mockImplementation(() => ({viewByName: mockviewByName}))
 }));
-let viewByUserId = jest.fn().mockResolvedValue([rows]);
-let view = jest.fn().mockResolvedValue([rows]);
-let viewByName = jest.fn().mockResolvedValue([{id: 1}]);
+let mockviewByUserId = jest.fn().mockResolvedValue(rows);
+let mockview = jest.fn().mockResolvedValue(rows);
+let mockviewByName = jest.fn().mockResolvedValue(row);
 
 jest.mock('superstruct');
 
@@ -25,23 +28,23 @@ afterEach(() => {
 describe('profile controller', () => {
   describe('view method', () => {
     const data =
-      {message: 'Success.', publicRecipes: [rows], favoriteRecipes: [rows]};
+      {message: 'Success.', publicRecipes: rows, favoriteRecipes: rows};
     const req: Partial<Request> = {params: {username: "Name"}};
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue(data)};
 
-    it('uses user.viewByName', async () => {
+    it('uses User.viewByName', async () => {
       await controller.view(<Request>req, <Response>res);
-      expect(viewByName).toHaveBeenCalledTimes(1);
+      expect(mockviewByName).toHaveBeenCalledWith("Name");
     });
 
-    it('uses recipe.view', async () => {
+    it('uses Recipe.view', async () => {
       await controller.view(<Request>req, <Response>res);
-      expect(view).toHaveBeenCalledTimes(1);
+      expect(mockview).toHaveBeenCalledWith(1);
     });
 
-    it('uses favoriteRecipe.viewByUserId', async () => {
+    it('uses FavoriteRecipe.viewByUserId', async () => {
       await controller.view(<Request>req, <Response>res);
-      expect(viewByUserId).toHaveBeenCalledTimes(1);
+      expect(mockviewByUserId).toHaveBeenCalledWith(1);
     });
 
     it('returns sent data', async () => {

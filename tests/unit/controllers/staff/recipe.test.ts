@@ -43,7 +43,11 @@ const toSave = {
 };
 jest.mock('../../../../src/access/mysql', () => ({
   Recipe: jest.fn().mockImplementation(() => ({
-    getForElasticSearch, create, edit, update, deleteById
+    getForElasticSearch: mockgetForElasticSearch,
+    create: mockcreate,
+    edit: mockedit,
+    update: mockupdate,
+    deleteById: mockdeleteById
   })),
   RecipeEquipment: jest.fn().mockImplementation(() => ({
     create: RECreate, update: REUpdate, deleteByRecipeId: REDeleteByRecipeId
@@ -67,11 +71,11 @@ jest.mock('../../../../src/access/mysql', () => ({
     deleteAllByRecipeId: SRDeleteAllByRecipeId
   }))
 }));
-let getForElasticSearch = jest.fn().mockResolvedValue(toSave);
-let create = jest.fn().mockResolvedValue({insertId: 1});
-let edit = jest.fn().mockResolvedValue([row]);
-let update = jest.fn();
-let deleteById = jest.fn();
+let mockgetForElasticSearch = jest.fn().mockResolvedValue(toSave);
+let mockcreate = jest.fn().mockResolvedValue({insertId: 1});
+let mockedit = jest.fn().mockResolvedValue([row]);
+let mockupdate = jest.fn();
+let mockdeleteById = jest.fn();
 let RECreate = jest.fn();
 let REUpdate = jest.fn();
 let REDeleteByRecipeId = jest.fn();
@@ -152,7 +156,7 @@ describe('staff recipe controller', () => {
 
     it('uses create', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(create).toHaveBeenCalledWith(recipeInfo);
+      expect(mockcreate).toHaveBeenCalledWith(recipeInfo);
     });
 
     it('uses assert on recipe methods', async () => {
@@ -212,7 +216,7 @@ describe('staff recipe controller', () => {
 
     it('uses getForElasticSearch', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(getForElasticSearch).toHaveBeenCalledWith(1);
+      expect(mockgetForElasticSearch).toHaveBeenCalledWith(1);
     });
 
     it('uses RecipeSearch.save', async () => {
@@ -233,7 +237,7 @@ describe('staff recipe controller', () => {
 
     it('uses edit', async () => {
       await controller.edit(<Request>req, <Response>res);
-      expect(edit).toHaveBeenCalledWith(1, 1, 1);
+      expect(mockedit).toHaveBeenCalledWith(1, 1, 1);
     });
 
     it('returns sent data', async () => {
@@ -257,7 +261,7 @@ describe('staff recipe controller', () => {
 
     it ('uses update', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(update).toHaveBeenCalledWith({id: 1, recipeInfo}, 1, 1);
+      expect(mockupdate).toHaveBeenCalledWith({id: 1, recipeInfo}, 1, 1);
     });
 
     it('uses assert on recipe methods', async () => {
@@ -317,7 +321,7 @@ describe('staff recipe controller', () => {
 
     it('uses getForElasticSearch', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(getForElasticSearch).toHaveBeenCalledWith(1);
+      expect(mockgetForElasticSearch).toHaveBeenCalledWith(1);
     });
 
     it('uses RecipeSearch.save', async () => {
@@ -380,7 +384,7 @@ describe('staff recipe controller', () => {
 
     it('uses deleteById', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(deleteById).toHaveBeenCalledWith(1);
+      expect(mockdeleteById).toHaveBeenCalledWith(1);
     });
 
     it('returns sent data', async () => {

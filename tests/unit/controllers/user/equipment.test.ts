@@ -10,26 +10,39 @@ const controller = new UserEquipmentController(<Pool>pool);
 
 jest.mock('superstruct');
 
-const row = [{id: 1}];
-const rows = [[{id: 1}, {id: 2}]];
+const row = {id: 1, name: "Name"};
+const rows = [{id: 1, name: "Name"}, {id: 2, name: "Name"}];
 jest.mock('../../../../src/access/mysql', () => ({
   Equipment: jest.fn().mockImplementation(() => ({
-    view, viewById, create, update, deleteById
+    view: mockview,
+    viewById: mockviewById,
+    create: mockcreate,
+    update: mockupdate,
+    deleteById: mockdeleteById
   })),
-  RecipeEquipment: jest.fn().mockImplementation(() => ({deleteByEquipmentId}))
+  RecipeEquipment: jest.fn().mockImplementation(() => ({
+    deleteByEquipmentId: mockdeleteByEquipmentId
+  }))
 }));
-let view = jest.fn().mockResolvedValue(rows);
-let viewById = jest.fn().mockResolvedValue([row]);
-let create = jest.fn();
-let update = jest.fn();
-let deleteById = jest.fn();
-let deleteByEquipmentId = jest.fn();
+let mockview = jest.fn().mockResolvedValue(rows);
+let mockviewById = jest.fn().mockResolvedValue([row]);
+let mockcreate = jest.fn();
+let mockupdate = jest.fn();
+let mockdeleteById = jest.fn();
+let mockdeleteByEquipmentId = jest.fn();
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 describe('user equipment controller', () => {
+  const equipmentInfo = {
+    equipmentTypeId: 1,
+    name: "Name",
+    description: "Description.",
+    image: "image"
+  };
+  const args = {authorId: 1, ownerId: 1, ...equipmentInfo};
   const session = {...<Express.Session>{}, userInfo: {id: 1}};
 
   describe('view method', () => {
@@ -38,7 +51,7 @@ describe('user equipment controller', () => {
 
     it('uses view', async () => {
       await controller.view(<Request>req, <Response>res);
-      expect(view).toHaveBeenCalledWith(1, 1);
+      expect(mockview).toHaveBeenCalledWith(1, 1);
     });
 
     it('returns sent data', async () => {
@@ -49,12 +62,12 @@ describe('user equipment controller', () => {
   });
 
   describe('viewById method', () => {
-    const req: Partial<Request> = {session, body: {id: 1}};
+    const req: Partial<Request> = {session, body: {id: "1"}};
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue(row)};
 
     it('uses viewById', async () => {
       await controller.viewById(<Request>req, <Response>res);
-      expect(viewById).toHaveBeenCalledWith(1, 1, 1);
+      expect(mockviewById).toHaveBeenCalledWith(1, 1, 1);
     });
 
     it('returns sent data', async () => {
@@ -65,26 +78,8 @@ describe('user equipment controller', () => {
   });
 
   describe('create method', () => {
-    const args = {
-      equipmentTypeId: 1,
-      authorId: 1,
-      ownerId: 1,
-      name: "Name",
-      description: "Description.",
-      image: "image"
-    };
     const message = 'Equipment created.';
-    const req: Partial<Request> = {
-      session,
-      body: {
-        equipmentInfo: {
-          equipmentTypeId: 1,
-          name: "Name",
-          description: "Description.",
-          image: "image"
-        }
-      }
-    };
+    const req: Partial<Request> = {session, body: {equipmentInfo}};
     const res: Partial<Response> =
       {send: jest.fn().mockResolvedValue({message})};
 
@@ -95,7 +90,7 @@ describe('user equipment controller', () => {
 
     it('uses create', async () => {
       await controller.create(<Request>req, <Response>res);
-      expect(create).toHaveBeenCalledWith(args);
+      expect(mockcreate).toHaveBeenCalledWith(args);
     });
 
     it('returns sent data', async () => {
@@ -106,28 +101,9 @@ describe('user equipment controller', () => {
   });
 
   describe('update method', () => {
-    const args = {
-      id: 1,
-      equipmentTypeId: 1,
-      authorId: 1,
-      ownerId: 1,
-      name: "Name",
-      description: "Description.",
-      image: "image"
-    };
     const message = 'Equipment updated.';
-    const req: Partial<Request> = {
-      session,
-      body: {
-        equipmentInfo: {
-          id: 1,
-          equipmentTypeId: 1,
-          name: "Name",
-          description: "Description.",
-          image: "image"
-        }
-      }
-    };
+    const req: Partial<Request> =
+      {session, body: {equipmentInfo: {id: 1, ...equipmentInfo}}};
     const res: Partial<Response> =
       {send: jest.fn().mockResolvedValue({message})};
 
@@ -138,7 +114,7 @@ describe('user equipment controller', () => {
 
     it('uses update', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(update).toHaveBeenCalledWith(args);
+      expect(mockupdate).toHaveBeenCalledWith({id: 1, ...args});
     });
 
     it('returns sent data', async () => {
@@ -156,12 +132,12 @@ describe('user equipment controller', () => {
 
     it('uses RecipeEquipment deleteByEquipmentId', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(deleteByEquipmentId).toHaveBeenCalledWith(1);
+      expect(mockdeleteByEquipmentId).toHaveBeenCalledWith(1);
     });
 
     it('uses deleteById', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(deleteById).toHaveBeenCalledWith(1, 1);
+      expect(mockdeleteById).toHaveBeenCalledWith(1, 1);
     });
 
     it('returns sent data', async () => {

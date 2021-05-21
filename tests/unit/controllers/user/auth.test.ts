@@ -41,15 +41,20 @@ jest.mock('../../../../src/lib/services', () => {
 
 jest.mock('../../../../src/access/mysql', () => ({
   User: jest.fn().mockImplementation(() => ({
-    getByEmail, getByName, create, verify, update, delete: mockDelete
+    getByEmail: mockgetByEmail,
+    getByName: mockgetByName,
+    create: mockcreate,
+    verify: mockverify,
+    update: mockupdate,
+    delete: mockdelete
   }))
 }));
-let getByEmail = jest.fn();
-let getByName = jest.fn();
-let create = jest.fn();
-let verify = jest.fn();
-let update = jest.fn();
-let mockDelete = jest.fn();
+let mockgetByEmail = jest.fn();
+let mockgetByName = jest.fn();
+let mockcreate = jest.fn();
+let mockverify = jest.fn();
+let mockupdate = jest.fn();
+let mockdelete = jest.fn();
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -139,7 +144,7 @@ describe('user auth controller', () => {
       };
 
       beforeAll(() => {
-        getByName = jest.fn().mockResolvedValue([{username: "NameIsGood"}]);
+        mockgetByName = jest.fn().mockResolvedValue([{username: "NameIsGood"}]);
       });
   
       it('returns sent data', async () => {
@@ -162,8 +167,9 @@ describe('user auth controller', () => {
       };
 
       beforeAll(() => {
-        getByName = jest.fn().mockResolvedValue([]);
-        getByEmail = jest.fn().mockResolvedValue([{username: "NameIsGood"}]);
+        mockgetByName = jest.fn().mockResolvedValue([]);
+        mockgetByEmail =
+          jest.fn().mockResolvedValue([{username: "NameIsGood"}]);
       });
   
       it('returns sent data', async () => {
@@ -191,8 +197,8 @@ describe('user auth controller', () => {
         {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
-        getByName = jest.fn().mockResolvedValue([]);
-        getByEmail = jest.fn().mockResolvedValue([]);
+        mockgetByName = jest.fn().mockResolvedValue([]);
+        mockgetByEmail = jest.fn().mockResolvedValue([]);
       });
 
       it('uses assert on request', async () => {
@@ -217,7 +223,7 @@ describe('user auth controller', () => {
 
       it('uses create', async () => {
         await controller.register(<Request>req, <Response>res);
-        expect(create).toHaveBeenCalledWith(args);
+        expect(mockcreate).toHaveBeenCalledWith(args);
       });
 
       it('uses emailConfirmationCode', async () => {
@@ -284,7 +290,7 @@ describe('user auth controller', () => {
         {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
-        getByEmail = jest.fn().mockResolvedValue([]);
+        mockgetByEmail = jest.fn().mockResolvedValue([]);
       });
   
       it('returns sent data', async () => {
@@ -306,7 +312,7 @@ describe('user auth controller', () => {
         {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
-        getByEmail = jest.fn().mockResolvedValue([{
+        mockgetByEmail = jest.fn().mockResolvedValue([{
           email: "person@person.com",
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           confirmation_code: "123XYZ"
@@ -333,7 +339,7 @@ describe('user auth controller', () => {
         {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
-        getByEmail = jest.fn().mockResolvedValue([{
+        mockgetByEmail = jest.fn().mockResolvedValue([{
           email: "person@person.com",
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           confirmation_code: "123XYZ"
@@ -360,7 +366,7 @@ describe('user auth controller', () => {
         {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
-        getByEmail = jest.fn().mockResolvedValue([{
+        mockgetByEmail = jest.fn().mockResolvedValue([{
           email: "person@person.com",
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           confirmation_code: "123XYZ"
@@ -375,7 +381,7 @@ describe('user auth controller', () => {
 
       it ('uses verify', async () => {
         await controller.verify(<Request>req, <Response>res);
-        expect(verify).toHaveBeenCalledWith("person@person.com");
+        expect(mockverify).toHaveBeenCalledWith("person@person.com");
       });
   
       it('returns sent data', async () => {
@@ -431,7 +437,7 @@ describe('user auth controller', () => {
         {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
-        getByEmail = jest.fn().mockResolvedValue([]);
+        mockgetByEmail = jest.fn().mockResolvedValue([]);
       });
   
       it('returns sent data', async () => {
@@ -451,7 +457,7 @@ describe('user auth controller', () => {
         {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
-        getByEmail = jest.fn().mockResolvedValue([{
+        mockgetByEmail = jest.fn().mockResolvedValue([{
           email: "person@person.com",
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           confirmation_code: "123XYZ"
@@ -475,7 +481,7 @@ describe('user auth controller', () => {
         {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
-        getByEmail = jest.fn().mockResolvedValue([{
+        mockgetByEmail = jest.fn().mockResolvedValue([{
           email: "person@person.com",
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           confirmation_code: null
@@ -499,7 +505,7 @@ describe('user auth controller', () => {
         {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
-        getByEmail = jest.fn().mockResolvedValue([{
+        mockgetByEmail = jest.fn().mockResolvedValue([{
           email: "person@person.com",
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           confirmation_code: "123XYZ"
@@ -592,7 +598,7 @@ describe('user auth controller', () => {
         {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
-        getByEmail = jest.fn().mockResolvedValue([{
+        mockgetByEmail = jest.fn().mockResolvedValue([{
           email: "person@person.com",
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           confirmation_code: "123XYZ"
@@ -616,7 +622,7 @@ describe('user auth controller', () => {
         {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
-        getByEmail = jest.fn().mockResolvedValue([{
+        mockgetByEmail = jest.fn().mockResolvedValue([{
           email: "person@person.com",
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           confirmation_code: "123XYZ"
@@ -647,7 +653,7 @@ describe('user auth controller', () => {
       };
 
       beforeAll(() => {
-        getByEmail = jest.fn().mockResolvedValue([{
+        mockgetByEmail = jest.fn().mockResolvedValue([{
           email: "person@person.com",
           pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
           username: "NameIsGood",
@@ -721,7 +727,7 @@ describe('user auth controller', () => {
 
     it ('uses update', async () => {
       await controller.update(<Request>req, <Response>res);
-      expect(update).toHaveBeenCalledWith(userInfo);
+      expect(mockupdate).toHaveBeenCalledWith(userInfo);
     });
 
     it('returns sent data', async () => {
@@ -740,7 +746,7 @@ describe('user auth controller', () => {
 
     it('uses delete', async () => {
       await controller.delete(<Request>req, <Response>res);
-      expect(mockDelete).toHaveBeenCalledWith("Name");
+      expect(mockdelete).toHaveBeenCalledWith("Name");
     });
 
     it('returns sent data', async () => {
