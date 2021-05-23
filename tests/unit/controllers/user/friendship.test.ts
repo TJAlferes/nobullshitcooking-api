@@ -3,147 +3,136 @@ import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
 import { UserFriendshipController } from '../../../../src/controllers/user';
-import {
-  validFriendshipEntity
-} from '../../../../src/lib/validations/friendship/entity';
+import { validFriendship } from '../../../../src/lib/validations/entities';
 
 const pool: Partial<Pool> = {};
 const controller = new UserFriendshipController(<Pool>pool);
 
 jest.mock('superstruct');
 
+const row = {id: 1, name: "Name"};
+const rows = [{id: 1, name: "Name"}, {id: 2, name: "Name"}];
 jest.mock('../../../../src/access/mysql', () => ({
   Friendship: jest.fn().mockImplementation(() => ({
-    getByFriend:  mockGetByFriend,
-    checkIfBlockedBy:  mockCheckIfBlockedBy,
-    view: mockView,
-    create: mockCreate,
-    accept: mockAccept,
-    reject: mockReject,
-    delete: mockDelete,
-    block: mockBlock,
-    unblock: mockUnblock
+    getByFriendId:  mockgetByFriendId,
+    checkIfBlockedBy:  mockcheckIfBlockedBy,
+    view: mockview,
+    create: mockcreate,
+    accept: mockaccept,
+    reject: mockreject,
+    delete: mockdelete,
+    block: mockblock,
+    unblock: mockunblock
   })),
-  User: jest.fn().mockImplementation(() => ({viewByName: mockViewByName}))
+  User: jest.fn().mockImplementation(() => ({viewByName: mockviewByName}))
 }));
-let mockGetByFriend = jest.fn();
-let mockCheckIfBlockedBy = jest.fn();
-let mockView = jest.fn();
-let mockCreate = jest.fn();
-let mockAccept = jest.fn();
-let mockReject = jest.fn();
-let mockDelete = jest.fn();
-let mockBlock = jest.fn();
-let mockUnblock = jest.fn();
-
-let mockViewByName = jest.fn();
+let mockgetByFriendId = jest.fn();
+let mockcheckIfBlockedBy = jest.fn();
+let mockview = jest.fn();
+let mockcreate = jest.fn();
+let mockaccept = jest.fn();
+let mockreject = jest.fn();
+let mockdelete = jest.fn();
+let mockblock = jest.fn();
+let mockunblock = jest.fn();
+let mockviewByName = jest.fn();
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 describe('user friendship controller', () => {
-  const session = {...<Express.Session>{}, userInfo: {username: "Name"}};
+  const session = {...<Express.Session>{}, userInfo: {id: 88}};
 
   describe('view method', () => {
     const rows = [{name: "Name1"}];
     const req: Partial<Request> = {session};
-    const res: Partial<Response> = {send: jest.fn().mockResolvedValue([rows])};
+    const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
     beforeAll(() => {
-      mockView = jest.fn().mockResolvedValue([rows]);
+      mockview = jest.fn().mockResolvedValue(rows);
     });
 
-    it('uses view correctly', async () => {
+    it('uses view', async () => {
       await controller.view(<Request>req, <Response>res);
-      expect(mockView).toHaveBeenCalledWith("Name");
+      expect(mockview).toHaveBeenCalledWith(1);
     });
 
-    it('sends data correctly', async () => {
-      await controller.view(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith([rows]);
-    });
-
-    it('returns correctly', async () => {
+    it('returns sent data', async () => {
       const actual = await controller.view(<Request>req, <Response>res);
-      expect(actual).toEqual([rows]);
+      expect(res.send).toHaveBeenCalledWith(rows);
+      expect(actual).toEqual(rows);
     });
   });
 
   describe('create method', () => {
-
     describe('when desired friend does not exist', () => {
+      const message = 'User not found.';
       const req: Partial<Request> = {session, body: {friendName: "Name"}};
       const res: Partial<Response> =
-        {send: jest.fn().mockResolvedValue({message: 'User not found.'})};
+        {send: jest.fn().mockResolvedValue({message})};
       
       beforeAll(() => {
-        mockViewByName = jest.fn().mockResolvedValue([[]]);
+        mockviewByName = jest.fn().mockResolvedValue([]);
       });
 
-      it('uses viewByName correctly', async () => {
+      it('uses viewByName', async () => {
         await controller.create(<Request>req, <Response>res);
-        expect(mockViewByName).toHaveBeenCalledWith("Name");
-      });
-
-      it('sends data correctly', async () => {
-        await controller.create(<Request>req, <Response>res);
-        expect(res.send).toHaveBeenCalledWith({message: 'User not found.'});
+        expect(mockviewByName).toHaveBeenCalledWith("Name");
       });
   
-      it('returns correctly', async () => {
+      it('returns sent data', async () => {
         const actual = await controller.create(<Request>req, <Response>res);
-        expect(actual).toEqual({message: 'User not found.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
 
     describe('when blocked by desired friend', () => {
+      const message = 'User not found.';
       const req: Partial<Request> = {session, body: {friendName: "Name1"}};
       const res: Partial<Response> =
-        {send: jest.fn().mockResolvedValue({message: 'User not found.'})};
+        {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
-        mockCheckIfBlockedBy =
+        mockcheckIfBlockedBy =
         jest.fn().mockResolvedValue([[{user: "Name", friend: "Name1"}]]);
-        mockViewByName =
+        mockviewByName =
           jest.fn().mockResolvedValue([[{username: "Name1", avatar: "Name1"}]]);
       });
 
-      it('uses checkIfBlockedBy correctly', async () => {
+      it('uses checkIfBlockedBy', async () => {
         await controller.create(<Request>req, <Response>res);
-        expect(mockCheckIfBlockedBy).toHaveBeenCalledWith("Name", "Name1");
-      });
-
-      it('sends data correctly', async () => {
-        await controller.create(<Request>req, <Response>res);
-        expect(res.send).toHaveBeenCalledWith({message: 'User not found.'});
+        expect(mockcheckIfBlockedBy).toHaveBeenCalledWith("Name", "Name1");
       });
   
-      it('returns correctly', async () => {
+      it('returns sent data', async () => {
         const actual = await controller.create(<Request>req, <Response>res);
-        expect(actual).toEqual({message: 'User not found.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
 
     describe('when friendship does not already exist', () => {
+      const message = 'Friendship request sent.';
       const req: Partial<Request> = {session, body: {friendName: "Name"}};
       const res: Partial<Response> = {
-        send: jest.fn().mockResolvedValue({message: 'Friendship request sent.'})
+        send: jest.fn().mockResolvedValue({message})
       };
 
       beforeAll(() => {
-        mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
-        mockGetByFriend = jest.fn().mockResolvedValue([[]]);
-        mockViewByName =
+        mockcheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
+        mockgetByFriendId = jest.fn().mockResolvedValue([[]]);
+        mockviewByName =
           jest.fn().mockResolvedValue([[{username: "Name1", avatar: "Name1"}]]);
       });
 
-      it ('uses getFriendshipByFriend correctly', async () => {
+      it ('uses getFriendshipByFriendId', async () => {
         await controller.create(<Request>req, <Response>res);
-        expect(mockGetByFriend).toHaveBeenCalledWith("Name", "Name1");
+        expect(mockgetByFriendId).toHaveBeenCalledWith("Name", "Name1");
       });
 
-      it('uses assert correctly', async () => {
+      it('uses assert', async () => {
         await controller.create(<Request>req, <Response>res);
         expect(assert).toHaveBeenCalledWith(
           {
@@ -152,444 +141,369 @@ describe('user friendship controller', () => {
             status1: "pending-sent",
             status2: "pending-received"
           },
-          validFriendshipEntity
+          validFriendship
         );
       });
 
-      it('uses create correctly', async () => {
+      it('uses create', async () => {
         await controller.create(<Request>req, <Response>res);
-        expect(mockCreate).toHaveBeenCalledTimes(1);
-      });
-
-      it('sends data correctly', async () => {
-        await controller.create(<Request>req, <Response>res);
-        expect(res.send)
-          .toHaveBeenCalledWith({message: 'Friendship request sent.'});
+        expect(mockcreate).toHaveBeenCalledTimes(1);  // TO DO: CalledWith
       });
   
-      it('returns correctly', async () => {
+      it('returns sent data', async () => {
         const actual = await controller.create(<Request>req, <Response>res);
-        expect(actual).toEqual({message: 'Friendship request sent.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
 
     describe('when status is pending-sent', () => {
+      const message = 'Already sent.';
       const req: Partial<Request> = {session, body: {friendName: "Name"}};
       const res: Partial<Response> =
-        {send: jest.fn().mockResolvedValue({message: 'Already sent.'})};
+        {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
-        mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
-        mockGetByFriend = jest.fn().mockResolvedValue([
+        mockcheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
+        mockgetByFriendId = jest.fn().mockResolvedValue([
           [{user: "Name", friend: "Name1", status: "pending-sent"}]
         ]);
-        mockViewByName =
+        mockviewByName =
           jest.fn().mockResolvedValue([[{username: "Name1", avatar: "Name1"}]]);
       });
-
-      it('sends data correctly', async () => {
-        await controller.create(<Request>req, <Response>res);
-        expect(res.send).toHaveBeenCalledWith({message: 'Already sent.'});
-      });
   
-      it('returns correctly', async () => {
+      it('returns sent data', async () => {
         const actual = await controller.create(<Request>req, <Response>res);
-        expect(actual).toEqual({message: 'Already sent.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
 
     describe('when status is pending-received', () => {
+      const message = 'Already received.';
       const req: Partial<Request> = {session, body: {friendName: "Name"}};
       const res: Partial<Response> =
-        {send: jest.fn().mockResolvedValue({message: 'Already received.'})};
+        {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
-        mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
-        mockGetByFriend = jest.fn().mockResolvedValue([
+        mockcheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
+        mockgetByFriendId = jest.fn().mockResolvedValue([
           [{user: "Name", friend: "Name1", status: "pending-received"}]
         ]);
-        mockViewByName =
+        mockviewByName =
           jest.fn().mockResolvedValue([[{username: "Name1", avatar: "Name1"}]]);
       });
-
-      it('sends data correctly', async () => {
-        await controller.create(<Request>req, <Response>res);
-        expect(res.send).toHaveBeenCalledWith({message: 'Already received.'});
-      });
   
-      it('returns correctly', async () => {
+      it('returns sent data', async () => {
         const actual = await controller.create(<Request>req, <Response>res);
-        expect(actual).toEqual({message: 'Already received.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
 
     describe('when status is accepted', () => {
+      const message = 'Already friends.';
       const req: Partial<Request> = {session, body: {friendName: "Name"}};
       const res: Partial<Response> =
-        {send: jest.fn().mockResolvedValue({message: 'Already friends.'})};
+        {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
-        mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
-        mockGetByFriend =  jest.fn().mockResolvedValue([
+        mockcheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
+        mockgetByFriendId =  jest.fn().mockResolvedValue([
           [{user: "Name", friend: "Name1", status: "accepted"}]
         ]);
-        mockViewByName =
+        mockviewByName =
           jest.fn().mockResolvedValue([[{username: "Name1", avatar: "Name1"}]]);
       });
-
-      it('sends data correctly', async () => {
-        await controller.create(<Request>req, <Response>res);
-        expect(res.send).toHaveBeenCalledWith({message: 'Already friends.'});
-      });
   
-      it('returns correctly', async () => {
+      it('returns sent data', async () => {
         const actual = await controller.create(<Request>req, <Response>res);
-        expect(actual).toEqual({message: 'Already friends.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
 
     describe('when status is blocked', () => {
+      const message = 'User blocked. First unblock.';
       const req: Partial<Request> = {session, body: {friendName: "Name"}};
-      const res: Partial<Response> = {
-        send: jest.fn().mockResolvedValue({
-          message: 'User blocked. First unblock.'
-        })
-      };
+      const res: Partial<Response> =
+        {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
-        mockCheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
-        mockGetByFriend =  jest.fn().mockResolvedValue([
+        mockcheckIfBlockedBy = jest.fn().mockResolvedValue([[]]);
+        mockgetByFriendId =  jest.fn().mockResolvedValue([
           [{user: "Name", friend: "Name1", status: "blocked"}]
         ]);
-        mockViewByName =
+        mockviewByName =
           jest.fn().mockResolvedValue([[{username: "Name1", avatar: "Name1"}]]);
       });
 
-      it('sends data correctly', async () => {
-        await controller.create(<Request>req, <Response>res);
-        expect(res.send)
-          .toHaveBeenCalledWith({message: 'User blocked. First unblock.'});
-      });
-
-      it('returns correctly', async () => {
+      it('returns sent data', async () => {
         const actual = await controller.create(<Request>req, <Response>res);
-        expect(actual).toEqual({message: 'User blocked. First unblock.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
-
   });
 
   describe('accept method', () => {
-
     describe('when desired friend does not exist', () => {
+      const message = 'User not found.';
       const req: Partial<Request> = {session, body: {friendName: "Name"}};
       const res: Partial<Response> =
-        {send: jest.fn().mockResolvedValue({message: 'User not found.'})};
+        {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
-        mockViewByName = jest.fn().mockResolvedValue([[]]);
+        mockviewByName = jest.fn().mockResolvedValue([[]]);
       });
 
-      it('uses viewByName correctly', async () => {
+      it('uses viewByName', async () => {
         await controller.accept(<Request>req, <Response>res);
-        expect(mockViewByName).toHaveBeenCalledWith("Name");
-      });
-
-      it('sends data correctly', async () => {
-        await controller.accept(<Request>req, <Response>res);
-        expect(res.send).toHaveBeenCalledWith({message: 'User not found.'});
+        expect(mockviewByName).toHaveBeenCalledWith("Name");
       });
       
-      it('returns correctly', async () => {
+      it('returns sent data', async () => {
         const actual = await controller.accept(<Request>req, <Response>res);
-        expect(actual).toEqual({message: 'User not found.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
 
     describe('when desired friend exists', () => {
+      const message = 'Friendship request accepted.';
       const req: Partial<Request> = {session, body: {friendName: "Name"}};
-      const res: Partial<Response> = {
-        send: jest.fn().mockResolvedValue({
-          message: 'Friendship request accepted.'
-        })
-      };
+      const res: Partial<Response> =
+        {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
-        mockViewByName =
+        mockviewByName =
           jest.fn().mockResolvedValue([[{username: "Name1", avatar: "Name1"}]]);
       });
 
-      it('uses viewByName correctly', async () => {
+      it('uses viewByName', async () => {
         await controller.accept(<Request>req, <Response>res);
-        expect(mockViewByName).toHaveBeenCalledWith("Name");
+        expect(mockviewByName).toHaveBeenCalledWith("Name");
       });
 
-      it('uses accept correctly', async () => {
+      it('uses accept', async () => {
         await controller.accept(<Request>req, <Response>res);
-        expect(mockAccept).toHaveBeenCalledWith("Name", "Name1");
-      });
-
-      it('sends data correctly', async () => {
-        await controller.accept(<Request>req, <Response>res);
-        expect(res.send)
-          .toHaveBeenCalledWith({message: 'Friendship request accepted.'});
+        expect(mockaccept).toHaveBeenCalledWith("Name", "Name1");
       });
   
-      it('returns correctly', async () => {
+      it('returns sent data', async () => {
         const actual = await controller.accept(<Request>req, <Response>res);
-        expect(actual).toEqual({message: 'Friendship request accepted.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
-
   });
 
   describe('reject method', () => {
-
     describe('when desired friend does not exist', () => {
+      const message = 'User not found.';
       const req: Partial<Request> = {session, body: {friendName: "Name"}};
       const res: Partial<Response> =
-        {send: jest.fn().mockResolvedValue({message: 'User not found.'})};
+        {send: jest.fn().mockResolvedValue({message})};
       
       beforeAll(() => {
-        mockViewByName = jest.fn().mockResolvedValue([[]]);
+        mockviewByName = jest.fn().mockResolvedValue([[]]);
       });
 
-      it('uses viewByName correctly', async () => {
+      it('uses viewByName', async () => {
         await controller.reject(<Request>req, <Response>res);
-        expect(mockViewByName).toHaveBeenCalledWith("Name");
-      });
-
-      it('sends data correctly', async () => {
-        await controller.reject(<Request>req, <Response>res);
-        expect(res.send).toHaveBeenCalledWith({message: 'User not found.'});
+        expect(mockviewByName).toHaveBeenCalledWith("Name");
       });
   
-      it('returns correctly', async () => {
+      it('returns sent data', async () => {
         const actual = await controller.reject(<Request>req, <Response>res);
-        expect(actual).toEqual({message: 'User not found.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
 
     describe('when desired friend exists', () => {
+      const message = 'Friendship request rejected.';
       const req: Partial<Request> = {session, body: {friendName: "Name"}};
-      const res: Partial<Response> = {
-        send: jest.fn().mockResolvedValue({
-          message: 'Friendship request rejected.'
-        })
-      };
+      const res: Partial<Response> =
+        {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
-        mockViewByName =
+        mockviewByName =
           jest.fn().mockResolvedValue([[{username: "Name1", avatar: "Name1"}]]);
       });
 
-      it('uses viewByName correctly', async () => {
+      it('uses viewByName', async () => {
         await controller.reject(<Request>req, <Response>res);
-        expect(mockViewByName).toHaveBeenCalledWith("Name");
+        expect(mockviewByName).toHaveBeenCalledWith("Name");
       });
 
-      it('uses reject correctly', async () => {
+      it('uses reject', async () => {
         await controller.reject(<Request>req, <Response>res);
-        expect(mockReject).toHaveBeenCalledWith("Name", "Name1");
-      });
-
-      it('sends data correctly', async () => {
-        await controller.reject(<Request>req, <Response>res);
-        expect(res.send)
-          .toHaveBeenCalledWith({message: 'Friendship request rejected.'});
+        expect(mockreject).toHaveBeenCalledWith("Name", "Name1");
       });
   
-      it('returns correctly', async () => {
+      it('returns sent data', async () => {
         const actual = await controller.reject(<Request>req, <Response>res);
-        expect(actual).toEqual({message: 'Friendship request rejected.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
-
   });
 
   describe('delete method', () => {
-
     describe('when desired friend does not exist', () => {
+      const message = 'User not found.';
       const req: Partial<Request> = {session, body: {friendName: "Name"}};
       const res: Partial<Response> =
-        {send: jest.fn().mockResolvedValue({message: 'User not found.'})};
+        {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
-        mockViewByName = jest.fn().mockResolvedValue([[]]);
+        mockviewByName = jest.fn().mockResolvedValue([[]]);
       });
 
-      it('uses viewByName correctly', async () => {
+      it('uses viewByName', async () => {
         await controller.delete(<Request>req, <Response>res);
-        expect(mockViewByName).toHaveBeenCalledWith("Name");
-      });
-
-      it('sends data correctly', async () => {
-        await controller.delete(<Request>req, <Response>res);
-        expect(res.send).toHaveBeenCalledWith({message: 'User not found.'});
+        expect(mockviewByName).toHaveBeenCalledWith("Name");
       });
   
-      it('returns correctly', async () => {
+      it('returns sent data', async () => {
         const actual = await controller.delete(<Request>req, <Response>res);
-        expect(actual).toEqual({message: 'User not found.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
 
     describe('when desired friend exists', () => {
+      const message = 'No longer friends. Maybe again later.';
       const req: Partial<Request> = {session, body: {friendName: "Name"}};
-      const res: Partial<Response> = {
-        send: jest.fn().mockResolvedValue({
-          message: 'No longer friends. Maybe again later.'
-        })
-      };
+      const res: Partial<Response> =
+        {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
-        mockViewByName =
+        mockviewByName =
           jest.fn().mockResolvedValue([[{username: "Name1", avatar: "Name1"}]]);
       });
 
-      it('uses viewByName correctly', async () => {
+      it('uses viewByName', async () => {
         await controller.delete(<Request>req, <Response>res);
-        expect(mockViewByName).toHaveBeenCalledWith("Name");
+        expect(mockviewByName).toHaveBeenCalledWith("Name");
       });
 
-      it('uses delete correctly', async () => {
+      it('uses delete', async () => {
         await controller.delete(<Request>req, <Response>res);
-        expect(mockDelete).toHaveBeenCalledWith("Name", "Name1");
+        expect(mockdelete).toHaveBeenCalledWith("Name", "Name1");
       });
 
-      it('sends data correctly', async () => {
-        await controller.delete(<Request>req, <Response>res);
-        expect(res.send).toHaveBeenCalledWith({
-          message: 'No longer friends. Maybe again later.'
-        });
-      });
-
-      it('returns correctly', async () => {
+      it('returns sent data', async () => {
         const actual = await controller.delete(<Request>req, <Response>res);
-        expect(actual)
-          .toEqual({message: 'No longer friends. Maybe again later.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
-
   });
 
   describe('block method', () => {
-
     describe('when desired friend does not exist', () => {
+      const message = 'User not found.';
       const req: Partial<Request> = {session, body: {friendName: "Name"}};
       const res: Partial<Response> =
-        {send: jest.fn().mockResolvedValue({message: 'User not found.'})};
+        {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
-        mockViewByName = jest.fn().mockResolvedValue([[]]);
+        mockviewByName = jest.fn().mockResolvedValue([[]]);
       });
 
-      it('uses viewByName correctly', async () => {
+      it('uses viewByName', async () => {
         await controller.block(<Request>req, <Response>res);
-        expect(mockViewByName).toHaveBeenCalledWith("Name");
-      });
-
-      it('sends data correctly', async () => {
-        await controller.block(<Request>req, <Response>res);
-        expect(res.send).toHaveBeenCalledWith({message: 'User not found.'});
+        expect(mockviewByName).toHaveBeenCalledWith("Name");
       });
   
-      it('returns correctly', async () => {
+      it('returns sent data', async () => {
         const actual = await controller.block(<Request>req, <Response>res);
-        expect(actual).toEqual({message: 'User not found.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
 
     describe('when desired friend exists', () => {
+      const message = 'User blocked.';
       const req: Partial<Request> = {session, body: {friendName: "Name"}};
       const res: Partial<Response> =
-        {send: jest.fn().mockResolvedValue({message: 'User blocked.'})};
+        {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
-        mockViewByName =
+        mockviewByName =
           jest.fn().mockResolvedValue([[{username: "Name1", avatar: "Name1"}]]);
       });
 
-      it('uses viewByName correctly', async () => {
+      it('uses viewByName', async () => {
         await controller.block(<Request>req, <Response>res);
-        expect(mockViewByName).toHaveBeenCalledWith("Name");
+        expect(mockviewByName).toHaveBeenCalledWith("Name");
       });
 
-      it('uses block correctly', async () => {
+      it('uses block', async () => {
         await controller.block(<Request>req, <Response>res);
-        expect(mockBlock).toHaveBeenCalledWith("Name", "Name1");
+        expect(mockblock).toHaveBeenCalledWith("Name", "Name1");
       });
 
-      it('sends data correctly', async () => {
-        await controller.block(<Request>req, <Response>res);
-        expect(res.send).toHaveBeenCalledWith({message: 'User blocked.'});
-      });
-  
-      it('returns correctly', async () => {
+      it('returns sent data', async () => {
         const actual = await controller.block(<Request>req, <Response>res);
-        expect(actual).toEqual({message: 'User blocked.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
 
   });
 
   describe('unblock method', () => {
-
     describe('when desired friend does not exist', () => {
+      const message = 'User not found.';
       const req: Partial<Request> = {session, body: {friendName: "Name"}};
       const res: Partial<Response> =
-        {send: jest.fn().mockResolvedValue({message: 'User not found.'})};
+        {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
-        mockViewByName = jest.fn().mockResolvedValue([[]]);
+        mockviewByName = jest.fn().mockResolvedValue([[]]);
       });
 
-      it('uses viewByName correctly', async () => {
+      it('uses viewByName', async () => {
         await controller.unblock(<Request>req, <Response>res);
-        expect(mockViewByName).toHaveBeenCalledWith("Name");
-      });
-
-      it('sends data correctly', async () => {
-        await controller.unblock(<Request>req, <Response>res);
-        expect(res.send).toHaveBeenCalledWith({message: 'User not found.'});
+        expect(mockviewByName).toHaveBeenCalledWith("Name");
       });
   
-      it('returns correctly', async () => {
+      it('returns sent data', async () => {
         const actual = await controller.unblock(<Request>req, <Response>res);
-        expect(actual).toEqual({message: 'User not found.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
 
     describe('when desired friend exists', () => {
+      const message = 'User unblocked.';
       const req: Partial<Request> = {session, body: {friendName: "Name"}};
       const res: Partial<Response> =
-        {send: jest.fn().mockResolvedValue({message: 'User unblocked.'})};
+        {send: jest.fn().mockResolvedValue({message})};
 
       beforeAll(() => {
-        mockViewByName =
+        mockviewByName =
           jest.fn().mockResolvedValue([[{username: "Name1", avatar: "Name1"}]]);
       });
 
-      it('uses viewByName correctly', async () => {
+      it('uses viewByName', async () => {
         await controller.unblock(<Request>req, <Response>res);
-        expect(mockViewByName).toHaveBeenCalledWith("Name");
+        expect(mockviewByName).toHaveBeenCalledWith("Name");
       });
 
-      it('uses unblock correctly', async () => {
+      it('uses unblock', async () => {
         await controller.unblock(<Request>req, <Response>res);
-        expect(mockUnblock).toHaveBeenCalledWith("Name", "Name1");
-      });
-
-      it('sends data correctly', async () => {
-        await controller.unblock(<Request>req, <Response>res);
-        expect(res.send).toHaveBeenCalledWith({message: 'User unblocked.'});
+        expect(mockunblock).toHaveBeenCalledWith("Name", "Name1");
       });
   
-      it('returns correctly', async () => {
+      it('returns sent data', async () => {
         const actual = await controller.unblock(<Request>req, <Response>res);
-        expect(actual).toEqual({message: 'User unblocked.'});
+        expect(res.send).toHaveBeenCalledWith({message});
+        expect(actual).toEqual({message});
       });
     });
-
   });
 });

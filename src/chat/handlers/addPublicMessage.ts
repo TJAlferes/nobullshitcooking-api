@@ -10,16 +10,13 @@ export async function addPublicMessage({
   chatMessage
 }: IAddPublicMessage) {
   const room = Object.keys(socket.rooms).find(r => r !== socket.id);
-
   if (!room) return;
 
-  const publicMessage = PublicMessage(room, from, text);
+  const message = PublicMessage(room, from, text);
+  await chatMessage.addMessage(message);
 
-  await chatMessage.addMessage(publicMessage);
-
-  socket.broadcast.to(room).emit('AddMessage', publicMessage);
-  
-  socket.emit('AddMessage', publicMessage);
+  socket.broadcast.to(room).emit('AddMessage', message);
+  socket.emit('AddMessage', message);
 }
 
 interface IAddPublicMessage {

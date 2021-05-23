@@ -22,7 +22,7 @@ export class User implements IUser {
       FROM users
       WHERE email = ?
     `;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [email]);
+    const [ [ row ] ] = await this.pool.execute<RowDataPacket[]>(sql, [email]);
     return row;
   }
 
@@ -30,19 +30,21 @@ export class User implements IUser {
   async getByName(username: string) {
     const sql =
       `SELECT id, email, pass, username FROM users WHERE username = ?`;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [username]);
+    const [ [ row ] ] =
+      await this.pool.execute<RowDataPacket[]>(sql, [username]);
     return row;
   }
 
   async viewById(id: number) {
-    const sql = `SELECT username, FROM users WHERE user_id = ?`;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
+    const sql = `SELECT username FROM users WHERE id = ?`;
+    const [ [ row ] ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
     return row;
   }
 
   async viewByName(username: string) {
-    const sql = `SELECT id, FROM users WHERE username = ?`;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [username]);
+    const sql = `SELECT id FROM users WHERE username = ?`;
+    const [ [ row ] ] =
+      await this.pool.execute<RowDataPacket[]>(sql, [username]);
     return row;
   }
 
@@ -51,7 +53,7 @@ export class User implements IUser {
       INSERT INTO users (email, pass, username, confirmation_code)
       VALUES (?, ?, ?, ?)
     `;
-    const [ row ] = await this.pool
+    const [ [ row ] ] = await this.pool
       .execute<RowDataPacket[]>(sql, [email, pass, username, confirmationCode]);
     return row;
   }
@@ -59,7 +61,7 @@ export class User implements IUser {
   async verify(email: string) {
     const sql =
       `UPDATE users SET confirmation_code = NULL WHERE email = ? LIMIT 1`;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [email]);
+    const [ [ row ] ] = await this.pool.execute<RowDataPacket[]>(sql, [email]);
     return row;
   }
 
@@ -70,30 +72,31 @@ export class User implements IUser {
       WHERE id = ?
       LIMIT 1
     `;
-    const [ row ] = await this.pool
+    const [ [ row ] ] = await this.pool
       .execute<RowDataPacket[]>(sql, [email, pass, username, id]);
     return row;
   }
 
   async delete(id: number) {
     const sql = `DELETE FROM users WHERE id = ? LIMIT 1`;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
+    const [ [ row ] ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
     return row;
   }
 }
 
-type Data = Promise<RowDataPacket[]>;
+type Row = Promise<RowDataPacket>;
+//type Rows = Promise<RowDataPacket[]>;
 
 export interface IUser {
   pool: Pool;
-  getByEmail(email: string): Data;
-  getByName(username: string): Data;
-  viewById(userId: number): Data;
-  viewByName(username: string): Data;
-  create(user: ICreatingUser): Data;
-  verify(email: string): Data;
-  update(user: IUpdatingUser): Data;
-  delete(userId: number): Data;
+  getByEmail(email: string): Row;
+  getByName(username: string): Row;
+  viewById(userId: number): Row;
+  viewByName(username: string): Row;
+  create(user: ICreatingUser): Row;
+  verify(email: string): Row;
+  update(user: IUpdatingUser): Row;
+  delete(userId: number): Row;
 }
 
 interface ICreatingUser {

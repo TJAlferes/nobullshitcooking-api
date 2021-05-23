@@ -13,33 +13,27 @@ export async function addPrivateMessage({
   friendship,
   user
 }: IAddPrivateMessage) {
-  const [ userExists ] = await user.getByName(to);
-
+  const userExists = await user.getByName(to);
   if (!userExists.length) {
     return socket.emit('FailedPrivateMessage', 'User not found.');
   }
-
-  const [ blockedUsers ] = await friendship.viewBlocked(userExists[0].username);
-    
+  
+  const { id, username } = userExists;
+  const [ blockedUsers ] = await friendship.viewBlocked(username);
   const blockedByUser = blockedUsers.find((u: any) => u.username === from);
-
   if (blockedByUser) {
     return socket.emit('FailedPrivateMessage', 'User not found.');
   }
 
-  const onlineUser = await chatUser.getSocketId(userExists[0].id);  // ?
-
+  const onlineUser = await chatUser.getSocketId(id);  // ?
   if (!onlineUser) {
     return socket.emit('FailedPrivateMessage', 'User not found.');
   }
 
-  const privateMessage = PrivateMessage(to, from, text);
-
-  //socket.to(to).to(from).emit('AddPrivateMessage', privateMessage);
-
-  socket.broadcast.to(onlineUser).emit('AddPrivateMessage', privateMessage);
-
-  socket.emit('AddPrivateMessage', privateMessage);
+  const message = PrivateMessage(to, from, text);
+  //socket.to(to).to(from).emit('AddPrivateMessage', message);
+  socket.broadcast.to(onlineUser).emit('AddPrivateMessage', message);
+  socket.emit('AddPrivateMessage', message);
 }
 
 export interface IAddPrivateMessage {

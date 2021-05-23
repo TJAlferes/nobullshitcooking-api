@@ -11,15 +11,11 @@ export async function rejoinRoom({
   if (room === '') return;
 
   socket.join(room);
-
   await chatRoom.add(room);  // ?
-
   await chatRoom.addUser(username, room);
-
   socket.broadcast.to(room).emit('AddUser', username);
 
   const users = await chatRoom.getUsers(room);
-  
   socket.emit('RegetUser', users, room);
 }
 

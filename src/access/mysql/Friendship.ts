@@ -39,7 +39,7 @@ export class Friendship implements IFriendship {
       FROM friendships
       WHERE user_id = ? AND friend_id = ?
     `;
-    const [ row ] =
+    const [ [ row ] ] =
       await this.pool.execute<RowDataPacket[]>(sql, [userId, friendId]);
     return row;
   }
@@ -50,9 +50,9 @@ export class Friendship implements IFriendship {
       FROM friendships
       WHERE user_id = ? AND friend_id = ? AND status = "blocked"
     `;
-    const [ rows ] =
+    const [ [ row ] ] =
       await this.pool.execute<RowDataPacket[]>(sql, [friendId, userId]);
-    return rows;
+    return row;
   }
 
   // change
@@ -105,7 +105,7 @@ export class Friendship implements IFriendship {
   async create({ userId, friendId, status1, status2 }: ICreatingFriendship) {
     const sql =
       `INSERT INTO friendships (user_id, friend_id, status) VALUES (?, ?, ?)`;
-    const [ row ] = await this.pool
+    const [ [ row ] ] = await this.pool
       .execute<RowDataPacket[]>(sql, [userId, friendId, status1]);
     await this.pool.execute<RowDataPacket[]>(sql, [friendId, userId, status2]);
     return row;
@@ -124,7 +124,7 @@ export class Friendship implements IFriendship {
       WHERE user_id = ? AND friend_id = ? AND status = "pending-sent"
       LIMIT 1
     `;
-    const [ row ] =
+    const [ [ row ] ] =
       await this.pool.execute<RowDataPacket[]>(sql1, [userId, friendId]);
     await this.pool.execute<RowDataPacket[]>(sql2, [friendId, userId]);
     return row;
@@ -137,7 +137,7 @@ export class Friendship implements IFriendship {
       WHERE user_id = ? AND friend_id = ? AND status != "blocked"
       LIMIT 1
     `;
-    const [ row ] =
+    const [ [ row ] ] =
       await this.pool.execute<RowDataPacket[]>(sql, [userId, friendId]);
     await this.pool.execute<RowDataPacket[]>(sql, [friendId, userId]);
     return row;
@@ -150,7 +150,7 @@ export class Friendship implements IFriendship {
       WHERE user_id = ? AND friend_id = ? AND status != "blocked"
       LIMIT 1
     `;
-    const [ row ] =
+    const [ [ row ] ] =
       await this.pool.execute<RowDataPacket[]>(sql, [userId, friendId]);
     await this.pool.execute<RowDataPacket[]>(sql, [friendId, userId]);
     return row;
@@ -165,7 +165,7 @@ export class Friendship implements IFriendship {
     `;
     await this.pool.execute(sql1, [userId, friendId]);
     await this.pool.execute(sql1, [friendId, userId]);
-    const [ row ] =
+    const [ [ row ] ] =
       await this.pool.execute<RowDataPacket[]>(sql2, [userId, friendId]);
     return row;
   }
@@ -173,7 +173,7 @@ export class Friendship implements IFriendship {
   async unblock(userId: number, friendId: number) {
     const sql =
       `DELETE FROM friendships WHERE user_id = ? AND friend_id = ? LIMIT 1`;
-    const [ row ] =
+    const [ [ row ] ] =
       await this.pool.execute<RowDataPacket[]>(sql, [userId, friendId]);
     return row;
   }
@@ -186,22 +186,23 @@ export class Friendship implements IFriendship {
   }
 }
 
-type Data = Promise<RowDataPacket[]>;
+type Row = Promise<RowDataPacket>;
+type Rows = Promise<RowDataPacket[]>;
 
 export interface IFriendship {
   pool: Pool;
-  getByFriendId(userId: number, friendId: number): Data;
-  checkIfBlockedBy(userId: number, friendId: number): Data;
-  view(userId: number): Data;
-  viewAccepted(userId: number): Data;
-  viewPending(userId: number): Data;
-  viewBlocked(userId: number): Data;
-  create(friendship: ICreatingFriendship): Data;
-  accept(userId: number, friendId: number): Data;
-  reject(userId: number, friendId: number): Data;
-  delete(userId: number, friendId: number): Data;
-  block(userId: number, friendId: number): Data;
-  unblock(userId: number, friendId: number): Data;
+  getByFriendId(userId: number, friendId: number): Row;
+  checkIfBlockedBy(userId: number, friendId: number): Row;
+  view(userId: number): Rows;
+  viewAccepted(userId: number): Rows;
+  viewPending(userId: number): Rows;
+  viewBlocked(userId: number): Rows;
+  create(friendship: ICreatingFriendship): Row;
+  accept(userId: number, friendId: number): Row;
+  reject(userId: number, friendId: number): Row;
+  delete(userId: number, friendId: number): Row;
+  block(userId: number, friendId: number): Row;
+  unblock(userId: number, friendId: number): Row;
   deleteAllByUserId(userId: number): void;
 }
 
