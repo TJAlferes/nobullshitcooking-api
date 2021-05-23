@@ -24,7 +24,7 @@ import {
 
 export async function createRecipeService({
   ownerId,
-  recipeCreation,
+  creatingRecipe,
   requiredMethods,
   requiredEquipment,
   requiredIngredients,
@@ -36,7 +36,7 @@ export async function createRecipeService({
   recipeSubrecipe,
   recipeSearch
 }: CreateRecipeService) {
-  const createdRecipe = await recipe.create(recipeCreation);
+  const createdRecipe = await recipe.create(creatingRecipe);
   const recipeId = createdRecipe.insertId;
 
   /*
@@ -114,7 +114,7 @@ export async function createRecipeService({
 
 interface CreateRecipeService {
   ownerId: number;
-  recipeCreation: ICreatingRecipe;
+  creatingRecipe: ICreatingRecipe;
   requiredEquipment: IMakeRecipeEquipment[];
   requiredIngredients: IMakeRecipeIngredient[];
   requiredMethods: IMakeRecipeMethod[];

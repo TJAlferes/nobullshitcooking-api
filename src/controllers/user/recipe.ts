@@ -37,15 +37,15 @@ export class UserRecipeController {
   }
 
   async viewPrivate(req: Request, res: Response) {
-    const authorId = req.session!.userInfo.id;
-    const ownerId = req.session!.userInfo.id;
+    const authorId = req.session.userInfo!.id;
+    const ownerId = req.session.userInfo!.id;
     const recipe = new Recipe(this.pool);
     const rows = await recipe.view(authorId, ownerId);
     return res.send(rows);
   }
 
   async viewPublic(req: Request, res: Response) {
-    const authorId = req.session!.userInfo.id;
+    const authorId = req.session.userInfo!.id;
     const ownerId = 1;
     const recipe = new Recipe(this.pool);
     const rows = await recipe.view(authorId, ownerId);
@@ -54,8 +54,8 @@ export class UserRecipeController {
 
   async viewPrivateById(req: Request, res: Response) {
     const id = Number(req.body.id);
-    const authorId = req.session!.userInfo.id;
-    const ownerId = req.session!.userInfo.id;
+    const authorId = req.session.userInfo!.id;
+    const ownerId = req.session.userInfo!.id;
     const recipe = new Recipe(this.pool);
     const [ row ] = await recipe.viewById(id, authorId, ownerId);
     return res.send(row);
@@ -63,7 +63,7 @@ export class UserRecipeController {
 
   async viewPublicById(req: Request, res: Response) {
     const id = Number(req.body.id);
-    const authorId = req.session!.userInfo.id;
+    const authorId = req.session.userInfo!.id;
     const ownerId = 1;
     const recipe = new Recipe(this.pool)
     const [ row ] = await recipe.viewById(id, authorId, ownerId);
@@ -90,10 +90,10 @@ export class UserRecipeController {
       cookingImage,
       video
     }= req.body.recipeInfo;
-    const authorId = req.session!.userInfo.id;
-    const ownerId = (ownership === "private") ? req.session!.userInfo.id : 1;
+    const authorId = req.session.userInfo!.id;
+    const ownerId = (ownership === "private") ? req.session.userInfo!.id : 1;
 
-    const args = {
+    const creatingRecipe = {
       recipeTypeId,
       cuisineId,
       authorId,
@@ -109,7 +109,7 @@ export class UserRecipeController {
       cookingImage,
       video
     };
-    assert(args, validRecipe);
+    assert(creatingRecipe, validRecipe);
 
     const recipe = new Recipe(this.pool);
     const recipeMethod = new RecipeMethod(this.pool);
@@ -119,7 +119,7 @@ export class UserRecipeController {
     const recipeSearch = new RecipeSearch(this.esClient);
     await createRecipeService({
       ownerId,
-      args,
+      creatingRecipe,
       requiredMethods,
       requiredEquipment,
       requiredIngredients,
@@ -137,8 +137,8 @@ export class UserRecipeController {
 
   async editPrivate(req: Request, res: Response) {
     const id = Number(req.body.id);
-    const authorId = req.session!.userInfo.id;
-    const ownerId = req.session!.userInfo.id;
+    const authorId = req.session.userInfo!.id;
+    const ownerId = req.session.userInfo!.id;
     const recipe = new Recipe(this.pool);
     const [ row ] = await recipe.edit(id, authorId, ownerId);
     return res.send(row);
@@ -146,7 +146,7 @@ export class UserRecipeController {
 
   async editPublic(req: Request, res: Response) {
     const id = Number(req.body.id);
-    const authorId = req.session!.userInfo.id;
+    const authorId = req.session.userInfo!.id;
     const ownerId = 1;
     const recipe = new Recipe(this.pool);
     const [ row ] = await recipe.edit(id, authorId, ownerId);
@@ -174,13 +174,13 @@ export class UserRecipeController {
       cookingImage,
       video
     }= req.body.recipeInfo;
-    const authorId = req.session!.userInfo.id;
-    const ownerId = (ownership === "private") ? req.session!.userInfo.id : 1;
+    const authorId = req.session.userInfo!.id;
+    const ownerId = (ownership === "private") ? req.session.userInfo!.id : 1;
     if (typeof id === "undefined") {
       return res.send({message: 'Invalid recipe ID!'});
     }
 
-    const args = {
+    const updatingRecipe = {
       recipeTypeId,
       cuisineId,
       authorId,
@@ -196,7 +196,7 @@ export class UserRecipeController {
       cookingImage,
       video
     };
-    assert(args, validRecipe);
+    assert(updatingRecipe, validRecipe);
 
     const recipe = new Recipe(this.pool);
     const recipeMethod = new RecipeMethod(this.pool);
@@ -208,7 +208,7 @@ export class UserRecipeController {
       id,
       authorId,
       ownerId,
-      args,
+      updatingRecipe,
       requiredMethods,
       requiredEquipment,
       requiredIngredients,
@@ -227,8 +227,8 @@ export class UserRecipeController {
   async delete(req: Request, res: Response) {
     // transaction(s)?: TO DO: TRIGGERS
     const id = Number(req.body.id);
-    const authorId = req.session!.userInfo.id;
-    const ownerId = req.session!.userInfo.id;
+    const authorId = req.session.userInfo!.id;
+    const ownerId = req.session.userInfo!.id;
 
     const recipeEquipment = new RecipeEquipment(this.pool);
     const recipeIngredient = new RecipeIngredient(this.pool);
@@ -251,7 +251,7 @@ export class UserRecipeController {
 
   async disown(req: Request, res: Response) {
     const id = Number(req.body.id);
-    const authorId = req.session!.userInfo.id;
+    const authorId = req.session.userInfo!.id;
 
     const recipe = new Recipe(this.pool);
     await recipe.disownById(id, authorId);

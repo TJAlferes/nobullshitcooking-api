@@ -16,7 +16,7 @@ export class UserSavedRecipeController {
   }
 
   async viewByUserId(req: Request, res: Response) {
-    const userId = req.session!.userInfo.id;
+    const userId = req.session.userInfo!.id;
     const savedRecipe = new SavedRecipe(this.pool);
     const rows = await savedRecipe.viewByUserId(userId);
     return res.send(rows);
@@ -24,7 +24,7 @@ export class UserSavedRecipeController {
 
   async create(req: Request, res: Response) {
     const recipeId = Number(req.body.id);
-    const userId = req.session!.userInfo.id;
+    const userId = req.session.userInfo!.id;
     assert({userId, recipeId}, validSavedRecipe);
     const savedRecipe = new SavedRecipe(this.pool);
     await savedRecipe.create(userId, recipeId);
@@ -33,7 +33,7 @@ export class UserSavedRecipeController {
 
   async delete(req: Request, res: Response) {
     const recipeId = Number(req.body.id);
-    const userId = req.session!.userInfo.id;
+    const userId = req.session.userInfo!.id;
     assert({userId, recipeId}, validSavedRecipe);
     const savedRecipe = new SavedRecipe(this.pool);
     await savedRecipe.delete(userId, recipeId);

@@ -1,5 +1,5 @@
 require('dotenv').config();
-import S3 from 'aws-sdk/clients/s3';
+import { S3Client } from '@aws-sdk/client-s3';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -18,11 +18,11 @@ const AWS_S3_BUCKETS = {
 
 export const getSignedUrl = {
   avatar: async function(req: Request, res: Response) {
-    const fullName = `${req.session!.userInfo.username}`;
+    const fullName = `${req.session.userInfo!.username}`;
     const tinyName = `${fullName}-tiny`;
     const { fileType } = req.body;
 
-    const s3 = new S3({
+    const s3 = new S3Client({
       accessKeyId: process.env.AWS_S3_AVATAR_ACCESS_KEY_ID,
       secretAccessKey: process.env.AWS_S3_AVATAR_SECRET_ACCESS_KEY
     });
@@ -44,11 +44,11 @@ export const getSignedUrl = {
     return res.json({success: true, fullSignature, tinySignature, fullName});
   },
   content: async function(req: Request, res: Response) {
-    const fullName = `${req.session!.userInfo.username}-${uuidv4()}`;
+    const fullName = `${req.session.userInfo!.username}-${uuidv4()}`;
     const thumbName = `${fullName}-thumb`;
     const { fileType } = req.body;
   
-    const s3 = new S3({
+    const s3 = new S3Client({
       accessKeyId: process.env.AWS_S3_CONTENT_ACCESS_KEY_ID,
       secretAccessKey: process.env.AWS_S3_CONTENT_SECRET_ACCESS_KEY
     });
@@ -70,11 +70,11 @@ export const getSignedUrl = {
     return res.json({success: true, fullSignature, thumbSignature, fullName});
   },
   equipment: async function(req: Request, res: Response) {
-    const fullName = `${req.session!.userInfo.username}-${uuidv4()}`;
+    const fullName = `${req.session.userInfo!.username}-${uuidv4()}`;
     const tinyName = `${fullName}-tiny`;
     const { fileType } = req.body;
   
-    const s3 = new S3({
+    const s3 = new S3Client({
       accessKeyId: process.env.AWS_S3_EQUIPMENT_ACCESS_KEY_ID,
       secretAccessKey: process.env.AWS_S3_EQUIPMENT_SECRET_ACCESS_KEY
     });
@@ -96,11 +96,11 @@ export const getSignedUrl = {
     return res.json({success: true, fullSignature, tinySignature, fullName});
   },
   ingredient: async function(req: Request, res: Response) {
-    const fullName = `${req.session!.userInfo.username}-${uuidv4()}`;
+    const fullName = `${req.session.userInfo!.username}-${uuidv4()}`;
     const tinyName = `${fullName}-tiny`;
     const { fileType } = req.body;
   
-    const s3 = new S3({
+    const s3 = new S3Client({
       accessKeyId: process.env.AWS_S3_INGREDIENT_ACCESS_KEY_ID,
       secretAccessKey: process.env.AWS_S3_INGREDIENT_SECRET_ACCESS_KEY
     });
@@ -122,12 +122,12 @@ export const getSignedUrl = {
     return res.json({success: true, fullSignature, tinySignature, fullName});
   },
   recipe: async function(req: Request, res: Response) {
-    const fullName = `${req.session!.userInfo.username}-${uuidv4()}`;
+    const fullName = `${req.session.userInfo!.username}-${uuidv4()}`;
     const thumbName = `${fullName}-thumb`;
     const tinyName = `${fullName}-tiny`;
     const { fileType } = req.body;
   
-    const s3 = new S3({
+    const s3 = new S3Client({
       accessKeyId: process.env.AWS_S3_RECIPE_ACCESS_KEY_ID,
       secretAccessKey: process.env.AWS_S3_RECIPE_SECRET_ACCESS_KEY
     });
@@ -162,10 +162,10 @@ export const getSignedUrl = {
     });
   },
   recipeCooking: async function(req: Request, res: Response) {
-    const fullName = `${req.session!.userInfo.username}-${uuidv4()}`;
+    const fullName = `${req.session.userInfo!.username}-${uuidv4()}`;
     const { fileType } = req.body;
   
-    const s3 = new S3({
+    const s3 = new S3Client({
       accessKeyId: process.env.AWS_S3_RECIPE_COOKING_ACCESS_KEY_ID,
       secretAccessKey: process.env.AWS_S3_RECIPE_COOKING_SECRET_ACCESS_KEY
     });
@@ -180,10 +180,10 @@ export const getSignedUrl = {
     return res.json({success: true, fullSignature, fullName});
   },
   recipeEquipment: async function(req: Request, res: Response) {
-    const fullName = `${req.session!.userInfo.username}-${uuidv4()}`;
+    const fullName = `${req.session.userInfo!.username}-${uuidv4()}`;
     const { fileType } = req.body;
   
-    const s3 = new S3({
+    const s3 = new S3Client({
       accessKeyId: process.env.AWS_S3_RECIPE_EQUIPMENT_ACCESS_KEY_ID,
       secretAccessKey: process.env.AWS_S3_RECIPE_EQUIPMENT_SECRET_ACCESS_KEY
     });
@@ -198,10 +198,10 @@ export const getSignedUrl = {
     return res.json({success: true, fullSignature, fullName});
   },
   recipeIngredients: async function(req: Request, res: Response) {
-    const fullName = `${req.session!.userInfo.username}-${uuidv4()}`;
+    const fullName = `${req.session.userInfo!.username}-${uuidv4()}`;
     const { fileType } = req.body;
   
-    const s3 = new S3({
+    const s3 = new S3Client({
       accessKeyId: process.env.AWS_S3_RECIPE_INGREDIENTS_ACCESS_KEY_ID,
       secretAccessKey: process.env.AWS_S3_RECIPE_INGREDIENTS_SECRET_ACCESS_KEY
     });

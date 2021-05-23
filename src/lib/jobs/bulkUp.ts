@@ -34,10 +34,10 @@ export async function bulkUp(esClient: Client, pool: Pool) {
   
   const [ bulkRecipes, bulkIngredients, bulkProducts, bulkEquipment ] =
     await Promise.all([
-      equipment.getAllForElasticSearch(),
-      ingredient.getAllForElasticSearch(),
-      product.getAllForElasticSearch(),
-      recipe.getAllForElasticSearch()
+      equipment.getForElasticSearch(),
+      ingredient.getForElasticSearch(),
+      product.getForElasticSearch(),
+      recipe.getForElasticSearch()
     ]);
 
   // delete

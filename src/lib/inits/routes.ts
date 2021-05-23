@@ -25,6 +25,7 @@ import {
   supplierRouter
 } from '../../routes';
 
+// TO DO: add grocer
 export function routesInit(app: Application, pool: Pool, esClient: Client) {
   const staff = staffRouter(esClient, pool);
   const user = userRouter(esClient, pool);

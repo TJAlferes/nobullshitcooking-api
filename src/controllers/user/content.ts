@@ -21,8 +21,8 @@ export class UserContentController {
   }
 
   async view(req: Request, res: Response) {
-    const authorId = req.session!.userInfo.id;
-    //const ownerId = req.session!.userInfo.id;
+    const authorId = req.session.userInfo!.id;
+    //const ownerId = req.session.userInfo!.id;
     const content = new Content(this.pool);
     const rows = await content.view(authorId);
     return res.send(rows);
@@ -30,8 +30,8 @@ export class UserContentController {
 
   async viewById(req: Request, res: Response) {
     const id = Number(req.body.id);
-    const authorId = req.session!.userInfo.id;
-    //const ownerId = req.session!.userInfo.id;
+    const authorId = req.session.userInfo!.id;
+    //const ownerId = req.session.userInfo!.id;
     const content = new Content(this.pool);
     const [ row ] = await content.viewById(id, authorId);
     return res.send(row);
@@ -40,8 +40,8 @@ export class UserContentController {
   async create(req: Request, res: Response) {
     const contentTypeId = Number(req.body.contentInfo.contentTypeId);
     const { published, title, items } = req.body.contentInfo;
-    const authorId = req.session!.userInfo.id;
-    const ownerId = req.session!.userInfo.id;
+    const authorId = req.session.userInfo!.id;
+    const ownerId = req.session.userInfo!.id;
     const created = ((new Date).toISOString()).split("T")[0];
 
     const args =
@@ -57,7 +57,7 @@ export class UserContentController {
     const id = Number(req.body.contentInfo.id);
     const contentTypeId = Number(req.body.contentInfo.contentTypeId);
     const { published, title, items } = req.body.contentInfo;
-    const ownerId = req.session!.userInfo.id;
+    const ownerId = req.session.userInfo!.id;
 
     const args = {contentTypeId, ownerId, published, title, items};
     assert(args, validUpdatingContent);
@@ -69,7 +69,7 @@ export class UserContentController {
 
   async delete(req: Request, res: Response) {
     const id = Number(req.body.id);
-    const ownerId = req.session!.userInfo.id;
+    const ownerId = req.session.userInfo!.id;
     const content = new Content(this.pool);
     await content.delete(ownerId, id);  // TO DO: switch order?
     return res.send({message: 'Content deleted.'});

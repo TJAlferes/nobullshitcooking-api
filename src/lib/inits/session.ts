@@ -26,6 +26,7 @@ export function sessionInit(
     unset: "destroy"
   };
   if (app.get('env') === 'production') {
+    // TO DO: finish
     // new Chrome requirements:
     /*sessionOptions.cookie = {
       sameSite: none,

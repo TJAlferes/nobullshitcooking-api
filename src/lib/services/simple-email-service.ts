@@ -1,9 +1,9 @@
 'use strict';
 
 //require('dotenv').config();
-import SES from 'aws-sdk/clients/ses';
+import { SESClient, CloneReceiptRuleSetCommand } from '@aws-sdk/client-ses';
 
-export function emailUser(
+export async function emailUser(
   from: string,
   to: string,
   subject: string,
@@ -11,14 +11,12 @@ export function emailUser(
   body_html: string,
   charset: string
 ) {
-  const ses = new SES();
+  const client = new SESClient({});
 
   const params = { 
     Source: from, 
     Destination: { 
-      ToAddresses: [
-        to 
-      ],
+      ToAddresses: [to]
     },
     Message: {
       Subject: {
@@ -36,11 +34,16 @@ export function emailUser(
         }
       }
     },
+    RuleSetName: undefined,
+    OriginalRuleSetName: undefined
     //ConfigurationSetName: configuration_set
   };
+  const command = new CloneReceiptRuleSetCommand(params);
   
-  ses.sendEmail(params, function(err, data) {
-    if (err) console.log(err.message);
-    else console.log("Email sent! Message ID: ", data.MessageId);
-  });
+  try {
+    const data = await client.send(command);
+    console.log("Email sent! Data: ", data);
+  } catch (error) {
+    console.log(error.message);
+  } finally {}
 }

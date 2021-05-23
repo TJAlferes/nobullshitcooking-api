@@ -52,9 +52,7 @@ export class StaffAuthController {
     if (!valid || !staffExists) return res.send({message: feedback});
 
     const { id, staffname } = staffExists;
-    req.session!.staffInfo = {};
-    req.session!.staffInfo.id = id;
-    req.session!.staffInfo.staffname = staffname;
+    req.session!.staffInfo = {id, staffname};
     return res.json({message: 'Signed in.', staffname});
   }
 
@@ -66,7 +64,7 @@ export class StaffAuthController {
   async update(req: Request, res: Response) {
     // TO DO: finish
     const { email, pass, staffname } = req.body.staffInfo;
-    const id = req.session!.staffInfo.id;
+    const id = req.session.staffInfo!.id;
     const args = {email, pass, staffname};
     //assert(args, validStaffUpdate);
 

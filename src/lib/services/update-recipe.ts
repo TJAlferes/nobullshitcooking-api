@@ -26,7 +26,7 @@ export async function updateRecipeService({
   id,
   authorId,
   ownerId,
-  recipeUpdate,
+  updatingRecipe,
   requiredMethods,
   requiredEquipment,
   requiredIngredients,
@@ -38,7 +38,7 @@ export async function updateRecipeService({
   recipeSubrecipe,
   recipeSearch
 }: UpdateRecipeService) {
-  await recipe.update({id, ...recipeUpdate}, authorId, ownerId);
+  await recipe.update({id, ...updatingRecipe}, authorId, ownerId);
 
   /*
   NOTE: order matters!
@@ -117,7 +117,7 @@ interface UpdateRecipeService {
   id: number;
   authorId: number;
   ownerId: number;
-  recipeUpdate: ICreatingRecipe;
+  updatingRecipe: ICreatingRecipe;
   requiredEquipment: IMakeRecipeEquipment[];
   requiredIngredients: IMakeRecipeIngredient[];
   requiredMethods: IMakeRecipeMethod[];

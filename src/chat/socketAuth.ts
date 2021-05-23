@@ -1,12 +1,13 @@
 'use strict';
 
+import { SessionData } from 'express-session';
 import cookie from 'cookie';
 import cookieParser from 'cookie-parser';
 import { RedisStore } from 'connect-redis';
 //import { NextFunction } from 'express';  // OLD
 import { Redis } from 'ioredis';
 import { Server, Socket } from 'socket.io';
-import { ExtendedError } from 'socket.io/dist/namespace';  // NEW
+import { ExtendedError } from 'socket.io/dist/namespace';
 import { v4 as uuidv4 } from 'uuid';
 
 import { ChatUser } from '../access/redis/ChatUser';
@@ -15,10 +16,10 @@ export async function addChatUser(
   pubClient: Redis,
   socket: Socket,
   sid: string,
-  session: Express.SessionData
+  session: SessionData
 ) {
   const { username } = session.userInfo;
-  socket.handshake.query = {sid, userInfo: session.userInfo};  // NEW
+  socket.handshake.query = {sid, userInfo: session.userInfo};
   const chatUser = new ChatUser(pubClient);
   await chatUser.add(username, sid, socket.id);
 }

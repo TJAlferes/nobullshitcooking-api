@@ -90,9 +90,7 @@ export class UserAuthController {
     if (!valid || !userExists) return res.send({message: feedback});
 
     const { id, username } = userExists;
-    req.session!.userInfo = {};
-    req.session!.userInfo.id = id;
-    req.session!.userInfo.username = username;
+    req.session.userInfo = {id, username};
     return res.json({message: 'Signed in.', username});
   }
 
@@ -103,7 +101,7 @@ export class UserAuthController {
 
   async update(req: Request, res: Response) {
     const { email, pass, username } = req.body.userInfo;
-    const id = req.session!.userInfo.id;
+    const id = req.session.userInfo!.id;
     const args = {id, email, pass, username};
     assert(args, validUserUpdate);
     const user = new User(this.pool);
@@ -115,7 +113,7 @@ export class UserAuthController {
 
   async delete(req: Request, res: Response) {
     /*
-    const userId = req.session!.userInfo.id;
+    const userId = req.session.userInfo!.id;
     const content = new Content(this.pool);
     const equipment = new Equipment(this.pool);
     const favoriteRecipe = new FavoriteRecipe(this.pool);

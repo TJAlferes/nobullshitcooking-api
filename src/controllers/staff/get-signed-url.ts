@@ -1,5 +1,5 @@
 require('dotenv').config();
-import S3 from 'aws-sdk/clients/s3';
+import { S3Client } from '@aws-sdk/client-s3';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -9,11 +9,11 @@ const AWS_S3_CONTENT_BUCKET: string = process.env.AWS_S3_CONTENT_BUCKET!;
 
 export const getSignedUrl = {
   content: async function(req: Request, res: Response) {
-    const fullName = `${req.session!.staffInfo.staffname}-${uuidv4()}`;
+    const fullName = `${req.session.staffInfo!.staffname}-${uuidv4()}`;
     const thumbName = `${fullName}-thumb`;
     const fileType = req.body.fileType;
   
-    const s3 = new S3({
+    const s3 = new S3Client({
       accessKeyId: process.env.AWS_S3_CONTENT_ACCESS_KEY_ID,
       secretAccessKey: process.env.AWS_S3_CONTENT_SECRET_ACCESS_KEY
     });
