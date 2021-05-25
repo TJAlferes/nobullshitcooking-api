@@ -18,12 +18,14 @@ export class ChatRoom implements IChatRoom {
   }
 
   async getUsers(room: string) {
-    const data = await this.pubClient.zrange(`rooms:${room}`, 0, -1);
+    // but change to userIds now
+    const usernames = await this.pubClient.zrange(`rooms:${room}`, 0, -1);
     const pubClient = this.pubClient;
     let users = [];
 
-    // TO DO: do some renaming here
-    for (let username of data){
+    // but change to userId of userIds now
+    // or... don't use userIds... and just omit this part?
+    for (const username of usernames){
       const userHash = await pubClient.hgetall(`user:${username}`);
       users.push(userHash.username);
     }

@@ -54,5 +54,5 @@ export type RedisClients = {
   pubClient: Redis;
   subClient: Redis;
   sessClient: Redis;
-  workerClient: Redis;
+  //workerClient: Redis;
 }

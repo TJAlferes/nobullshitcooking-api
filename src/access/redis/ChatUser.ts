@@ -11,16 +11,17 @@ export class ChatUser implements IChatUser {
   }
 
   async getSocketId(id: string) {
-    const foundUserSocketId = await this.client.hget(`user:${id}`, 'socketid');
-    return foundUserSocketId;
+    const socketId = await this.client.hget(`user:${id}`, 'socketid');
+    return socketId;
   }
 
   async add(username: string, sid: string, socketid: string) {
     await this.client
       .multi()
-      .hset(`user:${username}`, 'username', username)
-      .hset(`user:${username}`, 'sid', sid)
-      .hset(`user:${username}`, 'socketid', socketid)
+      .hset(
+        `user:${username}`,
+        'username', username, 'sid', sid, 'socketid', socketid
+      )
       .zadd('users', `${Date.now()}`, `${username}`)
       .exec();
   }

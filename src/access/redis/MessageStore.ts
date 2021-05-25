@@ -8,9 +8,17 @@ export class MessageStore implements IMessageStore {
 
   constructor(redisClient: Redis) {
     this.redisClient = redisClient;
+    this.getForUserId = this.getForUserId.bind(this);
+    this.save = this.save.bind(this);
   }
 
-  saveMessage(message: any) {
+  getForUserId(userId: string) {
+    return this.redisClient
+      .lrange(`messages:${userId}`, 0, -1)
+      .then(results => results.map(result => JSON.parse(result)));
+  }
+
+  save(message: any) {
     const value = JSON.stringify(message);
     this.redisClient
       .multi()
@@ -20,15 +28,9 @@ export class MessageStore implements IMessageStore {
       .expire(`messages:${message.to}`, CONVERSATION_TTL)
       .exec();
   }
-
-  findMessagesForUser(userId: string) {
-    return this.redisClient
-      .lrange(`messages:${userId}`, 0, -1)
-      .then(results => results.map(result => JSON.parse(result)));
-  }
 }
 
 interface IMessageStore {
-  saveMessage(message: any): void;
-  findMessagesForUser(userId: string): {};
+  getForUserId(userId: string): {};
+  save(message: any): void;
 }

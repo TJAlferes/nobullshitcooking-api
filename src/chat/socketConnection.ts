@@ -19,11 +19,14 @@ import {
   rejoinRoom
 } from './handlers';
 
+// remove indirection? move to inits/socket.ts?
 export function socketConnection(
   pool: Pool,
   { pubClient, subClient }: RedisClients
 ) {
   return async function(socket: Socket) {
+    const { sessionId, userId, username } = socket;
+
     const user = new User(pool);
     const friendship = new Friendship(pool);
 
@@ -31,43 +34,42 @@ export function socketConnection(
     //const chatRoom = new ChatRoom(pubClient, subClient);
     //const chatUser = new ChatUser(pubClient);
     const messageStore = new MessageStore(pubClient);  // change client?
-    const roomStore = new RoomStore(pubClient, subClient);          // ?
+    //const roomStore = new RoomStore(pubClient, subClient);          // ?
     const sessionStore = new SessionStore(pubClient);  // change client?
 
-    sessionStore.saveSession(socket.sessionId, {
-      userId: socket.userId,
-      username: socket.username,
-      connected: "true"
-    });
 
-    socket
-      .emit('session', {sessionId: socket.sessionId, userId: socket.userId});
 
-    socket.join(socket.userId);
+    sessionStore.save(sessionId, {userId, username, connected: "true"});
+
+    socket.emit('session', {sessionId, userId});
+    socket.join(userId);
 
     // fetch existing users (similar to GetOnline?)
     const users = [];
-    const [ messages, sessions ] = await Promise.all([
-      messageStore.findMessagesForUser(socket.userId),
-      sessionStore.findAllSessions()
-    ]);
-    const messagesPerUser = new Map();
+    const [ messages, sessions ] = 
+      await Promise.all([messageStore.getForUserId(userId), sessionStore.get()]);
 
+    const messagesPerUser = new Map();
     messages.forEach(message => {
       const { from, to } = message;
-      const otherUser = socket.userId === from ? to : from;
+      const otherUser = userId === from ? to : from;
+
       if (messagesPerUser.has(otherUser)) {
         messagesPerUser.get(otherUser).push(message);
         return;
       }
+
       messagesPerUser.set(otherUser, [message]);
     });
 
     sessions.forEach(({ userId, username, connected }) => {
-      users.push({userId, username, connected, messages: messagesPerUser.get(userId) || []})
+      const messages = messagesPerUser.get(userId) || [];
+      users.push({userId, username, connected, messages});
     });
 
     socket.emit('users', users);
+
+
 
     // Users
 
@@ -75,6 +77,7 @@ export function socketConnection(
     // no longer appear online
     // for users blocked and friends deleted
     // during that same session
+    // so emit ShowOffline
     
     // rename
     socket.on('GetOnline', async function() {
@@ -87,7 +90,7 @@ export function socketConnection(
 
     // Messages
 
-    socket.on('AddPublicMessage', async function(text: string) {
+    socket.on('AddMessage', async function(text: string) {
       await addPublicMessage({username, text, socket, chatMessage});
     });
 
@@ -130,15 +133,12 @@ export function socketConnection(
 
     socket.on('disconnect', async function(/*reason*/) {
       //console.log('disconnect reason: ', reason);
-      const matchingSockets = await io.in(socket.userId).allSockets();
+      const matchingSockets = await io.in(userId).allSockets();
       const disconnected = matchingSockets.size === 0;
       if (disconnected) {
-        socket.broadcast.emit('user disconnected', socket.userId);
-        sessionStore.saveSession(socket.sessionId, {
-          userId: socket.userId,
-          username: socket.username,
-          connected: false
-        });
+        socket.broadcast.emit('user disconnected', userId);
+        // await?
+        sessionStore.save(sessionId, {userId, username, connected: "false"});
       }
     });
   }

@@ -15,6 +15,7 @@ export async function getOnline({
 
   let online = [];
   for (let f of acceptedFriends) {
+    // NOTE: right now you actually need the f.username, not the f.user_id
     const onlineFriend = await chatUser.getSocketId(f.user_id);
     if (!onlineFriend) continue;
 

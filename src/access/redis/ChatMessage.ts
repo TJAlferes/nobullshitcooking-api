@@ -7,10 +7,10 @@ export class ChatMessage implements IChatMessage {
 
   constructor(client: Redis) {
     this.client = client;
-    this.addMessage = this.addMessage.bind(this);
+    this.add = this.add.bind(this);
   }
   
-  async addMessage(message: IMessage) {
+  async add(message: IMessage) {
     await this.client
       .multi()
       .zadd(
@@ -25,5 +25,5 @@ export class ChatMessage implements IChatMessage {
 
 export interface IChatMessage {
   client: Redis;
-  addMessage(message: IMessage): void;
+  add(message: IMessage): void;
 }

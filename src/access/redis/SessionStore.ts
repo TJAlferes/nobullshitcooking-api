@@ -11,42 +11,22 @@ export class SessionStore implements ISessionStore {
 
   constructor(redisClient: Redis) {
     this.redisClient = redisClient;
+    this.get = this.get.bind(this);
+    this.getById = this.getById.bind(this);
+    this.save = this.save.bind(this);
   }
 
-  findSession(id: string) {
-    return this.redisClient
-      .hmget(`session:${id}`, "userId", "username", "connected")
-      .then(mapSession);
-  }
-
-  saveSession(id: string, { userId, username, connected }: ISessionInfoAsStr) {
-    this.redisClient
-      .multi()
-      .hset(
-        `session:${id}`,
-        "userId", userId, "username", username, "connected", connected
-      )
-      .expire(`session:${id}`, SESSION_TTL)
-      .exec();
-  }
-
-  async findAllSessions() {
+  async get() {
     const keys = new Set<string>();
     let nextIdx = 0;
-    
     do {
-
       const [ nextIdxAsStr, results ] = await this.redisClient
         .scan(nextIdx, "MATCH", "session:*", "COUNT", 100);
-
       nextIdx = parseInt(nextIdxAsStr, 10);
-
       results.forEach(s => keys.add(s));
-
     } while (nextIdx !== 0);
 
     const commands: string[][] = [];
-
     keys.forEach(key => {
       commands.push(["hmget", key, "userId", "username", "connected"]);
     });
@@ -60,15 +40,29 @@ export class SessionStore implements ISessionStore {
           .filter(v => !!v)
       );
   }
+
+  getById(id: string) {
+    return this.redisClient
+      .hmget(`session:${id}`, "userId", "username", "connected")
+      .then(mapSession);
+  }
+
+  save(id: string, { userId, username, connected }: ISessionInfoAsStr) {
+    this.redisClient
+      .multi()
+      .hset(
+        `session:${id}`,
+        "userId", userId, "username", username, "connected", connected
+      )
+      .expire(`session:${id}`, SESSION_TTL)
+      .exec();
+  }
 }
 
 interface ISessionStore {
-  findSession(id: string): Promise<ISessionInfo | undefined>;
-  saveSession(
-    id: string,
-    { userId, username, connected }: ISessionInfoAsStr
-  ): void;
-  findAllSessions(): Promise< (ISessionInfo | undefined)[] >;
+  get(): Promise< (ISessionInfo | undefined)[] >;
+  getById(id: string): Promise<ISessionInfo | undefined>;
+  save(id: string, sessionInfo: ISessionInfoAsStr): void;
 }
 
 interface ISessionInfo {
