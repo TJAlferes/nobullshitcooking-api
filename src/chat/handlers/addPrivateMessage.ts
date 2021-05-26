@@ -23,6 +23,7 @@ export async function addPrivateMessage({
   const blockedByUser = blockedUsers.find((u: any) => u.username === from);
   if (blockedByUser) return notFound;
 
+  // TO DO: DO NOT USE socketId? USE uuidv4 "userId" INSTEAD?
   const onlineUser = await chatUser.getSocketId(id);  // ?
   if (!onlineUser) return notFound;
 

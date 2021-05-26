@@ -1,9 +1,9 @@
 'use strict';
 
 import { RedisStore } from 'connect-redis';
-import { Server } from 'http';
+import { Server as HTTPServer } from 'http';
 import { Pool } from 'mysql2/promise';
-import { Socket } from 'socket.io';
+import { Server as SocketIOServer, Socket } from 'socket.io';
 import { ExtendedError } from 'socket.io/dist/namespace';
 import { createAdapter } from 'socket.io-redis';
 import { v4 as uuidv4 } from 'uuid';
@@ -25,45 +25,46 @@ export function socketInit(
   pool: Pool,
   redisClients: RedisClients,
   redisSession: RedisStore,
-  httpServer: Server
+  httpServer: HTTPServer
 ) {
-  const io = require('socket.io')(httpServer, {
-    cors: {
-      //allowedHeaders: ["sid", "userInfo"],
-      credentials: true,
-      methods: ["GET", "POST"],
-      origin: ["https://nobullshitcooking.com", "http://localhost:8080"]
-    },
-    pingTimeout: 60000
-  });
-  const { pubClient, subClient } = redisClients;
-  //pubClient.duplicate()
+  const io = new SocketIOServer<IClientToServerEvents, IServerToClientEvents>(
+    httpServer,
+    {
+      cors: {
+        //allowedHeaders: ["sid", "userInfo"],
+        credentials: true,
+        methods: ["GET", "POST"],
+        origin: ["https://nobullshitcooking.com", "http://localhost:8080"]
+      },
+      pingTimeout: 60000
+    }
+  );
+  const { pubClient, subClient } = redisClients;  //pubClient.duplicate()
 
   io.adapter(createAdapter({pubClient, subClient}));
 
-  io.use(async function(socket: Socket, next: Next) {
+  io.use(async function(socket: IUberSocket, next: Next) {
     const sessionId = socket.handshake.auth.sessionId;
     if (sessionId) {
       const sessionStore = new SessionStore(pubClient)
-      const { userId, username } = await sessionStore.getById(sessionId);
-      if (userId && username) {
+      const session = await sessionStore.getById(sessionId);
+      if (session) {
         socket.sessionId = sessionId;
-        socket.userId = userId;
-        socket.username = username;
+        socket.userId = session.userId;
+        socket.username = session.username;
         return next();
       }
     }
   
     const username = socket.handshake.auth.username;
     if (!username) return next(new Error('Invalid username.'));
-  
     socket.sessionId = uuidv4();
     socket.userId = uuidv4();
     socket.username = username;
     next();
   });
 
-  io.on('connection', async function(socket: Socket) {
+  io.on('connection', async function(socket: IUberSocket) {
     const { sessionId, userId, username } = socket;
 
     const user = new User(pool);
@@ -79,7 +80,7 @@ export function socketInit(
 
     // fetch existing users (similar to GetOnline?)
     const users = [];
-    const [ messages, sessions ] =  await Promise.all([
+    const [ messages, sessions ] = await Promise.all([
       messageStore.getForUserId(userId), sessionStore.get()
     ]);
     const messagesPerUser = new Map();
@@ -159,3 +160,38 @@ export function socketInit(
 }
 
 type Next = (err?: ExtendedError | undefined) => void;
+
+interface IUberSocket extends Socket {
+  sessionId: string;
+  userId: string;
+  username: string;
+}
+
+interface IClientToServerEvents {
+  // Users
+  GetOnline(): void;
+  GetUser(room: string): void;
+  // Messages
+  AddMessage(text: string): void;
+  AddPrivateMessage(text: string, to: string): void;
+  // Rooms
+  AddRoom(room: string): void;
+  RejoinRoom(room: string): void;
+  //disconnecting
+}
+
+interface IServerToClientEvents {
+  // Users
+  GetOnline(online: []): void;
+  ShowOnline(user: string): void;
+  ShowOffline(user: string): void;
+  // Messages
+  AddMessage(message: IMessage): void;
+  AddPrivateMessage(message: IMessage): void;
+  FailedPrivateMessage(feedback: string): void;
+  // Rooms
+  GetUser(users: [], roomToAdd: string): void;
+  RegetUser(users: [], roomToRejoin: string): void;
+  AddUser(user: string): void;
+  RemoveUser(user: string): void;
+}

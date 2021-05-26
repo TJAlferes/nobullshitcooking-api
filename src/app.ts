@@ -25,6 +25,7 @@ export function appServer(
     console.log('Unhandled Rejection at:', reason);
   });
 
+  // TO DO: change again?
   if (process.env.NODE_ENV === 'production') {
     app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
       res.status(500).json({error: error.message || 'something went wrong'});

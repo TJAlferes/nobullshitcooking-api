@@ -34,8 +34,8 @@ export class SessionStore implements ISessionStore {
     return this.redisClient
       .multi(commands)
       .exec()
-      .then(
-        results => results
+      .then(results =>
+        results
           .map(([ err, session ]) => err ? undefined : mapSession(session))
           .filter(v => !!v)
       );
