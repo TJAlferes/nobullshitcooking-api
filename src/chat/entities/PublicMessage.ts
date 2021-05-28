@@ -1,13 +1,13 @@
-import { IMessage, PUBLIC } from './types';
+import { IChatUser, IMessage, PUBLIC } from './types';
 
 export function PublicMessage(
   to: string,
-  from: string,
+  from: IChatUser,
   text: string
 ): IMessage {
   return {
     kind: PUBLIC,
-    id: from + (new Date).getTime().toString(),
+    id: from.username + (new Date).getTime().toString(),
     to,
     from,
     text

@@ -5,6 +5,11 @@ export interface IMessage {
   kind: typeof PRIVATE | typeof PUBLIC;
   id: string;
   to: string;
-  from: string;
+  from: IChatUser;
   text: string;
+}
+
+export interface IChatUser {
+  id: number;
+  username: string;
 }

@@ -1,6 +1,3 @@
-//export {  } from './';
-//export {  } from './';
-//export {  } from './';
-export { MessageStore } from './MessageStore';
-//export { RoomStore } from './RoomStore';
-export { SessionStore } from './SessionStore';
+export { MessageStore, IMessageStore } from './MessageStore';
+export { RoomStore, IRoomStore } from './RoomStore';
+export { UserStore, IUserStore } from './UserStore';

@@ -1,28 +1,27 @@
 import { Socket } from 'socket.io';
 
-import { IChatMessage } from '../../access/redis/ChatMessage';
+import { IMessageStore } from '../../access/redis';
 import { PublicMessage } from '../entities/PublicMessage';
 
-export async function addPublicMessage({
-  from,
+export async function addMessage({
+  from,  // id, username,
   text,
   socket,
-  chatMessage
-}: IAddPublicMessage) {
-  // TO DO: explain this
+  messageStore
+}: IAddMessage) {
   const room = Object.keys(socket.rooms).find(r => r !== socket.id);
   if (!room) return;
 
   const message = PublicMessage(room, from, text);
-  await chatMessage.add(message);
+  await messageStore.add(message);
 
   socket.broadcast.to(room).emit('AddMessage', message);
   socket.emit('AddMessage', message);
 }
 
-interface IAddPublicMessage {
+interface IAddMessage {
   from: string;
   text: string;
   socket: Socket;
-  chatMessage: IChatMessage;
+  messageStore: IMessageStore;
 }

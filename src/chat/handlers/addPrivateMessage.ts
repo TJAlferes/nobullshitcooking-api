@@ -1,15 +1,15 @@
 import { Socket } from 'socket.io';
 
 import { IFriendship, IUser } from '../../access/mysql';
-import { IChatUser } from '../../access/redis/ChatUser';
+import { IUserStore } from '../../access/redis';
 import { PrivateMessage } from '../entities/PrivateMessage';
 
 export async function addPrivateMessage({
   to,
-  from,
+  from,  // id, username,
   text,
   socket,
-  chatUser,
+  userStore,
   friendship,
   user
 }: IAddPrivateMessage) {
@@ -23,12 +23,11 @@ export async function addPrivateMessage({
   const blockedByUser = blockedUsers.find((u: any) => u.username === from);
   if (blockedByUser) return notFound;
 
-  // TO DO: DO NOT USE socketId? USE uuidv4 "userId" INSTEAD?
-  const onlineUser = await chatUser.getSocketId(id);  // ?
+  const onlineUser = await userStore.getSocketId(id);
   if (!onlineUser) return notFound;
 
   const message = PrivateMessage(to, from, text);
-  //socket.to(to).to(from).emit('AddPrivateMessage', message);
+  //socket.to(to).to(from).emit('AddPrivateMessage', message);  // OLD
   socket.broadcast.to(onlineUser).emit('AddPrivateMessage', message);
   socket.emit('AddPrivateMessage', message);
 }
@@ -38,7 +37,7 @@ export interface IAddPrivateMessage {
   from: string;
   text: string;
   socket: Socket;
-  chatUser: IChatUser;
+  userStore: IUserStore;
   friendship: IFriendship;
   user: IUser;
 }

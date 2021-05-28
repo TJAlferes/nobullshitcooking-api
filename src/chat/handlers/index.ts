@@ -1,5 +1,5 @@
+export { addMessage } from './addMessage';
 export { addPrivateMessage } from './addPrivateMessage';
-export { addPublicMessage } from './addPublicMessage';
 export { addRoom } from './addRoom';
 export { disconnecting } from './disconnecting';
 export { getOnline } from './getOnline';

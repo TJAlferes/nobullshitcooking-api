@@ -1,19 +1,21 @@
 'use strict';
 
 import { RedisStore } from 'connect-redis';
+import cookie from 'cookie';
+import cookieParser from 'cookie-parser';
 import { Server as HTTPServer } from 'http';
 import { Pool } from 'mysql2/promise';
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import { ExtendedError } from 'socket.io/dist/namespace';
 import { createAdapter } from 'socket.io-redis';
-import { v4 as uuidv4 } from 'uuid';
 
 import { Friendship, User } from '../../access/mysql';
-import { MessageStore, SessionStore } from '../../access/redis';
+import { MessageStore, RoomStore, UserStore } from '../../access/redis';
 import { RedisClients } from '../../app';
+import { ChatUser } from '../../chat/entities/ChatUser';
 import {
+  addMessage,
   addPrivateMessage,
-  addPublicMessage,
   addRoom,
   disconnecting,
   getOnline,
@@ -31,7 +33,7 @@ export function socketInit(
     httpServer,
     {
       cors: {
-        //allowedHeaders: ["sid", "userInfo"],
+        allowedHeaders: ["sid", "userInfo"],
         credentials: true,
         methods: ["GET", "POST"],
         origin: ["https://nobullshitcooking.com", "http://localhost:8080"]
@@ -43,64 +45,41 @@ export function socketInit(
 
   io.adapter(createAdapter({pubClient, subClient}));
 
-  io.use(async function(socket: IUberSocket, next: Next) {
-    const sessionId = socket.handshake.auth.sessionId;
-    if (sessionId) {
-      const sessionStore = new SessionStore(pubClient)
-      const session = await sessionStore.getById(sessionId);
-      if (session) {
-        socket.sessionId = sessionId;
-        socket.userId = session.userId;
-        socket.username = session.username;
-        return next();
-      }
-    }
-  
-    const username = socket.handshake.auth.username;
-    if (!username) return next(new Error('Invalid username.'));
-    socket.sessionId = uuidv4();
-    socket.userId = uuidv4();
-    socket.username = username;
-    next();
+  io.use(async function(socket: Socket, next: Next) {
+    const parsedCookie = cookie.parse(socket.request.headers.cookie!);
+    const sessionId = cookieParser.signedCookie(
+      parsedCookie['connect.sid'],
+      process.env.SESSION_SECRET!
+    );
+
+    if (!sessionId || parsedCookie['connect.sid'] === sessionId)
+      return next(new Error('Not authenticated.'));
+
+    redisSession.get(sessionId, function(err, session) {
+      if (!session || !session.userInfo || !session.userInfo.id)
+        return next(new Error('Not authenticated.'));
+      
+      socket.request.sessionId = sessionId;
+      socket.request.userInfo = session.userInfo;
+
+      const { id, username } = session.userInfo;
+      const userStore = new UserStore(pubClient);
+      userStore.add(id, username, sessionId, socket.id);
+      
+      return next();
+    });
   });
 
-  io.on('connection', async function(socket: IUberSocket) {
-    const { sessionId, userId, username } = socket;
+  io.on('connection', async function(socket: Socket) {
+    const { id, username } = socket.request.userInfo;
+    const chatUser = ChatUser(id, username);
 
     const user = new User(pool);
     const friendship = new Friendship(pool);
-    const messageStore = new MessageStore(pubClient);  // change client?
-    const sessionStore = new SessionStore(pubClient);  // change client?
 
-    // persist session (similar to addChatUser?)
-    sessionStore.save(sessionId, {userId, username, connected: "true"});
-
-    socket.emit('session', {sessionId, userId});  // emit session details
-    socket.join(userId);  // join the userId room
-
-    // fetch existing users (similar to GetOnline?)
-    const users = [];
-    const [ messages, sessions ] = await Promise.all([
-      messageStore.getForUserId(userId), sessionStore.get()
-    ]);
-    const messagesPerUser = new Map();
-    messages.forEach(message => {
-      const { from, to } = message;
-      const otherUser = userId === from ? to : from;
-      if (messagesPerUser.has(otherUser))
-        messagesPerUser.get(otherUser).push(message);
-      else messagesPerUser.set(otherUser, [message]);
-    });
-    sessions.forEach(({ userId, username, connected }) => {
-      const messages = messagesPerUser.get(userId) || [];
-      users.push({userId, username, connected, messages});
-    });
-    socket.emit('users', users);
-
-    // notify existing users (similar to ShowOnline?)
-    socket.broadcast.emit('user connected', {
-      userId, username, connected: true, messages: []
-    });
+    const userStore = new UserStore(pubClient);
+    const roomStore = new RoomStore(pubClient, subClient);
+    const messageStore = new MessageStore(pubClient);
 
     // Users
 
@@ -108,46 +87,46 @@ export function socketInit(
     // during that same session (so emit ShowOffline)
     
     socket.on('GetOnline', async function() {  // TO DO: rename
-      await getOnline({username, socket, chatUser, friendship});
+      await getOnline({id, username, socket, userStore, friendship});
     });
 
     socket.on('GetUser', async function(room: string) {
-      await getUser({room, socket, chatRoom});
+      await getUser({room, socket, roomStore});
     });
 
     // Messages
 
     socket.on('AddMessage', async function(text: string) {
-      await addPublicMessage({username, text, socket, chatMessage});
+      await addMessage({text, id, username, socket, messageStore});
     });
 
     socket.on('AddPrivateMessage', async function(text: string, to: string) {
       await addPrivateMessage({
-        to, username, text, socket, chatUser, friendship, user
+        text, to, id, username, socket, userStore, friendship, user
       });
     });
 
     // Rooms
 
     socket.on('AddRoom', async function(room: string) {
-      await addRoom({room, username, socket, chatRoom});
+      await addRoom({room, username, socket, roomStore});
     });
 
     socket.on('RejoinRoom', async function(room: string) {
-      await rejoinRoom({room, username, socket, chatRoom});
+      await rejoinRoom({room, username, socket, roomStore});
     });
 
     // SocketIO events
 
     socket.on('error', (error: Error) => console.log('error: ', error));
 
-    socket.on('disconnecting', async function(reason: any) {
+    socket.on('disconnecting', async function(reason: string) {
       await disconnecting({
-        reason, username, socket, chatRoom, chatUser, friendship
+        reason, username, socket, roomStore, chatUser, friendship
       });
     });
 
-    socket.on('disconnect', async function(/*reason*/) {
+    socket.on('disconnect', async function(/*reason: string*/) {
       //console.log('disconnect reason: ', reason);
       const matchingSockets = await io.in(userId).allSockets();
       const disconnected = matchingSockets.size === 0;
@@ -162,9 +141,9 @@ export function socketInit(
 type Next = (err?: ExtendedError | undefined) => void;
 
 interface IUberSocket extends Socket {
-  sessionId: string;
-  userId: string;
-  username: string;
+  sessionId?: string;
+  userId?: string;
+  username?: string;
 }
 
 interface IClientToServerEvents {

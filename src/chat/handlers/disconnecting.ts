@@ -1,16 +1,15 @@
 import { Socket } from 'socket.io';
 
 import { IFriendship } from '../../access/mysql';
-import { IChatRoom } from '../../access/redis/ChatRoom';
-import { IChatUser } from '../../access/redis/ChatUser';
+import { IRoomStore, IUserStore } from '../../access/redis';
 
 export async function disconnecting({
   //reason,
-  userId,
+  id,
   username,
   socket,
-  chatRoom,
-  chatUser,
+  roomStore,
+  userStore,
   friendship,
 }: IDisconnecting) {
   //console.log('disconnecting; reason: ', reason);
@@ -18,28 +17,28 @@ export async function disconnecting({
   for (const room in clonedSocket.rooms) {
     if (room !== clonedSocket.id) {
       socket.broadcast.to(room).emit('RemoveUser', username);
-      chatRoom.removeUser(username, room);
+      roomStore.removeUser(id, room);
     }
   }
 
-  const acceptedFriends = await friendship.viewAccepted(userId);
+  const acceptedFriends = await friendship.viewAccepted(id);
   if (acceptedFriends.length) {
     for (const friend of acceptedFriends) {
-      const onlineFriend = await chatUser.getSocketId(friend.username);
+      const onlineFriend = await userStore.getSocketId(friend.username);
       if (!onlineFriend) continue;
-      socket.broadcast.to(onlineFriend).emit('ShowOffline', username);
+      socket.broadcast.to(onlineFriend).emit('Offline', username);
     }
   }
 
-  await chatUser.remove(username);
+  await userStore.remove(id);
 }
 
 export interface IDisconnecting {
   //reason: any;
-  userId: number;
+  id: number;
   username: string;
   socket: Socket;
-  chatRoom: IChatRoom;
-  chatUser: IChatUser;
+  roomStore: IRoomStore;
+  userStore: IUserStore;
   friendship: IFriendship;
 }

@@ -1,36 +1,46 @@
 import { Redis } from 'ioredis';
 
-const CONVERSATION_TTL = 24 * 60 * 60;
+import { IMessage } from '../../chat/entities/types';
 
-// TO DO: change any any types and merge with old code
+const MESSAGES_TTL = 24 * 60 * 60;
+
 export class MessageStore implements IMessageStore {
-  redisClient: Redis;
+  client: Redis;
 
-  constructor(redisClient: Redis) {
-    this.redisClient = redisClient;
-    this.getForUserId = this.getForUserId.bind(this);
-    this.save = this.save.bind(this);
+  constructor(client: Redis) {
+    this.client = client;
+    this.add = this.add.bind(this);
   }
-
-  getForUserId(userId: string) {
-    return this.redisClient
-      .lrange(`messages:${userId}`, 0, -1)
-      .then(results => results.map(result => JSON.parse(result)));
-  }
-
-  save(message: any) {
-    const value = JSON.stringify(message);
-    this.redisClient
+  
+  async add(message: IMessage) {
+    await this.client
       .multi()
-      .rpush(`messages:${message.from}`, value)
-      .rpush(`messages:${message.to}`, value)
-      .expire(`messages:${message.from}`, CONVERSATION_TTL)
-      .expire(`messages:${message.to}`, CONVERSATION_TTL)
+      .zadd(`rooms:${message.to}:messages`, JSON.stringify(message))
+      .expire(`rooms:${message.to}:messages`, MESSAGES_TTL)
       .exec();
   }
 }
 
-interface IMessageStore {
-  getForUserId(userId: string): {};
-  save(message: any): void;
+export interface IMessageStore {
+  client: Redis;
+  add(message: IMessage): void;
 }
+
+/*
+getForUserId(userId: string) {
+  return this.redisClient
+    .lrange(`messages:${userId}`, 0, -1)
+    .then(results => results.map(result => JSON.parse(result)));
+}
+
+save(message: any) {
+  const value = JSON.stringify(message);
+  this.redisClient
+    .multi()
+    .rpush(`messages:${message.from}`, value)
+    .rpush(`messages:${message.to}`, value)
+    .expire(`messages:${message.from}`, CONVERSATION_TTL)
+    .expire(`messages:${message.to}`, CONVERSATION_TTL)
+    .exec();
+}
+*/

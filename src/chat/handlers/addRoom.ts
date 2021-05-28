@@ -1,37 +1,39 @@
 import { Socket } from 'socket.io';
 
-import { IChatRoom } from '../../access/redis/ChatRoom';
+import { IRoomStore } from '../../access/redis';
 
 export async function addRoom({
   room,
+  id,
   username,
   socket,
-  chatRoom
+  roomStore
 }: IAddRoom) {
   if (room === '') return;
 
   const currentRooms = socket.rooms;
   // change to array and change to for of?
-  for (let currentRoom in currentRooms) {
+  for (const currentRoom in currentRooms) {
     if (currentRoom !== socket.id) {
       socket.leave(currentRoom);
-      chatRoom.removeUser(username, currentRoom);
-      socket.broadcast.to(currentRoom).emit('RemoveUser', username);
+      roomStore.removeUser(id, currentRoom);
+      socket.broadcast.to(currentRoom).emit('RemoveUser', id);
     }
   }
 
   socket.join(room);
-  await chatRoom.add(room);  // ???
-  await chatRoom.addUser(username, room);
-  socket.broadcast.to(room).emit('AddUser', username);
+  await roomStore.add(room);  // ???
+  await roomStore.addUser(id, room);
+  socket.broadcast.to(room).emit('AddUser', {id, username});
 
-  const users = await chatRoom.getUsers(room);
+  const users = await roomStore.getUsers(room);
   socket.emit('GetUser', users, room);
 }
 
 interface IAddRoom {
   room: string;
+  id: number;
   username: string;
   socket: Socket;
-  chatRoom: IChatRoom;
+  roomStore: IRoomStore;
 }
