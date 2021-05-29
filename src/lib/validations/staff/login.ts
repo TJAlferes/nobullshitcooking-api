@@ -5,25 +5,19 @@ import { IStaff } from '../../../access/mysql/Staff';
 export async function validLogin({email, pass}: Info, staff: IStaff) {
   // Problem: This would invalidate some older/alternative email types.
   if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
-    return {valid: false, feedback: 'Invalid email.'};
+    return {feedback: "Invalid email."};
   }
+  if (pass.length < 6) return {feedback: "Invalid password."};
+  if (pass.length > 54) return {feedback: "Invalid password."};
 
-  if (pass.length < 6) return {valid: false, feedback: 'Invalid password.'};
-
-  if (pass.length > 54) return {valid: false, feedback: 'Invalid password.'};
-
-  const [ staffExists ] = await staff.getByEmail(email);
-  //crypto.timingSafeEqual()
-  if (!staffExists) {
-    return {valid: false, feedback: 'Incorrect email or password.'};
-  }
+  const staffExists = await staff.getByEmail(email);
+  //crypto.timingSafeEqual() ???
+  if (!staffExists) return {feedback: "Incorrect email or password."};
   
-  const isCorrectPassword = await bcrypt.compare(pass, staffExists.pass);
-  if (!isCorrectPassword) {
-    return {valid: false, feedback: 'Incorrect email or password.'};
-  }
+  const correctPassword = await bcrypt.compare(pass, staffExists.pass);
+  if (!correctPassword) return {feedback: "Incorrect email or password."};
 
-  return {valid: true, feedback: 'Valid.', staffExists};
+  return {feedback: "valid", staffExists};
 }
 
 type Info = {

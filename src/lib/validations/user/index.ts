@@ -1,9 +1,7 @@
-export { validUserCreation } from './create';
 export { validLogin } from './login';
 export { validLoginRequest } from './loginRequest';
 export { validRegister } from './register';
 export { validRegisterRequest } from './registerRequest';
 export { validResend } from './resend';
-export { validUserUpdate } from './update';
 export { validVerify } from './verify';
 export { validVerifyRequest } from './verifyRequest';

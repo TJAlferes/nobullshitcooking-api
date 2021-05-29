@@ -9,7 +9,7 @@ import {
   validLoginRequest,
   validRegister,
   validRegisterRequest,
-  validStaffCreation
+  validStaffCreation  // validCreatingStaff validUpdatingStaff
 } from '../../lib/validations/staff';
 
 const SALT_ROUNDS = 10;
@@ -31,9 +31,8 @@ export class StaffAuthController {
     assert({email, pass, staffname}, validRegisterRequest);
 
     const staff = new Staff(this.pool);
-    const { valid, feedback } =
-      await validRegister({email, pass, staffname}, staff);
-    if (!valid) return res.send({message: feedback});
+    const feedback = await validRegister({email, pass, staffname}, staff);
+    if (feedback !== "valid") return res.send({message: feedback});
 
     const encryptedPassword = await bcrypt.hash(pass, SALT_ROUNDS);
     const args = {email, pass: encryptedPassword, staffname};
@@ -47,9 +46,10 @@ export class StaffAuthController {
     assert({email, pass}, validLoginRequest);
 
     const staff = new Staff(this.pool);
-    const { valid, feedback, staffExists } =
-      await validLogin({email, pass}, staff);
-    if (!valid || !staffExists) return res.send({message: feedback});
+    const { feedback, staffExists } = await validLogin({email, pass}, staff);
+    if (feedback !== "valid" || !staffExists) {
+      return res.send({message: feedback});
+    }
 
     const { id, staffname } = staffExists;
     req.session!.staffInfo = {id, staffname};

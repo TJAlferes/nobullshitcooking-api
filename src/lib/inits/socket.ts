@@ -13,6 +13,7 @@ import { Friendship, User } from '../../access/mysql';
 import { MessageStore, RoomStore, UserStore } from '../../access/redis';
 import { RedisClients } from '../../app';
 import { ChatUser } from '../../chat/entities/ChatUser';
+import { IMessage } from '../../chat/entities/types';
 import {
   addMessage,
   addPrivateMessage,
@@ -86,21 +87,21 @@ export function socketInit(
     // TO DO: no longer appear online for users blocked and friends deleted
     // during that same session (so emit ShowOffline)
     
-    socket.on('GetOnline', async function() {  // TO DO: rename
+    socket.on('GetOnlineFriends', async function() {
       await getOnline({id, username, socket, userStore, friendship});
     });
 
-    socket.on('GetUser', async function(room: string) {
+    socket.on('GetUsersInRoom', async function(room) {
       await getUser({room, socket, roomStore});
     });
 
     // Messages
 
-    socket.on('AddMessage', async function(text: string) {
+    socket.on('SendMessage', async function(text: string) {
       await addMessage({text, id, username, socket, messageStore});
     });
 
-    socket.on('AddPrivateMessage', async function(text: string, to: string) {
+    socket.on('SendPrivateMessage', async function(text: string, to: string) {
       await addPrivateMessage({
         text, to, id, username, socket, userStore, friendship, user
       });
@@ -108,7 +109,7 @@ export function socketInit(
 
     // Rooms
 
-    socket.on('AddRoom', async function(room: string) {
+    socket.on('JoinRoom', async function(room: string) {
       await addRoom({room, username, socket, roomStore});
     });
 
@@ -148,29 +149,29 @@ interface IUberSocket extends Socket {
 
 interface IClientToServerEvents {
   // Users
-  GetOnline(): void;
-  GetUser(room: string): void;
+  GetOnlineFriends(): void;
+  GetUsersInRoom(room: string): void;
   // Messages
-  AddMessage(text: string): void;
-  AddPrivateMessage(text: string, to: string): void;
+  SendMessage(text: string): void;
+  SendPrivateMessage(text: string, to: string): void;
   // Rooms
-  AddRoom(room: string): void;
+  JoinRoom(room: string): void;
   RejoinRoom(room: string): void;
   //disconnecting
 }
 
 interface IServerToClientEvents {
   // Users
-  GetOnline(online: []): void;
-  ShowOnline(user: string): void;
-  ShowOffline(user: string): void;
+  OnlineFriends(onlineFriends: string[]): void;
+  FriendCameOnline(friend: string): void;
+  FriendWentOffline(friend: string): void;
   // Messages
-  AddMessage(message: IMessage): void;
-  AddPrivateMessage(message: IMessage): void;
+  ReceivedMessage(message: IMessage): void;
+  ReceivedPrivateMessage(message: IMessage): void;
   FailedPrivateMessage(feedback: string): void;
   // Rooms
-  GetUser(users: [], roomToAdd: string): void;
-  RegetUser(users: [], roomToRejoin: string): void;
-  AddUser(user: string): void;
-  RemoveUser(user: string): void;
+  UsersInRoom(users: string[], room: string): void;
+  UsersInRoomRefetched(users: string[], room: string): void;
+  UserJoinedRoom(user: string): void;
+  UserLeftRoom(user: string): void;
 }

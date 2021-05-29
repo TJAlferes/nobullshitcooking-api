@@ -58,14 +58,14 @@ beforeAll(() => {
 });
 
 afterAll(() => {
-  const { pubClient, subClient, sessClient, workerClient } = redisClients;
+  const { pubClient, subClient, sessClient } = redisClients;
   server = null;
   esClient.close();
   pool.end();
   pubClient.disconnect();
   subClient.disconnect();
   sessClient.disconnect();
-  workerClient.disconnect();
+  //workerClient.disconnect();
   console.log('Integration tests finished.');
 });
 

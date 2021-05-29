@@ -21,42 +21,42 @@ export function userFriendshipRouter(pool: Pool) {
   router.post(
     '/create',
     userIsAuth,
-    [body('friendName').not().isEmpty().trim().escape()],
+    [body('friend').not().isEmpty().trim().escape()],
     catchExceptions(controller.create)
   );
 
   router.put(
     '/accept',
     userIsAuth,
-    [body('friendName').not().isEmpty().trim().escape()],
+    [body('friend').not().isEmpty().trim().escape()],
     catchExceptions(controller.accept)
   );
 
   router.put(
     '/reject',
     userIsAuth,
-    [body('friendName').not().isEmpty().trim().escape()],
+    [body('friend').not().isEmpty().trim().escape()],
     catchExceptions(controller.reject)
   );
 
   router.delete(
     '/delete',
     userIsAuth,
-    [body('friendName').not().isEmpty().trim().escape()],
+    [body('friend').not().isEmpty().trim().escape()],
     catchExceptions(controller.delete)
   );
 
   router.post(
     '/block',
     userIsAuth,
-    [body('friendName').not().isEmpty().trim().escape()],
+    [body('friend').not().isEmpty().trim().escape()],
     catchExceptions(controller.block)
   );
 
   router.delete(
     '/unblock',
     userIsAuth,
-    [body('friendName').not().isEmpty().trim().escape()],
+    [body('friend').not().isEmpty().trim().escape()],
     catchExceptions(controller.unblock)
   );
 

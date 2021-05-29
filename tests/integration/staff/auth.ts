@@ -8,39 +8,39 @@ export function staffAuthTests() {
       const { body } = await request(server).post('/staff/auth/register')
         .send({
           email: "newstaff@site.com",
-          password: "secret",
+          pass: "secret",
           staffname: "newstaff"
         });
-      expect(body).toEqual(1);
+      expect(body).toEqual({message: 'Staff account created.'});
     });
 
     it('does not register already registered staff', async () => {
       const { body } = await request(server).post('/staff/auth/register')
         .send({
           email: "newstaff@site.com",
-          password: "secret",
+          pass: "secret",
           staffname: "newstaff"
         });
-      expect(body).toEqual(1);
+      expect(body).toEqual({message: 'Staffname already taken.'});
     });
   });
 
   describe('POST /staff/auth/login', () => {
     it('logs in existing staff', async () => {
       const { body } = await request(server).post('/staff/auth/login')
-        .send({email: "staff@site.com", password: "secret"});
-      expect(body).toEqual(1);
+        .send({email: "staff@site.com", pass: "secret"});
+      expect(body).toEqual({message: 'Signed in.', staffname: "newstaff"});
     });
 
     it('does not log in already logged in staff', async () => {
       const { body } = await request(server).post('/staff/auth/login')
-        .send({email: "loggedinstaff@site.com", password: "secret"});
+        .send({email: "loggedinstaff@site.com", pass: "secret"});
       expect(body).toEqual(1);
     });
 
     it('does not log in non-existing staff', async () => {
       const { body } = await request(server).post('/staff/auth/login')
-        .send({email: "nonstaff@site.com", password: "secret"})
+        .send({email: "nonstaff@site.com", pass: "secret"})
       expect(body).toEqual(1);
     });
   });
