@@ -67,10 +67,11 @@ CREATE TABLE `customers` (
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `staff` (
-  `id`        int unsigned NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  `email`     varchar(60)  NOT NULL UNIQUE,
-  `pass`      char(60)     NOT NULL,
-  `staffname` varchar(20)  NOT NULL UNIQUE,
+  `id`                int unsigned NOT NULL              PRIMARY KEY AUTO_INCREMENT,
+  `email`             varchar(60)  NOT NULL              UNIQUE,
+  `pass`              char(60)     NOT NULL,
+  `staffname`          varchar(20)  NOT NULL              UNIQUE,
+  `confirmation_code` varchar(255)          DEFAULT NULL
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `users` (

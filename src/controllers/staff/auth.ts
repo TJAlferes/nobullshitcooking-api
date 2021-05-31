@@ -8,9 +8,10 @@ import {
   validLogin,
   validLoginRequest,
   validRegister,
-  validRegisterRequest,
-  validStaffCreation  // validCreatingStaff validUpdatingStaff
-} from '../../lib/validations/staff';
+  validStaffRegisterRequest,
+  validCreatingStaff,
+  //validUpdatingStaff
+} from '../../lib/validations';
 
 const SALT_ROUNDS = 10;
 
@@ -28,16 +29,18 @@ export class StaffAuthController {
 
   async register(req: Request, res: Response) {
     const { email, pass, staffname } = req.body.staffInfo;
-    assert({email, pass, staffname}, validRegisterRequest);
+    assert({email, pass, staffname}, validStaffRegisterRequest);
 
     const staff = new Staff(this.pool);
-    const feedback = await validRegister({email, pass, staffname}, staff);
+    const feedback = await validRegister({email, pass, name: staffname}, staff);
     if (feedback !== "valid") return res.send({message: feedback});
 
     const encryptedPassword = await bcrypt.hash(pass, SALT_ROUNDS);
     const args = {email, pass: encryptedPassword, staffname};
-    assert(args, validStaffCreation);
+    assert(args, validCreatingStaff);
+
     await staff.create(args);
+
     return res.send({message: 'Staff account created.'});
   }
 
@@ -46,13 +49,12 @@ export class StaffAuthController {
     assert({email, pass}, validLoginRequest);
 
     const staff = new Staff(this.pool);
-    const { feedback, staffExists } = await validLogin({email, pass}, staff);
-    if (feedback !== "valid" || !staffExists) {
-      return res.send({message: feedback});
-    }
+    const { feedback, exists } = await validLogin({email, pass}, staff);
+    if (feedback !== "valid" || !exists) return res.send({message: feedback});
 
-    const { id, staffname } = staffExists;
+    const { id, staffname } = exists;
     req.session!.staffInfo = {id, staffname};
+    
     return res.json({message: 'Signed in.', staffname});
   }
 
