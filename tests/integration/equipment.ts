@@ -5,15 +5,15 @@ import { server } from './index.test';
 export function equipmentTests() {
   describe('GET /equipment/:id', () => {
     it('returns data correctly', async () => {
-      const { body } = await request(server)
-        .get('/equipment/NOBSC%20Cutting%20Board');
+      const { body } = await request(server).get('/equipment/1');
       expect(body).toEqual({
-        id: "NOBSC Cutting Board",
-        owner: "NOBSC",
-        type: "Preparing",
-        name: "Cutting Board",
+        id: 1,
+        owner_id: 1,
+        equipment_type_id: 2,
+        equipment_type_name: "Preparing",
+        name: "Ceramic Stone",
         description: "It works.",
-        image: "nobsc-cutting-board"
+        image: "ceramic-stone"
       });
     });
   });

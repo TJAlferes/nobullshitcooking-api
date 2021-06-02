@@ -3,7 +3,7 @@ import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
 import { FavoriteRecipe } from '../../access/mysql';
-import { validFavoriteRecipe } from '../../lib/validations/entities';
+import { validFavoriteRecipe } from '../../lib/validations';
 
 export class UserFavoriteRecipeController {
   pool: Pool;

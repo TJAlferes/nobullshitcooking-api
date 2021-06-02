@@ -3,7 +3,7 @@ import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
 import { Friendship, User } from '../../access/mysql';
-import { validFriendship } from '../../lib/validations/entities';
+import { validFriendship } from '../../lib/validations';
 
 export class UserFriendshipController {
   pool: Pool;

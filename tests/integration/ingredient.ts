@@ -7,16 +7,15 @@ import { server } from './index.test';
 export function ingredientTests() {
   describe('GET /ingredient/:id', () => {
     it('returns data correctly', async () => {
-      const { body } = await request(server).get('/ingredient/NOBSC%20Tuna');
+      const { body } = await request(server).get('/ingredient/1');
       expect(body).toEqual({
-        id: "NOBSC Tuna",
-        type: "Fish",
+        id: 1,
+        ingredient_type_name: "Fish",
         brand: null,
         variety: null,
         name: "Tuna",
-        fullname: "NOBSC Tuna",
         description: "Tasty.",
-        image: "nobsc-tuna"
+        image: "tuna"
       });
     });
   });

@@ -7,7 +7,7 @@ export function userIngredientTests() {
     it('creates ingredient', async () => {
       const { body } = await request(server).post('/user/ingredient/create')
         .send({
-          type: "Beef",
+          ingredientTypeId: 4,
           brand: "Brand",
           variety: "Variety",
           name: "Name",
@@ -22,8 +22,8 @@ export function userIngredientTests() {
     it('updates ingredient', async () => {
       const { body } = await request(server).put('/user/ingredient/update')
         .send({
-          id: "Username Brand Variety Name",
-          type: "Beef",
+          id: 888,
+          ingredientTypeId: 4,
           brand: "Brand",
           variety: "Variety",
           name: "Name",
@@ -37,7 +37,7 @@ export function userIngredientTests() {
   describe('DELETE /user/ingredient/delete', () => {
     it('deletes ingredient', async () => {
       const { body } = await request(server).delete('/user/ingredient/delete')
-        .send({id: "Username Brand Variety Name"});
+        .send({id: 888});
       expect(body).toEqual({message: 'Ingredient deleted.'}); 
     });
   });

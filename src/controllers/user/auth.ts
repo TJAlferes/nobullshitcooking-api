@@ -4,19 +4,34 @@ import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 import { v4 as uuidv4 } from 'uuid';
 
-import { User } from '../../access/mysql';
-import { emailConfirmationCode } from '../../lib/services';
-import { validUser } from '../../lib/validations/entities';
 import {
-  validLogin,
-  validLoginRequest,
+  Content,
+  Equipment,
+  FavoriteRecipe,
+  Friendship,
+  Ingredient,
+  Plan,
+  Recipe,
+  RecipeEquipment,
+  RecipeIngredient,
+  RecipeMethod,
+  RecipeSubrecipe,
+  SavedRecipe,
+  User
+} from '../../access/mysql';
+import { emailConfirmationCode } from '../../lib/services';
+import {
+  validUserRegisterRequest,
   validRegister,
-  validRegisterRequest,
+  validResendRequest,
   validResend,
-  validUserUpdate,
+  validVerifyRequest,
   validVerify,
-  validVerifyRequest
-} from '../../lib/validations/user';
+  validCreatingUser,
+  validUpdatingUser,
+  validLoginRequest,
+  validLogin
+} from '../../lib/validations';
 
 const SALT_ROUNDS = 10;
 
@@ -36,21 +51,20 @@ export class UserAuthController {
 
   async register(req: Request, res: Response) {
     const { email, pass, username } = req.body.userInfo;
-    assert({email, pass, username}, validRegisterRequest);
+    assert({email, pass, username}, validUserRegisterRequest);
 
-    // why here? why not in the service/validation?
     const user = new User(this.pool);
-    const { valid, feedback } =
-      await validRegister({email, pass, username}, user);
-    if (!valid) return res.send({message: feedback});
+    const feedback = await validRegister({email, pass, name: username}, user);
+    if (feedback !== "valid") return res.send({message: feedback});
 
     const encryptedPass = await bcrypt.hash(pass, SALT_ROUNDS);
     const confirmationCode = uuidv4();
     const args = {email, pass: encryptedPass, username, confirmationCode};
-    assert(args, validUser);
+    assert(args, validCreatingUser);
     
     await user.create(args);
     emailConfirmationCode(email, confirmationCode);
+
     return res.send({message: 'User account created.'});
   }
 
@@ -59,38 +73,42 @@ export class UserAuthController {
     assert({email, pass, confirmationCode}, validVerifyRequest);
 
     const user = new User(this.pool);
-    const { valid, feedback } =
-      await validVerify({email, pass, confirmationCode}, user);
-    if (!valid) return res.send({message: feedback});
+    const feedback = await validVerify({email, pass, confirmationCode}, user);
+    if (feedback !== "valid") return res.send({message: feedback});
 
     user.verify(email);
+
     return res.send({message: 'User account verified.'});
   }
 
   async resendConfirmationCode(req: Request, res: Response) {
     const { email, pass } = req.body.userInfo;
-    assert({email, pass}, validLoginRequest);
+    assert({email, pass}, validResendRequest);
 
     const user = new User(this.pool);
-    const { valid, feedback } = await validResend({email, pass}, user);
-    if (!valid) return res.send({message: feedback});
+    const feedback = await validResend({email, pass}, user);
+    if (feedback !== "valid") return res.send({message: feedback});
     
     const confirmationCode = uuidv4();
     emailConfirmationCode(email, confirmationCode);
+
     return res.send({message: 'Confirmation code re-sent.'});
   }
 
   async login(req: Request, res: Response) {
+    const loggedIn = req.session.userInfo!.id;
+    if (loggedIn) return res.json({message: 'Already logged in.'});
+    
     const { email, pass } = req.body.userInfo;
     assert({email, pass}, validLoginRequest);
 
     const user = new User(this.pool);
-    const { valid, feedback, userExists } =
-      await validLogin({email, pass}, user);
-    if (!valid || !userExists) return res.send({message: feedback});
+    const { feedback, exists } = await validLogin({email, pass}, user);
+    if (feedback !== "valid" || !exists) return res.send({message: feedback});
 
-    const { id, username } = userExists;
+    const { id, username } = exists;
     req.session.userInfo = {id, username};
+
     return res.json({message: 'Signed in.', username});
   }
 
@@ -102,24 +120,25 @@ export class UserAuthController {
   async update(req: Request, res: Response) {
     const { email, pass, username } = req.body.userInfo;
     const id = req.session.userInfo!.id;
-    const args = {id, email, pass, username};
-    assert(args, validUserUpdate);
+
+    const encryptedPass = await bcrypt.hash(pass, SALT_ROUNDS);
+    const args = {email, pass: encryptedPass, username};
+    assert(args, validUpdatingUser);
+
     const user = new User(this.pool);
-    // ENCRYPT THE NEW PASS
-    await user.update(args);
-    // should it send the updated values back? const [ updatedUser ] = await
+    await user.update({id, ...args});
+
     return res.send({message: 'Account updated.'});
   }
 
   async delete(req: Request, res: Response) {
-    /*
     const userId = req.session.userInfo!.id;
+
     const content = new Content(this.pool);
     const equipment = new Equipment(this.pool);
     const favoriteRecipe = new FavoriteRecipe(this.pool);
     const friendship = new Friendship(this.pool);
     const ingredient = new Ingredient(this.pool);
-    //const notification = new Notification(this.pool);
     const plan = new Plan(this.pool);
     const recipe = new Recipe(this.pool);
     const recipeEquipment = new RecipeEquipment(this.pool);
@@ -128,7 +147,9 @@ export class UserAuthController {
     const recipeSubrecipe = new RecipeSubrecipe(this.pool);
     const savedRecipe = new SavedRecipe(this.pool);
     const user = new User(this.pool);
-    // NOTE: Due to foreign key constraints, deletes must be in this order:
+
+    // NOTE: Due to foreign key constraints, deletes must be in this order.
+
     await Promise.all([
       content.deleteAllByOwnerId(userId),  // move out and up?
       friendship.deleteAllByUserId(userId),
@@ -136,10 +157,10 @@ export class UserAuthController {
       favoriteRecipe.deleteAllByUserId(userId),
       savedRecipe.deleteAllByUserId(userId)
     ]);
-    //?
+
     await recipe.disown(userId);
-    const recipeIds =
-      await recipe.getAllPrivateIdsByUserId(userId) as number[];
+
+    const recipeIds = await recipe.getPrivateIds(userId);
     await Promise.all([
       recipeEquipment.deleteByRecipeIds(recipeIds),
       recipeIngredient.deleteByRecipeIds(recipeIds),
@@ -147,13 +168,13 @@ export class UserAuthController {
       recipeSubrecipe.deleteByRecipeIds(recipeIds),
       recipeSubrecipe.deleteBySubrecipeIds(recipeIds)
     ]);
-    await recipe.deletePrivate(userId, userId);
-    await Promise.all([
-      equipment.deleteAllByOwnerId(userId),
-      ingredient.deleteAllByOwnerId(userId)
-    ]);
+
+    await recipe.delete(userId, userId);
+
+    await Promise.all([equipment.delete(userId), ingredient.delete(userId)]);
+
     await user.delete(userId);
+
     return res.send({message: 'Account deleted.'});
-    */
   }
 }

@@ -6,7 +6,7 @@ import { Content } from '../../access/mysql';
 import {
   validCreatingContent,
   validUpdatingContent
-} from '../../lib/validations/entities';
+} from '../../lib/validations';
 
 export class StaffContentController {
   pool: Pool;

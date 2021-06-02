@@ -3,10 +3,10 @@ import request from 'supertest';
 import { server } from './index.test';
 
 export function recipeTypeTests() {
-  describe('GET /recipe-type/:name', () => {
+  describe('GET /recipe-type/:id', () => {
     it('returns data correctly', async () => {
-      const { body } = await request(server).get('/recipe-type/Drink');
-      expect(body).toEqual({name: "Drink"});
+      const { body } = await request(server).get('/recipe-type/1');
+      expect(body).toEqual({id: 1, name: "Drink"});
     });
   });
 }

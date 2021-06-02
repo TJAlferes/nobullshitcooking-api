@@ -15,7 +15,6 @@ export function profileTests() {
       const { body } = await request(server).get('/profile/testman');
       expect(body).toEqual({
         message: 'Success.',
-        avatar: 'nobsc-user-default',
         publicRecipes: [],
         favoriteRecipes: []
       });

@@ -14,7 +14,7 @@ export function userPlanTests() {
   describe('PUT /user/plan/update', () => {
     it('updates plan', async () => {
       const { body } = await request(server).put('/user/plan/update')
-        .send({id: "Username Name", name: "Name", data: {}});
+        .send({id: 1, name: "Name", data: {}});
       expect(body).toEqual({message: 'Plan updated.'});
     });
   });
@@ -22,7 +22,7 @@ export function userPlanTests() {
   describe('DELETE /user/plan/delete', () => {
     it('deletes plan', async () => {
       const { body } = await request(server).delete('/user/plan/delete')
-        .send({id: "Username Name"});
+        .send({id: 1});
       expect(body).toEqual({message: 'Plan deleted.'});
     });
   });

@@ -6,7 +6,7 @@ import { Content } from '../../access/mysql';
 import {
   validCreatingContent,
   validUpdatingContent
-} from '../../lib/validations/entities';
+} from '../../lib/validations';
 
 export class UserContentController {
   pool: Pool;
@@ -50,6 +50,7 @@ export class UserContentController {
 
     const content = new Content(this.pool);
     await content.create(args);
+
     return res.send({message: 'Content created.'});
   }
 
@@ -64,6 +65,7 @@ export class UserContentController {
 
     const content = new Content(this.pool);
     await content.update({id, ...args});
+
     return res.send({message: 'Content updated.'});
   }
 
@@ -72,6 +74,7 @@ export class UserContentController {
     const ownerId = req.session.userInfo!.id;
     const content = new Content(this.pool);
     await content.delete(ownerId, id);  // TO DO: switch order?
+    
     return res.send({message: 'Content deleted.'});
   }
 }

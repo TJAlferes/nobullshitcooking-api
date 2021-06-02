@@ -3,7 +3,7 @@ import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
 import { Supplier } from '../../access/mysql';
-import { validSupplier } from '../../lib/validations/entities';
+import { validSupplier } from '../../lib/validations';
 
 export class StaffSupplierController {
   pool: Pool;

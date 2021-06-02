@@ -3,7 +3,7 @@ import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
 import { Ingredient, RecipeIngredient } from '../../access/mysql';
-import { validIngredient } from '../../lib/validations/entities';
+import { validIngredient } from '../../lib/validations';
 
 export class UserIngredientController {
   pool: Pool;

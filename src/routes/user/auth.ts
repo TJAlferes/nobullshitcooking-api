@@ -23,6 +23,15 @@ export function userAuthRouter(pool: Pool) {
   );
 
   router.post(
+    '/resend-confirmation-code',
+    [
+      body('email').not().isEmpty().trim().escape(),
+      body('pass').not().isEmpty().trim().escape()
+    ],
+    catchExceptions(controller.resendConfirmationCode)
+  );
+
+  router.post(
     '/verify',
     [
       body('email').not().isEmpty().trim().escape(),
@@ -30,15 +39,6 @@ export function userAuthRouter(pool: Pool) {
       body('confirmationCode').not().isEmpty().trim().escape()
     ],
     catchExceptions(controller.verify)
-  );
-
-  router.post(
-    '/resend-confirmation-code',
-    [
-      body('email').not().isEmpty().trim().escape(),
-      body('pass').not().isEmpty().trim().escape()
-    ],
-    catchExceptions(controller.resendConfirmationCode)
   );
 
   router.post(

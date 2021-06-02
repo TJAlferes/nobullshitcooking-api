@@ -2,7 +2,6 @@ import request from 'supertest';
 
 import { server } from '../index.test';
 
-// TO DO: fix and finish
 export function userAuthTests() {
   describe('POST /user/auth/register', () => {
     const args =
@@ -17,27 +16,7 @@ export function userAuthTests() {
     it('does not register already registered user', async () => {
       const { body } =
         await request(server).post('/user/auth/register').send(args);
-      expect(body).toEqual(1);
-    });
-  });
-
-  describe('POST /user/auth/verify', () => {
-    const args = {
-      email: "newuser@site.com",
-      pass: "secret",
-      confirmationCode: "confirmationCode"
-    };
-
-    it('verifies new user', async () => {
-      const { body } =
-        await request(server).post('/user/auth/verify').send(args);
-      expect(body).toEqual({message: 'User account verified.'});
-    });
-
-    it('does not verify already verified user', async () => {
-      const { body } =
-        await request(server).post('/user/auth/verify').send(args);
-      expect(body).toEqual(1);
+      expect(body).toEqual({message: 'Username already taken.'});
     });
   });
 
@@ -54,40 +33,74 @@ export function userAuthTests() {
       const { body } = await request(server)
         .post('/user/auth/resend-confirmation-code')
         .send(args);
-      expect(body).toEqual(1);
+      expect(body).toEqual({message: "Already verified."});
+    });
+
+    it('does not resend to non-existing user', async () => {
+      const { body } = await request(server)
+        .post('/user/auth/resend-confirmation-code')
+        .send({email: "nonuser@site.com", pass: "secret"});
+      expect(body).toEqual({message: "Incorrect email or password."});
     });
   });
 
-  describe('POST /user/auth/login', () => {
+  describe('POST /user/auth/verify', () => {
+    const args = {
+      email: "newuser@site.com",
+      pass: "secret",
+      confirmationCode: "confirmationCode"
+    };
+    const message =
+      "An issue occurred, please double check your info and try again.";
+
+    it('verifies new user', async () => {
+      const { body } =
+        await request(server).post('/user/auth/verify').send(args);
+      expect(body).toEqual({message: 'User account verified.'});
+    });
+
+    it('does not verify already verified user', async () => {
+      const { body } =
+        await request(server).post('/user/auth/verify').send(args);
+      expect(body).toEqual({message});
+    });
+
+    it('does not verify non-existing user', async () => {
+      const { body } = await request(server)
+        .post('/user/auth/resend-confirmation-code')
+        .send({
+          email: "nonuser@site.com",
+          pass: "secret",
+          confirmationCode: "confirmationCode"
+        });
+      expect(body).toEqual({message});
+    });
+  });
+
+  describe('POST /user/auth/login', () => {  // TO DO: needs setups
     it('logs in existing user', async () => {
       const { body } = await request(server).post('/user/auth/login')
         .send({email: "user@site.com", pass: "secret"});
-      expect(body)
-        .toEqual({message: "Signed in.", username: "Person", avatar: "Person"});
+      expect(body).toEqual({message: "Signed in.", username: "Person"});
     });
 
     it('does not log in already logged in user', async () => {
       const { body } = await request(server).post('/user/auth/login')
         .send({email: "loggedinuser@site.com", pass: "secret"});
-      expect(body).toEqual(1);
+      expect(body).toEqual({message: 'Already logged in.'});
     });
 
     it('does not log in non-existing user', async () => {
       const { body } = await request(server).post('/user/auth/login')
         .send({email: "nonuser@site.com", pass: "secret"})
-      expect(body).toEqual(1);
+      expect(body).toEqual({message: "Incorrect email or password."});
     });
   });
 
-  describe('POST /user/auth/logout', () => {
+  /*describe('POST /user/auth/logout', () => {  // TO DO: needs setups
     it('logs out existing user', async () => {
       const { body } = await request(server).post('/user/auth/logout');
       expect(body).toEqual(1);
     });
-
-    it('does not log out non-existing user', async () => {
-      const { body } = await request(server).post('/user/auth/logout');
-      expect(body).toEqual(1);
-    });
-  });
+  });*/
 }

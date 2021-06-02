@@ -116,12 +116,13 @@ export class Recipe implements IRecipe {
     return row as ISavingRecipe;
   }
 
-  // ???
   async getPrivateIds(userId: number) {
     const sql = `SELECT id FROM recipes WHERE author_id = ? AND owner_id = ?`;
     const [ rows ] =
       await this.pool.execute<RowDataPacket[]>(sql, [userId, userId]);
-    return rows.map(r => r.id);
+    const ids: number[] = [];
+    rows.forEach(({ id }) => ids.push(id));
+    return ids;
   }
 
   async view(authorId: number, ownerId: number) {
@@ -141,7 +142,6 @@ export class Recipe implements IRecipe {
       SELECT
         r.id,
         u.username AS author,
-        u.avatar AS author_avatar,
         rt.name AS recipe_type_name,
         c.name AS cuisine_name,
         r.title,
@@ -346,8 +346,7 @@ export class Recipe implements IRecipe {
     ]);
     return row;
   }
-
-  // needed?
+  
   async disown(authorId: number) {
     const newAuthorId = 2;
     const sql =

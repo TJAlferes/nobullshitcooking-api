@@ -145,7 +145,7 @@ interface ICreatingContent {
   created: string;
   published: string | null;
   title: string;
-  items: any[];
+  items: any;  // TO DO: finish
 }
 
 interface IUpdatingContent {
@@ -154,5 +154,5 @@ interface IUpdatingContent {
   contentTypeId: number;
   published: string | null;
   title: string;
-  items: any[];
+  items: any;  // TO DO: finish
 }

@@ -17,7 +17,7 @@ import {
   createRecipeService,
   updateRecipeService
 } from '../../lib/services';
-import { validRecipe } from '../../lib/validations/entities';
+import { validRecipe } from '../../lib/validations';
 
 export class StaffRecipeController {
   esClient: Client;
@@ -54,7 +54,7 @@ export class StaffRecipeController {
     const authorId = 1;
     const ownerId = 1;
 
-    const args = {
+    const creatingRecipe = {
       recipeTypeId,
       cuisineId,
       authorId,
@@ -70,7 +70,7 @@ export class StaffRecipeController {
       cookingImage,
       video
     };
-    assert(args, validRecipe);
+    assert(creatingRecipe, validRecipe);
 
     const recipe = new Recipe(this.pool);
     const recipeMethod = new RecipeMethod(this.pool);
@@ -80,7 +80,7 @@ export class StaffRecipeController {
     const recipeSearch = new RecipeSearch(this.esClient);
     await createRecipeService({
       ownerId,
-      recipeCreation: args,
+      creatingRecipe,
       requiredMethods,
       requiredEquipment,
       requiredIngredients,
@@ -131,7 +131,7 @@ export class StaffRecipeController {
       return res.send({message: 'Invalid recipe ID!'});
     }
 
-    const args = {
+    const updatingRecipe = {
       recipeTypeId,
       cuisineId,
       authorId,
@@ -147,7 +147,7 @@ export class StaffRecipeController {
       cookingImage,
       video
     };
-    assert(args, validRecipe);
+    assert(updatingRecipe, validRecipe);
 
     const recipe = new Recipe(this.pool);
     const recipeMethod = new RecipeMethod(this.pool);
@@ -159,7 +159,7 @@ export class StaffRecipeController {
       id,
       authorId,
       ownerId,
-      recipeUpdate: args,
+      updatingRecipe,
       requiredMethods,
       requiredEquipment,
       requiredIngredients,

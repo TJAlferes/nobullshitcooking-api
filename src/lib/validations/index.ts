@@ -8,7 +8,7 @@ import {
   string
 } from 'superstruct';
 
-import { IStaff, IUser } from '../../access/mysql';  // ?
+import { IStaff, IUser } from '../../access/mysql';
 
 export const validCreatingContent = object({
   contentTypeId: number(),
@@ -137,13 +137,12 @@ export async function validRegister(
   {email, pass, name}: Register,
   access: IStaff | IUser
 ) {
-  if (name.length < 6) return "Name must be at least 6 characters.";
-  if (name.length > 20) return "Name must be no more than 20 characters.";
-
   // Problem: This would invalidate some older/alternative email types. Remove?
   if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
     return "Invalid email.";
   }
+  if (name.length < 6) return "Name must be at least 6 characters.";
+  if (name.length > 20) return "Name must be no more than 20 characters.";
   if (pass.length < 6) return "Password must be at least 6 characters.";
   if (pass.length > 54) return "Password must be no more than 54 characters.";
 
@@ -155,6 +154,8 @@ export async function validRegister(
 
   return "valid";
 }
+
+export const validResendRequest = object({email: string(), pass: string()});
 
 export async function validResend(
   {email, pass}: Resend,
@@ -170,8 +171,8 @@ export async function validResend(
   //crypto.timingSafeEqual(exists.email, email) ???
   if (!exists) return "Incorrect email or password.";
 
-  const isCorrectPassword = await bcrypt.compare(pass, exists.pass);
-  if (!isCorrectPassword) return "Incorrect email or password.";
+  const correctPassword = await bcrypt.compare(pass, exists.pass);
+  if (!correctPassword) return "Incorrect email or password.";
 
   const confirmed = exists.confirmation_code === null;
   if (confirmed) return "Already verified.";

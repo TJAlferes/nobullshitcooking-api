@@ -15,7 +15,6 @@ export class User implements IUser {
     this.delete = this.delete.bind(this);
   }
 
-  // sensitive
   async getByEmail(email: string) {
     const sql = `
       SELECT id, email, pass, username, confirmation_code
@@ -26,10 +25,12 @@ export class User implements IUser {
     return row;
   }
 
-  // sensitive
   async getByName(username: string) {
-    const sql =
-      `SELECT id, email, pass, username FROM users WHERE username = ?`;
+    const sql = `
+      SELECT id, email, pass, username, confirmation_code
+      FROM users
+      WHERE username = ?
+    `;
     const [ [ row ] ] =
       await this.pool.execute<RowDataPacket[]>(sql, [username]);
     return row;
@@ -65,7 +66,7 @@ export class User implements IUser {
     return row;
   }
 
-  async update({ email, pass, username, id }: IUpdatingUser) {
+  async update({ id, email, pass, username }: IUpdatingUser) {
     const sql = `
       UPDATE users
       SET email = ?, pass = ?, username = ?
@@ -85,7 +86,6 @@ export class User implements IUser {
 }
 
 type Row = Promise<RowDataPacket>;
-//type Rows = Promise<RowDataPacket[]>;
 
 export interface IUser {
   pool: Pool;
@@ -107,8 +107,8 @@ interface ICreatingUser {
 }
 
 interface IUpdatingUser {
+  id: number;
   email: string;
   pass: string;
   username: string;
-  id: number;
 }

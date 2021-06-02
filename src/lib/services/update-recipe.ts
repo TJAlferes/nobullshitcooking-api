@@ -20,7 +20,7 @@ import {
   validRecipeIngredient,
   validRecipeMethod,
   validRecipeSubrecipe
-} from '../validations/entities';
+} from '../validations';
 
 export async function updateRecipeService({
   id,

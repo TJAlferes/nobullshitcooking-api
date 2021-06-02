@@ -7,8 +7,8 @@ export function userRecipeTests() {
     it('creates recipe', async () => {
       const { body } = await request(server).post('/user/recipe/create')
         .send({
-          type: "Main",
-          cuisine: "Mexican",
+          recipeTypeId: 4,
+          cuisineId: 4,
           title: "Title",
           description: "Description.",
           activeTime: "00:00:04",
@@ -30,8 +30,8 @@ export function userRecipeTests() {
       const { body } = await request(server).put('/user/recipe/update')
         .send({
           id: 88,
-          type: "Main",
-          cuisine: "Mexican",
+          recipeTypeId: 4,
+          cuisineId: 4,
           title: "Title",
           description: "Description.",
           activeTime: "00:00:04",
@@ -50,7 +50,7 @@ export function userRecipeTests() {
   describe('DELETE /user/recipe/delete', () => {
     it('deletes recipe', async () => {
       const { body } = await request(server).delete('/user/recipe/delete')
-        .send({id: "Username Title"});
+        .send({id: 88});
       expect(body).toEqual({message: 'Recipe deleted.'});
     });
   });

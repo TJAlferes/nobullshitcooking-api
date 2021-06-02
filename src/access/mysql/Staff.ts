@@ -5,25 +5,32 @@ export class Staff implements IStaff {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.getByEmail = this.getByEmail.bind(this);
-    this.getByName = this.getByName.bind(this);
+    this.getByEmail = this.getByEmail.bind(this);  // sensitive
+    this.getByName = this.getByName.bind(this);  // sensitive
     this.viewById = this.viewById.bind(this);
+    this.viewByName = this.viewByName.bind(this);
     this.create = this.create.bind(this);
+    this.verify = this.verify.bind(this);
     this.update = this.update.bind(this);
     this.delete = this.delete.bind(this);
   }
 
-  // sensitive
   async getByEmail(email: string) {
-    const sql = `SELECT id, email, pass, staffname FROM staff WHERE email = ?`;
+    const sql = `
+      SELECT id, email, pass, staffname, confirmation_code
+      FROM staff
+      WHERE email = ?
+    `;
     const [ [ row ] ] = await this.pool.execute<RowDataPacket[]>(sql, [email]);
     return row;
   }
 
-  // sensitive
   async getByName(staffname: string) {
-    const sql =
-      `SELECT id, email, pass, staffname FROM staff WHERE staffname = ?`;
+    const sql = `
+      SELECT id, email, pass, staffname, confirmation_code
+      FROM staff
+      WHERE staffname = ?
+    `;
     const [ [ row ] ] =
       await this.pool.execute<RowDataPacket[]>(sql, [staffname]);
     return row;
@@ -35,10 +42,27 @@ export class Staff implements IStaff {
     return row;
   }
 
-  async create({ email, pass, staffname }: ICreatingStaff) {
-    const sql = `INSERT INTO staff (email, pass, staffname) VALUES (?, ?, ?)`;
+  async viewByName(staffname: string) {
+    const sql = `SELECT id FROM staff WHERE staffname = ?`;
     const [ [ row ] ] =
-      await this.pool.execute<RowDataPacket[]>(sql, [email, pass, staffname]);
+      await this.pool.execute<RowDataPacket[]>(sql, [staffname]);
+    return row;
+  }
+
+  async create({ email, pass, staffname, confirmationCode }: ICreatingStaff) {
+    const sql = `
+      INSERT INTO staff (email, pass, staffname, confirmation_code)
+      VALUES (?, ?, ?, ?)
+    `;
+    const [ [ row ] ] = await this.pool
+      .execute<RowDataPacket[]>(sql, [email, pass, staffname, confirmationCode]);
+    return row;
+  }
+
+  async verify(email: string) {
+    const sql =
+      `UPDATE staff SET confirmation_code = NULL WHERE email = ? LIMIT 1`;
+    const [ [ row ] ] = await this.pool.execute<RowDataPacket[]>(sql, [email]);
     return row;
   }
 
@@ -68,7 +92,9 @@ export interface IStaff {
   getByEmail(email: string): Row;
   getByName(staffname: string): Row;
   viewById(id: number): Row;
+  viewByName(username: string): Row;
   create(staff: ICreatingStaff): Row;
+  verify(email: string): Row;
   update(staff: IUpdatingStaff): Row;
   delete(id: number): Row;
 }
@@ -77,8 +103,12 @@ interface ICreatingStaff {
   email: string;
   pass: string;
   staffname: string;
+  confirmationCode: string;
 }
 
-interface IUpdatingStaff extends ICreatingStaff {
+interface IUpdatingStaff {
   id: number;
+  email: string;
+  pass: string;
+  staffname: string;
 }

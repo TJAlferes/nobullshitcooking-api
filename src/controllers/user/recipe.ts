@@ -15,7 +15,7 @@ import {
   createRecipeService,
   updateRecipeService
 } from '../../lib/services';
-import { validRecipe } from '../../lib/validations/entities';
+import { validRecipe } from '../../lib/validations';
 
 export class UserRecipeController {
   esClient: Client;

@@ -15,7 +15,7 @@ export class ProfileController {
     const { username } = req.params;
 
     const user = new User(this.pool);
-    const [ userExists ] = await user.viewByName(username);
+    const userExists = await user.viewByName(username);
     if (!userExists) return res.send({message: 'User does not exist.'});
 
     const id = userExists.id;

@@ -2,15 +2,21 @@ import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
+import { v4 as uuidv4 } from 'uuid';
 
 import { Staff } from '../../access/mysql';
+import { emailConfirmationCode } from '../../lib/services';
 import {
-  validLogin,
-  validLoginRequest,
-  validRegister,
   validStaffRegisterRequest,
+  validRegister,
+  validResendRequest,
+  validResend,
+  validVerifyRequest,
+  validVerify,
   validCreatingStaff,
-  //validUpdatingStaff
+  validUpdatingStaff,
+  validLoginRequest,
+  validLogin
 } from '../../lib/validations';
 
 const SALT_ROUNDS = 10;
@@ -21,9 +27,11 @@ export class StaffAuthController {
   constructor(pool: Pool) {
     this.pool = pool;
     this.register = this.register.bind(this);
+    this.verify = this.verify.bind(this);
+    this.resendConfirmationCode = this.resendConfirmationCode.bind(this);
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
-    //this.update = this.update.bind(this);
+    this.update = this.update.bind(this);
     //this.delete = this.delete.bind(this);
   }
 
@@ -35,13 +43,42 @@ export class StaffAuthController {
     const feedback = await validRegister({email, pass, name: staffname}, staff);
     if (feedback !== "valid") return res.send({message: feedback});
 
-    const encryptedPassword = await bcrypt.hash(pass, SALT_ROUNDS);
-    const args = {email, pass: encryptedPassword, staffname};
+    const encryptedPass = await bcrypt.hash(pass, SALT_ROUNDS);
+    const confirmationCode = uuidv4();
+    const args = {email, pass: encryptedPass, staffname, confirmationCode};
     assert(args, validCreatingStaff);
 
     await staff.create(args);
+    emailConfirmationCode(email, confirmationCode);
 
     return res.send({message: 'Staff account created.'});
+  }
+
+  async verify(req: Request, res: Response) {
+    const { email, pass, confirmationCode } = req.body.staffInfo;
+    assert({email, pass, confirmationCode}, validVerifyRequest);
+
+    const staff = new Staff(this.pool);
+    const feedback = await validVerify({email, pass, confirmationCode}, staff);
+    if (feedback !== "valid") return res.send({message: feedback});
+
+    staff.verify(email);
+
+    return res.send({message: 'User account verified.'});
+  }
+
+  async resendConfirmationCode(req: Request, res: Response) {
+    const { email, pass } = req.body.staffInfo;
+    assert({email, pass}, validResendRequest);
+
+    const staff = new Staff(this.pool);
+    const feedback = await validResend({email, pass}, staff);
+    if (feedback !== "valid") return res.send({message: feedback});
+    
+    const confirmationCode = uuidv4();
+    emailConfirmationCode(email, confirmationCode);
+    
+    return res.send({message: 'Confirmation code re-sent.'});
   }
 
   async login(req: Request, res: Response) {
@@ -64,19 +101,18 @@ export class StaffAuthController {
   }
 
   async update(req: Request, res: Response) {
-    // TO DO: finish
     const { email, pass, staffname } = req.body.staffInfo;
     const id = req.session.staffInfo!.id;
-    const args = {email, pass, staffname};
-    //assert(args, validStaffUpdate);
+
+    const encryptedPass = await bcrypt.hash(pass, SALT_ROUNDS);
+    const args = {email, pass: encryptedPass, staffname};
+    assert(args, validUpdatingStaff);
 
     const staff = new Staff(this.pool);
     await staff.update({id, ...args});
-    // should it send the updated values back? const [ updatedStaff ] = await
+
     return res.send({message: 'Account updated.'});
   }
 
-  /*async delete(req: Request, res: Response) {
-    // TO DO: finish
-  }*/
+  //async delete(req: Request, res: Response) {}
 }

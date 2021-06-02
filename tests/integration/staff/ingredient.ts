@@ -7,7 +7,7 @@ export function staffIngredientTests() {
     it('creates ingredient', async () => {
       const { body } = await request(server).post('/staff/ingredient/create')
         .send({
-          type: "Beef",
+          ingredientTypeId: 4,
           brand: "Brand",
           variety: "Variety",
           name: "Name",
@@ -22,8 +22,8 @@ export function staffIngredientTests() {
     it('updates ingredient', async () => {
       const { body } = await request(server).put('/staff/ingredient/update')
         .send({
-          id: "NOBSC Brand Variety Name",
-          type: "Beef",
+          id: 888,
+          ingredientTypeId: 4,
           brand: "Brand",
           variety: "Variety",
           name: "Name",
@@ -37,7 +37,7 @@ export function staffIngredientTests() {
   describe('DELETE /staff/ingredient/delete', () => {
     it('deletes ingredient', async () => {
       const { body } = await request(server).delete('/staff/ingredient/delete')
-        .send({id: "NOBSC Brand Variety Name"});
+        .send({id: 888});
       expect(body).toEqual({message: 'Ingredient deleted.'});
     });
   });

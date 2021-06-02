@@ -5,7 +5,7 @@ import { Client } from '@elastic/elasticsearch';
 
 import { EquipmentSearch } from '../../access/elasticsearch';
 import { Equipment, RecipeEquipment } from '../../access/mysql';
-import { validEquipment } from '../../lib/validations/entities';
+import { validEquipment } from '../../lib/validations';
 
 export class StaffEquipmentController {
   esClient: Client;

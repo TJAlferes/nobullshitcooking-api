@@ -21,6 +21,25 @@ export function staffAuthRouter(pool: Pool) {
     ],
     catchExceptions(controller.register)
   );
+
+  router.post(
+    '/resend-confirmation-code',
+    [
+      body('email').not().isEmpty().trim().escape(),
+      body('pass').not().isEmpty().trim().escape()
+    ],
+    catchExceptions(controller.resendConfirmationCode)
+  );
+
+  router.post(
+    '/verify',
+    [
+      body('email').not().isEmpty().trim().escape(),
+      body('pass').not().isEmpty().trim().escape(),
+      body('confirmationCode').not().isEmpty().trim().escape()
+    ],
+    catchExceptions(controller.verify)
+  );
   
   router.post(
     '/login',
@@ -35,6 +54,18 @@ export function staffAuthRouter(pool: Pool) {
     '/logout',
     staffIsAuth,
     catchExceptions(controller.logout)
+  );
+
+  // why POST?
+  router.post(
+    '/update',
+    staffIsAuth,
+    [
+      body('email').not().isEmpty().trim().escape(),
+      body('pass').not().isEmpty().trim().escape(),
+      body('username').not().isEmpty().trim().escape()
+    ],
+    catchExceptions(controller.update)
   );
 
   return router;

@@ -5,7 +5,7 @@ import { Client } from '@elastic/elasticsearch';
 
 import { IngredientSearch } from '../../access/elasticsearch';
 import { Ingredient, RecipeIngredient } from '../../access/mysql';
-import { validIngredient } from '../../lib/validations/entities';
+import { validIngredient } from '../../lib/validations';
 
 export class StaffIngredientController {
   esClient: Client;

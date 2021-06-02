@@ -7,7 +7,7 @@ export function userEquipmentTests() {
     it('creates equipment', async () => {
       const { body } = await request(server).post('/user/equipment/create')
         .send({
-          type: "Cleaning",
+          equipmentTypeId: 4,
           name: "Name",
           description: "Description.",
           image: "image"
@@ -20,8 +20,8 @@ export function userEquipmentTests() {
     it('updates equipment', async () => {
       const { body } = await request(server).put('/user/equipment/update')
         .send({
-          id: "Username Name",
-          type: "Cleaning",
+          id: 88,
+          equipmentTypeId: 4,
           name: "Name",
           description: "Description.",
           image: "image"
@@ -33,7 +33,7 @@ export function userEquipmentTests() {
   describe('DELETE /user/equipment/delete', () => {
     it('deletes equipment', async () => {
       const { body } = await request(server).delete('/user/equipment/delete')
-        .send({id: "Username Name"});
+        .send({id: 88});
       expect(body).toEqual({message: 'Equipment deleted.'}); 
     });
   });

@@ -3,7 +3,7 @@ import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
 import { Plan } from '../../access/mysql';
-import { validPlan } from '../../lib/validations/entities';
+import { validPlan } from '../../lib/validations';
 
 export class UserPlanController {
   pool: Pool;
