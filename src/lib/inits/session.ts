@@ -17,35 +17,27 @@ export function sessionInit(
 ) {
   const RedisStore = connectRedis(expressSession);
   const redisSession = new RedisStore({client: redisClients.sessClient});
-  const sessionOptions: SessionOptions = {
-    name: "connect.sid",
+  const options: SessionOptions = {
+    cookie: {},
     resave: true,
-    saveUninitialized: true,
+    saveUninitialized: true,  // false?
     secret: process.env.SESSION_SECRET || "secret",
     store: redisSession,
     unset: "destroy"
   };
+
+  // httpOnly: if true, client-side JS can NOT see the cookie in document.cookie
+  // maxAge: 86400000 milliseconds = 1 day
+  // sameSite: true | false | "lax" | "none" | "strict" https://github.com/expressjs/session#cookiesamesite
   if (app.get('env') === 'production') {
-    // TO DO: finish
-    // new Chrome requirements:
-    /*sessionOptions.cookie = {
-      sameSite: none,
-      secure: true
-    };*/
-    /*sessionOptions.cookie = {
-      sameSite: true,
-      maxAge: 86400000,
-      httpOnly: true,
-      secure: true
-    };*/
+    options.cookie =
+      {httpOnly: true, maxAge: 86400000, sameSite: true, secure: true};
   } else {
-    sessionOptions.cookie = {
-      httpOnly: false,
-      maxAge: 86400000,
-      sameSite: false,
-      secure: false
-    };
+    options.cookie =
+      {httpOnly: false, maxAge: 86400000, sameSite: false, secure: false};
   }
+
   socketInit(pool, redisClients, redisSession, httpServer);
-  return expressSession(sessionOptions);
+
+  return expressSession(options);
 }

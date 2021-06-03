@@ -19,7 +19,7 @@ async function cleanUpRooms(workerClient: Redis) {
         workerClient
         .multi()
         .zrem('rooms', room)
-        .del(`rooms:${room}:chats`)
+        .del(`rooms:${room}:messages`)
         .exec();
 
         workerClient.zrangebyscore(
@@ -61,7 +61,7 @@ async function cleanUpChats(workerClient: Redis) {
 
           rooms.forEach(function(room) {
             workerClient.zremrangebyscore(
-              `rooms:${room}:chats`,
+              `rooms:${room}:messages`,
               '-inf',
               ((new Date).getTime() - DELTA)
             );
