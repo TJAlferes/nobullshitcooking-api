@@ -7,6 +7,7 @@ import { Server } from 'http';
 import { Pool } from 'mysql2/promise';
 
 import { RedisClients } from '../../app';
+import { chatCleanUp } from '../jobs/chatCleanUp';
 import { socketInit } from '.';
 
 export function sessionInit(
@@ -38,6 +39,7 @@ export function sessionInit(
   }
 
   socketInit(pool, redisClients, redisSession, httpServer);
+  if (app.get('env') !== 'test') chatCleanUp(redisClients.pubClient);
 
   return expressSession(options);
 }

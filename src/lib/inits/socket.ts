@@ -12,17 +12,17 @@ import { createAdapter } from 'socket.io-redis';
 import { Friendship, User } from '../../access/mysql';
 import { ChatStore } from '../../access/redis';
 import { RedisClients } from '../../app';
-import { ChatUser } from '../../chat/entities/ChatUser';
-import { IMessage } from '../../chat/entities/types';
 import {
-  addMessage,
-  addPrivateMessage,
-  addRoom,
+  sendMessage,
+  sendPrivateMessage,
+  joinRoom,
   disconnecting,
-  getOnline,
-  getUser,
-  rejoinRoom
-} from '../../chat/handlers';
+  getOnlineFriends,
+  getUsersInRoom,
+  rejoinRoom,
+  ChatUser,
+  IMessage
+} from '../../chat';
 
 export function socketInit(
   pool: Pool,
@@ -46,7 +46,7 @@ export function socketInit(
 
   io.adapter(createAdapter({pubClient, subClient}));
 
-  io.use(async function(socket: IUberSocket, next: Next) {
+  io.use(async (socket: IUberSocket, next: Next) => {
     const parsedCookie = cookie.parse(socket.request.headers.cookie!);
     const sessionId = cookieParser.signedCookie(
       parsedCookie['connect.sid'],
@@ -56,7 +56,7 @@ export function socketInit(
     if (!sessionId || parsedCookie['connect.sid'] === sessionId)
       return next(new Error('Not authenticated.'));
 
-    redisSession.get(sessionId, function(err, session) {
+    redisSession.get(sessionId, (err, session) => {
       if (!session || !session.userInfo || !session.userInfo.id)
         return next(new Error('Not authenticated.'));
       
@@ -71,59 +71,60 @@ export function socketInit(
     });
   });
 
-  io.on('connection', async function(socket: IUberSocket) {
+  io.on('connection', async (socket: IUberSocket) => {
     const { id, username } = socket.userInfo!;
-    const chatUser = ChatUser(id, username);
+    if (!id || !username) return;
+
     const user = new User(pool);
     const friendship = new Friendship(pool);
     const chatStore = new ChatStore(pubClient);
+    const chatUser = ChatUser(id, username);
 
     // Users
 
     // TO DO: no longer appear online for users blocked and friends deleted
     // during that same session (so emit ShowOffline)
-    // MAKE THE HANDLER NAMES THE SAME AS THE EVENT NAMES
-    socket.on('GetOnlineFriends', async function() {
-      await getOnline({id, username, socket, chatStore, friendship});
+    // PASS IN chatUser or ChatUser ?
+    socket.on('GetOnlineFriends', async () => {
+      await getOnlineFriends({id, username, socket, chatStore, friendship});
     });
 
-    socket.on('GetUsersInRoom', async function(room) {
-      await getUser({room, socket, chatStore});
+    socket.on('GetUsersInRoom', async (room) => {
+      await getUsersInRoom({room, socket, chatStore});
     });
 
     // Messages
 
-    socket.on('SendMessage', async function(text: string) {
-      await addMessage({text, id, username, socket, chatStore});
+    socket.on('SendMessage', async (text: string) => {
+      await sendMessage({from: username, text, socket, chatStore});
     });
 
-    socket.on('SendPrivateMessage', async function(text: string, to: string) {
-      await addPrivateMessage({
-        text, to, id, username, socket, chatStore, friendship, user
+    socket.on('SendPrivateMessage', async (text: string, to: string) => {
+      await sendPrivateMessage({
+        to, from: username, text, socket, chatStore, friendship, user
       });
     });
 
     // Rooms
 
-    socket.on('JoinRoom', async function(room: string) {
-      await addRoom({room, username, socket, chatStore});
+    socket.on('JoinRoom', async (room: string) => {
+      await joinRoom({room, id, username, socket, chatStore});
     });
 
-    socket.on('RejoinRoom', async function(room: string) {
-      await rejoinRoom({room, username, socket, chatStore});
+    socket.on('RejoinRoom', async (room: string) => {
+      await rejoinRoom({room, id, username, socket, chatStore});
     });
 
     // SocketIO events
 
     socket.on('error', (error: Error) => console.log('error: ', error));
 
-    socket.on('disconnecting', async function(reason: string) {
-      await disconnecting({
-        reason, username, socket, chatStore, chatUser, friendship
-      });
+    socket.on('disconnecting', async (reason: string) => {
+      //console.log('disconnect reason: ', reason);
+      await disconnecting({username, socket, chatStore, chatUser, friendship});
     });
 
-    /*socket.on('disconnect', async function(reason: string) {
+    /*socket.on('disconnect', async (reason: string) => {
       console.log('disconnect reason: ', reason);
       const matchingSockets = await io.in(userId).allSockets();
       const disconnected = matchingSockets.size === 0;
@@ -164,8 +165,8 @@ interface IServerToClientEvents {
   FriendCameOnline(friend: string): void;
   FriendWentOffline(friend: string): void;
   // Messages
-  ReceivedMessage(message: IMessage): void;
-  ReceivedPrivateMessage(message: IMessage): void;
+  Message(message: IMessage): void;
+  PrivateMessage(message: IMessage): void;
   FailedPrivateMessage(feedback: string): void;
   // Rooms
   UsersInRoom(users: string[], room: string): void;

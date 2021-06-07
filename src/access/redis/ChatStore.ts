@@ -1,6 +1,6 @@
 import { Redis } from 'ioredis';
 
-import { IChatUser, IMessage } from '../../chat/entities/types';
+import { IMessage } from '../../chat/entities/types';
 
 export class ChatStore implements IChatStore {
   client: Redis;
@@ -26,7 +26,7 @@ export class ChatStore implements IChatStore {
     for (const id of ids){
       const username = await client.hget(`user:${id}`, 'username');
       if (!username) continue;
-      users.push({id: Number(id), username});
+      users.push(username);
     }
     return users;
   }
@@ -85,7 +85,7 @@ export class ChatStore implements IChatStore {
 
 export interface IChatStore {
   client: Redis;
-  getUsersInRoom(room: string): Promise<IChatUser[]>;
+  getUsersInRoom(room: string): Promise<string[]>;
   getUserSocketId(id: number): Promise<string | null>;
   //getRooms
   //getMessages

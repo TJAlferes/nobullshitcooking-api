@@ -1,18 +1,18 @@
 import { Socket } from 'socket.io';
 
-import { IFriendship, IUser } from '../../access/mysql';
-import { IUserStore } from '../../access/redis';
-import { PrivateMessage } from '../entities/PrivateMessage';
+import { IFriendship, IUser } from '../access/mysql';
+import { IChatStore } from '../access/redis';
+import { PrivateMessage } from '.';
 
-export async function addPrivateMessage({
+export async function sendPrivateMessage({
   to,
-  from,  // id, username,
+  from,
   text,
   socket,
-  userStore,
+  chatStore,
   friendship,
   user
-}: IAddPrivateMessage) {
+}: ISendPrivateMessage) {
   const notFound = socket.emit('FailedPrivateMessage', 'User not found.');
 
   const userExists = await user.getByName(to);
@@ -23,21 +23,21 @@ export async function addPrivateMessage({
   const blockedByUser = blockedUsers.find((u: any) => u.username === from);
   if (blockedByUser) return notFound;
 
-  const onlineUser = await userStore.getSocketId(id);
+  const onlineUser = await chatStore.getUserSocketId(id);
   if (!onlineUser) return notFound;
 
   const message = PrivateMessage(to, from, text);
   //socket.to(to).to(from).emit('AddPrivateMessage', message);  // OLD
-  socket.broadcast.to(onlineUser).emit('AddPrivateMessage', message);
-  socket.emit('AddPrivateMessage', message);
+  socket.broadcast.to(onlineUser).emit('PrivateMessage', message);
+  socket.emit('PrivateMessage', message);
 }
 
-export interface IAddPrivateMessage {
+export interface ISendPrivateMessage {
   to: string;
   from: string;
   text: string;
   socket: Socket;
-  userStore: IUserStore;
+  chatStore: IChatStore;
   friendship: IFriendship;
   user: IUser;
 }
