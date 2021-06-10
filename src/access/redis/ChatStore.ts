@@ -1,6 +1,6 @@
 import { Redis } from 'ioredis';
 
-import { IMessage } from '../../chat/entities/types';
+import { IMessage } from '../../chat';
 
 export class ChatStore implements IChatStore {
   client: Redis;
@@ -20,19 +20,12 @@ export class ChatStore implements IChatStore {
   }
 
   async getUsersInRoom(room: string) {
-    const ids = await this.client.zrange(`rooms:${room}:users`, 0, -1);
-    const client = this.client;
-    const users = [];
-    for (const id of ids){
-      const username = await client.hget(`user:${id}`, 'username');
-      if (!username) continue;
-      users.push(username);
-    }
+    const users = await this.client.zrange(`rooms:${room}:users`, 0, -1);
     return users;
   }
 
-  async getUserSocketId(id: number) {
-    const socketId = await this.client.hget(`user:${id}`, 'socketId');
+  async getUserSocketId(username: string) {
+    const socketId = await this.client.hget(`user:${username}`, 'socketId');
     return socketId;
   }
 
@@ -40,13 +33,10 @@ export class ChatStore implements IChatStore {
 
   //async getMessages(room: string, cb) {}
 
-  async createUser({ id, username, sessionId, socketId }: ICreatingChatUser) {
+  async createUser({ username, sessionId, socketId }: ICreatingChatUser) {
     await this.client.multi()
-      .hset(
-        `user:${id}`,
-        'username', username, 'sessionId', sessionId, 'socketId', socketId
-      )
-      .zadd('users', Date.now(), `${id}`)
+      .hset(`user:${username}`, 'sessionId', sessionId, 'socketId', socketId)
+      .zadd('users', Date.now(), `${username}`)
       .exec();
   }
 
@@ -57,48 +47,47 @@ export class ChatStore implements IChatStore {
   async createMessage(message: IMessage) {
     await this.client.multi()
       .zadd(`rooms:${message.to}:messages`, JSON.stringify(message))
-      .zadd('users', Date.now(), `${message.from.id}`)
+      .zadd('users', Date.now(), `${message.from}`)
       .zadd('rooms', Date.now(), `${message.to}`)
       .exec();
   }
   
-  async addUserToRoom(id: number, room: string) {
+  async addUserToRoom(username: string, room: string) {
     await this.client.multi()
-      .zadd(`rooms:${room}:users`, Date.now(), `${id}`)
-      .zadd('users', Date.now(), `${id}`)
+      .zadd(`rooms:${room}:users`, Date.now(), username)
+      .zadd('users', Date.now(), username)
       .zadd('rooms', Date.now(), room)
-      .set(`user:${id}:room`, room)
+      .set(`user:${username}:room`, room)
       .exec();
   }
   
-  async removeUserFromRoom(id: number, room: string) {
+  async removeUserFromRoom(username: string, room: string) {
     await this.client.multi()
-      .zrem(`rooms:${room}:users`, `${id}`)
-      .del(`user:${id}:room`)
+      .zrem(`rooms:${room}:users`, username)
+      .del(`user:${username}:room`)
       .exec();
   }
 
-  async deleteUser(id: number) {
-    await this.client.del(`user:${id}`);
+  async deleteUser(username: string) {
+    await this.client.del(`user:${username}`);
   }
 }
 
 export interface IChatStore {
   client: Redis;
   getUsersInRoom(room: string): Promise<string[]>;
-  getUserSocketId(id: number): Promise<string | null>;
+  getUserSocketId(username: string): Promise<string | null>;
   //getRooms
   //getMessages
   createUser(userInfo: ICreatingChatUser): void;
   createRoom(room: string): void;
   createMessage(message: IMessage): void;
-  addUserToRoom(id: number, room: string): void;
-  removeUserFromRoom(id: number, room: string): void;
-  deleteUser(id: number): void;
+  addUserToRoom(username: string, room: string): void;
+  removeUserFromRoom(username: string, room: string): void;
+  deleteUser(username: string): void;
 }
 
 interface ICreatingChatUser {
-  id: number;
   username: string;
   sessionId: string;
   socketId: string;

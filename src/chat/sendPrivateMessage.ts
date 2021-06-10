@@ -19,15 +19,14 @@ export async function sendPrivateMessage({
   if (!userExists.length) return notFound;
   
   const { id, username } = userExists;
-  const [ blockedUsers ] = await friendship.viewBlocked(username);
+  const blockedUsers = await friendship.viewBlocked(id);
   const blockedByUser = blockedUsers.find((u: any) => u.username === from);
   if (blockedByUser) return notFound;
 
-  const onlineUser = await chatStore.getUserSocketId(id);
+  const onlineUser = await chatStore.getUserSocketId(username);
   if (!onlineUser) return notFound;
 
   const message = PrivateMessage(to, from, text);
-  //socket.to(to).to(from).emit('AddPrivateMessage', message);  // OLD
   socket.broadcast.to(onlineUser).emit('PrivateMessage', message);
   socket.emit('PrivateMessage', message);
 }

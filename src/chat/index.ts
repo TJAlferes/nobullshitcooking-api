@@ -1,9 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
 
-export function ChatUser(id: number, username: string): IChatUser {
-  return {id, username};
-}
-
 export function PublicMessage(
   to: string,
   from: string,
@@ -31,16 +27,10 @@ export interface IMessage {
   text: string;
 }
 
-// ?
-export interface IChatUser {
-  id: number;
-  username: string;
-}
-
 export { sendMessage } from './sendMessage';
-export { sendPrivateMessage } from './sendPrivateMessage';
+export { sendPrivateMessage, ISendPrivateMessage } from './sendPrivateMessage';
 export { joinRoom } from './joinRoom';
-export { disconnecting } from './disconnecting';
-export { getOnlineFriends } from './getOnlineFriends';
+export { disconnecting, IDisconnecting } from './disconnecting';
+export { getOnlineFriends, IGetOnlineFriends } from './getOnlineFriends';
 export { getUsersInRoom } from './getUsersInRoom';
 export { rejoinRoom } from './rejoinRoom';

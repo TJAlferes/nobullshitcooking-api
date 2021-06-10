@@ -20,7 +20,6 @@ import {
   getOnlineFriends,
   getUsersInRoom,
   rejoinRoom,
-  ChatUser,
   IMessage
 } from '../../chat';
 
@@ -63,9 +62,9 @@ export function socketInit(
       socket.sessionId = sessionId;
       socket.userInfo = session.userInfo;
 
-      const { id, username } = session.userInfo;
+      const { username } = session.userInfo;
       const chatStore = new ChatStore(pubClient);
-      chatStore.createUser({id, username, sessionId, socketId: socket.id});
+      chatStore.createUser({username, sessionId, socketId: socket.id});
       
       return next();
     });
@@ -78,13 +77,11 @@ export function socketInit(
     const user = new User(pool);
     const friendship = new Friendship(pool);
     const chatStore = new ChatStore(pubClient);
-    const chatUser = ChatUser(id, username);
 
     // Users
 
     // TO DO: no longer appear online for users blocked and friends deleted
     // during that same session (so emit ShowOffline)
-    // PASS IN chatUser or ChatUser ?
     socket.on('GetOnlineFriends', async () => {
       await getOnlineFriends({id, username, socket, chatStore, friendship});
     });
@@ -108,11 +105,11 @@ export function socketInit(
     // Rooms
 
     socket.on('JoinRoom', async (room: string) => {
-      await joinRoom({room, id, username, socket, chatStore});
+      await joinRoom({room, username, socket, chatStore});
     });
 
     socket.on('RejoinRoom', async (room: string) => {
-      await rejoinRoom({room, id, username, socket, chatStore});
+      await rejoinRoom({room, username, socket, chatStore});
     });
 
     // SocketIO events
@@ -121,7 +118,7 @@ export function socketInit(
 
     socket.on('disconnecting', async (reason: string) => {
       //console.log('disconnect reason: ', reason);
-      await disconnecting({username, socket, chatStore, chatUser, friendship});
+      await disconnecting({id, username, socket, chatStore, friendship});
     });
 
     /*socket.on('disconnect', async (reason: string) => {

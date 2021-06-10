@@ -15,7 +15,7 @@ export async function getOnlineFriends({
 
   const onlineFriends = [];
   for (const friend of friends) {
-    const onlineFriend = await chatStore.getUserSocketId(friend.user_id);
+    const onlineFriend = await chatStore.getUserSocketId(friend.username);
     if (!onlineFriend) continue;
 
     socket.broadcast.to(onlineFriend).emit('FriendCameOnline', username);

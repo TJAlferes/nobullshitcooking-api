@@ -4,7 +4,6 @@ import { IChatStore } from '../access/redis';
 
 export async function joinRoom({
   room,
-  id,
   username,
   socket,
   chatStore
@@ -16,14 +15,14 @@ export async function joinRoom({
   for (const currentRoom in currentRooms) {
     if (currentRoom !== socket.id) {
       socket.leave(currentRoom);
-      chatStore.removeUserFromRoom(id, currentRoom);
+      chatStore.removeUserFromRoom(username, currentRoom);
       socket.broadcast.to(currentRoom).emit('UserLeftRoom', username);
     }
   }
 
   socket.join(room);
   chatStore.createRoom(room);  // ?
-  chatStore.addUserToRoom(id, room);
+  chatStore.addUserToRoom(username, room);
   socket.broadcast.to(room).emit('UserJoinedRoom', username);
 
   const users = await chatStore.getUsersInRoom(room);
@@ -32,7 +31,6 @@ export async function joinRoom({
 
 interface IJoinRoom {
   room: string;
-  id: number;
   username: string;
   socket: Socket;
   chatStore: IChatStore;
