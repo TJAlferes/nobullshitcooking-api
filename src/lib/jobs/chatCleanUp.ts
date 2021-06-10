@@ -30,11 +30,11 @@ function cleanUpUsers(client: Redis) {
       return;
     }
 
-    users.forEach(id => {
+    users.forEach(username => {
       client.multi()
-        .zrem('users', id)
-        .del(`user:${id}`)
-        .del(`user:${id}:room`)
+        .zrem('users', username)
+        .del(`user:${username}`)
+        .del(`user:${username}:room`)
         .exec();
     });
   });

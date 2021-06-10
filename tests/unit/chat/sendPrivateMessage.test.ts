@@ -1,21 +1,21 @@
 import { Socket } from 'socket.io';
 
-import { pool } from '../../../../src/lib/connections/mysql';  // just mock like in others?
+import { pool } from '../../../src/lib/connections/mysql';  // mock like others?
 import {
   Friendship,
   User,
   IFriendship,
   IUser
-} from '../../../../src/access/mysql';
-import { IChatUser } from '../../../../src/access/redis/ChatUser';
-import { PrivateMessage } from '../../../../src/chat/entities/PrivateMessage';
+} from '../../../src/access/mysql';
+import { IChatStore } from '../../../src/access/redis';
 import {
-  addPrivateMessage,
-  IAddPrivateMessage
-} from '../../../../src/chat/handlers/addPrivateMessage';
+  PrivateMessage,
+  sendPrivateMessage,
+  ISendPrivateMessage
+} from '../../../src/chat';
 
-let mockGetSocketId = jest.fn();
-let mockChatUser: Partial<IChatUser>;
+let mockGetUserSocketId = jest.fn();
+let mockChatStore: Partial<IChatStore>;
 
 jest.mock('../../../../src/access/mysql', () => ({
   Friendship: jest.fn().mockImplementation(() => ({
@@ -28,7 +28,7 @@ let mockViewBlocked = jest.fn();
 let mockUser: IUser;
 let mockGetByName = jest.fn();
 
-jest.mock('../../../../src/chat/entities/PrivateMessage');
+//jest.mock('../../../../src/chat/entities/PrivateMessage');  // TO DO: change
 const mockPrivateMessage = PrivateMessage as jest.Mocked<typeof PrivateMessage>;
 
 const rooms = new Set<string>();
@@ -42,169 +42,167 @@ const mockSocket: Partial<Socket> = {
   leave: jest.fn(),
   rooms
 };
-const params = {
+const initialParams = {
   to: "other",
   from: "self",
   text: "hello",
   socket: <Socket>mockSocket
 };
 
-let currParams: IAddPrivateMessage;
+let params: ISendPrivateMessage;
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 
-describe('addPrivateMessage handler', () => {
-
+describe('sendPrivateMessage handler', () => {
   describe('when user being messaged does not exist', () => {
     beforeAll(() => {
-      mockChatUser = {getSocketId: mockGetSocketId};
+      mockChatStore = {getUserSocketId: mockGetUserSocketId};
 
       mockFriendship = new Friendship(pool);
 
-      mockGetByName = jest.fn().mockResolvedValue([[]]);
+      mockGetByName = jest.fn().mockResolvedValue([]);
       mockUser = new User(pool);
 
-      currParams = {
-        ...params,
-        chatUser: <IChatUser>mockChatUser,
+      params = {
+        ...initialParams,
+        chatStore: <IChatStore>mockChatStore,
         friendship: <IFriendship>mockFriendship,
         user: <IUser>mockUser
       };
     });
 
-    it('uses getUserByName correctly', async () => {
-      await addPrivateMessage(currParams);
+    it('uses getUserByName', async () => {
+      await sendPrivateMessage(params);
       expect(mockGetByName).toHaveBeenCalledWith("other");
     });
 
     it('uses socket.emit', async () => {
-      await addPrivateMessage(currParams);
+      await sendPrivateMessage(params);
       expect(params.socket.emit)
         .toHaveBeenCalledWith('FailedPrivateMessage', 'User not found.');
     });
 
     // these may be wrong...
-    it('returns correctly', async () => {
-      const actual = await addPrivateMessage(currParams);
+    it('returns', async () => {
+      const actual = await sendPrivateMessage(params);
       expect(actual).toEqual(true);
     });
   });
 
   describe('when user being messaged blocked you', () => {
     beforeAll(() => {
-      mockChatUser = {getSocketId: mockGetSocketId};
+      mockChatStore = {getUserSocketId: mockGetUserSocketId};
 
-      mockViewBlocked = jest.fn().mockResolvedValue([[{username: "other"}]]);
+      mockViewBlocked = jest.fn().mockResolvedValue([{username: "other"}]);
       mockFriendship = new Friendship(pool);
 
-      mockGetByName = jest.fn().mockResolvedValue([[{username: "other"}]]);
+      mockGetByName = jest.fn().mockResolvedValue({id: 3, username: "other"});
       mockUser = new User(pool);
 
-      currParams = {
-        ...params,
-        chatUser: <IChatUser>mockChatUser,
+      params = {
+        ...initialParams,
+        chatStore: <IChatStore>mockChatStore,
         friendship: <IFriendship>mockFriendship,
         user: <IUser>mockUser
       };
     });
 
-    it('uses viewMyBlockedUsers correctly', async () => {
-      await addPrivateMessage(currParams);
+    it('uses viewMyBlockedUsers', async () => {
+      await sendPrivateMessage(params);
       expect(mockViewBlocked).toHaveBeenCalledWith("other");
     });
 
     it('uses socket.emit', async () => {
-      await addPrivateMessage(currParams);
+      await sendPrivateMessage(params);
       expect(params.socket.emit)
         .toHaveBeenCalledWith('FailedPrivateMessage', 'User not found.');
     });
 
-    it('returns correctly', async () => {
-      const actual = await addPrivateMessage(currParams);
+    it('returns', async () => {
+      const actual = await sendPrivateMessage(params);
       expect(actual).toEqual(true);
     });
   });
 
   describe('when user being messaged is offline', () => {
     beforeAll(() => {
-      mockGetSocketId = jest.fn().mockResolvedValue(undefined);
-      mockChatUser = {getSocketId: mockGetSocketId};
+      mockGetUserSocketId = jest.fn().mockResolvedValue(undefined);
+      mockChatStore = {getUserSocketId: mockGetUserSocketId};
 
-      mockViewBlocked = jest.fn().mockResolvedValue([[]]);
+      mockViewBlocked = jest.fn().mockResolvedValue([]);
       mockFriendship = new Friendship(pool);
 
-      mockGetByName = jest.fn().mockResolvedValue([[{username: "other"}]]);
+      mockGetByName = jest.fn().mockResolvedValue({id: 3, username: "other"});
       mockUser = new User(pool);
 
-      currParams = {
-        ...params,
-        chatUser: <IChatUser>mockChatUser,
+      params = {
+        ...initialParams,
+        chatStore: <IChatStore>mockChatStore,
         friendship: <IFriendship>mockFriendship,
         user: <IUser>mockUser
       };
     });
 
-    it('uses getSocketId correctly', async () => {
-      await addPrivateMessage(currParams);
-      expect(mockGetSocketId).toHaveBeenCalledWith("other");
+    it('uses getUserSocketId', async () => {
+      await sendPrivateMessage(params);
+      expect(mockGetUserSocketId).toHaveBeenCalledWith("other");
     });
 
     it('uses socket.emit', async () => {
-      await addPrivateMessage(currParams);
+      await sendPrivateMessage(params);
       expect(params.socket.emit)
         .toHaveBeenCalledWith('FailedPrivateMessage', 'User not found.');
     });
 
-    it('returns correctly', async () => {
-      const actual = await addPrivateMessage(currParams);
+    it('returns', async () => {
+      const actual = await sendPrivateMessage(params);
       expect(actual).toEqual(true);
     });
   });
 
   describe('when okay', () => {
     beforeAll(() => {
-      mockGetSocketId = jest.fn().mockResolvedValue("123456789");
-      mockChatUser = {getSocketId: mockGetSocketId};
+      mockGetUserSocketId = jest.fn().mockResolvedValue("123456789");
+      mockChatStore = {getUserSocketId: mockGetUserSocketId};
 
-      mockViewBlocked = jest.fn().mockResolvedValue([[]]);
+      mockViewBlocked = jest.fn().mockResolvedValue([]);
       mockFriendship = new Friendship(pool);
 
-      mockGetByName = jest.fn().mockResolvedValue([[{username: "other"}]]);
+      mockGetByName = jest.fn().mockResolvedValue({id: 3, username: "other"});
       mockUser = new User(pool);
 
-      currParams = {
-        ...params,
-        chatUser: <IChatUser>mockChatUser,
+      params = {
+        ...initialParams,
+        chatStore: <IChatStore>mockChatStore,
         friendship: <IFriendship>mockFriendship,
         user: <IUser>mockUser
       };
     });
   
-    it('uses PrivateMessage correctly', async () => {
-      await addPrivateMessage(currParams);
+    it('uses PrivateMessage', async () => {
+      await sendPrivateMessage(params);
       expect(mockPrivateMessage).toHaveBeenCalledWith("other", "self", "hello");
     });
 
-    it ('uses socket.broadcast.to correctly', async () => {
-      await addPrivateMessage(currParams);
+    it ('uses socket.broadcast.to', async () => {
+      await sendPrivateMessage(params);
       expect(params.socket.broadcast.to).toHaveBeenCalledWith("123456789");
     });
 
-    it ('uses socket.broadcast.to.emit correctly', async () => {
-      await addPrivateMessage(currParams);
+    it ('uses socket.broadcast.to.emit', async () => {
+      await sendPrivateMessage(params);
       expect(params.socket.broadcast.emit).toHaveBeenCalledWith(
-        'AddPrivateMessage', PrivateMessage("other", "self", "hello")
+        'PrivateMessage', PrivateMessage("other", "self", "hello")
       );
     });
 
-    it ('uses socket.emit with AddPrivateMessage event correctly', async () => {
-      await addPrivateMessage(currParams);
+    it ('uses socket.emit with AddPrivateMessage event', async () => {
+      await sendPrivateMessage(params);
       expect(params.socket.emit).toHaveBeenCalledWith(
-        'AddPrivateMessage', PrivateMessage("other", "self", "hello")
+        'PrivateMessage', PrivateMessage("other", "self", "hello")
       );
     });
   });
-
 });

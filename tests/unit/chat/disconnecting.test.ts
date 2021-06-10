@@ -13,9 +13,6 @@ jest.mock('../../../../src/access/mysql', () => ({
 let mockViewAccepted = jest.fn();
 
 const mockRemoveUserFromRoom = jest.fn();
-const mockChatStore: Partial<IChatStore> =
-  {removeUserFromRoom: mockRemoveUserFromRoom};
-
 let mockGetUserSocketId = jest.fn();
 const mockDeleteUser = jest.fn();
 
@@ -34,7 +31,9 @@ const mockSocket: Partial<Socket> = {
   rooms
 };
 
-const params = {
+let mockChatStore: Partial<IChatStore>;
+
+const initialParams = {
   reason: "reason",
   username: "self",
   socket: <Socket>mockSocket
@@ -42,7 +41,7 @@ const params = {
 
 let mockFriendship: IFriendship;
 
-let currParams: IDisconnecting;
+let params: IDisconnecting;
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -52,48 +51,52 @@ describe('disconnecting handler', () => {
   describe('when friends are offline', () => {
     beforeAll(() => {
       mockGetUserSocketId = jest.fn().mockResolvedValue(undefined);
-      mockViewAccepted =
-        jest.fn().mockResolvedValue([{username: "Jack"}, {username: "Jill"}]);
-      mockChatStore =
-        {getUserSocketId: mockGetUserSocketId, deleteUser: mockDeleteUser};
+      mockViewAccepted = jest.fn().mockResolvedValue(
+        [{id: 3, username: "Jack"}, {id: 4, username: "Jill"}]
+      );
+      mockChatStore = {
+        getUserSocketId: mockGetUserSocketId,
+        removeUserFromRoom: mockRemoveUserFromRoom,
+        deleteUser: mockDeleteUser
+      };
       mockFriendship = new Friendship(pool);
 
-      currParams = {
-        ...params,
+      params = {
+        ...initialParams,
         chatStore: <IChatStore>mockChatStore,
         friendship: <IFriendship>mockFriendship
       };
     });
 
-    it('uses socket.broadcast.to with RemoveUser event', async () => {
-      await disconnecting(currParams);
+    it('uses socket.broadcast.to with UserLeftRoom event', async () => {
+      await disconnecting(params);
       expect(params.socket.broadcast.to).toHaveBeenCalledWith("room");
     });
 
-    it('uses socket.broadcast.to.emit with RemoveUser event', async () => {
-      await disconnecting(currParams);
+    it('uses socket.broadcast.to.emit with UserLeftRoom event', async () => {
+      await disconnecting(params);
       expect(params.socket.broadcast.emit)
-        .toHaveBeenCalledWith('RemoveUser', "self");
+        .toHaveBeenCalledWith('UserLeftRoom', "self");
     });
 
     it('uses removeUserFromRoom', async () => {
-      await disconnecting(currParams);
+      await disconnecting(params);
       expect(mockRemoveUserFromRoom).toHaveBeenCalledWith("self", "room");
     });
 
     it('uses Friendship.viewAccepted', async () => {
-      await disconnecting(currParams);
+      await disconnecting(params);
       expect(mockViewAccepted).toHaveBeenCalledWith(150);
     });
 
     it('uses getUserSocketId', async () => {
-      await disconnecting(currParams);
+      await disconnecting(params);
       expect(mockGetUserSocketId).toHaveBeenCalledWith("Jack");
       expect(mockGetUserSocketId).toHaveBeenCalledWith("Jill");
     });
 
     it('uses deleteUser', async () => {
-      await disconnecting(currParams);
+      await disconnecting(params);
       expect(mockDeleteUser).toHaveBeenCalledWith(150);
     });
   });
@@ -101,59 +104,63 @@ describe('disconnecting handler', () => {
   describe('when friends are online', () => {
     beforeAll(() => {
       mockGetUserSocketId = jest.fn().mockResolvedValue("123456789");
-      mockViewAccepted = jest.fn()
-        .mockResolvedValue([{username: "Jack"}, {username: "Jill"}]);
-      mockChatStore =
-        {getUserSocketId: mockGetUserSocketId, deleteUser: mockDeleteUser};
+      mockViewAccepted = jest.fn().mockResolvedValue(
+        [{id: 3, username: "Jack"}, {id: 4, username: "Jill"}]
+      );
+      mockChatStore = {
+        getUserSocketId: mockGetUserSocketId,
+        removeUserFromRoom: mockRemoveUserFromRoom,
+        deleteUser: mockDeleteUser
+      };
       mockFriendship = new Friendship(pool);
 
-      currParams = {
-        ...params,
+      params = {
+        ...initialParams,
         chatStore: <IChatStore>mockChatStore,
         friendship: <IFriendship>mockFriendship
       };
     });
 
-    it ('uses socket.broadcast.to with RemoveUser event', async () => {
-      await disconnecting(currParams);
+    it ('uses socket.broadcast.to with UserLeftRoom event', async () => {
+      await disconnecting(params);
       expect(params.socket.broadcast.to).toHaveBeenCalledWith("room");
     });
 
-    it ('uses socket.broadcast.to.emit with RemoveUser event', async () => {
-      await disconnecting(currParams);
+    it ('uses socket.broadcast.to.emit with UserLeftRoom event', async () => {
+      await disconnecting(params);
       expect(params.socket.broadcast.emit)
-        .toHaveBeenCalledWith('RemoveUser', "self");
+        .toHaveBeenCalledWith('UserLeftRoom', "self");
     });
 
     it('uses removeUserFromRoom', async () => {
-      await disconnecting(currParams);
+      await disconnecting(params);
       expect(mockRemoveUserFromRoom).toHaveBeenCalledWith("self", "room");
     });
 
     it('uses Friendship.viewAccepted', async () => {
-      await disconnecting(currParams);
+      await disconnecting(params);
       expect(mockViewAccepted).toHaveBeenCalledWith("self");
     });
 
     it('uses getUserSocketId', async () => {
-      await disconnecting(currParams);
+      await disconnecting(params);
       expect(mockGetUserSocketId).toHaveBeenCalledWith("Jack");
       expect(mockGetUserSocketId).toHaveBeenCalledWith("Jill");
     });
 
-    it ('uses socket.broadcast.to with UserWentOffline event', async () => {
-      await disconnecting(currParams);
+    it ('uses socket.broadcast.to with FriendWentOffline event', async () => {
+      await disconnecting(params);
       expect(params.socket.broadcast.to).toHaveBeenCalledWith("123456789");
     });
 
-    it ('uses socket.broadcast.to.emit with UserWentOffline event', async () => {
-      await disconnecting(currParams);
+    it ('uses socket.broadcast.to.emit with FriendWentOffline event', async () => {
+      await disconnecting(params);
       expect(params.socket.broadcast.emit)
-        .toHaveBeenCalledWith('UserWentOffline', "self");
+        .toHaveBeenCalledWith('FriendWentOffline', "self");
     });
 
     it('uses deleteUser', async () => {
-      await disconnecting(currParams);
+      await disconnecting(params);
       expect(mockDeleteUser).toHaveBeenCalledWith(150);
     });
   });

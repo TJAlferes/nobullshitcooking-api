@@ -1,17 +1,17 @@
 import { Socket } from 'socket.io';
 
-import { IChatRoom } from '../../../../src/access/redis/ChatRoom';
-import { addRoom } from '../../../../src/chat/handlers/addRoom';
+import { IChatStore } from '../../../src/access/redis';
+import { joinRoom } from '../../../src/chat';
 
-const mockAdd = jest.fn();
-const mockAddUser = jest.fn();
-const mockGetUsers = jest.fn().mockResolvedValue([]);
-const mockRemoveUser = jest.fn();
-const mockChatRoom: Partial<IChatRoom> = {
-  add: mockAdd,
-  addUser: mockAddUser,
-  getUsers: mockGetUsers,
-  removeUser: mockRemoveUser,
+const mockCreateRoom = jest.fn();
+const mockAddUserToRoom = jest.fn();
+const mockGetUsersInRoom = jest.fn().mockResolvedValue([]);
+const mockRemoveUserFromRoom = jest.fn();
+const mockChatStore: Partial<IChatStore> = {
+  createRoom: mockCreateRoom,
+  addUserToRoom: mockAddUserToRoom,
+  getUsersInRoom: mockGetUsersInRoom,
+  removeUserFromRoom: mockRemoveUserFromRoom,
 };
 
 const mockBroadcast: any = {
@@ -33,7 +33,7 @@ const params = {
   room: "nextRoom",
   username: "self",
   socket: <Socket>mockSocket,
-  chatRoom: <IChatRoom>mockChatRoom
+  chatStore: <IChatStore>mockChatStore
 };
 
 afterEach(() => {
@@ -41,63 +41,64 @@ afterEach(() => {
 });
 
 describe ('addRoom handler', () => {
-  it('uses socket.leave correctly', async () => {
-    await addRoom(params);
+  it('uses socket.leave', async () => {
+    await joinRoom(params);
     expect(params.socket.leave).toHaveBeenCalledWith("room");
   });
 
-  it('uses removeUser correctly', async () => {
-    await addRoom(params);
-    expect(mockRemoveUser).toHaveBeenCalledWith("self", "room");
+  it('uses removeUserFromRoom', async () => {
+    await joinRoom(params);
+    expect(mockRemoveUserFromRoom).toHaveBeenCalledWith("self", "room");
   });
 
-  it('uses socket.broadcast.to with Remove user event correctly', async () => {
-    await addRoom(params);
+  it('uses socket.broadcast.to with UserLeftRoom user event', async () => {
+    await joinRoom(params);
     expect(params.socket.broadcast.to).toHaveBeenCalledWith("room");
   });
 
   it(
-    'uses socket.broadcast.to.emit with RemoveUser event correctly',
+    'uses socket.broadcast.to.emit with UserLeftRoom event',
     async () => {
-      await addRoom(params);
+      await joinRoom(params);
       expect(params.socket.broadcast.emit)
-        .toHaveBeenCalledWith('RemoveUser', "self");
+        .toHaveBeenCalledWith('UserLeftRoom', "self");
     }
   );
 
-  it('uses socket.join correctly', async () => {
-    await addRoom(params);
+  it('uses socket.join', async () => {
+    await joinRoom(params);
     expect(params.socket.join).toHaveBeenCalledWith("nextRoom");
   });
 
-  it('uses addRoom correctly', async () => {
-    await addRoom(params);
-    expect(mockAdd).toHaveBeenCalledWith("nextRoom");
+  it('uses createRoom', async () => {
+    await joinRoom(params);
+    expect(mockCreateRoom).toHaveBeenCalledWith("nextRoom");
   });
 
-  it('uses addUser correctly', async () => {
-    await addRoom(params);
-    expect(mockAddUser).toHaveBeenCalledWith("self", "nextRoom");
+  it('uses addUserToRoom', async () => {
+    await joinRoom(params);
+    expect(mockAddUserToRoom).toHaveBeenCalledWith("self", "nextRoom");
   });
 
-  it('uses socket.broadcast.to with AddUser event correctly', async () => {
-    await addRoom(params);
+  it('uses socket.broadcast.to with UserJoinedRoom event', async () => {
+    await joinRoom(params);
     expect(params.socket.broadcast.to).toHaveBeenCalledWith("nextRoom");
   });
 
-  it('uses socket.broadcast.to.emit with AddUser event correctly', async () => {
-    await addRoom(params);
+  it('uses socket.broadcast.to.emit with UserJoinedRoom event', async () => {
+    await joinRoom(params);
     expect(params.socket.broadcast.emit)
-      .toHaveBeenCalledWith('AddUser', "self");
+      .toHaveBeenCalledWith('UserJoinedRoom', "self");
   });
 
-  it('uses getUsers correctly', async () => {
-    await addRoom(params);
-    expect(mockGetUsers).toHaveBeenCalledWith("nextRoom");
+  it('uses getUsersInRoom', async () => {
+    await joinRoom(params);
+    expect(mockGetUsersInRoom).toHaveBeenCalledWith("nextRoom");
   });
 
-  it('uses socket.emit with GetUser event correctly', async () => {
-    await addRoom(params);
-    expect(params.socket.emit).toHaveBeenCalledWith('GetUser', [], "nextRoom");
+  it('uses socket.emit with UsersInRoom event', async () => {
+    await joinRoom(params);
+    expect(params.socket.emit)
+      .toHaveBeenCalledWith('UsersInRoom', [], "nextRoom");
   });
 });

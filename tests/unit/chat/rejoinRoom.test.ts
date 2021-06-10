@@ -1,17 +1,16 @@
 import { Socket } from 'socket.io';
 
-import { IChatRoom } from '../../../../src/access/redis/ChatRoom';
-import { rejoinRoom } from '../../../../src/chat/handlers/rejoinRoom';
+import { IChatStore } from '../../../src/access/redis';
+import { rejoinRoom } from '../../../src/chat';
 
-const mockAdd = jest.fn();
-const mockAddUser = jest.fn();
-const mockGetUsers =
-  jest.fn().mockResolvedValue([{username: "Jack"}, {username: "Jill"}]);
+const mockCreateRoom = jest.fn();
+const mockAddUserToRoom = jest.fn();
+const mockGetUsersInRoom = jest.fn().mockResolvedValue(["Jack", "Jill"]);
 
-const mockChatRoom: Partial<IChatRoom> = {
-  add: mockAdd,
-  addUser: mockAddUser,
-  getUsers: mockGetUsers
+const mockChatStore: Partial<IChatStore> = {
+  createRoom: mockCreateRoom,
+  addUserToRoom: mockAddUserToRoom,
+  getUsersInRoom: mockGetUsersInRoom
 };
 
 const rooms = new Set<string>();
@@ -29,7 +28,7 @@ const params = {
   room: "room",
   username: "self",
   socket: <Socket>mockSocket,
-  chatRoom: <IChatRoom>mockChatRoom
+  chatStore: <IChatStore>mockChatStore
 };
 
 afterEach(() => {
@@ -37,42 +36,41 @@ afterEach(() => {
 });
 
 describe('rejoinRoom handler', () => {
-  it ('uses socket.join correctly', async () => {
+  it ('uses socket.join', async () => {
     await rejoinRoom(params);
     expect(params.socket.join).toHaveBeenCalledWith("room");
   });
 
   // ?
-  it ('uses add correctly', async () => {
+  it ('uses createRoom', async () => {
     await rejoinRoom(params);
-    expect(mockAdd).toHaveBeenCalledWith("room");
+    expect(mockCreateRoom).toHaveBeenCalledWith("room");
   });
 
-  it ('uses addUser correctly', async () => {
+  it ('uses addUserToRoom', async () => {
     await rejoinRoom(params);
-    expect(mockAddUser).toHaveBeenCalledWith("self", "room");
+    expect(mockAddUserToRoom).toHaveBeenCalledWith("self", "room");
   });
 
-  it ('uses getUsers correctly', async () => {
+  it ('uses getUsersInRoom', async () => {
     await rejoinRoom(params);
-    expect(mockGetUsers).toHaveBeenCalledWith("room");
+    expect(mockGetUsersInRoom).toHaveBeenCalledWith("room");
   });
 
-  it ('uses socket.broadcast.to correctly', async () => {
+  it ('uses socket.broadcast.to', async () => {
     await rejoinRoom(params);
     expect(params.socket.broadcast.to).toHaveBeenCalledWith("room");
   });
 
-  it ('uses socket.broadcast.emit correctly', async () => {
+  it ('uses socket.broadcast.emit', async () => {
     await rejoinRoom(params);
     expect(params.socket.broadcast.emit)
-      .toHaveBeenCalledWith('AddUser', "self");
+      .toHaveBeenCalledWith('UserJoinedRoom', "self");
   });
 
-  it ('uses socket.emit with RegetUser event correctly', async () => {
+  it ('uses socket.emit with RegetUser event', async () => {
     await rejoinRoom(params);
-    expect(params.socket.emit).toHaveBeenCalledWith(
-      'RegetUser', [{username: "Jack"}, {username: "Jill"}], "room"
-    );
+    expect(params.socket.emit)
+      .toHaveBeenCalledWith('UsersInRoomRefetched', ["Jack", "Jill"], "room");
   });
 });
