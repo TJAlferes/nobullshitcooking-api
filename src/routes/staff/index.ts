@@ -13,21 +13,21 @@ import { staffSupplierRouter } from './supplier';
 const router = Router();
 
 export function staffRouter(esClient: Client, pool: Pool) {
-  const staffAuthRoutes = staffAuthRouter(pool);
-  const staffContentRoutes = staffContentRouter(pool);
-  const staffEquipmentRoutes = staffEquipmentRouter(esClient, pool);
+  const staffAuthRoutes =         staffAuthRouter(pool);
+  const staffContentRoutes =      staffContentRouter(pool);
+  const staffEquipmentRoutes =    staffEquipmentRouter(esClient, pool);
   const staffGetSignedUrlRoutes = staffGetSignedUrlRouter();
-  const staffIngredientRoutes = staffIngredientRouter(esClient, pool);
-  const staffRecipeRoutes = staffRecipeRouter(esClient, pool);
-  const staffSupplierRoutes = staffSupplierRouter(pool);
+  const staffIngredientRoutes =   staffIngredientRouter(esClient, pool);
+  const staffRecipeRoutes =       staffRecipeRouter(esClient, pool);
+  const staffSupplierRoutes =     staffSupplierRouter(pool);
 
-  router.use('/auth', staffAuthRoutes);
-  router.use('/content', staffContentRoutes);
-  router.use('/equipment', staffEquipmentRoutes);
+  router.use('/auth',                   staffAuthRoutes);
+  router.use('/content',                staffContentRoutes);
+  router.use('/equipment',              staffEquipmentRoutes);
   router.use('/get-signed-url/content', staffGetSignedUrlRoutes);
-  router.use('/ingredient', staffIngredientRoutes);
-  router.use('/recipe', staffRecipeRoutes);
-  router.use('/supplier', staffSupplierRoutes);
+  router.use('/ingredient',             staffIngredientRoutes);
+  router.use('/recipe',                 staffRecipeRoutes);
+  router.use('/supplier',               staffSupplierRoutes);
 
   return router;
 }

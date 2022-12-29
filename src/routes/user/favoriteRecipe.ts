@@ -16,8 +16,7 @@ export function userFavoriteRecipeRouter(pool: Pool) {
 
   router.post('/', userIsAuth, catchExceptions(controller.viewByUserId));
 
-  router.post('/create', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.create));
-
+  router.post('/create',   userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.create));
   router.delete('/delete', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.delete));
 
   return router;
