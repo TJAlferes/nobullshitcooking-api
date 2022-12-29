@@ -14,25 +14,11 @@ const router = Router();
 export function userFavoriteRecipeRouter(pool: Pool) {
   const controller = new UserFavoriteRecipeController(pool);
 
-  router.post(
-    '/',
-    userIsAuth,
-    catchExceptions(controller.viewByUserId)
-  );
+  router.post('/', userIsAuth, catchExceptions(controller.viewByUserId));
 
-  router.post(
-    '/create',
-    userIsAuth,
-    [body('id').not().isEmpty().trim().escape()],
-    catchExceptions(controller.create)
-  );
+  router.post('/create', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.create));
 
-  router.delete(
-    '/delete',
-    userIsAuth,
-    [body('id').not().isEmpty().trim().escape()],
-    catchExceptions(controller.delete)
-  );
+  router.delete('/delete', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.delete));
 
   return router;
 }

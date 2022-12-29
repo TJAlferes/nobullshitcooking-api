@@ -12,50 +12,26 @@ const router = Router();
 export function userEquipmentRouter(pool: Pool) {
   const controller = new UserEquipmentController(pool);
 
-  router.post(
-    '/all',
-    userIsAuth,
-    catchExceptions(controller.view)
-  );
+  router.post('/all', userIsAuth, catchExceptions(controller.view));
 
-  router.post(
-    '/one',
-    userIsAuth,
-    [body('id').not().isEmpty().trim().escape()],
-    catchExceptions(controller.viewById)
-  );
+  router.post('/one', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.viewById));
 
-  router.post(
-    '/create',
-    userIsAuth,
-    [
-      body('equipmentTypeId').not().isEmpty().trim().escape(),
-      body('name').not().isEmpty().trim().escape(),
-      body('description').not().isEmpty().trim().escape(),
-      body('image').not().isEmpty().trim().escape()
-    ],
-    catchExceptions(controller.create)
-  );
+  router.post('/create', userIsAuth, [
+    body('equipmentTypeId').not().isEmpty().trim().escape(),
+    body('name').not().isEmpty().trim().escape(),
+    body('description').not().isEmpty().trim().escape(),
+    body('image').not().isEmpty().trim().escape()
+  ], catchExceptions(controller.create));
 
-  router.put(
-    '/update',
-    userIsAuth,
-    [
-      body('id').not().isEmpty().trim().escape(),
-      body('equipmentTypeId').not().isEmpty().trim().escape(),
-      body('name').not().isEmpty().trim().escape(),
-      body('description').not().isEmpty().trim().escape(),
-      body('image').not().isEmpty().trim().escape()
-    ],
-    catchExceptions(controller.update)
-  );
+  router.put('/update', userIsAuth, [
+    body('id').not().isEmpty().trim().escape(),
+    body('equipmentTypeId').not().isEmpty().trim().escape(),
+    body('name').not().isEmpty().trim().escape(),
+    body('description').not().isEmpty().trim().escape(),
+    body('image').not().isEmpty().trim().escape()
+  ], catchExceptions(controller.update));
 
-  router.delete(
-    '/delete',
-    userIsAuth,
-    [body('id').not().isEmpty().trim().escape()],
-    catchExceptions(controller.delete)
-  );
+  router.delete('/delete', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.delete));
 
   return router;
 }

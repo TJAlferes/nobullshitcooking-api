@@ -11,10 +11,7 @@ export const router = Router();
 export function favoriteRecipeRouter(pool: Pool) {
   const controller = new FavoriteRecipeController(pool);
 
-  router.get(
-    '/',
-    catchExceptions(controller.viewMostFavorited)
-  );
+  router.get('/', catchExceptions(controller.viewMostFavorited));
 
   return router;
 }

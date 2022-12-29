@@ -9,10 +9,9 @@ import { redisClients } from './lib/connections/redis';
 import { appServer } from './app';
 
 const server = appServer(pool, esClient, redisClients);
-let PORT: number = Number(process.env.PORT) || 3003;
-let HOST: string = '0.0.0.0';
-if (process.env.NODE_ENV === 'production') {
-  PORT = Number(process.env.PORT) || 8081;
-  HOST = '127.0.0.1';
-}
+
+const PORT: number = (process.env.NODE_ENV === 'production') ? Number(process.env.PORT) || 8081 : Number(process.env.PORT) || 3003;
+
+const HOST: string = (process.env.NODE_ENV === 'production') ? '127.0.0.1'                      : '0.0.0.0';
+
 server.listen(PORT, HOST, () => console.log('Listening on port ' + PORT));

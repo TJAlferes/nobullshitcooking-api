@@ -12,22 +12,9 @@ const router = Router();
 export function contentRouter(pool: Pool) {
   const controller = new ContentController(pool);
   
-  router.get(
-    '/',
-    catchExceptions(controller.view)
-  );
-  
-  router.get(
-    '/links/:name',
-    [param('name').not().isEmpty().trim().escape()],
-    catchExceptions(controller.getLinksByType)
-  );
-  
-  router.get(
-    '/:id',
-    [param('id').not().isEmpty().trim().escape()],
-    catchExceptions(controller.viewById)
-  );
+  router.get('/', catchExceptions(controller.view));
+  router.get('/links/:name', [param('name').not().isEmpty().trim().escape()], catchExceptions(controller.getLinksByType));
+  router.get('/:id',         [param('id').not().isEmpty().trim().escape()],   catchExceptions(controller.viewById));
   
   return router;
 }

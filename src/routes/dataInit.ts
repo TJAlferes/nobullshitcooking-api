@@ -11,10 +11,7 @@ const router = Router();
 export function dataInitRouter(pool: Pool) {
   const controller = new DataInitController(pool);
 
-  router.get(
-    '/',
-    catchExceptions(controller.viewInitialData)
-  );
+  router.get('/', catchExceptions(controller.viewInitialData));
 
   return router;
 }

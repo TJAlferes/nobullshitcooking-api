@@ -12,16 +12,8 @@ const router = Router();
 export function cuisineRouter(pool: Pool) {
   const controller = new CuisineController(pool);
 
-  router.get(
-    '/',
-    catchExceptions(controller.view)
-  );
-  
-  router.get(
-    '/:id',
-    [param('id').not().isEmpty().trim().escape()],
-    catchExceptions(controller.viewById)
-  );
+  router.get('/', catchExceptions(controller.view));
+  router.get('/:id', [param('id').not().isEmpty().trim().escape()], catchExceptions(controller.viewById));
 
   return router;
 }

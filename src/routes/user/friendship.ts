@@ -12,53 +12,15 @@ const router = Router();
 export function userFriendshipRouter(pool: Pool) {
   const controller = new UserFriendshipController(pool);
 
-  router.post(
-    '/',
-    userIsAuth,
-    catchExceptions(controller.view)
-  );
+  router.post('/', userIsAuth, catchExceptions(controller.view));
 
-  router.post(
-    '/create',
-    userIsAuth,
-    [body('friend').not().isEmpty().trim().escape()],
-    catchExceptions(controller.create)
-  );
+  router.post('/create',   userIsAuth, [body('friend').not().isEmpty().trim().escape()], catchExceptions(controller.create));
+  router.put('/accept',    userIsAuth, [body('friend').not().isEmpty().trim().escape()], catchExceptions(controller.accept));
+  router.put('/reject',    userIsAuth, [body('friend').not().isEmpty().trim().escape()], catchExceptions(controller.reject));
+  router.delete('/delete', userIsAuth, [body('friend').not().isEmpty().trim().escape()], catchExceptions(controller.delete));
 
-  router.put(
-    '/accept',
-    userIsAuth,
-    [body('friend').not().isEmpty().trim().escape()],
-    catchExceptions(controller.accept)
-  );
-
-  router.put(
-    '/reject',
-    userIsAuth,
-    [body('friend').not().isEmpty().trim().escape()],
-    catchExceptions(controller.reject)
-  );
-
-  router.delete(
-    '/delete',
-    userIsAuth,
-    [body('friend').not().isEmpty().trim().escape()],
-    catchExceptions(controller.delete)
-  );
-
-  router.post(
-    '/block',
-    userIsAuth,
-    [body('friend').not().isEmpty().trim().escape()],
-    catchExceptions(controller.block)
-  );
-
-  router.delete(
-    '/unblock',
-    userIsAuth,
-    [body('friend').not().isEmpty().trim().escape()],
-    catchExceptions(controller.unblock)
-  );
+  router.post('/block',     userIsAuth, [body('friend').not().isEmpty().trim().escape()], catchExceptions(controller.block));
+  router.delete('/unblock', userIsAuth, [body('friend').not().isEmpty().trim().escape()], catchExceptions(controller.unblock));
 
   return router;
 }

@@ -12,16 +12,8 @@ const router = Router();
 export function contentTypeRouter(pool: Pool) {
   const controller = new ContentTypeController(pool);
 
-  router.get(
-    '/',
-    catchExceptions(controller.view)
-  );
-  
-  router.get(
-    '/:id',
-    [param('id').not().isEmpty().trim().escape()],
-    catchExceptions(controller.viewById)
-  );
+  router.get('/', catchExceptions(controller.view));
+  router.get('/:id', [param('id').not().isEmpty().trim().escape()], catchExceptions(controller.viewById));
 
   return router;
 }

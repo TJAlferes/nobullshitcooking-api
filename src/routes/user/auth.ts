@@ -12,68 +12,39 @@ const router = Router();
 export function userAuthRouter(pool: Pool) {
   const controller = new UserAuthController(pool);
 
-  router.post(
-    '/register',
-    [
-      body('email').not().isEmpty().trim().escape(),
-      body('pass').not().isEmpty().trim().escape(),
-      body('username').not().isEmpty().trim().escape()
-    ],
-    catchExceptions(controller.register)
-  );
+  router.post('/register', [
+    body('email').not().isEmpty().trim().escape(),
+    body('pass').not().isEmpty().trim().escape(),
+    body('username').not().isEmpty().trim().escape()
+  ], catchExceptions(controller.register));
 
-  router.post(
-    '/resend-confirmation-code',
-    [
-      body('email').not().isEmpty().trim().escape(),
-      body('pass').not().isEmpty().trim().escape()
-    ],
-    catchExceptions(controller.resendConfirmationCode)
-  );
+  router.post('/resend-confirmation-code', [
+    body('email').not().isEmpty().trim().escape(),
+    body('pass').not().isEmpty().trim().escape()
+  ], catchExceptions(controller.resendConfirmationCode));
 
-  router.post(
-    '/verify',
-    [
-      body('email').not().isEmpty().trim().escape(),
-      body('pass').not().isEmpty().trim().escape(),
-      body('confirmationCode').not().isEmpty().trim().escape()
-    ],
-    catchExceptions(controller.verify)
-  );
+  router.post('/verify', [
+    body('email').not().isEmpty().trim().escape(),
+    body('pass').not().isEmpty().trim().escape(),
+    body('confirmationCode').not().isEmpty().trim().escape()
+  ], catchExceptions(controller.verify));
 
-  router.post(
-    '/login',
-    [
-      body('email').not().isEmpty().trim().escape(),
-      body('pass').not().isEmpty().trim().escape()
-    ],
-    catchExceptions(controller.login)
-  );
+  router.post('/login', [
+    body('email').not().isEmpty().trim().escape(),
+    body('pass').not().isEmpty().trim().escape()
+  ], catchExceptions(controller.login));
 
-  router.post(
-    '/logout',
-    userIsAuth,
-    catchExceptions(controller.logout)
-  );
+  router.post('/logout', userIsAuth, catchExceptions(controller.logout));
 
   // why POST?
-  router.post(
-    '/update',
-    userIsAuth,
-    [
-      body('email').not().isEmpty().trim().escape(),
-      body('pass').not().isEmpty().trim().escape(),
-      body('username').not().isEmpty().trim().escape()
-    ],
-    catchExceptions(controller.update)
-  );
+  router.post('/update', userIsAuth, [
+    body('email').not().isEmpty().trim().escape(),
+    body('pass').not().isEmpty().trim().escape(),
+    body('username').not().isEmpty().trim().escape()
+  ], catchExceptions(controller.update));
 
   // why POST?
-  router.post(
-    '/delete',
-    userIsAuth,
-    catchExceptions(controller.delete)
-  );
+  router.post('/delete', userIsAuth, catchExceptions(controller.delete));
 
   return router;
 }

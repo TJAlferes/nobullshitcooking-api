@@ -12,11 +12,7 @@ const router = Router();
 export function profileRouter(pool: Pool) {
   const controller = new ProfileController(pool);
 
-  router.get(
-    '/:username',
-    [param('username').not().isEmpty().trim().escape()],
-    catchExceptions(controller.view)
-  );
+  router.get('/:username', [param('username').not().isEmpty().trim().escape()], catchExceptions(controller.view));
 
   return router;
 }

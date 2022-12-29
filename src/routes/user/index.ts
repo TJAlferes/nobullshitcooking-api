@@ -16,27 +16,27 @@ import { userSavedRecipeRouter } from './savedRecipe';
 const router = Router();
 
 export function userRouter(esClient: Client, pool: Pool) {
-  const userAuthRoutes = userAuthRouter(pool);
-  const userEquipmentRoutes = userEquipmentRouter(pool);
+  const userAuthRoutes =           userAuthRouter(pool);
+  const userEquipmentRoutes =      userEquipmentRouter(pool);
   const userFavoriteRecipeRoutes = userFavoriteRecipeRouter(pool);
-  const userFriendshipRoutes = userFriendshipRouter(pool);
-  const userGetSignedUrlRoutes = userGetSignedUrlRouter();
-  const userIngredientRoutes = userIngredientRouter(pool);
-  const userPlanRoutes = userPlanRouter(pool);
-  //const userProfileRoutes = userProfileRouter(pool);
-  const userRecipeRoutes = userRecipeRouter(esClient, pool);
-  const userSavedRecipeRoutes = userSavedRecipeRouter(pool);
+  const userFriendshipRoutes =     userFriendshipRouter(pool);
+  const userGetSignedUrlRoutes =   userGetSignedUrlRouter();
+  const userIngredientRoutes =     userIngredientRouter(pool);
+  const userPlanRoutes =           userPlanRouter(pool);
+  //const userProfileRoutes =        userProfileRouter(pool);
+  const userRecipeRoutes =         userRecipeRouter(esClient, pool);
+  const userSavedRecipeRoutes =    userSavedRecipeRouter(pool);
 
-  router.use('/auth', userAuthRoutes);
-  router.use('/equipment', userEquipmentRoutes);
+  router.use('/auth',            userAuthRoutes);
+  router.use('/equipment',       userEquipmentRoutes);
   router.use('/favorite-recipe', userFavoriteRecipeRoutes);
-  router.use('/friendship', userFriendshipRoutes);
-  router.use('/get-signed-url', userGetSignedUrlRoutes);
-  router.use('/ingredient', userIngredientRoutes);
-  router.use('/plan', userPlanRoutes);
-  //router.use('/profile', userProfileRoutes);
-  router.use('/recipe', userRecipeRoutes);
-  router.use('/saved-recipe', userSavedRecipeRoutes);
+  router.use('/friendship',      userFriendshipRoutes);
+  router.use('/get-signed-url',  userGetSignedUrlRoutes);
+  router.use('/ingredient',      userIngredientRoutes);
+  router.use('/plan',            userPlanRoutes);
+  //router.use('/profile',         userProfileRoutes);
+  router.use('/recipe',          userRecipeRoutes);
+  router.use('/saved-recipe',    userSavedRecipeRoutes);
 
   return router;
 }

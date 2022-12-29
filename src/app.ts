@@ -12,11 +12,7 @@ import { bulkUp } from './lib/jobs/bulkUp';
 const app = express();
 const httpServer = createServer(app);
 
-export function appServer(
-  pool: Pool,
-  esClient: Client,
-  redisClients: RedisClients
-) {
+export function appServer(pool: Pool, esClient: Client, redisClients: RedisClients) {
   middlewareInit(app, pool, redisClients, httpServer);  // must be called before routesInit
 
   routesInit(app, pool, esClient);
