@@ -5,10 +5,10 @@ export class RecipeMethod implements IRecipeMethod {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewByRecipeId = this.viewByRecipeId.bind(this);
-    this.create = this.create.bind(this);
-    this.update = this.update.bind(this);
-    this.deleteByRecipeId = this.deleteByRecipeId.bind(this);
+    this.viewByRecipeId =    this.viewByRecipeId.bind(this);
+    this.create =            this.create.bind(this);
+    this.update =            this.update.bind(this);
+    this.deleteByRecipeId =  this.deleteByRecipeId.bind(this);
     this.deleteByRecipeIds = this.deleteByRecipeIds.bind(this);
   }
 
@@ -25,25 +25,14 @@ export class RecipeMethod implements IRecipeMethod {
   }
 
   async create(placeholders: string, recipeMethods: number[]) {
-    const sql = `
-      INSERT INTO recipe_methods (recipe_id, method_id) VALUES ${placeholders} 
-    `;
-    const [ rows ] =
-      await this.pool.execute<RowDataPacket[]>(sql, recipeMethods);
+    const sql = `INSERT INTO recipe_methods (recipe_id, method_id) VALUES ${placeholders}`;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, recipeMethods);
     return rows;
   }
   
-  async update(
-    recipeId: number,
-    placeholders: string,
-    recipeMethods: number[]
-  ) {
+  async update(recipeId: number, placeholders: string, recipeMethods: number[]) {
     const sql1 = `DELETE FROM recipe_methods WHERE recipe_id = ?`;
-    const sql2 = (recipeMethods.length)
-      ? `
-        INSERT INTO recipe_methods (recipe_id, method_id) VALUES ${placeholders} 
-      `
-      : "none";
+    const sql2 = (recipeMethods.length) ? `INSERT INTO recipe_methods (recipe_id, method_id) VALUES ${placeholders}` : "none";
     const conn = await this.pool.getConnection();
     await conn.beginTransaction();
     try {
@@ -79,24 +68,13 @@ export class RecipeMethod implements IRecipeMethod {
 
 type Data = Promise<RowDataPacket[]>;
 
-type DataWithExtra = Promise<
-  RowDataPacket[] |
-  RowDataPacket[][] |
-  OkPacket |
-  OkPacket[] |
-  ResultSetHeader |
-  undefined
->;
+type DataWithExtra = Promise<RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] | ResultSetHeader | undefined>;
 
 export interface IRecipeMethod {
   pool: Pool;
   viewByRecipeId(recipeId: number): Data;
   create(placeholders: string, recipeMethods: number[]): Data;
-  update(
-    recipeId: number,
-    placeholders: string,
-    recipeMethods: number[]
-  ): DataWithExtra;  // | finish
+  update(recipeId: number, placeholders: string, recipeMethods: number[]): DataWithExtra;  // | finish
   deleteByRecipeId(recipeId: number): Data;
   deleteByRecipeIds(recipeIds: number[]): Data;
 }

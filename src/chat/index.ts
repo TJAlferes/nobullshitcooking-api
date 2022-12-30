@@ -1,18 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
 
-export function PublicMessage(
-  to: string,
-  from: string,
-  text: string
-): IMessage {
+export function PublicMessage(to: string, from: string, text: string): IMessage {
   return {kind: PUBLIC, id: uuidv4(), to, from, text};
 }
 
-export function PrivateMessage(
-  to: string,
-  from: string,
-  text: string
-): IMessage {
+export function PrivateMessage(to: string, from: string, text: string): IMessage {
   return {kind: PRIVATE, id: uuidv4(), to, from, text};
 }
 

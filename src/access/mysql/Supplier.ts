@@ -5,11 +5,11 @@ export class Supplier implements ISupplier {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.view = this.view.bind(this);
+    this.view =     this.view.bind(this);
     this.viewById = this.viewById.bind(this);
-    this.create = this.create.bind(this);
-    this.update = this.update.bind(this);
-    this.delete = this.delete.bind(this);
+    this.create =   this.create.bind(this);
+    this.update =   this.update.bind(this);
+    this.delete =   this.delete.bind(this);
   }
 
   async view() {

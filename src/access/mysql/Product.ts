@@ -5,13 +5,13 @@ export class Product implements IProduct {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.getForElasticSearch = this.getForElasticSearch.bind(this);
+    this.getForElasticSearch =     this.getForElasticSearch.bind(this);
     this.getForElasticSearchById = this.getForElasticSearchById.bind(this);
-    this.view = this.view.bind(this);
-    this.viewById = this.viewById.bind(this);
-    this.create = this.create.bind(this);
-    this.update = this.update.bind(this);
-    this.delete = this.delete.bind(this);
+    this.view =                    this.view.bind(this);
+    this.viewById =                this.viewById.bind(this);
+    this.create =                  this.create.bind(this);
+    this.update =                  this.update.bind(this);
+    this.delete =                  this.delete.bind(this);
   }
 
   async getForElasticSearch() {
@@ -33,9 +33,7 @@ export class Product implements IProduct {
     `;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql);
     const final = [];
-    for (let row of rows) {
-      final.push({index: {_index: 'products', _id: row.id}}, row);
-    }
+    for (let row of rows) final.push({index: {_index: 'products', _id: row.id}}, row);
     return final;
   }
 

@@ -3,13 +3,7 @@ import { Socket } from 'socket.io';
 import { IFriendship } from '../access/mysql';
 import { IChatStore } from '../access/redis';
 
-export async function getOnlineFriends({
-  id,
-  username,
-  socket,
-  chatStore,
-  friendship
-}: IGetOnlineFriends) {
+export async function getOnlineFriends({ id, username, socket, chatStore, friendship }: IGetOnlineFriends) {
   const friends = await friendship.viewAccepted(id);
   if (!friends.length) return;
 

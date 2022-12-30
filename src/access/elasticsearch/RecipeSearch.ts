@@ -5,16 +5,15 @@ export class RecipeSearch implements IRecipeSearch {
 
   constructor(esClient: Client) {
     this.client = esClient;
-    this.find = this.find.bind(this);
-    this.auto = this.auto.bind(this);
-    this.save = this.save.bind(this);
+    this.find =   this.find.bind(this);
+    this.auto =   this.auto.bind(this);
+    this.save =   this.save.bind(this);
     this.delete = this.delete.bind(this);
   }
 
   // deep pagination can kill performance, set upper bounds 
   async find(searchBody: any) {
-    const { body } =
-      await this.client.search({index: "recipes", body: searchBody});
+    const { body } = await this.client.search({index: "recipes", body: searchBody});
     return body;
   }
 
@@ -40,32 +39,14 @@ export class RecipeSearch implements IRecipeSearch {
     return body;
   }
 
-  async save(recipe: ISavingRecipe) {
-    const row = await this.client.index({
-      index: 'recipes',
-      id: recipe.id,
-      body: {
-        id: recipe.id,
-        author: recipe.author,
-        recipe_type_name: recipe.recipe_type_name,
-        cuisine_name: recipe.cuisine_name,
-        title: recipe.title,
-        description: recipe.description,
-        directions: recipe.directions,
-        recipe_image: recipe.recipe_image,
-        method_names: recipe.method_names,
-        equipment_names: recipe.equipment_names,
-        ingredient_names: recipe.ingredient_names,
-        subrecipe_titles: recipe.subrecipe_titles
-      }
-    });
+  async save({id, author, recipe_type_name, cuisine_name, title, description, directions, recipe_image, method_names, equipment_names, ingredient_names, subrecipe_titles}: ISavingRecipe) {
+    const row = await this.client.index({index: 'recipes', id, body: {id, author, recipe_type_name, cuisine_name, title, description, directions, recipe_image, method_names, equipment_names, ingredient_names, subrecipe_titles}});
     await this.client.indices.refresh({index: 'recipes'});
     return row;
   }
 
   async delete(id: string) {
-    const row =
-      await this.client.delete({index: 'recipes', id}, {ignore: [404]});
+    const row = await this.client.delete({index: 'recipes', id}, {ignore: [404]});
     await this.client.indices.refresh({index: 'recipes'});
     return row;
   }

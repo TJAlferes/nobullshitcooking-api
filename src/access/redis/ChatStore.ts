@@ -7,16 +7,16 @@ export class ChatStore implements IChatStore {
 
   constructor(client: Redis) {
     this.client = client;
-    this.getUsersInRoom = this.getUsersInRoom.bind(this);
-    this.getUserSocketId = this.getUserSocketId.bind(this);
+    this.getUsersInRoom =     this.getUsersInRoom.bind(this);
+    this.getUserSocketId =    this.getUserSocketId.bind(this);
     //this.getRooms
     //this.getMessages
-    this.createUser = this.createUser.bind(this);
-    this.createRoom = this.createRoom.bind(this);
-    this.createMessage = this.createMessage.bind(this);
-    this.addUserToRoom = this.addUserToRoom.bind(this);
+    this.createUser =         this.createUser.bind(this);
+    this.createRoom =         this.createRoom.bind(this);
+    this.createMessage =      this.createMessage.bind(this);
+    this.addUserToRoom =      this.addUserToRoom.bind(this);
     this.removeUserFromRoom = this.removeUserFromRoom.bind(this);
-    this.deleteUser = this.deleteUser.bind(this);
+    this.deleteUser =         this.deleteUser.bind(this);
   }
 
   async getUsersInRoom(room: string) {
@@ -47,16 +47,16 @@ export class ChatStore implements IChatStore {
   async createMessage(message: IMessage) {
     await this.client.multi()
       .zadd(`rooms:${message.to}:messages`, JSON.stringify(message))
-      .zadd('users', Date.now(), `${message.from}`)
-      .zadd('rooms', Date.now(), `${message.to}`)
+      .zadd('users',                        Date.now(), `${message.from}`)
+      .zadd('rooms',                        Date.now(), `${message.to}`)
       .exec();
   }
   
   async addUserToRoom(username: string, room: string) {
     await this.client.multi()
       .zadd(`rooms:${room}:users`, Date.now(), username)
-      .zadd('users', Date.now(), username)
-      .zadd('rooms', Date.now(), room)
+      .zadd('users',               Date.now(), username)
+      .zadd('rooms',               Date.now(), room)
       .set(`user:${username}:room`, room)
       .exec();
   }

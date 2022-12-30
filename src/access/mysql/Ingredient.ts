@@ -5,14 +5,14 @@ export class Ingredient implements IIngredient {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.getForElasticSearch = this.getForElasticSearch.bind(this);
+    this.getForElasticSearch =     this.getForElasticSearch.bind(this);
     this.getForElasticSearchById = this.getForElasticSearchById.bind(this);
-    this.view = this.view.bind(this);
-    this.viewById = this.viewById.bind(this);
-    this.create = this.create.bind(this);
-    this.update = this.update.bind(this);
-    this.delete = this.delete.bind(this);
-    this.deleteById = this.deleteById.bind(this);
+    this.view =                    this.view.bind(this);
+    this.viewById =                this.viewById.bind(this);
+    this.create =                  this.create.bind(this);
+    this.update =                  this.update.bind(this);
+    this.delete =                  this.delete.bind(this);
+    this.deleteById =              this.deleteById.bind(this);
   }
 
   async getForElasticSearch() {
@@ -33,9 +33,7 @@ export class Ingredient implements IIngredient {
     `;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
     const final = [];
-    for (let row of rows) {
-      final.push({index: {_index: 'ingredients', _id: row.id}}, {...row});
-    }
+    for (let row of rows) final.push({index: {_index: 'ingredients', _id: row.id}}, {...row});
     return final;
   }
 
@@ -55,8 +53,7 @@ export class Ingredient implements IIngredient {
       INNER JOIN ingredient_types t ON t.id = i.ingredient_type_id
       WHERE i.id = ? i.owner_id = ?
     `;
-    const [ [ row ] ] =
-      await this.pool.execute<RowDataPacket[]>(sql, [id, ownerId]);
+    const [ [ row ] ] = await this.pool.execute<RowDataPacket[]>(sql, [id, ownerId]);
     return row as ISavingIngredient;
   }
 
@@ -78,8 +75,7 @@ export class Ingredient implements IIngredient {
       WHERE i.author_id = ? AND i.owner_id = ?
       ORDER BY i.name ASC
     `;
-    const [ row ] =
-      await this.pool.execute<RowDataPacket[]>(sql, [authorId, ownerId]);
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [authorId, ownerId]);
     return row;
   }
 
@@ -98,8 +94,7 @@ export class Ingredient implements IIngredient {
       INNER JOIN ingredient_types t ON i.ingredient_type_id = t.id
       WHERE owner_id = 1 AND i.id = ?
     `;
-    const [ row ] =
-      await this.pool.execute<RowDataPacket[]>(sql, [id, authorId, ownerId]);
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id, authorId, ownerId]);
     return row;
   }
 
@@ -116,17 +111,9 @@ export class Ingredient implements IIngredient {
         image
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
-    const [ row ] =
-      await this.pool.execute<RowDataPacket[] & ResultSetHeader>(sql, [
-        ingredient.ingredientTypeId,
-        ingredient.authorId,
-        ingredient.ownerId,
-        ingredient.brand,
-        ingredient.variety,
-        ingredient.name,
-        ingredient.description,
-        ingredient.image
-      ]);
+    const [ row ] = await this.pool.execute<RowDataPacket[] & ResultSetHeader>(sql, [
+      ingredient.ingredientTypeId, ingredient.authorId, ingredient.ownerId, ingredient.brand, ingredient.variety, ingredient.name, ingredient.description, ingredient.image
+    ]);
     return row;
   }
 
@@ -144,13 +131,7 @@ export class Ingredient implements IIngredient {
       LIMIT 1
     `;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [
-      ingredient.ingredientTypeId,
-      ingredient.brand,
-      ingredient.variety,
-      ingredient.name,
-      ingredient.description,
-      ingredient.image,
-      ingredient.id
+      ingredient.ingredientTypeId, ingredient.brand, ingredient.variety, ingredient.name, ingredient.description, ingredient.image, ingredient.id
     ]);
     return row;
   }
@@ -162,8 +143,7 @@ export class Ingredient implements IIngredient {
 
   async deleteById(id: number, ownerId: number) {
     const sql = `DELETE FROM ingredients WHERE owner_id = ? AND id = ? LIMIT 1`;
-    const [ row ] =
-      await this.pool.execute<RowDataPacket[]>(sql, [ownerId, id]);
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId, id]);
     return row;
   }
 }

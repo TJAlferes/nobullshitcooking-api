@@ -5,11 +5,11 @@ export class SavedRecipe implements ISavedRecipe {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewByUserId = this.viewByUserId.bind(this);
-    this.create = this.create.bind(this);
-    this.delete = this.delete.bind(this);
+    this.viewByUserId =        this.viewByUserId.bind(this);
+    this.create =              this.create.bind(this);
+    this.delete =              this.delete.bind(this);
     this.deleteAllByRecipeId = this.deleteAllByRecipeId.bind(this);
-    this.deleteAllByUserId = this.deleteAllByUserId.bind(this);
+    this.deleteAllByUserId =   this.deleteAllByUserId.bind(this);
   }
 
   async viewByUserId(userId: number) {
@@ -33,16 +33,13 @@ export class SavedRecipe implements ISavedRecipe {
   async create(userId: number, recipeId: number) {
     await this.delete(userId, recipeId);
     const sql = `INSERT INTO saved_recipes (user_id, recipe_id) VALUES (?, ?)`;
-    const [ row ] =
-      await this.pool.execute<RowDataPacket[]>(sql, [userId, recipeId]);
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [userId, recipeId]);
     return row;
   }
 
   async delete(userId: number, recipeId: number) {
-    const sql =
-      `DELETE FROM saved_recipes WHERE user_id = ? AND recipe_id = ? LIMIT 1`;
-    const [ row ] =
-      await this.pool.execute<RowDataPacket[]>(sql, [userId, recipeId]);
+    const sql = `DELETE FROM saved_recipes WHERE user_id = ? AND recipe_id = ? LIMIT 1`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [userId, recipeId]);
     return row;
   }
 

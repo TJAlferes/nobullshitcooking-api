@@ -5,14 +5,14 @@ export class Equipment implements IEquipment {
   
   constructor(pool: Pool) {
     this.pool = pool;
-    this.getForElasticSearch = this.getForElasticSearch.bind(this);
+    this.getForElasticSearch =     this.getForElasticSearch.bind(this);
     this.getForElasticSearchById = this.getForElasticSearchById.bind(this);
-    this.view = this.view.bind(this);
-    this.viewById = this.viewById.bind(this);
-    this.create = this.create.bind(this);
-    this.update = this.update.bind(this);
-    this.delete = this.delete.bind(this);
-    this.deleteById = this.deleteById.bind(this);
+    this.view =                    this.view.bind(this);
+    this.viewById =                this.viewById.bind(this);
+    this.create =                  this.create.bind(this);
+    this.update =                  this.update.bind(this);
+    this.delete =                  this.delete.bind(this);
+    this.deleteById =              this.deleteById.bind(this);
   }
 
   async getForElasticSearch() {
@@ -30,9 +30,7 @@ export class Equipment implements IEquipment {
     `;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
     const final = [];
-    for (let row of rows) {
-      final.push({index: {_index: 'equipment', _id: row.id}}, row);
-    }
+    for (let row of rows) final.push({index: {_index: 'equipment', _id: row.id}}, row);
     return final;
   }
   
@@ -49,8 +47,7 @@ export class Equipment implements IEquipment {
       INNER JOIN equipment_types t ON t.id = e.equipment_type_id
       WHERE e.id = ? e.owner_id = ?
     `;
-    const [ [ row ] ] =
-      await this.pool.execute<RowDataPacket[]>(sql, [id, ownerId]);
+    const [ [ row ] ] = await this.pool.execute<RowDataPacket[]>(sql, [id, ownerId]);
     return row as ISavingEquipment;
   }
 
@@ -69,8 +66,7 @@ export class Equipment implements IEquipment {
       WHERE e.author_id = ? AND e.owner_id = ?
       ORDER BY e.name ASC
     `;
-    const [ rows ] =
-      await this.pool.execute<RowDataPacket[]>(sql, [authorId, ownerId]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [authorId, ownerId]);
     return rows;
   }
 
@@ -88,31 +84,18 @@ export class Equipment implements IEquipment {
       INNER JOIN equipment_types t ON e.equipment_type_id = t.id
       WHERE e.id = ? AND e.author_id = ? AND e.owner_id = ?
     `;
-    const [ row ] =
-      await this.pool.execute<RowDataPacket[]>(sql, [id, authorId, ownerId]);
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id, authorId, ownerId]);
     return row;
   }
 
   async create(equipment: ICreatingEquipment) {
     const sql = `
-      INSERT INTO equipment (
-        equipment_type_id,
-        author_id,
-        owner_id,
-        name,
-        description,
-        image
-      ) VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO equipment (equipment_type_id, author_id, owner_id, name, description, image)
+      VALUES (?, ?, ?, ?, ?, ?)
     `;
-    const [ row ] =
-      await this.pool.execute<RowDataPacket[] & ResultSetHeader>(sql, [
-        equipment.equipmentTypeId,
-        equipment.authorId,
-        equipment.ownerId,
-        equipment.name,
-        equipment.description,
-        equipment.image
-      ]);
+    const [ row ] = await this.pool.execute<RowDataPacket[] & ResultSetHeader>(sql, [
+      equipment.equipmentTypeId, equipment.authorId, equipment.ownerId, equipment.name, equipment.description, equipment.image
+    ]);
     return row;
   }
 
@@ -123,13 +106,7 @@ export class Equipment implements IEquipment {
       WHERE id = ?
       LIMIT 1
     `;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [
-      equipment.equipmentTypeId,
-      equipment.name,
-      equipment.description,
-      equipment.image,
-      equipment.id
-    ]);
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [equipment.equipmentTypeId, equipment.name, equipment.description, equipment.image, equipment.id]);
     return row;
   }
 
@@ -140,8 +117,7 @@ export class Equipment implements IEquipment {
 
   async deleteById(id: number, ownerId: number) {
     const sql = `DELETE FROM equipment WHERE owner_id = ? AND id = ? LIMIT 1`;
-    const [ row ] =
-      await this.pool.execute<RowDataPacket[]>(sql, [ownerId, id]);
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId, id]);
     return row;
   }
 }

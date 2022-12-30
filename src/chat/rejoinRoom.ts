@@ -2,12 +2,7 @@ import { Socket } from 'socket.io';
 
 import { IChatStore } from '../access/redis';
 
-export async function rejoinRoom({
-  room,
-  username,
-  socket,
-  chatStore
-}: IRejoinRoom) {
+export async function rejoinRoom({ room, username, socket, chatStore }: IRejoinRoom) {
   if (room === '') return;
 
   socket.join(room);

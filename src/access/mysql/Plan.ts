@@ -5,11 +5,11 @@ export class Plan implements IPlan {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.view = this.view.bind(this);
-    this.viewById = this.viewById.bind(this);
-    this.create = this.create.bind(this);
-    this.update = this.update.bind(this);
-    this.deleteById = this.deleteById.bind(this);
+    this.view =               this.view.bind(this);
+    this.viewById =           this.viewById.bind(this);
+    this.create =             this.create.bind(this);
+    this.update =             this.update.bind(this);
+    this.deleteById =         this.deleteById.bind(this);
     this.deleteAllByOwnerId = this.deleteAllByOwnerId.bind(this);
   }
   
@@ -20,34 +20,26 @@ export class Plan implements IPlan {
   }
 
   async viewById(id: number, ownerId: number) {
-    const sql =
-      `SELECT id, name, data FROM plans WHERE owner_id = ? AND id = ?`;
-    const [ row ] =
-      await this.pool.execute<RowDataPacket[]>(sql, [ownerId, id]);
+    const sql = `SELECT id, name, data FROM plans WHERE owner_id = ? AND id = ?`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId, id]);
     return row;
   }
 
   async create({ authorId, ownerId, name, data }: ICreatingPlan) {
-    const sql =
-      `INSERT INTO plans (id, owner_id, name, data) VALUES (?, ?, ?, ?)`;
-    const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [authorId, ownerId, name, data]);
+    const sql = `INSERT INTO plans (id, owner_id, name, data) VALUES (?, ?, ?, ?)`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [authorId, ownerId, name, data]);
     return row;
   }
 
   async update({ id, ownerId, name, data }: IUpdatingPlan) {
-    const sql = `
-      UPDATE plans SET name = ?, data = ? WHERE owner_id = ? AND id = ? LIMIT 1
-    `;
-    const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [name, data, ownerId, id]);
+    const sql = `UPDATE plans SET name = ?, data = ? WHERE owner_id = ? AND id = ? LIMIT 1`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [name, data, ownerId, id]);
     return row;
   }
 
   async deleteById(id: number, ownerId: number) {
     const sql = `DELETE FROM plans WHERE owner_id = ? AND id = ? LIMIT 1`;
-    const [ row ] =
-      await this.pool.execute<RowDataPacket[]>(sql, [ownerId, id]);
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId, id]);
     return row;
   }
 

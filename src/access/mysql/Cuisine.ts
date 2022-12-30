@@ -5,7 +5,7 @@ export class Cuisine implements ICuisine {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.view = this.view.bind(this);
+    this.view =     this.view.bind(this);
     this.viewById = this.viewById.bind(this);
   }
 

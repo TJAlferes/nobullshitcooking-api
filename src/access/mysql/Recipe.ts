@@ -5,18 +5,18 @@ export class Recipe implements IRecipe {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.getForElasticSearch = this.getForElasticSearch.bind(this);
+    this.getForElasticSearch =     this.getForElasticSearch.bind(this);
     this.getForElasticSearchById = this.getForElasticSearchById.bind(this);
-    this.getPrivateIds = this.getPrivateIds.bind(this);
-    this.view = this.view.bind(this);
-    this.viewById = this.viewById.bind(this);
-    this.create = this.create.bind(this);
-    this.edit = this.edit.bind(this);
-    this.update = this.update.bind(this);
-    this.disown = this.disown.bind(this);
-    this.disownById = this.disownById.bind(this);
-    this.delete = this.delete.bind(this);
-    this.deleteById = this.deleteById.bind(this);
+    this.getPrivateIds =           this.getPrivateIds.bind(this);
+    this.view =                    this.view.bind(this);
+    this.viewById =                this.viewById.bind(this);
+    this.create =                  this.create.bind(this);
+    this.edit =                    this.edit.bind(this);
+    this.update =                  this.update.bind(this);
+    this.disown =                  this.disown.bind(this);
+    this.disownById =              this.disownById.bind(this);
+    this.delete =                  this.delete.bind(this);
+    this.deleteById =              this.deleteById.bind(this);
   }
 
   async getForElasticSearch() {
@@ -63,9 +63,7 @@ export class Recipe implements IRecipe {
     `;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
     const final = [];
-    for (let row of rows) {
-      final.push({index: {_index: 'recipes', _id: row.id}}, row);
-    }
+    for (let row of rows) final.push({index: {_index: 'recipes', _id: row.id}}, row);
     return final;
   }
 
@@ -111,15 +109,13 @@ export class Recipe implements IRecipe {
       INNER JOIN cuisines c ON c.id = r.cuisine_id
       WHERE r.id = ? AND r.owner_id = ?
     `;
-    const [ [ row ] ] =
-      await this.pool.execute<RowDataPacket[]>(sql, [id, ownerId]);
+    const [ [ row ] ] = await this.pool.execute<RowDataPacket[]>(sql, [id, ownerId]);
     return row as ISavingRecipe;
   }
 
   async getPrivateIds(userId: number) {
     const sql = `SELECT id FROM recipes WHERE author_id = ? AND owner_id = ?`;
-    const [ rows ] =
-      await this.pool.execute<RowDataPacket[]>(sql, [userId, userId]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [userId, userId]);
     const ids: number[] = [];
     rows.forEach(({ id }) => ids.push(id));
     return ids;
@@ -132,8 +128,7 @@ export class Recipe implements IRecipe {
       WHERE author_id = ? AND owner_id = ?
       ORDER BY title ASC
     `;
-    const [ rows ] =
-      await this.pool.execute<RowDataPacket[]>(sql, [authorId, ownerId]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [authorId, ownerId]);
     return rows;
   }
 
@@ -197,8 +192,7 @@ export class Recipe implements IRecipe {
       INNER JOIN cuisines c ON c.id = r.cuisine_id
       WHERE r.id = ? AND r.author_id = ? AND r.owner_id = ?
     `;
-    const [ row ] =
-      await this.pool.execute<RowDataPacket[]>(sql, [id, authorId, ownerId]);
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id, authorId, ownerId]);
     return row;
   }
 
@@ -301,8 +295,7 @@ export class Recipe implements IRecipe {
     INNER JOIN cuisines c ON c.id = r.cuisine_id
     WHERE r.id = ? AND r.author_id = ? AND r.owner_id = ?;
     `;
-    const [ row ] =
-      await this.pool.execute<RowDataPacket[]>(sql, [id, authorId, ownerId]);
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id, authorId, ownerId]);
     return row;
   }
 
@@ -349,8 +342,7 @@ export class Recipe implements IRecipe {
   
   async disown(authorId: number) {
     const newAuthorId = 2;
-    const sql =
-      `UPDATE recipes SET author_id = ? WHERE author_id = ? AND owner_id = 1`;
+    const sql = `UPDATE recipes SET author_id = ? WHERE author_id = ? AND owner_id = 1`;
     await this.pool.execute<RowDataPacket[]>(sql, [newAuthorId, authorId]);
   }
 
@@ -362,8 +354,7 @@ export class Recipe implements IRecipe {
       WHERE id = ? AND author_id = ? AND owner_id = 1
       LIMIT 1
     `;
-    const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [newAuthorId, id, authorId]);
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [newAuthorId, id, authorId]);
     return row;
   }
 
@@ -379,8 +370,7 @@ export class Recipe implements IRecipe {
       WHERE recipe_id = ? AND author_id = ? AND owner_id = ?
       LIMIT 1
     `;
-    const [ row ] =
-      await this.pool.execute<RowDataPacket[]>(sql, [id, authorId, ownerId]);
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id, authorId, ownerId]);
     return row;
   }
 }

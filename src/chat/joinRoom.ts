@@ -2,12 +2,7 @@ import { Socket } from 'socket.io';
 
 import { IChatStore } from '../access/redis';
 
-export async function joinRoom({
-  room,
-  username,
-  socket,
-  chatStore
-}: IJoinRoom) {
+export async function joinRoom({ room, username, socket, chatStore }: IJoinRoom) {
   if (room === '') return;
 
   const currentRooms = socket.rooms;

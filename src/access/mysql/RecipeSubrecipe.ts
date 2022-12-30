@@ -5,12 +5,12 @@ export class RecipeSubrecipe implements IRecipeSubrecipe {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewByRecipeId = this.viewByRecipeId.bind(this);
-    this.create = this.create.bind(this);
-    this.update = this.update.bind(this);
-    this.deleteByRecipeId = this.deleteByRecipeId.bind(this);
-    this.deleteByRecipeIds = this.deleteByRecipeIds.bind(this);
-    this.deleteBySubrecipeId = this.deleteBySubrecipeId.bind(this);
+    this.viewByRecipeId =       this.viewByRecipeId.bind(this);
+    this.create =               this.create.bind(this);
+    this.update =               this.update.bind(this);
+    this.deleteByRecipeId =     this.deleteByRecipeId.bind(this);
+    this.deleteByRecipeIds =    this.deleteByRecipeIds.bind(this);
+    this.deleteBySubrecipeId =  this.deleteBySubrecipeId.bind(this);
     this.deleteBySubrecipeIds = this.deleteBySubrecipeIds.bind(this);
   }
 
@@ -28,29 +28,14 @@ export class RecipeSubrecipe implements IRecipeSubrecipe {
   }
 
   async create(placeholders: string, recipeSubrecipes: number[]) {
-    const sql = `
-      INSERT INTO recipe_subrecipes
-      (recipe_id, amount, measurement_id, subrecipe_id)
-      VALUES ${placeholders}
-    `;
-    const [ rows ] =
-      await this.pool.execute<RowDataPacket[]>(sql, recipeSubrecipes);
+    const sql = `INSERT INTO recipe_subrecipes (recipe_id, amount, measurement_id, subrecipe_id) VALUES ${placeholders}`;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, recipeSubrecipes);
     return rows;
   }
   
-  async update(
-    recipeId: number,
-    placeholders: string,
-    recipeSubrecipes: number[]
-  ) {
+  async update(recipeId: number, placeholders: string, recipeSubrecipes: number[]) {
     const sql1 = `DELETE FROM recipe_subrecipes WHERE recipe_id = ?`;
-    const sql2 = (recipeSubrecipes.length)
-      ? `
-        INSERT INTO recipe_subrecipes
-        (recipe_id, amount, measurement_id, subrecipe_id)
-        VALUES ${placeholders} 
-      `
-      : "none";
+    const sql2 = (recipeSubrecipes.length) ? `INSERT INTO recipe_subrecipes (recipe_id, amount, measurement_id, subrecipe_id) VALUES ${placeholders}` : "none";
     const conn = await this.pool.getConnection();
     await conn.beginTransaction();
     try {
@@ -101,24 +86,13 @@ export class RecipeSubrecipe implements IRecipeSubrecipe {
 
 type Data = Promise<RowDataPacket[]>;
 
-type DataWithExtra = Promise<
-  RowDataPacket[] |
-  RowDataPacket[][] |
-  OkPacket |
-  OkPacket[] |
-  ResultSetHeader |
-  undefined
->;
+type DataWithExtra = Promise<RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] | ResultSetHeader | undefined>;
 
 export interface IRecipeSubrecipe {
   pool: Pool;
   viewByRecipeId(recipeId: number): Data;
   create(placeholders: string, recipeSubrecipes: number[]): Data;
-  update(
-    recipeId: number,
-    placeholders: string,
-    recipeSubrecipes: number[]
-  ): DataWithExtra;  // | finish
+  update(recipeId: number, placeholders: string, recipeSubrecipes: number[]): DataWithExtra;  // | finish
   deleteByRecipeId(recipeId: number): Data;
   deleteByRecipeIds(recipeIds: number[]): Data;
   deleteBySubrecipeId(subrecipeId: number): Data;

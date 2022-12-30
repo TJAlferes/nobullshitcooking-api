@@ -3,14 +3,9 @@ import { Socket } from 'socket.io';
 import { IFriendship } from '../access/mysql';
 import { IChatStore } from '../access/redis';
 
-export async function disconnecting({
-  id,
-  username,
-  socket,
-  chatStore,
-  friendship,
-}: IDisconnecting) {
+export async function disconnecting({ id, username, socket, chatStore, friendship }: IDisconnecting) {
   const clonedSocket: Partial<Socket> = {...socket};
+  
   for (const room in clonedSocket.rooms) {
     if (room !== clonedSocket.id) {
       socket.broadcast.to(room).emit('UserLeftRoom', username);

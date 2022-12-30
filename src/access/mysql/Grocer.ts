@@ -5,7 +5,7 @@ export class Grocer implements IGrocer {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.view = this.view.bind(this);
+    this.view =   this.view.bind(this);
     this.create = this.create.bind(this);
     this.update = this.update.bind(this);
     this.delete = this.delete.bind(this);
@@ -23,11 +23,8 @@ export class Grocer implements IGrocer {
   }
 
   async create({ ownerId, name, address, notes }: ICreatingGrocer) {
-    const sql = `
-      INSERT INTO grocers (owner_id, name, address, notes) VALUES (?, ?, ?, ?)
-    `;
-    const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [ownerId, name, address, notes]);
+    const sql = `INSERT INTO grocers (owner_id, name, address, notes) VALUES (?, ?, ?, ?)`;
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId, name, address, notes]);
     return row;
   }
 
@@ -38,15 +35,13 @@ export class Grocer implements IGrocer {
       WHERE id = ? AND owner_id = ?
       LIMIT 1
     `;
-    const [ row ] = await this.pool
-      .execute<RowDataPacket[]>(sql, [name, address, notes, ownerId, id]);
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [name, address, notes, ownerId, id]);
     return row;
   }
 
   async delete(id: number, ownerId: number) {
     const sql = `DELETE FROM grocers WHERE owner_id = ? AND id = ? LIMIT 1`;
-    const [ row ] =
-      await this.pool.execute<RowDataPacket[]>(sql, [ownerId, id]);
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId, id]);
     return row;
   }
 }

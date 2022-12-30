@@ -4,15 +4,7 @@ import { IFriendship, IUser } from '../access/mysql';
 import { IChatStore } from '../access/redis';
 import { PrivateMessage } from '.';
 
-export async function sendPrivateMessage({
-  to,
-  from,
-  text,
-  socket,
-  chatStore,
-  friendship,
-  user
-}: ISendPrivateMessage) {
+export async function sendPrivateMessage({ to, from, text, socket, chatStore, friendship, user }: ISendPrivateMessage) {
   const notFound = socket.emit('FailedPrivateMessage', 'User not found.');
 
   const userExists = await user.getByName(to);

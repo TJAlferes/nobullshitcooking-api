@@ -5,16 +5,15 @@ export class EquipmentSearch implements IEquipmentSearch {
 
   constructor(esClient: Client) {
     this.client = esClient;
-    this.find = this.find.bind(this);
-    this.auto = this.auto.bind(this);
-    this.save = this.save.bind(this);
+    this.find =   this.find.bind(this);
+    this.auto =   this.auto.bind(this);
+    this.save =   this.save.bind(this);
     this.delete = this.delete.bind(this);
   }
 
   // deep pagination can kill performance, set upper bounds 
   async find(searchBody: object) {
-    const { body } =
-      await this.client.search({index: "equipment", body: searchBody});
+    const { body } = await this.client.search({index: "equipment", body: searchBody});
     return body;
   }
 
@@ -37,19 +36,14 @@ export class EquipmentSearch implements IEquipmentSearch {
 
   // (staff only)
   async save({ id, equipment_type_name, name, image }: ISavingEquipment) {
-    const row = await this.client.index({
-      index: 'equipment',
-      id,
-      body: {id, equipment_type_name, name, image}
-    });
+    const row = await this.client.index({index: 'equipment', id, body: {id, equipment_type_name, name, image}});
     await this.client.indices.refresh({index: 'equipment'});
     return row;
   }
 
   // (staff only)
   async delete(id: string) {
-    const row =
-      await this.client.delete({index: 'equipment', id}, {ignore: [404]});
+    const row = await this.client.delete({index: 'equipment', id}, {ignore: [404]});
     await this.client.indices.refresh({index: 'equipment'});
     return row;
   }

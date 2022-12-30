@@ -5,16 +5,15 @@ export class IngredientSearch implements IIngredientSearch {
 
   constructor(esClient: Client) {
     this.client = esClient;
-    this.find = this.find.bind(this);
-    this.auto = this.auto.bind(this);
-    this.save = this.save.bind(this);
+    this.find =   this.find.bind(this);
+    this.auto =   this.auto.bind(this);
+    this.save =   this.save.bind(this);
     this.delete = this.delete.bind(this);
   }
 
   // deep pagination can kill performance, set upper bounds 
   async find(searchBody: any) {
-    const { body } =
-      await this.client.search({index: "ingredients", body: searchBody});
+    const { body } = await this.client.search({index: "ingredients", body: searchBody});
     return body;
   }
 
@@ -38,28 +37,15 @@ export class IngredientSearch implements IIngredientSearch {
   }
 
   // (staff only)
-  async save({
-    id,
-    ingredient_type_name,
-    fullname,
-    brand,
-    variety,
-    name,
-    image
-  }: ISavingIngredient) {
-    const row = await this.client.index({
-      index: 'ingredients',
-      id,
-      body: {id, ingredient_type_name, fullname, brand, variety, name, image}
-    });
+  async save({ id, ingredient_type_name, fullname, brand, variety, name, image }: ISavingIngredient) {
+    const row = await this.client.index({index: 'ingredients', id, body: {id, ingredient_type_name, fullname, brand, variety, name, image}});
     await this.client.indices.refresh({index: 'ingredients'});
     return row;
   }
 
   // (staff only)
   async delete(id: string) {
-    const row =
-      await this.client.delete({index: 'ingredients', id}, {ignore: [404]});
+    const row = await this.client.delete({index: 'ingredients', id}, {ignore: [404]});
     await this.client.indices.refresh({index: 'ingredients'});
     return row;
   }
