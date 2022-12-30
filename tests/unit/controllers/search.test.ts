@@ -8,31 +8,19 @@ const controller = new SearchController(<Client>esClient);
 
 const found = {some: "value"};
 jest.mock('../../../src/access/elasticsearch', () => ({
-  EquipmentSearch: jest.fn().mockImplementation(() => ({
-    auto: autoEquipment,
-    find: findEquipment
-  })),
-  IngredientSearch: jest.fn().mockImplementation(() => ({
-    auto: autoIngredients,
-    find: findIngredients
-  })),
-  ProductSearch: jest.fn().mockImplementation(() => ({
-    auto: autoProducts,
-    find: findProducts
-  })),
-  RecipeSearch: jest.fn().mockImplementation(() => ({
-    auto: autoRecipes,
-    find: findRecipes
-  }))
+  EquipmentSearch:  jest.fn().mockImplementation(() => ({auto: autoEquipment,   find: findEquipment})),
+  IngredientSearch: jest.fn().mockImplementation(() => ({auto: autoIngredients, find: findIngredients})),
+  ProductSearch:    jest.fn().mockImplementation(() => ({auto: autoProducts,    find: findProducts})),
+  RecipeSearch:     jest.fn().mockImplementation(() => ({auto: autoRecipes,     find: findRecipes}))
 }));
-let autoEquipment = jest.fn().mockResolvedValue(found);
-let findEquipment = jest.fn().mockResolvedValue(found);
+let autoEquipment =   jest.fn().mockResolvedValue(found);
+let findEquipment =   jest.fn().mockResolvedValue(found);
 let autoIngredients = jest.fn().mockResolvedValue(found);
 let findIngredients = jest.fn().mockResolvedValue(found);
-let autoProducts = jest.fn().mockResolvedValue(found);
-let findProducts = jest.fn().mockResolvedValue(found);
-let autoRecipes = jest.fn().mockResolvedValue(found);
-let findRecipes = jest.fn().mockResolvedValue(found);
+let autoProducts =    jest.fn().mockResolvedValue(found);
+let findProducts =    jest.fn().mockResolvedValue(found);
+let autoRecipes =     jest.fn().mockResolvedValue(found);
+let findRecipes =     jest.fn().mockResolvedValue(found);
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -53,8 +41,7 @@ describe('search controller', () => {
     });
 
     it('returns sent data', async () => {
-      const actual =
-        await controller.autoEquipment(<Request>req, <Response>res);
+      const actual = await controller.autoEquipment(<Request>req, <Response>res);
       expect(res.json).toHaveBeenCalledWith({found});
       expect(actual).toEqual({found});
     });
@@ -70,8 +57,7 @@ describe('search controller', () => {
     });
 
     it('returns sent data', async () => {
-      const actual =
-        await controller.findEquipment(<Request>req, <Response>res);
+      const actual = await controller.findEquipment(<Request>req, <Response>res);
       expect(res.json).toHaveBeenCalledWith({found});
       expect(actual).toEqual({found});
     });
@@ -87,8 +73,7 @@ describe('search controller', () => {
     });
 
     it('returns sent data', async () => {
-      const actual =
-        await controller.autoIngredients(<Request>req, <Response>res);
+      const actual = await controller.autoIngredients(<Request>req, <Response>res);
       expect(res.json).toHaveBeenCalledWith({found});
       expect(actual).toEqual({found});
     });
@@ -104,8 +89,7 @@ describe('search controller', () => {
     });
 
     it('returns sent data', async () => {
-      const actual =
-        await controller.findIngredients(<Request>req, <Response>res);
+      const actual = await controller.findIngredients(<Request>req, <Response>res);
       expect(res.json).toHaveBeenCalledWith({found});
       expect(actual).toEqual({found});
     });

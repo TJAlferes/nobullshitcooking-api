@@ -10,23 +10,14 @@ const mockFriendship: Partial<IFriendship> = {viewAccepted: mockViewAccepted};
 const rooms = new Set<string>();
 rooms.add("room");
 
-const mockBroadcast: any =
-  {emit: jest.fn(), to: jest.fn((room: string) => mockBroadcast)};
+const mockBroadcast: any = {emit: jest.fn(), to: jest.fn((room: string) => mockBroadcast)};
 
-const mockSocket: Partial<Socket> = {
-  broadcast: <Socket>mockBroadcast,
-  emit: jest.fn().mockReturnValue(true),
-  rooms
-};
+const mockSocket: Partial<Socket> = {broadcast: <Socket>mockBroadcast, emit: jest.fn().mockReturnValue(true), rooms};
 
 let mockGetUserSocketId = jest.fn();
 let mockChatStore: Partial<IChatStore>;
 
-const initialParams = {
-  username: "self",
-  socket: <Socket>mockSocket,
-  nobscFriendship: <IFriendship>mockFriendship
-};
+const initialParams = {username: "self", socket: <Socket>mockSocket, nobscFriendship: <IFriendship>mockFriendship};
 
 let params: IGetOnlineFriends;
 
@@ -38,8 +29,8 @@ describe('getOnline handler', () => {
   describe('when friends are offline', () => {
     beforeAll(() => {
       mockGetUserSocketId = jest.fn().mockResolvedValue(undefined);
-      mockChatStore = {getUserSocketId: mockGetUserSocketId};
-      params = {...initialParams, chatStore: <IChatStore>mockChatStore};
+      mockChatStore =       {getUserSocketId: mockGetUserSocketId};
+      params =              {...initialParams, chatStore: <IChatStore>mockChatStore};
     });
 
     it('uses Friendship.viewAccepted', async () => {
@@ -62,8 +53,8 @@ describe('getOnline handler', () => {
   describe('when friends are online', () => {
     beforeAll(() => {
       mockGetUserSocketId = jest.fn().mockResolvedValue("123456789");
-      mockChatStore = {getUserSocketId: mockGetUserSocketId};
-      params = {...initialParams, chatStore: <IChatStore>mockChatStore};
+      mockChatStore =       {getUserSocketId: mockGetUserSocketId};
+      params =              {...initialParams, chatStore: <IChatStore>mockChatStore};
     });
 
     it('uses Friendship.viewAccepted', async () => {
@@ -84,14 +75,12 @@ describe('getOnline handler', () => {
 
     it('uses socket.broadcast.emit with FriendCameOnline event', async () => {
       await getOnlineFriends(params);
-      expect(params.socket.broadcast.emit)
-        .toHaveBeenCalledWith('FriendCameOnline', "self");
+      expect(params.socket.broadcast.emit).toHaveBeenCalledWith('FriendCameOnline', "self");
     });
 
     it('uses socket.emit with OnlineFriends event', async () => {
       await getOnlineFriends(params);
-      expect(params.socket.emit)
-        .toHaveBeenCalledWith('OnlineFriends', ["Jack", "Jill"]);
+      expect(params.socket.emit).toHaveBeenCalledWith('OnlineFriends', ["Jack", "Jill"]);
     });
   });
 });

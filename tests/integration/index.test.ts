@@ -73,10 +73,7 @@ describe ('NOBSC API', () => {
   describe('GET /', () => {
     it('returns data correctly', async () => {
       const { text } = await request(server).get('/');
-      expect(text).toEqual(`
-        No Bullshit Cooking Backend API.
-        Documentation at https://github.com/tjalferes/nobullshitcooking-api
-      `);
+      expect(text).toEqual(`No Bullshit Cooking Backend API. Documentation at https://github.com/tjalferes/nobullshitcooking-api`);
     });
   });
   describe('content', contentTests);

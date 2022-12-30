@@ -9,11 +9,9 @@ const controller = new CuisineController(<Pool>pool);
 const row = {id: 1, name: "Name"};
 const rows = [{id: 1, name: "Name"}, {id: 2, name: "Name"}];
 jest.mock('../../../src/access/mysql', () => ({
-  Cuisine: jest.fn().mockImplementation(() => ({
-    view: mockview, viewById: mockviewById
-  }))
+  Cuisine: jest.fn().mockImplementation(() => ({view: mockview, viewById: mockviewById}))
 }));
-let mockview = jest.fn().mockResolvedValue(rows);
+let mockview =     jest.fn().mockResolvedValue(rows);
 let mockviewById = jest.fn().mockResolvedValue([row]);
 
 afterEach(() => {

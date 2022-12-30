@@ -7,29 +7,14 @@ const mockCreateRoom = jest.fn();
 const mockAddUserToRoom = jest.fn();
 const mockGetUsersInRoom = jest.fn().mockResolvedValue(["Jack", "Jill"]);
 
-const mockChatStore: Partial<IChatStore> = {
-  createRoom: mockCreateRoom,
-  addUserToRoom: mockAddUserToRoom,
-  getUsersInRoom: mockGetUsersInRoom
-};
+const mockChatStore: Partial<IChatStore> = {createRoom: mockCreateRoom, addUserToRoom: mockAddUserToRoom, getUsersInRoom: mockGetUsersInRoom};
 
 const rooms = new Set<string>();
 rooms.add("room");
-const mockBroadcast: any =
-  {emit: jest.fn(), to: jest.fn((room: string) => mockBroadcast)};
-const mockSocket: Partial<Socket> = {
-  broadcast: <Socket>mockBroadcast,
-  emit: jest.fn().mockReturnValue(true),
-  join: jest.fn(),
-  rooms
-};
+const mockBroadcast: any = {emit: jest.fn(), to: jest.fn((room: string) => mockBroadcast)};
+const mockSocket: Partial<Socket> = {broadcast: <Socket>mockBroadcast, emit: jest.fn().mockReturnValue(true), join: jest.fn(), rooms};
 
-const params = {
-  room: "room",
-  username: "self",
-  socket: <Socket>mockSocket,
-  chatStore: <IChatStore>mockChatStore
-};
+const params = {room: "room", username: "self", socket: <Socket>mockSocket, chatStore: <IChatStore>mockChatStore};
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -64,13 +49,11 @@ describe('rejoinRoom handler', () => {
 
   it ('uses socket.broadcast.emit', async () => {
     await rejoinRoom(params);
-    expect(params.socket.broadcast.emit)
-      .toHaveBeenCalledWith('UserJoinedRoom', "self");
+    expect(params.socket.broadcast.emit).toHaveBeenCalledWith('UserJoinedRoom', "self");
   });
 
   it ('uses socket.emit with RegetUser event', async () => {
     await rejoinRoom(params);
-    expect(params.socket.emit)
-      .toHaveBeenCalledWith('UsersInRoomRefetched', ["Jack", "Jill"], "room");
+    expect(params.socket.emit).toHaveBeenCalledWith('UsersInRoomRefetched', ["Jack", "Jill"], "room");
   });
 });

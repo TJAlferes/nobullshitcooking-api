@@ -9,15 +9,13 @@ const controller = new ProfileController(<Pool>pool);
 const row = {id: 1, name: "Name"};
 const rows = [{id: 1, name: "Name"}, {id: 2, name: "Name"}];
 jest.mock('../../../src/access/mysql', () => ({
-  FavoriteRecipe: jest.fn().mockImplementation(() => ({
-    viewByUserId: mockviewByUserId
-  })),
-  Recipe: jest.fn().mockImplementation(() => ({view: mockview})),
-  User: jest.fn().mockImplementation(() => ({viewByName: mockviewByName}))
+  FavoriteRecipe: jest.fn().mockImplementation(() => ({viewByUserId: mockviewByUserId})),
+  Recipe:         jest.fn().mockImplementation(() => ({view: mockview})),
+  User:           jest.fn().mockImplementation(() => ({viewByName: mockviewByName}))
 }));
 let mockviewByUserId = jest.fn().mockResolvedValue(rows);
-let mockview = jest.fn().mockResolvedValue(rows);
-let mockviewByName = jest.fn().mockResolvedValue(row);
+let mockview =         jest.fn().mockResolvedValue(rows);
+let mockviewByName =   jest.fn().mockResolvedValue(row);
 
 jest.mock('superstruct');
 
@@ -27,8 +25,7 @@ afterEach(() => {
 
 describe('profile controller', () => {
   describe('view method', () => {
-    const data =
-      {message: 'Success.', publicRecipes: rows, favoriteRecipes: rows};
+    const data = {message: 'Success.', publicRecipes: rows, favoriteRecipes: rows};
     const req: Partial<Request> = {params: {username: "Name"}};
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue(data)};
 
