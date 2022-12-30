@@ -8,5 +8,6 @@ const host = process.env.NODE_ENV === 'production'
     ? 'elasticsearch-test'
     : 'elasticsearch-dev';
 const esHost = host || 'localhost';
-const node = 'http://' + esHost + ':9200';
+const node =   'http://' + esHost + ':9200';
+
 export const esClient = new Client({node});

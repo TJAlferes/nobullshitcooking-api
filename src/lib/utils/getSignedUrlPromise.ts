@@ -1,10 +1,6 @@
 import S3 from 'aws-sdk/clients/s3';
 
-export function getSignedUrlPromise(
-  s3: S3,
-  operation: string,
-  params: S3Params
-) {
+export function getSignedUrlPromise(s3: S3, operation: string, params: S3Params) {
   return new Promise((resolve, reject) => {
     s3.getSignedUrl(operation, params, (err, data) => {
       err ? reject(err) : resolve(data);

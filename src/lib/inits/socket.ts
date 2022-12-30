@@ -12,55 +12,33 @@ import { createAdapter } from 'socket.io-redis';
 import { Friendship, User } from '../../access/mysql';
 import { ChatStore } from '../../access/redis';
 import { RedisClients } from '../../app';
-import {
-  sendMessage,
-  sendPrivateMessage,
-  joinRoom,
-  disconnecting,
-  getOnlineFriends,
-  getUsersInRoom,
-  rejoinRoom,
-  IMessage
-} from '../../chat';
+import { sendMessage, sendPrivateMessage, joinRoom, disconnecting, getOnlineFriends, getUsersInRoom, rejoinRoom, IMessage } from '../../chat';
 
-export function socketInit(
-  pool: Pool,
-  redisClients: RedisClients,
-  redisSession: RedisStore,
-  httpServer: HTTPServer
-) {
-  const io = new SocketIOServer<IClientToServerEvents, IServerToClientEvents>(
-    httpServer,
-    {
-      cors: {
-        allowedHeaders: ["sessionId", "userInfo"],
-        credentials: true,
-        methods: ["GET", "POST"],
-        origin: ["https://nobullshitcooking.com", "http://localhost:3000"]
-      },
-      pingTimeout: 60000
-    }
-  );
+export function socketInit(pool: Pool, redisClients: RedisClients, redisSession: RedisStore, httpServer: HTTPServer) {
+  const io = new SocketIOServer<IClientToServerEvents, IServerToClientEvents>(httpServer, {
+    cors: {
+      allowedHeaders: ["sessionId", "userInfo"],
+      credentials:    true,
+      methods:        ["GET", "POST"],
+      origin:         ["https://nobullshitcooking.com", "http://localhost:3000"]
+    },
+    pingTimeout: 60000
+  });
   const { pubClient, subClient } = redisClients;  //pubClient.duplicate()
 
   io.adapter(createAdapter({pubClient, subClient}));
 
   io.use(async (socket: IUberSocket, next: Next) => {
     const parsedCookie = cookie.parse(socket.request.headers.cookie!);
-    const sessionId = cookieParser.signedCookie(
-      parsedCookie['connect.sid'],
-      process.env.SESSION_SECRET!
-    );
+    const sessionId = cookieParser.signedCookie(parsedCookie['connect.sid'], process.env.SESSION_SECRET!);
 
-    if (!sessionId || parsedCookie['connect.sid'] === sessionId)
-      return next(new Error('Not authenticated.'));
+    if ( (!sessionId) || (parsedCookie['connect.sid'] === sessionId) ) return next(new Error('Not authenticated.'));
 
     redisSession.get(sessionId, (err, session) => {
-      if (!session || !session.userInfo || !session.userInfo.id)
-        return next(new Error('Not authenticated.'));
+      if (!session || !session.userInfo || !session.userInfo.id) return next(new Error('Not authenticated.'));
       
       socket.sessionId = sessionId;
-      socket.userInfo = session.userInfo;
+      socket.userInfo =  session.userInfo;
 
       const { username } = session.userInfo;
       const chatStore = new ChatStore(pubClient);
@@ -74,9 +52,9 @@ export function socketInit(
     const { id, username } = socket.userInfo!;
     if (!id || !username) return;
 
-    const user = new User(pool);
+    const user =       new User(pool);
     const friendship = new Friendship(pool);
-    const chatStore = new ChatStore(pubClient);
+    const chatStore =  new ChatStore(pubClient);
 
     // Users
 

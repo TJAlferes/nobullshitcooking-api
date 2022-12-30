@@ -27,10 +27,10 @@ const textSearch = {
 
 // TO DO: rename this
 export async function bulkUp(esClient: Client, pool: Pool) {
-  const equipment = new Equipment(pool);
+  const equipment =  new Equipment(pool);
   const ingredient = new Ingredient(pool);
-  const product = new Product(pool);
-  const recipe = new Recipe(pool);
+  const product =    new Product(pool);
+  const recipe =     new Recipe(pool);
   
   const [ bulkRecipes, bulkIngredients, bulkProducts, bulkEquipment ] =
     await Promise.all([

@@ -3,14 +3,7 @@
 //require('dotenv').config();
 import { SESClient, CloneReceiptRuleSetCommand } from '@aws-sdk/client-ses';
 
-export async function emailUser(
-  from: string,
-  to: string,
-  subject: string,
-  body_text: string,
-  body_html: string,
-  charset: string
-) {
+export async function emailUser(from: string, to: string, subject: string, body_text: string, body_html: string, charset: string) {
   const client = new SESClient({});
 
   const params = { 
@@ -38,6 +31,7 @@ export async function emailUser(
     OriginalRuleSetName: undefined
     //ConfigurationSetName: configuration_set
   };
+  
   const command = new CloneReceiptRuleSetCommand(params);
   
   try {

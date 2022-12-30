@@ -6,37 +6,17 @@ import { IRecipeSearch } from '../../access/elasticsearch';
 import {
   ICreatingRecipe,
   IRecipe,
-  IMakeRecipeEquipment,
-  IRecipeEquipment,
-  IMakeRecipeIngredient,
-  IRecipeIngredient,
-  IMakeRecipeMethod,
-  IRecipeMethod,
-  IMakeRecipeSubrecipe,
-  IRecipeSubrecipe
+  IMakeRecipeEquipment, IRecipeEquipment,
+  IMakeRecipeIngredient, IRecipeIngredient,
+  IMakeRecipeMethod, IRecipeMethod,
+  IMakeRecipeSubrecipe, IRecipeSubrecipe
 } from '../../access/mysql';
-import {
-  validRecipeEquipment,
-  validRecipeIngredient,
-  validRecipeMethod,
-  validRecipeSubrecipe
-} from '../validations';
+import { validRecipeEquipment, validRecipeIngredient, validRecipeMethod, validRecipeSubrecipe } from '../validations';
 
 export async function updateRecipeService({
-  id,
-  authorId,
-  ownerId,
-  updatingRecipe,
-  requiredMethods,
-  requiredEquipment,
-  requiredIngredients,
-  requiredSubrecipes,
-  recipe,
-  recipeMethod,
-  recipeEquipment,
-  recipeIngredient,
-  recipeSubrecipe,
-  recipeSearch
+  id, authorId, ownerId, updatingRecipe,
+  requiredMethods, requiredEquipment, requiredIngredients, requiredSubrecipes,
+  recipe, recipeMethod, recipeEquipment, recipeIngredient, recipeSubrecipe, recipeSearch
 }: UpdateRecipeService) {
   await recipe.update({id, ...updatingRecipe}, authorId, ownerId);
 
@@ -53,10 +33,7 @@ export async function updateRecipeService({
   let placeholders = "none";
   let values: number[] = [];
   if (requiredMethods.length) {
-    requiredMethods.map(({ methodId }) =>
-      assert({id, methodId}, validRecipeMethod)
-    );
-
+    requiredMethods.map(({ methodId }) => assert({id, methodId}, validRecipeMethod));
     placeholders = '(?, ?),'.repeat(requiredMethods.length).slice(0, -1);
     requiredMethods.map(({ methodId }) => values.push(id, methodId));
   }
@@ -65,44 +42,27 @@ export async function updateRecipeService({
   placeholders = "none";
   values = [];
   if (requiredEquipment.length) {
-    requiredEquipment.map(({ amount, equipmentId }) =>
-      assert({id, amount, equipmentId}, validRecipeEquipment)
-    );
-    
+    requiredEquipment.map(({ amount, equipmentId }) => assert({id, amount, equipmentId}, validRecipeEquipment));
     placeholders = '(?, ?, ?),'.repeat(requiredEquipment.length).slice(0, -1);
-    requiredEquipment.map(({ amount, equipmentId }) =>
-      values.push(id, amount, equipmentId)
-    );
+    requiredEquipment.map(({ amount, equipmentId }) => values.push(id, amount, equipmentId));
   }
   await recipeEquipment.update(id, placeholders, values);
   
   placeholders = "none";
   values = [];
   if (requiredIngredients.length) {
-    requiredIngredients.map(({ amount, measurementId, ingredientId }) =>
-      assert({id, amount, measurementId, ingredientId}, validRecipeIngredient)
-    );
-
-    placeholders =
-      '(?, ?, ?, ?),'.repeat(requiredIngredients.length).slice(0, -1);
-    requiredIngredients.map(({ amount, measurementId, ingredientId }) =>
-      values.push(id, amount, measurementId, ingredientId)
-    );
+    requiredIngredients.map(({ amount, measurementId, ingredientId }) => assert({id, amount, measurementId, ingredientId}, validRecipeIngredient));
+    placeholders = '(?, ?, ?, ?),'.repeat(requiredIngredients.length).slice(0, -1);
+    requiredIngredients.map(({ amount, measurementId, ingredientId }) => values.push(id, amount, measurementId, ingredientId));
   }
   await recipeIngredient.update(id, placeholders, values);
   
   placeholders = "none";
   values = [];
   if (requiredSubrecipes.length) {
-    requiredSubrecipes.map(({ amount, measurementId, subrecipeId }) =>
-      assert({id, amount, measurementId, subrecipeId}, validRecipeSubrecipe)
-    );
-
-    placeholders =
-      '(?, ?, ?, ?),'.repeat(requiredSubrecipes.length).slice(0, -1);
-    requiredSubrecipes.map(({ amount, measurementId, subrecipeId }) =>
-      values.push(id, amount, measurementId, subrecipeId)
-    );
+    requiredSubrecipes.map(({ amount, measurementId, subrecipeId }) => assert({id, amount, measurementId, subrecipeId}, validRecipeSubrecipe));
+    placeholders = '(?, ?, ?, ?),'.repeat(requiredSubrecipes.length).slice(0, -1);
+    requiredSubrecipes.map(({ amount, measurementId, subrecipeId }) => values.push(id, amount, measurementId, subrecipeId));
   }
   await recipeSubrecipe.update(id, placeholders, values);
 
