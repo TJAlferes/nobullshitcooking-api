@@ -8,8 +8,8 @@ export class ContentController {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.view = this.view.bind(this);
-    this.viewById = this.viewById.bind(this);
+    this.view =           this.view.bind(this);
+    this.viewById =       this.viewById.bind(this);
     this.getLinksByType = this.getLinksByType.bind(this);
   }
 
@@ -21,8 +21,9 @@ export class ContentController {
   }
 
   async viewById(req: Request, res: Response) {
-    const id = Number(req.params.id);
+    const id =       Number(req.params.id);
     const authorId = 1;
+
     const content = new Content(this.pool);
     const [ row ] = await content.viewById(id, authorId);
     return res.send(row);
@@ -30,7 +31,9 @@ export class ContentController {
 
   async getLinksByType(req: Request, res: Response) {
     const { name } = req.params;
+
     const capitalized = name.charAt(0).toUpperCase() + name.slice(1);
+    
     const content = new Content(this.pool);
     const rows = await content.getLinksByContentTypeName(capitalized);
     return res.send(rows);

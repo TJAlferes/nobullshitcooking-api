@@ -40,30 +40,17 @@ export class UserFriendshipController {
 
     const friendshipExists = await friendship.getByFriendId(userId, friendId);
     if (!friendshipExists.length) {
-      const args = {
-        userId,
-        friendId,
-        status1: "pending-sent",
-        status2: "pending-received"
-      };
+      const args = {userId, friendId, status1: "pending-sent", status2: "pending-received"};
       assert(args, validFriendship);
       await friendship.create(args);
       return res.send({message: 'Friendship request sent.'});
     }
 
     const { status } = friendshipExists[0];
-    if (status === "pending-sent") {
-      return res.send({message: 'Already sent.'});
-    }
-    if (status === "pending-received") {
-      return res.send({message: 'Already received.'});
-    }
-    if (status === "accepted") {
-      return res.send({message: 'Already friends.'});
-    }
-    if (status === "blocked") {
-      return res.send({message: 'User blocked. First unblock.'});
-    }
+    if (status === "pending-sent")     return res.send({message: 'Already sent.'});
+    if (status === "pending-received") return res.send({message: 'Already received.'});
+    if (status === "accepted")         return res.send({message: 'Already friends.'});
+    if (status === "blocked")          return res.send({message: 'User blocked. First unblock.'});
   }
 
   async accept(req: Request, res: Response) {

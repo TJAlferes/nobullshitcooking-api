@@ -3,10 +3,7 @@ import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
 import { Content } from '../../access/mysql';
-import {
-  validCreatingContent,
-  validUpdatingContent
-} from '../../lib/validations';
+import { validCreatingContent, validUpdatingContent } from '../../lib/validations';
 
 export class StaffContentController {
   pool: Pool;
@@ -22,18 +19,10 @@ export class StaffContentController {
     const contentTypeId = Number(req.body.contentInfo.contentTypeId);
     const { published, title, items } = req.body.contentInfo;
     const authorId = 1;
-    const ownerId = 1;
-    const created = ((new Date).toISOString()).split("T")[0];
+    const ownerId =  1;
+    const created =  ((new Date).toISOString()).split("T")[0];
 
-    const args = {
-      contentTypeId,
-      authorId,
-      ownerId,
-      created,
-      published,
-      title,
-      items
-    };
+    const args = { contentTypeId, authorId, ownerId, created, published, title, items};
     assert(args, validCreatingContent);
 
     const content = new Content(this.pool);
@@ -42,7 +31,7 @@ export class StaffContentController {
   }
 
   async update(req: Request, res: Response) {
-    const id = Number(req.body.contentInfo.id);
+    const id =            Number(req.body.contentInfo.id);
     const contentTypeId = Number(req.body.contentInfo.contentTypeId);
     const { published, title, items } = req.body.contentInfo;
     const ownerId = 1;
@@ -56,8 +45,9 @@ export class StaffContentController {
   }
 
   async delete(req: Request, res: Response) {
-    const id = Number(req.body.id);
+    const id =      Number(req.body.id);
     const ownerId = 1;
+
     const content = new Content(this.pool);
     await content.delete(ownerId, id);
     return res.send({message: 'Content deleted.'});

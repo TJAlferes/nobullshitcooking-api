@@ -8,7 +8,7 @@ export class ContentTypeController {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.view = this.view.bind(this);
+    this.view =     this.view.bind(this);
     this.viewById = this.viewById.bind(this);
   }
 
@@ -20,6 +20,7 @@ export class ContentTypeController {
 
   async viewById(req: Request, res: Response) {
     const id = Number(req.params.id);
+    
     const contentType = new ContentType(this.pool);
     const [ row ] = await contentType.viewById(id);
     return res.send(row);

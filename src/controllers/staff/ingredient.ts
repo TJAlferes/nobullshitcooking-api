@@ -21,22 +21,11 @@ export class StaffIngredientController {
   
   async create(req: Request, res: Response) {
     const ingredientTypeId = Number(req.body.ingredientInfo.ingredientTypeId);
-    const { brand, variety, name, altNames, description, image } =
-      req.body.ingredientInfo;
+    const { brand, variety, name, altNames, description, image } = req.body.ingredientInfo;
     const authorId = 1;
-    const ownerId = 1;
+    const ownerId =  1;
 
-    const args = {
-      ingredientTypeId,
-      authorId,
-      ownerId,
-      brand,
-      variety,
-      name,
-      altNames,
-      description,
-      image
-    };
+    const args = {ingredientTypeId, authorId, ownerId, brand, variety, name, altNames, description, image};
     assert(args, validIngredient);
 
     const ingredient = new Ingredient(this.pool);
@@ -51,24 +40,13 @@ export class StaffIngredientController {
   }
 
   async update(req: Request, res: Response) {
-    const id = Number(req.body.ingredientInfo.id);
+    const id =               Number(req.body.ingredientInfo.id);
     const ingredientTypeId = Number(req.body.ingredientInfo.ingredientTypeId);
-    const { brand, variety, name, altNames, description, image } =
-      req.body.ingredientInfo;
+    const { brand, variety, name, altNames, description, image } = req.body.ingredientInfo;
     const authorId = 1;
-    const ownerId = 1;
+    const ownerId =  1;
 
-    const args = {
-      ingredientTypeId,
-      authorId,
-      ownerId,
-      brand,
-      variety,
-      name,
-      altNames,
-      description,
-      image
-    };
+    const args = {ingredientTypeId, authorId, ownerId, brand, variety, name, altNames, description, image};
     assert(args, validIngredient);
 
     const ingredient = new Ingredient(this.pool);
@@ -82,7 +60,7 @@ export class StaffIngredientController {
   }
 
   async delete(req: Request, res: Response) {
-    const id = Number(req.body.id);
+    const id =      Number(req.body.id);
     const ownerId = 1;
 
     const ingredientSearch = new IngredientSearch(this.esClient);

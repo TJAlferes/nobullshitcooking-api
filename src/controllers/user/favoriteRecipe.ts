@@ -11,12 +11,13 @@ export class UserFavoriteRecipeController {
   constructor(pool: Pool) {
     this.pool = pool;
     this.viewByUserId = this.viewByUserId.bind(this);
-    this.create = this.create.bind(this);
-    this.delete = this.delete.bind(this);
+    this.create =       this.create.bind(this);
+    this.delete =       this.delete.bind(this);
   }
 
   async viewByUserId(req: Request, res: Response) {
     const userId = req.session.userInfo!.id;
+    
     const favoriteRecipe = new FavoriteRecipe(this.pool);
     const rows = await favoriteRecipe.viewByUserId(userId);
     return res.send(rows);
@@ -24,8 +25,10 @@ export class UserFavoriteRecipeController {
 
   async create(req: Request, res: Response) {
     const recipeId = Number(req.body.id);
-    const userId = req.session.userInfo!.id;
+    const userId =   req.session.userInfo!.id;
+
     assert({userId, recipeId}, validFavoriteRecipe);
+
     const favoriteRecipe = new FavoriteRecipe(this.pool);
     await favoriteRecipe.create(userId, recipeId);
     return res.send({message: 'Favorited.'});
@@ -33,8 +36,10 @@ export class UserFavoriteRecipeController {
 
   async delete(req: Request, res: Response) {
     const recipeId = Number(req.body.id);
-    const userId = req.session.userInfo!.id;
+    const userId =   req.session.userInfo!.id;
+
     assert({userId, recipeId}, validFavoriteRecipe);
+
     const favoriteRecipe = new FavoriteRecipe(this.pool);
     await favoriteRecipe.delete(userId, recipeId);
     return res.send({message: 'Unfavorited.'});

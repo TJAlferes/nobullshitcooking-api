@@ -10,10 +10,10 @@ export class UserPlanController {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.view = this.view.bind(this);
-    this.viewById = this.viewById.bind(this);
-    this.create = this.create.bind(this);
-    this.update = this.update.bind(this);
+    this.view =       this.view.bind(this);
+    this.viewById =   this.viewById.bind(this);
+    this.create =     this.create.bind(this);
+    this.update =     this.update.bind(this);
     this.deleteById = this.deleteById.bind(this);
   }
 
@@ -25,8 +25,9 @@ export class UserPlanController {
   }
 
   async viewById(req: Request, res: Response) {
-    const id = Number(req.body.id);
+    const id =      Number(req.body.id);
     const ownerId = req.session.userInfo!.id;
+    
     const plan = new Plan(this.pool);
     const [ row ] = await plan.viewById(id, ownerId);
     return res.send(row);
@@ -34,8 +35,9 @@ export class UserPlanController {
 
   async create(req: Request, res: Response) {
     const { name, data } = req.body.planInfo;
-    const authorId = req.session.userInfo!.id;
-    const ownerId = req.session.userInfo!.id;
+    const authorId =       req.session.userInfo!.id;
+    const ownerId =        req.session.userInfo!.id;
+
     const args = {authorId, ownerId, name, data};
     assert(args, validPlan);
     const plan = new Plan(this.pool);
@@ -45,18 +47,21 @@ export class UserPlanController {
 
   async update(req: Request, res: Response) {
     const { id, name, data } = req.body.planInfo;
-    const authorId = req.session.userInfo!.id;
-    const ownerId = req.session.userInfo!.id;
+    const authorId =           req.session.userInfo!.id;
+    const ownerId =            req.session.userInfo!.id;
+
     const args = {authorId, ownerId, name, data};
     assert(args, validPlan);
+
     const plan = new Plan(this.pool);
     await plan.update({id, ...args});
     return res.send({message: 'Plan updated.'});
   }
 
   async deleteById(req: Request, res: Response) {
-    const id = Number(req.body.id);
+    const id =      Number(req.body.id);
     const ownerId = req.session.userInfo!.id;
+
     const plan = new Plan(this.pool);
     await plan.deleteById(id, ownerId);
     return res.send({message: 'Plan deleted.'});

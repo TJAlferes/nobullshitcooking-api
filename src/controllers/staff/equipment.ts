@@ -23,7 +23,7 @@ export class StaffEquipmentController {
     const equipmentTypeId = Number(req.body.equipmentInfo.equipmentTypeId);
     const { name, description, image } = req.body.equipmentInfo;
     const authorId = 1;
-    const ownerId = 1;
+    const ownerId =  1;
 
     const args = {equipmentTypeId, authorId, ownerId, name, description, image};
     assert(args, validEquipment);
@@ -40,11 +40,11 @@ export class StaffEquipmentController {
   }
 
   async update(req: Request, res: Response) {
-    const id = Number(req.body.equipmentInfo.id);
+    const id =              Number(req.body.equipmentInfo.id);
     const equipmentTypeId = Number(req.body.equipmentInfo.equipmentTypeId);
     const { name, description, image } = req.body.equipmentInfo;
     const authorId = 1;
-    const ownerId = 1;
+    const ownerId =  1;
 
     const args = {equipmentTypeId, authorId, ownerId, name, description, image};
     assert(args, validEquipment);
@@ -60,7 +60,7 @@ export class StaffEquipmentController {
   }
 
   async delete(req: Request, res: Response) {
-    const id = Number(req.body.id);
+    const id =      Number(req.body.id);
     const ownerId = 1;
 
     const equipmentSearch = new EquipmentSearch(this.esClient);

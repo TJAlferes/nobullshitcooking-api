@@ -6,31 +6,19 @@ import { v4 as uuidv4 } from 'uuid';
 
 import {
   Content,
-  Equipment,
-  FavoriteRecipe,
-  Friendship,
-  Ingredient,
+  User, Friendship,
   Plan,
-  Recipe,
-  RecipeEquipment,
-  RecipeIngredient,
-  RecipeMethod,
-  RecipeSubrecipe,
-  SavedRecipe,
-  User
+  Equipment, Ingredient,
+  Recipe, RecipeEquipment, RecipeIngredient, RecipeMethod, RecipeSubrecipe,
+  FavoriteRecipe, SavedRecipe
 } from '../../access/mysql';
 import { emailConfirmationCode } from '../../lib/services';
 import {
-  validUserRegisterRequest,
-  validRegister,
-  validResendRequest,
-  validResend,
-  validVerifyRequest,
-  validVerify,
-  validCreatingUser,
-  validUpdatingUser,
-  validLoginRequest,
-  validLogin
+  validUserRegisterRequest, validRegister,
+  validResendRequest, validResend,
+  validVerifyRequest, validVerify,
+  validCreatingUser, validUpdatingUser,
+  validLoginRequest, validLogin
 } from '../../lib/validations';
 
 const SALT_ROUNDS = 10;
@@ -40,13 +28,13 @@ export class UserAuthController {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.register = this.register.bind(this);
-    this.verify = this.verify.bind(this);
+    this.register =               this.register.bind(this);
+    this.verify =                 this.verify.bind(this);
     this.resendConfirmationCode = this.resendConfirmationCode.bind(this);
-    this.login = this.login.bind(this);
-    this.logout = this.logout.bind(this);
-    this.update = this.update.bind(this);
-    this.delete = this.delete.bind(this);
+    this.login =                  this.login.bind(this);
+    this.logout =                 this.logout.bind(this);
+    this.update =                 this.update.bind(this);
+    this.delete =                 this.delete.bind(this);
   }
 
   async register(req: Request, res: Response) {
@@ -134,19 +122,19 @@ export class UserAuthController {
   async delete(req: Request, res: Response) {
     const userId = req.session.userInfo!.id;
 
-    const content = new Content(this.pool);
-    const equipment = new Equipment(this.pool);
-    const favoriteRecipe = new FavoriteRecipe(this.pool);
-    const friendship = new Friendship(this.pool);
-    const ingredient = new Ingredient(this.pool);
-    const plan = new Plan(this.pool);
-    const recipe = new Recipe(this.pool);
-    const recipeEquipment = new RecipeEquipment(this.pool);
+    const content =          new Content(this.pool);
+    const equipment =        new Equipment(this.pool);
+    const favoriteRecipe =   new FavoriteRecipe(this.pool);
+    const friendship =       new Friendship(this.pool);
+    const ingredient =       new Ingredient(this.pool);
+    const plan =             new Plan(this.pool);
+    const recipe =           new Recipe(this.pool);
+    const recipeEquipment =  new RecipeEquipment(this.pool);
     const recipeIngredient = new RecipeIngredient(this.pool);
-    const recipeMethod = new RecipeMethod(this.pool);
-    const recipeSubrecipe = new RecipeSubrecipe(this.pool);
-    const savedRecipe = new SavedRecipe(this.pool);
-    const user = new User(this.pool);
+    const recipeMethod =     new RecipeMethod(this.pool);
+    const recipeSubrecipe =  new RecipeSubrecipe(this.pool);
+    const savedRecipe =      new SavedRecipe(this.pool);
+    const user =             new User(this.pool);
 
     // NOTE: Due to foreign key constraints, deletes must be in this order.
 

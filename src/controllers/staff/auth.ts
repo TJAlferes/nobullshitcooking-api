@@ -7,16 +7,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { Staff } from '../../access/mysql';
 import { emailConfirmationCode } from '../../lib/services';
 import {
-  validStaffRegisterRequest,
-  validRegister,
-  validResendRequest,
-  validResend,
-  validVerifyRequest,
-  validVerify,
-  validCreatingStaff,
-  validUpdatingStaff,
-  validLoginRequest,
-  validLogin
+  validStaffRegisterRequest, validRegister,
+  validResendRequest, validResend,
+  validVerifyRequest, validVerify,
+  validCreatingStaff, validUpdatingStaff,
+  validLoginRequest, validLogin
 } from '../../lib/validations';
 
 const SALT_ROUNDS = 10;
@@ -26,13 +21,13 @@ export class StaffAuthController {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.register = this.register.bind(this);
-    this.verify = this.verify.bind(this);
+    this.register =               this.register.bind(this);
+    this.verify =                 this.verify.bind(this);
     this.resendConfirmationCode = this.resendConfirmationCode.bind(this);
-    this.login = this.login.bind(this);
-    this.logout = this.logout.bind(this);
-    this.update = this.update.bind(this);
-    //this.delete = this.delete.bind(this);
+    this.login =                  this.login.bind(this);
+    this.logout =                 this.logout.bind(this);
+    this.update =                 this.update.bind(this);
+    //this.delete =                 this.delete.bind(this);
   }
 
   async register(req: Request, res: Response) {

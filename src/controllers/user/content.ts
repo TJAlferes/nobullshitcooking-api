@@ -44,8 +44,7 @@ export class UserContentController {
     const ownerId = req.session.userInfo!.id;
     const created = ((new Date).toISOString()).split("T")[0];
 
-    const args =
-      {contentTypeId, authorId, ownerId, created, published, title, items};
+    const args = {contentTypeId, authorId, ownerId, created, published, title, items};
     assert(args, validCreatingContent);
 
     const content = new Content(this.pool);

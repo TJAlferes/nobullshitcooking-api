@@ -8,7 +8,7 @@ export class MeasurementController {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.view = this.view.bind(this);
+    this.view =     this.view.bind(this);
     this.viewById = this.viewById.bind(this);
   }
 
@@ -20,6 +20,7 @@ export class MeasurementController {
 
   async viewById(req: Request, res: Response) {
     const id = Number(req.params.id);
+    
     const measurement = new Measurement(this.pool);
     const [ row ] = await measurement.viewById(id);
     return res.send(row);

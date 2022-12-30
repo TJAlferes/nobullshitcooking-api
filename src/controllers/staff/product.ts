@@ -21,21 +21,10 @@ export class StaffProductController {
   
   async create(req: Request, res: Response) {
     const productCategoryId = Number(req.body.productInfo.productCategoryId);
-    const productTypeId = Number(req.body.productInfo.productTypeId);
-    const { brand, variety, name, altNames, description, specs, image } =
-      req.body.productInfo;
+    const productTypeId =     Number(req.body.productInfo.productTypeId);
+    const { brand, variety, name, altNames, description, specs, image } = req.body.productInfo;
 
-    const args = {
-      productCategoryId,
-      productTypeId,
-      brand,
-      variety,
-      name,
-      altNames,
-      description,
-      specs,
-      image
-    };
+    const args = {productCategoryId, productTypeId, brand, variety, name, altNames, description, specs, image};
     assert(args, validProduct);
 
     const product = new Product(this.pool);
@@ -50,23 +39,12 @@ export class StaffProductController {
   }
 
   async update(req: Request, res: Response) {
-    const id = Number(req.body.productInfo.id);
+    const id =                Number(req.body.productInfo.id);
     const productCategoryId = Number(req.body.productInfo.productCategoryId);
-    const productTypeId = Number(req.body.productInfo.productTypeId);
-    const { brand, variety, name, altNames, description, specs, image } =
-      req.body.productInfo;
+    const productTypeId =     Number(req.body.productInfo.productTypeId);
+    const { brand, variety, name, altNames, description, specs, image } = req.body.productInfo;
 
-    const args = {
-      productCategoryId,
-      productTypeId,
-      brand,
-      variety,
-      name,
-      altNames,
-      description,
-      specs,
-      image
-    };
+    const args = {productCategoryId, productTypeId, brand, variety, name, altNames, description, specs, image};
     assert(args, validProduct);
 
     const product = new Product(this.pool);
