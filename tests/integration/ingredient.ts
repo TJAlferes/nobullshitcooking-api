@@ -8,14 +8,7 @@ export function ingredientTests() {
   describe('GET /ingredient/:id', () => {
     it('returns data correctly', async () => {
       const { body } = await request(server).get('/ingredient/1');
-      expect(body).toEqual({
-        id: 1,
-        ingredient_type_name: "Fish",
-        brand: null,
-        variety: null,
-        name: "Tuna",
-        description: "Tasty.",
-        image: "tuna"
+      expect(body).toEqual({id: 1, ingredient_type_name: "Fish", brand: null, variety: null, name: "Tuna", description: "Tasty.", image: "tuna"
       });
     });
   });

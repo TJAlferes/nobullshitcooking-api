@@ -6,14 +6,7 @@ export function staffIngredientTests() {
   describe('POST /staff/ingredient/create', () => {
     it('creates ingredient', async () => {
       const { body } = await request(server).post('/staff/ingredient/create')
-        .send({
-          ingredientTypeId: 4,
-          brand: "Brand",
-          variety: "Variety",
-          name: "Name",
-          description: "Description.",
-          image: "image"
-        });
+        .send({ingredientTypeId: 4, brand: "Brand", variety: "Variety", name: "Name", description: "Description.", image: "image"});
       expect(body).toEqual({message: 'Ingredient created.'});
     });
   });
@@ -21,23 +14,14 @@ export function staffIngredientTests() {
   describe('PUT /staff/ingredient/update', () => {
     it('updates ingredient', async () => {
       const { body } = await request(server).put('/staff/ingredient/update')
-        .send({
-          id: 888,
-          ingredientTypeId: 4,
-          brand: "Brand",
-          variety: "Variety",
-          name: "Name",
-          description: "Description.",
-          image: "image"
-        });
+        .send({id: 888, ingredientTypeId: 4, brand: "Brand", variety: "Variety", name: "Name", description: "Description.", image: "image"});
       expect(body).toEqual({message: 'Ingredient updated.'});
     });
   });
 
   describe('DELETE /staff/ingredient/delete', () => {
     it('deletes ingredient', async () => {
-      const { body } = await request(server).delete('/staff/ingredient/delete')
-        .send({id: 888});
+      const { body } = await request(server).delete('/staff/ingredient/delete').send({id: 888});
       expect(body).toEqual({message: 'Ingredient deleted.'});
     });
   });

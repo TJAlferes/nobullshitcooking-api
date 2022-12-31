@@ -13,11 +13,7 @@ export function profileTests() {
   describe('GET /profile/testman', () => {
     it('returns data correctly', async () => {
       const { body } = await request(server).get('/profile/testman');
-      expect(body).toEqual({
-        message: 'Success.',
-        publicRecipes: [],
-        favoriteRecipes: []
-      });
+      expect(body).toEqual({message: 'Success.', publicRecipes: [], favoriteRecipes: []});
     });
   });
 }
