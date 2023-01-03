@@ -2,8 +2,8 @@
 
 import { Redis } from 'ioredis';
 
-const INTERVAL = 60 * 60 * 1000 * 2; // 7200000 milliseconds = 2 hours
-const DELTA = 60 * 60 * 1000 * 3;  // 10800000 milliseconds = 3 hours
+const INTERVAL = 60 * 60 * 1000 * 2;  // 7200000 milliseconds = 2 hours
+const DELTA =    60 * 60 * 1000 * 3;  // 10800000 milliseconds = 3 hours
 const max = Date.now() - DELTA;
 
 function cleanUpRooms(client: Redis) {
