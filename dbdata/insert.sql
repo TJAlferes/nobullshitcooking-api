@@ -1,99 +1,86 @@
 \W
 
-INSERT INTO staff (email, pass, staffname) VALUES (
-  "tjalferes@tjalferes.com",
-  "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u",
-  "T. J. Alferes"
-);
+INSERT INTO staff (email, pass, staffname) VALUES
+("tjalferes@tjalferes.com", "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "T. J. Alferes");
 
-INSERT INTO users (email, pass, username) VALUES (
-  "tjalferes@tjalferes.com",
-  "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u",
-  "NOBSC"
-), (
-  "tjalferes@gmail.com",
-  "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u",
-  "Unknown"
-), (
-  "testman@testman.com",
-  "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u",
-  "Testman"
-);
+INSERT INTO users (email, pass, username) VALUES
+("tjalferes@tjalferes.com", "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "NOBSC"),
+("tjalferes@gmail.com",     "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "Unknown"),
+("testman@testman.com",     "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "Testman");
 
-INSERT INTO content_types (id, parent_id, name, path) VALUES
-(1,  0, "Page",        "/page"),
-(2,  0, "Post",        "/post"),
-(3,  1, "Guide",       "/page/guide"),
-(4,  1, "Promo",       "/page/promo"),
-(5,  1, "Site",        "/page/site"),
-(6,  3, "Fitness",     "/page/guide/fitness"),
-(7,  3, "Food",        "/page/guide/food"),
-(8,  6, "Exercises",   "/page/guide/fitness/exercises"),
-(9,  6, "Principles",  "/page/guide/fitness/principles"),
-(10, 7, "Recipes",     "/page/guide/food/recipes"),
-(11, 7, "Cuisines",    "/page/guide/food/cuisines"),
-(12, 7, "Ingredients", "/page/guide/food/ingredients"),
-(13, 7, "Nutrition",   "/page/guide/food/nutrition"),
-(14, 7, "Equipment",   "/page/guide/food/equipment"),
-(15, 7, "Methods",     "/page/guide/food/methods");
+INSERT INTO equipment_types (id, name) VALUES (1, "Cleaning"), (2, "Preparing"), (3, "Cooking"), (4, "Dining"), (5, "Storage");
 
-INSERT INTO content
-(content_type_id, author_id, owner_id, created, published, title, items)
-VALUES
-(8,  1, 1, "2020-04-14", "2020-04-14", "Bike",                               "[]"),
-(8,  1, 1, "2020-04-14", "2020-04-14", "Pullup",                             "[]"),
-(8,  1, 1, "2020-04-14", "2020-04-14", "Pushup",                             "[]"),
-(8,  1, 1, "2020-04-14", "2020-04-14", "Run",                                "[]"),
-(8,  1, 1, "2020-04-14", "2020-04-14", "Squat",                              "[]"),
-(8,  1, 1, "2020-04-14", "2020-04-14", "Walk",                               "[]"),
+INSERT INTO ingredient_types (id, name) VALUES
+(1,  "Fish"),
+(2,  "Shellfish"),
+(3,  "Beef"),
+(4,  "Pork"),
+(5,  "Poultry"),
+(6,  "Egg"),
+(7,  "Dairy"),
+(8,  "Oil"),
+(9,  "Grain"),
+(10, "Bean"),
+(11, "Vegetable"),
+(12, "Fruit"),
+(13, "Nut"),
+(14, "Seed"),
+(15, "Spice"),
+(16, "Herb"),
+(17, "Acid"),
+(18, "Product");
 
-(9,  1, 1, "2020-04-14", "2020-04-14", "Agility",                            "[]"),
-(9,  1, 1, "2020-04-14", "2020-04-14", "Balance",                            "[]"),
-(9,  1, 1, "2020-04-14", "2020-04-14", "Composition",                        "[]"),
-(9,  1, 1, "2020-04-14", "2020-04-14", "Endurance",                          "[]"),
-(9,  1, 1, "2020-04-14", "2020-04-14", "Flexibility",                        "[]"),
-(9,  1, 1, "2020-04-14", "2020-04-14", "Speed",                              "[]"),
-(9,  1, 1, "2020-04-14", "2020-04-14", "Strength",                           "[]"),
+INSERT INTO measurements (id, name) VALUES
+(1,  "teaspoon"),
+(2,  "Tablespoon"),
+(3,  "cup"),
+(4,  "ounce"),
+(5,  "pound"),
+(6,  "milliliter"),
+(7,  "liter"),
+(8,  "gram"),
+(9,  "kilogram"),
+(10, "NA");
 
-(10, 1, 1, "2020-04-14", "2020-04-14", "Appetizers",                         "[]"),
-(10, 1, 1, "2020-04-14", "2020-04-14", "Casseroles",                         "[]"),
-(10, 1, 1, "2020-04-14", "2020-04-14", "Condiments",                         "[]"),
-(10, 1, 1, "2020-04-14", "2020-04-14", "Desserts",                           "[]"),
-(10, 1, 1, "2020-04-14", "2020-04-14", "Dressings",                          "[]"),
-(10, 1, 1, "2020-04-14", "2020-04-14", "Drinks",                             "[]"),
-(10, 1, 1, "2020-04-14", "2020-04-14", "Mains",                              "[]"),
-(10, 1, 1, "2020-04-14", "2020-04-14", "Salads",                             "[]"),
-(10, 1, 1, "2020-04-14", "2020-04-14", "Sauces",                             "[]"),
-(10, 1, 1, "2020-04-14", "2020-04-14", "Sides",                              "[]"),
-(10, 1, 1, "2020-04-14", "2020-04-14", "Soups",                              "[]"),
-(10, 1, 1, "2020-04-14", "2020-04-14", "Stews",                              "[]"),
+INSERT INTO methods (id, name) VALUES
+(1,  "No-Cook"),
+(2,  "Chill"),
+(3,  "Freeze"),
+(4,  "Microwave"),
+(5,  "Toast"),
+(6,  "Steam"),
+(7,  "Poach"),
+(8,  "Simmer"),
+(9,  "Boil"),
+(10, "Blanch"),
+(11, "Stew"),
+(12, "Braise"),
+(13, "Bake"),
+(14, "Roast"),
+(15, "Broil"),
+(16, "Saute"),
+(17, "Pan-Fry"),
+(18, "Shallow-Fry"),
+(19, "Deep-Fry"),
+(20, "Stir-Fry"),
+(21, "Glaze"),
+(22, "BBQ"),
+(23, "Grill"),
+(24, "Smoke");
 
-(12, 1, 1, "2020-04-14", "2020-04-14", "Acids Herbs and Spices",             "[]"),
-(12, 1, 1, "2020-04-14", "2020-04-14", "Beans and Vegetables",               "[]"),
-(12, 1, 1, "2020-04-14", "2020-04-14", "Eggs and Dairy",                     "[]"),
-(12, 1, 1, "2020-04-14", "2020-04-14", "Fats and Oils",                      "[]"),
-(12, 1, 1, "2020-04-14", "2020-04-14", "Fish and Shellfish",                 "[]"),
-(12, 1, 1, "2020-04-14", "2020-04-14", "Fruit",                              "[]"),
-(12, 1, 1, "2020-04-14", "2020-04-14", "Meat and Poultry",                   "[]"),
-(12, 1, 1, "2020-04-14", "2020-04-14", "Seeds and Grains",                   "[]"),
-
-(13, 1, 1, "2020-04-14", "2020-04-14", "Calories",                           "[]"),
-(13, 1, 1, "2020-04-14", "2020-04-14", "Macronutrients",                     "[]"),
-(13, 1, 1, "2020-04-14", "2020-04-14", "Micronutrients",                     "[]"),
-(13, 1, 1, "2020-04-14", "2020-04-14", "Supplements",                        "[]"),
-
-(14, 1, 1, "2020-04-14", "2020-04-14", "Cleaning",                           "[]"),
-(14, 1, 1, "2020-04-14", "2020-04-14", "Cooking",                            "[]"),
-(14, 1, 1, "2020-04-14", "2020-04-14", "Dining",                             "[]"),
-(14, 1, 1, "2020-04-14", "2020-04-14", "Preparing",                          "[]"),
-(14, 1, 1, "2020-04-14", "2020-04-14", "Storage",                            "[]"),
-
-(15, 1, 1, "2020-04-14", "2020-04-14", "Bake Roast Toast and Broil",         "[]"),
-(15, 1, 1, "2020-04-14", "2020-04-14", "BBQ Grill and Smoke",                "[]"),
-(15, 1, 1, "2020-04-14", "2020-04-14", "Chill and Freeze",                   "[]"),
-(15, 1, 1, "2020-04-14", "2020-04-14", "Saute Fry and Glaze",                "[]"),
-(15, 1, 1, "2020-04-14", "2020-04-14", "Steam Poach Simmer Boil and Blanch", "[]"),
-(15, 1, 1, "2020-04-14", "2020-04-14", "Stew and Braise",                    "[]");
+INSERT INTO recipe_types (id, name) VALUES
+(1,  "Drink"),
+(2,  "Appetizer"),
+(3,  "Main"),
+(4,  "Side"),
+(5,  "Dessert"),
+(6,  "Soup"),
+(7,  "Salad"),
+(8,  "Stew"),
+(9,  "Casserole"),
+(10, "Sauce"),
+(11, "Dressing"),
+(12, "Condiment");
 
 INSERT INTO cuisines (id, name, nation) VALUES
 (1,  "Afghan",                   "Afghanistan"),
@@ -316,13 +303,6 @@ INSERT INTO cuisines (id, name, nation) VALUES
 (195, "Zambian",                 "Zambia"),
 (196, "Zimbabwean",              "Zimbabwe");
 
-INSERT INTO equipment_types (id, name) VALUES
-(1, "Cleaning"),
-(2, "Preparing"),
-(3, "Cooking"),
-(4, "Dining"),
-(5, "Storage");
-
 INSERT INTO equipment
 (equipment_type_id, author_id, owner_id, name, description, image)
 VALUES
@@ -384,26 +364,6 @@ VALUES
 (3, 1, 1, "Sturdy Spatula",                   "It works.", "sturdy-spatula"),
 (3, 1, 1, "Fish Spatula",                     "It works.", "fish-spatula"),
 (3, 1, 1, "Ladle",                            "It works.", "ladle");
-
-INSERT INTO ingredient_types (id, name) VALUES
-(1, "Fish"),
-(2, "Shellfish"),
-(3, "Beef"),
-(4, "Pork"),
-(5, "Poultry"),
-(6, "Egg"),
-(7, "Dairy"),
-(8, "Oil"),
-(9, "Grain"),
-(10, "Bean"),
-(11, "Vegetable"),
-(12, "Fruit"),
-(13, "Nut"),
-(14, "Seed"),
-(15, "Spice"),
-(16, "Herb"),
-(17, "Acid"),
-(18, "Product");
 
 INSERT INTO ingredients
 (ingredient_type_id, author_id, owner_id, variety, name, description, image)
@@ -807,63 +767,7 @@ VALUES
 (18, 1, 1, "",                   "Fish Sauce",                               "Tasty.", "tobasco-sauce"),
 (18, 1, 1, "Dark",               "Soy Sauce",                                "Tasty.", "tobasco-sauce"),
 (18, 1, 1, "Light",              "Soy Sauce",                                "Tasty.", "tobasco-sauce");
-
-INSERT INTO ingredients
-(ingredient_type_id, author_id, owner_id, brand, name, description, image)
-VALUES
 (18, 1, 1, "Tobasco",            "Hot Sauce",                                "Tasty.", "tobasco-sauce");
-
-INSERT INTO measurements (id, name) VALUES
-(1, "teaspoon"),
-(2, "Tablespoon"),
-(3, "cup"),
-(4, "ounce"),
-(5, "pound"),
-(6, "milliliter"),
-(7, "liter"),
-(8, "gram"),
-(9, "kilogram"),
-(10, "NA");
-
-INSERT INTO methods (id, name) VALUES
-(1, "No-Cook"),
-(2, "Chill"),
-(3, "Freeze"),
-(4, "Microwave"),
-(5, "Toast"),
-(6, "Steam"),
-(7, "Poach"),
-(8, "Simmer"),
-(9, "Boil"),
-(10, "Blanch"),
-(11, "Stew"),
-(12, "Braise"),
-(13, "Bake"),
-(14, "Roast"),
-(15, "Broil"),
-(16, "Saute"),
-(17, "Pan-Fry"),
-(18, "Shallow-Fry"),
-(19, "Deep-Fry"),
-(20, "Stir-Fry"),
-(21, "Glaze"),
-(22, "BBQ"),
-(23, "Grill"),
-(24, "Smoke");
-
-INSERT INTO recipe_types (id, name) VALUES
-(1, "Drink"),
-(2, "Appetizer"),
-(3, "Main"),
-(4, "Side"),
-(5, "Dessert"),
-(6, "Soup"),
-(7, "Salad"),
-(8, "Stew"),
-(9, "Casserole"),
-(10, "Sauce"),
-(11, "Dressing"),
-(12, "Condiment");
 
 INSERT INTO recipes
 (recipe_type_id, cuisine_id, author_id, owner_id, title, description, active_time, total_time, directions)
@@ -882,45 +786,43 @@ VALUES
 (12, 12, 1, 1, "Some Kind Of Chutney",               "Not Bad",          "00:30:00", "01:00:00", "Mix...");
 
 INSERT INTO recipe_equipment (recipe_id, amount, equipment_id) VALUES
-(1, 1, 1),
-(2, 1, 1),
-(3, 1, 1),
-(4, 1, 1),
-(5, 1, 1),
-(6, 1, 1),
-(7, 1, 1),
-(8, 1, 1),
-(9, 1, 1),
+(1,  1, 1),
+(2,  1, 1),
+(3,  1, 1),
+(4,  1, 1),
+(5,  1, 1),
+(6,  1, 1),
+(7,  1, 1),
+(8,  1, 1),
+(9,  1, 1),
 (10, 1, 1),
 (11, 1, 1),
 (12, 1, 1);
 
-INSERT INTO recipe_ingredients
-(recipe_id, amount, measurement_id, ingredient_id)
-VALUES
-(1, 4, 1, 116),
-(2, 2, 2, 209),
-(3, 1, 3, 153),
-(4, 1, 4, 159),
-(5, 7, 5, 165),
-(6, 1, 6, 176),
-(7, 3, 7, 142),
-(8, 1, 8, 230),
-(9, 9, 9, 202),
+INSERT INTO recipe_ingredients (recipe_id, amount, measurement_id, ingredient_id) VALUES
+(1,  4,  1,  116),
+(2,  2,  2,  209),
+(3,  1,  3,  153),
+(4,  1,  4,  159),
+(5,  7,  5,  165),
+(6,  1,  6,  176),
+(7,  3,  7,  142),
+(8,  1,  8,  230),
+(9,  9,  9,  202),
 (10, 20, 10, 100),
-(11, 10, 1, 122),
-(12, 13, 2, 138);
+(11, 10,  1, 122),
+(12, 13,  2, 138);
 
 INSERT INTO recipe_methods (recipe_id, method_id) VALUES
-(1, 6),
-(2, 9),
-(3, 13),
-(4, 15),
-(5, 16),
-(6, 7),
-(7, 4),
-(8, 3),
-(9, 2),
+(1,  6),
+(2,  9),
+(3,  13),
+(4,  15),
+(5,  16),
+(6,  7),
+(7,  4),
+(8,  3),
+(9,  2),
 (10, 1),
 (11, 12),
 (12, 13);

@@ -1,9 +1,9 @@
 import request from 'supertest';
 
-import { esClient } from '../../src/lib/connections/elasticsearch';
-import { pool } from '../../src/lib/connections/mysql';
+import { esClient }     from '../../src/lib/connections/elasticsearch';
+import { pool }         from '../../src/lib/connections/mysql';
 import { redisClients } from '../../src/lib/connections/redis';
-import { appServer } from '../../src/app';
+import { appServer }    from '../../src/app';
 import {
   staffAuthTests,
   staffContentTests,

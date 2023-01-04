@@ -1,6 +1,4 @@
 export { StaffAuthController } from './auth';
-export { StaffContentController } from './content';
-//export { StaffContentTypeController } from './contentType';
 export { StaffEquipmentController } from './equipment';
 export { getSignedUrl } from './get-signed-url';
 export { StaffIngredientController } from './ingredient';

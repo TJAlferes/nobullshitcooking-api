@@ -1,5 +1,4 @@
 export { UserAuthController } from './auth';
-export { UserContentController } from './content';
 export { UserEquipmentController } from './equipment';
 export { UserFavoriteRecipeController } from './favoriteRecipe';
 export { UserFriendshipController } from './friendship';

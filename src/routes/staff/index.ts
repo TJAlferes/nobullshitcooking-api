@@ -3,7 +3,6 @@ import { Pool } from 'mysql2/promise';
 import { Client } from '@elastic/elasticsearch';
 
 import { staffAuthRouter } from './auth';
-import { staffContentRouter } from './content';
 import { staffEquipmentRouter } from './equipment';
 import { staffGetSignedUrlRouter } from './get-signed-url';
 import { staffIngredientRouter } from './ingredient';
@@ -14,7 +13,6 @@ const router = Router();
 
 export function staffRouter(esClient: Client, pool: Pool) {
   const staffAuthRoutes =         staffAuthRouter(pool);
-  const staffContentRoutes =      staffContentRouter(pool);
   const staffEquipmentRoutes =    staffEquipmentRouter(esClient, pool);
   const staffGetSignedUrlRoutes = staffGetSignedUrlRouter();
   const staffIngredientRoutes =   staffIngredientRouter(esClient, pool);
@@ -22,7 +20,6 @@ export function staffRouter(esClient: Client, pool: Pool) {
   const staffSupplierRoutes =     staffSupplierRouter(pool);
 
   router.use('/auth',                   staffAuthRoutes);
-  router.use('/content',                staffContentRoutes);
   router.use('/equipment',              staffEquipmentRoutes);
   router.use('/get-signed-url/content', staffGetSignedUrlRoutes);
   router.use('/ingredient',             staffIngredientRoutes);

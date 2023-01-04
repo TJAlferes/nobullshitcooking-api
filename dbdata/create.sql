@@ -6,13 +6,6 @@ CREATE DATABASE nobsc;
 
 USE nobsc;
 
-CREATE TABLE `content_types` (
-  `id`        smallint unsigned NOT NULL DEFAULT '0'  PRIMARY KEY,
-  `parent_id` smallint unsigned NOT NULL DEFAULT '0',
-  `name`      varchar(60)       NOT NULL              UNIQUE,
-  `path`      varchar(255)      NOT NULL              UNIQUE
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
 CREATE TABLE `cuisines` (
   `id`     tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
   `name`   varchar(40)      NOT NULL DEFAULT ''  UNIQUE,
@@ -61,6 +54,8 @@ CREATE TABLE `suppliers` (
 
 
 
+-- We use AUTO_INCREMENTing PKs for now, but if needed later, we will likely switch to UUIDv7
+
 CREATE TABLE `customers` (
   `id`    int unsigned NOT NULL PRIMARY KEY AUTO_INCREMENT ,
   `email` varchar(60)  NOT NULL UNIQUE
@@ -70,7 +65,7 @@ CREATE TABLE `staff` (
   `id`                int unsigned NOT NULL              PRIMARY KEY AUTO_INCREMENT,
   `email`             varchar(60)  NOT NULL              UNIQUE,
   `pass`              char(60)     NOT NULL,
-  `staffname`          varchar(20)  NOT NULL              UNIQUE,
+  `staffname`         varchar(20)  NOT NULL              UNIQUE,
   `confirmation_code` varchar(255)          DEFAULT NULL
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -83,21 +78,6 @@ CREATE TABLE `users` (
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
-
-CREATE TABLE `content` (
-  `id`              int unsigned      NOT NULL              PRIMARY KEY AUTO_INCREMENT,
-  `content_type_id` smallint unsigned NOT NULL DEFAULT '0',
-  `author_id`       int unsigned      NOT NULL,
-  `owner_id`        int unsigned      NOT NULL,
-  `created`         char(10)          NOT NULL,
-  `published`       char(10),
-  `title`           varchar(100)      NOT NULL,
-  `image`           varchar(100)      NOT NULL DEFAULT '',
-  `items`           json                       DEFAULT NULL,
-  FOREIGN KEY (`content_type_id`) REFERENCES `content_types` (`id`),
-  FOREIGN KEY (`author_id`)       REFERENCES `users` (`id`),
-  FOREIGN KEY (`owner_id`)        REFERENCES `users` (`id`)
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `equipment` (
   `id`                smallint unsigned NOT NULL             PRIMARY KEY AUTO_INCREMENT,
