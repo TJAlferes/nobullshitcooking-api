@@ -1,18 +1,18 @@
 'use strict';
 
 import compression                                  from 'compression';
-import connectRedis                                 from 'connect-redis';
+import connectRedis, { Client }                     from 'connect-redis';
 import cookie                                       from 'cookie';
 import cookieParser                                 from 'cookie-parser';
 import cors                                         from 'cors';
-//import csurf                                        from 'csurf');  // no longer needed?
-import { Client }                                   from '@elastic/elasticsearch';
+//import csurf                                        from 'csurf';  // no longer needed?
+import { Client as ESClient }                       from '@elastic/elasticsearch';
 import express, { Request, Response, NextFunction } from 'express';
-//import expressPinoLogger                            from 'express-pino-logger');
+//import expressPinoLogger                            from 'express-pino-logger';
 import expressRateLimit                             from 'express-rate-limit';  // Use https://github.com/animir/node-rate-limiter-flexible instead?
 import expressSession, { SessionOptions }           from 'express-session';
 import helmet                                       from 'helmet';
-//import hpp                                          from 'hpp');
+//import hpp                                          from 'hpp';
 import { createServer }                             from 'http';
 import { Redis }                                    from 'ioredis';
 import { Pool }                                     from 'mysql2/promise';
@@ -20,42 +20,33 @@ import { Server as SocketIOServer, Socket }         from 'socket.io';
 import { ExtendedError }                            from 'socket.io/dist/namespace';
 import { createAdapter }                            from 'socket.io-redis';
 
-import { Friendship, User }                         from './access/mysql';
-import { ChatStore }                                from './access/redis';
-import { sendMessage, sendPrivateMessage, joinRoom, disconnecting, getOnlineFriends, getUsersInRoom, rejoinRoom, IMessage } from './chat';  // here?
-import { routesInit }                               from './lib/inits';
-import { chatCleanUp }                              from './lib/jobs/chatCleanUp';
-import { bulkUp }                                   from './lib/jobs/searchBulkUp';
+import { sendMessage, sendPrivateMessage, joinRoom, disconnecting, getOnlineFriends, getUsersInRoom, rejoinRoom, IMessage } from './chat';
+import { Friendship, User } from './access/mysql';
+import { ChatStore }        from './access/redis';
+import { chatCleanUp }      from './lib/jobs/chatCleanUp';
+import { bulkUp }           from './lib/jobs/searchBulkUp';
+import { routesInit }       from './routes';
 
-const app =        express();
-const httpServer = createServer(app);
+export function appServer(pool: Pool, esClient: ESClient, redisClients: RedisClients) {
+  const app =        express();
+  const httpServer = createServer(app);
 
-export function appServer(pool: Pool, esClient: Client, redisClients: RedisClients) {
-  const rateLimiterOptions = {windowMs: 1 * 60 * 1000, max: 100};  // 1000?  limit each IP address's requests per minute
-  const corsOptions =        {origin: ['http://localhost:8080'], credentials: true};
-
-  if (app.get('env') === 'production') {
-    app.set('trust proxy', 1);  // trust first proxy
-    corsOptions.origin = ['https://nobullshitcooking.com'];
-  }
+  if (app.get('env') === 'production') app.set('trust proxy', 1);  // trust first proxy
   
   const RedisStore = connectRedis(expressSession);
   const redisSession = new RedisStore({client: redisClients.sessClient});
+  // httpOnly: if true, client-side JS can NOT see the cookie in document.cookie
+  // maxAge:   86400000 milliseconds = 1 day
   const options: SessionOptions = {
-    cookie:            {},
+    cookie: (app.get('env') === 'production')
+      ? {httpOnly: true,  maxAge: 86400000, sameSite: true,  secure: true}
+      : {httpOnly: false, maxAge: 86400000, sameSite: false, secure: false},
     resave:            true,
     saveUninitialized: true,  // false?
     secret:            process.env.SESSION_SECRET || "secret",
     store:             redisSession,
     unset:             "destroy"
   };
-
-  // httpOnly: if true, client-side JS can NOT see the cookie in document.cookie
-  // maxAge:   86400000 milliseconds = 1 day
-  // sameSite: true | false | "lax" | "none" | "strict" https://github.com/expressjs/session#cookiesamesite
-  if (app.get('env') === 'production') options.cookie = {httpOnly: true,  maxAge: 86400000, sameSite: true,  secure: true};
-  else                                 options.cookie = {httpOnly: false, maxAge: 86400000, sameSite: false, secure: false};
-
   
   const io = new SocketIOServer<IClientToServerEvents, IServerToClientEvents>(httpServer, {
     cors: {
@@ -144,22 +135,23 @@ export function appServer(pool: Pool, esClient: Client, redisClients: RedisClien
 
   if (app.get('env') !== 'test') chatCleanUp(redisClients.pubClient);
 
-  const session = expressSession(options);
+  const session = expressSession(options);                         // move up?
 
   // middleware
   //app.use(expressPinoLogger());
   app.use(express.json());
   app.use(express.urlencoded({extended: false}));
-  app.use(expressRateLimit(rateLimiterOptions));
-  app.use(session);
-  app.use(cors(corsOptions));
+  app.use(expressRateLimit({max: 100, windowMs: 1 * 60 * 1000}));  // max: 1000?  limit each IP address's requests per minute
+  app.use(session);                                                // move up?
+  app.use(cors({
+    credentials: true,
+    origin: (app.get('env') === 'production') ? ['https://nobullshitcooking.com'] : ['http://localhost:8080']
+  }));
   //app.options('*', cors());
   app.use(helmet());
   //app.use(hpp());
   //app.use(csurf());
   app.use(compression());
-  
-
   
   routesInit(app, pool, esClient);
 
@@ -196,9 +188,9 @@ export function appServer(pool: Pool, esClient: Client, redisClients: RedisClien
 
 
 export type RedisClients = {
-  pubClient: Redis;
-  subClient: Redis;
-  sessClient: Redis;
+  pubClient:  Redis;
+  subClient:  Redis;
+  sessClient: Client;
   //workerClient: Redis;
 }
 
@@ -207,7 +199,7 @@ type Next = (err?: ExtendedError | undefined) => void;
 interface IUberSocket extends Socket {
   sessionId?: string;
   userInfo?: {
-    id?: number;
+    id?:       number;
     username?: string;
   }
 }

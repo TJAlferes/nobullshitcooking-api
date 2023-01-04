@@ -1,5 +1,3 @@
-export { Content, IContent } from './Content';
-export { ContentType, IContentType } from './ContentType';
 export { Cuisine, ICuisine } from './Cuisine';
 export { Equipment, IEquipment } from './Equipment';
 export { EquipmentType, IEquipmentType } from './EquipmentType';

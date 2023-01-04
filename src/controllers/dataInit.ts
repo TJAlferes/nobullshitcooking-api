@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 
-import { ContentType, Cuisine, Equipment, EquipmentType, Ingredient, IngredientType, Measurement, Method, Recipe, RecipeType } from '../access/mysql';
+import { Cuisine, Equipment, EquipmentType, Ingredient, IngredientType, Measurement, Method, Recipe, RecipeType } from '../access/mysql';
 
 export class DataInitController {
   pool: Pool;
@@ -15,7 +15,6 @@ export class DataInitController {
     const authorId = 1;
     const ownerId =  1;
 
-    const contentType =    new ContentType(this.pool);
     const cuisine =        new Cuisine(this.pool);
     const equipment =      new Equipment(this.pool);
     const equipmentType =  new EquipmentType(this.pool);
@@ -26,8 +25,7 @@ export class DataInitController {
     const recipe =         new Recipe(this.pool);
     const recipeType =     new RecipeType(this.pool);
 
-    const [ contentTypes, cuisines, equipments, equipmentTypes, ingredients, ingredientTypes, measurements, methods, recipes, recipeTypes ] = await Promise.all([
-      contentType.view(),
+    const [ cuisines, equipments, equipmentTypes, ingredients, ingredientTypes, measurements, methods, recipes, recipeTypes ] = await Promise.all([
       cuisine.view(),
       equipment.view(authorId, ownerId),
       equipmentType.view(),
@@ -39,6 +37,6 @@ export class DataInitController {
       recipeType.view()
     ]);
 
-    return res.send({contentTypes, cuisines, equipment: equipments, equipmentTypes, ingredients, ingredientTypes, measurements, methods, recipes, recipeTypes});
+    return res.send({cuisines, equipment: equipments, equipmentTypes, ingredients, ingredientTypes, measurements, methods, recipes, recipeTypes});
   }
 }

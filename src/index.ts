@@ -8,7 +8,7 @@ import { pool }         from './lib/connections/mysql';
 import { redisClients } from './lib/connections/redis';
 import { appServer }    from './app';
 
-// Kept separate for multiple reasons, easy integration testing being one of them.
+// Kept separate for multiple reasons, easy integration testing being primary.
 const server = appServer(pool, esClient, redisClients);
 
 const PORT = (process.env.NODE_ENV === 'production')

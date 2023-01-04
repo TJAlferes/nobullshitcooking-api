@@ -7,7 +7,6 @@ import { getSignedUrlPromise } from '../../lib/utils';
 
 const AWS_S3_BUCKETS = {
   AVATAR:             process.env.AWS_S3_AVATAR_BUCKET!,
-  CONTENT:            process.env.AWS_S3_CONTENT_BUCKET!,
   EQUIPMENT:          process.env.AWS_S3_EQUIPMENT_BUCKET!,
   INGREDIENT:         process.env.AWS_S3_INGREDIENT_BUCKET!,
   RECIPE:             process.env.AWS_S3_RECIPE_BUCKET!,
@@ -28,19 +27,6 @@ export const getSignedUrl = {
     const tinySignature = await getSignedUrlPromise(s3, 'putObject', {Bucket: AWS_S3_BUCKETS.AVATAR, Key: tinyName, ContentType: fileType, Expires: 50});
 
     return res.json({success: true, fullSignature, tinySignature, fullName});
-  },
-
-  content: async function(req: Request, res: Response) {
-    const fullName =     `${req.session.userInfo!.username}-${uuidv4()}`;
-    const thumbName =    `${fullName}-thumb`;
-    const { fileType } = req.body;
-  
-    const s3 = new S3Client({accessKeyId: process.env.AWS_S3_CONTENT_ACCESS_KEY_ID, secretAccessKey: process.env.AWS_S3_CONTENT_SECRET_ACCESS_KEY});
-  
-    const fullSignature =  await getSignedUrlPromise(s3, 'putObject', {Bucket: AWS_S3_BUCKETS.CONTENT, Key: fullName, ContentType: fileType, Expires: 50});
-    const thumbSignature = await getSignedUrlPromise(s3, 'putObject', {Bucket: AWS_S3_BUCKETS.CONTENT, Key: thumbName, ContentType: fileType, Expires: 50});
-  
-    return res.json({success: true, fullSignature, thumbSignature, fullName});
   },
 
   equipment: async function(req: Request, res: Response) {

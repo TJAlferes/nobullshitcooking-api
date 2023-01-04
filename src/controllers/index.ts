@@ -1,5 +1,3 @@
-export { ContentController } from './content';
-export { ContentTypeController } from './contentType';
 export { CuisineController } from './cuisine';
 export { DataInitController } from './dataInit';
 export { EquipmentController } from './equipment';

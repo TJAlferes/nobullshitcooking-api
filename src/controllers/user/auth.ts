@@ -5,7 +5,6 @@ import { assert } from 'superstruct';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
-  Content,
   User, Friendship,
   Plan,
   Equipment, Ingredient,
@@ -122,7 +121,6 @@ export class UserAuthController {
   async delete(req: Request, res: Response) {
     const userId = req.session.userInfo!.id;
 
-    const content =          new Content(this.pool);
     const equipment =        new Equipment(this.pool);
     const favoriteRecipe =   new FavoriteRecipe(this.pool);
     const friendship =       new Friendship(this.pool);
@@ -139,7 +137,6 @@ export class UserAuthController {
     // NOTE: Due to foreign key constraints, deletes must be in this order.
 
     await Promise.all([
-      content.deleteAllByOwnerId(userId),  // move out and up?
       friendship.deleteAllByUserId(userId),
       plan.deleteAllByOwnerId(userId),
       favoriteRecipe.deleteAllByUserId(userId),
