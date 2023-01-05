@@ -24,11 +24,11 @@ export async function sendPrivateMessage({ to, from, text, socket, chatStore, fr
 }
 
 export interface ISendPrivateMessage {
-  to: string;
-  from: string;
-  text: string;
-  socket: Socket;
-  chatStore: IChatStore;
+  to:         string;
+  from:       string;
+  text:       string;
+  socket:     Socket;  // not UberSocket?
+  chatStore:  IChatStore;
   friendship: IFriendship;
-  user: IUser;
+  user:       IUser;
 }

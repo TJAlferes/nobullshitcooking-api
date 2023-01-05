@@ -15,8 +15,8 @@ export async function rejoinRoom({ room, username, socket, chatStore }: IRejoinR
 }
 
 interface IRejoinRoom {
-  room: string;
-  username: string;
-  socket: Socket;
+  room:      string;
+  username:  string;
+  socket:    Socket;
   chatStore: IChatStore;
 }

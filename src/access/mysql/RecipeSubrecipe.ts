@@ -89,18 +89,18 @@ type Data = Promise<RowDataPacket[]>;
 type DataWithExtra = Promise<RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] | ResultSetHeader | undefined>;
 
 export interface IRecipeSubrecipe {
-  pool: Pool;
-  viewByRecipeId(recipeId: number): Data;
-  create(placeholders: string, recipeSubrecipes: number[]): Data;
+  pool:                                                                       Pool;
+  viewByRecipeId(recipeId: number):                                           Data;
+  create(placeholders: string, recipeSubrecipes: number[]):                   Data;
   update(recipeId: number, placeholders: string, recipeSubrecipes: number[]): DataWithExtra;  // | finish
-  deleteByRecipeId(recipeId: number): Data;
-  deleteByRecipeIds(recipeIds: number[]): Data;
-  deleteBySubrecipeId(subrecipeId: number): Data;
-  deleteBySubrecipeIds(subrecipeIds: number[]): Data;
+  deleteByRecipeId(recipeId: number):                                         Data;
+  deleteByRecipeIds(recipeIds: number[]):                                     Data;
+  deleteBySubrecipeId(subrecipeId: number):                                   Data;
+  deleteBySubrecipeIds(subrecipeIds: number[]):                               Data;
 }
 
 export interface IMakeRecipeSubrecipe {
-  amount: number;
+  amount:        number;
   measurementId: number;
-  subrecipeId: number;
+  subrecipeId:   number;
 }

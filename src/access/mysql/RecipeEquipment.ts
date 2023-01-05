@@ -78,16 +78,16 @@ type Data = Promise<RowDataPacket[]>;
 type DataWithExtra = Promise<RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] | ResultSetHeader | undefined>;
 
 export interface IRecipeEquipment {
-  pool: Pool;
-  viewByRecipeId(recipeId: number): Data;
-  create(placeholders: string, recipeEquipment: number[]): Data;
+  pool:                                                                      Pool;
+  viewByRecipeId(recipeId: number):                                          Data;
+  create(placeholders: string, recipeEquipment: number[]):                   Data;
   update(recipeId: number, placeholders: string, recipeEquipment: number[]): DataWithExtra;  // | finish
-  deleteByEquipmentId(equipmentId: number): Data;
-  deleteByRecipeId(recipeId: number): Data;
-  deleteByRecipeIds(recipeIds: number[]): Data;
+  deleteByEquipmentId(equipmentId: number):                                  Data;
+  deleteByRecipeId(recipeId: number):                                        Data;
+  deleteByRecipeIds(recipeIds: number[]):                                    Data;
 }
 
 export interface IMakeRecipeEquipment {
-  amount: number;
+  amount:      number;
   equipmentId: number;
 }

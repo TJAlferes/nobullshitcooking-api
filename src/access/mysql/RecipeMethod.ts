@@ -71,12 +71,12 @@ type Data = Promise<RowDataPacket[]>;
 type DataWithExtra = Promise<RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] | ResultSetHeader | undefined>;
 
 export interface IRecipeMethod {
-  pool: Pool;
-  viewByRecipeId(recipeId: number): Data;
-  create(placeholders: string, recipeMethods: number[]): Data;
+  pool:                                                                    Pool;
+  viewByRecipeId(recipeId: number):                                        Data;
+  create(placeholders: string, recipeMethods: number[]):                   Data;
   update(recipeId: number, placeholders: string, recipeMethods: number[]): DataWithExtra;  // | finish
-  deleteByRecipeId(recipeId: number): Data;
-  deleteByRecipeIds(recipeIds: number[]): Data;
+  deleteByRecipeId(recipeId: number):                                      Data;
+  deleteByRecipeIds(recipeIds: number[]):                                  Data;
 }
 
 export interface IMakeRecipeMethod {

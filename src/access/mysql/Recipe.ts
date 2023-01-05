@@ -153,7 +153,7 @@ export class Recipe implements IRecipe {
           FROM methods m
           INNER JOIN recipe_methods rm ON rm.method_id = m.id
           WHERE rm.recipe_id = r.id
-        ) required_methods,
+        ) methods,
         (
           SELECT JSON_ARRAYAGG(JSON_OBJECT(
             'amount', re.amount,
@@ -162,7 +162,7 @@ export class Recipe implements IRecipe {
           FROM equipment e
           INNER JOIN recipe_equipment re ON re.equipment_id = e.id
           WHERE re.recipe_id = r.id
-        ) required_equipment,
+        ) equipment,
         (
           SELECT JSON_ARRAYAGG(JSON_OBJECT(
             'amount', ri.amount,
@@ -174,7 +174,7 @@ export class Recipe implements IRecipe {
           ON ri.ingredient_id = i.id
           INNER JOIN measurements m ON m.id = ri.measurement_id
           WHERE ri.recipe_id = r.id
-        ) required_ingredients,
+        ) ingredients,
         (
           SELECT JSON_ARRAYAGG(JSON_OBJECT(
             'amount', rs.amount,
@@ -185,7 +185,7 @@ export class Recipe implements IRecipe {
           INNER JOIN recipe_subrecipes rs ON rs.subrecipe_id = r.id
           INNER JOIN measurements m ON m.id = rs.measurement_id
           WHERE rs.recipe_id = r.id
-        ) required_subrecipes
+        ) subrecipes
       FROM recipes r
       INNER JOIN users u ON u.id = r.author_id
       INNER JOIN recipe_types rt ON rt.id = r.recipe_type_id
@@ -255,7 +255,7 @@ export class Recipe implements IRecipe {
       SELECT JSON_ARRAYAGG(JSON_OBJECT('method_id', rm.method_id))
       FROM recipe_methods rm
       WHERE rm.recipe_id = r.id
-    ) required_methods,
+    ) methods,
     (
       SELECT JSON_ARRAYAGG(JSON_OBJECT(
         'amount', re.amount,
@@ -265,7 +265,7 @@ export class Recipe implements IRecipe {
       FROM equipment e
       INNER JOIN recipe_equipment re ON re.equipment_id = e.equipment_id
       WHERE re.recipe_id = r.id
-    ) required_equipment,
+    ) equipment,
     (
       SELECT JSON_ARRAYAGG(JSON_OBJECT(
         'amount', ri.amount,
@@ -276,7 +276,7 @@ export class Recipe implements IRecipe {
       FROM ingredients i
       INNER JOIN recipe_ingredients ri ON ri.ingredient_id = i.id
       WHERE ri.recipe_id = r.id
-    ) required_ingredients,
+    ) ingredients,
     (
       SELECT JSON_ARRAYAGG(JSON_OBJECT(
         'amount', rs.amount,
@@ -288,7 +288,7 @@ export class Recipe implements IRecipe {
       FROM recipes r
       INNER JOIN recipe_subrecipes rs ON rs.subrecipe_id = r.id
       WHERE rs.recipe_id = r.recipe_id
-    ) required_subrecipes
+    ) subrecipes
     FROM recipes r
     INNER JOIN users u ON u.id = r.author_id
     INNER JOIN recipe_types rt ON rt.id = r.recipe_type_id
@@ -380,36 +380,36 @@ type Data = Promise<RowDataPacket[]>;
 type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
 
 export interface IRecipe {
-  pool: Pool;
-  getForElasticSearch(): any;
-  getForElasticSearchById(id: number): Promise<ISavingRecipe>;
-  getPrivateIds(userId: number): Promise<number[]>;
-  view(authorId: number, ownerId: number): Data;
-  viewById(id: number, authorId: number, ownerId: number): Data;
-  create(recipe: ICreatingRecipe): DataWithHeader;
-  edit(id: number, authorId: number, ownerId: number): Data;
+  pool:                                                               Pool;
+  getForElasticSearch():                                              any;
+  getForElasticSearchById(id: number):                                Promise<ISavingRecipe>;
+  getPrivateIds(userId: number):                                      Promise<number[]>;
+  view(authorId: number, ownerId: number):                            Data;
+  viewById(id: number, authorId: number, ownerId: number):            Data;
+  create(recipe: ICreatingRecipe):                                    DataWithHeader;
+  edit(id: number, authorId: number, ownerId: number):                Data;
   update(recipe: IUpdatingRecipe, authorId: number, ownerId: number): Data;
-  disown(authorId: number): void;
-  disownById(id: number, authorId: number): Data;
-  delete(authorId: number, ownerId: number): void;
-  deleteById(id: number, authorId: number, ownerId: number): Data;
+  disown(authorId: number):                                           void;
+  disownById(id: number, authorId: number):                           Data;
+  delete(authorId: number, ownerId: number):                          void;
+  deleteById(id: number, authorId: number, ownerId: number):          Data;
 }
 
 export interface ICreatingRecipe {
-  recipeTypeId: number;
-  cuisineId: number;
-  authorId: number;
-  ownerId: number;
-  title: string;
-  description: string;
-  activeTime: string;
-  totalTime: string;
-  directions: string;
-  recipeImage: string;
-  equipmentImage: string;
+  recipeTypeId:     number;
+  cuisineId:        number;
+  authorId:         number;
+  ownerId:          number;
+  title:            string;
+  description:      string;
+  activeTime:       string;
+  totalTime:        string;
+  directions:       string;
+  recipeImage:      string;
+  equipmentImage:   string;
   ingredientsImage: string;
-  cookingImage: string;
-  video: string;
+  cookingImage:     string;
+  video:            string;
 }
 
 export interface IUpdatingRecipe extends ICreatingRecipe {
@@ -418,16 +418,16 @@ export interface IUpdatingRecipe extends ICreatingRecipe {
 }
 
 interface ISavingRecipe {
-  id: string;
-  author: string;
+  id:               string;
+  author:           string;
   recipe_type_name: string;
-  cuisine_name: string;
-  title: string;
-  description: string;
-  directions: string;
-  recipe_image: string;
-  method_names: string[];
-  equipment_names: string[];
+  cuisine_name:     string;
+  title:            string;
+  description:      string;
+  directions:       string;
+  recipe_image:     string;
+  method_names:     string[];
+  equipment_names:  string[];
   ingredient_names: string[];
   subrecipe_titles: string[];
   //video: string; ?

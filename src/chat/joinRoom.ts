@@ -25,8 +25,8 @@ export async function joinRoom({ room, username, socket, chatStore }: IJoinRoom)
 }
 
 interface IJoinRoom {
-  room: string;
-  username: string;
-  socket: Socket;
+  room:      string;
+  username:  string;
+  socket:    Socket;
   chatStore: IChatStore;
 }

@@ -20,10 +20,10 @@ if (process.env.NODE_ENV === 'production') config = {host: process.env.ELASTICAC
 
 if (process.env.NODE_ENV === 'development') config = {host: 'redis-dev', port: 6379};
 
-const pubClient =    new Redis(config);
-const subClient =    new Redis(config);
-const sessClient =   new Redis(config);
-const workerClient = new Redis(config);
+const pubClient =     new Redis(config);
+const subClient =     new Redis(config);
+const sessionClient = new Redis(config);
+const workerClient =  new Redis(config);
 
 if (process.env.NODE_ENV !== 'test') {
   pubClient.on('connect',    () => console.log('pubClient connected'));
@@ -36,10 +36,10 @@ if (process.env.NODE_ENV !== 'test') {
   subClient.on('error',      () => console.log('subClient error'));
   subClient.on('close',      () => console.log('subClient closed'));
 
-  sessClient.on('connect',   () => console.log('sessClient connected'));
-  sessClient.on('ready',     () => console.log('sessClient ready'));
-  sessClient.on('error',     () => console.log('sessClient error'));
-  sessClient.on('close',     () => console.log('sessClient closed'));
+  sessionClient.on('connect',   () => console.log('sessionClient connected'));
+  sessionClient.on('ready',     () => console.log('sessionClient ready'));
+  sessionClient.on('error',     () => console.log('sessionClient error'));
+  sessionClient.on('close',     () => console.log('sessionClient closed'));
 
   workerClient.on('connect', () => console.log('workerClient connected'));
   workerClient.on('ready',   () => console.log('workerClient ready'));
@@ -47,4 +47,4 @@ if (process.env.NODE_ENV !== 'test') {
   workerClient.on('close',   () => console.log('workerClient closed'));
 }
 
-export const redisClients = {pubClient, subClient, sessClient, workerClient};
+export const redisClients = {pubClient, subClient, sessionClient, workerClient};

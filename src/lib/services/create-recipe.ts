@@ -5,23 +5,38 @@ import { assert } from 'superstruct';
 import { IRecipeSearch } from '../../access/elasticsearch';
 import {
   ICreatingRecipe,
+  IMakeRecipeEquipment,
+  IMakeRecipeIngredient,
+  IMakeRecipeMethod,
+  IMakeRecipeSubrecipe,
+
   IRecipe,
-  IMakeRecipeEquipment, IRecipeEquipment,
-  IMakeRecipeIngredient, IRecipeIngredient,
-  IMakeRecipeMethod, IRecipeMethod,
-  IMakeRecipeSubrecipe, IRecipeSubrecipe
+  IRecipeEquipment,
+  IRecipeIngredient,
+  IRecipeMethod,
+  IRecipeSubrecipe
 } from '../../access/mysql';
 import { validRecipeEquipment, validRecipeIngredient, validRecipeMethod, validRecipeSubrecipe } from '../validations';
 
 export async function createRecipeService({
-  ownerId, creatingRecipe, requiredMethods, requiredEquipment, requiredIngredients, requiredSubrecipes,
-  recipe, recipeMethod, recipeEquipment, recipeIngredient, recipeSubrecipe, recipeSearch
+  ownerId,
+  creatingRecipe,
+  equipment,
+  ingredients,
+  methods,
+  subrecipes,
+  recipe,
+  recipeEquipment,
+  recipeIngredient,
+  recipeMethod,
+  recipeSubrecipe,
+  recipeSearch
 }: CreateRecipeService) {
   const createdRecipe = await recipe.create(creatingRecipe);
   const recipeId = createdRecipe.insertId;
 
   /*
-  NOTE: order matters!
+  NOTE: order matters! (why? it shouldn't, ideally)
 
   recipeId, methodId
   recipeId, amount, equipmentId
@@ -29,39 +44,43 @@ export async function createRecipeService({
   recipeId, amount, measurementId, subrecipeId
   */
 
-  if (requiredMethods.length) {
-    requiredMethods.map(({ methodId }) => assert({recipeId, methodId}, validRecipeMethod));
+  if (methods.length) {
+    methods.map(({ methodId }) => assert({recipeId, methodId}, validRecipeMethod));
 
-    const placeholders =     '(?, ?),'.repeat(requiredMethods.length).slice(0, -1);
+    const placeholders =     '(?, ?),'.repeat(methods.length).slice(0, -1);
     const values: number[] = [];
-    requiredMethods.map(({ methodId }) => values.push(recipeId, methodId));
+    methods.map(({ methodId }) => values.push(recipeId, methodId));
+    
     await recipeMethod.create(placeholders, values);
   }
 
-  if (requiredEquipment.length) {
-    requiredEquipment.map(({ amount, equipmentId }) => assert({recipeId, amount, equipmentId}, validRecipeEquipment));
+  if (equipment.length) {
+    equipment.map(({ amount, equipmentId }) => assert({recipeId, amount, equipmentId}, validRecipeEquipment));
 
-    const placeholders =     '(?, ?, ?),'.repeat(requiredEquipment.length).slice(0, -1);
+    const placeholders =     '(?, ?, ?),'.repeat(equipment.length).slice(0, -1);
     const values: number[] = [];
-    requiredEquipment.map(({ amount, equipmentId }) => values.push(recipeId, amount, equipmentId));
+    equipment.map(({ amount, equipmentId }) => values.push(recipeId, amount, equipmentId));
+
     await recipeEquipment.create(placeholders, values);
   }
 
-  if (requiredIngredients.length) {
-    requiredIngredients.map(({ amount, measurementId, ingredientId }) => assert({recipeId, amount, measurementId, ingredientId}, validRecipeIngredient));
+  if (ingredients.length) {
+    ingredients.map(({ amount, measurementId, ingredientId }) => assert({recipeId, amount, measurementId, ingredientId}, validRecipeIngredient));
 
-    const placeholders =     '(?, ?, ?, ?),'.repeat(requiredIngredients.length).slice(0, -1);
+    const placeholders =     '(?, ?, ?, ?),'.repeat(ingredients.length).slice(0, -1);
     const values: number[] = [];
-    requiredIngredients.map(({ amount, measurementId, ingredientId }) => values.push(recipeId, amount, measurementId, ingredientId));
+    ingredients.map(({ amount, measurementId, ingredientId }) => values.push(recipeId, amount, measurementId, ingredientId));
+
     await recipeIngredient.create(placeholders, values);
   }
 
-  if (requiredSubrecipes.length) {
-    requiredSubrecipes.map(({ amount, measurementId, subrecipeId }) => assert({recipeId, amount, measurementId, subrecipeId}, validRecipeSubrecipe));
+  if (subrecipes.length) {
+    subrecipes.map(({ amount, measurementId, subrecipeId }) => assert({recipeId, amount, measurementId, subrecipeId}, validRecipeSubrecipe));
 
-    const placeholders =     '(?, ?, ?, ?),'.repeat(requiredSubrecipes.length).slice(0, -1);
+    const placeholders =     '(?, ?, ?, ?),'.repeat(subrecipes.length).slice(0, -1);
     const values: number[] = [];
-    requiredSubrecipes.map(({ amount, measurementId, subrecipeId }) => values.push(recipeId, amount, measurementId, subrecipeId));
+    subrecipes.map(({ amount, measurementId, subrecipeId }) => values.push(recipeId, amount, measurementId, subrecipeId));
+
     await recipeSubrecipe.create(placeholders, values);
   }
 
@@ -73,16 +92,16 @@ export async function createRecipeService({
 }
 
 interface CreateRecipeService {
-  ownerId: number;
-  creatingRecipe: ICreatingRecipe;
-  requiredEquipment: IMakeRecipeEquipment[];
-  requiredIngredients: IMakeRecipeIngredient[];
-  requiredMethods: IMakeRecipeMethod[];
-  requiredSubrecipes: IMakeRecipeSubrecipe[];
-  recipe: IRecipe;
-  recipeMethod: IRecipeMethod;
-  recipeEquipment: IRecipeEquipment;
+  ownerId:          number;
+  creatingRecipe:   ICreatingRecipe;
+  equipment:        IMakeRecipeEquipment[];
+  ingredients:      IMakeRecipeIngredient[];
+  methods:          IMakeRecipeMethod[];
+  subrecipes:       IMakeRecipeSubrecipe[];
+  recipe:           IRecipe;
+  recipeEquipment:  IRecipeEquipment;
   recipeIngredient: IRecipeIngredient;
-  recipeSubrecipe: IRecipeSubrecipe;
-  recipeSearch: IRecipeSearch;
+  recipeMethod:     IRecipeMethod;
+  recipeSubrecipe:  IRecipeSubrecipe;
+  recipeSearch:     IRecipeSearch;
 }

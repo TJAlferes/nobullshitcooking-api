@@ -71,7 +71,7 @@ export class UserRecipeController {
     const {
       ownership,
       title, description, activeTime, totalTime, directions,
-      requiredMethods, requiredEquipment, requiredIngredients, requiredSubrecipes,
+      methods, equipment, ingredients, subrecipes,
       recipeImage, equipmentImage, ingredientsImage, cookingImage, video
     }= req.body.recipeInfo;
     const authorId = req.session.userInfo!.id;
@@ -93,7 +93,7 @@ export class UserRecipeController {
     await createRecipeService({
       ownerId,
       creatingRecipe,
-      requiredMethods, requiredEquipment, requiredIngredients, requiredSubrecipes,
+      methods, equipment, ingredients, subrecipes,
       recipe,
       recipeMethod, recipeEquipment, recipeIngredient, recipeSubrecipe,
       recipeSearch
@@ -129,7 +129,7 @@ export class UserRecipeController {
     const {
       ownership,
       title, description, activeTime, totalTime, directions,
-      requiredMethods, requiredEquipment, requiredIngredients, requiredSubrecipes,
+      methods, equipment, ingredients, subrecipes,
       recipeImage, equipmentImage, ingredientsImage, cookingImage, video
     }= req.body.recipeInfo;
     const authorId = req.session.userInfo!.id;
@@ -152,7 +152,7 @@ export class UserRecipeController {
     await updateRecipeService({
       id, authorId, ownerId,
       updatingRecipe,
-      requiredMethods, requiredEquipment, requiredIngredients, requiredSubrecipes,
+      methods, equipment, ingredients, subrecipes,
       recipe,
       recipeMethod, recipeEquipment, recipeIngredient, recipeSubrecipe,
       recipeSearch

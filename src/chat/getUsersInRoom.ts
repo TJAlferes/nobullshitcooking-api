@@ -8,7 +8,7 @@ export async function getUsersInRoom({ room, socket, chatStore }: IGetUser) {
 }
 
 interface IGetUser {
-  room: string;
-  socket: Socket;
+  room:      string;
+  socket:    Socket;  // not UberSocket?
   chatStore: IChatStore;
 }

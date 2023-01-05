@@ -27,7 +27,7 @@ export class RecipeIngredient implements IRecipeIngredient {
   }
 
   async create(placeholders: string, recipeIngredients: number[]) {
-    const sql = `INSERT INTO recipe_ingredients (recipe_id, amount, measurement_id, ingredient_id) VALUES ${placeholders}`;
+    const sql = `INSERT INTO recipe_ingredients (recipe_id, amount, measurement_id, ingredient_id) VALUES ${placeholders}`;  // may be wrong, test these
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, recipeIngredients);
     return row;
   }
@@ -78,17 +78,17 @@ type Data = Promise<RowDataPacket[]>;
 type DataWithExtra = Promise<RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] | ResultSetHeader | undefined>;
 
 export interface IRecipeIngredient {
-  pool: Pool;
-  viewByRecipeId(recipeId: number): Data;
-  create(placeholders: string, recipeIngredients: number[]): Data;
+  pool:                                                                        Pool;
+  viewByRecipeId(recipeId: number):                                            Data;
+  create(placeholders: string, recipeIngredients: number[]):                   Data;
   update(recipeId: number, placeholders: string, recipeIngredients: number[]): DataWithExtra;  // | finish
-  deleteByIngredientId(ingredientId: number): Data;
-  deleteByRecipeId(recipeId: number): Data;
-  deleteByRecipeIds(recipeIds: number[]): Data;
+  deleteByIngredientId(ingredientId: number):                                  Data;
+  deleteByRecipeId(recipeId: number):                                          Data;
+  deleteByRecipeIds(recipeIds: number[]):                                      Data;
 }
 
 export interface IMakeRecipeIngredient {
-  amount: number;
-  ingredientId: number;
+  amount:        number;
+  ingredientId:  number;
   measurementId: number;
 }

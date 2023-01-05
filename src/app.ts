@@ -6,7 +6,7 @@ import cookie                                       from 'cookie';
 import cookieParser                                 from 'cookie-parser';
 import cors                                         from 'cors';
 //import csurf                                        from 'csurf';  // no longer needed?
-import { Client as ESClient }                       from '@elastic/elasticsearch';
+import { Client as ElasticsearchClient }            from '@elastic/elasticsearch';
 import express, { Request, Response, NextFunction } from 'express';
 //import expressPinoLogger                            from 'express-pino-logger';
 import expressRateLimit                             from 'express-rate-limit';  // Use https://github.com/animir/node-rate-limiter-flexible instead?
@@ -27,14 +27,14 @@ import { chatCleanUp }      from './lib/jobs/chatCleanUp';
 import { bulkUp }           from './lib/jobs/searchBulkUp';
 import { routesInit }       from './routes';
 
-export function appServer(pool: Pool, esClient: ESClient, redisClients: RedisClients) {
+export function appServer(pool: Pool, elasticsearchClient: ElasticsearchClient, redisClients: RedisClients) {
   const app =        express();
   const httpServer = createServer(app);
 
   if (app.get('env') === 'production') app.set('trust proxy', 1);  // trust first proxy
   
   const RedisStore = connectRedis(expressSession);
-  const redisSession = new RedisStore({client: redisClients.sessClient});
+  const redisSession = new RedisStore({client: redisClients.sessionClient});
   // httpOnly: if true, client-side JS can NOT see the cookie in document.cookie
   // maxAge:   86400000 milliseconds = 1 day
   const options: SessionOptions = {
@@ -153,7 +153,7 @@ export function appServer(pool: Pool, esClient: ESClient, redisClients: RedisCli
   //app.use(csurf());
   app.use(compression());
   
-  routesInit(app, pool, esClient);
+  routesInit(app, pool, elasticsearchClient);
 
   process.on('unhandledRejection', (reason, promise: Promise<any>) => {
     console.log('Unhandled Rejection at: ', reason);
@@ -175,7 +175,7 @@ export function appServer(pool: Pool, esClient: ESClient, redisClients: RedisCli
     try {
       setTimeout(() => {
         console.log('Now running bulkUp.');
-        bulkUp(esClient, pool);
+        bulkUp(elasticsearchClient, pool);
       }, 40000);  // at the 40 second mark
     } catch(err) {
       console.error(err);
@@ -190,12 +190,14 @@ export function appServer(pool: Pool, esClient: ESClient, redisClients: RedisCli
 export type RedisClients = {
   pubClient:  Redis;
   subClient:  Redis;
-  sessClient: Client;
+  sessionClient: Client;
   //workerClient: Redis;
 }
 
 type Next = (err?: ExtendedError | undefined) => void;
 
+// change to socket data ? see typescript section of docs
+// or to socket auth ?
 interface IUberSocket extends Socket {
   sessionId?: string;
   userInfo?: {
@@ -219,7 +221,7 @@ interface IClientToServerEvents {
 
 interface IServerToClientEvents {
   // Users
-  OnlineFriends(onlineFriends: string[]):              void;
+  OnlineFriends(friends: string[]):              void;
   FriendCameOnline(friend: string):                    void;
   FriendWentOffline(friend: string):                   void;
   // Messages

@@ -26,9 +26,9 @@ export async function disconnecting({ id, username, socket, chatStore, friendshi
 }
 
 export interface IDisconnecting {
-  id: number;
-  username: string;
-  socket: Socket;
-  chatStore: IChatStore;
+  id:         number;
+  username:   string;
+  socket:     Socket;
+  chatStore:  IChatStore;
   friendship: IFriendship;
 }

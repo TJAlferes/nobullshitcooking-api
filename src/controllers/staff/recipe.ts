@@ -26,7 +26,7 @@ export class StaffRecipeController {
     const cuisineId =    Number(req.body.recipeInfo.cuisineId);
     const {
       title, description, activeTime, totalTime, directions,
-      requiredMethods, requiredEquipment, requiredIngredients, requiredSubrecipes,
+      methods, equipment, ingredients, subrecipes,
       recipeImage, equipmentImage, ingredientsImage, cookingImage,
       video
     } = req.body.recipeInfo;
@@ -50,7 +50,7 @@ export class StaffRecipeController {
     await createRecipeService({
       ownerId,
       creatingRecipe,
-      requiredMethods, requiredEquipment, requiredIngredients, requiredSubrecipes,
+      methods, equipment, ingredients, subrecipes,
       recipe,
       recipeMethod, recipeEquipment, recipeIngredient, recipeSubrecipe,
       recipeSearch
@@ -74,7 +74,7 @@ export class StaffRecipeController {
     const cuisineId =    Number(req.body.recipeInfo.cuisineId);
     const {
       title, description, activeTime, totalTime, directions,
-      requiredMethods, requiredEquipment, requiredIngredients, requiredSubrecipes,
+      methods, equipment, ingredients, subrecipes,
       recipeImage, equipmentImage, ingredientsImage, cookingImage, video
     } = req.body.recipeInfo;
     const authorId = 1;
@@ -97,7 +97,7 @@ export class StaffRecipeController {
     await updateRecipeService({
       id, authorId, ownerId,
       updatingRecipe,
-      requiredMethods, requiredEquipment, requiredIngredients, requiredSubrecipes,
+      methods, equipment, ingredients, subrecipes,
       recipe,
       recipeMethod, recipeEquipment, recipeIngredient, recipeSubrecipe,
       recipeSearch

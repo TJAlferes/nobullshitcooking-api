@@ -15,8 +15,8 @@ export async function sendMessage({ from, text, socket, chatStore }: ISendMessag
 }
 
 interface ISendMessage {
-  from: string;
-  text: string;
-  socket: Socket;
+  from:      string;
+  text:      string;
+  socket:    Socket;
   chatStore: IChatStore;
 }

@@ -3,24 +3,6 @@ import { array, defaulted, number, object, optional, string } from 'superstruct'
 
 import { IStaff, IUser } from '../../access/mysql';
 
-export const validCreatingContent = object({
-  contentTypeId: number(),
-  authorId:      number(),
-  ownerId:       number(),
-  created:       string(),
-  published:     defaulted(string(), null),
-  title:         string(),
-  items:         string()
-});
-
-export const validUpdatingContent = object({
-  contentTypeId: number(),
-  ownerId:       number(),
-  published:     defaulted(string(), null),
-  title:         string(),
-  items:         string()
-});
-
 export const validEquipment = object({
   equipmentTypeId: number(),
   authorId:        number(),
@@ -96,7 +78,7 @@ export const validRecipe = object({
 export const validRecipeMethod =     object({recipeId: number(), methodId: number()});
 export const validRecipeEquipment =  object({recipeId: number(), equipmentId: number(),  amount: number()});
 export const validRecipeIngredient = object({recipeId: number(), ingredientId: number(), amount: number(), measurementId: number()});
-export const validRecipeSubrecipe =  object({recipeId: number(), subrecipeId: number(),  amount: number(), measurementId: number()});
+export const validRecipeSubrecipe =  object({recipeId: number(), subrecipeId:  number(), amount: number(), measurementId: number()});
 
 export const validFavoriteRecipe = object({userId: number(), recipeId: number()});
 export const validSavedRecipe =    object({userId: number(), recipeId: number()});
@@ -162,10 +144,10 @@ export async function validVerify({ email, pass, confirmationCode }: Verify, acc
 }
 
 export const validCreatingStaff = object({email: string(), encryptedPass: string(), staffname: string(), confirmationCode: defaulted(string(), null)});
-export const validCreatingUser =  object({email: string(), encryptedPass: string(), username: string(),  confirmationCode: defaulted(string(), null)});
+export const validCreatingUser =  object({email: string(), encryptedPass: string(), username:  string(), confirmationCode: defaulted(string(), null)});
 
 export const validUpdatingStaff = object({email: string(), pass: string(), staffname: string()});
-export const validUpdatingUser =  object({email: string(), pass: string(), username: string()});
+export const validUpdatingUser =  object({email: string(), pass: string(), username:  string()});
 
 export const validLoginRequest = object({email: string(), pass: string()});
 
@@ -189,7 +171,7 @@ export async function validLogin({ email, pass }: Login, access: IStaff | IUser)
 
 type Login = {
   email: string;
-  pass: string;
+  pass:  string;
 };
 
 type Register = Login & {
