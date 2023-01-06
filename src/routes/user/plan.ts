@@ -17,14 +17,11 @@ export function userPlanRouter(pool: Pool) {
   router.post('/one', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.viewById));
 
   router.post('/create', userIsAuth, [
-    body('name').not().isEmpty().trim().escape(),
-    body('data').not().isEmpty()
+    body(['name', 'data']).not().isEmpty().trim().escape()
   ], catchExceptions(controller.create));
 
   router.put('/update', userIsAuth, [
-    body('id').not().isEmpty().trim().escape(),
-    body('name').not().isEmpty().trim().escape(),
-    body('data').not().isEmpty()
+    body(['id', 'name', 'data']).not().isEmpty().trim().escape()
   ], catchExceptions(controller.update));
 
   router.delete('/delete', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.deleteById));

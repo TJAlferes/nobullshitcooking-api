@@ -40,9 +40,7 @@ export function routesInit(app: Application, pool: Pool, esClient: Client) {
   const search =         searchRouter(esClient);
   const supplier =       supplierRouter(pool);
   
-  app.get('/', (req, res) => {
-    res.send(`No Bullshit Cooking Backend API. Documentation at https://github.com/tjalferes/nobullshitcooking-api`);
-  });
+  app.get('/', (req, res) => res.send(`No Bullshit Cooking Backend API. Documentation at https://github.com/tjalferes/nobullshitcooking-api`));
 
   app.use('/staff',           staff);
   app.use('/user',            user);

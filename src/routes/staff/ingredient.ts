@@ -13,24 +13,24 @@ const router = Router();
 export function staffIngredientRouter(esClient: Client, pool: Pool) {
   const controller = new StaffIngredientController(esClient, pool);
 
-  router.post('/create', staffIsAuth, [
-    body('ingredientTypeId').not().isEmpty().trim().escape(),
-    body('brand').not().isEmpty().trim().escape(),
-    body('variety').not().isEmpty().trim().escape(),
-    body('name').not().isEmpty().trim().escape(),
-    body('description').not().isEmpty().trim().escape(),
-    body('image').not().isEmpty().trim().escape()
-  ], catchExceptions(controller.create));
+  router.post('/create', staffIsAuth, [body([
+    'ingredientTypeId',
+    'brand',
+    'variety',
+    'name',
+    'description',
+    'image'
+  ]).not().isEmpty().trim().escape()], catchExceptions(controller.create));
 
-  router.put('/update', staffIsAuth, [
-    body('id').not().isEmpty().trim().escape(),
-    body('ingredientTypeId').not().isEmpty().trim().escape(),
-    body('brand').not().isEmpty().trim().escape(),
-    body('variety').not().isEmpty().trim().escape(),
-    body('name').not().isEmpty().trim().escape(),
-    body('description').not().isEmpty().trim().escape(),
-    body('image').not().isEmpty().trim().escape()
-  ], catchExceptions(controller.update));
+  router.put('/update', staffIsAuth, [body([
+    'id',
+    'ingredientTypeId',
+    'brand',
+    'variety',
+    'name',
+    'description',
+    'image'
+  ]).not().isEmpty().trim().escape()], catchExceptions(controller.update));
 
   router.delete('/delete', staffIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.delete));
 
