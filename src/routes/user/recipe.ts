@@ -13,41 +13,41 @@ const router = Router();
 export function userRecipeRouter(esClient: Client, pool: Pool) {
   const controller = new UserRecipeController(esClient, pool);
 
-  router.post('/create', userIsAuth, [
-    body('recipeTypeId').not().isEmpty().trim().escape(),
-    body('cuisineId').not().isEmpty().trim().escape(),
-    body('title').not().isEmpty().trim().escape(),
-    body('description').not().isEmpty().trim().escape(),
-    body('activeTime').not().isEmpty().trim().escape(),
-    body('totalTime').not().isEmpty().trim().escape(),
-    body('directions').not().isEmpty().trim().escape(),
-    body('recipeImage').not().isEmpty().trim().escape(),
-    body('equipmentImage').not().isEmpty().trim().escape(),
-    body('ingredientsImage').not().isEmpty().trim().escape(),
-    body('cookingImage').not().isEmpty().trim().escape(),
-    body('ownership').not().isEmpty().trim().escape(),
-    body('video').not().isEmpty().trim().escape()
-  ], catchExceptions(controller.create));
+  router.post('/create', userIsAuth, [body([
+    'recipeTypeId',
+    'cuisineId',
+    'title',
+    'description',
+    'activeTime',
+    'totalTime',
+    'directions',
+    'recipeImage',
+    'equipmentImage',
+    'ingredientsImage',
+    'cookingImage',
+    'ownership',
+    'video'
+  ]).not().isEmpty().trim().escape()], catchExceptions(controller.create));
 
-  router.put('/update', userIsAuth, [
-    body('id').not().isEmpty().trim().escape(),
-    body('recipeTypeId').not().isEmpty().trim().escape(),
-    body('cuisineId').not().isEmpty().trim().escape(),
-    body('title').not().isEmpty().trim().escape(),
-    body('description').not().isEmpty().trim().escape(),
-    body('activeTime').not().isEmpty().trim().escape(),
-    body('totalTime').not().isEmpty().trim().escape(),
-    body('directions').not().isEmpty().trim().escape(),
-    body('recipeImage').not().isEmpty().trim().escape(),
-    body('equipmentImage').not().isEmpty().trim().escape(),
-    body('ingredientsImage').not().isEmpty().trim().escape(),
-    body('cookingImage').not().isEmpty().trim().escape(),
-    body('ownership').not().isEmpty().trim().escape(),
-    body('video').not().isEmpty().trim().escape()
-  ], catchExceptions(controller.update));
+  router.put('/update', userIsAuth, [body([
+    'id',
+    'recipeTypeId',
+    'cuisineId',
+    'title',
+    'description',
+    'activeTime',
+    'totalTime',
+    'directions',
+    'recipeImage',
+    'equipmentImage',
+    'ingredientsImage',
+    'cookingImage',
+    'ownership',
+    'video'
+  ]).not().isEmpty().trim().escape()], catchExceptions(controller.update));
 
-  router.delete('/delete/private', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.deletePrivateById));
-  router.delete('/disown/public',  userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.disownById));  // TO DO: change to router.put
+  router.delete('/delete/private', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.delete));
+  router.delete('/disown/public',  userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.disown));  // TO DO: change to router.put
 
   router.post('/private/all', userIsAuth, catchExceptions(controller.viewPrivate));
   router.post('/public/all',  userIsAuth, catchExceptions(controller.viewPublic));

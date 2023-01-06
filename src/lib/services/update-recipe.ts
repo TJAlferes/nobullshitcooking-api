@@ -19,7 +19,7 @@ import {
 import { validRecipeEquipment, validRecipeIngredient, validRecipeMethod, validRecipeSubrecipe } from '../validations';
 
 export async function updateRecipeService({
-  id,
+  recipeId,
   authorId,
   ownerId,
   updatingRecipe,
@@ -34,74 +34,76 @@ export async function updateRecipeService({
   recipeSubrecipe,
   recipeSearch
 }: UpdateRecipeService) {
-  await recipe.update({id, ...updatingRecipe}, authorId, ownerId);
+  await recipe.update({id: recipeId, ...updatingRecipe}, authorId, ownerId);
 
   /*
-  NOTE: order matters!
+  NOTE: order matters! (because these inserts must match the database tables column orders)
   
-  id, methodId
-  id, amount, equipmentId
-  id, amount, measurementId, ingredientId
-  id, amount, measurementId, subrecipeId
+  recipeId, (method)Id
+  recipeId, amount, (equipment)Id
+  recipeId, amount, measurementId, (ingredient)Id
+  recipeId, amount, measurementId, (subrecipe)Id
   */
-  //const recipeId = id;
   
   let placeholders = "none";
   let values: number[] = [];
   if (methods.length) {
-    methods.map(({ methodId }) => assert({id, methodId}, validRecipeMethod));
-    placeholders = '(?, ?),'.repeat(methods.length).slice(0, -1);
-    methods.map(({ methodId }) => values.push(id, methodId));
+    methods.map(({ id }) => assert({recipeId, id}, validRecipeMethod));
+    placeholders = '(?, ?),'.repeat(methods.length).slice(0, -1);  // if 3 methods, then: (?, ?),(?, ?),(?, ?)
+    methods.map(({ id }) => values.push(recipeId, id));
   }
-  await recipeMethod.update(id, placeholders, values);
+  await recipeMethod.update(recipeId, placeholders, values);
   
   placeholders = "none";
   values = [];
   if (equipment.length) {
-    equipment.map(({ amount, equipmentId }) => assert({id, amount, equipmentId}, validRecipeEquipment));
+    equipment.map(({ amount, id }) => assert({recipeId, amount, id}, validRecipeEquipment));
     placeholders = '(?, ?, ?),'.repeat(equipment.length).slice(0, -1);
-    equipment.map(({ amount, equipmentId }) => values.push(id, amount, equipmentId));
+    equipment.map(({ amount, id }) => values.push(recipeId, amount, id));
   }
-  await recipeEquipment.update(id, placeholders, values);
+  await recipeEquipment.update(recipeId, placeholders, values);
   
   placeholders = "none";
   values = [];
   if (ingredients.length) {
-    ingredients.map(({ amount, measurementId, ingredientId }) => assert({id, amount, measurementId, ingredientId}, validRecipeIngredient));
+    ingredients.map(({ amount, measurementId, id }) => assert({recipeId, amount, measurementId, id}, validRecipeIngredient));
     placeholders = '(?, ?, ?, ?),'.repeat(ingredients.length).slice(0, -1);
-    ingredients.map(({ amount, measurementId, ingredientId }) => values.push(id, amount, measurementId, ingredientId));
+    ingredients.map(({ amount, measurementId, id }) => values.push(recipeId, amount, measurementId, id));
   }
-  await recipeIngredient.update(id, placeholders, values);
+  await recipeIngredient.update(recipeId, placeholders, values);
   
   placeholders = "none";
   values = [];
   if (subrecipes.length) {
-    subrecipes.map(({ amount, measurementId, subrecipeId }) => assert({id, amount, measurementId, subrecipeId}, validRecipeSubrecipe));
+    subrecipes.map(({ amount, measurementId, id }) => assert({recipeId, amount, measurementId, id}, validRecipeSubrecipe));
     placeholders = '(?, ?, ?, ?),'.repeat(subrecipes.length).slice(0, -1);
-    subrecipes.map(({ amount, measurementId, subrecipeId }) => values.push(id, amount, measurementId, subrecipeId));
+    subrecipes.map(({ amount, measurementId, id }) => values.push(recipeId, amount, measurementId, id));
   }
-  await recipeSubrecipe.update(id, placeholders, values);
+  await recipeSubrecipe.update(recipeId, placeholders, values);
 
   // if public recipe
   if (ownerId === 1) {
-    const toSave = await recipe.getForElasticSearchById(id);
+    const toSave = await recipe.getForElasticSearchById(recipeId);
     await recipeSearch.save(toSave);
   }
 }
 
 interface UpdateRecipeService {
-  id:               number;
+  recipeId:         number;
   authorId:         number;
   ownerId:          number;
+
   updatingRecipe:   ICreatingRecipe;
   equipment:        IMakeRecipeEquipment[];
   ingredients:      IMakeRecipeIngredient[];
   methods:          IMakeRecipeMethod[];
   subrecipes:       IMakeRecipeSubrecipe[];
+
   recipe:           IRecipe;
   recipeEquipment:  IRecipeEquipment;
   recipeIngredient: IRecipeIngredient;
   recipeMethod:     IRecipeMethod;
   recipeSubrecipe:  IRecipeSubrecipe;
+
   recipeSearch:     IRecipeSearch;
 }

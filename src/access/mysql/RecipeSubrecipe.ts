@@ -14,7 +14,7 @@ export class RecipeSubrecipe implements IRecipeSubrecipe {
     this.deleteBySubrecipeIds = this.deleteBySubrecipeIds.bind(this);
   }
 
-  async viewByRecipeId(recipeId: number) {
+  async viewByRecipeId(id: number) {
     const sql = `
       SELECT rs.amount, m.name AS measurement_name, r.title
       FROM recipe_subrecipes rs
@@ -23,7 +23,7 @@ export class RecipeSubrecipe implements IRecipeSubrecipe {
       WHERE rs.recipe_id = ?
       ORDER BY r.recipe_type_id
     `;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [recipeId]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
     return rows;
   }
 
@@ -57,29 +57,27 @@ export class RecipeSubrecipe implements IRecipeSubrecipe {
     }
   }
 
-  async deleteByRecipeId(recipeId: number) {
+  async deleteByRecipeId(id: number) {
     const sql = `DELETE FROM recipe_subrecipes WHERE recipe_id = ?`;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [recipeId]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
     return rows;
   }
 
-  async deleteByRecipeIds(recipeIds: number[]) {
+  async deleteByRecipeIds(ids: number[]) {
     const sql = `DELETE FROM recipe_subrecipes WHERE recipe_id = ANY(?)`;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, recipeIds);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, ids);
     return rows;
   }
 
-  async deleteBySubrecipeId(subrecipeId: number) {
+  async deleteBySubrecipeId(id: number) {
     const sql = `DELETE FROM recipe_subrecipes WHERE subrecipe_id = ?`;
-    const [ rows ] =
-      await this.pool.execute<RowDataPacket[]>(sql, [subrecipeId]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
     return rows;
   }
 
-  async deleteBySubrecipeIds(subrecipeIds: number[]) {
+  async deleteBySubrecipeIds(ids: number[]) {
     const sql = `DELETE FROM recipe_subrecipes WHERE subrecipe_id = ANY(?)`;
-    const [ rows ] =
-      await this.pool.execute<RowDataPacket[]>(sql, subrecipeIds);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, ids);
     return rows;
   }
 }
@@ -90,17 +88,17 @@ type DataWithExtra = Promise<RowDataPacket[] | RowDataPacket[][] | OkPacket | Ok
 
 export interface IRecipeSubrecipe {
   pool:                                                                       Pool;
-  viewByRecipeId(recipeId: number):                                           Data;
+  viewByRecipeId(id: number):                                                 Data;
   create(placeholders: string, recipeSubrecipes: number[]):                   Data;
   update(recipeId: number, placeholders: string, recipeSubrecipes: number[]): DataWithExtra;  // | finish
-  deleteByRecipeId(recipeId: number):                                         Data;
-  deleteByRecipeIds(recipeIds: number[]):                                     Data;
-  deleteBySubrecipeId(subrecipeId: number):                                   Data;
-  deleteBySubrecipeIds(subrecipeIds: number[]):                               Data;
+  deleteByRecipeId(id: number):                                               Data;
+  deleteByRecipeIds(ids: number[]):                                           Data;
+  deleteBySubrecipeId(id: number):                                            Data;
+  deleteBySubrecipeIds(ids: number[]):                                        Data;
 }
 
 export interface IMakeRecipeSubrecipe {
   amount:        number;
   measurementId: number;
-  subrecipeId:   number;
+  id:            number;
 }

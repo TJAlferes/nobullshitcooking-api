@@ -12,12 +12,7 @@ export const validEquipment = object({
   image:           defaulted(string(), '')
 });
 
-export const validFriendship = object({
-  userId:   number(),
-  friendId: number(),
-  status1:  string(),
-  status2:  string()
-});
+export const validFriendship = object({userId: number(), friendId: number(), status1: string(), status2: string()});
 
 export const validIngredient = object({
   ingredientTypeId: number(),
@@ -47,19 +42,19 @@ export const validPlan = object({
 });
 
 export const validProduct = object({
-  product_category_id: string(),
-  product_type_id:     string(),
-  brand:               defaulted(string(), ''),
-  variety:             defaulted(string(), ''),
-  name:                string(),
-  alt_names:           optional(array(string())),
-  description:         string(),
+  productCategoryId: string(),
+  productTypeId:     string(),
+  brand:             defaulted(string(), ''),
+  variety:           defaulted(string(), ''),
+  name:              string(),
+  altNames:          optional(array(string())),
+  description:       string(),
   //specs:
-  image:               defaulted(string(), '')
+  image:             defaulted(string(), '')
 });
 
 export const validRecipe = object({
-  recipe_type_id:   number(),
+  recipeTypeId:     number(),
   cuisineId:        number(),
   authorId:         number(),
   ownerId:          number(),
@@ -75,15 +70,51 @@ export const validRecipe = object({
   video:            defaulted(string(), '')
 });
 
-export const validRecipeMethod =     object({recipeId: number(), methodId: number()});
-export const validRecipeEquipment =  object({recipeId: number(), equipmentId: number(),  amount: number()});
-export const validRecipeIngredient = object({recipeId: number(), ingredientId: number(), amount: number(), measurementId: number()});
-export const validRecipeSubrecipe =  object({recipeId: number(), subrecipeId:  number(), amount: number(), measurementId: number()});
+export const validRecipeMethod =     object({recipeId: number(), id: number()});
+export const validRecipeEquipment =  object({recipeId: number(), amount: number(), id: number()});
+export const validRecipeIngredient = object({recipeId: number(), amount: number(), measurementId: number(), id: number()});
+export const validRecipeSubrecipe =  object({recipeId: number(), amount: number(), measurementId: number(), id: number()});
 
 export const validFavoriteRecipe = object({userId: number(), recipeId: number()});
 export const validSavedRecipe =    object({userId: number(), recipeId: number()});
 
 export const validSupplier = object({name: string()});
+
+
+
+export const validCreatingStaff = object({email: string(), encryptedPass: string(), staffname: string(), confirmationCode: defaulted(string(), null)});
+export const validCreatingUser =  object({email: string(), encryptedPass: string(), username:  string(), confirmationCode: defaulted(string(), null)});
+
+export const validUpdatingStaff = object({email: string(), pass: string(), staffname: string()});
+export const validUpdatingUser =  object({email: string(), pass: string(), username:  string()});
+
+
+
+// Login
+
+export const validLoginRequest = object({email: string(), pass: string()});
+
+export async function validLogin({ email, pass }: Login, access: IStaff | IUser) {
+  if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) return {feedback: "Invalid email."};
+  if (pass.length < 6)                                         return {feedback: "Invalid password."};
+  if (pass.length > 54)                                        return {feedback: "Invalid password."};
+
+  const exists = await access.getByEmail(email);
+  //crypto.timingSafeEqual() ???
+  if (!exists) return {feedback: "Incorrect email or password."};
+  
+  const correctPassword = await bcrypt.compare(pass, exists.pass);
+  if (!correctPassword) return {feedback: "Incorrect email or password."};
+
+  const confirmed = exists.confirmation_code === null;
+  if (!confirmed) return {feedback: "Please check your email for your confirmation code."};
+
+  return {feedback: "valid", exists};
+}
+
+
+
+// Register
 
 export const validStaffRegisterRequest = object({email: string(), pass: string(), staffname: string()});
 export const validUserRegisterRequest =  object({email: string(), pass: string(), username: string()});
@@ -105,6 +136,10 @@ export async function validRegister({ email, pass, name }: Register, access: ISt
   return "valid";
 }
 
+
+
+// Resend Confirmation Code
+
 export const validResendRequest = object({email: string(), pass: string()});
 
 export async function validResend({ email, pass }: Resend, access: IStaff | IUser) {
@@ -125,6 +160,10 @@ export async function validResend({ email, pass }: Resend, access: IStaff | IUse
   return "valid";
 }
 
+
+
+// Verify
+
 export const validVerifyRequest = object({email: string(), pass: string(), confirmationCode: string()});
 
 export async function validVerify({ email, pass, confirmationCode }: Verify, access: IStaff | IUser) {
@@ -143,31 +182,7 @@ export async function validVerify({ email, pass, confirmationCode }: Verify, acc
   return "valid";
 }
 
-export const validCreatingStaff = object({email: string(), encryptedPass: string(), staffname: string(), confirmationCode: defaulted(string(), null)});
-export const validCreatingUser =  object({email: string(), encryptedPass: string(), username:  string(), confirmationCode: defaulted(string(), null)});
 
-export const validUpdatingStaff = object({email: string(), pass: string(), staffname: string()});
-export const validUpdatingUser =  object({email: string(), pass: string(), username:  string()});
-
-export const validLoginRequest = object({email: string(), pass: string()});
-
-export async function validLogin({ email, pass }: Login, access: IStaff | IUser) {
-  if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) return {feedback: "Invalid email."};
-  if (pass.length < 6)                                         return {feedback: "Invalid password."};
-  if (pass.length > 54)                                        return {feedback: "Invalid password."};
-
-  const exists = await access.getByEmail(email);
-  //crypto.timingSafeEqual() ???
-  if (!exists) return {feedback: "Incorrect email or password."};
-  
-  const correctPassword = await bcrypt.compare(pass, exists.pass);
-  if (!correctPassword) return {feedback: "Incorrect email or password."};
-
-  const confirmed = exists.confirmation_code === null;
-  if (!confirmed) return {feedback: "Please check your email for your confirmation code."};
-
-  return {feedback: "valid", exists};
-}
 
 type Login = {
   email: string;

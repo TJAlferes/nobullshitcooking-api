@@ -95,7 +95,7 @@ export class StaffRecipeController {
     const recipeSubrecipe =  new RecipeSubrecipe(this.pool);
     const recipeSearch =     new RecipeSearch(this.esClient);
     await updateRecipeService({
-      id, authorId, ownerId,
+      recipeId: id, authorId, ownerId,
       updatingRecipe,
       methods, equipment, ingredients, subrecipes,
       recipe,

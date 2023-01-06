@@ -13,7 +13,7 @@ export class RecipeEquipment implements IRecipeEquipment {
     this.deleteByRecipeIds =   this.deleteByRecipeIds.bind(this);
   }
 
-  async viewByRecipeId(recipeId: number) {
+  async viewByRecipeId(id: number) {
     const sql = `
       SELECT re.amount, e.name AS equipment_name
       FROM recipe_equipment re
@@ -21,7 +21,7 @@ export class RecipeEquipment implements IRecipeEquipment {
       WHERE re.recipe_id = ?
       ORDER BY e.equipment_type_id
     `;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [recipeId]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
     return rows;
   }
 
@@ -54,21 +54,21 @@ export class RecipeEquipment implements IRecipeEquipment {
     }
   }
 
-  async deleteByEquipmentId(equipmentId: number) {
+  async deleteByEquipmentId(id: number) {
     const sql = `DELETE FROM recipe_equipment WHERE equipment_id = ?`;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [equipmentId]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
     return rows;
   }
 
-  async deleteByRecipeId(recipeId: number) {
+  async deleteByRecipeId(id: number) {
     const sql = `DELETE FROM recipe_equipment WHERE recipe_id = ?`;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [recipeId]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
     return rows;
   }
 
-  async deleteByRecipeIds(recipeIds: number[]) {
+  async deleteByRecipeIds(ids: number[]) {
     const sql = `DELETE FROM recipe_equipment WHERE recipe_id = ANY(?)`;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, recipeIds);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, ids);
     return rows;
   }
 }
@@ -79,15 +79,15 @@ type DataWithExtra = Promise<RowDataPacket[] | RowDataPacket[][] | OkPacket | Ok
 
 export interface IRecipeEquipment {
   pool:                                                                      Pool;
-  viewByRecipeId(recipeId: number):                                          Data;
+  viewByRecipeId(id: number):                                                Data;
   create(placeholders: string, recipeEquipment: number[]):                   Data;
   update(recipeId: number, placeholders: string, recipeEquipment: number[]): DataWithExtra;  // | finish
-  deleteByEquipmentId(equipmentId: number):                                  Data;
-  deleteByRecipeId(recipeId: number):                                        Data;
-  deleteByRecipeIds(recipeIds: number[]):                                    Data;
+  deleteByEquipmentId(id: number):                                           Data;
+  deleteByRecipeId(id: number):                                              Data;
+  deleteByRecipeIds(ids: number[]):                                          Data;
 }
 
 export interface IMakeRecipeEquipment {
-  amount:      number;
-  equipmentId: number;
+  amount: number;
+  id:     number;
 }
