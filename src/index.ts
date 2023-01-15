@@ -1,15 +1,13 @@
 'use strict';
 
-//require('regenerator-runtime/runtime');  // still needed?
 require('dotenv').config();
 
-import { esClient }     from './lib/connections/elasticsearch';
 import { pool }         from './lib/connections/mysql';
 import { redisClients } from './lib/connections/redis';
 import { appServer }    from './app';
 
 // Kept separate for multiple reasons, easy integration testing being primary.
-const server = appServer(pool, esClient, redisClients);
+const server = appServer(pool, redisClients);
 
 const PORT = (process.env.NODE_ENV === 'production')
   ? Number(process.env.PORT) || 8081

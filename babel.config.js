@@ -1,6 +1,8 @@
 module.exports = function(api) {
   api.cache(true);
+  
   const presets = [
+    "@babel/preset-typescript",
     [
       "@babel/preset-env",
       {
@@ -10,13 +12,6 @@ module.exports = function(api) {
       }
     ]
   ];
-  /*const plugins = [
-    [
-      "@babel/plugin-transform-runtime",
-      {"regenerator": true}
-    ]
-  ];*/
-  //"sourceType": "unambiguous"
-  //return {presets, plugins};
+
   return {presets};
 };

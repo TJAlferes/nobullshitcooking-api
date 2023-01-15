@@ -1,19 +1,15 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
-import { Client } from '@elastic/elasticsearch';
 
-import { RecipeSearch } from '../../access/elasticsearch';
 import { Recipe, RecipeEquipment, RecipeIngredient, RecipeMethod, RecipeSubrecipe } from '../../access/mysql';
 import { createRecipeService, updateRecipeService } from '../../lib/services';
 import { validRecipe } from '../../lib/validations';
 
 export class UserRecipeController {
-  esClient: Client;
   pool: Pool;
 
-  constructor(esClient: Client, pool: Pool) {
-    this.esClient = esClient;
+  constructor(pool: Pool) {
     this.pool = pool;
     this.viewPrivate =     this.viewPrivate.bind(this);
     this.viewPublic =      this.viewPublic.bind(this);
@@ -89,14 +85,12 @@ export class UserRecipeController {
     const recipeEquipment =  new RecipeEquipment(this.pool);
     const recipeIngredient = new RecipeIngredient(this.pool);
     const recipeSubrecipe =  new RecipeSubrecipe(this.pool);
-    const recipeSearch =     new RecipeSearch(this.esClient);
     await createRecipeService({
       ownerId,
       creatingRecipe,
       methods, equipment, ingredients, subrecipes,
       recipe,
-      recipeMethod, recipeEquipment, recipeIngredient, recipeSubrecipe,
-      recipeSearch
+      recipeMethod, recipeEquipment, recipeIngredient, recipeSubrecipe
     });
 
     return res.send({message: 'Recipe created.'});
@@ -148,14 +142,12 @@ export class UserRecipeController {
     const recipeEquipment =  new RecipeEquipment(this.pool);
     const recipeIngredient = new RecipeIngredient(this.pool);
     const recipeSubrecipe =  new RecipeSubrecipe(this.pool);
-    const recipeSearch =     new RecipeSearch(this.esClient);
     await updateRecipeService({
       recipeId: id, authorId, ownerId,
       updatingRecipe,
       methods, equipment, ingredients, subrecipes,
       recipe,
-      recipeMethod, recipeEquipment, recipeIngredient, recipeSubrecipe,
-      recipeSearch
+      recipeMethod, recipeEquipment, recipeIngredient, recipeSubrecipe
     });
 
     return res.send({message: 'Recipe updated.'});
@@ -192,10 +184,6 @@ export class UserRecipeController {
 
     const recipe = new Recipe(this.pool);
     await recipe.disownById(id, authorId);
-    const toSave = await recipe.getForElasticSearchById(id);
-
-    const recipeSearch = new RecipeSearch(this.esClient);
-    await recipeSearch.save(toSave);
 
     return res.send({message: 'Recipe disowned.'});
   }

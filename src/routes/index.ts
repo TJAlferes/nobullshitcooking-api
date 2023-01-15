@@ -2,7 +2,6 @@
 
 import { Application } from 'express';
 import { Pool } from 'mysql2/promise';
-import { Client } from '@elastic/elasticsearch';
 
 import { staffRouter } from './staff/index';
 import { userRouter } from './user/index';
@@ -22,9 +21,9 @@ import { searchRouter } from './search';
 import { supplierRouter } from './supplier';
 
 // TO DO: add grocer
-export function routesInit(app: Application, pool: Pool, esClient: Client) {
-  const staff =          staffRouter(esClient, pool);
-  const user =           userRouter(esClient, pool);
+export function routesInit(app: Application, pool: Pool) {
+  const staff =          staffRouter(pool);
+  const user =           userRouter(pool);
   const cuisine =        cuisineRouter(pool);
   const dataInit =       dataInitRouter(pool);
   const equipment =      equipmentRouter(pool);
@@ -37,7 +36,7 @@ export function routesInit(app: Application, pool: Pool, esClient: Client) {
   const profile =        profileRouter(pool);
   const recipe =         recipeRouter(pool);
   const recipeType =     recipeTypeRouter(pool);
-  const search =         searchRouter(esClient);
+  const search =         searchRouter(pool);
   const supplier =       supplierRouter(pool);
   
   app.get('/', (req, res) => res.send(`No Bullshit Cooking Backend API. Documentation at https://github.com/tjalferes/nobullshitcooking-api`));

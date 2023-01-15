@@ -5,8 +5,6 @@ import connectRedis, { Client }                     from 'connect-redis';
 import cookie                                       from 'cookie';
 import cookieParser                                 from 'cookie-parser';
 import cors                                         from 'cors';
-//import csurf                                        from 'csurf';  // no longer needed?
-import { Client as ElasticsearchClient }            from '@elastic/elasticsearch';
 import express, { Request, Response, NextFunction } from 'express';
 //import expressPinoLogger                            from 'express-pino-logger';
 import expressRateLimit                             from 'express-rate-limit';  // Use https://github.com/animir/node-rate-limiter-flexible instead?
@@ -27,7 +25,7 @@ import { chatCleanUp }      from './lib/jobs/chatCleanUp';
 import { bulkUp }           from './lib/jobs/searchBulkUp';
 import { routesInit }       from './routes';
 
-export function appServer(pool: Pool, elasticsearchClient: ElasticsearchClient, redisClients: RedisClients) {
+export function appServer(pool: Pool, redisClients: RedisClients) {
   const app =        express();
   const httpServer = createServer(app);
 
@@ -153,7 +151,7 @@ export function appServer(pool: Pool, elasticsearchClient: ElasticsearchClient, 
   //app.use(csurf());
   app.use(compression());
   
-  routesInit(app, pool, elasticsearchClient);
+  routesInit(app, pool);
 
   process.on('unhandledRejection', (reason, promise: Promise<any>) => {
     console.log('Unhandled Rejection at: ', reason);
@@ -175,7 +173,7 @@ export function appServer(pool: Pool, elasticsearchClient: ElasticsearchClient, 
     try {
       setTimeout(() => {
         console.log('Now running bulkUp.');
-        bulkUp(elasticsearchClient, pool);
+        bulkUp(pool);
       }, 40000);  // at the 40 second mark
     } catch(err) {
       console.error(err);

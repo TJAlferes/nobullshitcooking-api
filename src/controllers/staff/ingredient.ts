@@ -1,18 +1,14 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
-import { Client } from '@elastic/elasticsearch';
 
-import { IngredientSearch } from '../../access/elasticsearch';
 import { Ingredient, RecipeIngredient } from '../../access/mysql';
 import { validIngredient } from '../../lib/validations';
 
 export class StaffIngredientController {
-  esClient: Client;
   pool: Pool;
 
-  constructor(esClient: Client, pool: Pool) {
-    this.esClient = esClient;
+  constructor(pool: Pool) {
     this.pool = pool;
     this.create = this.create.bind(this);
     this.update = this.update.bind(this);
@@ -29,12 +25,7 @@ export class StaffIngredientController {
     assert(args, validIngredient);
 
     const ingredient = new Ingredient(this.pool);
-    const created = await ingredient.create(args);
-    const generatedId = created.insertId;
-    const toSave = await ingredient.getForElasticSearchById(generatedId);
-
-    const ingredientSearch = new IngredientSearch(this.esClient);
-    await ingredientSearch.save(toSave);
+    await ingredient.create(args);
     
     return res.send({message: 'Ingredient created.'});
   }
@@ -51,10 +42,6 @@ export class StaffIngredientController {
 
     const ingredient = new Ingredient(this.pool);
     await ingredient.update({id, ...args});
-    const toSave = await ingredient.getForElasticSearchById(id);
-
-    const ingredientSearch = new IngredientSearch(this.esClient);
-    await ingredientSearch.save(toSave);
 
     return res.send({message: 'Ingredient updated.'});
   }

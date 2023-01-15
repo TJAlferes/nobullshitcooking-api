@@ -10,7 +10,6 @@ const router = Router();
 
 export function userGetSignedUrlRouter() {
   router.post('/avatar',             userIsAuth, [body('fileType').not().isEmpty().trim().escape()], catchExceptions(getSignedUrl.avatar));
-  router.post('/content',            userIsAuth, [body('fileType').not().isEmpty().trim().escape()], catchExceptions(getSignedUrl.content));
   router.post('/equipment',          userIsAuth, [body('fileType').not().isEmpty().trim().escape()], catchExceptions(getSignedUrl.equipment));
   router.post('/ingredient',         userIsAuth, [body('fileType').not().isEmpty().trim().escape()], catchExceptions(getSignedUrl.ingredient));
   router.post('/recipe',             userIsAuth, [body('fileType').not().isEmpty().trim().escape()], catchExceptions(getSignedUrl.recipe));

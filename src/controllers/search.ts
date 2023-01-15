@@ -1,100 +1,85 @@
 import { Request, Response } from 'express';
-import { Client } from '@elastic/elasticsearch';
+import { Pool } from 'mysql2/promise';
 
-import { /*AllSearch,*/ EquipmentSearch, IngredientSearch, ProductSearch, RecipeSearch } from '../access/elasticsearch';
+import { Equipment, Ingredient, Product, Recipe } from '../access/mysql';
 
-// Note: "auto" is short for "autocomplete / live search suggestions"
-
+// "auto" is short for "autocomplete / live search suggestions"
 export class SearchController {
-  esClient: Client;
+  pool: Pool;
 
-  constructor(esClient: Client) {
-    this.esClient = esClient;
+  constructor(pool: Pool) {
+    this.pool =            pool;
     this.autoEquipment =   this.autoEquipment.bind(this);
-    this.findEquipment =   this.findEquipment.bind(this);
     this.autoIngredients = this.autoIngredients.bind(this);
-    this.findIngredients = this.findIngredients.bind(this);
+    this.autoProducts =    this.autoProducts.bind(this);
     this.autoRecipes =     this.autoRecipes.bind(this);
+    this.findEquipment =   this.findEquipment.bind(this);
+    this.findIngredients = this.findIngredients.bind(this);
+    this.findProducts =    this.findProducts.bind(this);
     this.findRecipes =     this.findRecipes.bind(this);
   }
-
-  /*async autoAll(req: Request, res: Response) {
-    const { searchTerm } = req.body;
-    
-    const allSearch = new AllSearch(this.esClient);
-    const found = await allSearch.auto(searchTerm);
-    return res.json({found});
-  }*/
-
-  /*async findAll(req: Request, res: Response) {
-    const { body } = req.body;  // security?
-
-    const allSearch = new AllSearch(this.esClient);
-    const found = await allSearch.find(body);
-    return res.json({found});
-  }*/
 
   async autoEquipment(req: Request, res: Response) {
     const { searchTerm } = req.body;
 
-    const equipmentSearch = new EquipmentSearch(this.esClient);
-    const found = await equipmentSearch.auto(searchTerm);
-    return res.json({found});
-  }
-
-  async findEquipment(req: Request, res: Response) {
-    const { body } = req.body;  // security?
-
-    const equipmentSearch = new EquipmentSearch(this.esClient);
-    const found = await equipmentSearch.find(body);
+    const equipment = new Equipment(this.pool);
+    const found = await equipment.auto(searchTerm);
     return res.json({found});
   }
 
   async autoIngredients(req: Request, res: Response) {
     const { searchTerm } = req.body;
 
-    const ingredientSearch = new IngredientSearch(this.esClient);
-    const found = await ingredientSearch.auto(searchTerm);
-    return res.json({found});
-  }
-
-  async findIngredients(req: Request, res: Response) {
-    const { body } = req.body;  // security?
-
-    const ingredientSearch = new IngredientSearch(this.esClient);
-    const found = await ingredientSearch.find(body);
+    const ingredient = new Ingredient(this.pool);
+    const found = await ingredient.auto(searchTerm);
     return res.json({found});
   }
 
   async autoProducts(req: Request, res: Response) {
     const { searchTerm } = req.body;
 
-    const productSearch = new ProductSearch(this.esClient);
-    const found = await productSearch.auto(searchTerm);
-    return res.json({found});
-  }
-
-  async findProducts(req: Request, res: Response) {
-    const { body } = req.body;  // security?
-
-    const productSearch = new ProductSearch(this.esClient);
-    const found = await productSearch.find(body);
+    const product = new Product(this.pool);
+    const found = await product.auto(searchTerm);
     return res.json({found});
   }
 
   async autoRecipes(req: Request, res: Response) {
     const { searchTerm } = req.body;
 
-    const recipeSearch = new RecipeSearch(this.esClient);
-    const found = await recipeSearch.auto(searchTerm);
+    const recipe = new Recipe(this.pool);
+    const found = await recipe.auto(searchTerm);
+    return res.json({found});
+  }
+
+  async findEquipment(req: Request, res: Response) {
+    const { body } = req.body;  // security?
+
+    const equipment = new Equipment(this.pool);
+    const found = await equipment.find(body);
+    return res.json({found});
+  }
+
+  async findIngredients(req: Request, res: Response) {
+    const { body } = req.body;  // security?
+
+    const ingredient = new Ingredient(this.pool);
+    const found = await ingredient.find(body);
+    return res.json({found});
+  }
+
+  async findProducts(req: Request, res: Response) {
+    const { body } = req.body;  // security?
+
+    const product = new Product(this.pool);
+    const found = await product.find(body);
     return res.json({found});
   }
 
   async findRecipes(req: Request, res: Response) {
     const { body } = req.body;  // security?
 
-    const recipeSearch = new RecipeSearch(this.esClient);
-    const found = await recipeSearch.find(body);
+    const recipe = new Recipe(this.pool);
+    const found = await recipe.find(body);
     return res.json({found});
   }
 }

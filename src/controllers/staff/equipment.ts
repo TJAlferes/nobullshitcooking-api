@@ -1,18 +1,14 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
-import { Client } from '@elastic/elasticsearch';
 
-import { EquipmentSearch } from '../../access/elasticsearch';
 import { Equipment, RecipeEquipment } from '../../access/mysql';
 import { validEquipment } from '../../lib/validations';
 
 export class StaffEquipmentController {
-  esClient: Client;
   pool: Pool;
 
-  constructor(esClient: Client, pool: Pool) {
-    this.esClient = esClient;
+  constructor(pool: Pool) {
     this.pool = pool;
     this.create = this.create.bind(this);
     this.update = this.update.bind(this);
@@ -29,12 +25,7 @@ export class StaffEquipmentController {
     assert(args, validEquipment);
 
     const equipment = new Equipment(this.pool);
-    const created = await equipment.create(args);
-    const generatedId = created.insertId;
-    const toSave = await equipment.getForElasticSearchById(generatedId);
-
-    const equipmentSearch = new EquipmentSearch(this.esClient);
-    await equipmentSearch.save(toSave);
+    await equipment.create(args);
 
     return res.send({message: 'Equipment created.'});
   }
@@ -51,10 +42,6 @@ export class StaffEquipmentController {
 
     const equipment = new Equipment(this.pool);
     await equipment.update({id, ...args});
-    const toSave = await equipment.getForElasticSearchById(id);
-
-    const equipmentSearch = new EquipmentSearch(this.esClient);
-    await equipmentSearch.save(toSave);
 
     return res.send({message: 'Equipment updated.'});
   }
@@ -62,9 +49,6 @@ export class StaffEquipmentController {
   async delete(req: Request, res: Response) {
     const id =      Number(req.body.id);
     const ownerId = 1;
-
-    const equipmentSearch = new EquipmentSearch(this.esClient);
-    await equipmentSearch.delete(String(id));
 
     const recipeEquipment = new RecipeEquipment(this.pool);
     await recipeEquipment.deleteByEquipmentId(id);

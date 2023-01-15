@@ -2,7 +2,6 @@
 
 import { assert } from 'superstruct';
 
-import { IRecipeSearch } from '../../access/elasticsearch';
 import {
   ICreatingRecipe,
   IMakeRecipeEquipment,
@@ -29,8 +28,7 @@ export async function createRecipeService({
   recipeEquipment,
   recipeIngredient,
   recipeMethod,
-  recipeSubrecipe,
-  recipeSearch
+  recipeSubrecipe
 }: CreateRecipeService) {
   const createdRecipe = await recipe.create(creatingRecipe);
   const recipeId = createdRecipe.insertId;
@@ -83,12 +81,6 @@ export async function createRecipeService({
 
     await recipeSubrecipe.create(placeholders, values);
   }
-
-  // if public recipe
-  if (ownerId === 1) {
-    const toSave = await recipe.getForElasticSearchById(recipeId);
-    await recipeSearch.save(toSave);
-  }
 }
 
 interface CreateRecipeService {
@@ -105,6 +97,4 @@ interface CreateRecipeService {
   recipeIngredient: IRecipeIngredient;
   recipeMethod:     IRecipeMethod;
   recipeSubrecipe:  IRecipeSubrecipe;
-
-  recipeSearch:     IRecipeSearch;
 }

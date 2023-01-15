@@ -4,12 +4,7 @@ export class ExceptionError extends Error {
   code: (number | null);
   payload: object;
 
-  constructor(
-    code: (number|null),
-    name: string,
-    message: string,
-    payload: object
-  ) {
+  constructor(code: (number | null), name: string, message: string, payload: object) {
     super();
     this.code = code;
     this.name = name;

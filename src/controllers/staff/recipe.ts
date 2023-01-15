@@ -1,19 +1,15 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
-import { Client } from '@elastic/elasticsearch';
 
-import { RecipeSearch } from '../../access/elasticsearch';
 import { FavoriteRecipe, Recipe, RecipeEquipment, RecipeIngredient, RecipeMethod, RecipeSubrecipe, SavedRecipe } from '../../access/mysql';
 import { createRecipeService, updateRecipeService } from '../../lib/services';
 import { validRecipe } from '../../lib/validations';
 
 export class StaffRecipeController {
-  esClient: Client;
   pool: Pool;
 
-  constructor(esClient: Client, pool: Pool) {
-    this.esClient = esClient;
+  constructor(pool: Pool) {
     this.pool = pool;
     this.create = this.create.bind(this);
     this.edit =   this.edit.bind(this);
@@ -46,14 +42,12 @@ export class StaffRecipeController {
     const recipeEquipment =  new RecipeEquipment(this.pool);
     const recipeIngredient = new RecipeIngredient(this.pool);
     const recipeSubrecipe =  new RecipeSubrecipe(this.pool);
-    const recipeSearch =     new RecipeSearch(this.esClient);
     await createRecipeService({
       ownerId,
       creatingRecipe,
       methods, equipment, ingredients, subrecipes,
       recipe,
-      recipeMethod, recipeEquipment, recipeIngredient, recipeSubrecipe,
-      recipeSearch
+      recipeMethod, recipeEquipment, recipeIngredient, recipeSubrecipe
     });
 
     return res.send({message: 'Recipe created.'});
@@ -93,14 +87,12 @@ export class StaffRecipeController {
     const recipeEquipment =  new RecipeEquipment(this.pool);
     const recipeIngredient = new RecipeIngredient(this.pool);
     const recipeSubrecipe =  new RecipeSubrecipe(this.pool);
-    const recipeSearch =     new RecipeSearch(this.esClient);
     await updateRecipeService({
       recipeId: id, authorId, ownerId,
       updatingRecipe,
       methods, equipment, ingredients, subrecipes,
       recipe,
-      recipeMethod, recipeEquipment, recipeIngredient, recipeSubrecipe,
-      recipeSearch
+      recipeMethod, recipeEquipment, recipeIngredient, recipeSubrecipe
     });
 
     return res.send({message: 'Recipe updated.'});
@@ -111,9 +103,6 @@ export class StaffRecipeController {
     const id =       Number(req.body.id);
     const authorId = 1;
     const ownerId =  1;
-
-    const recipeSearch = new RecipeSearch(this.esClient);
-    await recipeSearch.delete(String(id));
 
     const favoriteRecipe =   new FavoriteRecipe(this.pool);
     const savedRecipe =      new SavedRecipe(this.pool);
