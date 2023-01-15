@@ -30,7 +30,10 @@ export class Equipment implements IEquipment {
     `;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
     const final = [];
-    for (let row of rows) final.push({index: {_index: 'equipment', _id: row.id}}, row);
+
+    for (let row of rows)
+      final.push({index: {_index: 'equipment', _id: row.id}}, row);
+      
     return final;
   }
   

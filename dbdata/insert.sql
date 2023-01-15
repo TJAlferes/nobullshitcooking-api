@@ -826,3 +826,11 @@ INSERT INTO recipe_methods (recipe_id, method_id) VALUES
 (10, 1),
 (11, 12),
 (12, 13);
+
+CREATE FULLTEXT INDEX fulltext_idx_name ON equipment (name);
+
+CREATE FULLTEXT INDEX fulltext_idx_fullname ON ingredient (fullname);
+
+CREATE FULLTEXT INDEX fulltext_idx_fullname ON product (fullname);
+
+CREATE FULLTEXT INDEX fulltext_idx_title ON recipe (title);

@@ -11,7 +11,7 @@ export class ProductSearch implements IProductSearch {
     this.delete = this.delete.bind(this);
   }
 
-  // deep pagination can kill performance, set upper bounds 
+  // deep pagination can kill performance, set upper bounds
   async find(searchBody: any) {
     const { body } = await this.client.search({index: "products", body: searchBody});
     return body;
@@ -24,47 +24,77 @@ export class ProductSearch implements IProductSearch {
         highlight: {
           fragment_size: 200,  // less?
           number_of_fragments: 1,
-          fields: {fullname: {}}
+          fields: {
+            fullname: {}
+          }
         },
         query: {
-          bool: {must: [{match: {fullname: {query: term, operator: "and"}}}]}
+          bool: {
+            must: [
+              {
+                match: {
+                  fullname: {
+                    query: term,
+                    operator: "and"
+                  }
+                }
+              }
+            ]
+          }
         }
       },
       from: 0,
       size: 5
     });
+
     return body;
   }
 
   // (staff only)
-  async save({ id, product_type_name, fullname, brand, variety, name, image }: ISavingProduct) {
-    const row = await this.client.index({index: 'products', id, body: {id, product_type_name, fullname, brand, variety, name, image}});
+  async save(product: ISavingProduct) {
+    const row = await this.client.index({
+      index: 'products',
+      id:    product.id,
+      body: {
+        id:                product.id,
+        product_type_name: product.product_type_name,
+        fullname:          product.fullname,
+        brand:             product.brand,
+        variety:           product.variety,
+        name:              product.name,
+        image:             product.image
+      }
+    });
+
     await this.client.indices.refresh({index: 'products'});
+
     return row;
   }
 
   // (staff only)
   async delete(id: string) {
     const row = await this.client.delete({index: 'products', id}, {ignore: [404]});
+
     await this.client.indices.refresh({index: 'products'});
+
     return row;
   }
 }
 
 export interface IProductSearch {
-  client: Client;
-  find(searchBody: any): any;  // finish
-  auto(term: string): any;  // finish
+  client:                        Client;
+  find(searchBody: any):         any;  // finish
+  auto(term: string):            any;  // finish
   save(product: ISavingProduct): void;
-  delete(id: string): void;
+  delete(id: string):            void;
 }
 
 interface ISavingProduct {
-  id: string;
+  id:                string;
   product_type_name: string;
-  fullname: string;
-  brand: string;
-  variety: string;
-  name: string;
-  image: string;
+  fullname:          string;
+  brand:             string;
+  variety:           string;
+  name:              string;
+  image:             string;
 }
