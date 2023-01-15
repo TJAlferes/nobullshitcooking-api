@@ -10,14 +10,13 @@ module.exports = function(api) {
       }
     ]
   ];
-  const plugins = [
+  /*const plugins = [
     [
       "@babel/plugin-transform-runtime",
       {"regenerator": true}
-    ],
-    "@babel/plugin-proposal-class-properties",
-    "@babel/plugin-proposal-object-rest-spread",
-  ];
+    ]
+  ];*/
   //"sourceType": "unambiguous"
-  return {presets, plugins};
+  //return {presets, plugins};
+  return {presets};
 };
