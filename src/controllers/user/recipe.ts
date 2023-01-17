@@ -66,17 +66,39 @@ export class UserRecipeController {
     const cuisineId =    Number(req.body.recipeInfo.cuisineId);
     const {
       ownership,
-      title, description, activeTime, totalTime, directions,
-      methods, equipment, ingredients, subrecipes,
-      recipeImage, equipmentImage, ingredientsImage, cookingImage, video
-    }= req.body.recipeInfo;
+      title,
+      description,
+      activeTime,
+      totalTime,
+      directions,
+      methods,
+      equipment,
+      ingredients,
+      subrecipes,
+      recipeImage,
+      equipmentImage,
+      ingredientsImage,
+      cookingImage,
+      video
+    } = req.body.recipeInfo;
     const authorId = req.session.userInfo!.id;
     const ownerId = (ownership === "private") ? req.session.userInfo!.id : 1;
 
     const creatingRecipe = {
-      recipeTypeId, cuisineId, authorId, ownerId,
-      title, description, activeTime, totalTime, directions,
-      recipeImage, equipmentImage, ingredientsImage, cookingImage, video
+      recipeTypeId,
+      cuisineId,
+      authorId,
+      ownerId,
+      title,
+      description,
+      activeTime,
+      totalTime,
+      directions,
+      recipeImage,
+      equipmentImage,
+      ingredientsImage,
+      cookingImage,
+      video
     };
     assert(creatingRecipe, validRecipe);
 
@@ -86,11 +108,16 @@ export class UserRecipeController {
     const recipeIngredient = new RecipeIngredient(this.pool);
     const recipeSubrecipe =  new RecipeSubrecipe(this.pool);
     await createRecipeService({
-      ownerId,
       creatingRecipe,
-      methods, equipment, ingredients, subrecipes,
+      methods,
+      equipment,
+      ingredients,
+      subrecipes,
       recipe,
-      recipeMethod, recipeEquipment, recipeIngredient, recipeSubrecipe
+      recipeMethod,
+      recipeEquipment,
+      recipeIngredient,
+      recipeSubrecipe
     });
 
     return res.send({message: 'Recipe created.'});
@@ -122,18 +149,40 @@ export class UserRecipeController {
     const cuisineId =    Number(req.body.recipeInfo.cuisineId);
     const {
       ownership,
-      title, description, activeTime, totalTime, directions,
-      methods, equipment, ingredients, subrecipes,
-      recipeImage, equipmentImage, ingredientsImage, cookingImage, video
+      title,
+      description,
+      activeTime,
+      totalTime,
+      directions,
+      methods,
+      equipment,
+      ingredients,
+      subrecipes,
+      recipeImage,
+      equipmentImage,
+      ingredientsImage,
+      cookingImage,
+      video
     }= req.body.recipeInfo;
     const authorId = req.session.userInfo!.id;
     const ownerId = (ownership === "private") ? req.session.userInfo!.id : 1;
     if (typeof id === "undefined") return res.send({message: 'Invalid recipe ID!'});
 
     const updatingRecipe = {
-      recipeTypeId, cuisineId, authorId, ownerId,
-      title, description, activeTime, totalTime, directions,
-      recipeImage, equipmentImage, ingredientsImage, cookingImage, video
+      recipeTypeId,
+      cuisineId,
+      authorId,
+      ownerId,
+      title,
+      description,
+      activeTime,
+      totalTime,
+      directions,
+      recipeImage,
+      equipmentImage,
+      ingredientsImage,
+      cookingImage,
+      video
     };
     assert(updatingRecipe, validRecipe);
 
@@ -143,11 +192,17 @@ export class UserRecipeController {
     const recipeIngredient = new RecipeIngredient(this.pool);
     const recipeSubrecipe =  new RecipeSubrecipe(this.pool);
     await updateRecipeService({
-      recipeId: id, authorId, ownerId,
+      recipeId: id,
       updatingRecipe,
-      methods, equipment, ingredients, subrecipes,
+      methods,
+      equipment,
+      ingredients,
+      subrecipes,
       recipe,
-      recipeMethod, recipeEquipment, recipeIngredient, recipeSubrecipe
+      recipeMethod,
+      recipeEquipment,
+      recipeIngredient,
+      recipeSubrecipe
     });
 
     return res.send({message: 'Recipe updated.'});

@@ -16,13 +16,12 @@ import { Redis }                                    from 'ioredis';
 import { Pool }                                     from 'mysql2/promise';
 import { Server as SocketIOServer, Socket }         from 'socket.io';
 import { ExtendedError }                            from 'socket.io/dist/namespace';
-import { createAdapter }                            from 'socket.io-redis';
+import { createAdapter }                            from '@socket.io/redis-adapter';
 
 import { sendMessage, sendPrivateMessage, joinRoom, disconnecting, getOnlineFriends, getUsersInRoom, rejoinRoom, IMessage } from './chat';
 import { Friendship, User } from './access/mysql';
 import { ChatStore }        from './access/redis';
 import { chatCleanUp }      from './lib/jobs/chatCleanUp';
-import { bulkUp }           from './lib/jobs/searchBulkUp';
 import { routesInit }       from './routes';
 
 export function appServer(pool: Pool, redisClients: RedisClients) {
@@ -57,7 +56,7 @@ export function appServer(pool: Pool, redisClients: RedisClients) {
   });
   const { pubClient, subClient } = redisClients;  //pubClient.duplicate()
 
-  io.adapter(createAdapter({pubClient, subClient}));
+  io.adapter(createAdapter(pubClient, subClient));
 
   // middleware executed for every incoming socket
   io.use((socket: IUberSocket, next: Next) => {
@@ -166,18 +165,6 @@ export function appServer(pool: Pool, redisClients: RedisClients) {
     app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
       res.status(500).json({error});
     });
-  }
-
-  // move this, and create startup conditional
-  if (process.env.NODE_ENV === 'development') {
-    try {
-      setTimeout(() => {
-        console.log('Now running bulkUp.');
-        bulkUp(pool);
-      }, 40000);  // at the 40 second mark
-    } catch(err) {
-      console.error(err);
-    }
   }
 
   return httpServer;

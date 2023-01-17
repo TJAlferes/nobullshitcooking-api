@@ -22,39 +22,22 @@ import { supplierRouter } from './supplier';
 
 // TO DO: add grocer
 export function routesInit(app: Application, pool: Pool) {
-  const staff =          staffRouter(pool);
-  const user =           userRouter(pool);
-  const cuisine =        cuisineRouter(pool);
-  const dataInit =       dataInitRouter(pool);
-  const equipment =      equipmentRouter(pool);
-  const equipmentType =  equipmentTypeRouter(pool);
-  const favoriteRecipe = favoriteRecipeRouter(pool);
-  const ingredient =     ingredientRouter(pool);
-  const ingredientType = ingredientTypeRouter(pool);
-  const measurement =    measurementRouter(pool);
-  const method =         methodRouter(pool);
-  const profile =        profileRouter(pool);
-  const recipe =         recipeRouter(pool);
-  const recipeType =     recipeTypeRouter(pool);
-  const search =         searchRouter(pool);
-  const supplier =       supplierRouter(pool);
-  
   app.get('/', (req, res) => res.send(`No Bullshit Cooking Backend API. Documentation at https://github.com/tjalferes/nobullshitcooking-api`));
-
-  app.use('/staff',           staff);
-  app.use('/user',            user);
-  app.use('/cuisine',         cuisine);
-  app.use('/data-init',       dataInit);
-  app.use('/equipment',       equipment);
-  app.use('/equipment-type',  equipmentType);
-  app.use('/favorite-recipe', favoriteRecipe);
-  app.use('/ingredient',      ingredient);
-  app.use('/ingredient-type', ingredientType);
-  app.use('/measurement',     measurement);
-  app.use('/method',          method);
-  app.use('/profile',         profile);
-  app.use('/recipe',          recipe);
-  app.use('/recipe-type',     recipeType);
-  app.use('/search',          search);
-  app.use('/supplier',        supplier);
+  
+  app.use('/staff',           staffRouter(pool));
+  app.use('/user',            userRouter(pool));
+  app.use('/cuisine',         cuisineRouter(pool));
+  app.use('/data-init',       dataInitRouter(pool));
+  app.use('/equipment',       equipmentRouter(pool));
+  app.use('/equipment-type',  equipmentTypeRouter(pool));
+  app.use('/favorite-recipe', favoriteRecipeRouter(pool));
+  app.use('/ingredient',      ingredientRouter(pool));
+  app.use('/ingredient-type', ingredientTypeRouter(pool));
+  app.use('/measurement',     measurementRouter(pool));
+  app.use('/method',          methodRouter(pool));
+  app.use('/profile',         profileRouter(pool));
+  app.use('/recipe',          recipeRouter(pool));
+  app.use('/recipe-type',     recipeTypeRouter(pool));
+  app.use('/search',          searchRouter(pool));
+  app.use('/supplier',        supplierRouter(pool));
 }

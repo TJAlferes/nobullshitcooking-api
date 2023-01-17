@@ -37,7 +37,7 @@ export async function emailUser(from: string, to: string, subject: string, body_
   try {
     const data = await client.send(command);
     console.log("Email sent! Data: ", data);
-  } catch (error) {
+  } catch (error: any) {
     console.log(error.message);
   } finally {}
 }

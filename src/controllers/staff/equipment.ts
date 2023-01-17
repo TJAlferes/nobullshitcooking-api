@@ -16,10 +16,10 @@ export class StaffEquipmentController {
   }
   
   async create(req: Request, res: Response) {
-    const equipmentTypeId = Number(req.body.equipmentInfo.equipmentTypeId);
+    const equipmentTypeId =              Number(req.body.equipmentInfo.equipmentTypeId);
     const { name, description, image } = req.body.equipmentInfo;
-    const authorId = 1;
-    const ownerId =  1;
+    const authorId =                     1;
+    const ownerId =                      1;
 
     const args = {equipmentTypeId, authorId, ownerId, name, description, image};
     assert(args, validEquipment);
@@ -31,11 +31,11 @@ export class StaffEquipmentController {
   }
 
   async update(req: Request, res: Response) {
-    const id =              Number(req.body.equipmentInfo.id);
-    const equipmentTypeId = Number(req.body.equipmentInfo.equipmentTypeId);
+    const id =                           Number(req.body.equipmentInfo.id);
+    const equipmentTypeId =              Number(req.body.equipmentInfo.equipmentTypeId);
     const { name, description, image } = req.body.equipmentInfo;
-    const authorId = 1;
-    const ownerId =  1;
+    const authorId =                     1;
+    const ownerId =                      1;
 
     const args = {equipmentTypeId, authorId, ownerId, name, description, image};
     assert(args, validEquipment);

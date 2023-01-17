@@ -18,7 +18,6 @@ import {
 import { validRecipeEquipment, validRecipeIngredient, validRecipeMethod, validRecipeSubrecipe } from '../validations';
 
 export async function createRecipeService({
-  ownerId,
   creatingRecipe,
   equipment,
   ingredients,
@@ -84,8 +83,6 @@ export async function createRecipeService({
 }
 
 interface CreateRecipeService {
-  ownerId:          number;
-
   creatingRecipe:   ICreatingRecipe;
   equipment:        IMakeRecipeEquipment[];
   ingredients:      IMakeRecipeIngredient[];

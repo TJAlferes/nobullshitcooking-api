@@ -50,9 +50,6 @@ export class StaffIngredientController {
     const id =      Number(req.body.id);
     const ownerId = 1;
 
-    const ingredientSearch = new IngredientSearch(this.esClient);
-    await ingredientSearch.delete(String(id));
-
     const recipeIngredient = new RecipeIngredient(this.pool);
     await recipeIngredient.deleteByIngredientId(id);
 

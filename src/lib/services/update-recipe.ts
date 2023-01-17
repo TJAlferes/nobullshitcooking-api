@@ -19,8 +19,6 @@ import { validRecipeEquipment, validRecipeIngredient, validRecipeMethod, validRe
 
 export async function updateRecipeService({
   recipeId,
-  authorId,
-  ownerId,
   updatingRecipe,
   equipment,
   ingredients,
@@ -32,7 +30,7 @@ export async function updateRecipeService({
   recipeMethod,
   recipeSubrecipe
 }: UpdateRecipeService) {
-  await recipe.update({id: recipeId, ...updatingRecipe}, authorId, ownerId);
+  await recipe.update({id: recipeId, ...updatingRecipe});
 
   /*
   NOTE: order matters! (because these inserts must match the database tables column orders)
@@ -82,8 +80,6 @@ export async function updateRecipeService({
 
 interface UpdateRecipeService {
   recipeId:         number;
-  authorId:         number;
-  ownerId:          number;
 
   updatingRecipe:   ICreatingRecipe;
   equipment:        IMakeRecipeEquipment[];
