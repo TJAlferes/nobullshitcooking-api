@@ -15,7 +15,6 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: pass
       MYSQL_PASSWORD: pass
-      MYSQL_USER: root
       MYSQL_DATABASE: nobsc
     ports:
       - "3306:3306"
