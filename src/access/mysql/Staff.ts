@@ -5,8 +5,8 @@ export class Staff implements IStaff {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.getByEmail = this.getByEmail.bind(this);  // sensitive
-    this.getByName =  this.getByName.bind(this);  // sensitive
+    this.getByEmail = this.getByEmail.bind(this);  // security sensitive, do NOT send back in the api response
+    this.getByName =  this.getByName.bind(this);   // security sensitive, do NOT send back in the api response
     this.viewById =   this.viewById.bind(this);
     this.viewByName = this.viewByName.bind(this);
     this.create =     this.create.bind(this);
@@ -67,27 +67,27 @@ export class Staff implements IStaff {
 type Row = Promise<RowDataPacket>;
 
 export interface IStaff {
-  pool: Pool;
-  getByEmail(email: string): Row;
-  getByName(staffname: string): Row;
-  viewById(id: number): Row;
-  viewByName(username: string): Row;
+  pool:                          Pool;
+  getByEmail(email: string):     Row;
+  getByName(staffname: string):  Row;
+  viewById(id: number):          Row;
+  viewByName(username: string):  Row;
   create(staff: ICreatingStaff): Row;
-  verify(email: string): Row;
+  verify(email: string):         Row;
   update(staff: IUpdatingStaff): Row;
-  delete(id: number): Row;
+  delete(id: number):            Row;
 }
 
 interface ICreatingStaff {
-  email: string;
-  pass: string;
-  staffname: string;
+  email:            string;
+  pass:             string;
+  staffname:        string;
   confirmationCode: string;
 }
 
 interface IUpdatingStaff {
-  id: number;
-  email: string;
-  pass: string;
+  id:        number;
+  email:     string;
+  pass:      string;
   staffname: string;
 }

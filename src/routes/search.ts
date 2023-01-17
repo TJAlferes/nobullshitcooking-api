@@ -11,13 +11,13 @@ const router = Router();
 export function searchRouter(pool: Pool) {
   const controller = new SearchController(pool);
 
-  router.post('/auto/equipment',   catchExceptions(controller.autoEquipment));
-  router.post('/auto/ingredients', catchExceptions(controller.autoIngredients));
-  router.post('/auto/recipes',     catchExceptions(controller.autoRecipes));
+  //router.post('/auto/equipment',   catchExceptions(controller.autoEquipment));
+  //router.post('/auto/ingredients', catchExceptions(controller.autoIngredients));
+  //router.post('/auto/recipes',     catchExceptions(controller.autoRecipes));
   
-  router.post('/find/equipment',   catchExceptions(controller.findEquipment));
-  router.post('/find/ingredients', catchExceptions(controller.findIngredients));
-  router.post('/find/recipes',     catchExceptions(controller.findRecipes));
+  router.post('/equipment',   catchExceptions(controller.searchEquipment));
+  router.post('/ingredients', catchExceptions(controller.searchIngredients));
+  router.post('/recipes',     catchExceptions(controller.searchRecipes));
 
   return router;
 }

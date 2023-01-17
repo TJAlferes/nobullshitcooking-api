@@ -4,13 +4,13 @@ export class Plan implements IPlan {
   pool: Pool;
 
   constructor(pool: Pool) {
-    this.pool = pool;
-    this.view =               this.view.bind(this);
-    this.viewById =           this.viewById.bind(this);
-    this.create =             this.create.bind(this);
-    this.update =             this.update.bind(this);
-    this.deleteById =         this.deleteById.bind(this);
-    this.deleteAllByOwnerId = this.deleteAllByOwnerId.bind(this);
+    this.pool =       pool;
+    this.view =       this.view.bind(this);
+    this.viewById =   this.viewById.bind(this);
+    this.create =     this.create.bind(this);
+    this.update =     this.update.bind(this);
+    this.delete =     this.delete.bind(this);
+    this.deleteById = this.deleteById.bind(this);
   }
   
   async view(ownerId: number) {
@@ -37,37 +37,37 @@ export class Plan implements IPlan {
     return row;
   }
 
+  async delete(ownerId: number) {
+    const sql = `DELETE FROM plans WHERE owner_id = ?`;
+    await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
+  }
+
   async deleteById(id: number, ownerId: number) {
     const sql = `DELETE FROM plans WHERE owner_id = ? AND id = ? LIMIT 1`;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId, id]);
     return row;
-  }
-
-  async deleteAllByOwnerId(ownerId: number) {
-    const sql = `DELETE FROM plans WHERE owner_id = ?`;
-    await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
   }
 }
 
 type Data = Promise<RowDataPacket[]>;
 
 export interface IPlan {
-  pool: Pool;
-  view(ownerId: number): Data;
-  viewById(id: number, ownerId: number): Data;
-  create(plan: ICreatingPlan): Data;
-  update(plan: IUpdatingPlan): Data;
+  pool:                                    Pool;
+  view(ownerId: number):                   Data;
+  viewById(id: number, ownerId: number):   Data;
+  create(plan: ICreatingPlan):             Data;
+  update(plan: IUpdatingPlan):             Data;
+  delete(ownerId: number):                 void;
   deleteById(id: number, ownerId: number): Data;
-  deleteAllByOwnerId(ownerId: number): void;
 }
 
-interface ICreatingPlan {
+type ICreatingPlan = {
   authorId: number;
-  ownerId: number;
-  name: string;
-  data: string;
-}
+  ownerId:  number;
+  name:     string;
+  data:     string;
+};
 
-interface IUpdatingPlan extends ICreatingPlan {
+type IUpdatingPlan = ICreatingPlan & {
   id: number;
-}
+};

@@ -40,7 +40,6 @@ export class StaffProductController {
 
     const product = new Product(this.pool);
     await product.update({id, ...args});
-    await product.getForElasticSearchById(id);
 
     return res.send({message: 'Product updated.'});
   }

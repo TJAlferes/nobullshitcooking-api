@@ -5,21 +5,20 @@ export class Ingredient implements IIngredient {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.getForElasticSearch =     this.getForElasticSearch.bind(this);
-    this.getForElasticSearchById = this.getForElasticSearchById.bind(this);
-    this.view =                    this.view.bind(this);
-    this.viewById =                this.viewById.bind(this);
-    this.create =                  this.create.bind(this);
-    this.update =                  this.update.bind(this);
-    this.delete =                  this.delete.bind(this);
-    this.deleteById =              this.deleteById.bind(this);
+    this.search =     this.search.bind(this);
+    this.view =       this.view.bind(this);
+    this.viewById =   this.viewById.bind(this);
+    this.create =     this.create.bind(this);
+    this.update =     this.update.bind(this);
+    this.delete =     this.delete.bind(this);
+    this.deleteById = this.deleteById.bind(this);
   }
 
-  async getForElasticSearch() {
-    const ownerId = 1;  // only public ingredients goes into ElasticSearch
+  async search(term: string) {
+    const ownerId = 1;  // only public ingredients are searchable
     const sql = `
       SELECT
-        CAST(i.id AS CHAR),
+        i.id,
         t.name AS ingredient_type_name,
         i.brand,
         i.variety,
@@ -32,29 +31,7 @@ export class Ingredient implements IIngredient {
       WHERE i.owner_id = ?
     `;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
-    const final = [];
-    for (let row of rows) final.push({index: {_index: 'ingredients', _id: row.id}}, {...row});
-    return final;
-  }
-
-  async getForElasticSearchById(id: number) {
-    const ownerId = 1;  // only public ingredients goes into ElasticSearch
-    const sql = `
-      SELECT
-        CAST(i.id AS CHAR),
-        t.name AS ingredient_type_name,
-        i.brand,
-        i.variety,
-        i.name,
-        i.fullname,
-        i.description,
-        i.image
-      FROM ingredients i
-      INNER JOIN ingredient_types t ON t.id = i.ingredient_type_id
-      WHERE i.id = ? i.owner_id = ?
-    `;
-    const [ [ row ] ] = await this.pool.execute<RowDataPacket[]>(sql, [id, ownerId]);
-    return row as ISavingIngredient;
+    return rows;
   }
 
   async view(authorId: number, ownerId: number) {
@@ -153,18 +130,17 @@ type Data = Promise<RowDataPacket[]>;
 type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
 
 export interface IIngredient {
-  pool: Pool;
-  getForElasticSearch(): any;
-  getForElasticSearchById(id: number): Promise<ISavingIngredient>;
-  view(authorId: number, ownerId: number): Data;
+  pool:                                                    Pool;
+  search(term: string):                                    Data;
+  view(authorId: number, ownerId: number):                 Data;
   viewById(id: number, authorId: number, ownerId: number): Data;
-  create(ingredient: ICreatingIngredient): DataWithHeader;
-  update(ingredient: IUpdatingIngredient): Data;
-  delete(ownerId: number): void;
-  deleteById(id: number, ownerId: number): Data;
+  create(ingredient: ICreatingIngredient):                 DataWithHeader;
+  update(ingredient: IUpdatingIngredient):                 Data;
+  delete(ownerId: number):                                 void;
+  deleteById(id: number, ownerId: number):                 Data;
 }
 
-interface ICreatingIngredient {
+type ICreatingIngredient = {
   ingredientTypeId: number;
   authorId: number;
   ownerId: number;
@@ -173,19 +149,19 @@ interface ICreatingIngredient {
   name: string;
   description: string;
   image: string;
-}
+};
 
-interface IUpdatingIngredient extends ICreatingIngredient {
+type IUpdatingIngredient = ICreatingIngredient & {
   id: number;
-}
+};
 
-interface ISavingIngredient {
-  id: string;
+/*interface ISavingIngredient {
+  id:                   number;
   ingredient_type_name: string;
-  fullname: string;
-  brand: string;
-  variety: string;
-  name: string;
-  description: string;
-  image: string;
-}
+  fullname:             string;
+  brand:                string;
+  variety:              string;
+  name:                 string;
+  description:          string;
+  image:                string;
+}*/

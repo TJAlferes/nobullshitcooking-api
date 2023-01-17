@@ -5,8 +5,8 @@ export class User implements IUser {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.getByEmail = this.getByEmail.bind(this);  // sensitive
-    this.getByName =  this.getByName.bind(this);  // sensitive
+    this.getByEmail = this.getByEmail.bind(this);  // security sensitive, do NOT send back in the api response
+    this.getByName =  this.getByName.bind(this);   // security sensitive, do NOT send back in the api response
     this.viewById =   this.viewById.bind(this);
     this.viewByName = this.viewByName.bind(this);
     this.create =     this.create.bind(this);
@@ -67,27 +67,27 @@ export class User implements IUser {
 type Row = Promise<RowDataPacket>;
 
 export interface IUser {
-  pool: Pool;
-  getByEmail(email: string): Row;
-  getByName(username: string): Row;
-  viewById(userId: number): Row;
+  pool:                         Pool;
+  getByEmail(email: string):    Row;
+  getByName(username: string):  Row;
+  viewById(userId: number):     Row;
   viewByName(username: string): Row;
-  create(user: ICreatingUser): Row;
-  verify(email: string): Row;
-  update(user: IUpdatingUser): Row;
-  delete(userId: number): Row;
+  create(user: ICreatingUser):  Row;
+  verify(email: string):        Row;
+  update(user: IUpdatingUser):  Row;
+  delete(userId: number):       Row;
 }
 
 interface ICreatingUser {
-  email: string;
-  pass: string;
-  username: string;
+  email:            string;
+  pass:             string;
+  username:         string;
   confirmationCode: string;
 }
 
 interface IUpdatingUser {
-  id: number;
-  email: string;
-  pass: string;
+  id:       number;
+  email:    string;
+  pass:     string;
   username: string;
 }

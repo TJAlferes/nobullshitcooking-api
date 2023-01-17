@@ -144,29 +144,30 @@ export class Friendship implements IFriendship {
   }
 }
 
-type Row = Promise<RowDataPacket>;
+type Row =  Promise<RowDataPacket>;
+
 type Rows = Promise<RowDataPacket[]>;
 
 export interface IFriendship {
-  pool: Pool;
-  getByFriendId(userId: number, friendId: number): Row;
+  pool:                                               Pool;
+  getByFriendId(userId: number, friendId: number):    Row;
   checkIfBlockedBy(userId: number, friendId: number): Row;
-  view(userId: number): Rows;
-  viewAccepted(userId: number): Rows;
-  viewPending(userId: number): Rows;
-  viewBlocked(userId: number): Rows;
-  create(friendship: ICreatingFriendship): Row;
-  accept(userId: number, friendId: number): Row;
-  reject(userId: number, friendId: number): Row;
-  delete(userId: number, friendId: number): Row;
-  block(userId: number, friendId: number): Row;
-  unblock(userId: number, friendId: number): Row;
-  deleteAllByUserId(userId: number): void;
+  view(userId: number):                               Rows;
+  viewAccepted(userId: number):                       Rows;
+  viewPending(userId: number):                        Rows;
+  viewBlocked(userId: number):                        Rows;
+  create(friendship: ICreatingFriendship):            Row;
+  accept(userId: number, friendId: number):           Row;
+  reject(userId: number, friendId: number):           Row;
+  delete(userId: number, friendId: number):           Row;
+  block(userId: number, friendId: number):            Row;
+  unblock(userId: number, friendId: number):          Row;
+  deleteAllByUserId(userId: number):                  void;
 }
 
-interface ICreatingFriendship {
-  userId: number;
+type ICreatingFriendship = {
+  userId:   number;
   friendId: number;
-  status1: string;
-  status2: string;
-}
+  status1:  string;
+  status2:  string;
+};

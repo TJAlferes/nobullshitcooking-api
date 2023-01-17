@@ -135,10 +135,11 @@ export class UserAuthController {
     const user =             new User(this.pool);
 
     // NOTE: Due to foreign key constraints, deletes must be in this order.
+    // WHAT? Do this in the DB? Not here?
 
     await Promise.all([
       friendship.deleteAllByUserId(userId),
-      plan.deleteAllByOwnerId(userId),
+      plan.delete(userId),
       favoriteRecipe.deleteAllByUserId(userId),
       savedRecipe.deleteAllByUserId(userId)
     ]);

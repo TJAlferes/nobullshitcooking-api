@@ -4,22 +4,21 @@ export class Equipment implements IEquipment {
   pool: Pool;
   
   constructor(pool: Pool) {
-    this.pool = pool;
-    this.getForElasticSearch =     this.getForElasticSearch.bind(this);
-    this.getForElasticSearchById = this.getForElasticSearchById.bind(this);
-    this.view =                    this.view.bind(this);
-    this.viewById =                this.viewById.bind(this);
-    this.create =                  this.create.bind(this);
-    this.update =                  this.update.bind(this);
-    this.delete =                  this.delete.bind(this);
-    this.deleteById =              this.deleteById.bind(this);
+    this.pool =       pool;
+    this.search =     this.search.bind(this);
+    this.view =       this.view.bind(this);
+    this.viewById =   this.viewById.bind(this);
+    this.create =     this.create.bind(this);
+    this.update =     this.update.bind(this);
+    this.delete =     this.delete.bind(this);
+    this.deleteById = this.deleteById.bind(this);
   }
 
-  async getForElasticSearch() {
-    const ownerId = 1;  // only public equipment goes into ElasticSearch
+  async search(term: string) {
+    const ownerId = 1;  // only public equipment are searchable
     const sql = `
       SELECT
-        CAST(e.id AS CHAR),
+        e.id,
         t.name AS equipment_type_name,
         e.name,
         e.description,
@@ -29,29 +28,7 @@ export class Equipment implements IEquipment {
       WHERE e.owner_id = ?
     `;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
-    const final = [];
-
-    for (let row of rows)
-      final.push({index: {_index: 'equipment', _id: row.id}}, row);
-      
-    return final;
-  }
-  
-  async getForElasticSearchById(id: number) {
-    const ownerId = 1;  // only public equipment goes into ElasticSearch
-    const sql = `
-      SELECT
-        CAST(e.id AS CHAR),
-        t.name AS equipment_type_name,
-        e.name,
-        e.description,
-        e.image
-      FROM equipment e
-      INNER JOIN equipment_types t ON t.id = e.equipment_type_id
-      WHERE e.id = ? e.owner_id = ?
-    `;
-    const [ [ row ] ] = await this.pool.execute<RowDataPacket[]>(sql, [id, ownerId]);
-    return row as ISavingEquipment;
+    return rows;
   }
 
   async view(authorId: number, ownerId: number) {
@@ -130,34 +107,33 @@ type Data = Promise<RowDataPacket[]>;
 type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
 
 export interface IEquipment {
-  pool: Pool;
-  getForElasticSearch(): any;
-  getForElasticSearchById(id: number): Promise<ISavingEquipment>;
-  view(authorId: number, ownerId: number): Data;
+  pool:                                                    Pool;
+  search(term: string):                                    Data;
+  view(authorId: number, ownerId: number):                 Data;
   viewById(id: number, authorId: number, ownerId: number): Data;
-  create(equipment: ICreatingEquipment): DataWithHeader;
-  update(equipment: IUpdatingEquipment): Data;
-  delete(ownerId: number): void;
-  deleteById(id: number, ownerId: number): Data;
+  create(equipment: ICreatingEquipment):                   DataWithHeader;
+  update(equipment: IUpdatingEquipment):                   Data;
+  delete(ownerId: number):                                 void;
+  deleteById(id: number, ownerId: number):                 Data;
 }
 
-interface ICreatingEquipment {
+type ICreatingEquipment = {
   equipmentTypeId: number;
-  authorId: number;
-  ownerId: number;
-  name: string;
-  description: string;
-  image: string;
-}
+  authorId:        number;
+  ownerId:         number;
+  name:            string;
+  description:     string;
+  image:           string;
+};
 
-interface IUpdatingEquipment extends ICreatingEquipment {
+type IUpdatingEquipment = ICreatingEquipment & {
   id: number;
-}
+};
 
-interface ISavingEquipment {
-  id: string;
+/*interface ISavingEquipment {
+  id:                  number;
   equipment_type_name: string;
-  name: string;
-  description: string;
-  image: string;
-}
+  name:                string;
+  description:         string;
+  image:               string;
+}*/
