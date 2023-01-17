@@ -5,6 +5,7 @@ import connectRedis, { Client }                     from 'connect-redis';
 import cookie                                       from 'cookie';
 import cookieParser                                 from 'cookie-parser';
 import cors                                         from 'cors';
+// is csrf protection still necessary? if so, find a solution
 import express, { Request, Response, NextFunction } from 'express';
 //import { pinoHttp }                                 from 'pino-http';
 import expressRateLimit                             from 'express-rate-limit';  // Use https://github.com/animir/node-rate-limiter-flexible instead?
@@ -28,16 +29,16 @@ export function appServer(pool: Pool, redisClients: RedisClients) {
   const app =        express();
   const httpServer = createServer(app);
 
-  if (app.get('env') === 'production') app.set('trust proxy', 1);  // trust first proxy
+  if (app.get('env') === 'production') app.set('trust proxy', 1);  // trust first proxy  // insufficient?
   
   const RedisStore = connectRedis(expressSession);
+
   const redisSession = new RedisStore({client: redisClients.sessionClient});
-  // httpOnly: if true, client-side JS can NOT see the cookie in document.cookie
-  // maxAge:   86400000 milliseconds = 1 day
+
   const options: SessionOptions = {
     cookie: (app.get('env') === 'production')
-      ? {httpOnly: true,  maxAge: 86400000, sameSite: true,  secure: true}
-      : {httpOnly: false, maxAge: 86400000, sameSite: false, secure: false},
+      ? {httpOnly: true,  maxAge: 86400000, sameSite: true,  secure: true}    // httpOnly: if true, client-side JS can NOT see the cookie in document.cookie
+      : {httpOnly: false, maxAge: 86400000, sameSite: false, secure: false},  // maxAge:   86400000 milliseconds = 1 day
     resave:            true,
     saveUninitialized: true,  // false?
     secret:            process.env.SESSION_SECRET || "secret",
@@ -58,7 +59,7 @@ export function appServer(pool: Pool, redisClients: RedisClients) {
 
   io.adapter(createAdapter(pubClient, subClient));
 
-  // middleware executed for every incoming socket
+  // middleware executed for every incoming socket  // (January 17th 2023) no longer sufficient?
   io.use((socket: IUberSocket, next: Next) => {
     const parsedCookie = cookie.parse(socket.request.headers.cookie!);
     const sessionId =    cookieParser.signedCookie(parsedCookie['connect.sid'], process.env.SESSION_SECRET!);
@@ -66,7 +67,7 @@ export function appServer(pool: Pool, redisClients: RedisClients) {
     if ( (!sessionId) || (parsedCookie['connect.sid'] === sessionId) ) return next(new Error('Not authenticated.'));
 
     redisSession.get(sessionId, (err, session) => {
-      if (!session || !session.userInfo || !session.userInfo.id) return next(new Error('Not authenticated.'));
+      if (!session?.userInfo?.id) return next(new Error('Not authenticated.'));
       
       socket.sessionId = sessionId;
       socket.userInfo =  session.userInfo;
@@ -183,13 +184,13 @@ type Next = (err?: ExtendedError | undefined) => void;
 
 // change to socket data ? see typescript section of docs
 // or to socket auth ?
-interface IUberSocket extends Socket {
+type IUberSocket = Socket & {
   sessionId?: string;
   userInfo?: {
     id?:       number;
     username?: string;
   }
-}
+};
 
 interface IClientToServerEvents {
   // Users

@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { body } from 'express-validator';
 import { Pool } from 'mysql2/promise';
 
 import { SearchController } from '../controllers';
@@ -11,13 +12,13 @@ const router = Router();
 export function searchRouter(pool: Pool) {
   const controller = new SearchController(pool);
 
-  //router.post('/auto/equipment',   catchExceptions(controller.autoEquipment));
-  //router.post('/auto/ingredients', catchExceptions(controller.autoIngredients));
-  //router.post('/auto/recipes',     catchExceptions(controller.autoRecipes));
+  //router.post('/auto/equipment',   [body('term').not().isEmpty().trim().escape()] catchExceptions(controller.autoEquipment));
+  //router.post('/auto/ingredients', [body('term').not().isEmpty().trim().escape()] catchExceptions(controller.autoIngredients));
+  //router.post('/auto/recipes',     [body('term').not().isEmpty().trim().escape()] catchExceptions(controller.autoRecipes));
   
-  router.post('/equipment',   catchExceptions(controller.searchEquipment));
-  router.post('/ingredients', catchExceptions(controller.searchIngredients));
-  router.post('/recipes',     catchExceptions(controller.searchRecipes));
+  router.post('/equipment',   [body('term').not().isEmpty().trim().escape()], catchExceptions(controller.searchEquipment));
+  router.post('/ingredients', [body('term').not().isEmpty().trim().escape()], catchExceptions(controller.searchIngredients));
+  router.post('/recipes',     [body('term').not().isEmpty().trim().escape()], catchExceptions(controller.searchRecipes));
 
   return router;
 }
