@@ -6,7 +6,7 @@ import cookie                                       from 'cookie';
 import cookieParser                                 from 'cookie-parser';
 import cors                                         from 'cors';
 import express, { Request, Response, NextFunction } from 'express';
-//import expressPinoLogger                            from 'express-pino-logger';
+//import { pinoHttp }                                 from 'pino-http';
 import expressRateLimit                             from 'express-rate-limit';  // Use https://github.com/animir/node-rate-limiter-flexible instead?
 import expressSession, { SessionOptions }           from 'express-session';
 import helmet                                       from 'helmet';

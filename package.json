@@ -1,38 +1,19 @@
 {
-  "name": "nobullshitcooking-api",
-  "version": "1.0.0",
+  "name":        "nobullshitcooking-api",
+  "author":      "T. J. Alferes",
   "description": "API for No Bullshit Cooking",
+  "version":     "1.0.0",
+  "license":     "ISC",
   "main": "index.js",
   "scripts": {
-    "dev-ts": "ts-node src/index.ts",
-    "test": "jest --color --detectOpenHandles",
-    "start": "node dist/index.js",
-    "prod-start": "node build/bundle.js",
-    "build-ts": "tsc -p .",
+    "dev-ts":        "ts-node src/index.ts",
+    "test":          "jest --color --detectOpenHandles",
+    "start":         "node dist/index.js",
+    "prod-start":    "node build/bundle.js",
+    "build-ts":      "tsc -p .",
     "build-webpack": "webpack --config webpack.prod.js"
   },
-  "jest": {
-    "collectCoverage": true,
-    "coverageDirectory": "coverage",
-    "globals": {
-      "ts-jest": {
-        "babelConfig": true
-      }
-    },
-    "globalSetup": "./global-setup.js",
-    "preset": "ts-jest/presets/js-with-babel",
-    "testEnvironment": "node",
-    "testPathIgnorePatterns": [
-      "/node_modules/"
-    ],
-    "testRegex": "/*.test.ts$",
-    "transform": {
-      "^.+\\.[t]sx?$": "ts-jest",
-      "^.+\\.[j]sx?$": "babel-jest"
-    }
-  },
-  "author": "",
-  "license": "ISC",
+  "type": "module",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.245.0",
     "@aws-sdk/client-ses": "^3.245.0",

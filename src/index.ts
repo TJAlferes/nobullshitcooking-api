@@ -1,10 +1,11 @@
 'use strict';
 
-require('dotenv').config();
+import * as dotenv from 'dotenv';
+dotenv.config();
 
-import { pool }         from './lib/connections/mysql';
-import { redisClients } from './lib/connections/redis';
-import { appServer }    from './app';
+import { pool }         from './lib/connections/mysql.js';
+import { redisClients } from './lib/connections/redis.js';
+import { appServer }    from './app.js';
 
 // Kept separate for multiple reasons, easy integration testing being primary.
 const server = appServer(pool, redisClients);

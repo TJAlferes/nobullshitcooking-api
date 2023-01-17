@@ -1,4 +1,4 @@
-FROM node:12.17.0
+FROM node:16.19.0
 
 EXPOSE 3003
 
