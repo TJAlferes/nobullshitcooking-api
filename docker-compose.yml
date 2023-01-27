@@ -1,14 +1,15 @@
-version: "3.8"
+version: "3.9"
 
 services:
 
   mysql-dev:
     image: mysql:latest
     volumes:
+      - ./init:/docker-entrypoint-initdb.d
       - mysql-dev:/var/lib/mysql
     command: mysqld --default-authentication-plugin=mysql_native_password
     #command: --disable-partition-engine-check
-    #Note: This healthcheck test can return false positive, find a better one
+    # The healthcheck test immediately below can return a false positive. TO DO: Find a better solution.
     healthcheck:
       test: mysqladmin ping -h 127.0.0.1
     restart: always
@@ -32,19 +33,18 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    #command: node_modules/.bin/nodemon app/index.js
     depends_on:
       mysql-dev:
         condition: service_healthy
       redis-dev:
         condition: service_healthy
-    #volumes:
-      #- ./src/:/api/src
-      #- /node/app/node_modules
+    volumes:
+      - .:/code
+      - /code/node_modules
     env_file: .env
     environment:
       NODE_ENV: development
-      NODE_PATH: /api/node_modules
+      NODE_PATH: /code/node_modules
       PORT: 3003
     ports:
       - "3003:3003"

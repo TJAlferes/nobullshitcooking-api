@@ -7,10 +7,17 @@ generate*
 README.md
 postcss.*.js
 
+docker-compose.test.yml
+docker-compose.yml
 Dockerfile
 Dockerfile.dev
 Dockerfile.test
-docker-compose.yml
-.dockerignore
+
 /**/__tests__/
 .vscode
+
+**/node_modules/
+**/dist
+.coverage
+.coverage.*
+.aws

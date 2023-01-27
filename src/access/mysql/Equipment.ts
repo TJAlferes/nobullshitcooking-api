@@ -25,7 +25,7 @@ export class Equipment implements IEquipment {
         e.image
       FROM equipment e
       INNER JOIN equipment_types t ON t.id = e.equipment_type_id
-      WHERE e.owner_id = ?
+      WHERE e.owner_id = ? AND 
     `;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
     return rows;

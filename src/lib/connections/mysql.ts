@@ -1,6 +1,6 @@
 'use strict';
 
-import mysql from 'mysql2/promise';
+import mysql   from 'mysql2/promise';
 
 export const pool = process.env.NODE_ENV === 'production'
   ? mysql.createPool({

@@ -8,6 +8,7 @@
   "scripts": {
     "dev-ts":        "ts-node src/index.ts",
     "test":          "jest --color --detectOpenHandles",
+    "seed":          "node dbdata/index.mjs",
     "start":         "node dist/index.js",
     "prod-start":    "node build/bundle.js",
     "build-ts":      "tsc -p .",

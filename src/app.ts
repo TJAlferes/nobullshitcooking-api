@@ -143,7 +143,7 @@ export function appServer(pool: Pool, redisClients: RedisClients) {
   app.use(session);                                                // move up?
   app.use(cors({
     credentials: true,
-    origin: (app.get('env') === 'production') ? ['https://nobullshitcooking.com'] : ['http://localhost:8080']
+    origin: (app.get('env') === 'production') ? ['https://nobullshitcooking.com'] : ['http://localhost:3000', 'http://localhost:8080']
   }));
   //app.options('*', cors());
   app.use(helmet());

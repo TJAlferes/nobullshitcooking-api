@@ -16,9 +16,9 @@ export function searchRouter(pool: Pool) {
   //router.post('/auto/ingredients', [body('term').not().isEmpty().trim().escape()] catchExceptions(controller.autoIngredients));
   //router.post('/auto/recipes',     [body('term').not().isEmpty().trim().escape()] catchExceptions(controller.autoRecipes));
   
-  router.post('/equipment',   [body('term').not().isEmpty().trim().escape()], catchExceptions(controller.searchEquipment));
-  router.post('/ingredients', [body('term').not().isEmpty().trim().escape()], catchExceptions(controller.searchIngredients));
-  router.post('/recipes',     [body('term').not().isEmpty().trim().escape()], catchExceptions(controller.searchRecipes));
+  router.post('/find/equipment',   [body('term').not().isEmpty().trim().escape()], catchExceptions(controller.searchEquipment));
+  router.post('/find/ingredients', [body('term').not().isEmpty().trim().escape()], catchExceptions(controller.searchIngredients));
+  router.post('/find/recipes',     [body('term').not().isEmpty().trim().escape()], catchExceptions(controller.searchRecipes));
 
   return router;
 }
