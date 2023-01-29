@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { Pool } from 'mysql2/promise';
 
 import { userAuthRouter } from './auth';
+import { userDataInitRouter  } from './dataInit';
 import { userEquipmentRouter } from './equipment';
 import { userFavoriteRecipeRouter } from './favoriteRecipe';
 import { userFriendshipRouter } from './friendship';
@@ -16,6 +17,7 @@ const router = Router();
 
 export function userRouter(pool: Pool) {
   router.use('/auth',            userAuthRouter(pool));
+  router.use('/data-init',       userDataInitRouter);
   router.use('/equipment',       userEquipmentRouter(pool));
   router.use('/favorite-recipe', userFavoriteRecipeRouter(pool));
   router.use('/friendship',      userFriendshipRouter(pool));

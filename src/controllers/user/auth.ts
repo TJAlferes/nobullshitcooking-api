@@ -83,7 +83,7 @@ export class UserAuthController {
   }
 
   async login(req: Request, res: Response) {
-    const loggedIn = req.session.userInfo!.id;
+    const loggedIn = req.session.userInfo?.id;
     if (loggedIn) return res.json({message: 'Already logged in.'});
     
     const { email, pass } = req.body.userInfo;

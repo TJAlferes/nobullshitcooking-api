@@ -1,4 +1,5 @@
 export { UserAuthController } from './auth';
+export { UserDataInitController } from './dataInit';
 export { UserEquipmentController } from './equipment';
 export { UserFavoriteRecipeController } from './favoriteRecipe';
 export { UserFriendshipController } from './friendship';
