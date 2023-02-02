@@ -5,6 +5,7 @@ export class Equipment implements IEquipment {
   
   constructor(pool: Pool) {
     this.pool =       pool;
+    this.auto =       this.auto.bind(this);
     this.search =     this.search.bind(this);
     this.view =       this.view.bind(this);
     this.viewById =   this.viewById.bind(this);
@@ -12,6 +13,10 @@ export class Equipment implements IEquipment {
     this.update =     this.update.bind(this);
     this.delete =     this.delete.bind(this);
     this.deleteById = this.deleteById.bind(this);
+  }
+
+  async auto(term: string) {
+    return [];
   }
 
   async search(term: string) {
@@ -108,6 +113,7 @@ type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
 
 export interface IEquipment {
   pool:                                                    Pool;
+  auto(term: string):                                      Data;
   search(term: string):                                    Data;
   view(authorId: number, ownerId: number):                 Data;
   viewById(id: number, authorId: number, ownerId: number): Data;

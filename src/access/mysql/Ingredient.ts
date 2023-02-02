@@ -14,8 +14,26 @@ export class Ingredient implements IIngredient {
     this.deleteById = this.deleteById.bind(this);
   }
 
+  async auto(term: string) {
+    const ownerId = 1;  // only public ingredients are suggestible
+    const wildcards = `%${term}%`;
+    const sql = `
+      SELECT
+        i.id,
+        i.brand,
+        i.variety,
+        i.name,
+        i.fullname
+      FROM ingredients i
+      WHERE i.owner_id = ? AND i.name LIKE ?
+    `;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId, wildcards]);
+    return rows;
+  }
+
   async search(term: string) {
     const ownerId = 1;  // only public ingredients are searchable
+    const wildcards = `%${term}%`;
     const sql = `
       SELECT
         i.id,
@@ -28,9 +46,9 @@ export class Ingredient implements IIngredient {
         i.image
       FROM ingredients i
       INNER JOIN ingredient_types t ON t.id = i.ingredient_type_id
-      WHERE i.owner_id = ?
+      WHERE i.owner_id = ? AND i.name LIKE ?
     `;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId, wildcards]);
     return rows;
   }
 
@@ -131,6 +149,7 @@ type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
 
 export interface IIngredient {
   pool:                                                    Pool;
+  auto(term: string):                                      Data;
   search(term: string):                                    Data;
   view(authorId: number, ownerId: number):                 Data;
   viewById(id: number, authorId: number, ownerId: number): Data;
@@ -142,13 +161,13 @@ export interface IIngredient {
 
 type ICreatingIngredient = {
   ingredientTypeId: number;
-  authorId: number;
-  ownerId: number;
-  brand: string;
-  variety: string;
-  name: string;
-  description: string;
-  image: string;
+  authorId:         number;
+  ownerId:          number;
+  brand:            string;
+  variety:          string;
+  name:             string;
+  description:      string;
+  image:            string;
 };
 
 type IUpdatingIngredient = ICreatingIngredient & {

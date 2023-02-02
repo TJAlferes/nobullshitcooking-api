@@ -11,14 +11,15 @@ const router = Router();
 
 export function searchRouter(pool: Pool) {
   const controller = new SearchController(pool);
+  const sanitize = body('term').not().isEmpty().trim().escape();
 
-  //router.post('/auto/equipment',   [body('term').not().isEmpty().trim().escape()] catchExceptions(controller.autoEquipment));
-  //router.post('/auto/ingredients', [body('term').not().isEmpty().trim().escape()] catchExceptions(controller.autoIngredients));
-  //router.post('/auto/recipes',     [body('term').not().isEmpty().trim().escape()] catchExceptions(controller.autoRecipes));
+  router.post('/auto/equipment',   [sanitize], catchExceptions(controller.autoEquipment));
+  router.post('/auto/ingredients', [sanitize], catchExceptions(controller.autoIngredients));
+  router.post('/auto/recipes',     [sanitize], catchExceptions(controller.autoRecipes));
   
-  router.post('/find/equipment',   [body('term').not().isEmpty().trim().escape()], catchExceptions(controller.searchEquipment));
-  router.post('/find/ingredients', [body('term').not().isEmpty().trim().escape()], catchExceptions(controller.searchIngredients));
-  router.post('/find/recipes',     [body('term').not().isEmpty().trim().escape()], catchExceptions(controller.searchRecipes));
+  router.post('/find/equipment',   [sanitize], catchExceptions(controller.searchEquipment));
+  router.post('/find/ingredients', [sanitize], catchExceptions(controller.searchIngredients));
+  router.post('/find/recipes',     [sanitize], catchExceptions(controller.searchRecipes));
 
   return router;
 }

@@ -4,13 +4,19 @@ export class Product implements IProduct {
   pool: Pool;
 
   constructor(pool: Pool) {
-    this.pool = pool;
-    this.search =     this.search.bind(this);
-    this.view =       this.view.bind(this);
-    this.viewById =   this.viewById.bind(this);
-    this.create =     this.create.bind(this);
-    this.update =     this.update.bind(this);
-    this.delete =     this.delete.bind(this);
+    this.pool =     pool;
+    this.auto =     this.auto.bind(this);
+    this.search =   this.search.bind(this);
+    this.view =     this.view.bind(this);
+    this.viewById = this.viewById.bind(this);
+    this.create =   this.create.bind(this);
+    this.update =   this.update.bind(this);
+    this.delete =   this.delete.bind(this);
+    //deleteById
+  }
+
+  async auto(term: string) {
+    return [];
   }
 
   async search(term: string) {
@@ -151,6 +157,7 @@ type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
 
 export interface IProduct {
   pool:                              Pool;
+  auto(term: string):                Data;
   search(term: string):              Data;
   view():                            Data;
   viewById(id: number):              Data;

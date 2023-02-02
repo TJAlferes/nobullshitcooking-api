@@ -5,6 +5,7 @@ export class Recipe implements IRecipe {
 
   constructor(pool: Pool) {
     this.pool = pool;
+    this.auto =       this.auto.bind(this);
     this.search =        this.search.bind(this);
     this.getPrivateIds = this.getPrivateIds.bind(this);
     this.view =          this.view.bind(this);
@@ -16,6 +17,10 @@ export class Recipe implements IRecipe {
     this.disownById =    this.disownById.bind(this);
     this.delete =        this.delete.bind(this);
     this.deleteById =    this.deleteById.bind(this);
+  }
+
+  async auto(term: string) {
+    return [];
   }
 
   async search(term: string) {
@@ -320,6 +325,7 @@ type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
 
 export interface IRecipe {
   pool:                                                      Pool;
+  auto(term: string):                                        Data;
   search(term: string):                                      Data;
   getPrivateIds(userId: number):                             Promise<number[]>;
   view(authorId: number, ownerId: number):                   Data;
