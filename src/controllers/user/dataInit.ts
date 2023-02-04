@@ -12,10 +12,8 @@ export class UserDataInitController {
   }
 
   async viewInitialData(req: Request, res: Response) {
-    console.log('0---flag---');
     const userId = req.session.userInfo?.id;
-    if (!userId) return res.end();
-    console.log('1---flag---');
+    if (!userId) return res.send({message: "No userId."});
 
     const favoriteRecipe = new FavoriteRecipe(this.pool);
     const friendship =     new Friendship(this.pool);
@@ -35,7 +33,6 @@ export class UserDataInitController {
       recipe.view(userId, 1),
       savedRecipe.viewByUserId(userId)
     ]);
-    console.log('2---flag---');
 
     return res.send({myFavoriteRecipes, myFriendships, myPlans, myPrivateEquipment, myPrivateIngredients, myPrivateRecipes, myPublicRecipes, mySavedRecipes});
   }

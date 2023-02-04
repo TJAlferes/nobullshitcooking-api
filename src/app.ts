@@ -8,6 +8,7 @@ import cors                                         from 'cors';
 // is csrf protection still necessary? if so, find a solution
 import express, { Request, Response, NextFunction } from 'express';
 //import { pinoHttp }                                 from 'pino-http';
+const pino = require('pino-http')();
 import expressRateLimit                             from 'express-rate-limit';  // Use https://github.com/animir/node-rate-limiter-flexible instead?
 import expressSession, { SessionOptions }           from 'express-session';
 import helmet                                       from 'helmet';
@@ -39,8 +40,8 @@ export function appServer(pool: Pool, redisClients: RedisClients) {
     cookie: (app.get('env') === 'production')
       ? {httpOnly: true,  maxAge: 86400000, sameSite: true,  secure: true}    // httpOnly: if true, client-side JS can NOT see the cookie in document.cookie
       : {httpOnly: false, maxAge: 86400000, sameSite: false, secure: false},  // maxAge:   86400000 milliseconds = 1 day
-    resave:            true,
-    saveUninitialized: true,  // false?
+    resave:            false,  // true?
+    saveUninitialized: false,  // true?
     secret:            process.env.SESSION_SECRET || "secret",
     store:             redisSession,
     unset:             "destroy"
@@ -136,7 +137,8 @@ export function appServer(pool: Pool, redisClients: RedisClients) {
   const session = expressSession(options);                         // move up?
 
   // middleware
-  //app.use(expressPinoLogger());
+  //app.use(pinoHttp);
+  app.use(pino);
   app.use(express.json());
   app.use(express.urlencoded({extended: false}));
   app.use(expressRateLimit({max: 100, windowMs: 1 * 60 * 1000}));  // max: 1000?  limit each IP address's requests per minute
@@ -145,7 +147,7 @@ export function appServer(pool: Pool, redisClients: RedisClients) {
     credentials: true,
     origin: (app.get('env') === 'production') ? ['https://nobullshitcooking.com'] : ['http://localhost:3000', 'http://localhost:8080']
   }));
-  //app.options('*', cors());
+  app.options('*', cors());  // //
   app.use(helmet());
   //app.use(hpp());
   //app.use(csurf());
@@ -164,6 +166,7 @@ export function appServer(pool: Pool, redisClients: RedisClients) {
     });
   } else {
     app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
+      console.log(error);
       res.status(500).json({error});
     });
   }
