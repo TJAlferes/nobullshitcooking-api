@@ -17,7 +17,7 @@ const router = Router();
 
 export function userRouter(pool: Pool) {
   router.use('/auth',            userAuthRouter(pool));
-  router.use('/data-init',       userDataInitRouter);
+  router.use('/data-init',       userDataInitRouter(pool));
   router.use('/equipment',       userEquipmentRouter(pool));
   router.use('/favorite-recipe', userFavoriteRecipeRouter(pool));
   router.use('/friendship',      userFriendshipRouter(pool));

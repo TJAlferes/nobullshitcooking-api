@@ -11,7 +11,7 @@ const router = Router();
 export function userDataInitRouter(pool: Pool) {
   const controller = new UserDataInitController(pool);
 
-  router.post('/', userIsAuth, catchExceptions(controller.viewInitialData));
+  router.post('/', userIsAuth, catchExceptions(controller.viewInitialUserData));
 
   return router;
 }

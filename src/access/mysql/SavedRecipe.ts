@@ -15,9 +15,9 @@ export class SavedRecipe implements ISavedRecipe {
   async viewByUserId(userId: number) {
     const sql = `
       SELECT 
-        s.recipe_id,
+        s.recipe_id as id,
         r.title,
-        r.image,
+        r.recipe_image,
         r.owner_id,
         r.recipe_type_id,
         r.cuisine_id

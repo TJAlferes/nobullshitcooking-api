@@ -16,9 +16,9 @@ export class FavoriteRecipe implements IFavoriteRecipe {
   async viewByUserId(userId: number) {
     const sql = `
       SELECT 
-        f.recipe_id,
+        f.recipe_id as id,
         r.title,
-        r.image,
+        r.recipe_image,
         r.owner_id,
         r.recipe_type_id,
         r.cuisine_id

@@ -9,11 +9,12 @@ export class UserDataInitController {
   constructor(pool: Pool) {
     this.pool = pool;
     this.viewInitialData = this.viewInitialData.bind(this);
+    this.viewInitialUserData = this.viewInitialUserData.bind(this);
   }
 
   async viewInitialData(req: Request, res: Response) {
-    const userId = req.session.userInfo?.id;
-    if (!userId) return res.send({message: "No userId."});
+    const userId = req.session.userInfo!.id;
+    //if (!userId) return res.send({message: "No userId."});
 
     const favoriteRecipe = new FavoriteRecipe(this.pool);
     const friendship =     new Friendship(this.pool);
@@ -35,5 +36,39 @@ export class UserDataInitController {
     ]);
 
     return res.send({myFavoriteRecipes, myFriendships, myPlans, myPrivateEquipment, myPrivateIngredients, myPrivateRecipes, myPublicRecipes, mySavedRecipes});
+  }
+
+  async viewInitialUserData(req: Request, res: Response) {
+    const userId = req.session.userInfo!.id;
+
+    const favoriteRecipe = new FavoriteRecipe(this.pool);
+    const friendship =     new Friendship(this.pool);
+    const plan =           new Plan(this.pool);
+    //const equipment =      new Equipment(this.pool);
+    //const ingredient =     new Ingredient(this.pool);
+    //const recipe =         new Recipe(this.pool);
+    const savedRecipe =    new SavedRecipe(this.pool);
+
+    const [ myFavoriteRecipes, myFriendships, myPlans, /*myPrivateEquipment, myPrivateIngredients, myPrivateRecipes, myPublicRecipes,*/ mySavedRecipes ] = await Promise.all([
+      favoriteRecipe.viewByUserId(userId),
+      friendship.view(userId),
+      plan.view(userId),
+      //equipment.view(userId, userId),
+      //ingredient.view(userId, userId),
+      //recipe.view(userId, userId),
+      //recipe.view(userId, 1),
+      savedRecipe.viewByUserId(userId)
+    ]);
+
+    return res.send({
+      myFavoriteRecipes,
+      myFriendships,
+      myPlans,
+      myPrivateEquipment: [],
+      myPrivateIngredients: [],
+      myPrivateRecipes: [],
+      myPublicRecipes: [],
+      mySavedRecipes
+    });
   }
 }
