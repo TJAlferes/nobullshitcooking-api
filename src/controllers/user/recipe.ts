@@ -214,14 +214,22 @@ export class UserRecipeController {
     const authorId = req.session.userInfo!.id;
     const ownerId =  req.session.userInfo!.id;
 
+    //const favoriteRecipe =   new FavoriteRecipe(this.pool);
+    //const savedRecipe =      new SavedRecipe(this.pool);
     const recipeEquipment =  new RecipeEquipment(this.pool);
     const recipeIngredient = new RecipeIngredient(this.pool);
     const recipeMethod =     new RecipeMethod(this.pool);
     const recipeSubrecipe =  new RecipeSubrecipe(this.pool);
     await Promise.all([
+      //favoriteRecipe.deleteAllByRecipeId(id),
+      //savedRecipe.deleteAllByRecipeId(id),
+
       recipeEquipment.deleteByRecipeId(id),
+
       recipeIngredient.deleteByRecipeId(id),
+
       recipeMethod.deleteByRecipeId(id),
+
       recipeSubrecipe.deleteByRecipeId(id),
       recipeSubrecipe.deleteBySubrecipeId(id)
     ]);

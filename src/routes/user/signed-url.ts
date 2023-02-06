@@ -6,16 +6,10 @@ import { catchExceptions, userIsAuth } from '../../lib/utils';
 
 const router = Router();
 
-// for /user/signed-url/...
+// for /user/signed-url
 
 export function userSignedUrlRouter() {
-  router.post('/avatar',             userIsAuth, [body('fileType').not().isEmpty().trim().escape()], catchExceptions(Controller.avatar));
-  router.post('/equipment',          userIsAuth, [body('fileType').not().isEmpty().trim().escape()], catchExceptions(Controller.equipment));
-  router.post('/ingredient',         userIsAuth, [body('fileType').not().isEmpty().trim().escape()], catchExceptions(Controller.ingredient));
-  router.post('/recipe',             userIsAuth, [body('fileType').not().isEmpty().trim().escape()], catchExceptions(Controller.recipe));
-  router.post('/recipe-cooking',     userIsAuth, [body('fileType').not().isEmpty().trim().escape()], catchExceptions(Controller.recipeCooking));
-  router.post('/recipe-equipment',   userIsAuth, [body('fileType').not().isEmpty().trim().escape()], catchExceptions(Controller.recipeEquipment));
-  router.post('/recipe-ingredients', userIsAuth, [body('fileType').not().isEmpty().trim().escape()], catchExceptions(Controller.recipeIngredients));
+  router.post('/', userIsAuth, [body('subBucket').not().isEmpty().trim().escape()], catchExceptions(Controller.s3RequestPresign));
 
   return router;
 }
