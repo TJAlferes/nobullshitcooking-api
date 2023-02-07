@@ -21,7 +21,7 @@ export class ProfileController {
     const id = userExists.id;
 
     const recipe = new Recipe(this.pool);
-    const publicRecipes = await recipe.view(id, 1);
+    const publicRecipes = await recipe.viewAll(id, 1);
 
     const favoriteRecipe = new FavoriteRecipe(this.pool);
     const favoriteRecipes = await favoriteRecipe.viewByUserId(id);

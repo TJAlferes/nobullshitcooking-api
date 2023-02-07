@@ -1,19 +1,21 @@
 import { Router } from 'express';
 import { Pool } from 'mysql2/promise';
 
-import { userAuthRouter } from './auth';
-import { userDataInitRouter  } from './dataInit';
-import { userEquipmentRouter } from './equipment';
+import { userAuthRouter }           from './auth';
+import { userDataInitRouter  }      from './dataInit';
+import { userEquipmentRouter }      from './equipment';
 import { userFavoriteRecipeRouter } from './favoriteRecipe';
-import { userFriendshipRouter } from './friendship';
-import { userIngredientRouter } from './ingredient';
-import { userPlanRouter } from './plan';
-//import { userProfileRouter } from './profile';
-import { userRecipeRouter } from './recipe';
-import { userSavedRecipeRouter } from './savedRecipe';
-import { userSignedUrlRouter } from './signed-url';
+import { userFriendshipRouter }     from './friendship';
+import { userIngredientRouter }     from './ingredient';
+import { userPlanRouter }           from './plan';
+//import { userProfileRouter }        from './profile';
+import { userRecipeRouter }         from './recipe';
+import { userSavedRecipeRouter }    from './savedRecipe';
+import { userSignedUrlRouter }      from './signed-url';
 
 const router = Router();
+
+// for /user/...
 
 export function userRouter(pool: Pool) {
   router.use('/auth',            userAuthRouter(pool));
@@ -26,7 +28,7 @@ export function userRouter(pool: Pool) {
   //router.use('/profile',         userProfileRouter(pool));
   router.use('/recipe',          userRecipeRouter(pool));
   router.use('/saved-recipe',    userSavedRecipeRouter(pool));
-  router.use('/signed-url',      userSignedUrlRouter());
+  router.use('/signed-url',      userSignedUrlRouter());  // does not need pool
   
   return router;
 }

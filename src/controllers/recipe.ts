@@ -7,27 +7,27 @@ export class RecipeController {
   pool: Pool;
 
   constructor(pool: Pool) {
-    this.pool = pool;
-    this.view =     this.view.bind(this);
-    this.viewById = this.viewById.bind(this);
+    this.pool =    pool;
+    this.viewAll = this.viewAll.bind(this);
+    this.viewOne = this.viewOne.bind(this);
   }
 
-  async view(req: Request, res: Response) {
+  async viewAll(req: Request, res: Response) {
     const authorId = 1;
     const ownerId =  1;
 
     const recipe = new Recipe(this.pool);
-    const rows = await recipe.view(authorId, ownerId);
+    const rows = await recipe.viewAll(authorId, ownerId);
     return res.send(rows);
   }
 
-  async viewById(req: Request, res: Response) {
+  async viewOne(req: Request, res: Response) {
     const id =       Number(req.params.id);
     const authorId = 1;
     const ownerId =  1;
 
     const recipe = new Recipe(this.pool);
-    const [ row ] = await recipe.viewById(id, authorId, ownerId);
+    const [ row ] = await recipe.viewOne(id, authorId, ownerId);
     return res.send(row);
   }
 }

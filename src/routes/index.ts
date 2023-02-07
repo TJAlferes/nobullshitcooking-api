@@ -3,22 +3,22 @@
 import { Application } from 'express';
 import { Pool } from 'mysql2/promise';
 
-import { staffRouter } from './staff/index';
-import { userRouter } from './user/index';
-import { cuisineRouter } from './cuisine';
-import { dataInitRouter } from './dataInit';
-import { equipmentRouter } from './equipment';
-import { equipmentTypeRouter } from './equipmentType';
+import { staffRouter } from          './staff/index';
+import { userRouter } from           './user/index';
+import { cuisineRouter } from        './cuisine';
+import { dataInitRouter } from       './dataInit';
+import { equipmentRouter } from      './equipment';
+import { equipmentTypeRouter } from  './equipmentType';
 import { favoriteRecipeRouter } from './favoriteRecipe';
-import { ingredientRouter } from './ingredient';
+import { ingredientRouter } from     './ingredient';
 import { ingredientTypeRouter } from './ingredientType';
-import { measurementRouter } from './measurement';
-import { methodRouter } from './method';
-import { profileRouter } from './profile';
-import { recipeRouter } from './recipe';
-import { recipeTypeRouter } from './recipeType';
-import { searchRouter } from './search';
-import { supplierRouter } from './supplier';
+import { measurementRouter } from    './measurement';
+import { methodRouter } from         './method';
+import { profileRouter } from        './profile';
+import { recipeRouter } from         './recipe';
+import { recipeTypeRouter } from     './recipeType';
+import { searchRouter } from         './search';
+import { supplierRouter } from       './supplier';
 
 // TO DO: add grocer
 export function routesInit(app: Application, pool: Pool) {

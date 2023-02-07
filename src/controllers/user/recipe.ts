@@ -11,53 +11,53 @@ export class UserRecipeController {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewPrivate =     this.viewPrivate.bind(this);
-    this.viewPublic =      this.viewPublic.bind(this);
-    this.viewPrivateById = this.viewPrivateById.bind(this);
-    this.viewPublicById =  this.viewPublicById.bind(this);
-    this.create =          this.create.bind(this);
-    this.editPrivate =     this.editPrivate.bind(this);
-    this.editPublic =      this.editPublic.bind(this);
-    this.update =          this.update.bind(this);
-    this.delete =          this.delete.bind(this);
-    this.disown =          this.disown.bind(this);
+    this.viewAllPrivate = this.viewAllPrivate.bind(this);
+    this.viewAllPublic =  this.viewAllPublic.bind(this);
+    this.viewOnePrivate = this.viewOnePrivate.bind(this);
+    this.viewOnePublic =  this.viewOnePublic.bind(this);
+    this.create =         this.create.bind(this);
+    this.editPrivate =    this.editPrivate.bind(this);
+    this.editPublic =     this.editPublic.bind(this);
+    this.update =         this.update.bind(this);
+    this.deleteOne =      this.deleteOne.bind(this);
+    this.disownOne =      this.disownOne.bind(this);
   }
 
-  async viewPrivate(req: Request, res: Response) {
+  async viewAllPrivate(req: Request, res: Response) {
     const authorId = req.session.userInfo!.id;
     const ownerId =  req.session.userInfo!.id;
 
     const recipe = new Recipe(this.pool);
-    const rows = await recipe.view(authorId, ownerId);
+    const rows = await recipe.viewAll(authorId, ownerId);
     return res.send(rows);
   }
 
-  async viewPublic(req: Request, res: Response) {
+  async viewAllPublic(req: Request, res: Response) {
     const authorId = req.session.userInfo!.id;
     const ownerId =  1;
 
     const recipe = new Recipe(this.pool);
-    const rows = await recipe.view(authorId, ownerId);
+    const rows = await recipe.viewAll(authorId, ownerId);
     return res.send(rows);
   }
 
-  async viewPrivateById(req: Request, res: Response) {
+  async viewOnePrivate(req: Request, res: Response) {
     const id =       Number(req.body.id);
     const authorId = req.session.userInfo!.id;
     const ownerId =  req.session.userInfo!.id;
 
     const recipe = new Recipe(this.pool);
-    const [ row ] = await recipe.viewById(id, authorId, ownerId);
+    const [ row ] = await recipe.viewOne(id, authorId, ownerId);
     return res.send(row);
   }
 
-  async viewPublicById(req: Request, res: Response) {
+  async viewOnePublic(req: Request, res: Response) {
     const id =       Number(req.body.id);
     const authorId = req.session.userInfo!.id;
     const ownerId =  1;
 
     const recipe = new Recipe(this.pool)
-    const [ row ] = await recipe.viewById(id, authorId, ownerId);
+    const [ row ] = await recipe.viewOne(id, authorId, ownerId);
     return res.send(row);
   }
 
@@ -208,7 +208,7 @@ export class UserRecipeController {
     return res.send({message: 'Recipe updated.'});
   }
 
-  async delete(req: Request, res: Response) {
+  async deleteOne(req: Request, res: Response) {
     // transaction(s)?: TO DO: TRIGGERS
     const id =       Number(req.body.id);
     const authorId = req.session.userInfo!.id;
@@ -223,30 +223,26 @@ export class UserRecipeController {
     await Promise.all([
       //favoriteRecipe.deleteAllByRecipeId(id),
       //savedRecipe.deleteAllByRecipeId(id),
-
       recipeEquipment.deleteByRecipeId(id),
-
       recipeIngredient.deleteByRecipeId(id),
-
       recipeMethod.deleteByRecipeId(id),
-
       recipeSubrecipe.deleteByRecipeId(id),
       recipeSubrecipe.deleteBySubrecipeId(id)
     ]);
 
     // TO DO: what about deleting from plans???
     const recipe = new Recipe(this.pool);
-    await recipe.deleteById(id, authorId, ownerId);
+    await recipe.deleteOne(id, authorId, ownerId);
 
     return res.send({message: 'Recipe deleted.'});
   }
 
-  async disown(req: Request, res: Response) {
+  async disownOne(req: Request, res: Response) {
     const id =       Number(req.body.id);
     const authorId = req.session.userInfo!.id;
 
     const recipe = new Recipe(this.pool);
-    await recipe.disownById(id, authorId);
+    await recipe.disownOne(id, authorId);
 
     return res.send({message: 'Recipe disowned.'});
   }

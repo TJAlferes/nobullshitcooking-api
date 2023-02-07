@@ -5,20 +5,20 @@ export class Supplier implements ISupplier {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.view =     this.view.bind(this);
-    this.viewById = this.viewById.bind(this);
-    this.create =   this.create.bind(this);
-    this.update =   this.update.bind(this);
-    this.delete =   this.delete.bind(this);
+    this.viewAll =   this.viewAll.bind(this);
+    this.viewOne =   this.viewOne.bind(this);
+    this.create =    this.create.bind(this);
+    this.update =    this.update.bind(this);
+    this.deleteOne = this.deleteOne.bind(this);
   }
 
-  async view() {
+  async viewAll() {
     const sql = `SELECT id, name FROM suppliers`;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql);
     return rows;
   }
 
-  async viewById(id: number) {
+  async viewOne(id: number) {
     const sql = `SELECT id, name FROM suppliers WHERE id = ?`;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
     return row;
@@ -36,7 +36,7 @@ export class Supplier implements ISupplier {
     return row;
   }
 
-  async delete(id: number) {
+  async deleteOne(id: number) {
     const sql = `DELETE FROM suppliers WHERE id = ? LIMIT 1`;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
     return row;
@@ -46,9 +46,9 @@ export class Supplier implements ISupplier {
 type Data = Promise<RowDataPacket[]>;
 
 export interface ISupplier {
-  view(): Data;
-  viewById(id: number): Data;
-  create(name: string): Data;
+  viewAll():                        Data;
+  viewOne(id: number):              Data;
+  create(name: string):             Data;
   update(id: number, name: string): Data;
-  delete(id: number): Data;
+  deleteOne(id: number):            Data;
 }

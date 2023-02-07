@@ -4,19 +4,19 @@ export class Recipe implements IRecipe {
   pool: Pool;
 
   constructor(pool: Pool) {
-    this.pool = pool;
-    this.auto =       this.auto.bind(this);
+    this.pool =          pool;
+    this.auto =          this.auto.bind(this);
     this.search =        this.search.bind(this);
     this.getPrivateIds = this.getPrivateIds.bind(this);
-    this.view =          this.view.bind(this);
-    this.viewById =      this.viewById.bind(this);
+    this.viewAll =       this.viewAll.bind(this);
+    this.viewOne =       this.viewOne.bind(this);
     this.create =        this.create.bind(this);
     this.edit =          this.edit.bind(this);
     this.update =        this.update.bind(this);
-    this.disown =        this.disown.bind(this);
-    this.disownById =    this.disownById.bind(this);
-    this.delete =        this.delete.bind(this);
-    this.deleteById =    this.deleteById.bind(this);
+    this.disownAll =     this.disownAll.bind(this);
+    this.disownOne =     this.disownOne.bind(this);
+    this.deleteAll =     this.deleteAll.bind(this);
+    this.deleteOne =     this.deleteOne.bind(this);
   }
 
   async auto(term: string) {
@@ -77,7 +77,7 @@ export class Recipe implements IRecipe {
     return ids;
   }
 
-  async view(authorId: number, ownerId: number) {
+  async viewAll(authorId: number, ownerId: number) {
     const sql = `
       SELECT id, recipe_type_id, cuisine_id, title, recipe_image, owner_id
       FROM recipes
@@ -88,7 +88,7 @@ export class Recipe implements IRecipe {
     return rows;
   }
 
-  async viewById(id: number, authorId: number, ownerId: number) {
+  async viewOne(id: number, authorId: number, ownerId: number) {
     const sql = `
       SELECT
         r.id,
@@ -294,25 +294,25 @@ export class Recipe implements IRecipe {
     return row;
   }
   
-  async disown(authorId: number) {
+  async disownAll(authorId: number) {
     const newAuthorId = 2;
     const sql = `UPDATE recipes SET author_id = ? WHERE author_id = ? AND owner_id = 1`;
     await this.pool.execute<RowDataPacket[]>(sql, [newAuthorId, authorId]);
   }
 
-  async disownById(id: number, authorId: number) {
+  async disownOne(id: number, authorId: number) {
     const newAuthorId = 2;
     const sql = `UPDATE recipes SET author_id = ? WHERE id = ? AND author_id = ? AND owner_id = 1 LIMIT 1`;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [newAuthorId, id, authorId]);
     return row;
   }
 
-  async delete(authorId: number, ownerId: number) {
+  async deleteAll(authorId: number, ownerId: number) {
     const sql = `DELETE FROM recipes WHERE author_id = ? AND owner_id = ?`;
     await this.pool.execute<RowDataPacket[]>(sql, [authorId, ownerId]);
   }
   
-  async deleteById(id: number, authorId: number, ownerId: number) {
+  async deleteOne(id: number, authorId: number, ownerId: number) {
     const sql = `DELETE FROM recipes WHERE recipe_id = ? AND author_id = ? AND owner_id = ? LIMIT 1`;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id, authorId, ownerId]);
     return row;
@@ -324,19 +324,19 @@ type Data = Promise<RowDataPacket[]>;
 type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
 
 export interface IRecipe {
-  pool:                                                      Pool;
-  auto(term: string):                                        Data;
-  search(term: string):                                      Data;
-  getPrivateIds(userId: number):                             Promise<number[]>;
-  view(authorId: number, ownerId: number):                   Data;
-  viewById(id: number, authorId: number, ownerId: number):   Data;
-  create(recipe: ICreatingRecipe):                           DataWithHeader;
-  edit(id: number, authorId: number, ownerId: number):       Data;
-  update(recipe: IUpdatingRecipe):                           Data;
-  disown(authorId: number):                                  void;
-  disownById(id: number, authorId: number):                  Data;
-  delete(authorId: number, ownerId: number):                 void;
-  deleteById(id: number, authorId: number, ownerId: number): Data;
+  pool:                                                     Pool;
+  auto(term: string):                                       Data;
+  search(term: string):                                     Data;
+  getPrivateIds(userId: number):                            Promise<number[]>;
+  viewAll(authorId: number, ownerId: number):               Data;
+  viewOne(id: number, authorId: number, ownerId: number):   Data;
+  create(recipe: ICreatingRecipe):                          DataWithHeader;
+  edit(id: number, authorId: number, ownerId: number):      Data;
+  update(recipe: IUpdatingRecipe):                          Data;
+  disownAll(authorId: number):                              void;
+  disownOne(id: number, authorId: number):                  Data;
+  deleteAll(authorId: number, ownerId: number):             void;
+  deleteOne(id: number, authorId: number, ownerId: number): Data;
 }
 
 export type ICreatingRecipe = {

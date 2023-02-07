@@ -9,10 +9,10 @@ export class StaffProductController {
   pool: Pool;
 
   constructor(pool: Pool) {
-    this.pool = pool;
-    this.create = this.create.bind(this);
-    this.update = this.update.bind(this);
-    this.delete = this.delete.bind(this);
+    this.pool =      pool;
+    this.create =    this.create.bind(this);
+    this.update =    this.update.bind(this);
+    this.deleteOne = this.deleteOne.bind(this);
   }
   
   async create(req: Request, res: Response) {
@@ -44,11 +44,11 @@ export class StaffProductController {
     return res.send({message: 'Product updated.'});
   }
 
-  async delete(req: Request, res: Response) {
+  async deleteOne(req: Request, res: Response) {
     const id = Number(req.body.id);
 
     const product = new Product(this.pool);
-    await product.delete(id);
+    await product.deleteOne(id);
 
     return res.send({message: 'Product deleted.'});
   }

@@ -16,10 +16,12 @@ export function searchRouter(pool: Pool) {
   router.post('/auto/equipment',   [sanitize], catchExceptions(controller.autoEquipment));
   router.post('/auto/ingredients', [sanitize], catchExceptions(controller.autoIngredients));
   router.post('/auto/recipes',     [sanitize], catchExceptions(controller.autoRecipes));
+  //router.post('/auto/products', [sanitize], catchExceptions(controller.autoProducts));
   
   router.post('/find/equipment',   [sanitize], catchExceptions(controller.searchEquipment));
   router.post('/find/ingredients', [sanitize], catchExceptions(controller.searchIngredients));
   router.post('/find/recipes',     [sanitize], catchExceptions(controller.searchRecipes));
+  //router.post('/find/products', [sanitize], catchExceptions(controller.searchProducts));
 
   return router;
 }

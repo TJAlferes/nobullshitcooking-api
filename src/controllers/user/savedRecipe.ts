@@ -16,7 +16,7 @@ export class UserSavedRecipeController {
   }
 
   async viewByUserId(req: Request, res: Response) {
-    const userId =      req.session.userInfo!.id;
+    const userId = req.session.userInfo!.id;
 
     const savedRecipe = new SavedRecipe(this.pool);
     const rows = await savedRecipe.viewByUserId(userId);

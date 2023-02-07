@@ -12,8 +12,8 @@ const router = Router();
 export function ingredientRouter(pool: Pool) {
   const controller = new IngredientController(pool);
 
-  router.get('/', catchExceptions(controller.view));
-  router.get('/:id', [param('id').not().isEmpty().trim().escape()], catchExceptions(controller.viewById));
+  router.get('/', catchExceptions(controller.viewAll));
+  router.get('/:id', [param('id').not().isEmpty().trim().escape()], catchExceptions(controller.viewOne));
 
   return router;
 }

@@ -44,9 +44,9 @@ export const UserSignedUrlController = {
     if (subBucket === "recipe") {
       const thumbName = `${fullName}-thumb`;
       const tinyName = `${fullName}-tiny`;
-      const fullSignature =  await getSignedUrl(s3, new PutObjectCommand({Bucket: USER_BUCKET, Key: fullName, ContentType: "image/jpeg"}));
+      const fullSignature =  await getSignedUrl(s3, new PutObjectCommand({Bucket: USER_BUCKET, Key: fullName,  ContentType: "image/jpeg"}));
       const thumbSignature = await getSignedUrl(s3, new PutObjectCommand({Bucket: USER_BUCKET, Key: thumbName, ContentType: "image/jpeg"}));
-      const tinySignature =  await getSignedUrl(s3, new PutObjectCommand({Bucket: USER_BUCKET, Key: tinyName, ContentType: "image/jpeg"}));
+      const tinySignature =  await getSignedUrl(s3, new PutObjectCommand({Bucket: USER_BUCKET, Key: tinyName,  ContentType: "image/jpeg"}));
       return res.json({success: true, fullSignature, thumbSignature, tinySignature, fullName});
     }
 

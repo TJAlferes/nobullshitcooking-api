@@ -12,8 +12,8 @@ const router = Router();
 export function methodRouter(pool: Pool) {
   const controller = new ProductController(pool);
 
-  router.get('/', catchExceptions(controller.view));
-  router.get('/:id', [param('id').not().isEmpty().trim().escape()], catchExceptions(controller.viewById));
+  router.get('/', catchExceptions(controller.viewAll));
+  router.get('/:id', [param('id').not().isEmpty().trim().escape()], catchExceptions(controller.viewOne));
 
   return router;
 }

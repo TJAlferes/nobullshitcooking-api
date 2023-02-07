@@ -12,9 +12,9 @@ const router = Router();
 export function userPlanRouter(pool: Pool) {
   const controller = new UserPlanController(pool);
 
-  router.post('/', userIsAuth, catchExceptions(controller.view));
+  router.post('/', userIsAuth, catchExceptions(controller.viewAll));
 
-  router.post('/one', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.viewById));
+  router.post('/one', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.viewOne));
 
   router.post('/create', userIsAuth, [
     body(['name', 'data']).not().isEmpty().trim().escape()
@@ -24,7 +24,7 @@ export function userPlanRouter(pool: Pool) {
     body(['id', 'name', 'data']).not().isEmpty().trim().escape()
   ], catchExceptions(controller.update));
 
-  router.delete('/delete', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.deleteById));
+  router.delete('/delete', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.deleteOne));
 
   return router;
 }

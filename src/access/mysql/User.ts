@@ -12,7 +12,7 @@ export class User implements IUser {
     this.create =     this.create.bind(this);
     this.verify =     this.verify.bind(this);
     this.update =     this.update.bind(this);
-    this.delete =     this.delete.bind(this);
+    this.deleteById = this.deleteById.bind(this);
   }
 
   async getByEmail(email: string) {
@@ -57,7 +57,7 @@ export class User implements IUser {
     return row;
   }
 
-  async delete(id: number) {
+  async deleteById(id: number) {
     const sql = `DELETE FROM users WHERE id = ? LIMIT 1`;
     const [ [ row ] ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
     return row;
@@ -75,7 +75,7 @@ export interface IUser {
   create(user: ICreatingUser):  Row;
   verify(email: string):        Row;
   update(user: IUpdatingUser):  Row;
-  delete(userId: number):       Row;
+  deleteById(userId: number):   Row;
 }
 
 interface ICreatingUser {

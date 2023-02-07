@@ -7,22 +7,22 @@ export class MethodController {
   pool: Pool;
 
   constructor(pool: Pool) {
-    this.pool = pool;
-    this.view =     this.view.bind(this);
-    this.viewById = this.viewById.bind(this);
+    this.pool =    pool;
+    this.viewAll = this.viewAll.bind(this);
+    this.viewOne = this.viewOne.bind(this);
   }
 
-  async view(req: Request, res: Response) {
+  async viewAll(req: Request, res: Response) {
     const method = new Method(this.pool);
-    const rows = await method.view();
+    const rows = await method.viewAll();
     return res.send(rows);
   }
 
-  async viewById(req: Request, res: Response) {
+  async viewOne(req: Request, res: Response) {
     const id = Number(req.params.id);
 
     const method = new Method(this.pool);
-    const [ row ] = await method.viewById(id);
+    const [ row ] = await method.viewOne(id);
     return res.send(row);
   }
 }

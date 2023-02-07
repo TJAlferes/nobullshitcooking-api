@@ -9,27 +9,27 @@ export class UserPlanController {
   pool: Pool;
 
   constructor(pool: Pool) {
-    this.pool = pool;
-    this.view =       this.view.bind(this);
-    this.viewById =   this.viewById.bind(this);
-    this.create =     this.create.bind(this);
-    this.update =     this.update.bind(this);
-    this.deleteById = this.deleteById.bind(this);
+    this.pool =      pool;
+    this.viewAll =   this.viewAll.bind(this);
+    this.viewOne =   this.viewOne.bind(this);
+    this.create =    this.create.bind(this);
+    this.update =    this.update.bind(this);
+    this.deleteOne = this.deleteOne.bind(this);
   }
 
-  async view(req: Request, res: Response) {
+  async viewAll(req: Request, res: Response) {
     const ownerId = req.session.userInfo!.id;
     const plan = new Plan(this.pool);
-    const rows = await plan.view(ownerId);
+    const rows = await plan.viewAll(ownerId);
     return res.send(rows);
   }
 
-  async viewById(req: Request, res: Response) {
+  async viewOne(req: Request, res: Response) {
     const id =      Number(req.body.id);
     const ownerId = req.session.userInfo!.id;
     
     const plan = new Plan(this.pool);
-    const [ row ] = await plan.viewById(id, ownerId);
+    const [ row ] = await plan.viewOne(id, ownerId);
     return res.send(row);
   }
 
@@ -58,12 +58,12 @@ export class UserPlanController {
     return res.send({message: 'Plan updated.'});
   }
 
-  async deleteById(req: Request, res: Response) {
+  async deleteOne(req: Request, res: Response) {
     const id =      Number(req.body.id);
     const ownerId = req.session.userInfo!.id;
 
     const plan = new Plan(this.pool);
-    await plan.deleteById(id, ownerId);
+    await plan.deleteOne(id, ownerId);
     return res.send({message: 'Plan deleted.'});
   }
 }

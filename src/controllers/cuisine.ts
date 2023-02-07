@@ -8,21 +8,21 @@ export class CuisineController {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.view =     this.view.bind(this);
-    this.viewById = this.viewById.bind(this);
+    this.viewAll = this.viewAll.bind(this);
+    this.viewOne = this.viewOne.bind(this);
   }
 
-  async view(req: Request, res: Response) {
+  async viewAll(req: Request, res: Response) {
     const cuisine = new Cuisine(this.pool);
-    const rows = await cuisine.view();
+    const rows = await cuisine.viewAll();
     return res.send(rows);
   }
 
-  async viewById(req: Request, res: Response) {
+  async viewOne(req: Request, res: Response) {
     const id = Number(req.params.id);
     
     const cuisine = new Cuisine(this.pool);
-    const [ row ] = await cuisine.viewById(id);
+    const [ row ] = await cuisine.viewOne(id);
     return res.send(row);
   }
 }

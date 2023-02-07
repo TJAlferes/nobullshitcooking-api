@@ -26,15 +26,15 @@ export class DataInitController {
     const recipeType =     new RecipeType(this.pool);
 
     const [ cuisines, equipments, equipmentTypes, ingredients, ingredientTypes, measurements, methods, recipes, recipeTypes ] = await Promise.all([
-      cuisine.view(),
+      cuisine.viewAll(),
       equipment.viewAll(authorId, ownerId),
-      equipmentType.view(),
-      ingredient.view(authorId, ownerId),
-      ingredientType.view(),
-      measurement.view(),
-      method.view(),
-      recipe.view(authorId, ownerId),
-      recipeType.view()
+      equipmentType.viewAll(),
+      ingredient.viewAll(authorId, ownerId),
+      ingredientType.viewAll(),
+      measurement.viewAll(),
+      method.viewAll(),
+      recipe.viewAll(authorId, ownerId),
+      recipeType.viewAll()
     ]);
 
     return res.send({cuisines, equipment: equipments, equipmentTypes, ingredients, ingredientTypes, measurements, methods, recipes, recipeTypes});

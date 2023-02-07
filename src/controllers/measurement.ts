@@ -7,22 +7,22 @@ export class MeasurementController {
   pool: Pool;
 
   constructor(pool: Pool) {
-    this.pool = pool;
-    this.view =     this.view.bind(this);
-    this.viewById = this.viewById.bind(this);
+    this.pool =    pool;
+    this.viewAll = this.viewAll.bind(this);
+    this.viewOne = this.viewOne.bind(this);
   }
 
-  async view(req: Request, res: Response) {
+  async viewAll(req: Request, res: Response) {
     const measurement = new Measurement(this.pool);
-    const rows = await measurement.view();
+    const rows = await measurement.viewAll();
     return res.send(rows);
   }
 
-  async viewById(req: Request, res: Response) {
+  async viewOne(req: Request, res: Response) {
     const id = Number(req.params.id);
     
     const measurement = new Measurement(this.pool);
-    const [ row ] = await measurement.viewById(id);
+    const [ row ] = await measurement.viewOne(id);
     return res.send(row);
   }
 }

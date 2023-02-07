@@ -107,9 +107,8 @@ export class UserAuthController {
   async update(req: Request, res: Response) {
     const { email, pass, username } = req.body.userInfo;
     const id = req.session.userInfo!.id;
-
-    // IMPORTANT: Do not allow user 1, NOBSC, to be changed.
-    if (id === 1) return res.end();
+    
+    if (id === 1) return res.end();  // IMPORTANT: Do not allow user 1, NOBSC, to be changed.
 
     const encryptedPass = await bcrypt.hash(pass, SALT_ROUNDS);
     const args = {email, pass: encryptedPass, username};
@@ -124,8 +123,7 @@ export class UserAuthController {
   async delete(req: Request, res: Response) {
     const userId = req.session.userInfo!.id;
 
-    // IMPORTANT: Never allow user 1, NOBSC, to be deleted.
-    if (userId === 1) return res.end();
+    if (userId === 1) return res.end();  // IMPORTANT: Never allow user 1, NOBSC, to be deleted.
 
     const equipment =        new Equipment(this.pool);
     const favoriteRecipe =   new FavoriteRecipe(this.pool);
@@ -140,19 +138,17 @@ export class UserAuthController {
     const savedRecipe =      new SavedRecipe(this.pool);
     const user =             new User(this.pool);
 
-    // NOTE: Due to foreign key constraints, deletes must be in this order.
-    // WHAT? Do this in the DB? Not here?
+    // NOTE: Due to foreign key constraints, deletes must be in this order. (Do this in MySQL instead?)
 
+    // First delete/disown the user's relationships and content...
     await Promise.all([
       friendship.deleteAllByUserId(userId),
-      plan.delete(userId),
+      plan.deleteAll(userId),
       favoriteRecipe.deleteAllByUserId(userId),
       savedRecipe.deleteAllByUserId(userId)
     ]);
-
-    await recipe.disown(userId);
-
-    const recipeIds = await recipe.getPrivateIds(userId);
+    await recipe.disownAll(userId);
+    const recipeIds = await recipe.getPrivateIds(userId);  // CAREFUL! Double check this.
     await Promise.all([
       recipeEquipment.deleteByRecipeIds(recipeIds),
       recipeIngredient.deleteByRecipeIds(recipeIds),
@@ -160,12 +156,11 @@ export class UserAuthController {
       recipeSubrecipe.deleteByRecipeIds(recipeIds),
       recipeSubrecipe.deleteBySubrecipeIds(recipeIds)
     ]);
+    await recipe.deleteAll(userId, userId);  // CAREFUL! Double check this.
+    await Promise.all([equipment.deleteAll(userId), ingredient.deleteAll(userId)]);
 
-    await recipe.delete(userId, userId);
-
-    await Promise.all([equipment.deleteAll(userId), ingredient.delete(userId)]);
-
-    await user.delete(userId);
+    // ... Then delete the user.
+    await user.deleteById(userId);
 
     return res.send({message: 'Account deleted.'});
   }

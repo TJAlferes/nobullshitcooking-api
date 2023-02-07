@@ -22,14 +22,23 @@ export class UserDataInitController {
     const recipe =         new Recipe(this.pool);
     const savedRecipe =    new SavedRecipe(this.pool);
 
-    const [ myFavoriteRecipes, myFriendships, myPlans, myPrivateEquipment, myPrivateIngredients, myPrivateRecipes, myPublicRecipes, mySavedRecipes ] = await Promise.all([
+    const [
+      myFavoriteRecipes,
+      myFriendships,
+      myPlans,
+      myPrivateEquipment,
+      myPrivateIngredients,
+      myPrivateRecipes,
+      myPublicRecipes,
+      mySavedRecipes
+    ] = await Promise.all([
       favoriteRecipe.viewByUserId(userId),
       friendship.view(userId),
-      plan.view(userId),
+      plan.viewAll(userId),
       equipment.viewAll(userId, userId),
-      ingredient.view(userId, userId),
-      recipe.view(userId, userId),
-      recipe.view(userId, 1),
+      ingredient.viewAll(userId, userId),
+      recipe.viewAll(userId, userId),
+      recipe.viewAll(userId, 1),
       savedRecipe.viewByUserId(userId)
     ]);
 

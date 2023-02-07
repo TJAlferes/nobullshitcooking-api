@@ -14,7 +14,7 @@ export function staffSupplierRouter(pool: Pool) {
 
   router.post('/create',   staffIsAuth, [body('name').not().isEmpty().trim().escape()],         catchExceptions(controller.create));
   router.put('/update',    staffIsAuth, [body(['id', 'name']).not().isEmpty().trim().escape()], catchExceptions(controller.update));
-  router.delete('/delete', staffIsAuth, [body('id').not().isEmpty().trim().escape()],           catchExceptions(controller.delete));
+  router.delete('/delete', staffIsAuth, [body('id').not().isEmpty().trim().escape()],           catchExceptions(controller.deleteOne));
 
   return router;
 }

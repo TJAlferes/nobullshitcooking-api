@@ -14,7 +14,7 @@ export function userIngredientRouter(pool: Pool) {
 
   router.post('/', userIsAuth, catchExceptions(controller.view));
 
-  router.post('/one', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.viewById));
+  router.post('/one', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.viewOne));
 
   router.post('/create', userIsAuth, [body([
     'ingredientTypeId',
@@ -35,7 +35,7 @@ export function userIngredientRouter(pool: Pool) {
     'image'
   ]).not().isEmpty().trim().escape()], catchExceptions(controller.update));
 
-  router.delete('/delete', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.delete));
+  router.delete('/delete', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.deleteOne));
 
   return router;
 }
