@@ -12,7 +12,7 @@ const router = Router();
 export function userIngredientRouter(pool: Pool) {
   const controller = new UserIngredientController(pool);
 
-  router.post('/all', userIsAuth, catchExceptions(controller.view));
+  router.post('/', userIsAuth, catchExceptions(controller.view));
 
   router.post('/one', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.viewById));
 

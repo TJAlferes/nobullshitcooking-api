@@ -108,6 +108,9 @@ export class UserAuthController {
     const { email, pass, username } = req.body.userInfo;
     const id = req.session.userInfo!.id;
 
+    // IMPORTANT: Do not allow user 1, NOBSC, to be changed.
+    if (id === 1) return res.end();
+
     const encryptedPass = await bcrypt.hash(pass, SALT_ROUNDS);
     const args = {email, pass: encryptedPass, username};
     assert(args, validUpdatingUser);
@@ -120,6 +123,9 @@ export class UserAuthController {
 
   async delete(req: Request, res: Response) {
     const userId = req.session.userInfo!.id;
+
+    // IMPORTANT: Never allow user 1, NOBSC, to be deleted.
+    if (userId === 1) return res.end();
 
     const equipment =        new Equipment(this.pool);
     const favoriteRecipe =   new FavoriteRecipe(this.pool);
@@ -157,7 +163,7 @@ export class UserAuthController {
 
     await recipe.delete(userId, userId);
 
-    await Promise.all([equipment.delete(userId), ingredient.delete(userId)]);
+    await Promise.all([equipment.deleteAll(userId), ingredient.delete(userId)]);
 
     await user.delete(userId);
 

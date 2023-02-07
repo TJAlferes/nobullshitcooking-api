@@ -48,8 +48,8 @@ export function userRecipeRouter(pool: Pool) {
   router.delete('/delete/private', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.delete));
   router.delete('/disown/public',  userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.disown));  // TO DO: change to router.put
 
-  router.post('/private/all', userIsAuth, catchExceptions(controller.viewPrivate));
-  router.post('/public/all',  userIsAuth, catchExceptions(controller.viewPublic));
+  router.post('/private', userIsAuth, catchExceptions(controller.viewPrivate));
+  router.post('/public',  userIsAuth, catchExceptions(controller.viewPublic));
 
   router.post('/private/one', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.viewPrivateById));
   router.post('/public/one',  userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.viewPublicById));

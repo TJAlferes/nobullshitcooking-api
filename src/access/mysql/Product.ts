@@ -4,15 +4,14 @@ export class Product implements IProduct {
   pool: Pool;
 
   constructor(pool: Pool) {
-    this.pool =     pool;
-    this.auto =     this.auto.bind(this);
-    this.search =   this.search.bind(this);
-    this.view =     this.view.bind(this);
-    this.viewById = this.viewById.bind(this);
-    this.create =   this.create.bind(this);
-    this.update =   this.update.bind(this);
-    this.delete =   this.delete.bind(this);
-    //deleteById
+    this.pool =      pool;
+    this.auto =      this.auto.bind(this);
+    this.search =    this.search.bind(this);
+    this.viewAll =   this.viewAll.bind(this);
+    this.viewOne =   this.viewOne.bind(this);
+    this.create =    this.create.bind(this);
+    this.update =    this.update.bind(this);
+    this.deleteOne = this.deleteOne.bind(this);
   }
 
   async auto(term: string) {
@@ -40,7 +39,7 @@ export class Product implements IProduct {
     return rows;
   }
 
-  async view() {
+  async viewAll() {
     const sql = `
       SELECT
         p.id,
@@ -64,7 +63,7 @@ export class Product implements IProduct {
     return row;
   }
 
-  async viewById(id: number) {
+  async viewOne(id: number) {
     const sql = `
       SELECT
         p.id,
@@ -144,7 +143,7 @@ export class Product implements IProduct {
     return row;
   }
 
-  async delete(id: number) {
+  async deleteOne(id: number) {
     const sql = `DELETE FROM products WHERE id = ? LIMIT 1`;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
     return row;
@@ -159,11 +158,11 @@ export interface IProduct {
   pool:                              Pool;
   auto(term: string):                Data;
   search(term: string):              Data;
-  view():                            Data;
-  viewById(id: number):              Data;
+  viewAll():                         Data;
+  viewOne(id: number):               Data;
   create(product: ICreatingProduct): DataWithHeader;
   update(product: IUpdatingProduct): Data;
-  delete(id: number):                Data;
+  deleteOne(id: number):             Data;
 }
 
 type ICreatingProduct = {

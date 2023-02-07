@@ -27,7 +27,7 @@ export class DataInitController {
 
     const [ cuisines, equipments, equipmentTypes, ingredients, ingredientTypes, measurements, methods, recipes, recipeTypes ] = await Promise.all([
       cuisine.view(),
-      equipment.view(authorId, ownerId),
+      equipment.viewAll(authorId, ownerId),
       equipmentType.view(),
       ingredient.view(authorId, ownerId),
       ingredientType.view(),

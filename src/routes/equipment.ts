@@ -12,8 +12,9 @@ const router = Router();
 export function equipmentRouter(pool: Pool) {
   const controller = new EquipmentController(pool);
 
-  router.get('/official/all', catchExceptions(controller.view));
-  router.get('/:id', [param('id').not().isEmpty().trim().escape()], catchExceptions(controller.viewById));
+  router.get('/', catchExceptions(controller.viewAll));
+
+  router.get('/:id', [param('id').not().isEmpty().trim().escape()], catchExceptions(controller.viewOne));
 
   return router;
 }

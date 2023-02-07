@@ -26,7 +26,7 @@ export class UserDataInitController {
       favoriteRecipe.viewByUserId(userId),
       friendship.view(userId),
       plan.view(userId),
-      equipment.view(userId, userId),
+      equipment.viewAll(userId, userId),
       ingredient.view(userId, userId),
       recipe.view(userId, userId),
       recipe.view(userId, 1),

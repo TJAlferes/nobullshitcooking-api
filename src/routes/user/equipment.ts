@@ -12,19 +12,25 @@ const router = Router();
 export function userEquipmentRouter(pool: Pool) {
   const controller = new UserEquipmentController(pool);
 
-  router.post('/all', userIsAuth, catchExceptions(controller.view));
+  router.post('/', userIsAuth, catchExceptions(controller.viewAll));
 
-  router.post('/one', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.viewById));
+  router.post('/one', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.viewOne));
 
-  router.post('/create', userIsAuth, [
-    body(['equipmentTypeId', 'name', 'description', 'image']).not().isEmpty().trim().escape()
-  ], catchExceptions(controller.create));
+  router.post(
+    '/create',
+    userIsAuth,
+    [body(['equipmentTypeId', 'name', 'description', 'image']).not().isEmpty().trim().escape()],
+    catchExceptions(controller.create)
+  );
 
-  router.put('/update', userIsAuth, [
-    body(['id', 'equipmentTypeId', 'name', 'description', 'image']).not().isEmpty().trim().escape()
-  ], catchExceptions(controller.update));
+  router.put(
+    '/update',
+    userIsAuth,
+    [body(['id', 'equipmentTypeId', 'name', 'description', 'image']).not().isEmpty().trim().escape()],
+    catchExceptions(controller.update)
+  );
 
-  router.delete('/delete', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.delete));
+  router.delete('/delete', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.deleteOne));
 
   return router;
 }

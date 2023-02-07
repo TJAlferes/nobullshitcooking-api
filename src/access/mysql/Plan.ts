@@ -4,22 +4,22 @@ export class Plan implements IPlan {
   pool: Pool;
 
   constructor(pool: Pool) {
-    this.pool =       pool;
-    this.view =       this.view.bind(this);
-    this.viewById =   this.viewById.bind(this);
-    this.create =     this.create.bind(this);
-    this.update =     this.update.bind(this);
-    this.delete =     this.delete.bind(this);
-    this.deleteById = this.deleteById.bind(this);
+    this.pool =      pool;
+    this.viewAll =   this.viewAll.bind(this);
+    this.viewOne =   this.viewOne.bind(this);
+    this.create =    this.create.bind(this);
+    this.update =    this.update.bind(this);
+    this.deleteAll = this.deleteAll.bind(this);
+    this.deleteOne = this.deleteOne.bind(this);
   }
   
-  async view(ownerId: number) {
+  async viewAll(ownerId: number) {
     const sql = `SELECT id, name, data FROM plans WHERE owner_id = ?`;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
     return rows;
   }
 
-  async viewById(id: number, ownerId: number) {
+  async viewOne(id: number, ownerId: number) {
     const sql = `SELECT id, name, data FROM plans WHERE owner_id = ? AND id = ?`;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId, id]);
     return row;
@@ -37,12 +37,12 @@ export class Plan implements IPlan {
     return row;
   }
 
-  async delete(ownerId: number) {
+  async deleteAll(ownerId: number) {
     const sql = `DELETE FROM plans WHERE owner_id = ?`;
     await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
   }
 
-  async deleteById(id: number, ownerId: number) {
+  async deleteOne(id: number, ownerId: number) {
     const sql = `DELETE FROM plans WHERE owner_id = ? AND id = ? LIMIT 1`;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId, id]);
     return row;
@@ -52,13 +52,13 @@ export class Plan implements IPlan {
 type Data = Promise<RowDataPacket[]>;
 
 export interface IPlan {
-  pool:                                    Pool;
-  view(ownerId: number):                   Data;
-  viewById(id: number, ownerId: number):   Data;
-  create(plan: ICreatingPlan):             Data;
-  update(plan: IUpdatingPlan):             Data;
-  delete(ownerId: number):                 void;
-  deleteById(id: number, ownerId: number): Data;
+  pool:                                   Pool;
+  viewAll(ownerId: number):               Data;
+  viewOne(id: number, ownerId: number):   Data;
+  create(plan: ICreatingPlan):            Data;
+  update(plan: IUpdatingPlan):            Data;
+  deleteAll(ownerId: number):             void;
+  deleteOne(id: number, ownerId: number): Data;
 }
 
 type ICreatingPlan = {

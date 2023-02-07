@@ -4,15 +4,15 @@ export class Equipment implements IEquipment {
   pool: Pool;
   
   constructor(pool: Pool) {
-    this.pool =       pool;
-    this.auto =       this.auto.bind(this);
-    this.search =     this.search.bind(this);
-    this.view =       this.view.bind(this);
-    this.viewById =   this.viewById.bind(this);
-    this.create =     this.create.bind(this);
-    this.update =     this.update.bind(this);
-    this.delete =     this.delete.bind(this);
-    this.deleteById = this.deleteById.bind(this);
+    this.pool =      pool;
+    this.auto =      this.auto.bind(this);
+    this.search =    this.search.bind(this);
+    this.viewAll =   this.viewAll.bind(this);
+    this.viewOne =   this.viewOne.bind(this);
+    this.create =    this.create.bind(this);
+    this.update =    this.update.bind(this);
+    this.deleteAll = this.deleteAll.bind(this);
+    this.deleteOne = this.deleteOne.bind(this);
   }
 
   async auto(term: string) {
@@ -36,7 +36,7 @@ export class Equipment implements IEquipment {
     return rows;
   }
 
-  async view(authorId: number, ownerId: number) {
+  async viewAll(authorId: number, ownerId: number) {
     const sql = `
       SELECT
         e.id,
@@ -55,7 +55,7 @@ export class Equipment implements IEquipment {
     return rows;
   }
 
-  async viewById(id: number, authorId: number, ownerId: number) {
+  async viewOne(id: number, authorId: number, ownerId: number) {
     const sql = `
       SELECT
         e.id,
@@ -95,12 +95,12 @@ export class Equipment implements IEquipment {
     return row;
   }
 
-  async delete(ownerId: number) {
+  async deleteAll(ownerId: number) {
     const sql = `DELETE FROM equipment WHERE owner_id = ?`;
     await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
   }
 
-  async deleteById(id: number, ownerId: number) {
+  async deleteOne(id: number, ownerId: number) {
     const sql = `DELETE FROM equipment WHERE owner_id = ? AND id = ? LIMIT 1`;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId, id]);
     return row;
@@ -112,15 +112,15 @@ type Data = Promise<RowDataPacket[]>;
 type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
 
 export interface IEquipment {
-  pool:                                                    Pool;
-  auto(term: string):                                      Data;
-  search(term: string):                                    Data;
-  view(authorId: number, ownerId: number):                 Data;
-  viewById(id: number, authorId: number, ownerId: number): Data;
-  create(equipment: ICreatingEquipment):                   DataWithHeader;
-  update(equipment: IUpdatingEquipment):                   Data;
-  delete(ownerId: number):                                 void;
-  deleteById(id: number, ownerId: number):                 Data;
+  pool:                                                   Pool;
+  auto(term: string):                                     Data;
+  search(term: string):                                   Data;
+  viewAll(authorId: number, ownerId: number):             Data;
+  viewOne(id: number, authorId: number, ownerId: number): Data;
+  create(equipment: ICreatingEquipment):                  DataWithHeader;
+  update(equipment: IUpdatingEquipment):                  Data;
+  deleteAll(ownerId: number):                             void;
+  deleteOne(id: number, ownerId: number):                 Data;
 }
 
 type ICreatingEquipment = {

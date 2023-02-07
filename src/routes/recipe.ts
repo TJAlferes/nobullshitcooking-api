@@ -12,7 +12,7 @@ const router = Router();
 export function recipeRouter(pool: Pool) {
   const controller = new RecipeController(pool);
 
-  router.get('/official/all', catchExceptions(controller.view));
+  router.get('/', catchExceptions(controller.view));
   router.get('/:id', [param('id').not().isEmpty().trim().escape()], catchExceptions(controller.viewById));
 
   return router;
