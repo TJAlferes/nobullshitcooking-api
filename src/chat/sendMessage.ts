@@ -3,8 +3,8 @@ import { Socket } from 'socket.io';
 import { IChatStore } from '../access/redis';
 import { PublicMessage } from '.';
 
-export async function sendMessage({ from, text, socket, chatStore }: ISendMessage) {
-  const room = Object.keys(socket.rooms).find(r => r !== socket.id);
+export async function sendMessage({ from, text, sessionId, socket, chatStore }: ISendMessage) {
+  const room = Object.keys(socket.rooms).find(r => r !== sessionId);
   if (!room) return;
 
   const message = PublicMessage(room, from, text);
@@ -17,6 +17,7 @@ export async function sendMessage({ from, text, socket, chatStore }: ISendMessag
 interface ISendMessage {
   from:      string;
   text:      string;
+  sessionId: string;
   socket:    Socket;
   chatStore: IChatStore;
 }

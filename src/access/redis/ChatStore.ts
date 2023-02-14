@@ -7,6 +7,16 @@ export class ChatStore implements IChatStore {
 
   constructor(client: Redis) {
     this.client = client;
+    this.getUsersInRoom =     this.getUsersInRoom.bind(this);
+    this.getUserSessionId =   this.getUserSessionId.bind(this);
+    //this.getRooms
+    //this.getMessages
+    this.createUser =         this.createUser.bind(this);
+    this.createRoom =         this.createRoom.bind(this);
+    this.createMessage =      this.createMessage.bind(this);
+    this.addUserToRoom =      this.addUserToRoom.bind(this);
+    this.removeUserFromRoom = this.removeUserFromRoom.bind(this);
+    this.deleteUser =         this.deleteUser.bind(this);
   }
 
   async getUsersInRoom(room: string) {
@@ -14,14 +24,18 @@ export class ChatStore implements IChatStore {
     return users;
   }
 
-  async getUserSocketId(username: string) {
-    const socketId = await this.client.hget(`user:${username}`, 'socketId');
-    return socketId;
+  async getUserSessionId(username: string) {
+    const sessionId = await this.client.hget(`user:${username}`, 'sessionId');
+    return sessionId;
   }
 
-  async createUser({ username, sessionId, socketId }: ICreatingChatUser) {
+  //async getRooms(cb) {}
+
+  //async getMessages(room: string, cb) {}
+
+  async createUser({ sessionId, username }: IUserInfo) {
     await this.client.multi()
-      .hset(`user:${username}`, 'sessionId', sessionId, 'socketId', socketId)
+      .hset(`user:${username}`, 'sessionId', sessionId)
       .zadd('users', Date.now(), `${username}`)
       .exec();
   }
@@ -62,8 +76,8 @@ export class ChatStore implements IChatStore {
 export interface IChatStore {
   client:                                             Redis;
   getUsersInRoom(room: string):                       Promise<string[]>;
-  getUserSocketId(username: string):                  Promise<string | null>;
-  createUser(userInfo: ICreatingChatUser):            void;
+  getUserSessionId(username: string):                 Promise<string | null>;
+  createUser(userInfo: IUserInfo):                    void;
   createRoom(room: string):                           void;
   createMessage(message: IMessage):                   void;
   addUserToRoom(username: string, room: string):      void;
@@ -71,25 +85,7 @@ export interface IChatStore {
   deleteUser(username: string):                       void;
 }
 
-interface ICreatingChatUser {
-  username:  string;
+interface IUserInfo {
   sessionId: string;
-  socketId:  string;
+  username:  string;
 }
-
-
-
-    /*this.getUsersInRoom =     this.getUsersInRoom.bind(this);
-    this.getUserSocketId =    this.getUserSocketId.bind(this);
-    //this.getRooms
-    //this.getMessages
-    this.createUser =         this.createUser.bind(this);
-    this.createRoom =         this.createRoom.bind(this);
-    this.createMessage =      this.createMessage.bind(this);
-    this.addUserToRoom =      this.addUserToRoom.bind(this);
-    this.removeUserFromRoom = this.removeUserFromRoom.bind(this);
-    this.deleteUser =         this.deleteUser.bind(this);*/
-
-  //async getRooms(cb) {}
-
-  //async getMessages(room: string, cb) {}

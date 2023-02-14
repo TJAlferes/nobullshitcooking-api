@@ -7,8 +7,7 @@ import { pool }         from './lib/connections/mysql';
 import { redisClients } from './lib/connections/redis';
 import { appServer }    from './app';
 
-// Kept separate for multiple reasons, easy integration testing being primary.
-const server = appServer(pool, redisClients);
+export const { httpServer, io } = appServer(pool, redisClients);
 
 const PORT = (process.env.NODE_ENV === 'production')
   ? Number(process.env.PORT) || 8081
@@ -18,4 +17,4 @@ const HOST = (process.env.NODE_ENV === 'production')
   ? '127.0.0.1'
   : '0.0.0.0';
 
-server.listen(PORT, HOST, () => console.log('Listening on port ' + PORT));
+httpServer.listen(PORT, HOST, () => console.log('HTTP server listening on port ' + PORT));

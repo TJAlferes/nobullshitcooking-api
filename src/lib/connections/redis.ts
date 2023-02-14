@@ -2,6 +2,7 @@
 
 //import Redis from 'ioredis';
 const Redis = require('ioredis');  // temporary "fix" for TypeScript
+//import { Cluster } from 'ioredis';
 
 let config = {};
 
@@ -16,10 +17,12 @@ if (process.env.NODE_ENV === 'test') {
   };
 }
 
-if (process.env.NODE_ENV === 'production') config = {host: process.env.ELASTICACHE_PROD_PRIMARY, port: 6379};
+if (process.env.NODE_ENV === 'production')  config = {host: process.env.ELASTICACHE_PROD_PRIMARY, port: 6379};
 
 if (process.env.NODE_ENV === 'development') config = {host: 'redis-dev', port: 6379};
 
+//const pubClient = new Cluster([{host: 'redis-dev', port: 6380}, {host: 'redis-dev', port: 6381}]);  // security: use port: 16379 for cluster mode ?
+//const subClient = pubClient.duplicate();
 const pubClient =     new Redis(config);
 const subClient =     new Redis(config);
 const sessionClient = new Redis(config);

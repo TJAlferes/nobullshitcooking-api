@@ -13,6 +13,7 @@ import {
   validCreatingStaff, validUpdatingStaff,
   validLoginRequest, validLogin
 } from '../../lib/validations';
+import { io } from '../../index';
 
 const SALT_ROUNDS = 10;
 
@@ -91,7 +92,13 @@ export class StaffAuthController {
   }
 
   async logout(req: Request, res: Response) {
-    req.session!.destroy(function() {});
+    const sessionId = req.session.id;
+
+    req.session!.destroy(function() {
+      io.in(sessionId).disconnectSockets();
+      res.status(204);
+    });
+
     return res.end();
   }
 
