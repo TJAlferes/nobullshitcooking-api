@@ -61,7 +61,7 @@ export class Friendship implements IFriendship {
 
   async viewAccepted(userId: number) {
     const sql = `
-      SELECT u.id AS user_id, u.username f.status
+      SELECT u.id AS user_id, u.username, f.status
       FROM users u
       INNER JOIN friendships f ON u.id = f.friend_id
       WHERE f.user_id = ? AND f.status = "accepted"
@@ -72,7 +72,7 @@ export class Friendship implements IFriendship {
 
   async viewPending(userId: number) {
     const sql = `
-      SELECT u.id AS user_id, u.username f.status
+      SELECT u.id AS user_id, u.username, f.status
       FROM users u
       INNER JOIN friendships f ON u.id = f.friend_id
       WHERE f.user_id = ? AND f.status = "pending-received"
@@ -83,7 +83,7 @@ export class Friendship implements IFriendship {
 
   async viewBlocked(userId: number) {
     const sql = `
-      SELECT u.id AS user_id, u.username f.status
+      SELECT u.id AS user_id, u.username, f.status
       FROM users u
       INNER JOIN friendships f ON u.id = f.friend_id
       WHERE f.user_id = ? AND f.status = "blocked"

@@ -6,18 +6,16 @@ import connectRedis, { Client }                     from 'connect-redis';
 //import cookieParser                                 from 'cookie-parser';
 import cors                                         from 'cors';
 import express, { Request, Response, NextFunction } from 'express';
-//import { pinoHttp }                                 from 'pino-http';
 const pino = require('pino-http')();
 import expressRateLimit                             from 'express-rate-limit';  // Use https://github.com/animir/node-rate-limiter-flexible instead?
-import expressSession, { Session, SessionOptions }  from 'express-session';
+import expressSession, { Session }  from 'express-session';
 import helmet                                       from 'helmet';
 //import hpp                                          from 'hpp';
-import { createServer }                             from 'http';
+import { createServer, IncomingMessage }            from 'http';
 import { Redis }                                    from 'ioredis';
 import { Pool }                                     from 'mysql2/promise';
 import { Server as SocketIOServer, Socket }         from 'socket.io';
-import { ExtendedError }                            from 'socket.io/dist/namespace';
-import { createAdapter }                            from '@socket.io/redis-adapter';
+import { createAdapter, RedisAdapter }                            from '@socket.io/redis-adapter';
 
 import { sendMessage, sendPrivateMessage, joinRoom, disconnecting, getOnlineFriends, getUsersInRoom, rejoinRoom, IMessage } from './chat';
 import { Friendship, User } from './access/mysql';
@@ -97,9 +95,24 @@ export function appServer(pool: Pool, { sessionClient, pubClient, subClient }: R
     pingTimeout: 60000
   });
 
-  io.engine.use(sessionMiddleware);
-
   io.adapter(createAdapter(pubClient, subClient));
+
+  //io.engine.use(sessionMiddleware);
+  io.use((socket, next) => {
+    sessionMiddleware(socket.request as Request, {} as Response, next as NextFunction);
+  });
+
+  io.use((socket, next) => {  // middleware executed for every incoming socket
+    //if ( (!sessionId) || (parsedCookie['connect.sid'] === sessionId) ) return next(new Error('Not authenticated.'));
+    const sessionId =        socket.request.session.id;
+    const { id, username } = socket.request.session.userInfo!;
+    if (!sessionId || !id || !username) return next(new Error('Not authenticated.'));
+
+    const chatStore = new ChatStore(pubClient);
+    chatStore.createUser({sessionId, username});
+    console.log("chatStore.createUser called in middleware");
+    return next();
+  });
 
   io.on('connection', (socket: Socket) => {
     const sessionId =        socket.request.session.id;
@@ -111,7 +124,7 @@ export function appServer(pool: Pool, { sessionClient, pubClient, subClient }: R
     const friendship = new Friendship(pool);
     const chatStore =  new ChatStore(pubClient);
 
-    chatStore.createUser({sessionId, username});
+    //chatStore.createUser({sessionId, username});
 
     socket.join(sessionId);
 
@@ -137,12 +150,9 @@ export function appServer(pool: Pool, { sessionClient, pubClient, subClient }: R
     socket.on('error',         (error: Error) => console.log('error: ', error));
     socket.on('disconnecting', async (reason: string) => await disconnecting({sessionId, id, username, socket, chatStore, friendship}));
     /*socket.on('disconnect',    async (reason: string) => {
-      console.log('disconnect reason: ', reason);
-      const matchingSockets = await io.in(userId).allSockets();
-      const disconnected = matchingSockets.size === 0;
-      if (disconnected) {
-        socket.broadcast.emit('user disconnected', userId);
-        sessionStore.save(sessionId, {userId, username, connected: "false"});
+      const sockets = await io.in(sessionId).fetchSockets();
+      if (sockets.length === 0) {  // no more active connections for the given user
+        chatStore.deleteUser(username);
       }
     });*/
   });
@@ -210,6 +220,7 @@ export type RedisClients = {
   //workerClient: Redis;
 }
 
+//import { ExtendedError } from 'socket.io/dist/namespace';
 //type Next = (err?: ExtendedError | undefined) => void;
 
 interface IClientToServerEvents {

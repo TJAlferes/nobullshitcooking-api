@@ -40,7 +40,7 @@ export class ChatStore implements IChatStore {
       .exec();
   }
 
-  async createRoom(room: string) {  // not needed?
+  async createRoom(room: string) {
     if (room !== '') await this.client.zadd('rooms', Date.now(), room);
   }
 

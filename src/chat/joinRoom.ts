@@ -16,7 +16,7 @@ export async function joinRoom({ room, sessionId, username, socket, chatStore }:
   }
 
   socket.join(room);
-  chatStore.createRoom(room);  // ?
+  chatStore.createRoom(room);
   chatStore.addUserToRoom(username, room);
   socket.broadcast.to(room).emit('UserJoinedRoom', username);
 
