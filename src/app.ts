@@ -58,7 +58,7 @@ export function appServer(pool: Pool, { sessionClient, pubClient, subClient }: R
 
   app.use(pino);
   app.use(express.json());
-  app.use(express.urlencoded({extended: false}));
+  app.use(express.urlencoded({extended: true}));
   app.use(expressRateLimit({max: 100, windowMs: 1 * 60 * 1000}));  // limit each IP address's requests per minute
   app.use(sessionMiddleware);
   app.use(cors({
