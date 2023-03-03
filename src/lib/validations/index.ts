@@ -1,7 +1,26 @@
 import bcrypt from 'bcrypt';
+import { RowDataPacket } from 'mysql2/promise';
 import { array, defaulted, number, object, optional, string } from 'superstruct';
 
 import { IStaff, IUser } from '../../access/mysql';
+
+export const validSearchTerm = string();
+
+export const validSearchRequest = object({
+  term:           string(),
+  filters:        object({
+    equipmentTypes:    array(string()),
+    ingredientTypes:   array(string()),
+    recipeTypes:       array(string()),
+    methods:           array(string()),
+    cuisines:          array(string()),
+    productCategories: array(string()),
+    productTypes:      array(string())
+  }),
+  sorts:          object({}),  // TO DO: FINISH
+  currentPage:    number(),  // OFFSET in MySQL
+  resultsPerPage: number()   // LIMIT in MySQL
+});
 
 export const validEquipment = object({
   equipmentTypeId: number(),
@@ -197,4 +216,29 @@ type Resend = Login;
 
 type Verify = Login & {
   confirmationCode: string;
+};
+
+export type SearchRequest = {
+  term:           string;
+  filters:        {
+    [index: string]: string[];
+    equipmentTypes:    string[],
+    ingredientTypes:   string[],
+    recipeTypes:       string[],
+    methods:           string[],
+    cuisines:          string[],
+    productCategories: string[],
+    productTypes:      string[]
+  };
+  sorts:          {};
+  currentPage:    number;  // OFFSET in MySQL
+  resultsPerPage: number;  // LIMIT in MySQL
+};
+
+export type SearchResponse = {
+  results:      RowDataPacket[];
+  totalResults: number;
+  startPage:    number;
+  endPage:      number;
+  totalPages:   number;
 };

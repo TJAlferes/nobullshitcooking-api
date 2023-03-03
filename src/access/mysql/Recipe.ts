@@ -1,5 +1,7 @@
 import { Pool, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
+import type { SearchRequest, SearchResponse } from '../../lib/validations';
+
 export class Recipe implements IRecipe {
   pool: Pool;
 
@@ -68,25 +70,46 @@ export class Recipe implements IRecipe {
       WHERE r.owner_id = ?
     `;
 
-    // move most of this into a service
-
     // order matters
+    if (term) {
+      sql += ` AND r.title LIKE ?`;
+    }
     if (neededFilters.recipeTypes.length > 0) {
       const placeholders = '?,'.repeat(neededFilters.recipeTypes.length).slice(0, -1);
       sql += ` AND recipe_type_name IN (${placeholders})`;
     }
     if (neededFilters.methods.length > 0) {
       const placeholders = '?,'.repeat(neededFilters.methods.length).slice(0, -1);
-      sql += ` AND JSON_OVERLAPS(method_names, ${placeholders})`;
+      sql += ` AND JSON_OVERLAPS(method_names, [${placeholders}])`;
     }
     if (neededFilters.cuisines.length > 0) {
       const placeholders = '?,'.repeat(neededFilters.cuisines.length).slice(0, -1);
       sql += ` AND cuisine_code IN (${placeholders})`;
     }
+    //if (neededSorts)
 
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId, neededFilters.recipeTypes, neededFilters.methods, neededFilters.cuisines]);  // order matters
+    const params = [
+      ownerId,
+      term && `%${term}%`,
+      ...neededFilters.recipeTypes,
+      ...neededFilters.methods,
+      ...neededFilters.cuisines,
+      //...neededSorts,
+    ];  // order matters
 
-    return rows;
+    const [ [ totalResults ] ] = await this.pool.execute<RowDataPacket[]>(`SELECT COUNT(*) FROM (${sql})`, params);
+
+    sql += ` LIMIT ? OFFSET ?`;
+
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [...params, resultsPerPage, (currentPage - 1)]);  // order matters
+
+    return {
+      results:      rows,
+      totalResults: Number(totalResults),
+      startPage:    0,
+      endPage:      0,
+      totalPages:   Number(totalResults) / resultsPerPage
+    };
   }
 
   async getPrivateIds(userId: number) {
@@ -346,7 +369,7 @@ type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
 export interface IRecipe {
   pool:                                                     Pool;
   auto(term: string):                                       Data;
-  search(searchRequest: SearchRequest):                     Data;
+  search(searchRequest: SearchRequest):                     Promise<SearchResponse>;
   getPrivateIds(userId: number):                            Promise<number[]>;
   viewAll(authorId: number, ownerId: number):               Data;
   viewOne(id: number, authorId: number, ownerId: number):   Data;
@@ -379,22 +402,6 @@ export type ICreatingRecipe = {
 export type IUpdatingRecipe = ICreatingRecipe & {
   id: number;
   //  what about prevImage ?
-};
-
-export type SearchRequest = {
-  term:           string;    // setTerm
-  filters:        {
-    equipmentTypes:    string[],
-    ingredientTypes:   string[],
-    recipeTypes:       string[],
-    methods:           string[],
-    cuisines:          string[],
-    productCategories: string[],
-    productTypes:      string[]
-  };                       // setFilters (add, remove, clear)
-  sorts:          {};      // setSorts   (add, remove, clear)
-  currentPage:    number;  // setCurrentPage     // OFFSET in MySQL
-  resultsPerPage: number;  // setResultsPerPage  // LIMIT in MySQL
 };
 
 /*interface ISavingRecipe {

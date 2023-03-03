@@ -1,5 +1,7 @@
 import { Pool, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
+import type { SearchRequest } from '../../lib/validations';
+
 export class Product implements IProduct {
   pool: Pool;
 
@@ -18,7 +20,7 @@ export class Product implements IProduct {
     return [];
   }
 
-  async search(term: string) {
+  async search({ term, filters, sorts, currentPage, resultsPerPage }: SearchRequest) {
     const sql = `
       SELECT
         p.id,
@@ -155,14 +157,14 @@ type Data = Promise<RowDataPacket[]>;
 type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
 
 export interface IProduct {
-  pool:                              Pool;
-  auto(term: string):                Data;
-  search(term: string):              Data;
-  viewAll():                         Data;
-  viewOne(id: number):               Data;
-  create(product: ICreatingProduct): DataWithHeader;
-  update(product: IUpdatingProduct): Data;
-  deleteOne(id: number):             Data;
+  pool:                                 Pool;
+  auto(term: string):                   Data;
+  search(searchRequest: SearchRequest): Data;
+  viewAll():                            Data;
+  viewOne(id: number):                  Data;
+  create(product: ICreatingProduct):    DataWithHeader;
+  update(product: IUpdatingProduct):    Data;
+  deleteOne(id: number):                Data;
 }
 
 type ICreatingProduct = {

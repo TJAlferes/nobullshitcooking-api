@@ -1,5 +1,7 @@
 import { Pool, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
+import type { SearchRequest } from '../../lib/validations';
+
 export class Ingredient implements IIngredient {
   pool: Pool;
 
@@ -32,7 +34,7 @@ export class Ingredient implements IIngredient {
     return rows;
   }
 
-  async search(term: string) {
+  async search({ term, filters, sorts, currentPage, resultsPerPage }: SearchRequest) {
     const ownerId = 1;  // only public ingredients are searchable
     const wildcards = `%${term}%`;
     const sql = `
@@ -151,7 +153,7 @@ type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
 export interface IIngredient {
   pool:                                                   Pool;
   auto(term: string):                                     Data;
-  search(term: string):                                   Data;
+  search(searchRequest: SearchRequest):                   Data;
   viewAll(authorId: number, ownerId: number):             Data;
   viewOne(id: number, authorId: number, ownerId: number): Data;
   create(ingredient: ICreatingIngredient):                DataWithHeader;

@@ -1,5 +1,7 @@
 import { Pool, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
+import type { SearchRequest } from '../../lib/validations';
+
 export class Equipment implements IEquipment {
   pool: Pool;
   
@@ -19,7 +21,7 @@ export class Equipment implements IEquipment {
     return [];
   }
 
-  async search(term: string) {
+  async search({ term, filters, sorts, currentPage, resultsPerPage }: SearchRequest) {
     const ownerId = 1;  // only public equipment are searchable
     const sql = `
       SELECT
@@ -114,7 +116,7 @@ type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
 export interface IEquipment {
   pool:                                                   Pool;
   auto(term: string):                                     Data;
-  search(term: string):                                   Data;
+  search(searchRequest: SearchRequest):                   Data;
   viewAll(authorId: number, ownerId: number):             Data;
   viewOne(id: number, authorId: number, ownerId: number): Data;
   create(equipment: ICreatingEquipment):                  DataWithHeader;
