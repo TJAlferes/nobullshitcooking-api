@@ -238,7 +238,7 @@ export type SearchRequest = {
 export type SearchResponse = {
   results:      RowDataPacket[];
   totalResults: number;
-  startPage:    number;
-  endPage:      number;
+  //startPage:    number;
+  //endPage:      number;
   totalPages:   number;
 };

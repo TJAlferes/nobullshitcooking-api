@@ -33,36 +33,10 @@ export class Recipe implements IRecipe {
         r.id,
         u.username AS author,
         rt.name    AS recipe_type_name,
-        c.code     AS cuisine_code,
         c.name     AS cuisine_name,
         r.title,
         r.description,
-        r.directions,
-        r.recipe_image,
-        (
-          SELECT JSON_ARRAYAGG(m.name)
-          FROM methods m
-          INNER JOIN recipe_methods rm ON rm.method_id = m.id
-          WHERE rm.recipe_id = r.id
-        ) method_names,
-        (
-          SELECT JSON_ARRAYAGG(e.name)
-          FROM equipment e
-          INNER JOIN recipe_equipment re ON re.equipment_id = e.id
-          WHERE re.recipe_id = r.id
-        ) equipment_names,
-        (
-          SELECT JSON_ARRAYAGG(i.name)
-          FROM ingredients i
-          INNER JOIN recipe_ingredients ri ON ri.ingredient_id = i.id
-          WHERE ri.recipe_id = r.id
-        ) ingredient_names,
-        (
-          SELECT JSON_ARRAYAGG(r.title)
-          FROM recipes r
-          INNER JOIN recipe_subrecipes rs ON rs.subrecipe_id = r.id
-          WHERE rs.recipe_id = r.id
-        ) subrecipe_titles
+        r.recipe_image
       FROM recipes r
       INNER JOIN users u         ON u.id = r.author_id
       INNER JOIN recipe_types rt ON rt.id = r.recipe_type_id
@@ -80,11 +54,19 @@ export class Recipe implements IRecipe {
     }
     if (neededFilters.methods.length > 0) {
       const placeholders = '?,'.repeat(neededFilters.methods.length).slice(0, -1);
-      sql += ` AND JSON_OVERLAPS(method_names, [${placeholders}])`;
+      sql += ` AND JSON_OVERLAPS(
+        (
+          SELECT JSON_ARRAYAGG(m.name)
+          FROM methods m
+          INNER JOIN recipe_methods rm ON rm.method_id = m.id
+          WHERE rm.recipe_id = r.id
+        ),
+        [${placeholders}]
+      )`;
     }
     if (neededFilters.cuisines.length > 0) {
       const placeholders = '?,'.repeat(neededFilters.cuisines.length).slice(0, -1);
-      sql += ` AND cuisine_code IN (${placeholders})`;
+      sql += ` AND c.code IN (${placeholders})`;
     }
     //if (neededSorts)
 
@@ -97,19 +79,19 @@ export class Recipe implements IRecipe {
       //...neededSorts,
     ];  // order matters
 
-    const [ [ totalResults ] ] = await this.pool.execute<RowDataPacket[]>(`SELECT COUNT(*) FROM (${sql})`, params);
+    const [ [ count ] ] = await this.pool.execute<RowDataPacket[]>(`SELECT COUNT(*) FROM (${sql})`, params);
+    const totalResults = Number(count);
+    
+    const limit =  resultsPerPage;
+    const offset = (currentPage - 1) * resultsPerPage;
 
     sql += ` LIMIT ? OFFSET ?`;
 
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [...params, resultsPerPage, (currentPage - 1)]);  // order matters
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [...params, limit, offset]);  // order matters
 
-    return {
-      results:      rows,
-      totalResults: Number(totalResults),
-      startPage:    0,
-      endPage:      0,
-      totalPages:   Number(totalResults) / resultsPerPage
-    };
+    const totalPages = (totalResults <= resultsPerPage) ? 1 : Math.ceil(totalResults / resultsPerPage);
+
+    return {results: rows, totalResults, totalPages};
   }
 
   async getPrivateIds(userId: number) {
@@ -417,5 +399,4 @@ export type IUpdatingRecipe = ICreatingRecipe & {
   equipment_names:  string[];
   ingredient_names: string[];
   subrecipe_titles: string[];
-  //video: string; ?
 }*/
