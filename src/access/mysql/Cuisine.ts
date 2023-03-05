@@ -10,13 +10,13 @@ export class Cuisine implements ICuisine {
   }
 
   async viewAll() {
-    const sql = `SELECT id, name, nation FROM cuisines`;
+    const sql = `SELECT id, continent, code, name, country FROM cuisines`;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql);
     return rows;
   }
 
   async viewOne(id: number) {
-    const sql = `SELECT id, name, nation FROM cuisines WHERE id = ?`;
+    const sql = `SELECT id, continent, code, name, country FROM cuisines WHERE id = ?`;
     const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
     return row;
   }

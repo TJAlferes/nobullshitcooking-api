@@ -27,7 +27,6 @@ export class Recipe implements IRecipe {
 
   async search({ term, filters, sorts, currentPage, resultsPerPage }: SearchRequest) {
     const ownerId = 1;  // only public recipes are searchable
-    const neededFilters = {recipeTypes: filters.recipeTypes, methods: filters.methods, cuisines: filters.cuisines};  // subset of filters
     let sql = `
       SELECT
         r.id,
@@ -45,9 +44,15 @@ export class Recipe implements IRecipe {
     `;
 
     // order matters
-    if (term) {
-      sql += ` AND r.title LIKE ?`;
-    }
+
+    if (term) sql += ` AND r.title LIKE ?`;
+
+    const neededFilters = {
+      recipeTypes: filters?.recipeTypes ?? [],
+      methods:     filters?.methods ?? [],
+      cuisines:    filters?.cuisines ?? []
+    };  // subset of filters
+
     if (neededFilters.recipeTypes.length > 0) {
       const placeholders = '?,'.repeat(neededFilters.recipeTypes.length).slice(0, -1);
       sql += ` AND recipe_type_name IN (${placeholders})`;
@@ -68,6 +73,7 @@ export class Recipe implements IRecipe {
       const placeholders = '?,'.repeat(neededFilters.cuisines.length).slice(0, -1);
       sql += ` AND c.code IN (${placeholders})`;
     }
+
     //if (neededSorts)
 
     const params = [
@@ -82,14 +88,14 @@ export class Recipe implements IRecipe {
     const [ [ count ] ] = await this.pool.execute<RowDataPacket[]>(`SELECT COUNT(*) FROM (${sql})`, params);
     const totalResults = Number(count);
     
-    const limit =  resultsPerPage;
-    const offset = (currentPage - 1) * resultsPerPage;
+    const limit =  resultsPerPage ? Number(resultsPerPage)            : 20;
+    const offset = currentPage    ? (Number(currentPage) - 1) * limit : 0;
 
     sql += ` LIMIT ? OFFSET ?`;
 
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [...params, limit, offset]);  // order matters
 
-    const totalPages = (totalResults <= resultsPerPage) ? 1 : Math.ceil(totalResults / resultsPerPage);
+    const totalPages = (totalResults <= limit) ? 1 : Math.ceil(totalResults / limit);
 
     return {results: rows, totalResults, totalPages};
   }

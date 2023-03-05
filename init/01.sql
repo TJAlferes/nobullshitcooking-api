@@ -7,9 +7,11 @@ USE nobsc;
 
 
 CREATE TABLE cuisines (
-  `id`     tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
-  `name`   varchar(40)      NOT NULL DEFAULT '',
-  `nation` varchar(40)      NOT NULL DEFAULT ''  UNIQUE
+  `id`        tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
+  `continent` varchar(2)       NOT NULL DEFAULT '',
+  `code`      varchar(3)       NOT NULL DEFAULT ''  UNIQUE,
+  `name`      varchar(40)      NOT NULL DEFAULT '',
+  `country`   varchar(40)      NOT NULL DEFAULT ''  UNIQUE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE equipment_types (
@@ -354,7 +356,7 @@ INSERT INTO cuisines (id, continent, code, name, country) VALUES
 (29, "AF", "LBY", "Libyan",                   "Libya"),
 (30, "AF", "MDG", "Malagasy",                 "Madagascar"),
 (31, "AF", "MWI", "Malawian",                 "Malawi"),
-(32, "AF", "MLT", "Malian",                   "Mali"),
+(32, "AF", "MLI", "Malian",                   "Mali"),
 (33, "AF", "MRT", "Mauritanian",              "Mauritania"),
 (34, "AF", "MUS", "Mauritius",                "Mauritius"),
 (35, "AF", "MAR", "Moroccan",                 "Morocco"),
@@ -484,7 +486,6 @@ INSERT INTO cuisines (id, continent, code, name, country) VALUES
 (156, "EU", "ISL", "Icelandic",              "Iceland"),
 (157, "EU", "IRL", "Irish",                  "Ireland"),
 (158, "EU", "ITA", "Italian",                "Italy"),
-(159, "EU", "KIR", "Kiribati",               "Kiribati"),
 (160, "EU", "XXK", "Kosovan",                "Kosovo"),
 (161, "EU", "LVA", "Latvian",                "Latvia"),
 (162, "EU", "LIE", "Liechtensteiner",        "Liechtenstein"),

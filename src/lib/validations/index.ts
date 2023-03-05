@@ -1,25 +1,25 @@
 import bcrypt from 'bcrypt';
 import { RowDataPacket } from 'mysql2/promise';
-import { array, defaulted, number, object, optional, string } from 'superstruct';
+import { array, defaulted, Infer, number, object, optional, string } from 'superstruct';
 
 import { IStaff, IUser } from '../../access/mysql';
 
 export const validSearchTerm = string();
 
 export const validSearchRequest = object({
-  term:           string(),
-  filters:        object({
-    equipmentTypes:    array(string()),
-    ingredientTypes:   array(string()),
-    recipeTypes:       array(string()),
-    methods:           array(string()),
-    cuisines:          array(string()),
-    productCategories: array(string()),
-    productTypes:      array(string())
-  }),
-  sorts:          object({}),  // TO DO: FINISH
-  currentPage:    number(),  // OFFSET in MySQL
-  resultsPerPage: number()   // LIMIT in MySQL
+  term:           optional(string()),
+  filters:        optional(object({
+    equipmentTypes:    optional(array(string())),
+    ingredientTypes:   optional(array(string())),
+    recipeTypes:       optional(array(string())),
+    methods:           optional(array(string())),
+    cuisines:          optional(array(string())),
+    productCategories: optional(array(string())),
+    productTypes:      optional(array(string()))
+  })),
+  sorts:          optional(object({})),  // TO DO: FINISH
+  currentPage:    optional(string()),
+  resultsPerPage: optional(string())
 });
 
 export const validEquipment = object({
@@ -218,27 +218,27 @@ type Verify = Login & {
   confirmationCode: string;
 };
 
-export type SearchRequest = {
-  term:           string;
-  filters:        {
-    [index: string]: string[];
-    equipmentTypes:    string[],
-    ingredientTypes:   string[],
-    recipeTypes:       string[],
-    methods:           string[],
-    cuisines:          string[],
-    productCategories: string[],
-    productTypes:      string[]
+export type SearchRequest = Infer<typeof validSearchRequest>;
+
+/*export type SearchRequest = {
+  term?:           string;    // setTerm
+  filters?:        {
+    //[index: string]: string[];
+    equipmentTypes?:    string[],
+    ingredientTypes?:   string[],
+    recipeTypes?:       string[],
+    methods?:           string[],
+    cuisines?:          string[],
+    productCategories?: string[],
+    productTypes?:      string[]
   };
-  sorts:          {};
-  currentPage:    number;  // OFFSET in MySQL
-  resultsPerPage: number;  // LIMIT in MySQL
-};
+  sorts?:          {};
+  currentPage?:    string;  // setCurrentPage     // OFFSET in MySQL = (currentPage - 1) * resultsPerPage
+  resultsPerPage?: string;  // setResultsPerPage  // LIMIT  in MySQL = resultsPerPage
+};*/
 
 export type SearchResponse = {
   results:      RowDataPacket[];
   totalResults: number;
-  //startPage:    number;
-  //endPage:      number;
   totalPages:   number;
 };
