@@ -22,15 +22,15 @@ export function searchRouter(pool: Pool) {
   const sanitizeCurrentPage =       querySanitizer('currentPage');
   const defaults = [sanitizeTerm, sanitizeSorts, sanitizeResultsPerPage, sanitizeCurrentPage]
 
-  router.post('/auto/equipment',   [sanitizeTerm], catchExceptions(controller.autoEquipment));
-  router.post('/auto/ingredients', [sanitizeTerm], catchExceptions(controller.autoIngredients));
-  router.post('/auto/recipes',     [sanitizeTerm], catchExceptions(controller.autoRecipes));
-  router.post('/auto/products',    [sanitizeTerm], catchExceptions(controller.autoProducts));
+  router.get('/auto/equipment',   [sanitizeTerm], catchExceptions(controller.autoEquipment));
+  router.get('/auto/ingredients', [sanitizeTerm], catchExceptions(controller.autoIngredients));
+  router.get('/auto/recipes',     [sanitizeTerm], catchExceptions(controller.autoRecipes));
+  router.get('/auto/products',    [sanitizeTerm], catchExceptions(controller.autoProducts));
   
-  router.post('/find/equipment',   [...defaults, sanitizeEquipmentFilters],  catchExceptions(controller.searchEquipment));
-  router.post('/find/ingredients', [...defaults, sanitizeIngredientFilters], catchExceptions(controller.searchIngredients));
-  router.post('/find/recipes',     [...defaults, sanitizeRecipeFilters],     catchExceptions(controller.searchRecipes));
-  router.post('/find/products',    [...defaults, sanitizeProductFilters],    catchExceptions(controller.searchProducts));
+  router.get('/find/equipment',   [...defaults, sanitizeEquipmentFilters],  catchExceptions(controller.searchEquipment));
+  router.get('/find/ingredients', [...defaults, sanitizeIngredientFilters], catchExceptions(controller.searchIngredients));
+  router.get('/find/recipes',     [...defaults, sanitizeRecipeFilters],     catchExceptions(controller.searchRecipes));
+  router.get('/find/products',    [...defaults, sanitizeProductFilters],    catchExceptions(controller.searchProducts));
 
   return router;
 }

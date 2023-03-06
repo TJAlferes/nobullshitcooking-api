@@ -45,7 +45,12 @@ export class Recipe implements IRecipe {
 
     // order matters
 
-    if (term) sql += ` AND r.title LIKE ?`;
+    const params: Array<number|string> = [ownerId];
+
+    if (term) {
+      sql += ` AND r.title LIKE ?`;
+      params.push(`%${term}%`);
+    }
 
     const neededFilters = {
       recipeTypes: filters?.recipeTypes ?? [],
@@ -54,38 +59,40 @@ export class Recipe implements IRecipe {
     };  // subset of filters
 
     if (neededFilters.recipeTypes.length > 0) {
+      console.log('---recipeTypes: ', neededFilters.recipeTypes);
       const placeholders = '?,'.repeat(neededFilters.recipeTypes.length).slice(0, -1);
-      sql += ` AND recipe_type_name IN (${placeholders})`;
+      console.log('===recipeTypesPlaceholders: ', placeholders);
+      sql += ` AND rt.name IN (${placeholders})`;
+      params.push(...neededFilters.recipeTypes);
     }
+
     if (neededFilters.methods.length > 0) {
+      console.log('---methods: ', neededFilters.methods);
       const placeholders = '?,'.repeat(neededFilters.methods.length).slice(0, -1);
+      console.log('===methodsPlaceholders: ', placeholders);
       sql += ` AND JSON_OVERLAPS(
         (
-          SELECT JSON_ARRAYAGG(m.name)
+          JSON_ARRAYAGG(m.name)
           FROM methods m
           INNER JOIN recipe_methods rm ON rm.method_id = m.id
           WHERE rm.recipe_id = r.id
         ),
         [${placeholders}]
-      )`;
+      ) IS TRUE`;
+      params.push(...neededFilters.methods);
     }
+
     if (neededFilters.cuisines.length > 0) {
+      console.log('---cuisines: ', neededFilters.cuisines);
       const placeholders = '?,'.repeat(neededFilters.cuisines.length).slice(0, -1);
-      sql += ` AND c.code IN (${placeholders})`;
+      console.log('===cuisinesPlaceholders: ', placeholders);
+      sql += ` AND c.code IN (${placeholders})`;  
+      params.push(...neededFilters.cuisines);
     }
 
     //if (neededSorts)
 
-    const params = [
-      ownerId,
-      term && `%${term}%`,
-      ...neededFilters.recipeTypes,
-      ...neededFilters.methods,
-      ...neededFilters.cuisines,
-      //...neededSorts,
-    ];  // order matters
-
-    const [ [ count ] ] = await this.pool.execute<RowDataPacket[]>(`SELECT COUNT(*) FROM (${sql})`, params);
+    const [ [ count ] ] = await this.pool.execute<RowDataPacket[]>(`SELECT COUNT(*) FROM (${sql}) results`, params);
     const totalResults = Number(count);
     
     const limit =  resultsPerPage ? Number(resultsPerPage)            : 20;
@@ -93,7 +100,7 @@ export class Recipe implements IRecipe {
 
     sql += ` LIMIT ? OFFSET ?`;
 
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [...params, limit, offset]);  // order matters
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [...params, `${limit}`, `${offset}`]);  // order matters
 
     const totalPages = (totalResults <= limit) ? 1 : Math.ceil(totalResults / limit);
 
