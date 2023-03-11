@@ -12,7 +12,7 @@ const router = Router();
 export function searchRouter(pool: Pool) {
   const controller = new SearchController(pool);
 
-  const sanitizeTerm =              querySanitizer('term');
+  const sanitizeTerm =              query('term').trim().escape().notEmpty();
   const sanitizeEquipmentFilters =  querySanitizer('filters.equipmentTypes.*');
   const sanitizeIngredientFilters = querySanitizer('filters.ingredientTypes.*');
   const sanitizeRecipeFilters =     querySanitizer(['filters.recipeTypes.*', 'filters.methods.*', 'filters.cuisines.*']);

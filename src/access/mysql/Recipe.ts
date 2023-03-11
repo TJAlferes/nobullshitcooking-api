@@ -22,7 +22,10 @@ export class Recipe implements IRecipe {
   }
 
   async auto(term: string) {
-    return [];
+    const ownerId = 1;  // only public recipes are searchable
+    const sql = `SELECT id, title FROM recipes WHERE title LIKE ? AND owner_id = ? LIMIT 5`;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [`%${term}%`, ownerId]);
+    return rows;
   }
 
   async search({ term, filters, sorts, currentPage, resultsPerPage }: SearchRequest) {
@@ -59,9 +62,7 @@ export class Recipe implements IRecipe {
     };  // subset of filters
 
     if (neededFilters.recipeTypes.length > 0) {
-      console.log('---recipeTypes: ', neededFilters.recipeTypes);
       const placeholders = '?,'.repeat(neededFilters.recipeTypes.length).slice(0, -1);
-      console.log('===recipeTypesPlaceholders: ', placeholders);
       sql += ` AND rt.name IN (${placeholders})`;
       params.push(...neededFilters.recipeTypes);
     }
@@ -83,9 +84,7 @@ export class Recipe implements IRecipe {
     }
 
     if (neededFilters.cuisines.length > 0) {
-      console.log('---cuisines: ', neededFilters.cuisines);
       const placeholders = '?,'.repeat(neededFilters.cuisines.length).slice(0, -1);
-      console.log('===cuisinesPlaceholders: ', placeholders);
       sql += ` AND c.code IN (${placeholders})`;  
       params.push(...neededFilters.cuisines);
     }
@@ -101,6 +100,11 @@ export class Recipe implements IRecipe {
     sql += ` LIMIT ? OFFSET ?`;
 
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [...params, `${limit}`, `${offset}`]);  // order matters
+    console.log('>>>sql', sql);
+    console.log('>>>params', params);
+    console.log('>>>limit', limit);
+    console.log('>>>offset', offset);
+    console.log('>>>rows', rows);
 
     const totalPages = (totalResults <= limit) ? 1 : Math.ceil(totalResults / limit);
 
