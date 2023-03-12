@@ -1,21 +1,19 @@
 'use strict';
 
 import compression                                  from 'compression';
-import connectRedis, { Client }                     from 'connect-redis';
-//import cookie                                       from 'cookie';
-//import cookieParser                                 from 'cookie-parser';
+import RedisStore                                   from "connect-redis"
 import cors                                         from 'cors';
 import express, { Request, Response, NextFunction } from 'express';
-const pino = require('pino-http')();
 import expressRateLimit                             from 'express-rate-limit';  // Use https://github.com/animir/node-rate-limiter-flexible instead?
-import expressSession, { Session }  from 'express-session';
+import expressSession, { Session }                  from 'express-session';
 import helmet                                       from 'helmet';
-//import hpp                                          from 'hpp';
+import hpp                                          from 'hpp';
 import { createServer, IncomingMessage }            from 'http';
 import { Redis }                                    from 'ioredis';
 import { Pool }                                     from 'mysql2/promise';
 import { Server as SocketIOServer, Socket }         from 'socket.io';
-import { createAdapter, RedisAdapter }                            from '@socket.io/redis-adapter';
+import { createAdapter, RedisAdapter }              from '@socket.io/redis-adapter';
+const pino = require('pino-http')();
 
 import { sendMessage, sendPrivateMessage, joinRoom, disconnecting, getOnlineFriends, getUsersInRoom, rejoinRoom, IMessage } from './chat';
 import { Friendship, User } from './access/mysql';
@@ -35,8 +33,7 @@ export function appServer(pool: Pool, { sessionClient, pubClient, subClient }: R
 
   */
   
-  const RedisStore =        connectRedis(expressSession);
-  const redisSession =      new RedisStore({client: sessionClient});
+  const redisStore = new RedisStore({client: sessionClient});
   const sessionMiddleware = expressSession({
     cookie: (app.get('env') === 'production') ? {
       httpOnly: true,    // if true, client-side JS can NOT see the cookie in document.cookie
@@ -52,7 +49,7 @@ export function appServer(pool: Pool, { sessionClient, pubClient, subClient }: R
     resave:            false,
     saveUninitialized: false,
     secret:            process.env.SESSION_SECRET || "secret",
-    store:             redisSession,
+    store:             redisStore,
     unset:             "destroy"
   });
 
@@ -67,8 +64,21 @@ export function appServer(pool: Pool, { sessionClient, pubClient, subClient }: R
   }));
   //app.options('*', cors());  // //
   app.use(helmet());
-  //app.use(hpp());  // necessary?
-  //app.use(csurf());  // this lib is no longer maintained! is csrf protection still necessary? if so, find a different solution
+  app.use(hpp());
+  app.use('/search/*', hpp({
+    whitelist: [
+      'filter',
+      'filters.equipmentTypes',
+      'filters.ingredientTypes',
+      'filters.recipeTypes',
+      'filters.methods',
+      'filters.cuisines',
+      'filters.productTypes',
+      'filters.productCategories',
+      'sorts',
+    ]
+  }));
+  //app.use(csurf());  // no longer maintained! is csrf protection still necessary? if so, find a different solution
   app.use(compression());
 
   /*
@@ -103,7 +113,6 @@ export function appServer(pool: Pool, { sessionClient, pubClient, subClient }: R
   });
 
   io.use((socket, next) => {  // middleware executed for every incoming socket
-    //if ( (!sessionId) || (parsedCookie['connect.sid'] === sessionId) ) return next(new Error('Not authenticated.'));
     const sessionId =        socket.request.session.id;
     const { id, username } = socket.request.session.userInfo!;
     if (!sessionId || !id || !username) return next(new Error('Not authenticated.'));
@@ -214,10 +223,10 @@ declare module "http" {
 }*/
 
 export type RedisClients = {
-  pubClient:  Redis;  // | Cluster;
-  subClient:  Redis;  // | Cluster;
-  sessionClient: Client;
-  //workerClient: Redis;
+  pubClient:     Redis;  // | Cluster;
+  subClient:     Redis;  // | Cluster;
+  sessionClient: RedisStore; //Client;
+  //workerClient:  Redis;
 }
 
 //import { ExtendedError } from 'socket.io/dist/namespace';

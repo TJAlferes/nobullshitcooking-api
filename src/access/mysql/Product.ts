@@ -1,6 +1,6 @@
 import { Pool, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
-import type { SearchRequest } from '../../lib/validations';
+import type { SearchRequest, SearchResponse } from '../../lib/validations';
 
 export class Product implements IProduct {
   pool: Pool;
@@ -17,11 +17,13 @@ export class Product implements IProduct {
   }
 
   async auto(term: string) {
-    return [];
+    const sql = `SELECT id, brand, variety, name, fullname FROM products WHERE name LIKE ? LIMIT 5`;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [`%${term}%`]);
+    return rows;
   }
 
   async search({ term, filters, sorts, currentPage, resultsPerPage }: SearchRequest) {
-    const sql = `
+    let sql = `
       SELECT
         p.id,
         c.name AS product_category_name,
@@ -37,8 +39,46 @@ export class Product implements IProduct {
       INNER JOIN product_categories c ON c.id = p.product_category_id
       INNER JOIN product_types t      ON t.id = p.product_type_id
     `;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql);
-    return rows;
+
+    // order matters
+
+    const params: Array<number|string> = [];
+
+    if (term) {
+      sql += ` WHERE p.fullname LIKE ?`;
+      params.push(`%${term}%`);
+    }
+
+    const productCategories = filters?.productCategories ?? [];
+    const productTypes = filters?.productTypes ?? [];
+
+    if (productCategories.length > 0) {
+      const placeholders = '?,'.repeat(productCategories.length).slice(0, -1);
+      sql += ` AND c.name IN (${placeholders})`;
+      params.push(...productCategories);
+    }
+
+    if (productTypes.length > 0) {
+      const placeholders = '?,'.repeat(productTypes.length).slice(0, -1);
+      sql += ` AND t.name IN (${placeholders})`;
+      params.push(...productTypes);
+    }
+
+    //if (neededSorts)
+
+    const [ [ count ] ] = await this.pool.execute<RowDataPacket[]>(`SELECT COUNT(*) FROM (${sql}) results`, params);
+    const totalResults = Number(count);
+    
+    const limit =  resultsPerPage ? Number(resultsPerPage)            : 20;
+    const offset = currentPage    ? (Number(currentPage) - 1) * limit : 0;
+
+    sql += ` LIMIT ? OFFSET ?`;
+
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [...params, `${limit}`, `${offset}`]);  // order matters
+
+    const totalPages = (totalResults <= limit) ? 1 : Math.ceil(totalResults / limit);
+
+    return {results: rows, totalResults, totalPages};
   }
 
   async viewAll() {
@@ -159,7 +199,7 @@ type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
 export interface IProduct {
   pool:                                 Pool;
   auto(term: string):                   Data;
-  search(searchRequest: SearchRequest): Data;
+  search(searchRequest: SearchRequest): Promise<SearchResponse>;
   viewAll():                            Data;
   viewOne(id: number):                  Data;
   create(product: ICreatingProduct):    DataWithHeader;

@@ -55,21 +55,19 @@ export class Recipe implements IRecipe {
       params.push(`%${term}%`);
     }
 
-    const neededFilters = {
-      recipeTypes: filters?.recipeTypes ?? [],
-      methods:     filters?.methods ?? [],
-      cuisines:    filters?.cuisines ?? []
-    };  // subset of filters
+    const recipeTypes = filters?.recipeTypes ?? [];
+    const methods     = filters?.methods ?? [];
+    const cuisines    = filters?.cuisines ?? [];
 
-    if (neededFilters.recipeTypes.length > 0) {
-      const placeholders = '?,'.repeat(neededFilters.recipeTypes.length).slice(0, -1);
+    if (recipeTypes.length > 0) {
+      const placeholders = '?,'.repeat(recipeTypes.length).slice(0, -1);
       sql += ` AND rt.name IN (${placeholders})`;
-      params.push(...neededFilters.recipeTypes);
+      params.push(...recipeTypes);
     }
 
-    if (neededFilters.methods.length > 0) {
-      console.log('---methods: ', neededFilters.methods);
-      const placeholders = '?,'.repeat(neededFilters.methods.length).slice(0, -1);
+    if (methods.length > 0) {
+      console.log('---methods: ', methods);
+      const placeholders = '?,'.repeat(methods.length).slice(0, -1);
       console.log('===methodsPlaceholders: ', placeholders);
       sql += ` AND JSON_OVERLAPS(
         (
@@ -80,33 +78,34 @@ export class Recipe implements IRecipe {
         ),
         [${placeholders}]
       ) IS TRUE`;
-      params.push(...neededFilters.methods);
+      params.push(...methods);
     }
 
-    if (neededFilters.cuisines.length > 0) {
-      const placeholders = '?,'.repeat(neededFilters.cuisines.length).slice(0, -1);
+    if (cuisines.length > 0) {
+      const placeholders = '?,'.repeat(cuisines.length).slice(0, -1);
       sql += ` AND c.code IN (${placeholders})`;  
-      params.push(...neededFilters.cuisines);
+      params.push(...cuisines);
     }
 
     //if (neededSorts)
 
     const [ [ count ] ] = await this.pool.execute<RowDataPacket[]>(`SELECT COUNT(*) FROM (${sql}) results`, params);
+    console.log('>>>count', count);
     const totalResults = Number(count);
+    console.log('>>>totalResults', totalResults);
     
     const limit =  resultsPerPage ? Number(resultsPerPage)            : 20;
     const offset = currentPage    ? (Number(currentPage) - 1) * limit : 0;
+    console.log('>>>limit', limit);
+    console.log('>>>offset', offset);
 
     sql += ` LIMIT ? OFFSET ?`;
 
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [...params, `${limit}`, `${offset}`]);  // order matters
-    console.log('>>>sql', sql);
-    console.log('>>>params', params);
-    console.log('>>>limit', limit);
-    console.log('>>>offset', offset);
-    console.log('>>>rows', rows);
+    //console.log('>>>params', params);
 
     const totalPages = (totalResults <= limit) ? 1 : Math.ceil(totalResults / limit);
+    console.log('>>>totalPages', totalPages);
 
     return {results: rows, totalResults, totalPages};
   }

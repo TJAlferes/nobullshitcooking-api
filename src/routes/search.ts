@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { query } from 'express-validator';
-import { Pool } from 'mysql2/promise';
+import { query }  from 'express-validator';
+import { Pool }   from 'mysql2/promise';
 
 import { SearchController } from '../controllers';
-import { catchExceptions } from '../lib/utils';
+import { catchExceptions }  from '../lib/utils';
 
 const router = Router();
 
@@ -20,7 +20,7 @@ export function searchRouter(pool: Pool) {
   const sanitizeSorts =             querySanitizer('sorts.*');
   const sanitizeResultsPerPage =    querySanitizer('resultsPerPage');
   const sanitizeCurrentPage =       querySanitizer('currentPage');
-  const defaults = [sanitizeTerm, sanitizeSorts, sanitizeResultsPerPage, sanitizeCurrentPage]
+  const defaults =                  [sanitizeTerm, sanitizeSorts, sanitizeResultsPerPage, sanitizeCurrentPage];
 
   router.get('/auto/equipment',   [sanitizeTerm], catchExceptions(controller.autoEquipment));
   router.get('/auto/ingredients', [sanitizeTerm], catchExceptions(controller.autoIngredients));

@@ -1,6 +1,6 @@
 import { Pool, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
-import type { SearchRequest } from '../../lib/validations';
+import type { SearchRequest, SearchResponse } from '../../lib/validations';
 
 export class Ingredient implements IIngredient {
   pool: Pool;
@@ -19,25 +19,14 @@ export class Ingredient implements IIngredient {
 
   async auto(term: string) {
     const ownerId = 1;  // only public ingredients are suggestible
-    const wildcards = `%${term}%`;
-    const sql = `
-      SELECT
-        i.id,
-        i.brand,
-        i.variety,
-        i.name,
-        i.fullname
-      FROM ingredients i
-      WHERE i.owner_id = ? AND i.name LIKE ?
-    `;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId, wildcards]);
+    const sql = `SELECT id, brand, variety, name, fullname FROM equipment WHERE name LIKE ? AND owner_id = ? LIMIT 5`;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [`%${term}%`, ownerId]);
     return rows;
   }
 
   async search({ term, filters, sorts, currentPage, resultsPerPage }: SearchRequest) {
     const ownerId = 1;  // only public ingredients are searchable
-    const wildcards = `%${term}%`;
-    const sql = `
+    let sql = `
       SELECT
         i.id,
         t.name AS ingredient_type_name,
@@ -49,10 +38,41 @@ export class Ingredient implements IIngredient {
         i.image
       FROM ingredients i
       INNER JOIN ingredient_types t ON t.id = i.ingredient_type_id
-      WHERE i.owner_id = ? AND i.name LIKE ?
+      WHERE i.owner_id = ?
     `;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId, wildcards]);
-    return rows;
+
+    // order matters
+
+    const params: Array<number|string> = [ownerId];
+
+    if (term) {
+      sql += ` AND i.fullname LIKE ?`;
+      params.push(`%${term}%`);
+    }
+
+    const ingredientTypes = filters?.ingredientTypes ?? [];
+
+    if (ingredientTypes.length > 0) {
+      const placeholders = '?,'.repeat(ingredientTypes.length).slice(0, -1);
+      sql += ` AND t.name IN (${placeholders})`;
+      params.push(...ingredientTypes);
+    }
+
+    //if (neededSorts)
+
+    const [ [ count ] ] = await this.pool.execute<RowDataPacket[]>(`SELECT COUNT(*) FROM (${sql}) results`, params);
+    const totalResults = Number(count);
+    
+    const limit =  resultsPerPage ? Number(resultsPerPage)            : 20;
+    const offset = currentPage    ? (Number(currentPage) - 1) * limit : 0;
+
+    sql += ` LIMIT ? OFFSET ?`;
+
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [...params, `${limit}`, `${offset}`]);  // order matters
+
+    const totalPages = (totalResults <= limit) ? 1 : Math.ceil(totalResults / limit);
+
+    return {results: rows, totalResults, totalPages};
   }
 
   async viewAll(authorId: number, ownerId: number) {
@@ -153,7 +173,7 @@ type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
 export interface IIngredient {
   pool:                                                   Pool;
   auto(term: string):                                     Data;
-  search(searchRequest: SearchRequest):                   Data;
+  search(searchRequest: SearchRequest):                   Promise<SearchResponse>;
   viewAll(authorId: number, ownerId: number):             Data;
   viewOne(id: number, authorId: number, ownerId: number): Data;
   create(ingredient: ICreatingIngredient):                DataWithHeader;
