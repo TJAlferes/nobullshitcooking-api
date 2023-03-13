@@ -19,7 +19,7 @@ export class Equipment implements IEquipment {
 
   async auto(term: string) {
     const ownerId = 1;  // only public equipment are searchable
-    const sql = `SELECT id, name, FROM equipment WHERE name LIKE ? AND owner_id = ? LIMIT 5`;
+    const sql = `SELECT id, name AS text FROM equipment WHERE name LIKE ? AND owner_id = ? LIMIT 5`;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [`%${term}%`, ownerId]);
     return rows;
   }
@@ -57,7 +57,7 @@ export class Equipment implements IEquipment {
 
     //if (neededSorts)
 
-    const [ [ count ] ] = await this.pool.execute<RowDataPacket[]>(`SELECT COUNT(*) FROM (${sql}) results`, params);
+    const [ [ { count } ] ] = await this.pool.execute<RowDataPacket[]>(`SELECT COUNT(*) AS count FROM (${sql}) results`, params);
     const totalResults = Number(count);
     
     const limit =  resultsPerPage ? Number(resultsPerPage)            : 20;

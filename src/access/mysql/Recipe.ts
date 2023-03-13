@@ -23,7 +23,7 @@ export class Recipe implements IRecipe {
 
   async auto(term: string) {
     const ownerId = 1;  // only public recipes are searchable
-    const sql = `SELECT id, title FROM recipes WHERE title LIKE ? AND owner_id = ? LIMIT 5`;
+    const sql = `SELECT id, title AS text FROM recipes WHERE title LIKE ? AND owner_id = ? LIMIT 5`;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [`%${term}%`, ownerId]);
     return rows;
   }
@@ -66,9 +66,7 @@ export class Recipe implements IRecipe {
     }
 
     if (methods.length > 0) {
-      console.log('---methods: ', methods);
       const placeholders = '?,'.repeat(methods.length).slice(0, -1);
-      console.log('===methodsPlaceholders: ', placeholders);
       sql += ` AND JSON_OVERLAPS(
         (
           JSON_ARRAYAGG(m.name)
@@ -89,20 +87,15 @@ export class Recipe implements IRecipe {
 
     //if (neededSorts)
 
-    const [ [ count ] ] = await this.pool.execute<RowDataPacket[]>(`SELECT COUNT(*) FROM (${sql}) results`, params);
-    console.log('>>>count', count);
+    const [ [ { count } ] ] = await this.pool.execute<RowDataPacket[]>(`SELECT COUNT(*) AS count FROM (${sql}) results`, params);
     const totalResults = Number(count);
-    console.log('>>>totalResults', totalResults);
     
     const limit =  resultsPerPage ? Number(resultsPerPage)            : 20;
     const offset = currentPage    ? (Number(currentPage) - 1) * limit : 0;
-    console.log('>>>limit', limit);
-    console.log('>>>offset', offset);
 
     sql += ` LIMIT ? OFFSET ?`;
 
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [...params, `${limit}`, `${offset}`]);  // order matters
-    //console.log('>>>params', params);
 
     const totalPages = (totalResults <= limit) ? 1 : Math.ceil(totalResults / limit);
     console.log('>>>totalPages', totalPages);

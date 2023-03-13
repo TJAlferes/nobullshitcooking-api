@@ -19,7 +19,7 @@ export class Ingredient implements IIngredient {
 
   async auto(term: string) {
     const ownerId = 1;  // only public ingredients are suggestible
-    const sql = `SELECT id, brand, variety, name, fullname FROM equipment WHERE name LIKE ? AND owner_id = ? LIMIT 5`;
+    const sql = `SELECT id, brand, variety, name, fullname AS text FROM ingredients WHERE name LIKE ? AND owner_id = ? LIMIT 5`;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [`%${term}%`, ownerId]);
     return rows;
   }
@@ -60,7 +60,7 @@ export class Ingredient implements IIngredient {
 
     //if (neededSorts)
 
-    const [ [ count ] ] = await this.pool.execute<RowDataPacket[]>(`SELECT COUNT(*) FROM (${sql}) results`, params);
+    const [ [ { count } ] ] = await this.pool.execute<RowDataPacket[]>(`SELECT COUNT(*) AS count FROM (${sql}) results`, params);
     const totalResults = Number(count);
     
     const limit =  resultsPerPage ? Number(resultsPerPage)            : 20;

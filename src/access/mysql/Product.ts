@@ -17,7 +17,7 @@ export class Product implements IProduct {
   }
 
   async auto(term: string) {
-    const sql = `SELECT id, brand, variety, name, fullname FROM products WHERE name LIKE ? LIMIT 5`;
+    const sql = `SELECT id, brand, variety, name, fullname AS text FROM products WHERE name LIKE ? LIMIT 5`;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [`%${term}%`]);
     return rows;
   }
@@ -66,7 +66,7 @@ export class Product implements IProduct {
 
     //if (neededSorts)
 
-    const [ [ count ] ] = await this.pool.execute<RowDataPacket[]>(`SELECT COUNT(*) FROM (${sql}) results`, params);
+    const [ [ { count } ] ] = await this.pool.execute<RowDataPacket[]>(`SELECT COUNT(*) AS count FROM (${sql}) results`, params);
     const totalResults = Number(count);
     
     const limit =  resultsPerPage ? Number(resultsPerPage)            : 20;
