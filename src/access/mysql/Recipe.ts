@@ -48,7 +48,7 @@ export class Recipe implements IRecipe {
 
     // order matters
 
-    const params: Array<number|string> = [ownerId];
+    let params: Array<number|string> = [ownerId];
 
     if (term) {
       sql += ` AND r.title LIKE ?`;
@@ -67,15 +67,16 @@ export class Recipe implements IRecipe {
 
     if (methods.length > 0) {
       const placeholders = '?,'.repeat(methods.length).slice(0, -1);
+      // I don't believe this is optimal, but it's the best solution I know of for now. -- tjalferes, March 19th 2023
       sql += ` AND JSON_OVERLAPS(
+        JSON_ARRAY(${placeholders}),
         (
-          JSON_ARRAYAGG(m.name)
+          SELECT JSON_ARRAYAGG(m.name)
           FROM methods m
           INNER JOIN recipe_methods rm ON rm.method_id = m.id
           WHERE rm.recipe_id = r.id
-        ),
-        [${placeholders}]
-      ) IS TRUE`;
+        )
+      )`;
       params.push(...methods);
     }
 
