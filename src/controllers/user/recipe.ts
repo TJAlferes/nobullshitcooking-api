@@ -42,22 +42,22 @@ export class UserRecipeController {
   }
 
   async viewOnePrivate(req: Request, res: Response) {
-    const id =       Number(req.body.id);
+    const title =    req.body.title;
     const authorId = req.session.userInfo!.id;
     const ownerId =  req.session.userInfo!.id;
 
     const recipe = new Recipe(this.pool);
-    const [ row ] = await recipe.viewOne(id, authorId, ownerId);
+    const [ row ] = await recipe.viewOne(title, authorId, ownerId);
     return res.send(row);
   }
 
   async viewOnePublic(req: Request, res: Response) {
-    const id =       Number(req.body.id);
+    const title =    req.body.title;
     const authorId = req.session.userInfo!.id;
     const ownerId =  1;
 
     const recipe = new Recipe(this.pool)
-    const [ row ] = await recipe.viewOne(id, authorId, ownerId);
+    const [ row ] = await recipe.viewOne(title, authorId, ownerId);
     return res.send(row);
   }
 

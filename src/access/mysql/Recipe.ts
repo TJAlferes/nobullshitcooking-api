@@ -10,6 +10,7 @@ export class Recipe implements IRecipe {
     this.auto =          this.auto.bind(this);
     this.search =        this.search.bind(this);
     this.getPrivateIds = this.getPrivateIds.bind(this);
+    this.viewTitles =    this.viewTitles.bind(this);
     this.viewAll =       this.viewAll.bind(this);
     this.viewOne =       this.viewOne.bind(this);
     this.create =        this.create.bind(this);
@@ -112,6 +113,12 @@ export class Recipe implements IRecipe {
     return ids;
   }
 
+  async viewTitles(authorId: number, ownerId: number) {  // for Next.js getStaticPaths
+    const sql = `SELECT title FROM recipes WHERE author_id = ? AND owner_id = ?`;
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [authorId, ownerId]);
+    return rows;
+  }
+
   async viewAll(authorId: number, ownerId: number) {
     const sql = `
       SELECT id, recipe_type_id, cuisine_id, title, recipe_image, owner_id
@@ -123,7 +130,7 @@ export class Recipe implements IRecipe {
     return rows;
   }
 
-  async viewOne(id: number, authorId: number, ownerId: number) {
+  async viewOne(title: string, authorId: number, ownerId: number) {
     const sql = `
       SELECT
         r.id,
@@ -180,9 +187,9 @@ export class Recipe implements IRecipe {
       INNER JOIN users u         ON u.id = r.author_id
       INNER JOIN recipe_types rt ON rt.id = r.recipe_type_id
       INNER JOIN cuisines c      ON c.id = r.cuisine_id
-      WHERE r.id = ? AND r.author_id = ? AND r.owner_id = ?
+      WHERE r.title = ? AND r.author_id = ? AND r.owner_id = ?
     `;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id, authorId, ownerId]);
+    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [title, authorId, ownerId]);
     return row;
   }
 
@@ -359,19 +366,20 @@ type Data = Promise<RowDataPacket[]>;
 type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
 
 export interface IRecipe {
-  pool:                                                     Pool;
-  auto(term: string):                                       Data;
-  search(searchRequest: SearchRequest):                     Promise<SearchResponse>;
-  getPrivateIds(userId: number):                            Promise<number[]>;
-  viewAll(authorId: number, ownerId: number):               Data;
-  viewOne(id: number, authorId: number, ownerId: number):   Data;
-  create(recipe: ICreatingRecipe):                          DataWithHeader;
-  edit(id: number, authorId: number, ownerId: number):      Data;
-  update(recipe: IUpdatingRecipe):                          Data;
-  disownAll(authorId: number):                              void;
-  disownOne(id: number, authorId: number):                  Data;
-  deleteAll(authorId: number, ownerId: number):             void;
-  deleteOne(id: number, authorId: number, ownerId: number): Data;
+  pool:                                                      Pool;
+  auto(term: string):                                        Data;
+  search(searchRequest: SearchRequest):                      Promise<SearchResponse>;
+  getPrivateIds(userId: number):                             Promise<number[]>;
+  viewTitles(authorId: number, ownerId: number):             Data;
+  viewAll(authorId: number, ownerId: number):                Data;
+  viewOne(title: string, authorId: number, ownerId: number): Data;
+  create(recipe: ICreatingRecipe):                           DataWithHeader;
+  edit(id: number, authorId: number, ownerId: number):       Data;
+  update(recipe: IUpdatingRecipe):                           Data;
+  disownAll(authorId: number):                               void;
+  disownOne(id: number, authorId: number):                   Data;
+  deleteAll(authorId: number, ownerId: number):              void;
+  deleteOne(id: number, authorId: number, ownerId: number):  Data;
 }
 
 export type ICreatingRecipe = {
