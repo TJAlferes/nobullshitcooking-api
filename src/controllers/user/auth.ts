@@ -154,7 +154,7 @@ export class UserAuthController {
       favoriteRecipe.deleteAllByUserId(userId),
       savedRecipe.deleteAllByUserId(userId)
     ]);
-    await recipe.disownAll(userId);
+    await recipe.disownAllByAuthorId(userId);
     const recipeIds = await recipe.getPrivateIds(userId);  // CAREFUL! Double check this.
     await Promise.all([
       recipeEquipment.deleteByRecipeIds(recipeIds),
@@ -163,7 +163,7 @@ export class UserAuthController {
       recipeSubrecipe.deleteByRecipeIds(recipeIds),
       recipeSubrecipe.deleteBySubrecipeIds(recipeIds)
     ]);
-    await recipe.deleteAll(userId, userId);  // CAREFUL! Double check this.
+    await recipe.deleteAllByOwnerId(userId);  // CAREFUL! Double check this.
     await Promise.all([equipment.deleteAll(userId), ingredient.deleteAll(userId)]);
 
     // ... Then delete the user.

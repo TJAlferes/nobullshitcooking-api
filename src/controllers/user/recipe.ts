@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { Pool } from 'mysql2/promise';
-import { assert } from 'superstruct';
+import { Pool }              from 'mysql2/promise';
+import { assert }            from 'superstruct';
 
 import { Recipe, RecipeEquipment, RecipeIngredient, RecipeMethod, RecipeSubrecipe } from '../../access/mysql';
 import { createRecipeService, updateRecipeService } from '../../lib/services';
@@ -12,12 +12,10 @@ export class UserRecipeController {
   constructor(pool: Pool) {
     this.pool = pool;
     this.viewAllPrivate = this.viewAllPrivate.bind(this);
-    this.viewAllPublic =  this.viewAllPublic.bind(this);
     this.viewOnePrivate = this.viewOnePrivate.bind(this);
+    this.viewAllPublic =  this.viewAllPublic.bind(this);
     this.viewOnePublic =  this.viewOnePublic.bind(this);
     this.create =         this.create.bind(this);
-    this.editPrivate =    this.editPrivate.bind(this);
-    this.editPublic =     this.editPublic.bind(this);
     this.update =         this.update.bind(this);
     this.deleteOne =      this.deleteOne.bind(this);
     this.disownOne =      this.disownOne.bind(this);
@@ -32,6 +30,16 @@ export class UserRecipeController {
     return res.send(rows);
   }
 
+  async viewOnePrivate(req: Request, res: Response) {
+    const title =    req.body.title;  // still use id ?
+    const authorId = req.session.userInfo!.id;
+    const ownerId =  req.session.userInfo!.id;
+
+    const recipe = new Recipe(this.pool);
+    const [ row ] = await recipe.viewOne(title, authorId, ownerId);
+    return res.send(row);
+  }
+
   async viewAllPublic(req: Request, res: Response) {
     const authorId = req.session.userInfo!.id;
     const ownerId =  1;
@@ -41,19 +49,15 @@ export class UserRecipeController {
     return res.send(rows);
   }
 
-  async viewOnePrivate(req: Request, res: Response) {
-    const title =    req.body.title;
-    const authorId = req.session.userInfo!.id;
-    const ownerId =  req.session.userInfo!.id;
-
-    const recipe = new Recipe(this.pool);
-    const [ row ] = await recipe.viewOne(title, authorId, ownerId);
-    return res.send(row);
-  }
-
   async viewOnePublic(req: Request, res: Response) {
-    const title =    req.body.title;
-    const authorId = req.session.userInfo!.id;
+    function unslugify(title: string) {
+      return title.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    }
+
+    const title = unslugify(req.params.title);
+    const author = unslugify(req.params.usename);
+    //const title =    req.body.title;
+    //const authorId = req.session.userInfo!.id;
     const ownerId =  1;
 
     const recipe = new Recipe(this.pool)
@@ -109,10 +113,12 @@ export class UserRecipeController {
     const recipeSubrecipe =  new RecipeSubrecipe(this.pool);
     await createRecipeService({
       creatingRecipe,
+
       methods,
       equipment,
       ingredients,
       subrecipes,
+
       recipe,
       recipeMethod,
       recipeEquipment,
@@ -121,26 +127,6 @@ export class UserRecipeController {
     });
 
     return res.send({message: 'Recipe created.'});
-  }
-
-  async editPrivate(req: Request, res: Response) {
-    const id =       Number(req.body.id);
-    const authorId = req.session.userInfo!.id;
-    const ownerId =  req.session.userInfo!.id;
-
-    const recipe = new Recipe(this.pool);
-    const [ row ] = await recipe.edit(id, authorId, ownerId);
-    return res.send(row);
-  }
-
-  async editPublic(req: Request, res: Response) {
-    const id =       Number(req.body.id);
-    const authorId = req.session.userInfo!.id;
-    const ownerId =  1;
-
-    const recipe = new Recipe(this.pool);
-    const [ row ] = await recipe.edit(id, authorId, ownerId);
-    return res.send(row);
   }
 
   async update(req: Request, res: Response) {
@@ -194,10 +180,12 @@ export class UserRecipeController {
     await updateRecipeService({
       recipeId: id,
       updatingRecipe,
+
       methods,
       equipment,
       ingredients,
       subrecipes,
+
       recipe,
       recipeMethod,
       recipeEquipment,
@@ -232,7 +220,7 @@ export class UserRecipeController {
 
     // TO DO: what about deleting from plans???
     const recipe = new Recipe(this.pool);
-    await recipe.deleteOne(id, authorId, ownerId);
+    await recipe.deleteOneByOwnerId(id, ownerId);
 
     return res.send({message: 'Recipe deleted.'});
   }
@@ -242,7 +230,7 @@ export class UserRecipeController {
     const authorId = req.session.userInfo!.id;
 
     const recipe = new Recipe(this.pool);
-    await recipe.disownOne(id, authorId);
+    await recipe.disownOneByAuthorId(id, authorId);
 
     return res.send({message: 'Recipe disowned.'});
   }

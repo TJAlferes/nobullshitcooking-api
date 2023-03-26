@@ -5,7 +5,7 @@ import { getSignedUrl }               from "@aws-sdk/s3-request-presigner";
 import { Request, Response }          from 'express';
 import { v4 as uuidv4 }               from 'uuid';
 
-const region =                        "us-east-1";
+const region =                 "us-east-1";
 const USER_BUCKET =            process.env.AWS_S3_USER_BUCKET!;
 const USER_ACCESS_KEY_ID =     process.env.AWS_S3_USER_ACCESS_KEY_ID!;
 const USER_SECRET_ACCESS_KEY = process.env.AWS_S3_USER_SECRET_ACCESS_KEY!;

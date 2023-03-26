@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { body } from 'express-validator';
-import { Pool } from 'mysql2/promise';
+import { body }   from 'express-validator';
+import { Pool }   from 'mysql2/promise';
 
-import { UserRecipeController } from '../../controllers/user';
+import { UserRecipeController }        from '../../controllers/user';
 import { catchExceptions, userIsAuth } from '../../lib/utils';
 
 const router = Router();
@@ -11,8 +11,10 @@ const router = Router();
 
 export function userRecipeRouter(pool: Pool) {
   const controller = new UserRecipeController(pool);
-
-  router.post('/create', userIsAuth, [body([
+  
+  // TO DO: sanitize the requireds with *
+  const recipeInfo = [
+    'ownership',
     'recipeTypeId',
     'cuisineId',
     'title',
@@ -20,42 +22,30 @@ export function userRecipeRouter(pool: Pool) {
     'activeTime',
     'totalTime',
     'directions',
+    //'methods.*.id',
+    //'equipment*',
+    //'ingredients*',
+    //'subrecipes*',
     'recipeImage',
     'equipmentImage',
     'ingredientsImage',
     'cookingImage',
-    'ownership',
     'video'
-  ]).not().isEmpty().trim().escape()], catchExceptions(controller.create));
+  ];
+  const sanitizedId =    body('id').not().isEmpty().trim().escape();
+  const sanitizedTitle = body('title').not().isEmpty().trim().escape();
 
-  router.put('/update', userIsAuth, [body([
-    'id',
-    'recipeTypeId',
-    'cuisineId',
-    'title',
-    'description',
-    'activeTime',
-    'totalTime',
-    'directions',
-    'recipeImage',
-    'equipmentImage',
-    'ingredientsImage',
-    'cookingImage',
-    'ownership',
-    'video'
-  ]).not().isEmpty().trim().escape()], catchExceptions(controller.update));
+  router.post('/private',     userIsAuth,                   catchExceptions(controller.viewAllPrivate));  // only viewable by this logged in user
+  router.post('/private/one', userIsAuth, [sanitizedId],    catchExceptions(controller.viewOnePrivate));  // only viewable by this logged in user
+  router.post('/public',                                    catchExceptions(controller.viewAllPublic));  // move? remove?
+  router.post('/public/one',              [sanitizedTitle], catchExceptions(controller.viewOnePublic));  // move? remove?
 
-  router.delete('/delete/private', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.deleteOne));
-  router.delete('/disown/public',  userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.disownOne));  // TO DO: change to router.put
+  router.post('/create', userIsAuth, [body(recipeInfo).not().isEmpty().trim().escape()], catchExceptions(controller.create));
 
-  router.post('/private', userIsAuth, catchExceptions(controller.viewAllPrivate));
-  router.post('/public',  userIsAuth, catchExceptions(controller.viewAllPublic));
+  router.put('/update',  userIsAuth, [body(['id', ...recipeInfo]).not().isEmpty().trim().escape()], catchExceptions(controller.update));
 
-  router.post('/private/one', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.viewOnePrivate));
-  router.post('/public/one',  userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.viewOnePublic));
-
-  router.post('/edit/private', userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.editPrivate));
-  router.post('/edit/public',  userIsAuth, [body('id').not().isEmpty().trim().escape()], catchExceptions(controller.editPublic));
+  router.delete('/delete',     userIsAuth, [sanitizedId], catchExceptions(controller.deleteOne));
+  router.delete('/disown',     userIsAuth, [sanitizedId], catchExceptions(controller.disownOne));  // TO DO: router.put ?
 
   return router;
 }
