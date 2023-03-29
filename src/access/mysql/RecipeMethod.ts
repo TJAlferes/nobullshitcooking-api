@@ -32,14 +32,13 @@ export class RecipeMethod implements IRecipeMethod {
   
   async update(recipeId: number, placeholders: string, recipeMethods: number[]) {
     const sql1 = `DELETE FROM recipe_methods WHERE recipe_id = ?`;
-    const sql2 = (recipeMethods.length) ? `INSERT INTO recipe_methods (recipe_id, method_id) VALUES ${placeholders}` : "none";
+    const sql2 = recipeMethods.length ? `INSERT INTO recipe_methods (recipe_id, method_id) VALUES ${placeholders}` : undefined;
     const conn = await this.pool.getConnection();
     await conn.beginTransaction();
     try {
-      // Rather than updating current values in the database, we delete them,
-      // and, if there are new values, we insert them. (WHY?)
+      // Rather than updating current values in the database, we delete them, and, if there are new values, we insert them.
       await conn.query(sql1, [recipeId]);
-      if (sql2 !== "none") {
+      if (sql2) {
         const [ rows ] = await conn.query(sql2, recipeMethods);
         await conn.commit();
         return rows;

@@ -34,13 +34,13 @@ export class RecipeIngredient implements IRecipeIngredient {
   
   async update(recipeId: number, placeholders: string, recipeIngredients: number[]) {
     const sql1 = `DELETE FROM recipe_ingredients WHERE recipe_id = ?`;
-    const sql2 = (recipeIngredients.length) ? `INSERT INTO recipe_ingredients (recipe_id, amount, measurement_id, ingredient_id) VALUES ${placeholders}` : "none";
+    const sql2 = recipeIngredients.length ? `INSERT INTO recipe_ingredients (recipe_id, amount, measurement_id, ingredient_id) VALUES ${placeholders}` : undefined;
     const conn = await this.pool.getConnection();
     await conn.beginTransaction();
     try {
-      // Rather than updating current values in the database, we delete them, and, if there are new values, we insert them.
+      // Rather than updating current values in the database, we delete them, and, if there are new values, we insert them. 
       await conn.query(sql1, [recipeId]);
-      if (sql2 !== "none") {
+      if (sql2) {
         const [ rows ] = await conn.query(sql2, recipeIngredients);
         await conn.commit();
         return rows;

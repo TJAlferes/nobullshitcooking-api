@@ -3,8 +3,8 @@ import { Pool }              from 'mysql2/promise';
 import { assert }            from 'superstruct';
 
 import { Recipe, RecipeEquipment, RecipeIngredient, RecipeMethod, RecipeSubrecipe } from '../../access/mysql';
-import { createRecipeService, updateRecipeService } from '../../lib/services';
-import { validRecipe } from '../../lib/validations';
+import { createRecipeService, updateRecipeService }                                 from '../../lib/services';
+import { validRecipe }                                                              from '../../lib/validations';
 
 export class UserRecipeController {
   pool: Pool;
@@ -199,7 +199,6 @@ export class UserRecipeController {
   async deleteOne(req: Request, res: Response) {
     // transaction(s)?: TO DO: TRIGGERS
     const id =       Number(req.body.id);
-    const authorId = req.session.userInfo!.id;
     const ownerId =  req.session.userInfo!.id;
 
     //const favoriteRecipe =   new FavoriteRecipe(this.pool);

@@ -12,7 +12,7 @@ const router = Router();
 export function recipeRouter(pool: Pool) {
   const controller = new RecipeController(pool);
 
-  //router.get('/', catchExceptions(controller.viewAll));  // remove ?
+  //router.get('/', catchExceptions(controller.viewAll));  // remove ? you need these for the planner
   router.get('/titles', catchExceptions(controller.viewTitles));
   router.get('/:title', [param('title').not().isEmpty().trim().escape()], catchExceptions(controller.viewOne));
 

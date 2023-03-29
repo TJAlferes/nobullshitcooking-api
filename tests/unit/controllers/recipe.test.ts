@@ -3,14 +3,17 @@ import { Pool } from 'mysql2/promise';
 
 import { RecipeController } from '../../../src/controllers';
 
-const pool: Partial<Pool> = {};
-const controller = new RecipeController(<Pool>pool);
+const controller = new RecipeController({} as Pool);
 
-const row = {id: 1, name: "Name"};
+const row =  {id: 1, name: "Name"};
 const rows = [{id: 1, name: "Name"}, {id: 2, name: "Name"}];
+
 jest.mock('../../../src/access/mysql', () => ({
-  Recipe: jest.fn().mockImplementation(() => ({view: mockview, viewById: mockviewById}))
+  Recipe: jest.fn().mockImplementation(() => ({
+    view:     mockview,
+    viewById: mockviewById}))
 }));
+
 let mockview =     jest.fn().mockResolvedValue(rows);
 let mockviewById = jest.fn().mockResolvedValue([row]);
 

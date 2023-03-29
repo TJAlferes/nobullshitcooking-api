@@ -44,8 +44,8 @@ export function userRecipeRouter(pool: Pool) {
 
   router.put('/update',  userIsAuth, [body(['id', ...recipeInfo]).not().isEmpty().trim().escape()], catchExceptions(controller.update));
 
-  router.delete('/delete',     userIsAuth, [sanitizedId], catchExceptions(controller.deleteOne));
-  router.delete('/disown',     userIsAuth, [sanitizedId], catchExceptions(controller.disownOne));  // TO DO: router.put ?
+  router.delete('/delete', userIsAuth, [sanitizedId], catchExceptions(controller.deleteOne));
+  router.delete('/disown', userIsAuth, [sanitizedId], catchExceptions(controller.disownOne));  // TO DO: router.put ?
 
   return router;
 }

@@ -20,10 +20,12 @@ import { validRecipeEquipment, validRecipeIngredient, validRecipeMethod, validRe
 export async function updateRecipeService({
   recipeId,
   updatingRecipe,
+
   equipment,
   ingredients,
   methods,
   subrecipes,
+
   recipe,
   recipeEquipment,
   recipeIngredient,
@@ -33,7 +35,7 @@ export async function updateRecipeService({
   await recipe.update({id: recipeId, ...updatingRecipe});
 
   /*
-  NOTE: order matters! (because these inserts must match the database tables column orders)
+  NOTE: order matters! The order of elements in the `values` array must match the database tables column orders
   
   recipeId, (method)Id
   recipeId, amount, (equipment)Id

@@ -35,16 +35,14 @@ export class RecipeSubrecipe implements IRecipeSubrecipe {
   
   async update(recipeId: number, placeholders: string, recipeSubrecipes: number[]) {
     const sql1 = `DELETE FROM recipe_subrecipes WHERE recipe_id = ?`;
-    const sql2 = (recipeSubrecipes.length) ? `INSERT INTO recipe_subrecipes (recipe_id, amount, measurement_id, subrecipe_id) VALUES ${placeholders}` : "none";
+    const sql2 = recipeSubrecipes.length ? `INSERT INTO recipe_subrecipes (recipe_id, amount, measurement_id, subrecipe_id) VALUES ${placeholders}` : undefined;
     const conn = await this.pool.getConnection();
     await conn.beginTransaction();
     try {
-      // Rather than updating current values in the database, we delete them,
-      // and, if there are new values, we insert them.
+      // Rather than updating current values in the database, we delete them, and, if there are new values, we insert them.
       await conn.query(sql1, [recipeId]);
-      if (sql2 !== "none") {
-        const [ rows ] = await conn
-        .query(sql2, recipeSubrecipes);
+      if (sql2) {
+        const [ rows ] = await conn.query(sql2, recipeSubrecipes);
         await conn.commit();
         return rows;
       }
