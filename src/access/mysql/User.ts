@@ -67,15 +67,15 @@ export class User implements IUser {
 type Row = Promise<RowDataPacket>;
 
 export interface IUser {
-  pool:                         Pool;
-  getByEmail(email: string):    Row;
-  getByName(username: string):  Row;
-  viewById(userId: number):     Row;
-  viewByName(username: string): Row;
-  create(user: ICreatingUser):  Row;
-  verify(email: string):        Row;
-  update(user: IUpdatingUser):  Row;
-  deleteById(userId: number):   Row;
+  pool:       Pool;
+  getByEmail: (email: string) => Row;
+  getByName:  (username: string) => Row;
+  viewById:   (userId: number) => Row;
+  viewByName: (username: string) => Row;
+  create:     (user: ICreatingUser) => Row;
+  verify:     (email: string) => Row;
+  update:     (user: IUpdatingUser) => Row;
+  deleteById: (userId: number) => Row;
 }
 
 interface ICreatingUser {

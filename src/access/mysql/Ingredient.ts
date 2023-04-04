@@ -171,15 +171,15 @@ type Data = Promise<RowDataPacket[]>;
 type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
 
 export interface IIngredient {
-  pool:                                                   Pool;
-  auto(term: string):                                     Data;
-  search(searchRequest: SearchRequest):                   Promise<SearchResponse>;
-  viewAll(authorId: number, ownerId: number):             Data;
-  viewOne(id: number, authorId: number, ownerId: number): Data;
-  create(ingredient: ICreatingIngredient):                DataWithHeader;
-  update(ingredient: IUpdatingIngredient):                Data;
-  deleteAll(ownerId: number):                             void;
-  deleteOne(id: number, ownerId: number):                 Data;
+  pool:      Pool;
+  auto:      (term: string) => Data;
+  search:    (searchRequest: SearchRequest) => Promise<SearchResponse>;
+  viewAll:   (authorId: number, ownerId: number) => Data;
+  viewOne:   (id: number, authorId: number, ownerId: number) => Data;
+  create:    (ingredient: ICreatingIngredient) => DataWithHeader;
+  update:    (ingredient: IUpdatingIngredient) => Data;
+  deleteAll: (ownerId: number) => void;
+  deleteOne: (id: number, ownerId: number) => Data;
 }
 
 type ICreatingIngredient = {
@@ -196,14 +196,3 @@ type ICreatingIngredient = {
 type IUpdatingIngredient = ICreatingIngredient & {
   id: number;
 };
-
-/*interface ISavingIngredient {
-  id:                   number;
-  ingredient_type_name: string;
-  fullname:             string;
-  brand:                string;
-  variety:              string;
-  name:                 string;
-  description:          string;
-  image:                string;
-}*/

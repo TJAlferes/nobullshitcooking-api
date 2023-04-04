@@ -58,10 +58,10 @@ export class SavedRecipe implements ISavedRecipe {
 type Data = Promise<RowDataPacket[]>;
 
 export interface ISavedRecipe {
-  pool: Pool;
-  viewByUserId(userId: number): Data;
-  create(userId: number, recipeId: number): Data;
-  delete(userId: number, recipeId: number): Data;
-  deleteAllByRecipeId(recipeId: number): Data;
-  deleteAllByUserId(userId: number): void;
+  pool:                Pool;
+  viewByUserId:        (userId: number) => Data;
+  create:              (userId: number, recipeId: number) => Data;
+  delete:              (userId: number, recipeId: number) => Data;
+  deleteAllByRecipeId: (recipeId: number) => Data;
+  deleteAllByUserId:   (userId: number) => void;
 }

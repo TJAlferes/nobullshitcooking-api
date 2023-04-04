@@ -1,4 +1,4 @@
-import { Request, Response, Router } from 'express';
+import { Router } from 'express';
 import { Pool } from 'mysql2/promise';
 
 import { UserDataInitController } from '../../controllers/user';

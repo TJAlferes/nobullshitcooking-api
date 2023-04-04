@@ -3,7 +3,6 @@ export { UserDataInitController }       from './dataInit';
 export { UserEquipmentController }      from './equipment';
 export { UserFavoriteRecipeController } from './favoriteRecipe';
 export { UserFriendshipController }     from './friendship';
-export { UserGrocerController }         from './grocer';
 export { UserIngredientController }     from './ingredient';
 export { UserPlanController }           from './plan';
 export { UserRecipeController }         from './recipe';

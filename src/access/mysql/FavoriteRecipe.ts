@@ -6,7 +6,6 @@ export class FavoriteRecipe implements IFavoriteRecipe {
   constructor(pool: Pool) {
     this.pool = pool;
     this.viewByUserId =        this.viewByUserId.bind(this);
-    //this.viewMost =            this.viewMost.bind(this);
     this.create =              this.create.bind(this);
     this.delete =              this.delete.bind(this);
     this.deleteAllByRecipeId = this.deleteAllByRecipeId.bind(this);
@@ -30,24 +29,6 @@ export class FavoriteRecipe implements IFavoriteRecipe {
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [userId]);
     return rows;
   }
-
-  /*async viewMost(limit: number) {
-    //const sql = `
-    //  SELECT recipe_id
-    //  FROM favorite_recipes
-    //  ORDER BY COUNT(user_id) DESC
-    //  LIMIT ?
-    //`;
-    const sql = `
-      SELECT recipe_id, COUNT(recipe_id) AS tally
-      FROM favorite_recipes
-      GROUP BY recipe_id
-      ORDER BY tally DESC
-      LIMIT ?
-    `;
-    const [ rows ] = this.pool.execute(sql, [limit]);
-    return rows;
-  }*/
 
   async create(userId: number, recipeId: number) {
     await this.delete(userId, recipeId);
@@ -77,11 +58,10 @@ export class FavoriteRecipe implements IFavoriteRecipe {
 type Data = Promise<RowDataPacket[]>;
 
 export interface IFavoriteRecipe {
-  pool: Pool;
-  //viewMost(): Data;
-  viewByUserId(userId: number): Data;
-  create(userId: number, recipeId: number): Data;
-  delete(userId: number, recipeId: number): Data;
-  deleteAllByRecipeId(recipeId: number): Data;
-  deleteAllByUserId(userId: number): void;
+  pool:                Pool;
+  viewByUserId:        (userId: number) => Data;
+  create:              (userId: number, recipeId: number) => Data;
+  delete:              (userId: number, recipeId: number) => Data;
+  deleteAllByRecipeId: (recipeId: number) => Data;
+  deleteAllByUserId:   (userId: number) => void;
 }

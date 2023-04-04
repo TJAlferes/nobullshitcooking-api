@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import { RowDataPacket } from 'mysql2/promise';
 import { array, defaulted, Infer, number, object, optional, string } from 'superstruct';
 
-import { IStaff, IUser } from '../../access/mysql';
+import { IUser } from '../../access/mysql';
 
 export const validSearchTerm = string();
 
@@ -101,10 +101,8 @@ export const validSupplier = object({name: string()});
 
 
 
-export const validCreatingStaff = object({email: string(), encryptedPass: string(), staffname: string(), confirmationCode: defaulted(string(), null)});
 export const validCreatingUser =  object({email: string(), encryptedPass: string(), username:  string(), confirmationCode: defaulted(string(), null)});
 
-export const validUpdatingStaff = object({email: string(), pass: string(), staffname: string()});
 export const validUpdatingUser =  object({email: string(), pass: string(), username:  string()});
 
 
@@ -113,7 +111,7 @@ export const validUpdatingUser =  object({email: string(), pass: string(), usern
 
 export const validLoginRequest = object({email: string(), pass: string()});
 
-export async function validLogin({ email, pass }: Login, access: IStaff | IUser) {
+export async function validLogin({ email, pass }: Login, access: IUser) {
   if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) return {feedback: "Invalid email."};
   if (pass.length < 6)                                         return {feedback: "Invalid password."};
   if (pass.length > 54)                                        return {feedback: "Invalid password."};
@@ -135,10 +133,9 @@ export async function validLogin({ email, pass }: Login, access: IStaff | IUser)
 
 // Register
 
-export const validStaffRegisterRequest = object({email: string(), pass: string(), staffname: string()});
 export const validUserRegisterRequest =  object({email: string(), pass: string(), username: string()});
 
-export async function validRegister({ email, pass, name }: Register, access: IStaff | IUser) {
+export async function validRegister({ email, pass, name }: Register, access: IUser) {
   // Problem: This would invalidate some older/alternative email types. Remove?
   if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) return "Invalid email.";
   if (name.length < 6)                                         return "Name must be at least 6 characters.";
@@ -161,7 +158,7 @@ export async function validRegister({ email, pass, name }: Register, access: ISt
 
 export const validResendRequest = object({email: string(), pass: string()});
 
-export async function validResend({ email, pass }: Resend, access: IStaff | IUser) {
+export async function validResend({ email, pass }: Resend, access: IUser) {
   if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) return "Invalid email.";
   if (pass.length < 6)                                         return "Invalid password.";
   if (pass.length > 54)                                        return "Invalid password.";
@@ -185,7 +182,7 @@ export async function validResend({ email, pass }: Resend, access: IStaff | IUse
 
 export const validVerifyRequest = object({email: string(), pass: string(), confirmationCode: string()});
 
-export async function validVerify({ email, pass, confirmationCode }: Verify, access: IStaff | IUser) {
+export async function validVerify({ email, pass, confirmationCode }: Verify, access: IUser) {
   if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) return "Invalid email.";
   if (pass.length < 6)                                         return "Invalid password.";
   if (pass.length > 54)                                        return "Invalid password.";

@@ -148,15 +148,15 @@ type Data = Promise<RowDataPacket[]>;
 type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
 
 export interface IEquipment {
-  pool:                                                   Pool;
-  auto(term: string):                                     Data;
-  search(searchRequest: SearchRequest):                   Promise<SearchResponse>;
-  viewAll(authorId: number, ownerId: number):             Data;
-  viewOne(id: number, authorId: number, ownerId: number): Data;
-  create(equipment: ICreatingEquipment):                  DataWithHeader;
-  update(equipment: IUpdatingEquipment):                  Data;
-  deleteAll(ownerId: number):                             void;
-  deleteOne(id: number, ownerId: number):                 Data;
+  pool:      Pool;
+  auto:      (term: string) => Data;
+  search:    (searchRequest: SearchRequest) => Promise<SearchResponse>;
+  viewAll:   (authorId: number, ownerId: number) => Data;
+  viewOne:   (id: number, authorId: number, ownerId: number) => Data;
+  create:    (equipment: ICreatingEquipment) => DataWithHeader;
+  update:    (equipment: IUpdatingEquipment) => Data;
+  deleteAll: (ownerId: number) => void;
+  deleteOne: (id: number, ownerId: number) => Data;
 }
 
 type ICreatingEquipment = {
@@ -171,11 +171,3 @@ type ICreatingEquipment = {
 type IUpdatingEquipment = ICreatingEquipment & {
   id: number;
 };
-
-/*interface ISavingEquipment {
-  id:                  number;
-  equipment_type_name: string;
-  name:                string;
-  description:         string;
-  image:               string;
-}*/
