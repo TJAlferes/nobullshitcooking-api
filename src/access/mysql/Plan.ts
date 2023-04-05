@@ -43,8 +43,8 @@ export class PlanRepository implements IPlanRepository {
 
 export interface IPlanRepository {
   pool:      Pool;
-  viewAll:   (ownerId: number) =>             Promise<Plan[] | null>;
-  viewOne:   (id: number, ownerId: number) => Promise<Plan[] | null>;
+  viewAll:   (ownerId: number) =>             Promise<Plan[]>;
+  viewOne:   (id: number, ownerId: number) => Promise<Plan[]>;
   create:    (plan: ICreatingPlan) =>         Promise<void>;
   update:    (plan: IUpdatingPlan) =>         Promise<void>;
   deleteAll: (ownerId: number) =>             Promise<void>;

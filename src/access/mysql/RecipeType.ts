@@ -1,31 +1,32 @@
 import { Pool, RowDataPacket } from 'mysql2/promise';
 
-export class RecipeType implements IRecipeType {
+export class RecipeTypeRepository implements IRecipeTypeRepository {
   pool: Pool;
 
   constructor(pool: Pool) {
-    this.pool =    pool;
-    this.viewAll = this.viewAll.bind(this);
-    this.viewOne = this.viewOne.bind(this);
+    this.pool = pool;
   }
 
   async viewAll() {
     const sql = `SELECT id, name FROM recipe_types`;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql);
+    const [ rows ] = await this.pool.execute<RecipeType[]>(sql);
     return rows;
   }
 
   async viewOne(id: number) {
     const sql = `SELECT id, name FROM recipe_types WHERE id = ?`;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
+    const [ row ] = await this.pool.execute<RecipeType[]>(sql, [id]);
     return row;
   }
 }
 
-type Data = Promise<RowDataPacket[]>;
-
-export interface IRecipeType {
-  pool:                Pool;
-  viewAll():           Data;
-  viewOne(id: number): Data;
+export interface IRecipeTypeRepository {
+  pool:    Pool;
+  viewAll: () =>           Promise<RecipeType[]>;
+  viewOne: (id: number) => Promise<RecipeType[]>;
 }
+
+type RecipeType = RowDataPacket & {
+  id:   number;
+  name: string;
+};

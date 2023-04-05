@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 import { assert } from 'superstruct';
 
-import { FavoriteRecipe } from '../../access/mysql';
+import { FavoriteRecipe, RecipeRepository } from '../../access/mysql';
 import { validFavoriteRecipe } from '../../lib/validations';
 
 export class UserFavoriteRecipeController {
@@ -26,8 +26,14 @@ export class UserFavoriteRecipeController {
   async create(req: Request, res: Response) {
     const recipeId = Number(req.body.id);
     const userId =   req.session.userInfo!.id;
+    const ownerId =  1;  // only public recipes may be favorited
 
     assert({userId, recipeId}, validFavoriteRecipe);
+
+    const recipeRepo = new RecipeRepository(this.pool);
+    const recipe = await recipeRepo.viewOneById(recipeId, userId, ownerId);
+    if (!recipe) return res.send({message: 'Not Found'});
+    if (recipe.author_id === userId) return res.send({message: 'May not favorite own recipe.'});
 
     const favoriteRecipe = new FavoriteRecipe(this.pool);
     await favoriteRecipe.create(userId, recipeId);

@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import { Pool } from 'mysql2/promise';
-import { assert } from 'superstruct';
+import { Pool }              from 'mysql2/promise';
+import { assert }            from 'superstruct';
 
 import { Friendship, User } from '../../access/mysql';
-import { validFriendship } from '../../lib/validations';
+import { validFriendship }  from '../../lib/validations';
 
 export class UserFriendshipController {
   pool: Pool;
@@ -85,8 +85,8 @@ export class UserFriendshipController {
     const friendExists = await user.viewByName(friend);
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
-    const friendId = friendExists[0].id;
-    const userId = req.session.userInfo!.id;
+    const friendId =   friendExists[0].id;
+    const userId =     req.session.userInfo!.id;
     const friendship = new Friendship(this.pool);
     await friendship.delete(userId, friendId);
     return res.send({message: 'No longer friends. Maybe again later.'});
@@ -98,8 +98,8 @@ export class UserFriendshipController {
     const friendExists = await user.viewByName(friend);
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
-    const friendId = friendExists[0].id;
-    const userId = req.session.userInfo!.id;
+    const friendId =   friendExists[0].id;
+    const userId =     req.session.userInfo!.id;
     const friendship = new Friendship(this.pool);
     await friendship.block(userId, friendId);
     return res.send({message: 'User blocked.'});
@@ -111,8 +111,8 @@ export class UserFriendshipController {
     const friendExists = await user.viewByName(friend);
     if (!friendExists.length) return res.send({message: 'User not found.'});
 
-    const friendId = friendExists[0].id;
-    const userId = req.session.userInfo!.id;
+    const friendId =   friendExists[0].id;
+    const userId =     req.session.userInfo!.id;
     const friendship = new Friendship(this.pool);
     await friendship.unblock(userId, friendId);
     return res.send({message: 'User unblocked.'});

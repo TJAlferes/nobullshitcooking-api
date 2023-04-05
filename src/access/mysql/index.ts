@@ -13,7 +13,7 @@ export { Plan, IPlan } from './Plan';
 //export { Product, IProduct } from './Product';
 //export { ProductCategory, IProductCategory } from './ProductCategory';
 //export { ProductType, IProductType } from './ProductType';
-export { Recipe, ICreatingRecipe, IRecipe } from './Recipe';
+export { RecipeRepository, CreatingRecipe, Recipe } from './Recipe';
 export { RecipeEquipment, IMakeRecipeEquipment, IRecipeEquipment } from './RecipeEquipment';
 export { RecipeIngredient, IMakeRecipeIngredient, IRecipeIngredient } from './RecipeIngredient';
 export { RecipeMethod, IMakeRecipeMethod, IRecipeMethod } from './RecipeMethod';

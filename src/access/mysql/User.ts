@@ -1,93 +1,97 @@
 import { Pool, RowDataPacket } from 'mysql2/promise';
 
-export class User implements IUser {
+export class UserRepository implements IUserRepository {
   pool: Pool;
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.getByEmail = this.getByEmail.bind(this);  // security sensitive, do NOT send back in the api response
-    this.getByName =  this.getByName.bind(this);   // security sensitive, do NOT send back in the api response
-    this.viewById =   this.viewById.bind(this);
-    this.viewByName = this.viewByName.bind(this);
-    this.create =     this.create.bind(this);
-    this.verify =     this.verify.bind(this);
-    this.update =     this.update.bind(this);
-    this.deleteById = this.deleteById.bind(this);
   }
 
+  // security sensitive, do NOT send back in the api response
   async getByEmail(email: string) {
     const sql = `SELECT id, email, pass, username, confirmation_code FROM users WHERE email = ?`;
-    const [ [ row ] ] = await this.pool.execute<RowDataPacket[]>(sql, [email]);
+    const [ [ row ] ] = await this.pool.execute<User[]>(sql, [email]);
     return row;
   }
 
+  // security sensitive, do NOT send back in the api response
   async getByName(username: string) {
     const sql = `SELECT id, email, pass, username, confirmation_code FROM users WHERE username = ?`;
-    const [ [ row ] ] = await this.pool.execute<RowDataPacket[]>(sql, [username]);
+    const [ [ row ] ] = await this.pool.execute<User[]>(sql, [username]);
     return row;
   }
 
-  async viewById(id: number) {
+  async viewById(id: number) {  // rename to getUsername
     const sql = `SELECT username FROM users WHERE id = ?`;
-    const [ [ row ] ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
+    const [ [ row ] ] = await this.pool.execute<Username[]>(sql, [id]);
     return row;
   }
 
-  async viewByName(username: string) {
+  async viewByName(username: string) {  // rename to getUserId
     const sql = `SELECT id FROM users WHERE username = ?`;
-    const [ [ row ] ] = await this.pool.execute<RowDataPacket[]>(sql, [username]);
+    const [ [ row ] ] = await this.pool.execute<UserId[]>(sql, [username]);
     return row;
   }
 
-  async create({ email, pass, username, confirmationCode }: ICreatingUser) {
+  async create({ email, pass, username, confirmationCode }: CreatingUser) {
     const sql = `INSERT INTO users (email, pass, username, confirmation_code) VALUES (?, ?, ?, ?)`;
-    const [ [ row ] ] = await this.pool.execute<RowDataPacket[]>(sql, [email, pass, username, confirmationCode]);
-    return row;
+    await this.pool.execute<RowDataPacket[]>(sql, [email, pass, username, confirmationCode]);
   }
 
   async verify(email: string) {
     const sql = `UPDATE users SET confirmation_code = NULL WHERE email = ? LIMIT 1`;
-    const [ [ row ] ] = await this.pool.execute<RowDataPacket[]>(sql, [email]);
-    return row;
+    await this.pool.execute<RowDataPacket[]>(sql, [email]);
   }
 
-  async update({ id, email, pass, username }: IUpdatingUser) {
+  async update({ id, email, pass, username }: UpdatingUser) {
     const sql = `UPDATE users SET email = ?, pass = ?, username = ? WHERE id = ? LIMIT 1`;
-    const [ [ row ] ] = await this.pool.execute<RowDataPacket[]>(sql, [email, pass, username, id]);
-    return row;
+    await this.pool.execute(sql, [email, pass, username, id]);
   }
 
   async deleteById(id: number) {
     const sql = `DELETE FROM users WHERE id = ? LIMIT 1`;
-    const [ [ row ] ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
-    return row;
+    await this.pool.execute(sql, [id]);
   }
 }
 
-type Row = Promise<RowDataPacket>;
-
-export interface IUser {
+export interface IUserRepository {
   pool:       Pool;
-  getByEmail: (email: string) => Row;
-  getByName:  (username: string) => Row;
-  viewById:   (userId: number) => Row;
-  viewByName: (username: string) => Row;
-  create:     (user: ICreatingUser) => Row;
-  verify:     (email: string) => Row;
-  update:     (user: IUpdatingUser) => Row;
-  deleteById: (userId: number) => Row;
+  getByEmail: (email: string) =>      Promise<User>;
+  getByName:  (username: string) =>   Promise<User>;
+  viewById:   (userId: number) =>     Promise<Username>;
+  viewByName: (username: string) =>   Promise<UserId>;
+  create:     (user: CreatingUser) => Promise<void>;
+  verify:     (email: string) =>      Promise<void>;
+  update:     (user: UpdatingUser) => Promise<void>;
+  deleteById: (userId: number) =>     Promise<void>;
 }
 
-interface ICreatingUser {
+type CreatingUser = {
   email:            string;
   pass:             string;
   username:         string;
   confirmationCode: string;
-}
+};
 
-interface IUpdatingUser {
+type UpdatingUser = {
   id:       number;
   email:    string;
   pass:     string;
   username: string;
-}
+};
+
+type User = RowDataPacket & {
+  id:       number;
+  email:    string;
+  pass:     string;
+  username: string;
+  confirmationCode: string;
+};
+
+type UserId = RowDataPacket & {
+  id: string;
+};
+
+type Username = RowDataPacket & {
+  username: string;
+};

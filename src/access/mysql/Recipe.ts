@@ -2,29 +2,17 @@ import { Pool, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
 import type { SearchRequest, SearchResponse } from '../../lib/validations';
 
-export class Recipe implements IRecipe {
+export class RecipeRepository implements IRecipeRepository {
   pool: Pool;
 
   constructor(pool: Pool) {
-    this.pool =                pool;
-    this.autosuggest =         this.autosuggest.bind(this);
-    this.search =              this.search.bind(this);
-    this.getPrivateIds =       this.getPrivateIds.bind(this);
-    this.viewAllPublicTitles = this.viewAllPublicTitles.bind(this);
-    this.viewOneById =         this.viewOneById.bind(this);
-    this.viewOneByTitle =      this.viewOneByTitle.bind(this);
-    this.create =              this.create.bind(this);
-    this.update =              this.update.bind(this);
-    this.disownAllByAuthorId = this.disownAllByAuthorId.bind(this);
-    this.disownOneByAuthorId = this.disownOneByAuthorId.bind(this);
-    this.deleteAllByOwnerId =  this.deleteAllByOwnerId.bind(this);
-    this.deleteOneByOwnerId =  this.deleteOneByOwnerId.bind(this);
+    this.pool = pool;
   }
 
   async autosuggest(term: string) {
     const ownerId = 1;  // only public recipes are searchable
     const sql = `SELECT id, title AS text FROM recipes WHERE title LIKE ? AND owner_id = ? LIMIT 5`;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [`%${term}%`, ownerId]);
+    const [ rows ] = await this.pool.execute<Suggestion[]>(sql, [`%${term}%`, ownerId]);
     return rows;
   }
 
@@ -114,7 +102,7 @@ export class Recipe implements IRecipe {
 
   async viewAllPublicTitles(authorId: number, ownerId: number) {  // for Next.js getStaticPaths
     const sql = `SELECT title FROM recipes WHERE author_id = ? AND owner_id = ?`;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [authorId, ownerId]);
+    const [ rows ] = await this.pool.execute<Title[]>(sql, [authorId, ownerId]);
     return rows;
   }
 
@@ -131,17 +119,17 @@ export class Recipe implements IRecipe {
 
   async viewOneById(id: number, authorId: number, ownerId: number) {
     const sql = `${viewOneSQL} AND r.id = ?`;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [authorId, ownerId, id]);
+    const [ [ row ] ] = await this.pool.execute<Recipe[]>(sql, [authorId, ownerId, id]);
     return row;
   }
 
   async viewOneByTitle(title: string, authorId: number, ownerId: number) {
     const sql = `${viewOneSQL} AND r.title = ?`;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [authorId, ownerId, title]);
+    const [ [ row ] ] = await this.pool.execute<Recipe[]>(sql, [authorId, ownerId, title]);
     return row;
   }
 
-  async create(recipe: ICreatingRecipe) {
+  async create(recipe: CreatingRecipe) {
     const sql = `
       INSERT INTO recipes (
         recipe_type_id,
@@ -160,7 +148,7 @@ export class Recipe implements IRecipe {
         video
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
-    const [ row ] = await this.pool.execute<RowDataPacket[] & ResultSetHeader>(sql, [
+    const [ row ] = await this.pool.execute<ResultSetHeader>(sql, [
       recipe.recipeTypeId,
       recipe.cuisineId,
       recipe.authorId,
@@ -179,7 +167,7 @@ export class Recipe implements IRecipe {
     return row;
   }
 
-  async update(recipe: IUpdatingRecipe) {
+  async update(recipe: UpdatingRecipe) {
     const sql = `
       UPDATE recipes
       SET
@@ -200,7 +188,7 @@ export class Recipe implements IRecipe {
       WHERE id = ?
       LIMIT 1
     `;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [
+    await this.pool.execute<RowDataPacket[]>(sql, [
       recipe.recipeTypeId,
       recipe.cuisineId,
       recipe.authorId,
@@ -217,57 +205,50 @@ export class Recipe implements IRecipe {
       recipe.video,
       recipe.id
     ]);
-    return row;
   }
   
   async disownAllByAuthorId(authorId: number) {
     if (authorId == 1 || authorId == 2) return;
     const newAuthorId = 2;  // double check
     const sql = `UPDATE recipes SET author_id = ? WHERE author_id = ? AND owner_id = 1`;
-    await this.pool.execute<RowDataPacket[]>(sql, [newAuthorId, authorId]);
+    await this.pool.execute(sql, [newAuthorId, authorId]);
   }
 
   async disownOneByAuthorId(id: number, authorId: number) {
     const newAuthorId = 2;  // double check
     const sql = `UPDATE recipes SET author_id = ? WHERE id = ? AND author_id = ? AND owner_id = 1 LIMIT 1`;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [newAuthorId, id, authorId]);
-    return row;
+    await this.pool.execute(sql, [newAuthorId, id, authorId]);
   }
 
   async deleteAllByOwnerId(ownerId: number) {
     if (ownerId == 1 || ownerId == 2) return;
     const sql = `DELETE FROM recipes WHERE owner_id = ?`;
-    await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
+    await this.pool.execute(sql, [ownerId]);
   }
   
   async deleteOneByOwnerId(id: number, ownerId: number) {
     const sql = `DELETE FROM recipes WHERE id = ? AND owner_id = ? LIMIT 1`;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id, ownerId]);
-    return row;
+    await this.pool.execute(sql, [id, ownerId]);
   }
 }
 
-type Data = Promise<RowDataPacket[]>;
-
-type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
-
-export interface IRecipe {
-  pool:                                                             Pool;
-  autosuggest(term: string):                                        Data;
-  search(searchRequest: SearchRequest):                             Promise<SearchResponse>;
-  getPrivateIds(userId: number):                                    Promise<number[]>;
-  viewAllPublicTitles(authorId: number, ownerId: number):           Data;
-  viewOneById(id: number, authorId: number, ownerId: number):       Data;
-  viewOneByTitle(title: string, authorId: number, ownerId: number): Data;
-  create(recipe: ICreatingRecipe):                                  DataWithHeader;
-  update(recipe: IUpdatingRecipe):                                  Data;
-  disownAllByAuthorId(authorId: number):                            void;
-  disownOneByAuthorId(id: number, authorId: number):                Data;
-  deleteAllByOwnerId(ownerId: number):                              void;
-  deleteOneByOwnerId(id: number, ownerId: number):                  Data;
+export interface IRecipeRepository {
+  pool:                Pool;
+  autosuggest:         (term: string) =>                                     Promise<Suggestion[]>;
+  search:              (searchRequest: SearchRequest) =>                     Promise<SearchResponse>;
+  getPrivateIds:       (userId: number) =>                                   Promise<number[]>;  // ???
+  viewAllPublicTitles: (authorId: number, ownerId: number) =>                Promise<Title[]>;
+  viewOneById:         (id: number, authorId: number, ownerId: number) =>    Promise<Recipe>;
+  viewOneByTitle:      (title: string, authorId: number, ownerId: number) => Promise<Recipe>;
+  create:              (recipe: CreatingRecipe) =>                          Promise<ResultSetHeader>;
+  update:              (recipe: UpdatingRecipe) =>                          Promise<void>;
+  disownAllByAuthorId: (authorId: number) =>                                 Promise<void>;
+  disownOneByAuthorId: (id: number, authorId: number) =>                     Promise<void>;
+  deleteAllByOwnerId:  (ownerId: number) =>                                  Promise<void>;
+  deleteOneByOwnerId:  (id: number, ownerId: number) =>                      Promise<void>;
 }
 
-export type ICreatingRecipe = {
+export type CreatingRecipe = {
   recipeTypeId:     number;
   cuisineId:        number;
   authorId:         number;
@@ -284,9 +265,75 @@ export type ICreatingRecipe = {
   video:            string;
 };
 
-export type IUpdatingRecipe = ICreatingRecipe & {
+export type UpdatingRecipe = CreatingRecipe & {
   id: number;
   //  what about prevImage ?
+};
+
+export type Recipe = RowDataPacket & {
+  id:                number;
+  author:            string;
+  recipe_type_name:  string;
+  cuisine_name:      string;
+  author_id:         number;
+  recipe_type_id:    number;
+  cuisine_id:        number;
+  owner_id:          number;
+  title:             string;
+  description:       string;
+  active_time:       string;  // Date on insert?
+  total_time:        string;  // Date on insert?
+  directions:        string;
+  recipe_image:      string;
+  equipment_image:   string;
+  ingredients_image: string;
+  cooking_image:     string;
+  methods:           Method[];
+  equipment:         Equipment[];
+  ingredients:       Ingredient[];
+  subrecipes:        Subrecipe[];
+};
+
+type Method = {
+  method_name: string;
+  method_id:   number;
+};
+
+type Equipment = {
+  amount:            number;
+  equipment_name:    string;
+  equipment_type_id: number;
+  equipment_id:      number;
+};
+
+type Ingredient = {
+  amount:             number;
+  measurement_name:   string;
+  ingredient_name:    string;
+
+  measurement_id:     number;
+  ingredient_type_id: number;
+  ingredient_id:      number;
+};
+
+type Subrecipe = {
+  amount:           number;
+  measurement_name: string;
+  subrecipe_title:  string;
+
+  measurement_id:   number;
+  recipe_type_id:   number;
+  cuisine_id:       number;
+  subrecipe_id:     number;
+};
+
+type Suggestion = RowDataPacket & {
+  id:   number;
+  text: string;
+};
+
+type Title = RowDataPacket & {
+  title: string;
 };
 
 const viewOneSQL = `
@@ -295,6 +342,7 @@ const viewOneSQL = `
     u.username AS author,
     rt.name    AS recipe_type_name,
     c.name     AS cuisine_name,
+    r.author_id,
     r.recipe_type_id,
     r.cuisine_id,
     r.owner_id,
@@ -310,6 +358,7 @@ const viewOneSQL = `
     (
       SELECT JSON_ARRAYAGG(JSON_OBJECT(
         'method_name', m.name,
+
         'method_id',   rm.method_id
       ))
       FROM methods m
@@ -320,6 +369,7 @@ const viewOneSQL = `
       SELECT JSON_ARRAYAGG(JSON_OBJECT(
         'amount',         re.amount,
         'equipment_name', e.name,
+
         'equipment_type_id', e.equipment_type_id,
         'equipment_id',      re.equipment_id
       ))
@@ -332,6 +382,7 @@ const viewOneSQL = `
         'amount',           ri.amount,
         'measurement_name', m.name,
         'ingredient_name',  i.name,
+
         'measurement_id',     ri.measurement_id,
         'ingredient_type_id', i.ingredient_type_id,
         'ingredient_id',      ri.ingredient_id
@@ -346,6 +397,7 @@ const viewOneSQL = `
         'amount',           rs.amount,
         'measurement_name', m.name,
         'subrecipe_title',  r.title,
+
         'measurement_id', rs.measurement_id,
         'recipe_type_id', r.recipe_type_id,
         'cuisine_id',     r.cuisine_id,

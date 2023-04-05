@@ -2,25 +2,27 @@ import { Pool, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
 import type { SearchRequest, SearchResponse } from '../../lib/validations';
 
-export class Ingredient implements IIngredient {
+export class IngredientRepository implements IIngredientRepository {
   pool: Pool;
 
   constructor(pool: Pool) {
-    this.pool =      pool;
-    this.auto =      this.auto.bind(this);
-    this.search =    this.search.bind(this);
-    this.viewAll =   this.viewAll.bind(this);
-    this.viewOne =   this.viewOne.bind(this);
-    this.create =    this.create.bind(this);
-    this.update =    this.update.bind(this);
-    this.deleteAll = this.deleteAll.bind(this);
-    this.deleteOne = this.deleteOne.bind(this);
+    this.pool = pool;
   }
 
   async auto(term: string) {
     const ownerId = 1;  // only public ingredients are suggestible
-    const sql = `SELECT id, brand, variety, name, fullname AS text FROM ingredients WHERE name LIKE ? AND owner_id = ? LIMIT 5`;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [`%${term}%`, ownerId]);
+    const sql = `
+      SELECT
+        id,
+        brand,
+        variety,
+        name,
+        fullname AS text
+      FROM ingredients
+      WHERE fullname LIKE ? AND owner_id = ?
+      LIMIT 5
+    `;
+    const [ rows ] = await this.pool.execute<IngredientSuggestion[]>(sql, [`%${term}%`, ownerId]);
     return rows;
   }
 
@@ -93,7 +95,7 @@ export class Ingredient implements IIngredient {
       WHERE i.author_id = ? AND i.owner_id = ?
       ORDER BY i.name ASC
     `;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [authorId, ownerId]);
+    const [ row ] = await this.pool.execute<Ingredient[]>(sql, [authorId, ownerId]);
     return row;
   }
 
@@ -112,7 +114,7 @@ export class Ingredient implements IIngredient {
       INNER JOIN ingredient_types t ON i.ingredient_type_id = t.id
       WHERE owner_id = 1 AND i.id = ?
     `;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id, authorId, ownerId]);
+    const [ row ] = await this.pool.execute<Ingredient[]>(sql, [id, authorId, ownerId]);
     return row;
   }
 
@@ -129,10 +131,17 @@ export class Ingredient implements IIngredient {
         image
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
-    const [ row ] = await this.pool.execute<RowDataPacket[] & ResultSetHeader>(sql, [
-      ingredient.ingredientTypeId, ingredient.authorId, ingredient.ownerId, ingredient.brand, ingredient.variety, ingredient.name, ingredient.description, ingredient.image
+    const [ row ] = await this.pool.execute<Ingredient[] & ResultSetHeader>(sql, [
+      ingredient.ingredientTypeId,
+      ingredient.authorId,
+      ingredient.ownerId,
+      ingredient.brand,
+      ingredient.variety,
+      ingredient.name,
+      ingredient.description,
+      ingredient.image
     ]);
-    return row;
+    return row;  // is this needed?
   }
 
   async update(ingredient: IUpdatingIngredient) {
@@ -148,39 +157,52 @@ export class Ingredient implements IIngredient {
       WHERE id = ?
       LIMIT 1
     `;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [
-      ingredient.ingredientTypeId, ingredient.brand, ingredient.variety, ingredient.name, ingredient.description, ingredient.image, ingredient.id
+    await this.pool.execute(sql, [
+      ingredient.ingredientTypeId,
+      ingredient.brand,
+      ingredient.variety,
+      ingredient.name,
+      ingredient.description,
+      ingredient.image,
+      ingredient.id
     ]);
-    return row;
   }
 
   async deleteAll(ownerId: number) {
     const sql = `DELETE FROM ingredients WHERE owner_id = ?`;
-    await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
+    await this.pool.execute(sql, [ownerId]);
   }
 
   async deleteOne(id: number, ownerId: number) {
     const sql = `DELETE FROM ingredients WHERE owner_id = ? AND id = ? LIMIT 1`;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId, id]);
-    return row;
+    await this.pool.execute(sql, [ownerId, id]);
   }
 }
 
-type Data = Promise<RowDataPacket[]>;
-
-type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
-
-export interface IIngredient {
+export interface IIngredientRepository {
   pool:      Pool;
-  auto:      (term: string) => Data;
-  search:    (searchRequest: SearchRequest) => Promise<SearchResponse>;
-  viewAll:   (authorId: number, ownerId: number) => Data;
-  viewOne:   (id: number, authorId: number, ownerId: number) => Data;
-  create:    (ingredient: ICreatingIngredient) => DataWithHeader;
-  update:    (ingredient: IUpdatingIngredient) => Data;
-  deleteAll: (ownerId: number) => void;
-  deleteOne: (id: number, ownerId: number) => Data;
+  auto:      (term: string) =>                                  Promise<IngredientSuggestion[]>;
+  search:    (searchRequest: SearchRequest) =>                  Promise<SearchResponse>;
+  viewAll:   (authorId: number, ownerId: number) =>             Promise<Ingredient[]>;
+  viewOne:   (id: number, authorId: number, ownerId: number) => Promise<Ingredient[]>;
+  create:    (ingredient: ICreatingIngredient) =>               Promise<Ingredient[] & ResultSetHeader>;
+  update:    (ingredient: IUpdatingIngredient) =>               Promise<void>;
+  deleteAll: (ownerId: number) =>                               Promise<void>;
+  deleteOne: (id: number, ownerId: number) =>                   Promise<void>;
 }
+
+type Ingredient = RowDataPacket & {
+  id:                   number;
+  ingredient_type_id:   number;
+  owner_id:             number;
+  ingredient_type_name: string;
+  brand:                string;
+  variety:              string;
+  name:                 string;
+  fullname:             string;
+  description:          string;
+  image:                string;
+};
 
 type ICreatingIngredient = {
   ingredientTypeId: number;
@@ -195,4 +217,12 @@ type ICreatingIngredient = {
 
 type IUpdatingIngredient = ICreatingIngredient & {
   id: number;
+};
+
+type IngredientSuggestion = RowDataPacket & {
+  id:      number;
+  brand:   string;
+  variety: string;
+  name:    string;
+  text:    string;
 };

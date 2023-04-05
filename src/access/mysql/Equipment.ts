@@ -2,25 +2,17 @@ import { Pool, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
 import type { SearchRequest, SearchResponse } from '../../lib/validations';
 
-export class Equipment implements IEquipment {
+export class EquipmentRepository implements IEquipmentRepository {
   pool: Pool;
   
   constructor(pool: Pool) {
-    this.pool =      pool;
-    this.auto =      this.auto.bind(this);
-    this.search =    this.search.bind(this);
-    this.viewAll =   this.viewAll.bind(this);
-    this.viewOne =   this.viewOne.bind(this);
-    this.create =    this.create.bind(this);
-    this.update =    this.update.bind(this);
-    this.deleteAll = this.deleteAll.bind(this);
-    this.deleteOne = this.deleteOne.bind(this);
+    this.pool = pool;
   }
 
   async auto(term: string) {
     const ownerId = 1;  // only public equipment are searchable
     const sql = `SELECT id, name AS text FROM equipment WHERE name LIKE ? AND owner_id = ? LIMIT 5`;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [`%${term}%`, ownerId]);
+    const [ rows ] = await this.pool.execute<EquipmentSuggestion[]>(sql, [`%${term}%`, ownerId]);
     return rows;
   }
 
@@ -87,7 +79,7 @@ export class Equipment implements IEquipment {
       WHERE e.author_id = ? AND e.owner_id = ?
       ORDER BY e.name ASC
     `;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [authorId, ownerId]);
+    const [ rows ] = await this.pool.execute<Equipment[]>(sql, [authorId, ownerId]);
     return rows;
   }
 
@@ -105,7 +97,7 @@ export class Equipment implements IEquipment {
       INNER JOIN equipment_types t ON e.equipment_type_id = t.id
       WHERE e.id = ? AND e.author_id = ? AND e.owner_id = ?
     `;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [id, authorId, ownerId]);
+    const [ row ] = await this.pool.execute<Equipment[]>(sql, [id, authorId, ownerId]);
     return row;
   }
 
@@ -114,10 +106,15 @@ export class Equipment implements IEquipment {
       INSERT INTO equipment (equipment_type_id, author_id, owner_id, name, description, image)
       VALUES (?, ?, ?, ?, ?, ?)
     `;
-    const [ row ] = await this.pool.execute<RowDataPacket[] & ResultSetHeader>(sql, [
-      equipment.equipmentTypeId, equipment.authorId, equipment.ownerId, equipment.name, equipment.description, equipment.image
+    const [ row ] = await this.pool.execute<Equipment[] & ResultSetHeader>(sql, [
+      equipment.equipmentTypeId,
+      equipment.authorId,
+      equipment.ownerId,
+      equipment.name,
+      equipment.description,
+      equipment.image
     ]);
-    return row;
+    return row;  // is this needed?
   }
 
   async update(equipment: IUpdatingEquipment) {
@@ -127,37 +124,47 @@ export class Equipment implements IEquipment {
       WHERE id = ?
       LIMIT 1
     `;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [equipment.equipmentTypeId, equipment.name, equipment.description, equipment.image, equipment.id]);
-    return row;
+    await this.pool.execute(sql, [
+      equipment.equipmentTypeId,
+      equipment.name,
+      equipment.description,
+      equipment.image,
+      equipment.id
+    ]);
   }
 
   async deleteAll(ownerId: number) {
     const sql = `DELETE FROM equipment WHERE owner_id = ?`;
-    await this.pool.execute<RowDataPacket[]>(sql, [ownerId]);
+    await this.pool.execute(sql, [ownerId]);
   }
 
   async deleteOne(id: number, ownerId: number) {
     const sql = `DELETE FROM equipment WHERE owner_id = ? AND id = ? LIMIT 1`;
-    const [ row ] = await this.pool.execute<RowDataPacket[]>(sql, [ownerId, id]);
-    return row;
+    await this.pool.execute(sql, [ownerId, id]);
   }
 }
 
-type Data = Promise<RowDataPacket[]>;
-
-type DataWithHeader = Promise<RowDataPacket[] & ResultSetHeader>;
-
-export interface IEquipment {
+export interface IEquipmentRepository {
   pool:      Pool;
-  auto:      (term: string) => Data;
-  search:    (searchRequest: SearchRequest) => Promise<SearchResponse>;
-  viewAll:   (authorId: number, ownerId: number) => Data;
-  viewOne:   (id: number, authorId: number, ownerId: number) => Data;
-  create:    (equipment: ICreatingEquipment) => DataWithHeader;
-  update:    (equipment: IUpdatingEquipment) => Data;
-  deleteAll: (ownerId: number) => void;
-  deleteOne: (id: number, ownerId: number) => Data;
+  auto:      (term: string) =>                                  Promise<EquipmentSuggestion[]>;
+  search:    (searchRequest: SearchRequest) =>                  Promise<SearchResponse>;
+  viewAll:   (authorId: number, ownerId: number) =>             Promise<Equipment[]>;
+  viewOne:   (id: number, authorId: number, ownerId: number) => Promise<Equipment[]>;
+  create:    (equipment: ICreatingEquipment) =>                 Promise<Equipment[] & ResultSetHeader>;
+  update:    (equipment: IUpdatingEquipment) =>                 Promise<void>;
+  deleteAll: (ownerId: number) =>                               Promise<void>;
+  deleteOne: (id: number, ownerId: number) =>                   Promise<void>;
 }
+
+type Equipment = RowDataPacket & {
+  id:                  number;
+  equipment_type_id:   number;
+  owner_id:            number;
+  equipment_type_name: string;
+  name:                string;
+  description:         string;
+  image:               string;
+};
 
 type ICreatingEquipment = {
   equipmentTypeId: number;
@@ -170,4 +177,9 @@ type ICreatingEquipment = {
 
 type IUpdatingEquipment = ICreatingEquipment & {
   id: number;
+};
+
+type EquipmentSuggestion = RowDataPacket & {
+  id:   number;
+  name: string;
 };
