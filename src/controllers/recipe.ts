@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Pool }              from 'mysql2/promise';
 
-import { Recipe } from '../access/mysql';
+import { RecipeRepository } from '../access/mysql';
 
 export class RecipeController {
   pool: Pool;
@@ -15,22 +15,22 @@ export class RecipeController {
     const authorId = 1;
     const ownerId =  1;
 
-    const recipe = new Recipe(this.pool);
-    const rows = await recipe.viewAll(authorId, ownerId);
+    const repo = new RecipeRepository(this.pool);
+    const rows = await repo.viewAll(authorId, ownerId);
     return res.send(rows);
   }*/
 
   // for Next.js getStaticPaths
-  async viewTitles(req: Request, res: Response) {
+  async viewAllPublicTitles(req: Request, res: Response) {
     const authorId = 1;
     const ownerId =  1;
 
-    const recipe = new Recipe(this.pool);
-    const rows = await recipe.viewTitles(authorId, ownerId);
+    const repo = new RecipeRepository(this.pool);
+    const rows = await repo.viewAllPublicTitles(authorId, ownerId);
     return res.send(rows);
   }
 
-  async viewOne(req: Request, res: Response) {
+  async viewOneByTitle(req: Request, res: Response) {
     function unslugify(title: string) {
       return title.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     }
@@ -39,8 +39,8 @@ export class RecipeController {
     const authorId = 1;
     const ownerId =  1;
 
-    const recipe = new Recipe(this.pool);
-    const [ row ] = await recipe.viewOne(title, authorId, ownerId);
+    const repo = new RecipeRepository(this.pool);
+    const row = await repo.viewOneByTitle(title, authorId, ownerId);
     return res.send(row);
   }
 }

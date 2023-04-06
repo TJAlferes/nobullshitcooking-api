@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Pool }              from 'mysql2/promise';
 
-import { Method } from '../access/mysql';
+import { MethodRepository } from '../access/mysql';
 
 export class MethodController {
   pool: Pool;
@@ -11,16 +11,16 @@ export class MethodController {
   }
 
   async viewAll(req: Request, res: Response) {
-    const method = new Method(this.pool);
-    const rows = await method.viewAll();
+    const repo = new MethodRepository(this.pool);
+    const rows = await repo.viewAll();
     return res.send(rows);
   }
 
   async viewOne(req: Request, res: Response) {
     const id = Number(req.params.id);
 
-    const method = new Method(this.pool);
-    const [ row ] = await method.viewOne(id);
+    const repo = new MethodRepository(this.pool);
+    const [ row ] = await repo.viewOne(id);
     return res.send(row);
   }
 }

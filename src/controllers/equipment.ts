@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Pool }              from 'mysql2/promise';
 
-import { Equipment } from '../access/mysql';
+import { EquipmentRepository } from '../access/mysql';
 
 export class EquipmentController {
   pool: Pool;
@@ -14,8 +14,8 @@ export class EquipmentController {
     const authorId = 1;
     const ownerId =  1;
 
-    const equipment = new Equipment(this.pool);
-    const rows = await equipment.viewAll(authorId, ownerId);
+    const repo = new EquipmentRepository(this.pool);
+    const rows = await repo.viewAll(authorId, ownerId);
     return res.send(rows);
   }
 
@@ -24,8 +24,8 @@ export class EquipmentController {
     const authorId = 1;
     const ownerId =  1;
 
-    const equipment = new Equipment(this.pool);
-    const [ row ] = await equipment.viewOne(id, authorId, ownerId);
+    const repo = new EquipmentRepository(this.pool);
+    const [ row ] = await repo.viewOne(id, authorId, ownerId);
     return res.send(row);
   }
 }

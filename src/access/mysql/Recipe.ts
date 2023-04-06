@@ -240,8 +240,8 @@ export interface IRecipeRepository {
   viewAllPublicTitles: (authorId: number, ownerId: number) =>                Promise<Title[]>;
   viewOneById:         (id: number, authorId: number, ownerId: number) =>    Promise<Recipe>;
   viewOneByTitle:      (title: string, authorId: number, ownerId: number) => Promise<Recipe>;
-  create:              (recipe: CreatingRecipe) =>                          Promise<ResultSetHeader>;
-  update:              (recipe: UpdatingRecipe) =>                          Promise<void>;
+  create:              (recipe: CreatingRecipe) =>                           Promise<ResultSetHeader>;
+  update:              (recipe: UpdatingRecipe) =>                           Promise<void>;
   disownAllByAuthorId: (authorId: number) =>                                 Promise<void>;
   disownOneByAuthorId: (id: number, authorId: number) =>                     Promise<void>;
   deleteAllByOwnerId:  (ownerId: number) =>                                  Promise<void>;

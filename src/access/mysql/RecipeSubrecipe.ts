@@ -1,17 +1,10 @@
-import { OkPacket, Pool, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
+import { Pool, RowDataPacket } from 'mysql2/promise';
 
-export class RecipeSubrecipe implements IRecipeSubrecipe {
+export class RecipeSubrecipeRepository implements IRecipeSubrecipeRepository {
   pool: Pool;
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewByRecipeId =       this.viewByRecipeId.bind(this);
-    this.create =               this.create.bind(this);
-    this.update =               this.update.bind(this);
-    this.deleteByRecipeId =     this.deleteByRecipeId.bind(this);
-    this.deleteByRecipeIds =    this.deleteByRecipeIds.bind(this);
-    this.deleteBySubrecipeId =  this.deleteBySubrecipeId.bind(this);
-    this.deleteBySubrecipeIds = this.deleteBySubrecipeIds.bind(this);
   }
 
   async viewByRecipeId(id: number) {
@@ -23,14 +16,13 @@ export class RecipeSubrecipe implements IRecipeSubrecipe {
       WHERE rs.recipe_id = ?
       ORDER BY r.recipe_type_id
     `;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
+    const [ rows ] = await this.pool.execute<RecipeSubrecipe[]>(sql, [id]);
     return rows;
   }
 
   async create(placeholders: string, recipeSubrecipes: number[]) {
     const sql = `INSERT INTO recipe_subrecipes (recipe_id, amount, measurement_id, subrecipe_id) VALUES ${placeholders}`;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, recipeSubrecipes);
-    return rows;
+    await this.pool.execute(sql, recipeSubrecipes);
   }
   
   async update(recipeId: number, placeholders: string, recipeSubrecipes: number[]) {
@@ -39,12 +31,11 @@ export class RecipeSubrecipe implements IRecipeSubrecipe {
     const conn = await this.pool.getConnection();
     await conn.beginTransaction();
     try {
-      // Rather than updating current values in the database, we delete them, and, if there are new values, we insert them.
+      // Rather than updating current values in the database, we delete them...
       await conn.query(sql1, [recipeId]);
+      // ... and, if there are new values, we insert them.
       if (sql2) {
-        const [ rows ] = await conn.query(sql2, recipeSubrecipes);
-        await conn.commit();
-        return rows;
+        await conn.query(sql2, recipeSubrecipes);
       }
       await conn.commit();
     } catch (err) {
@@ -57,46 +48,44 @@ export class RecipeSubrecipe implements IRecipeSubrecipe {
 
   async deleteByRecipeId(id: number) {
     const sql = `DELETE FROM recipe_subrecipes WHERE recipe_id = ?`;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
-    return rows;
+    await this.pool.execute(sql, [id]);
   }
 
   async deleteByRecipeIds(ids: number[]) {
     const sql = `DELETE FROM recipe_subrecipes WHERE recipe_id = ANY(?)`;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, ids);
-    return rows;
+    await this.pool.execute(sql, ids);
   }
 
   async deleteBySubrecipeId(id: number) {
     const sql = `DELETE FROM recipe_subrecipes WHERE subrecipe_id = ?`;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [id]);
-    return rows;
+    await this.pool.execute(sql, [id]);
   }
 
   async deleteBySubrecipeIds(ids: number[]) {
     const sql = `DELETE FROM recipe_subrecipes WHERE subrecipe_id = ANY(?)`;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, ids);
-    return rows;
+    await this.pool.execute(sql, ids);
   }
 }
 
-type Data = Promise<RowDataPacket[]>;
-
-type DataWithExtra = Promise<RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] | ResultSetHeader | undefined>;
-
-export interface IRecipeSubrecipe {
-  pool:                                                                       Pool;
-  viewByRecipeId(id: number):                                                 Data;
-  create(placeholders: string, recipeSubrecipes: number[]):                   Data;
-  update(recipeId: number, placeholders: string, recipeSubrecipes: number[]): DataWithExtra;  // | finish
-  deleteByRecipeId(id: number):                                               Data;
-  deleteByRecipeIds(ids: number[]):                                           Data;
-  deleteBySubrecipeId(id: number):                                            Data;
-  deleteBySubrecipeIds(ids: number[]):                                        Data;
+export interface IRecipeSubrecipeRepository {
+  pool:                 Pool;
+  viewByRecipeId:       (id: number) =>                                                         Promise<RecipeSubrecipe[]>;
+  create:               (placeholders: string, recipeSubrecipes: number[]) =>                   Promise<void>;
+  update:               (recipeId: number, placeholders: string, recipeSubrecipes: number[]) => Promise<void>;
+  deleteBySubrecipeId:  (id: number) =>                                                         Promise<void>;
+  deleteBySubrecipeIds: (ids: number[]) =>                                                      Promise<void>;
+  deleteByRecipeId:     (id: number) =>                                                         Promise<void>;
+  deleteByRecipeIds:    (ids: number[]) =>                                                      Promise<void>;
 }
 
-export interface IMakeRecipeSubrecipe {
+export type MakeRecipeSubrecipe = {
   amount:        number;
   measurementId: number;
   id:            number;
-}
+};
+
+export type RecipeSubrecipe = RowDataPacket & {
+  amount:           number;
+  measurement_name: string;
+  title:            string;
+};

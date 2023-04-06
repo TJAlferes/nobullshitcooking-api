@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Pool }              from 'mysql2/promise';
 
-import { RecipeType } from '../access/mysql';
+import { RecipeTypeRepository } from '../access/mysql';
 
 export class RecipeTypeController {
   pool: Pool;
@@ -11,16 +11,16 @@ export class RecipeTypeController {
   }
 
   async viewAll(req: Request, res: Response) {
-    const recipeType = new RecipeType(this.pool);
-    const rows = await recipeType.viewAll();
+    const repo = new RecipeTypeRepository(this.pool);
+    const rows = await repo.viewAll();
     return res.send(rows);
   }
 
   async viewOne(req: Request, res: Response) {
     const id = Number(req.params.id);
     
-    const recipeType = new RecipeType(this.pool);
-    const [ row ] = await recipeType.viewOne(id);
+    const repo = new RecipeTypeRepository(this.pool);
+    const [ row ] = await repo.viewOne(id);
     return res.send(row);
   }
 }
