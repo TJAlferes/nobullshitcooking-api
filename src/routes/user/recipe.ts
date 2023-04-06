@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { body }   from 'express-validator';
 import { Pool }   from 'mysql2/promise';
 
-import { UserRecipeController }        from '../../controllers/user';
+import { UserPublicRecipeController }  from '../../controllers/user';
 import { catchExceptions, userIsAuth } from '../../lib/utils';
 
 const router = Router();
@@ -10,7 +10,7 @@ const router = Router();
 // for /user/recipe/...
 
 export function userPublicRecipeRouter(pool: Pool) {
-  const controller = new UserRecipeController(pool);  //UserPublicRecipeController
+  const controller = new UserPublicRecipeController(pool);
   
   // TO DO: sanitize the requireds with *
   const recipeInfo = [
@@ -33,8 +33,8 @@ export function userPublicRecipeRouter(pool: Pool) {
     'video'
   ];
 
-  router.post('/public/all',                                                     catchExceptions(controller.viewAllPublic));  //viewAll
-  router.post('/public/one', [bodySanitizer('id')],                              catchExceptions(controller.viewOnePublic));  //viewOne
+  router.post('/public/all',                                                     catchExceptions(controller.viewAll));
+  router.post('/public/one', [bodySanitizer('id')],                              catchExceptions(controller.viewOne));
   router.post('/create',     userIsAuth, [bodySanitizer(recipeInfo)],            catchExceptions(controller.create));
   //router.post('/edit',       userIsAuth, [bodySanitizer(['id', ...recipeInfo])], catchExceptions(controller.edit));
   router.put('/update',      userIsAuth, [bodySanitizer(['id', ...recipeInfo])], catchExceptions(controller.update));

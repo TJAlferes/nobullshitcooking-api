@@ -1,18 +1,15 @@
 import { Request, Response } from 'express';
-import { Pool } from 'mysql2/promise';
-import { assert } from 'superstruct';
+import { Pool }              from 'mysql2/promise';
+import { assert }            from 'superstruct';
 
 import { FavoriteRecipe, RecipeRepository } from '../../access/mysql';
-import { validFavoriteRecipe } from '../../lib/validations';
+import { validFavoriteRecipe }              from '../../lib/validations';
 
 export class UserFavoriteRecipeController {
   pool: Pool;
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewByUserId = this.viewByUserId.bind(this);
-    this.create =       this.create.bind(this);
-    this.delete =       this.delete.bind(this);
   }
 
   async viewByUserId(req: Request, res: Response) {

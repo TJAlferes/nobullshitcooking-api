@@ -12,6 +12,8 @@ const USER_SECRET_ACCESS_KEY = process.env.AWS_S3_USER_SECRET_ACCESS_KEY!;
 
 export const UserSignedUrlController = {
   s3RequestPresign: async function(req: Request, res: Response) {
+    // TO DO: read S3 docs, change this
+    //
     // Be sure to read the AWS S3 docs. There aren't actually subbuckets. This is just a convention we decided to go with. Why?
     // Because we used to have seven S3 buckets. Now we consolidated them into one S3 bucket to make management a bit easier.
     // So we use this string as a way to maintain categories of user images.

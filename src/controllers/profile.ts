@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Pool } from 'mysql2/promise';
+import { Pool }              from 'mysql2/promise';
 
 import { FavoriteRecipe, Recipe, User } from '../access/mysql';
 
@@ -8,7 +8,6 @@ export class ProfileController {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.view = this.view.bind(this);
   }
 
   async view(req: Request, res: Response) {

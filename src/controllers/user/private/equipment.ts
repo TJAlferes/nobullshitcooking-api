@@ -1,20 +1,15 @@
 import { Request, Response } from 'express';
-import { Pool } from 'mysql2/promise';
-import { assert } from 'superstruct';
+import { Pool }              from 'mysql2/promise';
+import { assert }            from 'superstruct';
 
-import { Equipment, RecipeEquipment } from '../../access/mysql';
-import { validEquipment } from '../../lib/validations';
+import { Equipment, RecipeEquipment } from '../../../access/mysql';
+import { validEquipment }             from '../../../lib/validations';
 
 export class UserEquipmentController {
   pool: Pool;
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewAll =   this.viewAll.bind(this);
-    this.viewOne =   this.viewOne.bind(this);
-    this.create =    this.create.bind(this);
-    this.update =    this.update.bind(this);
-    this.deleteOne = this.deleteOne.bind(this);
   }
 
   async viewAll(req: Request, res: Response) {

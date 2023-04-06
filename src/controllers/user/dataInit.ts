@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Pool } from 'mysql2/promise';
+import { Pool }              from 'mysql2/promise';
 
 import { FavoriteRecipe, SavedRecipe, Friendship, Plan, Equipment, Ingredient, Recipe } from '../../access/mysql';
 
@@ -8,7 +8,6 @@ export class UserDataInitController {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewInitialUserData = this.viewInitialUserData.bind(this);
   }
   
   async viewInitialUserData(req: Request, res: Response) {

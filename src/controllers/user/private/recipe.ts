@@ -11,14 +11,9 @@ export class UserPrivateRecipeController {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewAllPrivate = this.viewAllPrivate.bind(this);
-    this.viewOnePrivate = this.viewOnePrivate.bind(this);
-    this.create =         this.create.bind(this);
-    this.update =         this.update.bind(this);
-    this.deleteOne =      this.deleteOne.bind(this);
   }
 
-  async viewAllPrivate(req: Request, res: Response) {
+  async viewAll(req: Request, res: Response) {
     const authorId = req.session.userInfo!.id;
     const ownerId =  req.session.userInfo!.id;
 
@@ -27,7 +22,7 @@ export class UserPrivateRecipeController {
     return res.send(rows);
   }
 
-  async viewOnePrivate(req: Request, res: Response) {
+  async viewOne(req: Request, res: Response) {
     const title =    req.body.title;  // still use id ?
     const authorId = req.session.userInfo!.id;
     const ownerId =  req.session.userInfo!.id;
@@ -41,7 +36,6 @@ export class UserPrivateRecipeController {
     const recipeTypeId = Number(req.body.recipeInfo.recipeTypeId);
     const cuisineId =    Number(req.body.recipeInfo.cuisineId);
     const {
-      ownership,
       title,
       description,
       activeTime,
@@ -58,7 +52,7 @@ export class UserPrivateRecipeController {
       video
     } = req.body.recipeInfo;
     const authorId = req.session.userInfo!.id;
-    const ownerId = (ownership === "private") ? req.session.userInfo!.id : 1;
+    const ownerId =  req.session.userInfo!.id;
 
     const creatingRecipe = {
       recipeTypeId,
@@ -106,7 +100,6 @@ export class UserPrivateRecipeController {
     const recipeTypeId = Number(req.body.recipeInfo.recipeTypeId);
     const cuisineId =    Number(req.body.recipeInfo.cuisineId);
     const {
-      ownership,
       title,
       description,
       activeTime,
@@ -123,8 +116,8 @@ export class UserPrivateRecipeController {
       video
     }= req.body.recipeInfo;
     const authorId = req.session.userInfo!.id;
-    const ownerId = (ownership === "private") ? req.session.userInfo!.id : 1;
-    if (typeof id === "undefined") return res.send({message: 'Invalid recipe ID!'});
+    const ownerId =  req.session.userInfo!.id;
+    if (!id) return res.send({message: 'Invalid recipe ID!'});
 
     const updatingRecipe = {
       recipeTypeId,

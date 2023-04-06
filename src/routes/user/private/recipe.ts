@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { body }   from 'express-validator';
 import { Pool }   from 'mysql2/promise';
 
-import { UserRecipeController }        from '../../../controllers/user';
+import { UserPrivateRecipeController } from '../../../controllers/user/private';
 import { catchExceptions, userIsAuth } from '../../../lib/utils';
 
 const router = Router();
@@ -10,7 +10,7 @@ const router = Router();
 // for /user/private/recipe/...
 
 export function userPrivateRecipeRouter(pool: Pool) {
-  const controller = new UserRecipeController(pool);  //UserPrivateRecipeController
+  const controller = new UserPrivateRecipeController(pool);
   
   // TO DO: sanitize the requireds with *
   const recipeInfo = [
@@ -33,8 +33,8 @@ export function userPrivateRecipeRouter(pool: Pool) {
     'video'
   ];
 
-  router.post('/all',      userIsAuth,                                         catchExceptions(controller.viewAllPrivate));  // only viewable by this logged in user
-  router.post('/one',      userIsAuth, [bodySanitizer('id')],                  catchExceptions(controller.viewOnePrivate));  // only viewable by this logged in user
+  router.post('/all',      userIsAuth,                                         catchExceptions(controller.viewAll));  // only viewable by this logged in user
+  router.post('/one',      userIsAuth, [bodySanitizer('id')],                  catchExceptions(controller.viewOne));  // only viewable by this logged in user
   router.post('/create',   userIsAuth, [bodySanitizer(recipeInfo)],            catchExceptions(controller.create));
   //router.post('/edit',     userIsAuth, [bodySanitizer(['id', ...recipeInfo])], catchExceptions(controller.edit));
   router.put('/update',    userIsAuth, [bodySanitizer(['id', ...recipeInfo])], catchExceptions(controller.update));

@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { Pool } from 'mysql2/promise';
+import { Pool }   from 'mysql2/promise';
 
-import { UserDataInitController } from '../../controllers/user';
+import { UserDataInitController }      from '../../controllers/user';
 import { catchExceptions, userIsAuth } from '../../lib/utils';
 
 const router = Router();

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Pool } from 'mysql2/promise';
+import { Pool }              from 'mysql2/promise';
 
 import { Cuisine } from '../access/mysql';
 
@@ -8,8 +8,6 @@ export class CuisineController {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewAll = this.viewAll.bind(this);
-    this.viewOne = this.viewOne.bind(this);
   }
 
   async viewAll(req: Request, res: Response) {

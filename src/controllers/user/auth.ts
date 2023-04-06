@@ -1,23 +1,35 @@
-import bcrypt from 'bcrypt';
+import bcrypt                from 'bcrypt';
 import { Request, Response } from 'express';
-import { Pool } from 'mysql2/promise';
-import { assert } from 'superstruct';
-import { v4 as uuidv4 } from 'uuid';
+import { Pool }              from 'mysql2/promise';
+import { assert }            from 'superstruct';
+import { v4 as uuidv4 }      from 'uuid';
 
 import {
-  User, Friendship,
+  User,
+  Friendship,
   Plan,
-  Equipment, Ingredient,
-  Recipe, RecipeEquipment, RecipeIngredient, RecipeMethod, RecipeSubrecipe,
-  FavoriteRecipe, SavedRecipe
+  Equipment,
+  Ingredient,
+  Recipe,
+  RecipeEquipment,
+  RecipeIngredient,
+  RecipeMethod,
+  RecipeSubrecipe,
+  FavoriteRecipe,
+  SavedRecipe
 } from '../../access/mysql';
 import { emailConfirmationCode } from '../../lib/services';
 import {
-  validUserRegisterRequest, validRegister,
-  validResendRequest, validResend,
-  validVerifyRequest, validVerify,
-  validCreatingUser, validUpdatingUser,
-  validLoginRequest, validLogin
+  validUserRegisterRequest,
+  validRegister,
+  validResendRequest,
+  validResend,
+  validVerifyRequest,
+  validVerify,
+  validCreatingUser,
+  validUpdatingUser,
+  validLoginRequest,
+  validLogin
 } from '../../lib/validations';
 import { io } from '../../index';
 
@@ -28,13 +40,6 @@ export class UserAuthController {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.register =               this.register.bind(this);
-    this.verify =                 this.verify.bind(this);
-    this.resendConfirmationCode = this.resendConfirmationCode.bind(this);
-    this.login =                  this.login.bind(this);
-    this.logout =                 this.logout.bind(this);
-    this.update =                 this.update.bind(this);
-    this.delete =                 this.delete.bind(this);
   }
 
   async register(req: Request, res: Response) {

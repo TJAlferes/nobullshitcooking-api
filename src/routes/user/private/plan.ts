@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { body } from 'express-validator';
-import { Pool } from 'mysql2/promise';
+import { body }   from 'express-validator';
+import { Pool }   from 'mysql2/promise';
 
-import { UserPlanController } from '../../../controllers/user';
+import { UserPrivatePlanController }   from '../../../controllers/user/private';
 import { catchExceptions, userIsAuth } from '../../../lib/utils';
 
 const router = Router();
@@ -10,7 +10,7 @@ const router = Router();
 // for /user/private/plan/...
 
 export function userPrivatePlanRouter(pool: Pool) {
-  const controller = new UserPlanController(pool);  //UserPrivatePlanController
+  const controller = new UserPrivatePlanController(pool);
 
   router.post('/all',      userIsAuth,                                          catchExceptions(controller.viewAll));
   router.post('/one',      userIsAuth, [bodySanitizer('id')],                   catchExceptions(controller.viewOne));

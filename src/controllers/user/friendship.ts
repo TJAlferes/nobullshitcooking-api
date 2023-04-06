@@ -9,14 +9,7 @@ export class UserFriendshipController {
   pool: Pool;
 
   constructor(pool: Pool) {
-    this.pool =    pool;
-    this.view =    this.view.bind(this);
-    this.create =  this.create.bind(this);
-    this.accept =  this.accept.bind(this);
-    this.reject =  this.reject.bind(this);
-    this.delete =  this.delete.bind(this);
-    this.block =   this.block.bind(this);
-    this.unblock = this.unblock.bind(this);
+    this.pool = pool;
   }
 
   async view(req: Request, res: Response) {
@@ -117,4 +110,4 @@ export class UserFriendshipController {
     await friendship.unblock(userId, friendId);
     return res.send({message: 'User unblocked.'});
   }
-};
+}

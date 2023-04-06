@@ -9,12 +9,7 @@ export class UserPublicPlanController {
   pool: Pool;
 
   constructor(pool: Pool) {
-    this.pool =      pool;
-    this.viewAll =   this.viewAll.bind(this);
-    this.viewOne =   this.viewOne.bind(this);
-    this.create =    this.create.bind(this);
-    this.update =    this.update.bind(this);
-    this.deleteOne = this.deleteOne.bind(this);
+    this.pool = pool;
   }
 
   async viewAll(req: Request, res: Response) {

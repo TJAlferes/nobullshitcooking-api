@@ -11,14 +11,9 @@ export class UserPublicRecipeController {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.viewAllPublic =  this.viewAllPublic.bind(this);
-    this.viewOnePublic =  this.viewOnePublic.bind(this);
-    this.create =         this.create.bind(this);
-    this.update =         this.update.bind(this);
-    this.disownOne =      this.disownOne.bind(this);
   }
 
-  async viewAllPublic(req: Request, res: Response) {
+  async viewAll(req: Request, res: Response) {
     const authorId = req.session.userInfo!.id;
     const ownerId =  1;
 
@@ -27,7 +22,7 @@ export class UserPublicRecipeController {
     return res.send(rows);
   }
 
-  async viewOnePublic(req: Request, res: Response) {
+  async viewOne(req: Request, res: Response) {
     function unslugify(title: string) {
       return title.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     }
@@ -47,7 +42,6 @@ export class UserPublicRecipeController {
     const recipeTypeId = Number(req.body.recipeInfo.recipeTypeId);
     const cuisineId =    Number(req.body.recipeInfo.cuisineId);
     const {
-      ownership,
       title,
       description,
       activeTime,
@@ -64,7 +58,7 @@ export class UserPublicRecipeController {
       video
     } = req.body.recipeInfo;
     const authorId = req.session.userInfo!.id;
-    const ownerId = (ownership === "private") ? req.session.userInfo!.id : 1;
+    const ownerId =  1;
 
     const creatingRecipe = {
       recipeTypeId,
@@ -112,7 +106,6 @@ export class UserPublicRecipeController {
     const recipeTypeId = Number(req.body.recipeInfo.recipeTypeId);
     const cuisineId =    Number(req.body.recipeInfo.cuisineId);
     const {
-      ownership,
       title,
       description,
       activeTime,
@@ -129,8 +122,8 @@ export class UserPublicRecipeController {
       video
     }= req.body.recipeInfo;
     const authorId = req.session.userInfo!.id;
-    const ownerId = (ownership === "private") ? req.session.userInfo!.id : 1;
-    if (typeof id === "undefined") return res.send({message: 'Invalid recipe ID!'});
+    const ownerId =  1;
+    if (!id) return res.send({message: 'Invalid recipe ID!'});
 
     const updatingRecipe = {
       recipeTypeId,

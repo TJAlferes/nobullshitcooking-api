@@ -7,12 +7,10 @@ export class RecipeController {
   pool: Pool;
 
   constructor(pool: Pool) {
-    this.pool =       pool;
-    //this.viewAll =    this.viewAll.bind(this);     // remove?
-    this.viewTitles = this.viewTitles.bind(this);  // for Next.js getStaticPaths
-    this.viewOne =    this.viewOne.bind(this);
+    this.pool = pool;
   }
 
+  // remove?
   /*async viewAll(req: Request, res: Response) {
     const authorId = 1;
     const ownerId =  1;
@@ -22,6 +20,7 @@ export class RecipeController {
     return res.send(rows);
   }*/
 
+  // for Next.js getStaticPaths
   async viewTitles(req: Request, res: Response) {
     const authorId = 1;
     const ownerId =  1;
