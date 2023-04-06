@@ -9,8 +9,8 @@ const router = Router();
 
 // for /user/recipe/...
 
-export function userRecipeRouter(pool: Pool) {
-  const controller = new UserRecipeController(pool);
+export function userPublicRecipeRouter(pool: Pool) {
+  const controller = new UserRecipeController(pool);  //UserPublicRecipeController
   
   // TO DO: sanitize the requireds with *
   const recipeInfo = [
@@ -32,20 +32,17 @@ export function userRecipeRouter(pool: Pool) {
     'cookingImage',
     'video'
   ];
-  const sanitizedId =    body('id').not().isEmpty().trim().escape();
-  const sanitizedTitle = body('title').not().isEmpty().trim().escape();
 
-  router.post('/private',     userIsAuth,                   catchExceptions(controller.viewAllPrivate));  // only viewable by this logged in user
-  router.post('/private/one', userIsAuth, [sanitizedId],    catchExceptions(controller.viewOnePrivate));  // only viewable by this logged in user
-  router.post('/public',                                    catchExceptions(controller.viewAllPublic));  // move? remove?
-  router.post('/public/one',              [sanitizedTitle], catchExceptions(controller.viewOnePublic));  // move? remove?
-
-  router.post('/create', userIsAuth, [body(recipeInfo).not().isEmpty().trim().escape()], catchExceptions(controller.create));
-
-  router.put('/update',  userIsAuth, [body(['id', ...recipeInfo]).not().isEmpty().trim().escape()], catchExceptions(controller.update));
-
-  router.delete('/delete', userIsAuth, [sanitizedId], catchExceptions(controller.deleteOne));
-  router.delete('/disown', userIsAuth, [sanitizedId], catchExceptions(controller.disownOne));  // TO DO: router.put ?
+  router.post('/public/all',                                                     catchExceptions(controller.viewAllPublic));  //viewAll
+  router.post('/public/one', [bodySanitizer('id')],                              catchExceptions(controller.viewOnePublic));  //viewOne
+  router.post('/create',     userIsAuth, [bodySanitizer(recipeInfo)],            catchExceptions(controller.create));
+  //router.post('/edit',       userIsAuth, [bodySanitizer(['id', ...recipeInfo])], catchExceptions(controller.edit));
+  router.put('/update',      userIsAuth, [bodySanitizer(['id', ...recipeInfo])], catchExceptions(controller.update));
+  router.delete('/disown',   userIsAuth, [bodySanitizer('title')],               catchExceptions(controller.disownOne));  // TO DO: router.put ?
 
   return router;
+}
+
+function bodySanitizer(keys: string | string[]) {
+  return body(keys).not().isEmpty().trim().escape();
 }

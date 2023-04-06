@@ -2,10 +2,10 @@ import { Request, Response } from 'express';
 import { Pool }              from 'mysql2/promise';
 import { assert }            from 'superstruct';
 
-import { Plan }      from '../../access/mysql';
-import { validPlan } from '../../lib/validations';
+import { Plan }      from '../../../access/mysql';
+import { validPlan } from '../../../lib/validations';
 
-export class UserPublicPlanController {
+export class UserPrivatePlanController {
   pool: Pool;
 
   constructor(pool: Pool) {

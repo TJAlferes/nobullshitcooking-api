@@ -1,10 +1,7 @@
 export { UserAuthController }           from './auth';
 export { UserDataInitController }       from './dataInit';
-export { UserEquipmentController }      from './equipment';
 export { UserFavoriteRecipeController } from './favoriteRecipe';
 export { UserFriendshipController }     from './friendship';
-export { UserIngredientController }     from './ingredient';
-export { UserPlanController }           from './plan';
-export { UserRecipeController }         from './recipe';
-export { UserSavedRecipeController }    from './savedRecipe';
+export { UserPublicPlanController }     from './plan';
+export { UserPublicRecipeController }   from './recipe';
 export { UserSignedUrlController }      from './signed-url';

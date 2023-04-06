@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { body } from 'express-validator';
+import { body }   from 'express-validator';
 
 import { UserSignedUrlController as Controller } from '../../controllers/user';
-import { catchExceptions, userIsAuth } from '../../lib/utils';
+import { catchExceptions, userIsAuth }           from '../../lib/utils';
 
 const router = Router();
 

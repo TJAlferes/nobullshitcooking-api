@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { body } from 'express-validator';
-import { Pool } from 'mysql2/promise';
+import { body }   from 'express-validator';
+import { Pool }   from 'mysql2/promise';
 
-import { UserFriendshipController } from '../../controllers/user';
+import { UserFriendshipController }    from '../../controllers/user';
 import { catchExceptions, userIsAuth } from '../../lib/utils';
 
 const router = Router();
@@ -12,15 +12,17 @@ const router = Router();
 export function userFriendshipRouter(pool: Pool) {
   const controller = new UserFriendshipController(pool);
 
-  router.post('/', userIsAuth, catchExceptions(controller.view));
-
-  router.post('/create',   userIsAuth, [body('friend').not().isEmpty().trim().escape()], catchExceptions(controller.create));
-  router.put('/accept',    userIsAuth, [body('friend').not().isEmpty().trim().escape()], catchExceptions(controller.accept));
-  router.put('/reject',    userIsAuth, [body('friend').not().isEmpty().trim().escape()], catchExceptions(controller.reject));
-  router.delete('/delete', userIsAuth, [body('friend').not().isEmpty().trim().escape()], catchExceptions(controller.delete));
-
-  router.post('/block',     userIsAuth, [body('friend').not().isEmpty().trim().escape()], catchExceptions(controller.block));
-  router.delete('/unblock', userIsAuth, [body('friend').not().isEmpty().trim().escape()], catchExceptions(controller.unblock));
+  router.post('/',          userIsAuth,                            catchExceptions(controller.view));
+  router.post('/create',    userIsAuth, [bodySanitizer('friend')], catchExceptions(controller.create));
+  router.put('/accept',     userIsAuth, [bodySanitizer('friend')], catchExceptions(controller.accept));
+  router.put('/reject',     userIsAuth, [bodySanitizer('friend')], catchExceptions(controller.reject));
+  router.delete('/delete',  userIsAuth, [bodySanitizer('friend')], catchExceptions(controller.delete));
+  router.post('/block',     userIsAuth, [bodySanitizer('friend')], catchExceptions(controller.block));
+  router.delete('/unblock', userIsAuth, [bodySanitizer('friend')], catchExceptions(controller.unblock));
 
   return router;
+}
+
+function bodySanitizer(keys: string | string[]) {
+  return body(keys).not().isEmpty().trim().escape();
 }

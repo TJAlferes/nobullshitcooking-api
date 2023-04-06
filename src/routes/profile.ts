@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { param } from 'express-validator';
-import { Pool } from 'mysql2/promise';
+import { param }  from 'express-validator';
+import { Pool }   from 'mysql2/promise';
 
 import { ProfileController } from '../controllers';
-import { catchExceptions } from '../lib/utils';
+import { catchExceptions }   from '../lib/utils';
 
 const router = Router();
 

@@ -1,16 +1,16 @@
 import { Router } from 'express';
-import { body }   from 'express-validator';
-import { Pool }   from 'mysql2/promise';
+import { body } from 'express-validator';
+import { Pool } from 'mysql2/promise';
 
-import { UserPlanController }          from '../../controllers/user';
-import { catchExceptions, userIsAuth } from '../../lib/utils';
+import { UserPlanController } from '../../../controllers/user';
+import { catchExceptions, userIsAuth } from '../../../lib/utils';
 
 const router = Router();
 
-// for /user/plan/...
+// for /user/private/plan/...
 
-export function userPublicPlanRouter(pool: Pool) {
-  const controller = new UserPlanController(pool);  //UserPublicPlanController
+export function userPrivatePlanRouter(pool: Pool) {
+  const controller = new UserPlanController(pool);  //UserPrivatePlanController
 
   router.post('/all',      userIsAuth,                                          catchExceptions(controller.viewAll));
   router.post('/one',      userIsAuth, [bodySanitizer('id')],                   catchExceptions(controller.viewOne));
