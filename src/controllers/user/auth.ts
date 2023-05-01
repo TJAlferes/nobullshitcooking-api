@@ -16,18 +16,23 @@ import {
   RecipeMethod,
   RecipeSubrecipe,
   FavoriteRecipe,
-  SavedRecipe
+  SavedRecipe,
+  UserRepository
 } from '../../access/mysql';
 import { emailConfirmationCode } from '../../lib/services';
 import {
   validUserRegisterRequest,
   validRegister,
+
   validResendRequest,
   validResend,
+
   validVerifyRequest,
   validVerify,
+
   validCreatingUser,
   validUpdatingUser,
+
   validLoginRequest,
   validLogin
 } from '../../lib/validations';
@@ -43,20 +48,11 @@ export class UserAuthController {
   }
 
   async register(req: Request, res: Response) {
-    const { email, pass, username } = req.body.userInfo;
-    assert({email, pass, username}, validUserRegisterRequest);
+    const { email, password, username } = req.body.userInfo;
+    assert({email, password, username}, validRegisterRequest);
 
-    const user = new User(this.pool);
-    const feedback = await validRegister({email, pass, name: username}, user);
-    if (feedback !== "valid") return res.send({message: feedback});
-
-    const encryptedPass = await bcrypt.hash(pass, SALT_ROUNDS);
-    const confirmationCode = uuidv4();
-    const args = {email, pass: encryptedPass, username, confirmationCode};
-    assert(args, validCreatingUser);
-    
-    await user.create(args);
-    emailConfirmationCode(email, confirmationCode);
+    const userRepo = new UserRepository(this.pool);
+    await createUserService({email, password, username, userRepo});
 
     return res.send({message: 'User account created.'});
   }
@@ -65,11 +61,11 @@ export class UserAuthController {
     const { email, pass, confirmationCode } = req.body.userInfo;
     assert({email, pass, confirmationCode}, validVerifyRequest);
 
-    const user = new User(this.pool);
-    const feedback = await validVerify({email, pass, confirmationCode}, user);
+    const userRepo = new UserRepository(this.pool);
+    const feedback = await validVerify({email, pass, confirmationCode}, userRepo);
     if (feedback !== "valid") return res.send({message: feedback});
 
-    user.verify(email);
+    userRepo.verify(email);
 
     return res.send({message: 'User account verified.'});
   }
@@ -78,8 +74,8 @@ export class UserAuthController {
     const { email, pass } = req.body.userInfo;
     assert({email, pass}, validResendRequest);
 
-    const user = new User(this.pool);
-    const feedback = await validResend({email, pass}, user);
+    const userRepo = new UserRepository(this.pool);
+    const feedback = await validResend({email, pass}, userRepo);
     if (feedback !== "valid") return res.send({message: feedback});
     
     const confirmationCode = uuidv4();

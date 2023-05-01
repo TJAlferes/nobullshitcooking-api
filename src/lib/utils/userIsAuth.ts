@@ -7,4 +7,4 @@ export function userIsAuth(req: Request, res: Response, next: NextFunction) {
     next(new StatusError("Unauthorized", 401));
   }
   next();
-};
+}

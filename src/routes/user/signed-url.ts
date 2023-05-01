@@ -9,7 +9,7 @@ const router = Router();
 // for /user/signed-url
 
 export function userSignedUrlRouter() {
-  router.post('/', userIsAuth, [body('subBucket').not().isEmpty().trim().escape()], catchExceptions(Controller.s3RequestPresign));
+  router.post('/', userIsAuth, [body('folder').not().isEmpty().trim().escape()], catchExceptions(Controller.s3RequestPresign));
 
   return router;
 }

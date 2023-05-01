@@ -1,10 +1,15 @@
 'use strict';
 
 export class ExceptionError extends Error {
-  code: (number | null);
+  code: number | null;
   payload: object;
 
-  constructor(code: (number | null), name: string, message: string, payload: object) {
+  constructor(
+    code: number | null,
+    name: string,
+    message: string,
+    payload: object
+  ) {
     super();
     this.code = code;
     this.name = name;
@@ -18,7 +23,7 @@ export class ExceptionError extends Error {
   }
 }
 
-export function Exception(message: string,payload: object) {
+export function Exception(message: string, payload: object) {
   return new ExceptionError(null, "", message, payload);
 }
 

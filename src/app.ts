@@ -233,24 +233,24 @@ export type RedisClients = {
 //type Next = (err?: ExtendedError | undefined) => void;
 
 interface IClientToServerEvents {
-  GetOnlineFriends():                           void;
-  GetUsersInRoom(room: string):                 void;
-  JoinRoom(room: string):                       void;
-  RejoinRoom(room: string):                     void;
-  SendMessage(text: string):                    void;
-  SendPrivateMessage(text: string, to: string): void;
+  GetOnlineFriends:   () =>                         void;
+  GetUsersInRoom:     (room: string) =>             void;
+  JoinRoom:           (room: string) =>             void;
+  RejoinRoom:         (room: string) =>             void;
+  SendMessage:        (text: string) =>             void;
+  SendPrivateMessage: (text: string, to: string) => void;
   //disconnecting
 }
 
 interface IServerToClientEvents {
-  OnlineFriends(friends: string[]):                    void;
-  FriendCameOnline(friend: string):                    void;
-  FriendWentOffline(friend: string):                   void;
-  UsersInRoom(users: string[], room: string):          void;
-  UsersInRoomRefetched(users: string[], room: string): void;
-  UserJoinedRoom(user: string):                        void;
-  UserLeftRoom(user: string):                          void;
-  Message(message: IMessage):                          void;
-  PrivateMessage(message: IMessage):                   void;
-  FailedPrivateMessage(feedback: string):              void;
+  OnlineFriends:        (friends: string[]) =>             void;
+  FriendCameOnline:     (friend: string) =>                void;
+  FriendWentOffline:    (friend: string) =>                void;
+  UsersInRoom:          (users: string[], room: string) => void;
+  UsersInRoomRefetched: (users: string[], room: string) => void;
+  UserJoinedRoom:       (user: string) =>                  void;
+  UserLeftRoom:         (user: string) =>                  void;
+  Message:              (message: IMessage) =>             void;
+  PrivateMessage:       (message: IMessage) =>             void;
+  FailedPrivateMessage: (feedback: string) =>              void;
 }
