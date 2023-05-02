@@ -33,16 +33,50 @@ export function userPrivateRecipeRouter(pool: Pool) {
     'video'
   ];
 
-  router.post('/all',      userIsAuth,                                         catchExceptions(controller.viewAll));  // only viewable by this logged in user
-  router.post('/one',      userIsAuth, [bodySanitizer('id')],                  catchExceptions(controller.viewOne));  // only viewable by this logged in user
-  router.post('/create',   userIsAuth, [bodySanitizer(recipeInfo)],            catchExceptions(controller.create));
-  //router.post('/edit',     userIsAuth, [bodySanitizer(['id', ...recipeInfo])], catchExceptions(controller.edit));
-  router.put('/update',    userIsAuth, [bodySanitizer(['id', ...recipeInfo])], catchExceptions(controller.update));
-  router.delete('/delete', userIsAuth, [bodySanitizer('id')],                  catchExceptions(controller.deleteOne));
+  router.post(
+    '/all',
+    userIsAuth,
+    catchExceptions(controller.viewAll)
+  );
+
+  router.post(
+    '/one',
+    userIsAuth,
+    sanitize('id'),
+    catchExceptions(controller.viewOne)
+  );
+
+  router.post(
+    '/create',
+    userIsAuth,
+    sanitize(recipeInfo),
+    catchExceptions(controller.create)
+  );
+
+  /*router.post(
+    '/edit',
+    userIsAuth,
+    sanitize(['id', ...recipeInfo]),
+    catchExceptions(controller.edit)
+  );*/
+
+  router.put(
+    '/update',
+    userIsAuth,
+    sanitize(['id', ...recipeInfo]),
+    catchExceptions(controller.update)
+  );
+
+  router.delete(
+    '/delete',
+    userIsAuth,
+    sanitize('id'),
+    catchExceptions(controller.deleteOne)
+  );
 
   return router;
 }
 
-function bodySanitizer(keys: string | string[]) {
+function sanitize(keys: string | string[]) {
   return body(keys).not().isEmpty().trim().escape();
 }

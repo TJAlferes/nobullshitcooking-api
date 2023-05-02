@@ -33,16 +33,48 @@ export function userPublicRecipeRouter(pool: Pool) {
     'video'
   ];
 
-  router.post('/public/all',                                                     catchExceptions(controller.viewAll));
-  router.post('/public/one', [bodySanitizer('id')],                              catchExceptions(controller.viewOne));
-  router.post('/create',     userIsAuth, [bodySanitizer(recipeInfo)],            catchExceptions(controller.create));
-  //router.post('/edit',       userIsAuth, [bodySanitizer(['id', ...recipeInfo])], catchExceptions(controller.edit));
-  router.put('/update',      userIsAuth, [bodySanitizer(['id', ...recipeInfo])], catchExceptions(controller.update));
-  router.delete('/disown',   userIsAuth, [bodySanitizer('title')],               catchExceptions(controller.disownOne));  // TO DO: router.put ?
+  router.post(
+    '/public/all',
+    catchExceptions(controller.viewAll)
+  );
+
+  router.post(
+    '/public/one',
+    sanitize('id'),
+    catchExceptions(controller.viewOne)
+  );
+
+  router.post(
+    '/create',
+    userIsAuth,
+    sanitize(recipeInfo),
+    catchExceptions(controller.create)
+  );
+
+  /*router.post(
+    '/edit',
+    userIsAuth,
+    sanitize(['id', ...recipeInfo]),
+    catchExceptions(controller.edit)
+  );*/
+
+  router.put(
+    '/update',
+    userIsAuth,
+    sanitize(['id', ...recipeInfo]),
+    catchExceptions(controller.update)
+  );
+
+  router.delete(
+    '/disown',
+    userIsAuth,
+    sanitize('title'),
+    catchExceptions(controller.disownOne)
+  );  // router.put ?
 
   return router;
 }
 
-function bodySanitizer(keys: string | string[]) {
+function sanitize(keys: string | string[]) {
   return body(keys).not().isEmpty().trim().escape();
 }

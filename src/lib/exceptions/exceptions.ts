@@ -5,8 +5,8 @@ export class ExceptionError extends Error {
   payload: object;
 
   constructor(
-    code: number | null,
-    name: string,
+    code:    number | null,
+    name:    string,
     message: string,
     payload: object
   ) {

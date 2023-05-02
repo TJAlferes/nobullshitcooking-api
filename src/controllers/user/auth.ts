@@ -1,4 +1,3 @@
-import bcrypt                from 'bcrypt';
 import { Request, Response } from 'express';
 import { Pool }              from 'mysql2/promise';
 import { assert }            from 'superstruct';
@@ -37,8 +36,6 @@ import {
   validLogin
 } from '../../lib/validations';
 import { io } from '../../index';
-
-const SALT_ROUNDS = 10;
 
 export class UserAuthController {
   pool: Pool;

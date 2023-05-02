@@ -35,6 +35,6 @@ export function searchRouter(pool: Pool) {
   return router;
 }
 
-function querySanitizer(params: string | string[]) {
+function querySanitizer(params: string | string[]) {  // sanitizeParams ?
   return query(params).trim().escape().optional({nullable: true, checkFalsy: true});
 }

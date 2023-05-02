@@ -19,12 +19,45 @@ export function userEquipmentRouter(pool: Pool) {
     'image'
   ];
 
-  router.post('/all',      userIsAuth,                                            catchExceptions(controller.viewAll));
-  router.post('/one',      userIsAuth, [bodySanitizer('id')],                     catchExceptions(controller.viewOne));
-  router.post('/create',   userIsAuth, [bodySanitizer(equipmentInfo)],            catchExceptions(controller.create));
-  //router.post('/edit',     userIsAuth,                                            catchExceptions(controller.edit));
-  router.put('/update',    userIsAuth, [bodySanitizer(['id', ...equipmentInfo])], catchExceptions(controller.update));
-  router.delete('/delete', userIsAuth, [bodySanitizer('id')],                     catchExceptions(controller.deleteOne));
+  router.post(
+    '/all',
+    userIsAuth,
+    catchExceptions(controller.viewAll)
+  );
+
+  router.post(
+    '/one',
+    userIsAuth,
+    bodySanitizer('id'),
+    catchExceptions(controller.viewOne)
+  );
+
+  router.post(
+    '/create',
+    userIsAuth,
+    bodySanitizer(equipmentInfo),
+    catchExceptions(controller.create)
+  );
+
+  /*router.post(
+    '/edit',
+    userIsAuth,
+    catchExceptions(controller.edit)
+  );*/
+
+  router.put(
+    '/update',
+    userIsAuth,
+    bodySanitizer(['id', ...equipmentInfo]),
+    catchExceptions(controller.update)
+  );
+
+  router.delete(
+    '/delete',
+    userIsAuth,
+    bodySanitizer('id'),
+    catchExceptions(controller.deleteOne)
+  );
 
   return router;
 }

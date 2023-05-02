@@ -21,16 +21,49 @@ export function userIngredientRouter(pool: Pool) {
     'image'
   ];
 
-  router.post('/all',      userIsAuth,                                             catchExceptions(controller.viewAll));
-  router.post('/one',      userIsAuth, [bodySanitizer('id')],                      catchExceptions(controller.viewOne));
-  router.post('/create',   userIsAuth, [bodySanitizer(ingredientInfo)],            catchExceptions(controller.create));
-  //router.post('/edit',     userIsAuth,                                             catchExceptions(controller.edit));
-  router.put('/update',    userIsAuth, [bodySanitizer(['id', ...ingredientInfo])], catchExceptions(controller.update));
-  router.delete('/delete', userIsAuth, [bodySanitizer('id')],                      catchExceptions(controller.deleteOne));
+  router.post(
+    '/all',
+    userIsAuth,
+    catchExceptions(controller.viewAll)
+  );
+
+  router.post(
+    '/one',
+    userIsAuth,
+    sanitize('id'),
+    catchExceptions(controller.viewOne)
+  );
+
+  router.post(
+    '/create',
+    userIsAuth,
+    sanitize(ingredientInfo),
+    catchExceptions(controller.create)
+  );
+
+  /*router.post(
+    '/edit',
+    userIsAuth,
+    catchExceptions(controller.edit)
+  );*/
+
+  router.put(
+    '/update',
+    userIsAuth,
+    sanitize(['id', ...ingredientInfo]),
+    catchExceptions(controller.update)
+  );
+
+  router.delete(
+    '/delete',
+    userIsAuth,
+    sanitize('id'),
+    catchExceptions(controller.deleteOne)
+  );
 
   return router;
 }
 
-function bodySanitizer(keys: string | string[]) {
+function sanitize(keys: string | string[]) {
   return body(keys).not().isEmpty().trim().escape();
 }
