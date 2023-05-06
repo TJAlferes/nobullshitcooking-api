@@ -4,7 +4,7 @@ import { assert }            from 'superstruct';
 import { v4 as uuidv4 }      from 'uuid';
 
 import {
-  User,
+  UserRepository,
   Friendship,
   Plan,
   Equipment,
@@ -15,26 +15,8 @@ import {
   RecipeMethod,
   RecipeSubrecipe,
   FavoriteRecipe,
-  SavedRecipe,
-  UserRepository
+  SavedRecipe
 } from '../../access/mysql';
-import { emailConfirmationCode } from '../../lib/services';
-import {
-  validUserRegisterRequest,
-  validRegister,
-
-  validResendRequest,
-  validResend,
-
-  validVerifyRequest,
-  validVerify,
-
-  validCreatingUser,
-  validUpdatingUser,
-
-  validLoginRequest,
-  validLogin
-} from '../../lib/validations';
 import { io } from '../../index';
 
 export class UserAuthController {
@@ -46,55 +28,40 @@ export class UserAuthController {
 
   async register(req: Request, res: Response) {
     const { email, password, username } = req.body.userInfo;
-    assert({email, password, username}, validRegisterRequest);
 
     const userRepo = new UserRepository(this.pool);
     await createUserService({email, password, username, userRepo});
 
-    return res.send({message: 'User account created.'});
-  }
-
-  async verify(req: Request, res: Response) {
-    const { email, pass, confirmationCode } = req.body.userInfo;
-    assert({email, pass, confirmationCode}, validVerifyRequest);
-
-    const userRepo = new UserRepository(this.pool);
-    const feedback = await validVerify({email, pass, confirmationCode}, userRepo);
-    if (feedback !== "valid") return res.send({message: feedback});
-
-    userRepo.verify(email);
-
-    return res.send({message: 'User account verified.'});
+    return res.send({message: 'User account created.'});  // or .status and .json ?
   }
 
   async resendConfirmationCode(req: Request, res: Response) {
-    const { email, pass } = req.body.userInfo;
-    assert({email, pass}, validResendRequest);
+    const { email, password } = req.body.userInfo;
 
     const userRepo = new UserRepository(this.pool);
-    const feedback = await validResend({email, pass}, userRepo);
-    if (feedback !== "valid") return res.send({message: feedback});
-    
-    const confirmationCode = uuidv4();
-    emailConfirmationCode(email, confirmationCode);
+    await resendConfirmationCodeService({email, password, userRepo});
 
     return res.send({message: 'Confirmation code re-sent.'});
   }
 
+  async verify(req: Request, res: Response) {
+    const { email, password, confirmationCode } = req.body.userInfo;
+
+    const userRepo = new UserRepository(this.pool);
+    await verifyService({email, password, confirmationCode, userRepo});
+
+    return res.send({message: 'User account verified.'});
+  }
+
   async login(req: Request, res: Response) {
     const loggedIn = req.session.userInfo?.id;
-    if (loggedIn) return res.json({message: 'Already logged in.'});
+    if (loggedIn) return res.json({message: 'Already logged in.'});  // throw ?
     
-    const { email, pass } = req.body.userInfo;
-    assert({email, pass}, validLoginRequest);
+    const { email, password } = req.body.userInfo;
+    const userRepo = new UserRepository(this.pool);
+    const { id, username } = await loginService(email, password, userRepo);
 
-    const user = new User(this.pool);
-    const { feedback, exists } = await validLogin({email, pass}, user);
-    if (feedback !== "valid" || !exists) return res.send({message: feedback});
-
-    const { id, username } = exists;
     req.session.userInfo = {id, username};
-
     return res.json({message: 'Signed in.', username});
   }
 
