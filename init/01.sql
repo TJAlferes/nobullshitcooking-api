@@ -6,7 +6,7 @@ USE nobsc;
 
 
 
-CREATE TABLE cuisines (
+CREATE TABLE cuisine (
   `id`        tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
   `continent` varchar(2)       NOT NULL DEFAULT '',
   `code`      varchar(3)       NOT NULL DEFAULT ''  UNIQUE,
@@ -14,42 +14,42 @@ CREATE TABLE cuisines (
   `country`   varchar(40)      NOT NULL DEFAULT ''  UNIQUE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE equipment_types (
+CREATE TABLE equipment_type (
   `id`   tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
   `name` varchar(25)               DEFAULT NULL
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE ingredient_types (
+CREATE TABLE ingredient_type (
   `id`   tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
   `name` varchar(25)               DEFAULT NULL
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE measurements (
+CREATE TABLE measurement (
   `id`   tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
   `name` varchar(25)               DEFAULT NULL
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE methods (
+CREATE TABLE method (
   `id`   tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
   `name` varchar(25)               DEFAULT NULL
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE product_categories (
+CREATE TABLE product_category (
   `id`   tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
   `name` varchar(25)               DEFAULT NULL
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE product_types (
+CREATE TABLE product_type (
   `id`   tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
   `name` varchar(25)               DEFAULT NULL
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE recipe_types (
+CREATE TABLE recipe_type (
   `id`   tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
   `name` varchar(25)               DEFAULT NULL
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE suppliers (
+CREATE TABLE supplier (
   `id`   smallint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
   `name` varchar(60)       NOT NULL             UNIQUE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -58,7 +58,7 @@ CREATE TABLE suppliers (
 
 -- We use AUTO_INCREMENTing PKs for now, but if needed later, we will likely switch to UUIDv7
 
-CREATE TABLE customers (
+CREATE TABLE customer (
   `id`    int unsigned NOT NULL PRIMARY KEY AUTO_INCREMENT ,
   `email` varchar(60)  NOT NULL UNIQUE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -71,7 +71,7 @@ CREATE TABLE staff (
   `confirmation_code` varchar(255)          DEFAULT NULL
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE users (
+CREATE TABLE user (
   `id`                int unsigned NOT NULL              PRIMARY KEY AUTO_INCREMENT,
   `email`             varchar(60)  NOT NULL              UNIQUE,
   `pass`              char(60)     NOT NULL,
@@ -94,7 +94,7 @@ CREATE TABLE equipment (
   FOREIGN KEY (`owner_id`)          REFERENCES `users` (`id`)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE ingredients (
+CREATE TABLE ingredient (
   `id`                 smallint unsigned NOT NULL             PRIMARY KEY AUTO_INCREMENT,
   `ingredient_type_id` tinyint unsigned  NOT NULL DEFAULT '0',
   `author_id`          int unsigned      NOT NULL,
@@ -111,7 +111,7 @@ CREATE TABLE ingredients (
   FOREIGN KEY (`author_id`)          REFERENCES `users` (`id`) 
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE orders (
+CREATE TABLE order (
   `id`          int unsigned NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `customer_id` int unsigned NOT NULL,
   `staff_id`    int unsigned NOT NULL,
@@ -119,7 +119,7 @@ CREATE TABLE orders (
   FOREIGN KEY (`staff_id`)    REFERENCES `staff` (`id`)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE plans (
+CREATE TABLE plan (
   `id`        int unsigned NOT NULL            PRIMARY KEY AUTO_INCREMENT,
   `author_id` int unsigned NOT NULL,
   `owner_id`  int unsigned NOT NULL,
@@ -129,7 +129,7 @@ CREATE TABLE plans (
   FOREIGN KEY (`owner_id`)  REFERENCES `users` (`id`)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE products (
+CREATE TABLE product (
   `id`                  smallint unsigned NOT NULL              PRIMARY KEY AUTO_INCREMENT,
   `product_category_id` tinyint unsigned  NOT NULL DEFAULT '0',
   `product_type_id`     tinyint unsigned  NOT NULL DEFAULT '0',
@@ -145,7 +145,7 @@ CREATE TABLE products (
   FOREIGN KEY (`product_type_id`)     REFERENCES `product_types` (`id`)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE recipes (
+CREATE TABLE recipe (
   `id`                int unsigned     NOT NULL            PRIMARY KEY AUTO_INCREMENT,
   `recipe_type_id`    tinyint unsigned NOT NULL,
   `cuisine_id`        tinyint unsigned NOT NULL,
@@ -169,14 +169,14 @@ CREATE TABLE recipes (
 
 
 
-CREATE TABLE favorite_recipes (
+CREATE TABLE favorite_recipe (
   `user_id`   int unsigned NOT NULL,
   `recipe_id` int unsigned NOT NULL,
   FOREIGN KEY (`user_id`)   REFERENCES `users` (`id`),
   FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`id`)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE friendships (
+CREATE TABLE friendship (
   `user_id`   int unsigned NOT NULL,
   `friend_id` int unsigned NOT NULL,
   `status`    varchar(20)  NOT NULL,
@@ -184,14 +184,14 @@ CREATE TABLE friendships (
   FOREIGN KEY (`friend_id`) REFERENCES `users` (`id`)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE order_products (
+CREATE TABLE order_product (
   `order_id`   int unsigned      NOT NULL,
   `product_id` smallint unsigned NOT NULL,
   FOREIGN KEY (`order_id`)   REFERENCES `orders` (`id`),
   FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE product_suppliers (
+CREATE TABLE product_supplier (
   `product_id`  smallint unsigned NOT NULL,
   `supplier_id` smallint unsigned NOT NULL,
   FOREIGN KEY (`product_id`)  REFERENCES `products` (`id`),
@@ -206,7 +206,7 @@ CREATE TABLE recipe_equipment (
   FOREIGN KEY (`equipment_id`) REFERENCES `equipment` (`id`)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE recipe_ingredients (
+CREATE TABLE recipe_ingredient (
   `recipe_id`      int unsigned      NOT NULL DEFAULT '0',
   `amount`         decimal(5,2)      NOT NULL,
   `measurement_id` tinyint unsigned  NOT NULL,
@@ -216,14 +216,14 @@ CREATE TABLE recipe_ingredients (
   FOREIGN KEY (`ingredient_id`)  REFERENCES `ingredients` (`id`)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE recipe_methods (
+CREATE TABLE recipe_method (
   `recipe_id` int unsigned     NOT NULL,
   `method_id` tinyint unsigned NOT NULL,
   FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`id`),
   FOREIGN KEY (`method_id`) REFERENCES `methods` (`id`)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE recipe_subrecipes (
+CREATE TABLE recipe_subrecipe (
   `recipe_id`      int unsigned     NOT NULL,
   `amount`         decimal(5,2)     NOT NULL,
   `measurement_id` tinyint unsigned NOT NULL,
@@ -233,7 +233,7 @@ CREATE TABLE recipe_subrecipes (
   FOREIGN KEY (`subrecipe_id`)   REFERENCES `recipes` (`id`)
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE saved_recipes (
+CREATE TABLE saved_recipe (
   `user_id`   int unsigned NOT NULL,
   `recipe_id` int unsigned NOT NULL,
   FOREIGN KEY (`user_id`)   REFERENCES `users` (`id`),
@@ -245,14 +245,14 @@ CREATE TABLE saved_recipes (
 INSERT INTO staff (email, pass, staffname) VALUES
 ("tjalferes@tjalferes.com", "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "T. J. Alferes");
 
-INSERT INTO users (email, pass, username) VALUES
+INSERT INTO user (email, pass, username) VALUES
 ("tjalferes@tjalferes.com", "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "NOBSC"),
 ("tjalferes@gmail.com",     "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "Unknown"),
 ("testman@testman.com",     "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "Testman");
 
-INSERT INTO equipment_types (id, name) VALUES (1, "Cleaning"), (2, "Preparing"), (3, "Cooking"), (4, "Dining"), (5, "Storage");
+INSERT INTO equipment_type (id, name) VALUES (1, "Cleaning"), (2, "Preparing"), (3, "Cooking"), (4, "Dining"), (5, "Storage");
 
-INSERT INTO ingredient_types (id, name) VALUES
+INSERT INTO ingredient_type (id, name) VALUES
 (1,  "Fish"),
 (2,  "Shellfish"),
 (3,  "Beef"),
@@ -272,7 +272,7 @@ INSERT INTO ingredient_types (id, name) VALUES
 (17, "Acid"),
 (18, "Product");
 
-INSERT INTO measurements (id, name) VALUES
+INSERT INTO measurement (id, name) VALUES
 (1,  "teaspoon"),
 (2,  "Tablespoon"),
 (3,  "cup"),
@@ -284,7 +284,7 @@ INSERT INTO measurements (id, name) VALUES
 (9,  "kilogram"),
 (10, "NA");
 
-INSERT INTO methods (id, name) VALUES
+INSERT INTO method (id, name) VALUES
 (1,  "No-Cook"),
 (2,  "Chill"),
 (3,  "Freeze"),
@@ -310,7 +310,7 @@ INSERT INTO methods (id, name) VALUES
 (23, "Grill"),
 (24, "Smoke");
 
-INSERT INTO recipe_types (id, name) VALUES
+INSERT INTO recipe_type (id, name) VALUES
 (1,  "Drink"),
 (2,  "Appetizer"),
 (3,  "Main"),
@@ -324,7 +324,7 @@ INSERT INTO recipe_types (id, name) VALUES
 (11, "Dressing"),
 (12, "Condiment");
 
-INSERT INTO cuisines (id, continent, code, name, country) VALUES
+INSERT INTO cuisine (id, continent, code, name, country) VALUES
 (1,  "AF", "DZA", "Algerian",                 "Algeria"),
 (2,  "AF", "AGO", "Angolan",                  "Angola"),
 (3,  "AF", "BEN", "Benin",                    "Benin"),
@@ -588,7 +588,7 @@ VALUES
 (3, 1, 1, "Fish Spatula",                     "fish-spatula"),
 (3, 1, 1, "Ladle",                            "ladle");
 
-INSERT INTO ingredients
+INSERT INTO ingredient
 (ingredient_type_id, author_id, owner_id, variety, name, image)
 VALUES
 (1, 1, 1, "",                    "Tuna",                                     "tuna"),
@@ -991,12 +991,12 @@ VALUES
 (18, 1, 1, "Dark",               "Soy Sauce",                                "dark-soy-sauce"),
 (18, 1, 1, "Light",              "Soy Sauce",                                "light-soy-sauce");
 
-INSERT INTO ingredients
+INSERT INTO ingredient
 (ingredient_type_id, author_id, owner_id, brand, name, description, image)
 VALUES
 (18, 1, 1, "Tobasco",            "Hot Sauce",                                "tobasco-hot-sauce");
 
-INSERT INTO recipes
+INSERT INTO recipe
 (recipe_type_id, cuisine_id, author_id, owner_id, title, description, active_time, total_time, directions)
 VALUES
 (1,  1,  1, 1, "Borscht",                            "Excellent",        "00:30:00", "04:00:00", "Chop beets and onions..."),
@@ -1026,7 +1026,7 @@ INSERT INTO recipe_equipment (recipe_id, amount, equipment_id) VALUES
 (11, 1, 1),
 (12, 1, 1);
 
-INSERT INTO recipe_ingredients (recipe_id, amount, measurement_id, ingredient_id) VALUES
+INSERT INTO recipe_ingredient (recipe_id, amount, measurement_id, ingredient_id) VALUES
 (1,  4,  1,  116),
 (2,  2,  2,  209),
 (3,  1,  3,  153),
@@ -1040,7 +1040,7 @@ INSERT INTO recipe_ingredients (recipe_id, amount, measurement_id, ingredient_id
 (11, 10,  1, 122),
 (12, 13,  2, 138);
 
-INSERT INTO recipe_methods (recipe_id, method_id) VALUES
+INSERT INTO recipe_method (recipe_id, method_id) VALUES
 (1,  6),
 (2,  9),
 (3,  13),
@@ -1058,12 +1058,12 @@ INSERT INTO recipe_methods (recipe_id, method_id) VALUES
 
 CREATE FULLTEXT INDEX fulltext_idx_name ON equipment (name);
 
-CREATE FULLTEXT INDEX fulltext_idx_brand   ON ingredients (brand);
-CREATE FULLTEXT INDEX fulltext_idx_variety ON ingredients (variety);
-CREATE FULLTEXT INDEX fulltext_idx_name    ON ingredients (name);
+CREATE FULLTEXT INDEX fulltext_idx_brand   ON ingredient (brand);
+CREATE FULLTEXT INDEX fulltext_idx_variety ON ingredient (variety);
+CREATE FULLTEXT INDEX fulltext_idx_name    ON ingredient (name);
 
-CREATE FULLTEXT INDEX fulltext_idx_brand   ON products (brand);
-CREATE FULLTEXT INDEX fulltext_idx_variety ON products (variety);
-CREATE FULLTEXT INDEX fulltext_idx_name    ON products (name);
+CREATE FULLTEXT INDEX fulltext_idx_brand   ON product (brand);
+CREATE FULLTEXT INDEX fulltext_idx_variety ON product (variety);
+CREATE FULLTEXT INDEX fulltext_idx_name    ON product (name);
 
-CREATE FULLTEXT INDEX fulltext_idx_title ON recipes (title);
+CREATE FULLTEXT INDEX fulltext_idx_title ON recipe (title);

@@ -1,14 +1,9 @@
 import { Pool, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
 import type { SearchRequest, SearchResponse } from '../../lib/validations';
+import { MySQLRepo } from './MySQL';
 
-export class IngredientRepository implements IIngredientRepository {
-  pool: Pool;
-
-  constructor(pool: Pool) {
-    this.pool = pool;
-  }
-
+export class IngredientRepo extends MySQLRepo implements IIngredientRepo {
   async auto(term: string) {
     const ownerId = 1;  // only public ingredients are suggestible
     const sql = `
@@ -18,7 +13,7 @@ export class IngredientRepository implements IIngredientRepository {
         variety,
         name,
         fullname AS text
-      FROM ingredients
+      FROM ingredient
       WHERE fullname LIKE ? AND owner_id = ?
       LIMIT 5
     `;
@@ -38,8 +33,8 @@ export class IngredientRepository implements IIngredientRepository {
         i.fullname,
         i.description,
         i.image
-      FROM ingredients i
-      INNER JOIN ingredient_types t ON t.id = i.ingredient_type_id
+      FROM ingredient i
+      INNER JOIN ingredient_type t ON t.id = i.ingredient_type_id
       WHERE i.owner_id = ?
     `;
 
@@ -90,8 +85,8 @@ export class IngredientRepository implements IIngredientRepository {
         i.fullname,
         i.description,
         i.image
-      FROM ingredients i
-      INNER JOIN ingredient_types t ON i.ingredient_type_id = t.id
+      FROM ingredient i
+      INNER JOIN ingredient_type t ON i.ingredient_type_id = t.id
       WHERE i.author_id = ? AND i.owner_id = ?
       ORDER BY i.name ASC
     `;
@@ -110,8 +105,8 @@ export class IngredientRepository implements IIngredientRepository {
         i.fullname,
         i.description,
         i.image
-      FROM ingredients i
-      INNER JOIN ingredient_types t ON i.ingredient_type_id = t.id
+      FROM ingredient i
+      INNER JOIN ingredient_type t ON i.ingredient_type_id = t.id
       WHERE owner_id = 1 AND i.id = ?
     `;
     const [ row ] = await this.pool.execute<Ingredient[]>(sql, [id, authorId, ownerId]);
@@ -120,7 +115,7 @@ export class IngredientRepository implements IIngredientRepository {
 
   async create(ingredient: ICreatingIngredient) {
     const sql = `
-      INSERT INTO ingredients (
+      INSERT INTO ingredient (
         ingredient_type_id,
         author_id,
         owner_id,
@@ -146,7 +141,7 @@ export class IngredientRepository implements IIngredientRepository {
 
   async update(ingredient: IUpdatingIngredient) {
     const sql = `
-      UPDATE ingredients
+      UPDATE ingredient
       SET
         ingredient_type_id = ?,
         brand = ?,
@@ -169,17 +164,17 @@ export class IngredientRepository implements IIngredientRepository {
   }
 
   async deleteAll(ownerId: number) {
-    const sql = `DELETE FROM ingredients WHERE owner_id = ?`;
+    const sql = `DELETE FROM ingredient WHERE owner_id = ?`;
     await this.pool.execute(sql, [ownerId]);
   }
 
   async deleteOne(id: number, ownerId: number) {
-    const sql = `DELETE FROM ingredients WHERE owner_id = ? AND id = ? LIMIT 1`;
+    const sql = `DELETE FROM ingredient WHERE owner_id = ? AND id = ? LIMIT 1`;
     await this.pool.execute(sql, [ownerId, id]);
   }
 }
 
-export interface IIngredientRepository {
+export interface IIngredientRepo {
   pool:      Pool;
   auto:      (term: string) =>                                  Promise<IngredientSuggestion[]>;
   search:    (searchRequest: SearchRequest) =>                  Promise<SearchResponse>;

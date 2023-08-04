@@ -1,20 +1,13 @@
 import { Request, Response } from 'express';
-import { Pool }              from 'mysql2/promise';
 
-import { EquipmentRepository } from '../access/mysql';
+import { EquipmentRepo } from '../access/mysql';
 
 export class EquipmentController {
-  pool: Pool;
-
-  constructor(pool: Pool) {
-    this.pool = pool;
-  }
-
   async viewAll(req: Request, res: Response) {
     const authorId = 1;
     const ownerId =  1;
 
-    const repo = new EquipmentRepository(this.pool);
+    const repo = new EquipmentRepo();
     const rows = await repo.viewAll(authorId, ownerId);
     return res.send(rows);
   }
@@ -24,7 +17,7 @@ export class EquipmentController {
     const authorId = 1;
     const ownerId =  1;
 
-    const repo = new EquipmentRepository(this.pool);
+    const repo = new EquipmentRepo();
     const [ row ] = await repo.viewOne(id, authorId, ownerId);
     return res.send(row);
   }

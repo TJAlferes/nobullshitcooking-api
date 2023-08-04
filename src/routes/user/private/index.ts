@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { Pool }   from 'mysql2/promise';
 
 //import { userDataInitRouter  }     from './dataInit';
 import { userEquipmentRouter }     from './equipment';
@@ -12,13 +11,13 @@ const router = Router();
 
 // for /user/private/...
 
-export function userPrivateRouter(pool: Pool) {
-  //router.use('/data-init',    userDataInitRouter(pool));
-  router.use('/equipment',    userEquipmentRouter(pool));
-  router.use('/ingredient',   userIngredientRouter(pool));
-  router.use('/plan',         userPrivatePlanRouter(pool));
-  router.use('/recipe',       userPrivateRecipeRouter(pool));
-  router.use('/saved-recipe', userSavedRecipeRouter(pool));
+export function userPrivateRouter() {
+  //router.use('/data-init',    userDataInitRouter());
+  router.use('/equipment',    userEquipmentRouter());
+  router.use('/ingredient',   userIngredientRouter());
+  router.use('/plan',         userPrivatePlanRouter());
+  router.use('/recipe',       userPrivateRecipeRouter());
+  router.use('/saved-recipe', userSavedRecipeRouter());
   
   return router;
 }

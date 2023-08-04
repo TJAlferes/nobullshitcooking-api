@@ -1,21 +1,14 @@
 import { Request, Response } from 'express';
-import { Pool }              from 'mysql2/promise';
 import { assert }            from 'superstruct';
 
-import { Plan }      from '../../access/mysql';
+import { PlanRepo }  from '../../access/mysql';
 import { validPlan } from '../../lib/validations';
 
 export class UserPublicPlanController {
-  pool: Pool;
-
-  constructor(pool: Pool) {
-    this.pool = pool;
-  }
-
   async viewAll(req: Request, res: Response) {
     const ownerId = req.session.userInfo!.id;
-    const plan = new Plan(this.pool);
-    const rows = await plan.viewAll(ownerId);
+    const planRepo = new PlanRepo();
+    const rows = await planRepo.viewAll(ownerId);
     return res.send(rows);
   }
 
@@ -23,8 +16,8 @@ export class UserPublicPlanController {
     const id =      Number(req.body.id);
     const ownerId = req.session.userInfo!.id;
     
-    const plan = new Plan(this.pool);
-    const [ row ] = await plan.viewOne(id, ownerId);
+    const planRepo = new PlanRepo();
+    const [ row ] = await planRepo.viewOne(id, ownerId);
     return res.send(row);
   }
 
@@ -35,8 +28,8 @@ export class UserPublicPlanController {
 
     const args = {authorId, ownerId, name, data};
     assert(args, validPlan);
-    const plan = new Plan(this.pool);
-    await plan.create(args);
+    const planRepo = new PlanRepo();
+    await planRepo.create(args);
     return res.send({message: 'Plan created.'});
   }
 
@@ -48,8 +41,8 @@ export class UserPublicPlanController {
     const args = {authorId, ownerId, name, data};
     assert(args, validPlan);
 
-    const plan = new Plan(this.pool);
-    await plan.update({id, ...args});
+    const planRepo = new PlanRepo();
+    await planRepo.update({id, ...args});
     return res.send({message: 'Plan updated.'});
   }
 
@@ -57,8 +50,8 @@ export class UserPublicPlanController {
     const id =      Number(req.body.id);
     const ownerId = req.session.userInfo!.id;
 
-    const plan = new Plan(this.pool);
-    await plan.deleteOne(id, ownerId);
+    const planRepo = new PlanRepo();
+    await planRepo.deleteOne(id, ownerId);
     return res.send({message: 'Plan deleted.'});
   }
 }

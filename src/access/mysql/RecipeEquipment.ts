@@ -1,12 +1,8 @@
 import { Pool, RowDataPacket } from 'mysql2/promise';
 
-export class RecipeEquipmentRepository implements IRecipeEquipmentRepository {
-  pool: Pool;
+import { MySQLRepo } from './MySQL';
 
-  constructor(pool: Pool) {
-    this.pool = pool;
-  }
-
+export class RecipeEquipmentRepo extends MySQLRepo implements IRecipeEquipmentRepo {
   async viewByRecipeId(id: number) {
     const sql = `
       SELECT re.amount, e.name AS equipment_name
@@ -61,7 +57,7 @@ export class RecipeEquipmentRepository implements IRecipeEquipmentRepository {
   }
 }
 
-export interface IRecipeEquipmentRepository {
+export interface IRecipeEquipmentRepo {
   pool:                Pool;
   viewByRecipeId:      (id: number) =>                                                        Promise<RecipeEquipment[]>;
   create:              (placeholders: string, recipeEquipment: number[]) =>                   Promise<void>;

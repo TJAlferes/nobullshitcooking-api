@@ -1,22 +1,15 @@
 import { Request, Response } from 'express';
-import { Pool }              from 'mysql2/promise';
 import { assert }            from 'superstruct';
 
-import { SavedRecipe, RecipeRepository } from '../../../access/mysql';
-import { validSavedRecipe }              from '../../../lib/validations';
+import { SavedRecipeRepo, RecipeRepo } from '../../../access/mysql';
+import { validSavedRecipe }            from '../../../lib/validations';
 
 export class UserSavedRecipeController {
-  pool: Pool;
-
-  constructor(pool: Pool) {
-    this.pool = pool;
-  }
-
   async viewByUserId(req: Request, res: Response) {
     const userId = req.session.userInfo!.id;
 
-    const savedRecipe = new SavedRecipe(this.pool);
-    const rows = await savedRecipe.viewByUserId(userId);
+    const savedRecipeRepo = new SavedRecipeRepo();
+    const rows = await savedRecipeRepo.viewByUserId(userId);
     return res.send(rows);
   }
 
@@ -27,15 +20,15 @@ export class UserSavedRecipeController {
 
     assert({userId, recipeId}, validSavedRecipe);
 
-    const recipeRepo = new RecipeRepository(this.pool);
+    const recipeRepo = new RecipeRepo();
     const recipe = await recipeRepo.viewOneById(recipeId, userId, ownerId);
     if (!recipe)
       return res.send({message: 'Not Found'});
     if (recipe.author_id === userId)
       return res.send({message: 'Your recipes are saved when you create or update them. This "Save" is so you may save public recipes created by others.'});
 
-    const savedRecipe = new SavedRecipe(this.pool);
-    await savedRecipe.create(userId, recipeId);
+    const savedRecipeRepo = new SavedRecipeRepo();
+    await savedRecipeRepo.create(userId, recipeId);
     return res.send({message: 'Saved.'});
   }
 
@@ -45,8 +38,8 @@ export class UserSavedRecipeController {
 
     assert({userId, recipeId}, validSavedRecipe);
     
-    const savedRecipe = new SavedRecipe(this.pool);
-    await savedRecipe.delete(userId, recipeId);
+    const savedRecipeRepo = new SavedRecipeRepo();
+    await savedRecipeRepo.delete(userId, recipeId);
     return res.send({message: 'Unsaved.'});
   }
 }

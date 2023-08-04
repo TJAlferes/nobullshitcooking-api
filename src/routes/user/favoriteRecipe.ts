@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
-import { Pool }   from 'mysql2/promise';
 
 import { UserFavoriteRecipeController } from '../../controllers/user';
 import { catchExceptions, userIsAuth }  from '../../lib/utils';
@@ -9,8 +8,8 @@ const router = Router();
 
 // for /user/favorite-recipe/...
 
-export function userFavoriteRecipeRouter(pool: Pool) {
-  const controller = new UserFavoriteRecipeController(pool);
+export function userFavoriteRecipeRouter() {
+  const controller = new UserFavoriteRecipeController();
 
   router.post(
     '/all',

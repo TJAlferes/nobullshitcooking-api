@@ -1,14 +1,9 @@
 import { Pool, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
 import type { SearchRequest, SearchResponse } from '../../lib/validations';
+import { MySQLRepo } from './MySQL';
 
-export class EquipmentRepository implements IEquipmentRepository {
-  pool: Pool;
-  
-  constructor(pool: Pool) {
-    this.pool = pool;
-  }
-
+export class EquipmentRepo extends MySQLRepo implements IEquipmentRepo {
   async auto(term: string) {
     const ownerId = 1;  // only public equipment are searchable
     const sql = `SELECT id, name AS text FROM equipment WHERE name LIKE ? AND owner_id = ? LIMIT 5`;
@@ -26,7 +21,7 @@ export class EquipmentRepository implements IEquipmentRepository {
         e.description,
         e.image
       FROM equipment e
-      INNER JOIN equipment_types t ON t.id = e.equipment_type_id
+      INNER JOIN equipment_type t ON t.id = e.equipment_type_id
       WHERE e.owner_id = ?
     `;
 
@@ -75,7 +70,7 @@ export class EquipmentRepository implements IEquipmentRepository {
         e.description,
         e.image
       FROM equipment e
-      INNER JOIN equipment_types t ON e.equipment_type_id = t.id
+      INNER JOIN equipment_type t ON e.equipment_type_id = t.id
       WHERE e.author_id = ? AND e.owner_id = ?
       ORDER BY e.name ASC
     `;
@@ -94,7 +89,7 @@ export class EquipmentRepository implements IEquipmentRepository {
         e.description,
         e.image
       FROM equipment e
-      INNER JOIN equipment_types t ON e.equipment_type_id = t.id
+      INNER JOIN equipment_type t ON e.equipment_type_id = t.id
       WHERE e.id = ? AND e.author_id = ? AND e.owner_id = ?
     `;
     const [ row ] = await this.pool.execute<Equipment[]>(sql, [id, authorId, ownerId]);
@@ -144,7 +139,7 @@ export class EquipmentRepository implements IEquipmentRepository {
   }
 }
 
-export interface IEquipmentRepository {
+export interface IEquipmentRepo {
   pool:      Pool;
   auto:      (term: string) =>                                  Promise<EquipmentSuggestion[]>;
   search:    (searchRequest: SearchRequest) =>                  Promise<SearchResponse>;

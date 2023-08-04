@@ -1,26 +1,22 @@
 import { Pool, RowDataPacket } from 'mysql2/promise';
 
-export class CuisineRepository implements ICuisineRepository {
-  pool: Pool;
+import { MySQLRepo } from './MySQL';
 
-  constructor(pool: Pool) {
-    this.pool = pool;
-  }
-
+export class CuisineRepo extends MySQLRepo implements ICuisineRepo {
   async viewAll() {
-    const sql = `SELECT id, continent, code, name, country FROM cuisines`;
+    const sql = `SELECT id, continent, code, name, country FROM cuisine`;
     const [ rows ] = await this.pool.execute<Cuisine[]>(sql);
     return rows;
   }
 
   async viewOne(id: number) {
-    const sql = `SELECT id, continent, code, name, country FROM cuisines WHERE id = ?`;
+    const sql = `SELECT id, continent, code, name, country FROM cuisine WHERE id = ?`;
     const [ row ] = await this.pool.execute<Cuisine[]>(sql, [id]);
     return row;
   }
 }
 
-export interface ICuisineRepository {
+export interface ICuisineRepo {
   pool:                    Pool;
   viewAll: () =>           Promise<Cuisine[]>;
   viewOne: (id: number) => Promise<Cuisine[]>;

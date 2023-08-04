@@ -1,26 +1,22 @@
 import { Pool, RowDataPacket } from 'mysql2/promise';
 
-export class RecipeTypeRepository implements IRecipeTypeRepository {
-  pool: Pool;
+import { MySQLRepo } from './MySQL';
 
-  constructor(pool: Pool) {
-    this.pool = pool;
-  }
-
+export class RecipeTypeRepo extends MySQLRepo implements IRecipeTypeRepo {
   async viewAll() {
-    const sql = `SELECT id, name FROM recipe_types`;
+    const sql = `SELECT id, name FROM recipe_type`;
     const [ rows ] = await this.pool.execute<RecipeType[]>(sql);
     return rows;
   }
 
   async viewOne(id: number) {
-    const sql = `SELECT id, name FROM recipe_types WHERE id = ?`;
+    const sql = `SELECT id, name FROM recipe_type WHERE id = ?`;
     const [ row ] = await this.pool.execute<RecipeType[]>(sql, [id]);
     return row;
   }
 }
 
-export interface IRecipeTypeRepository {
+export interface IRecipeTypeRepo {
   pool:    Pool;
   viewAll: () =>           Promise<RecipeType[]>;
   viewOne: (id: number) => Promise<RecipeType[]>;

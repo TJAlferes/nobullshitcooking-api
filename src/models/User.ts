@@ -45,6 +45,8 @@ export function constructConfirmationCode(confirmationCode: string) {
   return confirmationCode;
 }
 
+// UserEntity
+// don't freeze ?
 export function constructUser(params: UserParams) {
   const email =            constructEmail(params.email);
   const password =         constructPassword(params.password);

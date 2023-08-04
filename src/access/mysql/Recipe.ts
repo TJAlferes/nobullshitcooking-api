@@ -1,17 +1,12 @@
 import { Pool, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
 import type { SearchRequest, SearchResponse } from '../../lib/validations';
+import { MySQLRepo } from './MySQL';
 
-export class RecipeRepository implements IRecipeRepository {
-  pool: Pool;
-
-  constructor(pool: Pool) {
-    this.pool = pool;
-  }
-
+export class RecipeRepo extends MySQLRepo implements IRecipeRepo {
   async autosuggest(term: string) {
     const ownerId = 1;  // only public recipes are searchable
-    const sql = `SELECT id, title AS text FROM recipes WHERE title LIKE ? AND owner_id = ? LIMIT 5`;
+    const sql = `SELECT id, title AS text FROM recipe WHERE title LIKE ? AND owner_id = ? LIMIT 5`;
     const [ rows ] = await this.pool.execute<Suggestion[]>(sql, [`%${term}%`, ownerId]);
     return rows;
   }
@@ -27,10 +22,10 @@ export class RecipeRepository implements IRecipeRepository {
         r.title,
         r.description,
         r.recipe_image
-      FROM recipes r
-      INNER JOIN users u         ON u.id = r.author_id
-      INNER JOIN recipe_types rt ON rt.id = r.recipe_type_id
-      INNER JOIN cuisines c      ON c.id = r.cuisine_id
+      FROM recipe r
+      INNER JOIN user u         ON u.id = r.author_id
+      INNER JOIN recipe_type rt ON rt.id = r.recipe_type_id
+      INNER JOIN cuisine c      ON c.id = r.cuisine_id
       WHERE r.owner_id = ?
     `;
 
@@ -60,8 +55,8 @@ export class RecipeRepository implements IRecipeRepository {
         JSON_ARRAY(${placeholders}),
         (
           SELECT JSON_ARRAYAGG(m.name)
-          FROM methods m
-          INNER JOIN recipe_methods rm ON rm.method_id = m.id
+          FROM method m
+          INNER JOIN recipe_method rm ON rm.method_id = m.id
           WHERE rm.recipe_id = r.id
         )
       )`;
@@ -93,7 +88,7 @@ export class RecipeRepository implements IRecipeRepository {
   }
 
   async getPrivateIds(userId: number) {
-    const sql = `SELECT id FROM recipes WHERE author_id = ? AND owner_id = ?`;
+    const sql = `SELECT id FROM recipe WHERE author_id = ? AND owner_id = ?`;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [userId, userId]);
     const ids: number[] = [];
     rows.forEach(({ id }) => ids.push(id));
@@ -101,7 +96,7 @@ export class RecipeRepository implements IRecipeRepository {
   }
 
   async viewAllPublicTitles(authorId: number, ownerId: number) {  // for Next.js getStaticPaths
-    const sql = `SELECT title FROM recipes WHERE author_id = ? AND owner_id = ?`;
+    const sql = `SELECT title FROM recipe WHERE author_id = ? AND owner_id = ?`;
     const [ rows ] = await this.pool.execute<Title[]>(sql, [authorId, ownerId]);
     return rows;
   }
@@ -109,7 +104,7 @@ export class RecipeRepository implements IRecipeRepository {
   /*async viewAll(authorId: number, ownerId: number) {
     const sql = `
       SELECT id, recipe_type_id, cuisine_id, title, recipe_image, owner_id
-      FROM recipes
+      FROM recipe
       WHERE author_id = ? AND owner_id = ?
       ORDER BY title ASC
     `;
@@ -131,7 +126,7 @@ export class RecipeRepository implements IRecipeRepository {
 
   async create(recipe: CreatingRecipe) {
     const sql = `
-      INSERT INTO recipes (
+      INSERT INTO recipe (
         recipe_type_id,
         cuisine_id,
         author_id,
@@ -169,7 +164,7 @@ export class RecipeRepository implements IRecipeRepository {
 
   async update(recipe: UpdatingRecipe) {
     const sql = `
-      UPDATE recipes
+      UPDATE recipe
       SET
         recipe_type_id = ?,
         cuisine_id = ?,
@@ -210,29 +205,29 @@ export class RecipeRepository implements IRecipeRepository {
   async disownAllByAuthorId(authorId: number) {
     if (authorId == 1 || authorId == 2) return;
     const newAuthorId = 2;  // double check
-    const sql = `UPDATE recipes SET author_id = ? WHERE author_id = ? AND owner_id = 1`;
+    const sql = `UPDATE recipe SET author_id = ? WHERE author_id = ? AND owner_id = 1`;
     await this.pool.execute(sql, [newAuthorId, authorId]);
   }
 
   async disownOneByAuthorId(id: number, authorId: number) {
     const newAuthorId = 2;  // double check
-    const sql = `UPDATE recipes SET author_id = ? WHERE id = ? AND author_id = ? AND owner_id = 1 LIMIT 1`;
+    const sql = `UPDATE recipe SET author_id = ? WHERE id = ? AND author_id = ? AND owner_id = 1 LIMIT 1`;
     await this.pool.execute(sql, [newAuthorId, id, authorId]);
   }
 
   async deleteAllByOwnerId(ownerId: number) {
     if (ownerId == 1 || ownerId == 2) return;
-    const sql = `DELETE FROM recipes WHERE owner_id = ?`;
+    const sql = `DELETE FROM recipe WHERE owner_id = ?`;
     await this.pool.execute(sql, [ownerId]);
   }
   
   async deleteOneByOwnerId(id: number, ownerId: number) {
-    const sql = `DELETE FROM recipes WHERE id = ? AND owner_id = ? LIMIT 1`;
+    const sql = `DELETE FROM recipe WHERE id = ? AND owner_id = ? LIMIT 1`;
     await this.pool.execute(sql, [id, ownerId]);
   }
 }
 
-export interface IRecipeRepository {
+export interface IRecipeRepo {
   pool:                Pool;
   autosuggest:         (term: string) =>                                     Promise<Suggestion[]>;
   search:              (searchRequest: SearchRequest) =>                     Promise<SearchResponse>;
@@ -362,7 +357,7 @@ const viewOneSQL = `
         'method_id',   rm.method_id
       ))
       FROM methods m
-      INNER JOIN recipe_methods rm ON rm.method_id = m.id
+      INNER JOIN recipe_method rm ON rm.method_id = m.id
       WHERE rm.recipe_id = r.id
     ) methods,
     (
@@ -388,8 +383,8 @@ const viewOneSQL = `
         'ingredient_id',      ri.ingredient_id
       ))
       FROM ingredients i
-      INNER JOIN recipe_ingredients ri ON ri.ingredient_id = i.id
-      INNER JOIN measurements m        ON m.id = ri.measurement_id
+      INNER JOIN recipe_ingredient ri ON ri.ingredient_id = i.id
+      INNER JOIN measurement m        ON m.id = ri.measurement_id
       WHERE ri.recipe_id = r.id
     ) ingredients,
     (
@@ -404,13 +399,13 @@ const viewOneSQL = `
         'subrecipe_id',   rs.subrecipe_id
       ))
       FROM recipes r
-      INNER JOIN recipe_subrecipes rs ON rs.subrecipe_id = r.id
-      INNER JOIN measurements m       ON m.id = rs.measurement_id
+      INNER JOIN recipe_subrecipe rs ON rs.subrecipe_id = r.id
+      INNER JOIN measurement m       ON m.id = rs.measurement_id
       WHERE rs.recipe_id = r.id
     ) subrecipes
   FROM recipes r
-  INNER JOIN users u         ON u.id = r.author_id
-  INNER JOIN recipe_types rt ON rt.id = r.recipe_type_id
-  INNER JOIN cuisines c      ON c.id = r.cuisine_id
+  INNER JOIN user u         ON u.id = r.author_id
+  INNER JOIN recipe_type rt ON rt.id = r.recipe_type_id
+  INNER JOIN cuisine c      ON c.id = r.cuisine_id
   WHERE r.author_id = ? AND r.owner_id = ?
 `;

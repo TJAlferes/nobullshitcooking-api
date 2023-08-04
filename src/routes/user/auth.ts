@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
-import { Pool }   from 'mysql2/promise';
 
 import { UserAuthController }          from '../../controllers/user';
 import { catchExceptions, userIsAuth } from '../../lib/utils';
@@ -9,8 +8,8 @@ const router = Router();
 
 // for /user/auth/...
 
-export function userAuthRouter(pool: Pool) {
-  const controller = new UserAuthController(pool);
+export function userAuthRouter() {
+  const controller = new UserAuthController();
 
   router.post(
     '/register',

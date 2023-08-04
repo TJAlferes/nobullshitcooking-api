@@ -1,22 +1,15 @@
 import { Request, Response } from 'express';
-import { Pool }              from 'mysql2/promise';
 import { assert }            from 'superstruct';
 
-import { FavoriteRecipe, RecipeRepository } from '../../access/mysql';
-import { validFavoriteRecipe }              from '../../lib/validations';
+import { FavoriteRecipeRepo, RecipeRepo } from '../../access/mysql';
+import { validFavoriteRecipe }            from '../../lib/validations';
 
 export class UserFavoriteRecipeController {
-  pool: Pool;
-
-  constructor(pool: Pool) {
-    this.pool = pool;
-  }
-
   async viewByUserId(req: Request, res: Response) {
     const userId = req.session.userInfo!.id;
     
-    const favoriteRecipe = new FavoriteRecipe(this.pool);
-    const rows = await favoriteRecipe.viewByUserId(userId);
+    const favoriteRecipeRepo = new FavoriteRecipeRepo();
+    const rows = await favoriteRecipeRepo.viewByUserId(userId);
     return res.send(rows);
   }
 
@@ -27,13 +20,13 @@ export class UserFavoriteRecipeController {
 
     assert({userId, recipeId}, validFavoriteRecipe);
 
-    const recipeRepo = new RecipeRepository(this.pool);
+    const recipeRepo = new RecipeRepo();
     const recipe = await recipeRepo.viewOneById(recipeId, userId, ownerId);
     if (!recipe) return res.send({message: 'Not Found'});
     if (recipe.author_id === userId) return res.send({message: 'May not favorite own recipe.'});
 
-    const favoriteRecipe = new FavoriteRecipe(this.pool);
-    await favoriteRecipe.create(userId, recipeId);
+    const favoriteRecipeRepo = new FavoriteRecipeRepo();
+    await favoriteRecipeRepo.create(userId, recipeId);
     return res.send({message: 'Favorited.'});
   }
 
@@ -43,8 +36,8 @@ export class UserFavoriteRecipeController {
 
     assert({userId, recipeId}, validFavoriteRecipe);
 
-    const favoriteRecipe = new FavoriteRecipe(this.pool);
-    await favoriteRecipe.delete(userId, recipeId);
+    const favoriteRecipeRepo = new FavoriteRecipeRepo();
+    await favoriteRecipeRepo.delete(userId, recipeId);
     return res.send({message: 'Unfavorited.'});
   }
 }

@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
-import { Pool }   from 'mysql2/promise';
 
 import { UserFriendshipController }    from '../../controllers/user';
 import { catchExceptions, userIsAuth } from '../../lib/utils';
@@ -9,8 +8,8 @@ const router = Router();
 
 // for /user/friendship/...
 
-export function userFriendshipRouter(pool: Pool) {
-  const controller = new UserFriendshipController(pool);
+export function userFriendshipRouter() {
+  const controller = new UserFriendshipController();
 
   router.post('/',          userIsAuth,                     catchExceptions(controller.view));
   router.post('/create',    userIsAuth, sanitize('friend'), catchExceptions(controller.create));

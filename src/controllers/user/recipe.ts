@@ -1,24 +1,23 @@
 import { Request, Response } from 'express';
-import { Pool }              from 'mysql2/promise';
 import { assert }            from 'superstruct';
 
-import { Recipe, RecipeEquipment, RecipeIngredient, RecipeMethod, RecipeSubrecipe } from '../../access/mysql';
-import { createRecipeService, updateRecipeService }                                 from '../../lib/services';
-import { validRecipe }                                                              from '../../lib/validations';
+import {
+  RecipeRepo,
+  RecipeEquipmentRepo,
+  RecipeIngredientRepo,
+  RecipeMethodRepo,
+  RecipeSubrecipeRepo
+} from '../../access/mysql';
+import { createRecipeService, updateRecipeService } from '../../lib/services';
+import { validRecipe }                              from '../../lib/validations';
 
 export class UserPublicRecipeController {
-  pool: Pool;
-
-  constructor(pool: Pool) {
-    this.pool = pool;
-  }
-
   async viewAll(req: Request, res: Response) {
     const authorId = req.session.userInfo!.id;
     const ownerId =  1;
 
-    const recipe = new Recipe(this.pool);
-    const rows = await recipe.viewAll(authorId, ownerId);
+    const recipeRepo = new RecipeRepo();
+    const rows = await recipeRepo.viewAll(authorId, ownerId);
     return res.send(rows);
   }
 
@@ -33,8 +32,8 @@ export class UserPublicRecipeController {
     //const authorId = req.session.userInfo!.id;
     const ownerId =  1;
 
-    const recipe = new Recipe(this.pool)
-    const [ row ] = await recipe.viewOne(title, authorId, ownerId);
+    const recipeRepo = new RecipeRepo()
+    const [ row ] = await recipeRepo.viewOne(title, authorId, ownerId);
     return res.send(row);
   }
 
@@ -78,11 +77,11 @@ export class UserPublicRecipeController {
     };
     assert(creatingRecipe, validRecipe);
 
-    const recipe =           new Recipe(this.pool);
-    const recipeMethod =     new RecipeMethod(this.pool);
-    const recipeEquipment =  new RecipeEquipment(this.pool);
-    const recipeIngredient = new RecipeIngredient(this.pool);
-    const recipeSubrecipe =  new RecipeSubrecipe(this.pool);
+    const recipeRepo =           new RecipeRepo();
+    const recipeMethodRepo =     new RecipeMethodRepo();
+    const recipeEquipmentRepo =  new RecipeEquipmentRepo();
+    const recipeIngredientRepo = new RecipeIngredientRepo();
+    const recipeSubrecipeRepo =  new RecipeSubrecipeRepo();
     await createRecipeService({
       creatingRecipe,
 
@@ -91,11 +90,11 @@ export class UserPublicRecipeController {
       ingredients,
       subrecipes,
 
-      recipe,
-      recipeMethod,
-      recipeEquipment,
-      recipeIngredient,
-      recipeSubrecipe
+      recipeRepo,
+      recipeMethodRepo,
+      recipeEquipmentRepo,
+      recipeIngredientRepo,
+      recipeSubrecipeRepo
     });
 
     return res.send({message: 'Recipe created.'});
@@ -143,11 +142,11 @@ export class UserPublicRecipeController {
     };
     assert(updatingRecipe, validRecipe);
 
-    const recipe =           new Recipe(this.pool);
-    const recipeMethod =     new RecipeMethod(this.pool);
-    const recipeEquipment =  new RecipeEquipment(this.pool);
-    const recipeIngredient = new RecipeIngredient(this.pool);
-    const recipeSubrecipe =  new RecipeSubrecipe(this.pool);
+    const recipeRepo =           new RecipeRepo();
+    const recipeMethodRepo =     new RecipeMethodRepo();
+    const recipeEquipmentRepo =  new RecipeEquipmentRepo();
+    const recipeIngredientRepo = new RecipeIngredientRepo();
+    const recipeSubrecipeRepo =  new RecipeSubrecipeRepo();
     await updateRecipeService({
       recipeId: id,
       updatingRecipe,
@@ -157,11 +156,11 @@ export class UserPublicRecipeController {
       ingredients,
       subrecipes,
 
-      recipe,
-      recipeMethod,
-      recipeEquipment,
-      recipeIngredient,
-      recipeSubrecipe
+      recipeRepo,
+      recipeMethodRepo,
+      recipeEquipmentRepo,
+      recipeIngredientRepo,
+      recipeSubrecipeRepo
     });
 
     return res.send({message: 'Recipe updated.'});
@@ -171,8 +170,8 @@ export class UserPublicRecipeController {
     const id =       Number(req.body.id);
     const authorId = req.session.userInfo!.id;
 
-    const recipe = new Recipe(this.pool);
-    await recipe.disownOneByAuthorId(id, authorId);
+    const recipeRepo = new RecipeRepo();
+    await recipeRepo.disownOneByAuthorId(id, authorId);
 
     return res.send({message: 'Recipe disowned.'});
   }

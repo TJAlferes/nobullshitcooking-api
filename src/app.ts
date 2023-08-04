@@ -10,18 +10,17 @@ import helmet                                       from 'helmet';
 import hpp                                          from 'hpp';
 import { createServer, IncomingMessage }            from 'http';
 import { Redis }                                    from 'ioredis';
-import { Pool }                                     from 'mysql2/promise';
 import { Server as SocketIOServer, Socket }         from 'socket.io';
 import { createAdapter, RedisAdapter }              from '@socket.io/redis-adapter';
 const pino = require('pino-http')();
 
 import { sendMessage, sendPrivateMessage, joinRoom, disconnecting, getOnlineFriends, getUsersInRoom, rejoinRoom, IMessage } from './chat';
-import { Friendship, User } from './access/mysql';
+import { FriendshipRepo, UserRepo } from './access/mysql';
 import { ChatStore }        from './access/redis';
 import { chatCleanUp }      from './lib/jobs/chatCleanUp';
 import { routesInit }       from './routes';
 
-export function appServer(pool: Pool, { sessionClient, pubClient, subClient }: RedisClients) {
+export function appServer({ sessionClient, pubClient, subClient }: RedisClients) {
   const app =        express();
   const httpServer = createServer(app);
 
@@ -87,7 +86,7 @@ export function appServer(pool: Pool, { sessionClient, pubClient, subClient }: R
 
   */
 
-  routesInit(app, pool);
+  routesInit(app);
   
   /*
 
@@ -129,8 +128,8 @@ export function appServer(pool: Pool, { sessionClient, pubClient, subClient }: R
 
     if (!sessionId || !id || !username) return;
 
-    const user =       new User(pool);
-    const friendship = new Friendship(pool);
+    const user =       new UserRepo();
+    const friendship = new FriendshipRepo();
     const chatStore =  new ChatStore(pubClient);
 
     //chatStore.createUser({sessionId, username});

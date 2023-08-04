@@ -1,23 +1,16 @@
 import { Request, Response } from 'express';
-import { Pool }              from 'mysql2/promise';
 import { assert }            from 'superstruct';
 
-import { Equipment, RecipeEquipment } from '../../../access/mysql';
-import { validEquipment }             from '../../../lib/validations';
+import { EquipmentRepo, RecipeEquipmentRepo } from '../../../access/mysql';
+import { validEquipment }                     from '../../../lib/validations';
 
 export class UserEquipmentController {
-  pool: Pool;
-
-  constructor(pool: Pool) {
-    this.pool = pool;
-  }
-
   async viewAll(req: Request, res: Response) {
     const authorId = req.session.userInfo!.id;
     const ownerId =  req.session.userInfo!.id;
 
-    const equipment = new Equipment(this.pool);
-    const rows = await equipment.viewAll(authorId, ownerId);
+    const equipmentRepo = new EquipmentRepo();
+    const rows = await equipmentRepo.viewAll(authorId, ownerId);
     return res.send(rows);
   }
 
@@ -26,8 +19,8 @@ export class UserEquipmentController {
     const authorId = req.session.userInfo!.id;
     const ownerId =  req.session.userInfo!.id;
 
-    const equipment = new Equipment(this.pool);
-    const [ row ] = await equipment.viewOne(id, authorId, ownerId);
+    const equipmentRepo = new EquipmentRepo();
+    const [ row ] = await equipmentRepo.viewOne(id, authorId, ownerId);
     return res.send(row);
   }
 
@@ -40,8 +33,8 @@ export class UserEquipmentController {
     const args = {equipmentTypeId, authorId, ownerId, name, description, image};
     assert(args, validEquipment);
 
-    const equipment = new Equipment(this.pool);
-    await equipment.create(args);
+    const equipmentRepo = new EquipmentRepo();
+    await equipmentRepo.create(args);
     
     return res.send({message: 'Equipment created.'});
   }
@@ -56,8 +49,8 @@ export class UserEquipmentController {
     const args = {equipmentTypeId, authorId, ownerId, name, description, image};
     assert(args, validEquipment);
 
-    const equipment = new Equipment(this.pool);
-    await equipment.update({id, ...args});
+    const equipmentRepo = new EquipmentRepo();
+    await equipmentRepo.update({id, ...args});
 
     return res.send({message: 'Equipment updated.'});
   }
@@ -66,11 +59,11 @@ export class UserEquipmentController {
     const id =      Number(req.body.id);
     const ownerId = req.session.userInfo!.id;
 
-    const recipeEquipment = new RecipeEquipment(this.pool);
-    await recipeEquipment.deleteByEquipmentId(id);
+    const recipeEquipmentRepo = new RecipeEquipmentRepo();
+    await recipeEquipmentRepo.deleteByEquipmentId(id);
 
-    const equipment = new Equipment(this.pool);
-    await equipment.deleteOne(id, ownerId);
+    const equipmentRepo = new EquipmentRepo();
+    await equipmentRepo.deleteOne(id, ownerId);
 
     return res.send({message: 'Equipment deleted.'});
   }

@@ -1,26 +1,22 @@
 import { Pool, RowDataPacket } from 'mysql2/promise';
 
-export class MeasurementRepository implements IMeasurementRepository {
-  pool: Pool;
+import { MySQLRepo } from './MySQL';
 
-  constructor(pool: Pool) {
-    this.pool = pool;
-  }
-
+export class MeasurementRepo extends MySQLRepo implements IMeasurementRepo {
   async viewAll() {
-    const sql = `SELECT id, name FROM measurements`;
+    const sql = `SELECT id, name FROM measurement`;
     const [ rows ] = await this.pool.execute<Measurement[]>(sql);
     return rows;
   }
 
   async viewOne(id: number) {
-    const sql = `SELECT id, name FROM measurements WHERE id = ?`;
+    const sql = `SELECT id, name FROM measurement WHERE id = ?`;
     const [ row ] = await this.pool.execute<Measurement[]>(sql, [id]);
     return row;
   }
 }
 
-export interface IMeasurementRepository {
+export interface IMeasurementRepo {
   pool:    Pool;
   viewAll: () =>           Promise<Measurement[]>;
   viewOne: (id: number) => Promise<Measurement[]>;

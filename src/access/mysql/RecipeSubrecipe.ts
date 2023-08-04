@@ -1,18 +1,14 @@
 import { Pool, RowDataPacket } from 'mysql2/promise';
 
-export class RecipeSubrecipeRepository implements IRecipeSubrecipeRepository {
-  pool: Pool;
+import { MySQLRepo } from './MySQL';
 
-  constructor(pool: Pool) {
-    this.pool = pool;
-  }
-
+export class RecipeSubrecipeRepo extends MySQLRepo implements IRecipeSubrecipeRepo {
   async viewByRecipeId(id: number) {
     const sql = `
       SELECT rs.amount, m.name AS measurement_name, r.title
-      FROM recipe_subrecipes rs
-      INNER JOIN measurements m ON m.id = rs.measurement_id
-      INNER JOIN recipes r ON r.id = rs.subrecipe_id
+      FROM recipe_subrecipe rs
+      INNER JOIN measurement m ON m.id = rs.measurement_id
+      INNER JOIN recipe r ON r.id = rs.subrecipe_id
       WHERE rs.recipe_id = ?
       ORDER BY r.recipe_type_id
     `;
@@ -21,13 +17,13 @@ export class RecipeSubrecipeRepository implements IRecipeSubrecipeRepository {
   }
 
   async create(placeholders: string, recipeSubrecipes: number[]) {
-    const sql = `INSERT INTO recipe_subrecipes (recipe_id, amount, measurement_id, subrecipe_id) VALUES ${placeholders}`;
+    const sql = `INSERT INTO recipe_subrecipe (recipe_id, amount, measurement_id, subrecipe_id) VALUES ${placeholders}`;
     await this.pool.execute(sql, recipeSubrecipes);
   }
   
   async update(recipeId: number, placeholders: string, recipeSubrecipes: number[]) {
-    const sql1 = `DELETE FROM recipe_subrecipes WHERE recipe_id = ?`;
-    const sql2 = recipeSubrecipes.length ? `INSERT INTO recipe_subrecipes (recipe_id, amount, measurement_id, subrecipe_id) VALUES ${placeholders}` : undefined;
+    const sql1 = `DELETE FROM recipe_subrecipe WHERE recipe_id = ?`;
+    const sql2 = recipeSubrecipes.length ? `INSERT INTO recipe_subrecipe (recipe_id, amount, measurement_id, subrecipe_id) VALUES ${placeholders}` : undefined;
     const conn = await this.pool.getConnection();
     await conn.beginTransaction();
     try {
@@ -47,27 +43,27 @@ export class RecipeSubrecipeRepository implements IRecipeSubrecipeRepository {
   }
 
   async deleteByRecipeId(id: number) {
-    const sql = `DELETE FROM recipe_subrecipes WHERE recipe_id = ?`;
+    const sql = `DELETE FROM recipe_subrecipe WHERE recipe_id = ?`;
     await this.pool.execute(sql, [id]);
   }
 
   async deleteByRecipeIds(ids: number[]) {
-    const sql = `DELETE FROM recipe_subrecipes WHERE recipe_id = ANY(?)`;
+    const sql = `DELETE FROM recipe_subrecipe WHERE recipe_id = ANY(?)`;
     await this.pool.execute(sql, ids);
   }
 
   async deleteBySubrecipeId(id: number) {
-    const sql = `DELETE FROM recipe_subrecipes WHERE subrecipe_id = ?`;
+    const sql = `DELETE FROM recipe_subrecipe WHERE subrecipe_id = ?`;
     await this.pool.execute(sql, [id]);
   }
 
   async deleteBySubrecipeIds(ids: number[]) {
-    const sql = `DELETE FROM recipe_subrecipes WHERE subrecipe_id = ANY(?)`;
+    const sql = `DELETE FROM recipe_subrecipe WHERE subrecipe_id = ANY(?)`;
     await this.pool.execute(sql, ids);
   }
 }
 
-export interface IRecipeSubrecipeRepository {
+export interface IRecipeSubrecipeRepo {
   pool:                 Pool;
   viewByRecipeId:       (id: number) =>                                                         Promise<RecipeSubrecipe[]>;
   create:               (placeholders: string, recipeSubrecipes: number[]) =>                   Promise<void>;

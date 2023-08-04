@@ -1,12 +1,9 @@
 import { Pool, RowDataPacket } from 'mysql2/promise';
 
-export class UserRepository implements IUserRepository {
-  pool: Pool;
+import { MySQLRepo } from './MySQL';
 
-  constructor(pool: Pool) {
-    this.pool = pool;
-  }
-
+// class UserRepoUsingMySQL, class UserRepoUsingPostgreSQL
+export class UserRepo extends MySQLRepo implements IUserRepo {
   // security sensitive, do NOT send back in the api response
   async getByEmail(email: string) {
     const sql = `SELECT id, email, pass, username, confirmation_code FROM users WHERE email = ?`;
@@ -54,7 +51,7 @@ export class UserRepository implements IUserRepository {
   }
 }
 
-export interface IUserRepository {
+export interface IUserRepo {
   pool:       Pool;
   getByEmail: (email: string) =>      Promise<User>;
   getByName:  (username: string) =>   Promise<User>;

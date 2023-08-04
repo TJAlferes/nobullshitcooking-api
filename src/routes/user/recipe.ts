@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
-import { Pool }   from 'mysql2/promise';
 
 import { UserPublicRecipeController }  from '../../controllers/user';
 import { catchExceptions, userIsAuth } from '../../lib/utils';
@@ -9,8 +8,8 @@ const router = Router();
 
 // for /user/recipe/...
 
-export function userPublicRecipeRouter(pool: Pool) {
-  const controller = new UserPublicRecipeController(pool);
+export function userPublicRecipeRouter() {
+  const controller = new UserPublicRecipeController();
   
   // TO DO: sanitize the requireds with *
   const recipeInfo = [

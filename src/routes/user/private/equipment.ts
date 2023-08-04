@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
-import { Pool }   from 'mysql2/promise';
 
 import { UserEquipmentController }     from '../../../controllers/user/private';
 import { catchExceptions, userIsAuth } from '../../../lib/utils';
@@ -9,8 +8,8 @@ const router = Router();
 
 // for /user/private/equipment/...
 
-export function userEquipmentRouter(pool: Pool) {
-  const controller = new UserEquipmentController(pool);
+export function userEquipmentRouter() {
+  const controller = new UserEquipmentController();
 
   const equipmentInfo = [
     'equipmentTypeId',

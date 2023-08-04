@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { query }  from 'express-validator';
-import { Pool }   from 'mysql2/promise';
 
 import { SearchController } from '../controllers';
 import { catchExceptions }  from '../lib/utils';
@@ -9,8 +8,8 @@ const router = Router();
 
 // for /search/...
 
-export function searchRouter(pool: Pool) {
-  const controller = new SearchController(pool);
+export function searchRouter() {
+  const controller = new SearchController();
 
   const sanitizeTerm =              query('term').trim().escape().notEmpty();
   const sanitizeEquipmentFilters =  querySanitizer('filters.equipmentTypes.*');

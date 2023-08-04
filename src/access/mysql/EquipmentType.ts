@@ -1,26 +1,22 @@
 import { Pool, RowDataPacket } from 'mysql2/promise';
 
-export class EquipmentTypeRepository implements IEquipmentTypeRepository {
-  pool: Pool;
+import { MySQLRepo } from './MySQL';
 
-  constructor(pool: Pool) {
-    this.pool = pool;
-  }
-
+export class EquipmentTypeRepo extends MySQLRepo implements IEquipmentTypeRepo {
   async viewAll() {
-    const sql = `SELECT id, name FROM equipment_types`;
+    const sql = `SELECT id, name FROM equipment_type`;
     const [ rows ] = await this.pool.execute<EquipmentType[]>(sql);
     return rows;
   }
 
   async viewOne(id: number) {
-    const sql = `SELECT id, name FROM equipment_types WHERE id = ?`;
+    const sql = `SELECT id, name FROM equipment_type WHERE id = ?`;
     const [ row ] = await this.pool.execute<EquipmentType[]>(sql, [id]);
     return row;
   }
 }
 
-export interface IEquipmentTypeRepository {
+export interface IEquipmentTypeRepo {
   pool:    Pool;
   viewAll: () =>           Promise<EquipmentType[]>;
   viewOne: (id: number) => Promise<EquipmentType[]>;

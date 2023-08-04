@@ -1,23 +1,16 @@
 import { Request, Response } from 'express';
-import { Pool }              from 'mysql2/promise';
 import { assert }            from 'superstruct';
 
-import { Ingredient, RecipeIngredient } from '../../../access/mysql';
-import { validIngredient }              from '../../../lib/validations';
+import { IngredientRepo, RecipeIngredientRepo } from '../../../access/mysql';
+import { validIngredient }                      from '../../../lib/validations';
 
 export class UserIngredientController {
-  pool: Pool;
-
-  constructor(pool: Pool) {
-    this.pool = pool;
-  }
-
   async viewAll(req: Request, res: Response) {
     const authorId = req.session.userInfo!.id;
     const ownerId =  req.session.userInfo!.id;
 
-    const ingredient = new Ingredient(this.pool);
-    const rows = await ingredient.viewAll(authorId, ownerId);
+    const ingredientRepo = new IngredientRepo();
+    const rows = await ingredientRepo.viewAll(authorId, ownerId);
     return res.send(rows);
   }
 
@@ -26,8 +19,8 @@ export class UserIngredientController {
     const authorId = req.session.userInfo!.id;
     const ownerId =  req.session.userInfo!.id;
 
-    const ingredient = new Ingredient(this.pool);
-    const [ row ] = await ingredient.viewOne(id, authorId, ownerId);
+    const ingredientRepo = new IngredientRepo();
+    const [ row ] = await ingredientRepo.viewOne(id, authorId, ownerId);
     return res.send(row);
   }
 
@@ -40,8 +33,8 @@ export class UserIngredientController {
     const args = {ingredientTypeId, authorId, ownerId, brand, variety, name, altNames, description, image};
     assert(args, validIngredient);
 
-    const ingredient = new Ingredient(this.pool);
-    await ingredient.create(args);
+    const ingredientRepo = new IngredientRepo();
+    await ingredientRepo.create(args);
 
     return res.send({message: 'Ingredient created.'});
   }
@@ -56,8 +49,8 @@ export class UserIngredientController {
     const args = {ingredientTypeId, authorId, ownerId, brand, variety, name, altNames, description, image};
     assert(args, validIngredient);
 
-    const ingredient = new Ingredient(this.pool);
-    await ingredient.update({id, ...args});
+    const ingredientRepo = new IngredientRepo();
+    await ingredientRepo.update({id, ...args});
 
     return res.send({message: 'Ingredient updated.'});
   }
@@ -66,11 +59,11 @@ export class UserIngredientController {
     const id =      Number(req.body.id);
     const ownerId = req.session.userInfo!.id;
 
-    const recipeIngredient = new RecipeIngredient(this.pool);
-    await recipeIngredient.deleteByIngredientId(id);
+    const recipeIngredientRepo = new RecipeIngredientRepo();
+    await recipeIngredientRepo.deleteByIngredientId(id);
 
-    const ingredient = new Ingredient(this.pool);
-    await ingredient.deleteOne(id, ownerId);
+    const ingredientRepo = new IngredientRepo();
+    await ingredientRepo.deleteOne(id, ownerId);
     
     return res.send({message: 'Ingredient deleted.'});
   }

@@ -1,17 +1,13 @@
 import { Pool, RowDataPacket } from 'mysql2/promise';
 
-export class RecipeMethodRepository implements IRecipeMethodRepository {
-  pool: Pool;
+import { MySQLRepo } from './MySQL';
 
-  constructor(pool: Pool) {
-    this.pool = pool;
-  }
-
+export class RecipeMethodRepo extends MySQLRepo implements IRecipeMethodRepo {
   async viewByRecipeId(id: number) {
     const sql = `
       SELECT m.name AS method_name
-      FROM recipe_methods rm
-      INNER JOIN methods m ON m.id = rm.method_id
+      FROM recipe_method rm
+      INNER JOIN method m ON m.id = rm.method_id
       WHERE rm.recipe_id = ?
       ORDER BY m.id
     `;
@@ -20,13 +16,13 @@ export class RecipeMethodRepository implements IRecipeMethodRepository {
   }
 
   async create(placeholders: string, recipeMethods: number[]) {
-    const sql = `INSERT INTO recipe_methods (recipe_id, method_id) VALUES ${placeholders}`;
+    const sql = `INSERT INTO recipe_method (recipe_id, method_id) VALUES ${placeholders}`;
     await this.pool.execute(sql, recipeMethods);  // test that this works correctly!
   }
   
   async update(recipeId: number, placeholders: string, recipeMethods: number[]) {
-    const sql1 = `DELETE FROM recipe_methods WHERE recipe_id = ?`;
-    const sql2 = recipeMethods.length ? `INSERT INTO recipe_methods (recipe_id, method_id) VALUES ${placeholders}` : undefined;
+    const sql1 = `DELETE FROM recipe_method WHERE recipe_id = ?`;
+    const sql2 = recipeMethods.length ? `INSERT INTO recipe_method (recipe_id, method_id) VALUES ${placeholders}` : undefined;
     const conn = await this.pool.getConnection();
     await conn.beginTransaction();
     try {
@@ -46,17 +42,17 @@ export class RecipeMethodRepository implements IRecipeMethodRepository {
   }
 
   async deleteByRecipeId(id: number) {
-    const sql = `DELETE FROM recipe_methods WHERE recipe_id = ?`;
+    const sql = `DELETE FROM recipe_method WHERE recipe_id = ?`;
     await this.pool.execute(sql, [id]);
   }
 
   async deleteByRecipeIds(ids: number[]) {
-    const sql = `DELETE FROM recipe_methods WHERE recipe_id = ANY(?)`;
+    const sql = `DELETE FROM recipe_method WHERE recipe_id = ANY(?)`;
     await this.pool.execute(sql, ids);
   }
 }
 
-export interface IRecipeMethodRepository {
+export interface IRecipeMethodRepo {
   pool:              Pool;
   viewByRecipeId:    (id: number) =>                                                      Promise<RecipeMethod[]>;
   create:            (placeholders: string, recipeMethods: number[]) =>                   Promise<void>;

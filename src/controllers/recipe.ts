@@ -1,21 +1,14 @@
 import { Request, Response } from 'express';
-import { Pool }              from 'mysql2/promise';
 
-import { RecipeRepository } from '../access/mysql';
+import { RecipeRepo } from '../access/mysql';
 
 export class RecipeController {
-  pool: Pool;
-
-  constructor(pool: Pool) {
-    this.pool = pool;
-  }
-
   // remove?
   /*async viewAll(req: Request, res: Response) {
     const authorId = 1;
     const ownerId =  1;
 
-    const repo = new RecipeRepository(this.pool);
+    const repo = new RecipeRepo();
     const rows = await repo.viewAll(authorId, ownerId);
     return res.send(rows);
   }*/
@@ -25,7 +18,7 @@ export class RecipeController {
     const authorId = 1;
     const ownerId =  1;
 
-    const repo = new RecipeRepository(this.pool);
+    const repo = new RecipeRepo();
     const rows = await repo.viewAllPublicTitles(authorId, ownerId);
     return res.send(rows);
   }
@@ -39,7 +32,7 @@ export class RecipeController {
     const authorId = 1;
     const ownerId =  1;
 
-    const repo = new RecipeRepository(this.pool);
+    const repo = new RecipeRepo();
     const row = await repo.viewOneByTitle(title, authorId, ownerId);
     return res.send(row);
   }
