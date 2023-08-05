@@ -1,9 +1,9 @@
-import { v4 as uuidv4 } from 'uuid';
+import { uuidv7 } from 'uuidv7';
 
 export function PublicMessage(to: string, from: string, text: string): IMessage {
   return {
     kind: PUBLIC,
-    id: uuidv4(),
+    id: uuidv7(),
     to,
     from,
     text
@@ -13,7 +13,7 @@ export function PublicMessage(to: string, from: string, text: string): IMessage 
 export function PrivateMessage(to: string, from: string, text: string): IMessage {
   return {
     kind: PRIVATE,
-    id: uuidv4(),
+    id: uuidv7(),
     to,
     from,
     text

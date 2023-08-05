@@ -1,16 +1,19 @@
 import { assert, defaulted, object, string } from 'superstruct';
-import { v4 as uuidv4 }                      from 'uuid';
+import { uuidv7 }                            from 'uuidv7';
 
 export class User {
-  private userId;
+  private id;
   private email;
   private password;
   private username;
   private confirmationCode;
+  // Timestamps - these will be handled by MySQL
+  private created_at: Date | null = null;
+  private updated_at: Date | null = null;
   //private events: DomainEvent = [];
 
   private constructor(params: UserParams) {
-    this.userId           = UserId();
+    this.id               = UserId();
     this.email            = Email(params.email);
     this.password         = Password(params.password);
     this.username         = Username(params.username);
@@ -27,16 +30,23 @@ export class User {
   commandMethod(input, context) {
     // validate args, validate state transitions, record domain events
   }
+  //update
+  //delete
 
   queryMethod(): ReturnType {
 
   }
+  //getById        (INTERNAL ONLY, read model)
+  //getByEmail     (INTERNAL ONLY, read model)
+  //getByUsername  (INTERNAL ONLY, read model)
+  //viewByEmail    (EXTERNAL, view model)
+  //viewByUsername (EXTERNAL, view model)
 
   //releaseEvents(): Event[] { return recorded domain events }
 }
 
 export function UserId() {
-  return uuidv4();
+  return uuidv7();
 }
  
 export function Email(email: string) {

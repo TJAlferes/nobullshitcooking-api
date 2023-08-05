@@ -1,29 +1,29 @@
 import { assert, string } from 'superstruct';
-import { v4 as uuidv4 }   from 'uuid';
+import { uuidv7 }         from 'uuidv7';
 
-export class ChatMessage {
+export class Chatmessage {
   private id;
   private kind;
   private to;
   private from;
-  private text;
+  private content;
 
   private constructor(params: ChatMessageParams) {
-    this.id   = ChatMessageId();
-    this.kind = Kind(params.kind);
-    this.to   = Username(params.to);    // ALSO ALLOW SOCKETS ?
-    this.from = Username(params.from);  // ALSO ALLOW SOCKETS ?
-    this.text = Text(params.text);
+    this.id   =    ChatmessageId();
+    this.kind =    Kind(params.kind);
+    this.to   =    Username(params.to);    // ALSO ALLOW SOCKETS ?
+    this.from =    Username(params.from);  // ALSO ALLOW SOCKETS ?
+    this.content = Content(params.content);
   }
 
-  static create(params: ChatMessageParams): ChatMessage {
-    const chatMessage = new ChatMessage(params);
+  static create(params: ChatMessageParams): Chatmessage {
+    const chatMessage = new Chatmessage(params);
     return chatMessage;
   }
 }
 
-export function ChatMessageId() {
-  return uuidv4();
+export function ChatmessageId() {
+  return uuidv7();
 }
 
 export function Kind(kind: typeof PRIVATE | typeof PUBLIC) {
@@ -44,19 +44,19 @@ export function Username(username: string) {
   return username;
 }
 
-export function Text(text: string) {
-  assert(text, string());
-  if (text.length > 1000) {
-    throw new Error("Chat message text must be no more than 1,000 characters.");
+export function Content(content: string) {
+  assert(content, string());
+  if (content.length > 1000) {
+    throw new Error("Chat message content must be no more than 1,000 characters.");
   }
-  return text;
+  return content;
 }
 
 export type ChatMessageParams = {
-  kind: typeof PRIVATE | typeof PUBLIC;
-  to:   string;
-  from: string;
-  text: string;
+  kind:    typeof PRIVATE | typeof PUBLIC;
+  to:      string;
+  from:    string;
+  content: string;
 };
 
 export const PRIVATE = "private" as const;

@@ -3,12 +3,12 @@ import { assert, string } from 'superstruct';
 import { Username } from '../User';
 
 export class ChatUser {
-  private sessionId;
+  private sessionId;  // ???
   private username;
   //private chatUserRepo: ChatUserRepoInterface;
 
   private constructor(params: ChatUserParams) {
-    this.sessionId = SessionId(params.sessionId);
+    this.sessionId = SessionId(params.sessionId);  // ???
     this.username  = Username(params.username);
   }
 
@@ -19,12 +19,12 @@ export class ChatUser {
   }
 }
 
-export function SessionId(sessionId: string) {
+export function SessionId(sessionId: string) {  // ???
   assert(sessionId, string());
   return sessionId;
 }
 
 type ChatUserParams = {
-  sessionId: string;
+  sessionId: string;  // ???
   username: string;
 };
