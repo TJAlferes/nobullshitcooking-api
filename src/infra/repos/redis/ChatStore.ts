@@ -7,16 +7,6 @@ export class ChatStore implements IChatStore {
 
   constructor(client: Redis) {
     this.client = client;
-    this.getUsersInRoom =     this.getUsersInRoom.bind(this);
-    this.getUserSessionId =   this.getUserSessionId.bind(this);
-    //this.getRooms
-    //this.getMessages
-    this.createUser =         this.createUser.bind(this);
-    this.createRoom =         this.createRoom.bind(this);
-    this.createMessage =      this.createMessage.bind(this);
-    this.addUserToRoom =      this.addUserToRoom.bind(this);
-    this.removeUserFromRoom = this.removeUserFromRoom.bind(this);
-    this.deleteUser =         this.deleteUser.bind(this);
   }
 
   async getUsersInRoom(room: string) {

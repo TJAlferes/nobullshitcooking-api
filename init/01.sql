@@ -1,6 +1,6 @@
 DROP DATABASE IF EXISTS nobsc;
 
-CREATE DATABASE nobsc;
+CREATE DATABASE nobsc CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 USE nobsc;
 
@@ -12,47 +12,47 @@ CREATE TABLE cuisine (
   `code`      varchar(3)       NOT NULL DEFAULT ''  UNIQUE,
   `name`      varchar(40)      NOT NULL DEFAULT '',
   `country`   varchar(40)      NOT NULL DEFAULT ''  UNIQUE
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE equipment_type (
   `id`   tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
   `name` varchar(25)               DEFAULT NULL
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE ingredient_type (
   `id`   tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
   `name` varchar(25)               DEFAULT NULL
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE measurement (
   `id`   tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
   `name` varchar(25)               DEFAULT NULL
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE method (
   `id`   tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
   `name` varchar(25)               DEFAULT NULL
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE product_category (
   `id`   tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
   `name` varchar(25)               DEFAULT NULL
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE product_type (
   `id`   tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
   `name` varchar(25)               DEFAULT NULL
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE recipe_type (
   `id`   tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
   `name` varchar(25)               DEFAULT NULL
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE supplier (
   `id`   smallint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
   `name` varchar(60)       NOT NULL             UNIQUE
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 
 
@@ -61,7 +61,7 @@ CREATE TABLE supplier (
 CREATE TABLE customer (
   `id`    int unsigned NOT NULL PRIMARY KEY AUTO_INCREMENT ,
   `email` varchar(60)  NOT NULL UNIQUE
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE staff (
   `id`                int unsigned NOT NULL              PRIMARY KEY AUTO_INCREMENT,
@@ -69,7 +69,7 @@ CREATE TABLE staff (
   `pass`              char(60)     NOT NULL,
   `staffname`         varchar(20)  NOT NULL              UNIQUE,
   `confirmation_code` varchar(255)          DEFAULT NULL
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE user (
   `id`                int unsigned NOT NULL              PRIMARY KEY AUTO_INCREMENT,
@@ -77,7 +77,7 @@ CREATE TABLE user (
   `pass`              char(60)     NOT NULL,
   `username`          varchar(20)  NOT NULL              UNIQUE,
   `confirmation_code` varchar(255)          DEFAULT NULL
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 
 
@@ -92,7 +92,7 @@ CREATE TABLE equipment (
   FOREIGN KEY (`equipment_type_id`) REFERENCES `equipment_types` (`id`),
   FOREIGN KEY (`author_id`)         REFERENCES `users` (`id`),
   FOREIGN KEY (`owner_id`)          REFERENCES `users` (`id`)
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE ingredient (
   `id`                 smallint unsigned NOT NULL             PRIMARY KEY AUTO_INCREMENT,
@@ -109,7 +109,7 @@ CREATE TABLE ingredient (
   FOREIGN KEY (`ingredient_type_id`) REFERENCES `ingredient_types` (`id`),
   FOREIGN KEY (`owner_id`)           REFERENCES `users` (`id`),
   FOREIGN KEY (`author_id`)          REFERENCES `users` (`id`) 
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE order (
   `id`          int unsigned NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -117,7 +117,7 @@ CREATE TABLE order (
   `staff_id`    int unsigned NOT NULL,
   FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`),
   FOREIGN KEY (`staff_id`)    REFERENCES `staff` (`id`)
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE plan (
   `id`        int unsigned NOT NULL            PRIMARY KEY AUTO_INCREMENT,
@@ -127,7 +127,7 @@ CREATE TABLE plan (
   `data`      json DEFAULT NULL,
   FOREIGN KEY (`author_id`) REFERENCES `users` (`id`),
   FOREIGN KEY (`owner_id`)  REFERENCES `users` (`id`)
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE product (
   `id`                  smallint unsigned NOT NULL              PRIMARY KEY AUTO_INCREMENT,
@@ -143,7 +143,7 @@ CREATE TABLE product (
   `image`               varchar(100)      NOT NULL DEFAULT '',
   FOREIGN KEY (`product_category_id`) REFERENCES `product_categories` (`id`),
   FOREIGN KEY (`product_type_id`)     REFERENCES `product_types` (`id`)
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE recipe (
   `id`                int unsigned     NOT NULL            PRIMARY KEY AUTO_INCREMENT,
@@ -165,7 +165,7 @@ CREATE TABLE recipe (
   FOREIGN KEY (`cuisine_id`)     REFERENCES `cuisines` (`id`),
   FOREIGN KEY (`author_id`)      REFERENCES `users` (`id`),
   FOREIGN KEY (`owner_id`)       REFERENCES `users` (`id`)
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 
 
@@ -174,7 +174,7 @@ CREATE TABLE favorite_recipe (
   `recipe_id` int unsigned NOT NULL,
   FOREIGN KEY (`user_id`)   REFERENCES `users` (`id`),
   FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`id`)
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE friendship (
   `user_id`   int unsigned NOT NULL,
@@ -182,21 +182,21 @@ CREATE TABLE friendship (
   `status`    varchar(20)  NOT NULL,
   FOREIGN KEY (`user_id`)   REFERENCES `users` (`id`),
   FOREIGN KEY (`friend_id`) REFERENCES `users` (`id`)
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE order_product (
   `order_id`   int unsigned      NOT NULL,
   `product_id` smallint unsigned NOT NULL,
   FOREIGN KEY (`order_id`)   REFERENCES `orders` (`id`),
   FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE product_supplier (
   `product_id`  smallint unsigned NOT NULL,
   `supplier_id` smallint unsigned NOT NULL,
   FOREIGN KEY (`product_id`)  REFERENCES `products` (`id`),
   FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`)
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE recipe_equipment (
   `recipe_id`    int unsigned      NOT NULL,
@@ -204,7 +204,7 @@ CREATE TABLE recipe_equipment (
   `equipment_id` smallint unsigned NOT NULL,
   FOREIGN KEY (`recipe_id`)    REFERENCES `recipes` (`id`),
   FOREIGN KEY (`equipment_id`) REFERENCES `equipment` (`id`)
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE recipe_ingredient (
   `recipe_id`      int unsigned      NOT NULL DEFAULT '0',
@@ -214,14 +214,14 @@ CREATE TABLE recipe_ingredient (
   FOREIGN KEY (`recipe_id`)      REFERENCES `recipes` (`id`),
   FOREIGN KEY (`measurement_id`) REFERENCES `measurements` (`id`),
   FOREIGN KEY (`ingredient_id`)  REFERENCES `ingredients` (`id`)
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE recipe_method (
   `recipe_id` int unsigned     NOT NULL,
   `method_id` tinyint unsigned NOT NULL,
   FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`id`),
   FOREIGN KEY (`method_id`) REFERENCES `methods` (`id`)
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE recipe_subrecipe (
   `recipe_id`      int unsigned     NOT NULL,
@@ -231,14 +231,14 @@ CREATE TABLE recipe_subrecipe (
   FOREIGN KEY (`recipe_id`)      REFERENCES `recipes` (`id`),
   FOREIGN KEY (`measurement_id`) REFERENCES `measurements` (`id`),
   FOREIGN KEY (`subrecipe_id`)   REFERENCES `recipes` (`id`)
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE saved_recipe (
   `user_id`   int unsigned NOT NULL,
   `recipe_id` int unsigned NOT NULL,
   FOREIGN KEY (`user_id`)   REFERENCES `users` (`id`),
   FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`id`)
-) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 
 
 

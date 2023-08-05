@@ -1,11 +1,45 @@
-import bcrypt                        from 'bcrypt';
 import { assert, defaulted, object, string } from 'superstruct';
-import { ExceptionError } from '../lib/exceptions/exceptions';
+import { v4 as uuidv4 }                      from 'uuid';
 
-// business rules, business logic
-// entities, value objects
+export class User {
+  private userId;
+  private email;
+  private password;
+  private username;
+  private confirmationCode;
+  //private events: DomainEvent = [];
 
-export function constructEmail(email: string) {
+  private constructor(params: UserParams) {
+    this.userId           = UserId();
+    this.email            = Email(params.email);
+    this.password         = Password(params.password);
+    this.username         = Username(params.username);
+    this.confirmationCode = ConfirmationCode(params.confirmationCode);
+  }
+
+  static create(params: UserParams): User {
+    const user             = new User(params);
+    //const userCreatedEvent = new UserCreatedEvent(user.userId);
+    //this.events.push(userCreatedEvent);
+    return user;
+  }
+
+  commandMethod(input, context) {
+    // validate args, validate state transitions, record domain events
+  }
+
+  queryMethod(): ReturnType {
+
+  }
+
+  //releaseEvents(): Event[] { return recorded domain events }
+}
+
+export function UserId() {
+  return uuidv4();
+}
+ 
+export function Email(email: string) {
   assert(email, string());
   // Potential issue: This invalidates some older/alternative email types.
   if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
@@ -14,7 +48,7 @@ export function constructEmail(email: string) {
   return email;
 }
 
-export function constructPassword(password: string) {
+export function Password(password: string) {
   assert(password, string());
   if (password.length < 6) {
     throw new Error("Password must be at least 6 characters.");
@@ -25,7 +59,7 @@ export function constructPassword(password: string) {
   return password;
 }
 
-export function constructUsername(username: string) {
+export function Username(username: string) {
   assert(username, string());
   if (username.length < 6) {
     throw new Error("Username must be at least 6 characters.");
@@ -36,7 +70,7 @@ export function constructUsername(username: string) {
   return username;
 }
 
-export function constructConfirmationCode(confirmationCode: string) {
+export function ConfirmationCode(confirmationCode: string) {
   assert(confirmationCode, defaulted(string(), null));  // IMPORTANT: double check this defaulted to null is not fucking things up
   if (!confirmationCode) return null;
   //const userRepo = new UserRepository(pool);
@@ -45,36 +79,12 @@ export function constructConfirmationCode(confirmationCode: string) {
   return confirmationCode;
 }
 
-// UserEntity
-// don't freeze ?
-export function constructUser(params: UserParams) {
-  const email =            constructEmail(params.email);
-  const password =         constructPassword(params.password);
-  const username =         constructUsername(params.username);
-  const confirmationCode = constructConfirmationCode(params.confirmationCode);
-  return Object.freeze({
-    email,
-    password,
-    username,
-    confirmationCode
-  });
-}
-
 type UserParams = {
   email:            string;
   password:         string;
   username:         string;
   confirmationCode: string;
 };
-
-export const User = object({
-  email:            string(),
-  password:         string(),
-  username:         string(),
-  confirmationCode: defaulted(string(), null)
-});
-
-
 
 export const validUpdatingUser = object({
   email:    string(),
