@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { assert }            from 'superstruct';
 
-import { FriendshipRepo, UserRepo } from '../../access/mysql';
+import { FriendshipRepo, UserRepo } from '../../repos/mysql';
 import { validFriendship }          from '../../lib/validations';
 
 export class UserFriendshipController {

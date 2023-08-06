@@ -10,7 +10,7 @@ import {
   MethodRepo,
   RecipeRepo,
   RecipeTypeRepo
-} from '../access/mysql';
+} from '../repos/mysql';
 
 export class DataInitController {
   async viewInitialData(req: Request, res: Response) {

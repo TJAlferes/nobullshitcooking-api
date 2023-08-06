@@ -14,9 +14,9 @@ import { Server as SocketIOServer, Socket }         from 'socket.io';
 import { createAdapter, RedisAdapter }              from '@socket.io/redis-adapter';
 const pino = require('pino-http')();
 
-import { sendMessage, sendPrivateMessage, joinRoom, disconnecting, getOnlineFriends, getUsersInRoom, rejoinRoom, IMessage } from './chat';
-import { FriendshipRepo, UserRepo } from './access/mysql';
-import { ChatStore }        from './access/redis';
+import { sendMessage, sendPrivateMessage, joinRoom, disconnecting, getOnlineFriends, getUsersInRoom, rejoinRoom, IMessage } from '../app/chat';
+import { FriendshipRepo, UserRepo } from './repos/mysql';
+import { ChatStore }        from './repos/redis';  // { ChatmessageRepo, ChatroomRepo, ChatroomUserRepo }
 import { chatCleanUp }      from './lib/jobs/chatCleanUp';
 import { routesInit }       from './routes';
 
@@ -28,8 +28,8 @@ export function appServer({ sessionClient, pubClient, subClient }: RedisClients)
 
   /*
 
-  Middleware
-
+  Express Middleware
+  
   */
   
   const redisStore = new RedisStore({client: sessionClient});

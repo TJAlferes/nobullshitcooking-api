@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { assert }            from 'superstruct';
 
-import { EquipmentRepo, RecipeEquipmentRepo } from '../../../access/mysql';
+import { EquipmentRepo, RecipeEquipmentRepo } from '../../../repos/mysql';
 import { validEquipment }                     from '../../../lib/validations';
 
 export class UserEquipmentController {

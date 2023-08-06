@@ -9,20 +9,20 @@ export async function disconnecting({ sessionId, id, username, socket, chatStore
   for (const room in clonedSocket.rooms) {
     if (room !== sessionId) {
       socket.broadcast.to(room).emit('UserLeftRoom', username);
-      chatStore.removeUserFromRoom(username, room);
+      chatStore.removeUserFromRoom(username, room);  // chatroomUserRepo.removeUserFromChatroom({user_id, chatroom_id})
     }
   }
 
   const friends = await friendship.viewAccepted(id);
   if (friends.length) {
     for (const friend of friends) {
-      const onlineFriend = await chatStore.getUserSessionId(friend.username);
+      const onlineFriend = await chatStore.getUserSessionId(friend.username);  // ???
       if (!onlineFriend) continue;
       socket.broadcast.to(onlineFriend).emit('FriendWentOffline', username);
     }
   }
 
-  chatStore.deleteUser(username);
+  chatStore.deleteUser(username);  // ???
 }
 
 export interface IDisconnecting {

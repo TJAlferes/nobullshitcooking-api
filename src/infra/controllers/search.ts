@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { assert, create }    from 'superstruct';
 
-import { EquipmentRepo, IngredientRepo, RecipeRepo } from '../access/mysql';
+import { EquipmentRepo, IngredientRepo, RecipeRepo } from '../repos/mysql';
 import { validSearchTerm, validSearchRequest }       from '../lib/validations';
 
 // "auto" here means "autosuggest" (live search suggestions)

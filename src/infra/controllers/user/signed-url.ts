@@ -3,7 +3,7 @@ require('dotenv').config();
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl }               from "@aws-sdk/s3-request-presigner";
 import { Request, Response }          from 'express';
-import { v4 as uuidv4 }               from 'uuid';
+import { uuidv7 }                     from 'uuidv7';
 
 const region =                 "us-east-1";
 const USER_BUCKET =            process.env.AWS_S3_USER_BUCKET!;
@@ -26,7 +26,7 @@ export const UserSignedUrlController = {
 
     const objectKey = (folder === AVATAR)
       ? `${folder}${req.session.userInfo!.username}`
-      : `${folder}${req.session.userInfo!.username}/${filename}-${uuidv4()}`;
+      : `${folder}${req.session.userInfo!.username}/${filename}-${uuidv7()}`;
 
     if ( (folder === AVATAR) || (folder === PRIVATE_EQUIPMENT) || (folder === PRIVATE_INGREDIENT) ) {
       const fullSignature = await getSignedUrl(s3, new PutObjectCommand({Bucket: USER_BUCKET, Key: objectKey,           ContentType: "image/jpeg"}));

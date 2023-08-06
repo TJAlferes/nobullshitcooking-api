@@ -7,7 +7,7 @@ export class User {
   private password;
   private username;
   private confirmationCode;
-  // Timestamps - these will be handled by MySQL
+  // Timestamps -- handled by MySQL
   private created_at: Date | null = null;
   private updated_at: Date | null = null;
   //private events: DomainEvent = [];

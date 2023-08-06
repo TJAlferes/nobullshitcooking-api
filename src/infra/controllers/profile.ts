@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { FavoriteRecipeRepo, RecipeRepo, UserRepo } from '../access/mysql';
+import { FavoriteRecipeRepo, RecipeRepo, UserRepo } from '../repos/mysql';
 
 export class ProfileController {
   async view(req: Request, res: Response) {

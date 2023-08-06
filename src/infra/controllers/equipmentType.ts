@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { EquipmentTypeRepo } from '../access/mysql';
+import { EquipmentTypeRepo } from '../repos/mysql';
 
 export class EquipmentTypeController {
   async viewAll(req: Request, res: Response) {

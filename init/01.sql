@@ -4,7 +4,8 @@ CREATE DATABASE nobsc CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 USE nobsc;
 
-
+-- validation tables
+-- there are only so many records (< 1,000)
 
 CREATE TABLE cuisine (
   `id`        tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
@@ -24,6 +25,7 @@ CREATE TABLE ingredient_type (
   `name` varchar(25)               DEFAULT NULL
 );
 
+-- rename to unit ??? because measurement = amount unit ???
 CREATE TABLE measurement (
   `id`   tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
   `name` varchar(25)               DEFAULT NULL
@@ -34,123 +36,80 @@ CREATE TABLE method (
   `name` varchar(25)               DEFAULT NULL
 );
 
-CREATE TABLE product_category (
-  `id`   tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
-  `name` varchar(25)               DEFAULT NULL
-);
-
-CREATE TABLE product_type (
-  `id`   tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
-  `name` varchar(25)               DEFAULT NULL
-);
-
 CREATE TABLE recipe_type (
   `id`   tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
   `name` varchar(25)               DEFAULT NULL
 );
 
-CREATE TABLE supplier (
-  `id`   smallint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
-  `name` varchar(60)       NOT NULL             UNIQUE
+-- primary tables
+-- there are potentially very many records (> 100,000)
+
+CREATE TABLE chatmessage (
+  `id`          char(36) PRIMARY KEY,
+  `chatroom_id` char(36) NOT NULL,
+  `sender_id`   char(36) NOT NULL,
+  `receiver_id` char(36) NOT NULL,
+  `content`     text NOT NULL,
+  `created_at`  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (`chatroom_id`) REFERENCES `chatroom` (`id`),
+  FOREIGN KEY (`sender_id`)   REFERENCES `user` (`id`),
+  FOREIGN KEY (`receiver_id`) REFERENCES `user` (`id`),
 );
 
-
-
--- We use AUTO_INCREMENTing PKs for now, but if needed later, we will likely switch to UUIDv7
-
-CREATE TABLE customer (
-  `id`    int unsigned NOT NULL PRIMARY KEY AUTO_INCREMENT ,
-  `email` varchar(60)  NOT NULL UNIQUE
+CREATE TABLE chatroom (
+  `id`         char(36) PRIMARY KEY,
+  `name`       varchar(50) NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-
-CREATE TABLE staff (
-  `id`                int unsigned NOT NULL              PRIMARY KEY AUTO_INCREMENT,
-  `email`             varchar(60)  NOT NULL              UNIQUE,
-  `pass`              char(60)     NOT NULL,
-  `staffname`         varchar(20)  NOT NULL              UNIQUE,
-  `confirmation_code` varchar(255)          DEFAULT NULL
-);
-
-CREATE TABLE user (
-  `id`                int unsigned NOT NULL              PRIMARY KEY AUTO_INCREMENT,
-  `email`             varchar(60)  NOT NULL              UNIQUE,
-  `pass`              char(60)     NOT NULL,
-  `username`          varchar(20)  NOT NULL              UNIQUE,
-  `confirmation_code` varchar(255)          DEFAULT NULL
-);
-
-
 
 CREATE TABLE equipment (
-  `id`                smallint unsigned NOT NULL             PRIMARY KEY AUTO_INCREMENT,
-  `equipment_type_id` tinyint unsigned  NOT NULL DEFAULT '0',
-  `author_id`         int unsigned      NOT NULL,
-  `owner_id`          int unsigned      NOT NULL,
-  `name`              varchar(100)      NOT NULL,
-  `description`       text              NOT NULL DEFAULT '',
-  `image`             varchar(100)      NOT NULL DEFAULT '',
-  FOREIGN KEY (`equipment_type_id`) REFERENCES `equipment_types` (`id`),
-  FOREIGN KEY (`author_id`)         REFERENCES `users` (`id`),
-  FOREIGN KEY (`owner_id`)          REFERENCES `users` (`id`)
+  `id`                char(36)         PRIMARY KEY,
+  `equipment_type_id` tinyint unsigned NOT NULL DEFAULT '0',
+  `author_id`         char(36)         NOT NULL,
+  `owner_id`          char(36)         NOT NULL,
+  `name`              varchar(100)     NOT NULL,
+  `description`       text             NOT NULL DEFAULT '',
+  `image`             varchar(100)     NOT NULL DEFAULT '',
+  FOREIGN KEY (`equipment_type_id`) REFERENCES `equipment_type` (`id`),
+  FOREIGN KEY (`author_id`)         REFERENCES `user` (`id`),
+  FOREIGN KEY (`owner_id`)          REFERENCES `user` (`id`)
 );
 
 CREATE TABLE ingredient (
-  `id`                 smallint unsigned NOT NULL             PRIMARY KEY AUTO_INCREMENT,
-  `ingredient_type_id` tinyint unsigned  NOT NULL DEFAULT '0',
-  `author_id`          int unsigned      NOT NULL,
-  `owner_id`           int unsigned      NOT NULL,
-  `brand`              varchar(50)       NOT NULL DEFAULT '',
-  `variety`            varchar(50)       NOT NULL DEFAULT '',
-  `name`               varchar(50)       NOT NULL DEFAULT '',
-  `fullname`           varchar(152) GENERATED ALWAYS AS (CONCAT(brand, ' ', variety, ' ', name)) STORED NOT NULL UNIQUE,
-  `alt_names`          json                       DEFAULT NULL,
-  `description`        text              NOT NULL DEFAULT '',
-  `image`              varchar(100)      NOT NULL DEFAULT '',
-  FOREIGN KEY (`ingredient_type_id`) REFERENCES `ingredient_types` (`id`),
-  FOREIGN KEY (`owner_id`)           REFERENCES `users` (`id`),
-  FOREIGN KEY (`author_id`)          REFERENCES `users` (`id`) 
-);
-
-CREATE TABLE order (
-  `id`          int unsigned NOT NULL PRIMARY KEY AUTO_INCREMENT,
-  `customer_id` int unsigned NOT NULL,
-  `staff_id`    int unsigned NOT NULL,
-  FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`),
-  FOREIGN KEY (`staff_id`)    REFERENCES `staff` (`id`)
+  `id`                 char(36)         PRIMARY KEY,
+  `ingredient_type_id` tinyint unsigned NOT NULL DEFAULT '0',
+  `author_id`          char(36)         NOT NULL,
+  `owner_id`           char(36)         NOT NULL,
+  `brand`              varchar(50)      NOT NULL DEFAULT '',
+  `variety`            varchar(50)      NOT NULL DEFAULT '',
+  `name`               varchar(50)      NOT NULL DEFAULT '',
+  `fullname`           varchar(152)     GENERATED ALWAYS AS (CONCAT(brand, ' ', variety, ' ', name)) STORED NOT NULL UNIQUE,
+  `alt_names`          json                      DEFAULT NULL,
+  `description`        text             NOT NULL DEFAULT '',
+  `image`              varchar(100)     NOT NULL DEFAULT '',
+  FOREIGN KEY (`ingredient_type_id`) REFERENCES `ingredient_type` (`id`),
+  FOREIGN KEY (`owner_id`)           REFERENCES `user` (`id`),
+  FOREIGN KEY (`author_id`)          REFERENCES `user` (`id`) 
 );
 
 CREATE TABLE plan (
-  `id`        int unsigned NOT NULL            PRIMARY KEY AUTO_INCREMENT,
-  `author_id` int unsigned NOT NULL,
-  `owner_id`  int unsigned NOT NULL,
+  `id`        char(36)     PRIMARY KEY,
+  `author_id` char(36)     NOT NULL,
+  `owner_id`  char(36)     NOT NULL,
   `name`      varchar(100) NOT NULL DEFAULT '',
-  `data`      json DEFAULT NULL,
-  FOREIGN KEY (`author_id`) REFERENCES `users` (`id`),
-  FOREIGN KEY (`owner_id`)  REFERENCES `users` (`id`)
-);
-
-CREATE TABLE product (
-  `id`                  smallint unsigned NOT NULL              PRIMARY KEY AUTO_INCREMENT,
-  `product_category_id` tinyint unsigned  NOT NULL DEFAULT '0',
-  `product_type_id`     tinyint unsigned  NOT NULL DEFAULT '0',
-  `brand`               varchar(50)       NOT NULL DEFAULT '',
-  `variety`             varchar(50)       NOT NULL DEFAULT '',
-  `name`                varchar(50)       NOT NULL DEFAULT '',
-  `fullname`            varchar(152) GENERATED ALWAYS AS (CONCAT(brand, ' ', variety, ' ', name)) STORED NOT NULL UNIQUE,
-  `alt_names`           json                       DEFAULT NULL,
-  `description`         text              NOT NULL,
-  `specs`               json                       DEFAULT NULL,
-  `image`               varchar(100)      NOT NULL DEFAULT '',
-  FOREIGN KEY (`product_category_id`) REFERENCES `product_categories` (`id`),
-  FOREIGN KEY (`product_type_id`)     REFERENCES `product_types` (`id`)
+  `data`      json         DEFAULT NULL,
+  FOREIGN KEY (`author_id`) REFERENCES `user` (`id`),
+  FOREIGN KEY (`owner_id`)  REFERENCES `user` (`id`)
 );
 
 CREATE TABLE recipe (
-  `id`                int unsigned     NOT NULL            PRIMARY KEY AUTO_INCREMENT,
+  `id`                char(36)         PRIMARY KEY,
   `recipe_type_id`    tinyint unsigned NOT NULL,
   `cuisine_id`        tinyint unsigned NOT NULL,
-  `author_id`         int unsigned     NOT NULL,
-  `owner_id`          int unsigned     NOT NULL,
+  `author_id`         char(36)         NOT NULL,
+  `owner_id`          char(36)         NOT NULL,
   `title`             varchar(100)     NOT NULL DEFAULT '',
   `description`       varchar(150)     NOT NULL DEFAULT '',
   `active_time`       time             NOT NULL,
@@ -161,83 +120,98 @@ CREATE TABLE recipe (
   `ingredients_image` varchar(100)     NOT NULL DEFAULT '',
   `cooking_image`     varchar(100)     NOT NULL DEFAULT '',
   `video`             varchar(100)     NOT NULL DEFAULT '',
-  FOREIGN KEY (`recipe_type_id`) REFERENCES `recipe_types` (`id`),
-  FOREIGN KEY (`cuisine_id`)     REFERENCES `cuisines` (`id`),
-  FOREIGN KEY (`author_id`)      REFERENCES `users` (`id`),
-  FOREIGN KEY (`owner_id`)       REFERENCES `users` (`id`)
+  FOREIGN KEY (`recipe_type_id`) REFERENCES `recipe_type` (`id`),
+  FOREIGN KEY (`cuisine_id`)     REFERENCES `cuisine` (`id`),
+  FOREIGN KEY (`author_id`)      REFERENCES `user` (`id`),
+  FOREIGN KEY (`owner_id`)       REFERENCES `user` (`id`)
 );
 
+CREATE TABLE staff (
+  `id`                char(36)     PRIMARY KEY,
+  `email`             varchar(60)  NOT NULL UNIQUE,
+  `pass`              char(60)     NOT NULL,
+  `staffname`         varchar(20)  NOT NULL UNIQUE,
+  `confirmation_code` varchar(255) DEFAULT NULL
+);
 
+CREATE TABLE user (
+  `id`                char(36)     PRIMARY KEY,
+  `email`             varchar(60)  NOT NULL UNIQUE,
+  `pass`              char(60)     NOT NULL,
+  `username`          varchar(20)  NOT NULL UNIQUE,
+  `confirmation_code` varchar(255) DEFAULT NULL
+);
+
+-- linking/intersection/cross-reference tables
+-- used for many-to-many relationships
+-- example: a chatroom can have many users, a user can be in many chatrooms
+-- example: a user can favorite many recipes, a recipe can be favorited by many users
+
+CREATE TABLE chatroom_user (
+  `chatroom_id` char(36) NOT NULL,
+  `user_id`     char(36) NOT NULL,
+  `is_admin`,
+  `is_muted`,
+  PRIMARY KEY (`chatroom_id`, `user_id`),
+  FOREIGN KEY (`chatroom_id`) REFERENCES `chatroom` (`id`),
+  FOREIGN KEY (`user_id`)     REFERENCES `user` (`id`)
+);
 
 CREATE TABLE favorite_recipe (
-  `user_id`   int unsigned NOT NULL,
-  `recipe_id` int unsigned NOT NULL,
-  FOREIGN KEY (`user_id`)   REFERENCES `users` (`id`),
-  FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`id`)
+  `user_id`   char(36) NOT NULL,
+  `recipe_id` char(36) NOT NULL,
+  FOREIGN KEY (`user_id`)   REFERENCES `user` (`id`),
+  FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`id`)
 );
 
 CREATE TABLE friendship (
-  `user_id`   int unsigned NOT NULL,
-  `friend_id` int unsigned NOT NULL,
-  `status`    varchar(20)  NOT NULL,
-  FOREIGN KEY (`user_id`)   REFERENCES `users` (`id`),
-  FOREIGN KEY (`friend_id`) REFERENCES `users` (`id`)
-);
-
-CREATE TABLE order_product (
-  `order_id`   int unsigned      NOT NULL,
-  `product_id` smallint unsigned NOT NULL,
-  FOREIGN KEY (`order_id`)   REFERENCES `orders` (`id`),
-  FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
-);
-
-CREATE TABLE product_supplier (
-  `product_id`  smallint unsigned NOT NULL,
-  `supplier_id` smallint unsigned NOT NULL,
-  FOREIGN KEY (`product_id`)  REFERENCES `products` (`id`),
-  FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`)
+  `user_id`   char(36)    NOT NULL,
+  `friend_id` char(36)    NOT NULL,
+  `status`    varchar(20) NOT NULL,
+  FOREIGN KEY (`user_id`)   REFERENCES `user` (`id`),
+  FOREIGN KEY (`friend_id`) REFERENCES `user` (`id`)
 );
 
 CREATE TABLE recipe_equipment (
-  `recipe_id`    int unsigned      NOT NULL,
-  `amount`       tinyint unsigned  NOT NULL,
-  `equipment_id` smallint unsigned NOT NULL,
-  FOREIGN KEY (`recipe_id`)    REFERENCES `recipes` (`id`),
+  `recipe_id`    char(36)         NOT NULL,
+  `amount`       tinyint unsigned NOT NULL,
+  `equipment_id` char(36)         NOT NULL,
+  FOREIGN KEY (`recipe_id`)    REFERENCES `recipe` (`id`),
   FOREIGN KEY (`equipment_id`) REFERENCES `equipment` (`id`)
 );
 
 CREATE TABLE recipe_ingredient (
-  `recipe_id`      int unsigned      NOT NULL DEFAULT '0',
-  `amount`         decimal(5,2)      NOT NULL,
-  `measurement_id` tinyint unsigned  NOT NULL,
-  `ingredient_id`  smallint unsigned NOT NULL DEFAULT '0',
-  FOREIGN KEY (`recipe_id`)      REFERENCES `recipes` (`id`),
-  FOREIGN KEY (`measurement_id`) REFERENCES `measurements` (`id`),
-  FOREIGN KEY (`ingredient_id`)  REFERENCES `ingredients` (`id`)
+  `recipe_id`      char(36)         NOT NULL DEFAULT '0',
+  `amount`         decimal(5,2)     NOT NULL,
+  `measurement_id` tinyint unsigned NOT NULL,
+  `ingredient_id`  char(36)         NOT NULL DEFAULT '0',
+  FOREIGN KEY (`recipe_id`)      REFERENCES `recipe` (`id`),
+  FOREIGN KEY (`measurement_id`) REFERENCES `measurement` (`id`),
+  FOREIGN KEY (`ingredient_id`)  REFERENCES `ingredient` (`id`)
 );
 
 CREATE TABLE recipe_method (
-  `recipe_id` int unsigned     NOT NULL,
+  `recipe_id` char(36)         NOT NULL,
   `method_id` tinyint unsigned NOT NULL,
-  FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`id`),
-  FOREIGN KEY (`method_id`) REFERENCES `methods` (`id`)
+  FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`id`),
+  FOREIGN KEY (`method_id`) REFERENCES `method` (`id`)
 );
 
 CREATE TABLE recipe_subrecipe (
-  `recipe_id`      int unsigned     NOT NULL,
+  `recipe_id`      char(36)         NOT NULL,
   `amount`         decimal(5,2)     NOT NULL,
   `measurement_id` tinyint unsigned NOT NULL,
-  `subrecipe_id`   int unsigned     NOT NULL,
-  FOREIGN KEY (`recipe_id`)      REFERENCES `recipes` (`id`),
-  FOREIGN KEY (`measurement_id`) REFERENCES `measurements` (`id`),
-  FOREIGN KEY (`subrecipe_id`)   REFERENCES `recipes` (`id`)
+  `subrecipe_id`   char(36)         NOT NULL,
+  FOREIGN KEY (`recipe_id`)      REFERENCES `recipe` (`id`),
+  FOREIGN KEY (`measurement_id`) REFERENCES `measurement` (`id`),
+  FOREIGN KEY (`subrecipe_id`)   REFERENCES `recipe` (`id`)
 );
 
 CREATE TABLE saved_recipe (
-  `user_id`   int unsigned NOT NULL,
-  `recipe_id` int unsigned NOT NULL,
-  FOREIGN KEY (`user_id`)   REFERENCES `users` (`id`),
-  FOREIGN KEY (`recipe_id`) REFERENCES `recipes` (`id`)
+  `user_id`   char(36) NOT NULL,
+  `recipe_id` char(36) NOT NULL,
+  FOREIGN KEY (`user_id`)   REFERENCES `user` (`id`),
+  FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`id`)
 );
 
 

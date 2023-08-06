@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { MeasurementRepo } from '../access/mysql';
+import { MeasurementRepo } from '../repos/mysql';
 
 export class MeasurementController {
   async viewAll(req: Request, res: Response) {

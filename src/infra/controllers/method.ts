@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { MethodRepo } from '../access/mysql';
+import { MethodRepo } from '../repos/mysql';
 
 export class MethodController {
   async viewAll(req: Request, res: Response) {

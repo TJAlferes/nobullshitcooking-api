@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { assert }            from 'superstruct';
 
-import { SavedRecipeRepo, RecipeRepo } from '../../../access/mysql';
+import { SavedRecipeRepo, RecipeRepo } from '../../../repos/mysql';
 import { validSavedRecipe }            from '../../../lib/validations';
 
 export class UserSavedRecipeController {

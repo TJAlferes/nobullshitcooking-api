@@ -7,6 +7,9 @@ export class Chatmessage {
   private to;
   private from;
   private content;
+  // Timestamps -- handled by MySQL
+  private created_at: Date | null = null;
+  private updated_at: Date | null = null;
 
   private constructor(params: ChatMessageParams) {
     this.id   =    ChatmessageId();

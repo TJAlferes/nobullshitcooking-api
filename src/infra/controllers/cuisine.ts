@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { CuisineRepo } from '../access/mysql';
+import { CuisineRepo } from '../repos/mysql';
 
 export class CuisineController {
   async viewAll(req: Request, res: Response) {

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { RecipeRepo } from '../access/mysql';
+import { RecipeRepo } from '../repos/mysql';
 
 export class RecipeController {
   // remove?

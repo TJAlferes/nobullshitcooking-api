@@ -10,17 +10,17 @@ export async function joinRoom({ room, sessionId, username, socket, chatStore }:
   for (const currentRoom in currentRooms) {
     if (currentRoom !== sessionId) {
       socket.leave(currentRoom);
-      chatStore.removeUserFromRoom(username, currentRoom);
+      chatStore.removeUserFromRoom(username, currentRoom);  // chatroomUserRepo.removeUserFromChatroom({user_id, chatroom_id})
       socket.broadcast.to(currentRoom).emit('UserLeftRoom', username);
     }
   }
 
   socket.join(room);
-  chatStore.createRoom(room);
-  chatStore.addUserToRoom(username, room);
+  chatStore.createRoom(room);  // chatroomRepo.create(chatroomName);
+  chatStore.addUserToRoom(username, room);  // chatroomUserRepo.addUserToChatroom({user_id, chatroom_id})
   socket.broadcast.to(room).emit('UserJoinedRoom', username);
 
-  const users = await chatStore.getUsersInRoom(room);
+  const users = await chatStore.getUsersInRoom(room);  // chatroomUserRepo.viewUsersInChatroom(chatroomName)
   socket.emit('UsersInroom', users, room);
 }
 

@@ -7,8 +7,8 @@ export async function sendMessage({ from, text, sessionId, socket, chatStore }: 
   const room = Object.keys(socket.rooms).find(r => r !== sessionId);
   if (!room) return;
 
-  const message = PublicMessage(room, from, text);
-  chatStore.createMessage(message);
+  const message = PublicMessage(room, from, text);  // const chatmessage = Chatmessage.create({chatroom_id, receiver_id, content, etc.});
+  chatStore.createMessage(message);  // chatmessageRepo.insert(chatmessage)
 
   socket.broadcast.to(room).emit('Message', message);
   socket.emit('Message', message);

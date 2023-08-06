@@ -8,7 +8,7 @@ import {
   EquipmentRepo,
   IngredientRepo,
   RecipeRepo
-} from '../../access/mysql';
+} from '../../repos/mysql';
 
 export class UserDataInitController {
   async viewInitialUserData(req: Request, res: Response) {

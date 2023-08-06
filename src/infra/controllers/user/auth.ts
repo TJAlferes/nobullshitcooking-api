@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { assert }            from 'superstruct';
-import { v4 as uuidv4 }      from 'uuid';
+import { uuidv7 }            from 'uuidv7';
 
 import {
   UserRepo,
@@ -15,7 +15,7 @@ import {
   RecipeSubrecipeRepo,
   FavoriteRecipeRepo,
   SavedRecipeRepo
-} from '../../access/mysql';
+} from '../../repos/mysql';
 import { io } from '../../index';
 
 export class UserAuthController {

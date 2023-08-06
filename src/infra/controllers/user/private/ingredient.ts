@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { assert }            from 'superstruct';
 
-import { IngredientRepo, RecipeIngredientRepo } from '../../../access/mysql';
+import { IngredientRepo, RecipeIngredientRepo } from '../../../repos/mysql';
 import { validIngredient }                      from '../../../lib/validations';
 
 export class UserIngredientController {

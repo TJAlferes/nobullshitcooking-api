@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { RecipeTypeRepo } from '../access/mysql';
+import { RecipeTypeRepo } from '../repos/mysql';
 
 export class RecipeTypeController {
   async viewAll(req: Request, res: Response) {

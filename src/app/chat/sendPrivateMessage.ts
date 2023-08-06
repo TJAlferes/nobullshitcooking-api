@@ -23,7 +23,7 @@ export async function sendPrivateMessage({
   const blockedByUser = blockedUsers.find((u: any) => u.username === from);
   if (blockedByUser) return notFound;
 
-  const onlineUser = await chatStore.getUserSessionId(username);
+  const onlineUser = await chatStore.getUserSessionId(username);  // ???
   if (!onlineUser) return notFound;
 
   const message = PrivateMessage(to, from, text);

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { assert }            from 'superstruct';
 
-import { PlanRepo }  from '../../../access/mysql';
+import { PlanRepo }  from '../../../repos/mysql';
 import { validPlan } from '../../../lib/validations';
 
 export class UserPrivatePlanController {

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { IngredientRepo } from '../access/mysql';
+import { IngredientRepo } from '../repos/mysql';
 
 export class IngredientController {
   async viewAll(req: Request, res: Response) {

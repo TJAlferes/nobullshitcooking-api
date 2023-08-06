@@ -7,7 +7,7 @@ import {
   RecipeIngredientRepo,
   RecipeMethodRepo,
   RecipeSubrecipeRepo
-} from '../../../access/mysql';
+} from '../../../repos/mysql';
 import { createRecipeService, updateRecipeService } from '../../../lib/services';
 import { validRecipe }                              from '../../../lib/validations';
 
