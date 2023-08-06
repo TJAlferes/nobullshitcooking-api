@@ -18,7 +18,7 @@ export class Equipment {
     this.ownerId         = OwnerId(params.ownerId);
     this.name            = EquipmentName(params.name);
     this.description     = Description(params.description);
-    this.image           = Image(params.image)
+    this.image           = Image(params.image);
   }
 
   static create(params: EquipmentParams) {

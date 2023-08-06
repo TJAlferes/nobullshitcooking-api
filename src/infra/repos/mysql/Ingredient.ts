@@ -221,3 +221,18 @@ type IngredientSuggestion = RowDataPacket & {
   name:    string;
   text:    string;
 };
+
+/*
+SELECT
+  i.id,
+  i.brand,
+  i.variety,
+  i.name,
+  CONCAT_WS(' ', i.brand, i.variety, i.name, IFNULL(GROUP_CONCAT(ian.alt_name SEPARATOR ' '), '')) AS fullname
+FROM
+  ingredient AS i
+LEFT JOIN
+  ingredient_alt_name AS ian ON i.id = ian.ingredient_id
+GROUP BY
+  i.id;
+*/

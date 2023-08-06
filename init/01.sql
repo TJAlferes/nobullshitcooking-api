@@ -86,12 +86,18 @@ CREATE TABLE ingredient (
   `variety`            varchar(50)      NOT NULL DEFAULT '',
   `name`               varchar(50)      NOT NULL DEFAULT '',
   `fullname`           varchar(152)     GENERATED ALWAYS AS (CONCAT(brand, ' ', variety, ' ', name)) STORED NOT NULL UNIQUE,
-  `alt_names`          json                      DEFAULT NULL,
   `description`        text             NOT NULL DEFAULT '',
   `image`              varchar(100)     NOT NULL DEFAULT '',
   FOREIGN KEY (`ingredient_type_id`) REFERENCES `ingredient_type` (`id`),
   FOREIGN KEY (`owner_id`)           REFERENCES `user` (`id`),
   FOREIGN KEY (`author_id`)          REFERENCES `user` (`id`) 
+);
+
+CREATE TABLE ingredient_alt_name (
+  `id`            char(36),
+  `ingredient_id` char(36),
+  `alt_name`      varchar(50),
+  FOREIGN KEY (`ingredient_id`) REFERENCES `ingredient` (`id`),
 );
 
 CREATE TABLE plan (
