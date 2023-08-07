@@ -1,5 +1,6 @@
 import { assert, string } from 'superstruct';
-import { uuidv7 }         from 'uuidv7';
+
+import { GenerateId } from './shared';
 
 export class Chatroom {
   private id;
@@ -9,7 +10,7 @@ export class Chatroom {
   private updated_at: Date | null = null;
 
   private constructor(name: string) {
-    this.id = ChatroomId();
+    this.id =   GenerateId();
     this.name = ChatroomName(name);
   }
 
@@ -17,10 +18,6 @@ export class Chatroom {
     const chatRoom = new Chatroom(name);
     return chatRoom;  // only return the id?
   }
-}
-
-export function ChatroomId() {
-  return uuidv7();
 }
 
 export function ChatroomName(name: string) {

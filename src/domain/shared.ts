@@ -1,18 +1,13 @@
 import { assert, defaulted, number, object, string } from 'superstruct';
 import { uuidv7 }                                    from 'uuidv7';
 
-export function Id() {
+export function GenerateId() {
   return uuidv7();
 }
 
-export function AuthorId(authorId: string) {
-  assert(authorId, string());
-  return authorId;
-}
-
-export function OwnerId(ownerId: string) {
-  assert(ownerId, string());
-  return ownerId;
+export function Id(id: string) {
+  assert(id, string());
+  return id;
 }
 
 export function Description(description: string) {

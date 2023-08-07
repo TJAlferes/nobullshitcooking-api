@@ -13,16 +13,17 @@ class UserService {
   }
 
   async create(params: CreateUserServiceParams) {
+    const user = User.create({email, password: encryptedPassword, username})
     const email = constructEmail(params.email);
     // should this also be done inside the value object constructor? (using a repo interface)
-    const emailExists = await params.userRepo.getByEmail(email);
+    const emailExists = await repo.getByEmail(email);
     if (emailExists) {
       throw new Error("Email already in use.");
     }
   
     const username = constructUsername(params.username);
     // should this also be done inside the value object constructor? (using a repo interface)
-    const nameExists = await params.userRepo.getByName(username);
+    const nameExists = await params.repo.getByName(username);
     if (nameExists) {
       throw new Error("Username already in use.");
     }

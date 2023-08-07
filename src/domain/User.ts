@@ -1,5 +1,6 @@
 import { assert, defaulted, object, string } from 'superstruct';
-import { uuidv7 }                            from 'uuidv7';
+
+import { GenerateId } from './shared';
 
 export class User {
   private id;
@@ -13,11 +14,11 @@ export class User {
   //private events: DomainEvent = [];
 
   private constructor(params: UserParams) {
-    this.id               = UserId();
+    this.id               = GenerateId();  // Id() or Generate ?
     this.email            = Email(params.email);
     this.password         = Password(params.password);
     this.username         = Username(params.username);
-    this.confirmationCode = ConfirmationCode(params.confirmationCode);
+    this.confirmationCode = ConfirmationCode(params.confirmationCode);  // or Generate ?
   }
 
   static create(params: UserParams): User {
@@ -45,10 +46,6 @@ export class User {
   //releaseEvents(): Event[] { return recorded domain events }
 }
 
-export function UserId() {
-  return uuidv7();
-}
- 
 export function Email(email: string) {
   assert(email, string());
   // Potential issue: This invalidates some older/alternative email types.
@@ -96,8 +93,8 @@ type UserParams = {
   confirmationCode: string;
 };
 
-export const validUpdatingUser = object({
+/*export const validUpdatingUser = object({
   email:    string(),
   pass:     string(),
   username: string()
-});
+});*/

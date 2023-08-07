@@ -135,7 +135,7 @@ CREATE TABLE recipe (
 CREATE TABLE staff (
   `id`                char(36)     PRIMARY KEY,
   `email`             varchar(60)  NOT NULL UNIQUE,
-  `pass`              char(60)     NOT NULL,
+  `password`              char(60)     NOT NULL,
   `staffname`         varchar(20)  NOT NULL UNIQUE,
   `confirmation_code` varchar(255) DEFAULT NULL
 );
@@ -143,7 +143,7 @@ CREATE TABLE staff (
 CREATE TABLE user (
   `id`                char(36)     PRIMARY KEY,
   `email`             varchar(60)  NOT NULL UNIQUE,
-  `pass`              char(60)     NOT NULL,
+  `password`              char(60)     NOT NULL,
   `username`          varchar(20)  NOT NULL UNIQUE,
   `confirmation_code` varchar(255) DEFAULT NULL
 );
@@ -170,6 +170,7 @@ CREATE TABLE favorite_recipe (
   FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`id`)
 );
 
+-- this may need improvement
 CREATE TABLE friendship (
   `user_id`   char(36)    NOT NULL,
   `friend_id` char(36)    NOT NULL,
@@ -222,10 +223,10 @@ CREATE TABLE saved_recipe (
 
 
 
-INSERT INTO staff (email, pass, staffname) VALUES
+INSERT INTO staff (email, password, staffname) VALUES
 ("tjalferes@tjalferes.com", "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "T. J. Alferes");
 
-INSERT INTO user (email, pass, username) VALUES
+INSERT INTO user (email, password, username) VALUES
 ("tjalferes@tjalferes.com", "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "NOBSC"),
 ("tjalferes@gmail.com",     "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "Unknown"),
 ("testman@testman.com",     "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "Testman");
@@ -1017,8 +1018,8 @@ INSERT INTO recipe_ingredient (recipe_id, amount, measurement_id, ingredient_id)
 (8,  1,  8,  230),
 (9,  9,  9,  202),
 (10, 20, 10, 100),
-(11, 10,  1, 122),
-(12, 13,  2, 138);
+(11, 10, 1,  122),
+(12, 13, 2,  138);
 
 INSERT INTO recipe_method (recipe_id, method_id) VALUES
 (1,  6),

@@ -1,7 +1,9 @@
+import bcrypt                from 'bcrypt';
 import { Request, Response } from 'express';
 import { assert }            from 'superstruct';
-import { uuidv7 }            from 'uuidv7';
 
+import { UserAuthService } from '../../../app/services';
+import { io }              from '../../../index';
 import {
   UserRepo,
   FriendshipRepo,
@@ -16,23 +18,30 @@ import {
   FavoriteRecipeRepo,
   SavedRecipeRepo
 } from '../../repos/mysql';
-import { io } from '../../index';
+
+/*
+TO DO:
+UserController      UserService .update .delete .get .view                            User  UserRepo
+UserAuthController  UserAuthService .register .verify .resendConfirmationCode .login  User  UserRepo
+*/
 
 export class UserAuthController {
   async register(req: Request, res: Response) {
     const { email, password, username } = req.body.userInfo;
 
-    const userRepo = new UserRepo();
-    await createUserService({email, password, username, userRepo});
+    const repo        = new UserRepo();
+    const userAuthService = new UserAuthService(repo);
+    await userAuthService.register({email, password, username});  // return message from here???
 
-    return res.send({message: 'User account created.'});  // or .status and .json ?
+    return res.send({message: 'User account created.'});  // or .status and .json ???
   }
 
   async resendConfirmationCode(req: Request, res: Response) {
     const { email, password } = req.body.userInfo;
 
-    const userRepo = new UserRepo();
-    await resendConfirmationCodeService({email, password, userRepo});
+    const userRepo        = new UserRepo();
+    const userAuthService = new UserAuthService(userRepo);
+    await userAuthService.resendConfirmationCode({email, password});
 
     return res.send({message: 'Confirmation code re-sent.'});
   }
@@ -41,20 +50,25 @@ export class UserAuthController {
     const { email, password, confirmationCode } = req.body.userInfo;
 
     const userRepo = new UserRepo();
-    await verifyService({email, password, confirmationCode, userRepo});
+    const userAuthService = new UserAuthService(userRepo);
+    await userAuthService.verify({email, password, confirmationCode});
 
     return res.send({message: 'User account verified.'});
   }
 
   async login(req: Request, res: Response) {
     const loggedIn = req.session.userInfo?.id;
-    if (loggedIn) return res.json({message: 'Already logged in.'});  // throw ?
+    if (loggedIn) {
+      return res.json({message: 'Already logged in.'});  // throw in this layer?  // do this inside the service ?
+    }
     
     const { email, password } = req.body.userInfo;
-    const userRepo = new UserRepo();
-    const { id, username } = await loginService(email, password, userRepo);
+    const userRepo            = new UserRepo();
+    const userAuthService     = new UserAuthService(userRepo);
+    const { id, username }    = await userAuthService.login({email, password});
 
-    req.session.userInfo = {id, username};
+    req.session.userInfo = {id, username};  // do this inside the service ?
+
     return res.json({message: 'Signed in.', username});
   }
 
@@ -69,13 +83,14 @@ export class UserAuthController {
     return res.end();
   }
 
+  // move this to a user controller???
   async update(req: Request, res: Response) {
-    const { email, pass, username } = req.body.userInfo;
+    const { email, password, username } = req.body.userInfo;
     const id = req.session.userInfo!.id;
     
     if (id === 1) return res.end();  // IMPORTANT: Do not allow user 1, NOBSC, to be changed.  (THIS IS A BUSINESS RULE, move this BUSINESS LOGIC TO THE DOMAIN MODEL)
 
-    const encryptedPass = await bcrypt.hash(pass, SALT_ROUNDS);
+    const encryptedPass = await bcrypt.hash(password, 10);
     const args = {email, pass: encryptedPass, username};
     assert(args, validUpdatingUser);
 
@@ -85,6 +100,7 @@ export class UserAuthController {
     return res.send({message: 'Account updated.'});
   }
 
+  // move this to a user controller???
   async delete(req: Request, res: Response) {
     const userId = req.session.userInfo!.id;
 

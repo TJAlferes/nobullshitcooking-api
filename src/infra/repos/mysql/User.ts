@@ -30,7 +30,7 @@ export class UserRepo extends MySQLRepo implements IUserRepo {
     return row;
   }
 
-  async create({ email, pass, username, confirmationCode }: CreatingUser) {
+  async create({ email, pass, username, confirmationCode }: CreatingUser) {  // User
     const sql = `INSERT INTO users (email, pass, username, confirmation_code) VALUES (?, ?, ?, ?)`;
     await this.pool.execute<RowDataPacket[]>(sql, [email, pass, username, confirmationCode]);
   }

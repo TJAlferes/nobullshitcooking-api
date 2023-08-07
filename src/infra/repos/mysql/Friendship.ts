@@ -70,6 +70,7 @@ export class FriendshipRepo extends MySQLRepo implements IFriendshipRepo {
     return rows;
   }
 
+  // this may need improvement
   async create({ userId, friendId, status1, status2 }: ICreatingFriendship) {
     const sql = `INSERT INTO friendship (user_id, friend_id, status) VALUES (?, ?, ?)`;
     await this.pool.execute(sql, [userId, friendId, status1]);

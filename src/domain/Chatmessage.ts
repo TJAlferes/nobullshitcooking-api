@@ -1,5 +1,6 @@
 import { assert, string } from 'superstruct';
-import { uuidv7 }         from 'uuidv7';
+
+import { GenerateId } from './shared';
 
 export class Chatmessage {
   private id;
@@ -12,7 +13,7 @@ export class Chatmessage {
   private updated_at: Date | null = null;
 
   private constructor(params: ChatMessageParams) {
-    this.id   =    ChatmessageId();
+    this.id   =    GenerateId();
     this.kind =    Kind(params.kind);
     this.to   =    Username(params.to);    // ALSO ALLOW SOCKETS ?
     this.from =    Username(params.from);  // ALSO ALLOW SOCKETS ?
@@ -23,10 +24,6 @@ export class Chatmessage {
     const chatMessage = new Chatmessage(params);
     return chatMessage;
   }
-}
-
-export function ChatmessageId() {
-  return uuidv7();
 }
 
 export function Kind(kind: typeof PRIVATE | typeof PUBLIC) {

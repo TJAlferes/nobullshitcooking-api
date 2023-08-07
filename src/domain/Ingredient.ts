@@ -1,6 +1,6 @@
 import { assert, defaulted, number, string } from 'superstruct';
 
-import { Id, AuthorId, OwnerId, Description, Image } from './shared';
+import { GenerateId, Id, Description, Image } from './shared';
 
 export class Ingredient {
   private id;
@@ -15,10 +15,10 @@ export class Ingredient {
   private image;
 
   private constructor(params: IngredientParams) {
-    this.id               = Id();
+    this.id               = GenerateId();
     this.ingredientTypeId = IngredientTypeId(params.ingredientTypeId);
-    this.authorId         = AuthorId(params.authorId);
-    this.ownerId          = OwnerId(params.ownerId);
+    this.authorId         = Id(params.authorId);
+    this.ownerId          = Id(params.ownerId);
     this.brand            = IngredientBrand(params.brand);
     this.variety          = IngredientVariety(params.variety)
     this.name             = IngredientName(params.name);
