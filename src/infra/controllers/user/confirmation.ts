@@ -1,0 +1,28 @@
+import { Request, Response } from 'express';
+
+import { UserConfirmationService } from '../../../app/services';
+import { UserRepo }                from '../../repos/mysql';
+
+export class UserConfirmationController {
+  async confirm(req: Request, res: Response) {
+    const { email, password, confirmationCode } = req.body.userInfo;
+
+    const userRepo                = new UserRepo();
+    const userConfirmationService = new UserConfirmationService(userRepo);
+
+    await userConfirmationService.confirm({email, password, confirmationCode});
+
+    return res.send({message: 'User account verified.'});
+  }
+
+  async resendConfirmationCode(req: Request, res: Response) {
+    const { email, password } = req.body.userInfo;
+
+    const userRepo                = new UserRepo();
+    const userConfirmationService = new UserConfirmationService(userRepo);
+
+    await userConfirmationService.resendConfirmationCode({email, password});
+
+    return res.send({message: 'Confirmation code re-sent.'});
+  }
+}

@@ -8,14 +8,14 @@ import { emailUser }                         from './simple-email-service';
 
 // DRY the repeated validation logic
 
-export class UserAuthService {
-  repo: IUserRepo;
+export class UserConfirmationService {
+  private readonly repo: IUserRepo;
 
   constructor(repo: IUserRepo) {
-    this.repo = repo;  // .bind(this) ???
+    this.repo = repo;
   }
 
-  async verify(params: VerifyParams) {
+  async confirm(params: ConfirmParams) {
     const email = Email(params.email);
     const user = await this.repo.getByEmail(email);
     if (!user) {
@@ -37,6 +37,30 @@ export class UserAuthService {
     await this.repo.verify(email);
   }
 
+  async sendConfirmationCode(user: ) {
+    const charset  = "UTF-8";
+    const from     = "No Bullshit Cooking <staff@nobullshitcooking.com>";
+    const to       = user.getEmail();
+    const subject  = "Confirmation Code For No Bullshit Cooking";
+    const bodyText = "Confirmation Code For No Bullshit Cooking\r\n"
+      + "Please enter the following confirmation code at:\r\n"
+      + "https://nobullshitcooking.com/verify\r\n"
+      + user.getConfirmationCode();
+    const bodyHtml = `
+      <html>
+      <head></head>
+      <body>
+        <h1>Confirmation Code For No Bullshit Cooking</h1>
+        <p>Please enter the following confirmation code at:</p>
+        <p>https://nobullshitcooking.com/verify</p>
+        ${user.getConfirmationCode()}
+      </body>
+      </html>
+    `;
+
+    await emailUser({from, to, subject, bodyText, bodyHtml, charset});
+  }
+
   async resendConfirmationCode(params: ResendConfirmationCodeParams) {
     const email = Email(params.email);
     const user = await this.repo.getByEmail(email);
@@ -55,69 +79,19 @@ export class UserAuthService {
       throw new Error("Incorrect email or password.");
     }
   
-    const confirmationCode = uuidv7();
-    const charset  = "UTF-8";
-    const from     = "No Bullshit Cooking <staff@nobullshitcooking.com>";
-    const to       = email;
-    const subject  = "Confirmation Code For No Bullshit Cooking";
-    const bodyText = "Confirmation Code For No Bullshit Cooking\r\n"
-      + "Please enter the following confirmation code at:\r\n"
-      + "https://nobullshitcooking.com/verify\r\n"
-      + confirmationCode;
-    const bodyHtml = `
-      <html>
-      <head></head>
-      <body>
-        <h1>Confirmation Code For No Bullshit Cooking</h1>
-        <p>Please enter the following confirmation code at:</p>
-        <p>https://nobullshitcooking.com/verify</p>
-        ${confirmationCode}
-      </body>
-      </html>
-    `;
+    const confirmationCode = uuidv7();  // NO!!! get it from the userRepo!!!
 
-    emailUser({from, to, subject, bodyText, bodyHtml, charset});
+    await this.sendConfirmationCode(user);
   }
-
-  async login(params: LoginParams) {
-    const email = Email(params.email);
-    const user = await this.repo.getByEmail(email);
-    if (!user) {
-      throw new Error("Incorrect email or password.");
-    }
-  
-    const confirmed = user.confirmation_code === null;
-    if (!confirmed) {
-      throw new Error("Please check your email for your confirmation code.");
-    }
-
-    const password = Password(params.password);
-    const correctPassword = await bcrypt.compare(password, user.password);
-    if (!correctPassword) {
-      throw new Error("Incorrect email or password.");
-    }
-  
-    return {
-      id:       user.id,
-      username: user.username
-    };
-  }
-
-  // logout is handled in the controller???
 }
 
-type VerifyParams = {
+type ConfirmParams = {
   email:            string;
   password:         string;
   confirmationCode: string;       
 };
 
 type ResendConfirmationCodeParams = {
-  email:    string;
-  password: string;
-};
-
-type LoginParams = {
   email:    string;
   password: string;
 };

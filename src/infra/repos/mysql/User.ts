@@ -1,19 +1,22 @@
 import { Pool, RowDataPacket } from 'mysql2/promise';
 
+import { UserTableRow } from '../../../../types';
 import { MySQLRepo } from './MySQL';
 
-// class UserRepoUsingMySQL, class UserRepoUsingPostgreSQL
+// TO DO: make only one specific explicit method for getting password ???
+
 export class UserRepo extends MySQLRepo implements IUserRepo {
   // security sensitive, do NOT send back in the api response
   async getByEmail(email: string) {
-    const sql = `SELECT id, email, pass, username, confirmation_code FROM users WHERE email = ?`;
-    const [ [ row ] ] = await this.pool.execute<User[]>(sql, [email]);
-    return row;
+    const sql = `SELECT id, email, password, username, confirmation_code FROM users WHERE email = ?`;
+    const [ [ row ] ] = await this.pool.query<RowDataPacket[]>(sql, [email]);
+    // if (!row) throw ???
+    return row as UserTableRow;
   }
 
   // security sensitive, do NOT send back in the api response
   async getByName(username: string) {
-    const sql = `SELECT id, email, pass, username, confirmation_code FROM users WHERE username = ?`;
+    const sql = `SELECT id, email, password, username, confirmation_code FROM users WHERE username = ?`;
     const [ [ row ] ] = await this.pool.execute<User[]>(sql, [username]);
     return row;
   }
@@ -30,9 +33,9 @@ export class UserRepo extends MySQLRepo implements IUserRepo {
     return row;
   }
 
-  async create({ email, pass, username, confirmationCode }: CreatingUser) {  // User
-    const sql = `INSERT INTO users (email, pass, username, confirmation_code) VALUES (?, ?, ?, ?)`;
-    await this.pool.execute<RowDataPacket[]>(sql, [email, pass, username, confirmationCode]);
+  async create({ id, email, password, username, confirmationCode }: UserTableRow) {
+    const sql = `INSERT INTO users (id, email, pass, username, confirmation_code) VALUES (?, ?, ?, ?)`;
+    await this.pool.execute<RowDataPacket[]>(sql, [id, email, password, username, confirmationCode]);
   }
 
   async verify(email: string) {
@@ -40,9 +43,18 @@ export class UserRepo extends MySQLRepo implements IUserRepo {
     await this.pool.execute<RowDataPacket[]>(sql, [email]);
   }
 
-  async update({ id, email, pass, username }: UpdatingUser) {
-    const sql = `UPDATE users SET email = ?, pass = ?, username = ? WHERE id = ? LIMIT 1`;
-    await this.pool.execute(sql, [email, pass, username, id]);
+  async update(params: UserTableRow) {
+    const sql = `
+      UPDATE users
+      SET
+        email             = :email,
+        password          = :password,
+        username          = :username,
+        confirmation_code = :confirmationCode
+      WHERE id = :id
+      LIMIT 1
+    `;
+    await this.pool.execute(sql, params);
   }
 
   async deleteById(id: number) {
@@ -53,29 +65,15 @@ export class UserRepo extends MySQLRepo implements IUserRepo {
 
 export interface IUserRepo {
   pool:       Pool;
-  getByEmail: (email: string) =>      Promise<User>;
+  getByEmail: (email: string) =>      Promise<UserTableRow>;
   getByName:  (username: string) =>   Promise<User>;
   viewById:   (userId: number) =>     Promise<Username>;
   viewByName: (username: string) =>   Promise<UserId>;
-  create:     (user: CreatingUser) => Promise<void>;
+  create:     (user: UserTableRow) => Promise<void>;
   verify:     (email: string) =>      Promise<void>;
-  update:     (user: UpdatingUser) => Promise<void>;
+  update:     (user: UserTableRow) => Promise<void>;
   deleteById: (userId: number) =>     Promise<void>;
 }
-
-type CreatingUser = {
-  email:            string;
-  pass:             string;
-  username:         string;
-  confirmationCode: string;
-};
-
-type UpdatingUser = {
-  id:       number;
-  email:    string;
-  pass:     string;
-  username: string;
-};
 
 type User = RowDataPacket & {
   id:       number;

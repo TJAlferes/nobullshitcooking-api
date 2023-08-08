@@ -124,7 +124,7 @@ export class RecipeRepo extends MySQLRepo implements IRecipeRepo {
     return row;
   }
 
-  async create(recipe: CreatingRecipe) {
+  async create(recipe: CreatingRecipe) {  // TO DO: you need id :id now too
     const sql = `
       INSERT INTO recipe (
         recipe_type_id,
@@ -141,24 +141,24 @@ export class RecipeRepo extends MySQLRepo implements IRecipeRepo {
         ingredients_image,
         cooking_image,
         video
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (
+        :recipeTypeId,
+        :cuisineId,
+        :authorId,
+        :ownerId,
+        :title,
+        :description,
+        :activeTime,
+        :totalTime,
+        :directions,
+        :recipeImage,
+        :equipmentImage,
+        :ingredientsImage,
+        :cookingImage,
+        :video
+      )
     `;
-    const [ row ] = await this.pool.execute<ResultSetHeader>(sql, [
-      recipe.recipeTypeId,
-      recipe.cuisineId,
-      recipe.authorId,
-      recipe.ownerId,
-      recipe.title,
-      recipe.description,
-      recipe.activeTime,
-      recipe.totalTime,
-      recipe.directions,
-      recipe.recipeImage,
-      recipe.equipmentImage,
-      recipe.ingredientsImage,
-      recipe.cookingImage,
-      recipe.video
-    ]);
+    const [ row ] = await this.pool.execute<ResultSetHeader>(sql, recipe);
     return row;
   }
 
@@ -166,40 +166,24 @@ export class RecipeRepo extends MySQLRepo implements IRecipeRepo {
     const sql = `
       UPDATE recipe
       SET
-        recipe_type_id = ?,
-        cuisine_id = ?,
-        author_id = ?,
-        owner_id = ?,
-        title = ?,
-        description = ?,
-        active_time = ?,
-        total_time = ?,
-        directions = ?,
-        recipe_image = ?,
-        equipment_image = ?,
-        ingredients_image = ?,
-        cooking_image = ?,
-        video = ?
-      WHERE id = ?
+        recipe_type_id    = :recipeTypeId,
+        cuisine_id        = :cuisineId,
+        author_id         = :authorId,
+        owner_id          = :ownerId,
+        title             = :title,
+        description       = :description,
+        active_time       = :activeTime,
+        total_time        = :totalTime,
+        directions        = :directions,
+        recipe_image      = :recipeImage,
+        equipment_image   = :equipmentImage,
+        ingredients_image = :ingredientsImage,
+        cooking_image     = :cookingImage,
+        video             = :video
+      WHERE id = :id
       LIMIT 1
     `;
-    await this.pool.execute<RowDataPacket[]>(sql, [
-      recipe.recipeTypeId,
-      recipe.cuisineId,
-      recipe.authorId,
-      recipe.ownerId,
-      recipe.title,
-      recipe.description,
-      recipe.activeTime,
-      recipe.totalTime,
-      recipe.directions,
-      recipe.recipeImage,
-      recipe.equipmentImage,
-      recipe.ingredientsImage,
-      recipe.cookingImage,
-      recipe.video,
-      recipe.id
-    ]);
+    await this.pool.execute<RowDataPacket[]>(sql, recipe);
   }
   
   async disownAllByAuthorId(authorId: number) {

@@ -1,5 +1,7 @@
 import "express-session";
 
+// find a better way, get rid of this pollution
+
 declare module "express-session" {
   interface SessionData {
     staffInfo?: {

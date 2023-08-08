@@ -1,9 +1,9 @@
 import { assert, defaulted, object, string } from 'superstruct';
 
-import { GenerateId } from './shared';
+import { Id, GenerateId } from './shared';
 
 export class User {
-  private id;
+  private readonly id;
   private email;
   private password;
   private username;
@@ -13,16 +13,18 @@ export class User {
   private updated_at: Date | null = null;
   //private events: DomainEvent = [];
 
-  private constructor(params: UserParams) {
-    this.id               = GenerateId();  // Id() or Generate ?
+  private constructor(params: UserEntity) {
+    this.id               = Id(params.id);
     this.email            = Email(params.email);
     this.password         = Password(params.password);
     this.username         = Username(params.username);
-    this.confirmationCode = ConfirmationCode(params.confirmationCode);  // or Generate ?
+    this.confirmationCode = Id(params.confirmationCode);
   }
 
   static create(params: UserParams): User {
-    const user             = new User(params);
+    const id               = GenerateId();
+    const confirmationCode = GenerateId();
+    const user             = new User({...params, id, confirmationCode});
     //const userCreatedEvent = new UserCreatedEvent(user.userId);
     //this.events.push(userCreatedEvent);
     return user;
@@ -31,12 +33,34 @@ export class User {
   commandMethod(input, context) {
     // validate args, validate state transitions, record domain events
   }
+  //setters
+
+  // these go into repo:
   //update
   //delete
 
   queryMethod(): ReturnType {
 
   }
+
+  load(params: UserEntity): User {
+    return new User(params);
+  }
+
+  //getters
+  getEmail() {
+    return this.email;
+  }
+
+  getUsername() {
+    return this.username;
+  }
+
+  getConfirmationCode() {
+    return this.confirmationCode;
+  }
+
+  // these go into repo:
   //getById        (INTERNAL ONLY, read model)
   //getByEmail     (INTERNAL ONLY, read model)
   //getByUsername  (INTERNAL ONLY, read model)
@@ -86,10 +110,14 @@ export function ConfirmationCode(confirmationCode: string) {
   return confirmationCode;
 }
 
-type UserParams = {
+export type UserParams = {
   email:            string;
   password:         string;
   username:         string;
+};
+
+export type UserEntity = UserParams & {
+  id:               string;
   confirmationCode: string;
 };
 
