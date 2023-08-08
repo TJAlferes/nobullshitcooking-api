@@ -1,5 +1,5 @@
-import { assert, defaulted, number, object, string } from 'superstruct';
-import { uuidv7 }                                    from 'uuidv7';
+import { assert, defaulted, string } from 'superstruct';
+import { uuidv7 }                    from 'uuidv7';
 
 export function GenerateId() {
   return uuidv7();
@@ -7,6 +7,9 @@ export function GenerateId() {
 
 export function Id(id: string) {
   assert(id, string());
+  if (id.length !== 36) {
+    throw new Error("Invalid ID.");
+  }
   return id;
 }
 

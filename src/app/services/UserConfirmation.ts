@@ -28,6 +28,7 @@ export class UserConfirmationService {
       throw new Error("An issue occurred, please double check your info and try again.");
     }
 
+    // MOVE TO UserAuthenticationService
     const password = Password(params.password);
     const correctPassword = await bcrypt.compare(password, user.password);
     if (!correctPassword) {
@@ -73,6 +74,7 @@ export class UserConfirmationService {
       throw new Error("Already verified.");
     }
   
+    // MOVE TO UserAuthenticationService
     const password = Password(params.password);
     const correctPassword = await bcrypt.compare(password, user.password);
     if (!correctPassword) {

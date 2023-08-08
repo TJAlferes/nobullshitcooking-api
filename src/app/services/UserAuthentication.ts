@@ -13,6 +13,21 @@ export class UserAuthenticationService {
     this.repo = repo;
   }
 
+  async hashPassword(password: string) {
+    const validPassword = Password(password);
+    const encryptedPassword = await bcrypt.hash(validPassword, 10);
+    return encryptedPassword;
+  }
+
+  async comparePassword(password: string, currentHash: string) {  // no, this should get it from repo itself
+    const validPassword = Password(password);
+    const currentHash = await this.repo.getPasswor
+    const correctPassword = await bcrypt.compare(password, user.password);
+    if (!correctPassword) {
+      throw new Error("Incorrect email or password.");
+    }
+  }
+
   async login(params: LoginParams) {
     const email = Email(params.email);
     const user = await this.repo.getByEmail(email);
@@ -25,6 +40,7 @@ export class UserAuthenticationService {
       throw new Error("Please check your email for your confirmation code.");
     }
 
+    this.comparePassword(params.password);
     const password = Password(params.password);
     const correctPassword = await bcrypt.compare(password, user.password);
     if (!correctPassword) {
@@ -43,4 +59,9 @@ export class UserAuthenticationService {
 type LoginParams = {
   email:    string;
   password: string;
+};
+
+type ComparePasswordParams = {
+  password: string;
+  hash:     string;
 };

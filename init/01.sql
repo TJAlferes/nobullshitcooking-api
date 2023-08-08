@@ -52,9 +52,9 @@ CREATE TABLE chatmessage (
   `content`     text NOT NULL,
   `created_at`  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at`  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (`chatroom_id`) REFERENCES `chatroom` (`id`),
-  FOREIGN KEY (`sender_id`)   REFERENCES `user` (`id`),
-  FOREIGN KEY (`receiver_id`) REFERENCES `user` (`id`),
+  FOREIGN KEY (`chatroom_id`) REFERENCES `chatroom` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`sender_id`)   REFERENCES `user` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`receiver_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
 );
 
 CREATE TABLE chatroom (
@@ -73,8 +73,8 @@ CREATE TABLE equipment (
   `description`       text             NOT NULL DEFAULT '',
   `image`             varchar(100)     NOT NULL DEFAULT '',
   FOREIGN KEY (`equipment_type_id`) REFERENCES `equipment_type` (`id`),
-  FOREIGN KEY (`author_id`)         REFERENCES `user` (`id`),
-  FOREIGN KEY (`owner_id`)          REFERENCES `user` (`id`)
+  FOREIGN KEY (`author_id`)         REFERENCES `user` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`owner_id`)          REFERENCES `user` (`id`) ON DELETE CASCADE
 );
 
 CREATE TABLE ingredient (
@@ -89,8 +89,8 @@ CREATE TABLE ingredient (
   `description`        text             NOT NULL DEFAULT '',
   `image`              varchar(100)     NOT NULL DEFAULT '',
   FOREIGN KEY (`ingredient_type_id`) REFERENCES `ingredient_type` (`id`),
-  FOREIGN KEY (`owner_id`)           REFERENCES `user` (`id`),
-  FOREIGN KEY (`author_id`)          REFERENCES `user` (`id`) 
+  FOREIGN KEY (`author_id`)          REFERENCES `user` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`owner_id`)           REFERENCES `user` (`id`) ON DELETE CASCADE
 );
 
 CREATE TABLE ingredient_alt_name (
@@ -106,8 +106,8 @@ CREATE TABLE plan (
   `owner_id`  char(36)     NOT NULL,
   `name`      varchar(100) NOT NULL DEFAULT '',
   `data`      json         DEFAULT NULL,
-  FOREIGN KEY (`author_id`) REFERENCES `user` (`id`),
-  FOREIGN KEY (`owner_id`)  REFERENCES `user` (`id`)
+  FOREIGN KEY (`author_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`owner_id`)  REFERENCES `user` (`id`) ON DELETE CASCADE
 );
 
 CREATE TABLE recipe (
@@ -128,14 +128,14 @@ CREATE TABLE recipe (
   `video`             varchar(100)     NOT NULL DEFAULT '',
   FOREIGN KEY (`recipe_type_id`) REFERENCES `recipe_type` (`id`),
   FOREIGN KEY (`cuisine_id`)     REFERENCES `cuisine` (`id`),
-  FOREIGN KEY (`author_id`)      REFERENCES `user` (`id`),
-  FOREIGN KEY (`owner_id`)       REFERENCES `user` (`id`)
+  FOREIGN KEY (`author_id`)      REFERENCES `user` (`id`) ON DELETE CASCADE,  -- careful, recheck
+  FOREIGN KEY (`owner_id`)       REFERENCES `user` (`id`) ON DELETE CASCADE   -- careful, recheck
 );
 
 CREATE TABLE staff (
   `id`                char(36)     PRIMARY KEY,
   `email`             varchar(60)  NOT NULL UNIQUE,
-  `password`              char(60)     NOT NULL,
+  `password`          char(60)     NOT NULL,
   `staffname`         varchar(20)  NOT NULL UNIQUE,
   `confirmation_code` varchar(255) DEFAULT NULL
 );
@@ -143,7 +143,7 @@ CREATE TABLE staff (
 CREATE TABLE user (
   `id`                char(36)     PRIMARY KEY,
   `email`             varchar(60)  NOT NULL UNIQUE,
-  `password`              char(60)     NOT NULL,
+  `password`          char(60)     NOT NULL,
   `username`          varchar(20)  NOT NULL UNIQUE,
   `confirmation_code` varchar(255) DEFAULT NULL
 );
@@ -159,15 +159,15 @@ CREATE TABLE chatroom_user (
   `is_admin`,
   `is_muted`,
   PRIMARY KEY (`chatroom_id`, `user_id`),
-  FOREIGN KEY (`chatroom_id`) REFERENCES `chatroom` (`id`),
-  FOREIGN KEY (`user_id`)     REFERENCES `user` (`id`)
+  FOREIGN KEY (`chatroom_id`) REFERENCES `chatroom` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`user_id`)     REFERENCES `user` (`id`) ON DELETE CASCADE
 );
 
 CREATE TABLE favorite_recipe (
   `user_id`   char(36) NOT NULL,
   `recipe_id` char(36) NOT NULL,
-  FOREIGN KEY (`user_id`)   REFERENCES `user` (`id`),
-  FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`id`)
+  FOREIGN KEY (`user_id`)   REFERENCES `user` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`id`) ON DELETE CASCADE
 );
 
 -- this may need improvement
@@ -175,16 +175,16 @@ CREATE TABLE friendship (
   `user_id`   char(36)    NOT NULL,
   `friend_id` char(36)    NOT NULL,
   `status`    varchar(20) NOT NULL,
-  FOREIGN KEY (`user_id`)   REFERENCES `user` (`id`),
-  FOREIGN KEY (`friend_id`) REFERENCES `user` (`id`)
+  FOREIGN KEY (`user_id`)   REFERENCES `user` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`friend_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 );
 
 CREATE TABLE recipe_equipment (
   `recipe_id`    char(36)         NOT NULL,
   `amount`       tinyint unsigned NOT NULL,
   `equipment_id` char(36)         NOT NULL,
-  FOREIGN KEY (`recipe_id`)    REFERENCES `recipe` (`id`),
-  FOREIGN KEY (`equipment_id`) REFERENCES `equipment` (`id`)
+  FOREIGN KEY (`recipe_id`)    REFERENCES `recipe` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`equipment_id`) REFERENCES `equipment` (`id`) ON DELETE CASCADE
 );
 
 CREATE TABLE recipe_ingredient (
@@ -192,15 +192,15 @@ CREATE TABLE recipe_ingredient (
   `amount`         decimal(5,2)     NOT NULL,
   `measurement_id` tinyint unsigned NOT NULL,
   `ingredient_id`  char(36)         NOT NULL DEFAULT '0',
-  FOREIGN KEY (`recipe_id`)      REFERENCES `recipe` (`id`),
+  FOREIGN KEY (`recipe_id`)      REFERENCES `recipe` (`id`)  ON DELETE CASCADE,
   FOREIGN KEY (`measurement_id`) REFERENCES `measurement` (`id`),
-  FOREIGN KEY (`ingredient_id`)  REFERENCES `ingredient` (`id`)
+  FOREIGN KEY (`ingredient_id`)  REFERENCES `ingredient` (`id`) ON DELETE CASCADE
 );
 
 CREATE TABLE recipe_method (
   `recipe_id` char(36)         NOT NULL,
   `method_id` tinyint unsigned NOT NULL,
-  FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`id`),
+  FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`id`) ON DELETE CASCADE,
   FOREIGN KEY (`method_id`) REFERENCES `method` (`id`)
 );
 
@@ -209,16 +209,16 @@ CREATE TABLE recipe_subrecipe (
   `amount`         decimal(5,2)     NOT NULL,
   `measurement_id` tinyint unsigned NOT NULL,
   `subrecipe_id`   char(36)         NOT NULL,
-  FOREIGN KEY (`recipe_id`)      REFERENCES `recipe` (`id`),
+  FOREIGN KEY (`recipe_id`)      REFERENCES `recipe` (`id`) ON DELETE CASCADE,
   FOREIGN KEY (`measurement_id`) REFERENCES `measurement` (`id`),
-  FOREIGN KEY (`subrecipe_id`)   REFERENCES `recipe` (`id`)
+  FOREIGN KEY (`subrecipe_id`)   REFERENCES `recipe` (`id`) ON DELETE CASCADE
 );
 
 CREATE TABLE saved_recipe (
   `user_id`   char(36) NOT NULL,
   `recipe_id` char(36) NOT NULL,
-  FOREIGN KEY (`user_id`)   REFERENCES `user` (`id`),
-  FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`id`)
+  FOREIGN KEY (`user_id`)   REFERENCES `user` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`id`) ON DELETE CASCADE
 );
 
 
