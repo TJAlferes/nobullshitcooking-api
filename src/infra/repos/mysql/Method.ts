@@ -1,4 +1,4 @@
-import { Pool, RowDataPacket } from 'mysql2/promise';
+import { RowDataPacket } from 'mysql2/promise';
 
 import { MySQLRepo } from './MySQL';
 
@@ -17,7 +17,6 @@ export class MethodRepo extends MySQLRepo implements IMethodRepo {
 }
 
 export interface IMethodRepo {
-  pool:    Pool;
   viewAll: () =>           Promise<Method[]>;
   viewOne: (id: number) => Promise<Method[]>;
 }

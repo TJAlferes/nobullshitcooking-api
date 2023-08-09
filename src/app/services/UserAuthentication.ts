@@ -46,11 +46,13 @@ export class UserAuthenticationService {
     if (!correctPassword) {
       throw new Error("Incorrect email or password.");
     }
-  
-    return {
+
+    params.session.userInfo = {
       id:       user.id,
       username: user.username
     };
+  
+    return user.username;
   }
 
   // logout is handled in the controller???
@@ -59,6 +61,7 @@ export class UserAuthenticationService {
 type LoginParams = {
   email:    string;
   password: string;
+  session: 
 };
 
 type ComparePasswordParams = {

@@ -1,4 +1,4 @@
-import { Pool, RowDataPacket } from 'mysql2/promise';
+import { RowDataPacket } from 'mysql2/promise';
 
 import { MySQLRepo } from './MySQL';
 
@@ -120,7 +120,6 @@ export class FriendshipRepo extends MySQLRepo implements IFriendshipRepo {
 type Row =  Promise<RowDataPacket>;
 
 export interface IFriendshipRepo {
-  pool:              Pool;
   getByFriendId:     (userId: number, friendId: number) => Promise<Friendship>;
   checkIfBlockedBy:  (userId: number, friendId: number) => Promise<Friendship>;
   view:              (userId: number) =>                   Promise<Friend[]>;

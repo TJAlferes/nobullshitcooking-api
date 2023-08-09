@@ -1,4 +1,4 @@
-import { Pool, RowDataPacket } from 'mysql2/promise';
+import { RowDataPacket } from 'mysql2/promise';
 
 import { MySQLRepo } from './MySQL';
 
@@ -17,7 +17,6 @@ export class CuisineRepo extends MySQLRepo implements ICuisineRepo {
 }
 
 export interface ICuisineRepo {
-  pool:                    Pool;
   viewAll: () =>           Promise<Cuisine[]>;
   viewOne: (id: number) => Promise<Cuisine[]>;
 }

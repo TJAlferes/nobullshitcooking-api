@@ -1,9 +1,6 @@
 import { User }      from '../../domain/User';
 import { IUserRepo } from '../../infra/repos/mysql';
-import {
-  UserAuthenticationService,
-  UserConfirmationService
-} from '.';
+import { UserAuthenticationService, UserConfirmationService } from '.';
 
 export class UserService {
   private readonly repo: IUserRepo;
@@ -59,30 +56,19 @@ export class UserService {
   async delete(userId: string) {
     if (userId === 1) return;  // IMPORTANT: Never allow user 1, NOBSC, to be deleted.
 
-    // (Do this in MySQL instead if possible) (cascading deletes)
-    /*const equipmentRepo =        new EquipmentRepo();
-    const favoriteRecipeRepo =   new FavoriteRecipeRepo();
-    const friendshipRepo =       new FriendshipRepo();
-    const ingredientRepo =       new IngredientRepo();
-    const planRepo =             new PlanRepo();
-    const recipeRepo =           new RecipeRepo();
-    const recipeEquipmentRepo =  new RecipeEquipmentRepo();
-    const recipeIngredientRepo = new RecipeIngredientRepo();
-    const recipeMethodRepo =     new RecipeMethodRepo();
-    const recipeSubrecipeRepo =  new RecipeSubrecipeRepo();
-    const savedRecipeRepo =      new SavedRecipeRepo();
-    const userRepo =             new UserRepo();
-
-    // NOTE: Due to foreign key constraints, deletes must be in this order. (Do this in MySQL instead?) (WHAT!?)
+    // NOTE: Due to MySQL foreign keys, deletes must be in this order.
+    // TO DO: Let MySQL ON DELETE CASCADE handle most of this.
 
     // First delete/disown the user's relationships and content...
     await Promise.all([
-      friendshipRepo.deleteAllByUserId(userId),
-      planRepo.deleteAll(userId),
-      favoriteRecipeRepo.deleteAllByUserId(userId),
-      savedRecipeRepo.deleteAllByUserId(userId)
+      friendshipRepo.deleteAllByUserId(userId),      // ok
+      planRepo.deleteAll(userId),                    // NOT OK???
+      favoriteRecipeRepo.deleteAllByUserId(userId),  // ok
+      savedRecipeRepo.deleteAllByUserId(userId)      // ok
     ]);
-    await recipeRepo.disownAllByAuthorId(userId);
+
+    await recipeRepo.disownAllByAuthorId(userId);  // ???
+
     const recipeIds = await recipeRepo.getPrivateIds(userId);  // CAREFUL! Double check this.
     await Promise.all([
       recipeEquipmentRepo.deleteByRecipeIds(recipeIds),
@@ -92,10 +78,11 @@ export class UserService {
       recipeSubrecipeRepo.deleteBySubrecipeIds(recipeIds)
     ]);
     await recipeRepo.deleteAllByOwnerId(userId);  // CAREFUL! Double check this.
-    await Promise.all([equipmentRepo.deleteAll(userId), ingredientRepo.deleteAll(userId)]);*/
+
+    await Promise.all([equipmentRepo.deleteAll(userId), ingredientRepo.deleteAll(userId)]);  // ok
 
     // ... Then delete the user.
-    await userRepo.deleteById(userId);
+    await this.repo.delete(userId);
   }
 }
 
@@ -106,5 +93,6 @@ type CreateParams = {
 };
 
 type UpdateParams = CreateParams & {
-  id: string;
+  id:                string;
+  confirmation_code: string;
 };

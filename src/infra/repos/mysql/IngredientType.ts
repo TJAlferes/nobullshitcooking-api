@@ -1,4 +1,4 @@
-import { Pool, RowDataPacket } from 'mysql2/promise';
+import { RowDataPacket } from 'mysql2/promise';
 
 import { MySQLRepo } from './MySQL';
 
@@ -17,7 +17,6 @@ export class IngredientTypeRepo extends MySQLRepo implements IIngredientTypeRepo
 }
 
 export interface IIngredientTypeRepo {
-  pool:    Pool;
   viewAll: () =>           Promise<IngredientType[]>;
   viewOne: (id: number) => Promise<IngredientType[]>;
 }

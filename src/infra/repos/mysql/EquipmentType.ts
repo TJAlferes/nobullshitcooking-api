@@ -1,4 +1,4 @@
-import { Pool, RowDataPacket } from 'mysql2/promise';
+import { RowDataPacket } from 'mysql2/promise';
 
 import { MySQLRepo } from './MySQL';
 
@@ -17,7 +17,6 @@ export class EquipmentTypeRepo extends MySQLRepo implements IEquipmentTypeRepo {
 }
 
 export interface IEquipmentTypeRepo {
-  pool:    Pool;
   viewAll: () =>           Promise<EquipmentType[]>;
   viewOne: (id: number) => Promise<EquipmentType[]>;
 }

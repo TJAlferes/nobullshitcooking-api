@@ -8,7 +8,7 @@ export class UserAuthenticationController {
   async login(req: Request, res: Response) {
     const loggedIn = req.session.userInfo?.id;
     if (loggedIn) {
-      return res.json({message: 'Already logged in.'});  // throw in this layer?  // do this inside the service ?
+      return res.json({message: 'Already logged in.'});  // throw in this layer?
     }
     
     const { email, password } = req.body.userInfo;
@@ -16,11 +16,9 @@ export class UserAuthenticationController {
     const userRepo                  = new UserRepo();
     const userAuthenticationService = new UserAuthenticationService(userRepo);
 
-    const { id, username } = await userAuthenticationService.login({email, password});
+    const username = await userAuthenticationService.login({email, password, session: req.session});
 
-    req.session.userInfo = {id, username};  // do this inside the service ?
-
-    return res.json({message: 'Signed in.', username});
+    return res.json({message: 'Logged in.', username});
   }
 
   async logout(req: Request, res: Response) {

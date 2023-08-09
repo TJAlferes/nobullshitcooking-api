@@ -1,4 +1,4 @@
-import { Pool, RowDataPacket } from 'mysql2/promise';
+import { RowDataPacket } from 'mysql2/promise';
 
 import { UserTableRow } from '../../../../types';
 import { MySQLRepo } from './MySQL';
@@ -22,8 +22,8 @@ export class UserRepo extends MySQLRepo implements IUserRepo {
 
   async getByUsername(username: string) {  // security sensitive, do NOT send back in the api response
     const sql = `SELECT id, email, password, username, confirmation_code FROM users WHERE username = ?`;
-    const [ [ row ] ] = await this.pool.execute<User[]>(sql, [username]);
-    return row;
+    const [ [ row ] ] = await this.pool.execute<RowDataPacket[]>(sql, [username]);
+    return row as UserTableRow;
   }
 
   /*async viewById(id: string) {
@@ -64,7 +64,7 @@ export class UserRepo extends MySQLRepo implements IUserRepo {
         email             = :email,
         password          = :password,
         username          = :username,
-        confirmation_code = :confirmationCode
+        confirmation_code = :confirmation_code
       WHERE id = :id
       LIMIT 1
     `;
@@ -78,9 +78,9 @@ export class UserRepo extends MySQLRepo implements IUserRepo {
 }
 
 export interface IUserRepo {
-  pool:       Pool;
-  getByEmail: (email: string) =>      Promise<UserTableRow>;
-  getByName:  (username: string) =>   Promise<User>;
+  getById:       (id: string) =>       Promise<UserTableRow>
+  getByEmail:    (email: string) =>    Promise<UserTableRow>;
+  getByUsername: (username: string) => Promise<UserTableRow>;
   //viewById:   (userId: number) =>     Promise<Username>;
   //viewByName: (username: string) =>   Promise<UserId>;
   insert:     (user: UserTableRow) => Promise<void>;
@@ -88,19 +88,3 @@ export interface IUserRepo {
   update:     (user: UserTableRow) => Promise<void>;
   delete:     (userId: string) =>     Promise<void>;
 }
-
-type User = RowDataPacket & {
-  id:       number;
-  email:    string;
-  pass:     string;
-  username: string;
-  confirmationCode: string;
-};
-
-type UserId = RowDataPacket & {
-  id: string;
-};
-
-type Username = RowDataPacket & {
-  username: string;
-};

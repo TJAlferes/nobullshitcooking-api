@@ -1,4 +1,4 @@
-import { Pool, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
+import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
 import type { SearchRequest, SearchResponse } from '../../lib/validations';
 import { MySQLRepo } from './MySQL';
@@ -175,7 +175,6 @@ export class IngredientRepo extends MySQLRepo implements IIngredientRepo {
 }
 
 export interface IIngredientRepo {
-  pool:      Pool;
   auto:      (term: string) =>                                  Promise<IngredientSuggestion[]>;
   search:    (searchRequest: SearchRequest) =>                  Promise<SearchResponse>;
   viewAll:   (authorId: number, ownerId: number) =>             Promise<Ingredient[]>;

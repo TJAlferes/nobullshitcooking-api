@@ -1,4 +1,4 @@
-import { Pool, RowDataPacket } from 'mysql2/promise';
+import { RowDataPacket } from 'mysql2/promise';
 
 import { MySQLRepo } from './MySQL';
 
@@ -64,7 +64,6 @@ export class RecipeSubrecipeRepo extends MySQLRepo implements IRecipeSubrecipeRe
 }
 
 export interface IRecipeSubrecipeRepo {
-  pool:                 Pool;
   viewByRecipeId:       (id: number) =>                                                         Promise<RecipeSubrecipe[]>;
   create:               (placeholders: string, recipeSubrecipes: number[]) =>                   Promise<void>;
   update:               (recipeId: number, placeholders: string, recipeSubrecipes: number[]) => Promise<void>;

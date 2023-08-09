@@ -1,4 +1,4 @@
-import { Pool, RowDataPacket } from 'mysql2/promise';
+import { RowDataPacket } from 'mysql2/promise';
 //import { Plan } from '../domain/plan';
 
 import { MySQLRepo } from './MySQL';
@@ -38,7 +38,6 @@ export class PlanRepo extends MySQLRepo implements IPlanRepo {
 }
 
 export interface IPlanRepo {
-  pool:      Pool;
   viewAll:   (ownerId: number) =>             Promise<Plan[]>;
   viewOne:   (id: number, ownerId: number) => Promise<Plan[]>;
   create:    (plan: ICreatingPlan) =>         Promise<void>;

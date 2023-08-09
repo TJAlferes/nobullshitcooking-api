@@ -12,7 +12,7 @@ export class UserConfirmationController {
 
     await userConfirmationService.confirm({email, password, confirmationCode});
 
-    return res.send({message: 'User account verified.'});
+    return res.send({message: 'User account confirmed.'});
   }
 
   async resendConfirmationCode(req: Request, res: Response) {

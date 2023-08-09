@@ -1,4 +1,4 @@
-import { Pool, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
+import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
 import type { SearchRequest, SearchResponse } from '../../lib/validations';
 import { MySQLRepo } from './MySQL';
@@ -212,7 +212,6 @@ export class RecipeRepo extends MySQLRepo implements IRecipeRepo {
 }
 
 export interface IRecipeRepo {
-  pool:                Pool;
   autosuggest:         (term: string) =>                                     Promise<Suggestion[]>;
   search:              (searchRequest: SearchRequest) =>                     Promise<SearchResponse>;
   getPrivateIds:       (userId: number) =>                                   Promise<number[]>;  // ???

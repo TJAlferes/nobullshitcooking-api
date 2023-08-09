@@ -1,4 +1,4 @@
-import { Pool, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
+import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
 import type { SearchRequest, SearchResponse } from '../../lib/validations';
 import { MySQLRepo } from './MySQL';
@@ -140,7 +140,6 @@ export class EquipmentRepo extends MySQLRepo implements IEquipmentRepo {
 }
 
 export interface IEquipmentRepo {
-  pool:      Pool;
   auto:      (term: string) =>                                  Promise<EquipmentSuggestion[]>;
   search:    (searchRequest: SearchRequest) =>                  Promise<SearchResponse>;
   viewAll:   (authorId: number, ownerId: number) =>             Promise<Equipment[]>;

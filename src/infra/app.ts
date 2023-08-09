@@ -15,8 +15,8 @@ import { createAdapter, RedisAdapter }              from '@socket.io/redis-adapt
 const pino = require('pino-http')();
 
 import { sendMessage, sendPrivateMessage, joinRoom, disconnecting, getOnlineFriends, getUsersInRoom, rejoinRoom, IMessage } from '../app/chat';
-import { FriendshipRepo, UserRepo } from './repos/mysql';
-import { ChatStore }        from './repos/redis';  // { ChatmessageRepo, ChatroomRepo, ChatroomUserRepo }
+import { FriendshipRepo, UserRepo, ChatmessageRepo, ChatroomRepo, ChatroomUserRepo } from './repos/mysql';
+//import { ChatStore }        from './repos/redis';
 import { chatCleanUp }      from './lib/jobs/chatCleanUp';
 import { routesInit }       from './routes';
 
@@ -106,11 +106,13 @@ export function appServer({ sessionClient, pubClient, subClient }: RedisClients)
 
   io.adapter(createAdapter(pubClient, subClient));
 
-  //io.engine.use(sessionMiddleware);
-  io.use((socket, next) => {
+  // new way
+  io.engine.use(sessionMiddleware);
+
+  // old way
+  /*io.use((socket, next) => {
     sessionMiddleware(socket.request as Request, {} as Response, next as NextFunction);
   });
-
   io.use((socket, next) => {  // middleware executed for every incoming socket
     const sessionId =        socket.request.session.id;
     const { id, username } = socket.request.session.userInfo!;
@@ -120,7 +122,7 @@ export function appServer({ sessionClient, pubClient, subClient }: RedisClients)
     chatStore.createUser({sessionId, username});
     console.log("chatStore.createUser called in middleware");
     return next();
-  });
+  });*/
 
   io.on('connection', (socket: Socket) => {
     const sessionId =        socket.request.session.id;
@@ -128,9 +130,15 @@ export function appServer({ sessionClient, pubClient, subClient }: RedisClients)
 
     if (!sessionId || !id || !username) return;
 
-    const user =       new UserRepo();
-    const friendship = new FriendshipRepo();
-    const chatStore =  new ChatStore(pubClient);
+    const userRepo         = new UserRepo();
+    const friendshipRepo   = new FriendshipRepo();
+    const chatmessageRepo  = new ChatmessageRepo();
+    const chatroomRepo     = new ChatroomRepo();
+    const chatroomUserRepo = new ChatroomUserRepo();
+    // maybe not needed?
+    //userService, friendshipService, chatmessageService, chatroomService, chatroomUserService
+    // old way
+    //const chatStore =  new ChatStore(pubClient);
 
     //chatStore.createUser({sessionId, username});
 
@@ -197,17 +205,18 @@ declare module "http" {
     session: Session & {
       authenticated: boolean;
       staffInfo?: {
-        id: number;
+        id:        string;
         staffname: string;
       };
       userInfo?: {
-        id: number;
+        id:       string;
         username: string;
       };
     }
   }
 }
 
+//interface Session {}
 /*declare module "express-session" {
   interface SessionData {
     staffInfo?: {

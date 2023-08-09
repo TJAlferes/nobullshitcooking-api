@@ -1,4 +1,4 @@
-import { Pool, RowDataPacket } from 'mysql2/promise';
+import { RowDataPacket } from 'mysql2/promise';
 
 import { MySQLRepo } from './MySQL';
 
@@ -17,7 +17,6 @@ export class MeasurementRepo extends MySQLRepo implements IMeasurementRepo {
 }
 
 export interface IMeasurementRepo {
-  pool:    Pool;
   viewAll: () =>           Promise<Measurement[]>;
   viewOne: (id: number) => Promise<Measurement[]>;
 }

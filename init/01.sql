@@ -44,6 +44,29 @@ CREATE TABLE recipe_type (
 -- primary tables
 -- there are potentially very many records (> 100,000)
 
+CREATE TABLE staff (
+  `id`                char(36)     PRIMARY KEY,
+  `email`             varchar(60)  NOT NULL UNIQUE,
+  `password`          char(60)     NOT NULL,
+  `staffname`         varchar(20)  NOT NULL UNIQUE,
+  `confirmation_code` varchar(255) DEFAULT NULL
+);
+
+CREATE TABLE user (
+  `id`                char(36)     PRIMARY KEY,
+  `email`             varchar(60)  NOT NULL UNIQUE,
+  `password`          char(60)     NOT NULL,
+  `username`          varchar(20)  NOT NULL UNIQUE,
+  `confirmation_code` varchar(255) DEFAULT NULL
+);
+
+CREATE TABLE chatroom (
+  `id`         char(36) PRIMARY KEY,
+  `name`       varchar(50) NOT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
 CREATE TABLE chatmessage (
   `id`          char(36) PRIMARY KEY,
   `chatroom_id` char(36) NOT NULL,
@@ -55,13 +78,6 @@ CREATE TABLE chatmessage (
   FOREIGN KEY (`chatroom_id`) REFERENCES `chatroom` (`id`) ON DELETE CASCADE,
   FOREIGN KEY (`sender_id`)   REFERENCES `user` (`id`) ON DELETE CASCADE,
   FOREIGN KEY (`receiver_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
-);
-
-CREATE TABLE chatroom (
-  `id`         char(36) PRIMARY KEY,
-  `name`       varchar(50) NOT NULL,
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE equipment (
@@ -97,17 +113,7 @@ CREATE TABLE ingredient_alt_name (
   `id`            char(36),
   `ingredient_id` char(36),
   `alt_name`      varchar(50),
-  FOREIGN KEY (`ingredient_id`) REFERENCES `ingredient` (`id`),
-);
-
-CREATE TABLE plan (
-  `id`        char(36)     PRIMARY KEY,
-  `author_id` char(36)     NOT NULL,
-  `owner_id`  char(36)     NOT NULL,
-  `name`      varchar(100) NOT NULL DEFAULT '',
-  `data`      json         DEFAULT NULL,
-  FOREIGN KEY (`author_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`owner_id`)  REFERENCES `user` (`id`) ON DELETE CASCADE
+  FOREIGN KEY (`ingredient_id`) REFERENCES `ingredient` (`id`) ON DELETE CASCADE,
 );
 
 CREATE TABLE recipe (
@@ -132,20 +138,29 @@ CREATE TABLE recipe (
   FOREIGN KEY (`owner_id`)       REFERENCES `user` (`id`) ON DELETE CASCADE   -- careful, recheck
 );
 
-CREATE TABLE staff (
-  `id`                char(36)     PRIMARY KEY,
-  `email`             varchar(60)  NOT NULL UNIQUE,
-  `password`          char(60)     NOT NULL,
-  `staffname`         varchar(20)  NOT NULL UNIQUE,
-  `confirmation_code` varchar(255) DEFAULT NULL
+CREATE TABLE plan (
+  `id`        char(36)     PRIMARY KEY,
+  `author_id` char(36)     NOT NULL,
+  `owner_id`  char(36)     NOT NULL,
+  `name`      varchar(100) NOT NULL DEFAULT '',
+  `data`      json         DEFAULT NULL,
+  FOREIGN KEY (`author_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`owner_id`)  REFERENCES `user` (`id`) ON DELETE CASCADE
 );
 
-CREATE TABLE user (
-  `id`                char(36)     PRIMARY KEY,
-  `email`             varchar(60)  NOT NULL UNIQUE,
-  `password`          char(60)     NOT NULL,
-  `username`          varchar(20)  NOT NULL UNIQUE,
-  `confirmation_code` varchar(255) DEFAULT NULL
+CREATE TABLE day (
+  id         char(36) PRIMARY KEY,
+  plan_id    char(36) NOT NULL,
+  day_number tinyint  NOT NULL,
+  FOREIGN KEY (`plan_id`) REFERENCES plan (`id`) ON DELETE CASCADE
+);
+
+CREATE TABLE day_recipe (
+  day_id    char(36) NOT NULL,
+  recipe_id char(36) NOT NULL,
+  --PRIMARY KEY (day_id, recipe_id),
+  FOREIGN KEY (`day_id`)    REFERENCES day (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`recipe_id`) REFERENCES recipe (`id`) ON DELETE CASCADE
 );
 
 -- linking/intersection/cross-reference tables
