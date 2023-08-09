@@ -8,159 +8,150 @@ USE nobsc;
 -- there are only so many records (< 1,000)
 
 CREATE TABLE cuisine (
-  `id`        tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
-  `continent` varchar(2)       NOT NULL DEFAULT '',
-  `code`      varchar(3)       NOT NULL DEFAULT ''  UNIQUE,
-  `name`      varchar(40)      NOT NULL DEFAULT '',
-  `country`   varchar(40)      NOT NULL DEFAULT ''  UNIQUE
+  `cuisine_id`   TINYINT UNSIGNED NOT NULL DEFAULT '0' PRIMARY KEY,
+  `continent`    VARCHAR(2)       NOT NULL DEFAULT '',
+  `code`         VARCHAR(3)       NOT NULL DEFAULT ''  UNIQUE,
+  `cuisine_name` VARCHAR(40)      NOT NULL DEFAULT '',
+  `country`      VARCHAR(40)      NOT NULL DEFAULT ''  UNIQUE
 );
 
 CREATE TABLE equipment_type (
-  `id`   tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
-  `name` varchar(25)               DEFAULT NULL
+  `equipment_type_id`   TINYINT UNSIGNED NOT NULL DEFAULT '0' PRIMARY KEY,
+  `equipment_type_name` VARCHAR(25)               DEFAULT NULL
 );
 
 CREATE TABLE ingredient_type (
-  `id`   tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
-  `name` varchar(25)               DEFAULT NULL
+  `ingredient_type_id`   TINYINT UNSIGNED NOT NULL DEFAULT '0' PRIMARY KEY,
+  `ingredient_type_name` VARCHAR(25)               DEFAULT NULL
 );
 
--- rename to unit ??? because measurement = amount unit ???
-CREATE TABLE measurement (
-  `id`   tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
-  `name` varchar(25)               DEFAULT NULL
+-- unit = amount unit
+CREATE TABLE unit (
+  `unit_id`   TINYINT UNSIGNED NOT NULL DEFAULT '0' PRIMARY KEY,
+  `unit_name` VARCHAR(25)               DEFAULT NULL
 );
 
 CREATE TABLE method (
-  `id`   tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
-  `name` varchar(25)               DEFAULT NULL
+  `method_id`   TINYINT UNSIGNED NOT NULL DEFAULT '0' PRIMARY KEY,
+  `method_name` VARCHAR(25)               DEFAULT NULL
 );
 
 CREATE TABLE recipe_type (
-  `id`   tinyint unsigned NOT NULL DEFAULT '0' PRIMARY KEY,
-  `name` varchar(25)               DEFAULT NULL
+  `recipe_type_id`   TINYINT UNSIGNED NOT NULL DEFAULT '0' PRIMARY KEY,
+  `recipe_type_name` VARCHAR(25)               DEFAULT NULL
 );
 
 -- primary tables
 -- there are potentially very many records (> 100,000)
 
 CREATE TABLE staff (
-  `id`                char(36)     PRIMARY KEY,
-  `email`             varchar(60)  NOT NULL UNIQUE,
-  `password`          char(60)     NOT NULL,
-  `staffname`         varchar(20)  NOT NULL UNIQUE,
-  `confirmation_code` varchar(255) DEFAULT NULL
+  `staff_id`          CHAR(36)     PRIMARY KEY,
+  `email`             VARCHAR(60)  NOT NULL UNIQUE,
+  `password`          CHAR(60)     NOT NULL,
+  `staffname`         VARCHAR(20)  NOT NULL UNIQUE,
+  `confirmation_code` VARCHAR(255) DEFAULT NULL
 );
 
 CREATE TABLE user (
-  `id`                char(36)     PRIMARY KEY,
-  `email`             varchar(60)  NOT NULL UNIQUE,
-  `password`          char(60)     NOT NULL,
-  `username`          varchar(20)  NOT NULL UNIQUE,
-  `confirmation_code` varchar(255) DEFAULT NULL
+  `user_id`           CHAR(36)     PRIMARY KEY,
+  `email`             VARCHAR(60)  NOT NULL UNIQUE,
+  `password`          CHAR(60)     NOT NULL,
+  `username`          VARCHAR(20)  NOT NULL UNIQUE,
+  `confirmation_code` VARCHAR(255) DEFAULT NULL
 );
 
 CREATE TABLE chatroom (
-  `id`         char(36) PRIMARY KEY,
-  `name`       varchar(50) NOT NULL,
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `chatroom_id`   CHAR(36) PRIMARY KEY,
+  `chatroom_name` VARCHAR(50) NOT NULL,
+  `created_at`    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE chatmessage (
-  `id`          char(36) PRIMARY KEY,
-  `chatroom_id` char(36) NOT NULL,
-  `sender_id`   char(36) NOT NULL,
-  `receiver_id` char(36) NOT NULL,
-  `content`     text NOT NULL,
-  `created_at`  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `updated_at`  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (`chatroom_id`) REFERENCES `chatroom` (`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`sender_id`)   REFERENCES `user` (`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`receiver_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+  `chatmessage_id` CHAR(36) PRIMARY KEY,
+  `chatroom_id`    CHAR(36) NOT NULL,
+  `sender_id`      CHAR(36) NOT NULL,
+  `receiver_id`    CHAR(36) NOT NULL,
+  `content`        TEXT NOT NULL,
+  `created_at`     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`     TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (`chatroom_id`) REFERENCES `chatroom` (`chatroom_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`sender_id`)   REFERENCES `user` (`user_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`receiver_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE,
 );
 
 CREATE TABLE equipment (
-  `id`                char(36)         PRIMARY KEY,
-  `equipment_type_id` tinyint unsigned NOT NULL DEFAULT '0',
-  `author_id`         char(36)         NOT NULL,
-  `owner_id`          char(36)         NOT NULL,
-  `name`              varchar(100)     NOT NULL,
-  `description`       text             NOT NULL DEFAULT '',
-  `image`             varchar(100)     NOT NULL DEFAULT '',
-  FOREIGN KEY (`equipment_type_id`) REFERENCES `equipment_type` (`id`),
-  FOREIGN KEY (`author_id`)         REFERENCES `user` (`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`owner_id`)          REFERENCES `user` (`id`) ON DELETE CASCADE
+  `equipment_id`      CHAR(36)         PRIMARY KEY,
+  `equipment_type_id` TINYINT UNSIGNED NOT NULL DEFAULT '0',
+  `author_id`         CHAR(36)         NOT NULL,
+  `owner_id`          CHAR(36)         NOT NULL,
+  `equipment_name`    VARCHAR(100)     NOT NULL,
+  `description`       TEXT             NOT NULL DEFAULT '',
+  `image`             VARCHAR(100)     NOT NULL DEFAULT '',
+  FOREIGN KEY (`equipment_type_id`) REFERENCES `equipment_type` (`equipment_type_id`),
+  FOREIGN KEY (`author_id`)         REFERENCES `user` (`user_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`owner_id`)          REFERENCES `user` (`user_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE ingredient (
-  `id`                 char(36)         PRIMARY KEY,
-  `ingredient_type_id` tinyint unsigned NOT NULL DEFAULT '0',
-  `author_id`          char(36)         NOT NULL,
-  `owner_id`           char(36)         NOT NULL,
-  `brand`              varchar(50)      NOT NULL DEFAULT '',
-  `variety`            varchar(50)      NOT NULL DEFAULT '',
-  `name`               varchar(50)      NOT NULL DEFAULT '',
-  `fullname`           varchar(152)     GENERATED ALWAYS AS (CONCAT(brand, ' ', variety, ' ', name)) STORED NOT NULL UNIQUE,
-  `description`        text             NOT NULL DEFAULT '',
-  `image`              varchar(100)     NOT NULL DEFAULT '',
-  FOREIGN KEY (`ingredient_type_id`) REFERENCES `ingredient_type` (`id`),
-  FOREIGN KEY (`author_id`)          REFERENCES `user` (`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`owner_id`)           REFERENCES `user` (`id`) ON DELETE CASCADE
+  `ingredient_id`       CHAR(36)         PRIMARY KEY,
+  `ingredient_type_id`  TINYINT UNSIGNED NOT NULL DEFAULT '0',
+  `author_id`           CHAR(36)         NOT NULL,
+  `owner_id`            CHAR(36)         NOT NULL,
+  `brand`               VARCHAR(50)      NOT NULL DEFAULT '',
+  `variety`             VARCHAR(50)      NOT NULL DEFAULT '',
+  `ingredient_name`     VARCHAR(50)      NOT NULL DEFAULT '',
+  `ingredient_fullname` VARCHAR(152)     GENERATED ALWAYS AS (CONCAT(brand, ' ', variety, ' ', ingredient_name)) STORED NOT NULL UNIQUE,
+  `description`         TEXT             NOT NULL DEFAULT '',
+  `image`               VARCHAR(100)     NOT NULL DEFAULT '',
+  FOREIGN KEY (`ingredient_type_id`) REFERENCES `ingredient_type` (`ingredient_type_id`),
+  FOREIGN KEY (`author_id`)          REFERENCES `user` (`user_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`owner_id`)           REFERENCES `user` (`user_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE ingredient_alt_name (
-  `id`            char(36),
-  `ingredient_id` char(36),
-  `alt_name`      varchar(50),
-  FOREIGN KEY (`ingredient_id`) REFERENCES `ingredient` (`id`) ON DELETE CASCADE,
+  `ingredient_alt_name_id` CHAR(36),
+  `ingredient_id`          CHAR(36),
+  `alt_name`               VARCHAR(50),
+  FOREIGN KEY (`ingredient_id`) REFERENCES `ingredient` (`ingredient_id`) ON DELETE CASCADE,
 );
 
 CREATE TABLE recipe (
-  `id`                char(36)         PRIMARY KEY,
-  `recipe_type_id`    tinyint unsigned NOT NULL,
-  `cuisine_id`        tinyint unsigned NOT NULL,
-  `author_id`         char(36)         NOT NULL,
-  `owner_id`          char(36)         NOT NULL,
-  `title`             varchar(100)     NOT NULL DEFAULT '',
-  `description`       varchar(150)     NOT NULL DEFAULT '',
-  `active_time`       time             NOT NULL,
-  `total_time`        time             NOT NULL,
-  `directions`        text             NOT NULL,
-  `recipe_image`      varchar(100)     NOT NULL DEFAULT '',
-  `equipment_image`   varchar(100)     NOT NULL DEFAULT '',
-  `ingredients_image` varchar(100)     NOT NULL DEFAULT '',
-  `cooking_image`     varchar(100)     NOT NULL DEFAULT '',
-  `video`             varchar(100)     NOT NULL DEFAULT '',
-  FOREIGN KEY (`recipe_type_id`) REFERENCES `recipe_type` (`id`),
-  FOREIGN KEY (`cuisine_id`)     REFERENCES `cuisine` (`id`),
-  FOREIGN KEY (`author_id`)      REFERENCES `user` (`id`) ON DELETE CASCADE,  -- careful, recheck
-  FOREIGN KEY (`owner_id`)       REFERENCES `user` (`id`) ON DELETE CASCADE   -- careful, recheck
+  `recipe_id`         CHAR(36)         PRIMARY KEY,
+  `recipe_type_id`    TINYINT UNSIGNED NOT NULL,
+  `cuisine_id`        TINYINT UNSIGNED NOT NULL,
+  `author_id`         CHAR(36)         NOT NULL,
+  `owner_id`          CHAR(36)         NOT NULL,
+  `title`             VARCHAR(100)     NOT NULL DEFAULT '',
+  `description`       VARCHAR(150)     NOT NULL DEFAULT '',
+  `active_time`       TIME             NOT NULL,
+  `total_time`        TIME             NOT NULL,
+  `directions`        TEXT             NOT NULL,
+  `recipe_image`      VARCHAR(100)     NOT NULL DEFAULT '',
+  `equipment_image`   VARCHAR(100)     NOT NULL DEFAULT '',
+  `ingredients_image` VARCHAR(100)     NOT NULL DEFAULT '',
+  `cooking_image`     VARCHAR(100)     NOT NULL DEFAULT '',
+  `video`             VARCHAR(100)     NOT NULL DEFAULT '',
+  FOREIGN KEY (`recipe_type_id`) REFERENCES `recipe_type` (`recipe_type_id`),
+  FOREIGN KEY (`cuisine_id`)     REFERENCES `cuisine` (`cuisine_id`),
+  FOREIGN KEY (`author_id`)      REFERENCES `user` (`user_id`),
+  FOREIGN KEY (`owner_id`)       REFERENCES `user` (`user_id`)
 );
 
 CREATE TABLE plan (
-  `id`        char(36)     PRIMARY KEY,
-  `author_id` char(36)     NOT NULL,
-  `owner_id`  char(36)     NOT NULL,
-  `name`      varchar(100) NOT NULL DEFAULT '',
-  `data`      json         DEFAULT NULL,
-  FOREIGN KEY (`author_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`owner_id`)  REFERENCES `user` (`id`) ON DELETE CASCADE
+  `plan_id`   CHAR(36)     PRIMARY KEY,
+  `author_id` CHAR(36)     NOT NULL,
+  `owner_id`  CHAR(36)     NOT NULL,
+  `plan_name` VARCHAR(100) NOT NULL DEFAULT '',
+  FOREIGN KEY (`author_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`owner_id`)  REFERENCES `user` (`user_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE day (
-  id         char(36) PRIMARY KEY,
-  plan_id    char(36) NOT NULL,
-  day_number tinyint  NOT NULL,
-  FOREIGN KEY (`plan_id`) REFERENCES plan (`id`) ON DELETE CASCADE
-);
-
-CREATE TABLE day_recipe (
-  day_id    char(36) NOT NULL,
-  recipe_id char(36) NOT NULL,
-  --PRIMARY KEY (day_id, recipe_id),
-  FOREIGN KEY (`day_id`)    REFERENCES day (`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`recipe_id`) REFERENCES recipe (`id`) ON DELETE CASCADE
+  `day_id`     CHAR(36) PRIMARY KEY,
+  `plan_id`    CHAR(36) NOT NULL,
+  `day_number` TINYINT  NOT NULL,
+  FOREIGN KEY (`plan_id`) REFERENCES plan (`plan_id`) ON DELETE CASCADE
 );
 
 -- linking/intersection/cross-reference tables
@@ -169,71 +160,79 @@ CREATE TABLE day_recipe (
 -- example: a user can favorite many recipes, a recipe can be favorited by many users
 
 CREATE TABLE chatroom_user (
-  `chatroom_id` char(36) NOT NULL,
-  `user_id`     char(36) NOT NULL,
+  `chatroom_id` CHAR(36) NOT NULL,
+  `user_id`     CHAR(36) NOT NULL,
   `is_admin`,
   `is_muted`,
   PRIMARY KEY (`chatroom_id`, `user_id`),
-  FOREIGN KEY (`chatroom_id`) REFERENCES `chatroom` (`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`user_id`)     REFERENCES `user` (`id`) ON DELETE CASCADE
+  FOREIGN KEY (`chatroom_id`) REFERENCES `chatroom` (`chatroom_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`user_id`)     REFERENCES `user` (`user_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE favorite_recipe (
-  `user_id`   char(36) NOT NULL,
-  `recipe_id` char(36) NOT NULL,
-  FOREIGN KEY (`user_id`)   REFERENCES `user` (`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`id`) ON DELETE CASCADE
+  `user_id`   CHAR(36) NOT NULL,
+  `recipe_id` CHAR(36) NOT NULL,
+  FOREIGN KEY (`user_id`)   REFERENCES `user` (`user_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`recipe_id`) ON DELETE CASCADE
 );
 
 -- this may need improvement
 CREATE TABLE friendship (
-  `user_id`   char(36)    NOT NULL,
-  `friend_id` char(36)    NOT NULL,
-  `status`    varchar(20) NOT NULL,
-  FOREIGN KEY (`user_id`)   REFERENCES `user` (`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`friend_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+  `user_id`   CHAR(36)    NOT NULL,
+  `friend_id` CHAR(36)    NOT NULL,
+  `status`    VARCHAR(20) NOT NULL,
+  FOREIGN KEY (`user_id`)   REFERENCES `user` (`user_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`friend_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE recipe_equipment (
-  `recipe_id`    char(36)         NOT NULL,
-  `amount`       tinyint unsigned NOT NULL,
-  `equipment_id` char(36)         NOT NULL,
-  FOREIGN KEY (`recipe_id`)    REFERENCES `recipe` (`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`equipment_id`) REFERENCES `equipment` (`id`) ON DELETE CASCADE
+  `recipe_id`    CHAR(36)         NOT NULL,
+  `amount`       TINYINT UNSIGNED NOT NULL,
+  `equipment_id` CHAR(36)         NOT NULL,
+  FOREIGN KEY (`recipe_id`)    REFERENCES `recipe` (`recipe_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`equipment_id`) REFERENCES `equipment` (`equipment_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE recipe_ingredient (
-  `recipe_id`      char(36)         NOT NULL DEFAULT '0',
-  `amount`         decimal(5,2)     NOT NULL,
-  `measurement_id` tinyint unsigned NOT NULL,
-  `ingredient_id`  char(36)         NOT NULL DEFAULT '0',
-  FOREIGN KEY (`recipe_id`)      REFERENCES `recipe` (`id`)  ON DELETE CASCADE,
-  FOREIGN KEY (`measurement_id`) REFERENCES `measurement` (`id`),
-  FOREIGN KEY (`ingredient_id`)  REFERENCES `ingredient` (`id`) ON DELETE CASCADE
+  `recipe_id`     CHAR(36)         NOT NULL DEFAULT '0',
+  `amount`        DECIMAL(5,2)     NOT NULL,
+  `unit_id`       TINYINT UNSIGNED NOT NULL,
+  `ingredient_id` CHAR(36)         NOT NULL DEFAULT '0',
+  FOREIGN KEY (`recipe_id`)     REFERENCES `recipe` (`recipe_id`)  ON DELETE CASCADE,
+  FOREIGN KEY (`unit_id`)       REFERENCES `unit` (`unit_id`),
+  FOREIGN KEY (`ingredient_id`) REFERENCES `ingredient` (`ingredient_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE recipe_method (
-  `recipe_id` char(36)         NOT NULL,
-  `method_id` tinyint unsigned NOT NULL,
-  FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`method_id`) REFERENCES `method` (`id`)
+  `recipe_id` CHAR(36)         NOT NULL,
+  `method_id` TINYINT UNSIGNED NOT NULL,
+  FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`recipe_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`method_id`) REFERENCES `method` (`method_id`)
 );
 
 CREATE TABLE recipe_subrecipe (
-  `recipe_id`      char(36)         NOT NULL,
-  `amount`         decimal(5,2)     NOT NULL,
-  `measurement_id` tinyint unsigned NOT NULL,
-  `subrecipe_id`   char(36)         NOT NULL,
-  FOREIGN KEY (`recipe_id`)      REFERENCES `recipe` (`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`measurement_id`) REFERENCES `measurement` (`id`),
-  FOREIGN KEY (`subrecipe_id`)   REFERENCES `recipe` (`id`) ON DELETE CASCADE
+  `recipe_id`    CHAR(36)         NOT NULL,
+  `amount`       DECIMAL(5,2)     NOT NULL,
+  `unit_id`      TINYINT UNSIGNED NOT NULL,
+  `subrecipe_id` CHAR(36)         NOT NULL,
+  FOREIGN KEY (`recipe_id`)    REFERENCES `recipe` (`recipe_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`unit_id`)      REFERENCES `unit` (`unit_id`),
+  FOREIGN KEY (`subrecipe_id`) REFERENCES `recipe` (`recipe_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE saved_recipe (
-  `user_id`   char(36) NOT NULL,
-  `recipe_id` char(36) NOT NULL,
-  FOREIGN KEY (`user_id`)   REFERENCES `user` (`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`id`) ON DELETE CASCADE
+  `user_id`   CHAR(36) NOT NULL,
+  `recipe_id` CHAR(36) NOT NULL,
+  FOREIGN KEY (`user_id`)   REFERENCES `user` (`user_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`recipe_id`) ON DELETE CASCADE
+);
+
+CREATE TABLE day_recipe (
+  `day_id`    CHAR(36) NOT NULL,
+  `recipe_id` CHAR(36) NOT NULL,
+  --PRIMARY KEY (day_id, recipe_id),
+  FOREIGN KEY (`day_id`)    REFERENCES day (`day_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`recipe_id`) REFERENCES recipe (`recipe_id`) ON DELETE CASCADE
 );
 
 
@@ -246,9 +245,9 @@ INSERT INTO user (email, password, username) VALUES
 ("tjalferes@gmail.com",     "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "Unknown"),
 ("testman@testman.com",     "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "Testman");
 
-INSERT INTO equipment_type (id, name) VALUES (1, "Cleaning"), (2, "Preparing"), (3, "Cooking"), (4, "Dining"), (5, "Storage");
+INSERT INTO equipment_type (equipment_type_id, equipment_type_name) VALUES (1, "Cleaning"), (2, "Preparing"), (3, "Cooking"), (4, "Dining"), (5, "Storage");
 
-INSERT INTO ingredient_type (id, name) VALUES
+INSERT INTO ingredient_type (ingredient_type_id, ingredient_type_name) VALUES
 (1,  "Fish"),
 (2,  "Shellfish"),
 (3,  "Beef"),
@@ -268,7 +267,7 @@ INSERT INTO ingredient_type (id, name) VALUES
 (17, "Acid"),
 (18, "Product");
 
-INSERT INTO measurement (id, name) VALUES
+INSERT INTO unit (unit_id, unit_name) VALUES
 (1,  "teaspoon"),
 (2,  "Tablespoon"),
 (3,  "cup"),
@@ -280,7 +279,7 @@ INSERT INTO measurement (id, name) VALUES
 (9,  "kilogram"),
 (10, "NA");
 
-INSERT INTO method (id, name) VALUES
+INSERT INTO method (method_id, method_name) VALUES
 (1,  "No-Cook"),
 (2,  "Chill"),
 (3,  "Freeze"),
@@ -306,7 +305,7 @@ INSERT INTO method (id, name) VALUES
 (23, "Grill"),
 (24, "Smoke");
 
-INSERT INTO recipe_type (id, name) VALUES
+INSERT INTO recipe_type (recipe_type_id, recipe_type_name) VALUES
 (1,  "Drink"),
 (2,  "Appetizer"),
 (3,  "Main"),
@@ -320,7 +319,7 @@ INSERT INTO recipe_type (id, name) VALUES
 (11, "Dressing"),
 (12, "Condiment");
 
-INSERT INTO cuisine (id, continent, code, name, country) VALUES
+INSERT INTO cuisine (cuisine_id, continent, code, cuisine_name, country) VALUES
 (1,  "AF", "DZA", "Algerian",                 "Algeria"),
 (2,  "AF", "AGO", "Angolan",                  "Angola"),
 (3,  "AF", "BEN", "Benin",                    "Benin"),
@@ -523,7 +522,7 @@ INSERT INTO cuisine (id, continent, code, name, country) VALUES
 (197, "OC", "VUT", "Vanuatuan",         "Vanuatu");
 
 INSERT INTO equipment
-(equipment_type_id, author_id, owner_id, name, image)
+(equipment_type_id, author_id, owner_id, equipment_name, image)
 VALUES
 (2, 1, 1, "Ceramic Stone",                    "ceramic-stone"),
 (2, 1, 1, "Chef\'s Knife",                    "chefs-knife"),
@@ -585,7 +584,7 @@ VALUES
 (3, 1, 1, "Ladle",                            "ladle");
 
 INSERT INTO ingredient
-(ingredient_type_id, author_id, owner_id, variety, name, image)
+(ingredient_type_id, author_id, owner_id, variety, ingredient_name, image)
 VALUES
 (1, 1, 1, "",                    "Tuna",                                     "tuna"),
 (1, 1, 1, "",                    "Salmon",                                   "salmon"),
@@ -988,7 +987,7 @@ VALUES
 (18, 1, 1, "Light",              "Soy Sauce",                                "light-soy-sauce");
 
 INSERT INTO ingredient
-(ingredient_type_id, author_id, owner_id, brand, name, description, image)
+(ingredient_type_id, author_id, owner_id, brand, ingredient_name, description, image)
 VALUES
 (18, 1, 1, "Tobasco",            "Hot Sauce",                                "tobasco-hot-sauce");
 
@@ -1022,7 +1021,7 @@ INSERT INTO recipe_equipment (recipe_id, amount, equipment_id) VALUES
 (11, 1, 1),
 (12, 1, 1);
 
-INSERT INTO recipe_ingredient (recipe_id, amount, measurement_id, ingredient_id) VALUES
+INSERT INTO recipe_ingredient (recipe_id, amount, unit_id, ingredient_id) VALUES
 (1,  4,  1,  116),
 (2,  2,  2,  209),
 (3,  1,  3,  153),
@@ -1052,14 +1051,10 @@ INSERT INTO recipe_method (recipe_id, method_id) VALUES
 
 
 
-CREATE FULLTEXT INDEX fulltext_idx_name ON equipment (name);
+CREATE FULLTEXT INDEX fulltext_idx_name ON equipment (equipment_name);
 
 CREATE FULLTEXT INDEX fulltext_idx_brand   ON ingredient (brand);
 CREATE FULLTEXT INDEX fulltext_idx_variety ON ingredient (variety);
-CREATE FULLTEXT INDEX fulltext_idx_name    ON ingredient (name);
-
-CREATE FULLTEXT INDEX fulltext_idx_brand   ON product (brand);
-CREATE FULLTEXT INDEX fulltext_idx_variety ON product (variety);
-CREATE FULLTEXT INDEX fulltext_idx_name    ON product (name);
+CREATE FULLTEXT INDEX fulltext_idx_name    ON ingredient (ingredient_name);
 
 CREATE FULLTEXT INDEX fulltext_idx_title ON recipe (title);

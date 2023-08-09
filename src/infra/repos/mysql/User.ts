@@ -6,35 +6,35 @@ import { MySQLRepo } from './MySQL';
 // TO DO: make only one specific explicit method for getting password ???
 
 export class UserRepo extends MySQLRepo implements IUserRepo {
-  async getById(id: string) {
-    const sql = `SELECT id, email, password, username, confirmation_code FROM users WHERE id = ?`;
-    const [ [ row ] ] = await this.pool.query<RowDataPacket[]>(sql, [id]);
+  async getById(user_id: string) {
+    const sql = `SELECT user_id, email, password, username, confirmation_code FROM users WHERE user_id = ?`;
+    const [ [ row ] ] = await this.pool.query<RowDataPacket[]>(sql, [user_id]);
     // if (!row) throw ???
     return row as UserTableRow;
   }
 
   async getByEmail(email: string) {  // security sensitive, do NOT send back in the api response
-    const sql = `SELECT id, email, password, username, confirmation_code FROM users WHERE email = ?`;
+    const sql = `SELECT user_id, email, password, username, confirmation_code FROM users WHERE email = ?`;
     const [ [ row ] ] = await this.pool.query<RowDataPacket[]>(sql, [email]);
     // if (!row) throw ???
     return row as UserTableRow;
   }
 
   async getByUsername(username: string) {  // security sensitive, do NOT send back in the api response
-    const sql = `SELECT id, email, password, username, confirmation_code FROM users WHERE username = ?`;
+    const sql = `SELECT user_id, email, password, username, confirmation_code FROM users WHERE username = ?`;
     const [ [ row ] ] = await this.pool.execute<RowDataPacket[]>(sql, [username]);
     return row as UserTableRow;
   }
 
-  /*async viewById(id: string) {
-    const sql = `SELECT username FROM users WHERE id = ?`;
-    const [ [ row ] ] = await this.pool.execute<Username[]>(sql, [id]);
+  /*async viewById(user_id: string) {
+    const sql = `SELECT email, username FROM users WHERE user_id = ?`;
+    const [ [ row ] ] = await this.pool.execute<Username[]>(sql, [user_id]);
     return row;
   }
 
   async viewByEmail(email: string) {
     const sql = `SELECT username FROM users WHERE email = ?`;
-    const [ [ row ] ] = await this.pool.execute<Username[]>(sql, [id]);
+    const [ [ row ] ] = await this.pool.execute<Username[]>(sql, [user_id]);
     return row;
   }
 
@@ -46,8 +46,8 @@ export class UserRepo extends MySQLRepo implements IUserRepo {
 
   async insert(params: UserTableRow) {
     const sql = `
-      INSERT INTO users (id, email, password, username, confirmation_code)
-      VALUES (:id, :email, :password, :username, :confirmation_code)
+      INSERT INTO users (user_id, email, password, username, confirmation_code)
+      VALUES (:user_id, :email, :password, :username, :confirmation_code)
     `;
     await this.pool.execute<RowDataPacket[]>(sql, params);
   }
@@ -65,20 +65,20 @@ export class UserRepo extends MySQLRepo implements IUserRepo {
         password          = :password,
         username          = :username,
         confirmation_code = :confirmation_code
-      WHERE id = :id
+      WHERE user_id = :user_id
       LIMIT 1
     `;
     await this.pool.execute(sql, params);
   }
 
-  async delete(id: string) {
-    const sql = `DELETE FROM users WHERE id = ? LIMIT 1`;
-    await this.pool.execute(sql, [id]);
+  async delete(user_id: string) {
+    const sql = `DELETE FROM users WHERE user_id = ? LIMIT 1`;
+    await this.pool.execute(sql, [user_id]);
   }
 }
 
 export interface IUserRepo {
-  getById:       (id: string) =>       Promise<UserTableRow>
+  getById:       (user_id: string) =>       Promise<UserTableRow>
   getByEmail:    (email: string) =>    Promise<UserTableRow>;
   getByUsername: (username: string) => Promise<UserTableRow>;
   //viewById:   (userId: number) =>     Promise<Username>;
@@ -86,5 +86,5 @@ export interface IUserRepo {
   insert:     (user: UserTableRow) => Promise<void>;
   //verify:     (email: string) =>      Promise<void>;
   update:     (user: UserTableRow) => Promise<void>;
-  delete:     (userId: string) =>     Promise<void>;
+  delete:     (user_id: string) =>     Promise<void>;
 }
