@@ -5,7 +5,7 @@ export type CreateUserParams = {
 };
 
 export type UserTableRow = {
-  id:                string;
+  user_id:           string;
   email:             string;
   password:          string;
   username:          string;

@@ -12,19 +12,19 @@ export const validSavedRecipe =    object({userId: number(), recipeId: number()}
 export const validSearchTerm = string();
 
 export const validSearchRequest = object({
-  term:           optional(string()),
-  filters:        optional(object({
-    equipmentTypes:    optional(array(string())),
-    ingredientTypes:   optional(array(string())),
-    recipeTypes:       optional(array(string())),
-    methods:           optional(array(string())),
-    cuisines:          optional(array(string())),
-    productCategories: optional(array(string())),
-    productTypes:      optional(array(string()))
-  })),
-  sorts:          optional(object({})),  // TO DO: FINISH
-  currentPage:    optional(string()),
-  resultsPerPage: optional(string())
+  term:             optional(string()),
+  current_page:     optional(string()),
+  results_per_page: optional(string()),
+  sorts:            optional(object({})),  // TO DO: FINISH
+  filters:          optional(object({
+    equipment_types:    optional(array(string())),
+    ingredient_types:   optional(array(string())),
+    recipe_types:       optional(array(string())),
+    methods:            optional(array(string())),
+    cuisines:           optional(array(string())),
+    product_categories: optional(array(string())),
+    product_types:      optional(array(string()))
+  }))
 });
 
 export type SearchRequest = Infer<typeof validSearchRequest>;
@@ -47,7 +47,7 @@ export type SearchRequest = Infer<typeof validSearchRequest>;
 };*/
 
 export type SearchResponse = {
-  results:      RowDataPacket[];
-  totalResults: number;
-  totalPages:   number;
+  results:       RowDataPacket[];
+  total_results: number;
+  total_pages:   number;
 };

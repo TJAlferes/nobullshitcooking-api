@@ -4,24 +4,24 @@ import { MySQLRepo } from './MySQL';
 
 export class RecipeTypeRepo extends MySQLRepo implements IRecipeTypeRepo {
   async viewAll() {
-    const sql = `SELECT id, name FROM recipe_type`;
-    const [ rows ] = await this.pool.execute<RecipeType[]>(sql);
+    const sql = `SELECT recipe_type_id, recipe_type_name FROM recipe_type`;
+    const [ rows ] = await this.pool.execute<RecipeTypeView[]>(sql);
     return rows;
   }
 
-  async viewOne(id: number) {
-    const sql = `SELECT id, name FROM recipe_type WHERE id = ?`;
-    const [ row ] = await this.pool.execute<RecipeType[]>(sql, [id]);
+  async viewOne(recipe_type_id: number) {
+    const sql = `SELECT recipe_type_id, recipe_type_name FROM recipe_type WHERE recipe_type_id = ?`;
+    const [ [ row ] ] = await this.pool.execute<RecipeTypeView[]>(sql, [recipe_type_id]);
     return row;
   }
 }
 
 export interface IRecipeTypeRepo {
-  viewAll: () =>           Promise<RecipeType[]>;
-  viewOne: (id: number) => Promise<RecipeType[]>;
+  viewAll: () =>                       Promise<RecipeTypeView[]>;
+  viewOne: (recipe_type_id: number) => Promise<RecipeTypeView>;
 }
 
-type RecipeType = RowDataPacket & {
-  id:   number;
-  name: string;
+type RecipeTypeView = RowDataPacket & {
+  recipe_type_id:   number;
+  recipe_type_name: string;
 };

@@ -1,224 +1,232 @@
-import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
+import { RowDataPacket } from 'mysql2/promise';
 
 import type { SearchRequest, SearchResponse } from '../../lib/validations';
 import { MySQLRepo } from './MySQL';
 
 export class IngredientRepo extends MySQLRepo implements IIngredientRepo {
   async auto(term: string) {
-    const ownerId = 1;  // only public ingredients are suggestible
+    const owner_id = 1;  // only public ingredients are suggestible
     const sql = `
       SELECT
-        id,
+        ingredient_id,
         brand,
         variety,
-        name,
+        ingredient_name,
         fullname AS text
       FROM ingredient
       WHERE fullname LIKE ? AND owner_id = ?
       LIMIT 5
     `;
-    const [ rows ] = await this.pool.execute<IngredientSuggestion[]>(sql, [`%${term}%`, ownerId]);
+    const [ rows ] = await this.pool.execute<IngredientSuggestion[]>(sql, [`%${term}%`, owner_id]);
     return rows;
   }
 
-  async search({ term, filters, sorts, currentPage, resultsPerPage }: SearchRequest) {
-    const ownerId = 1;  // only public ingredients are searchable
+  async search({ term, filters, sorts, current_page, results_per_page }: SearchRequest) {
+    const owner_id = 1;  // only public ingredients are searchable
     let sql = `
       SELECT
-        i.id,
-        t.name AS ingredient_type_name,
+        i.ingredient_d,
+        t.ingredient_type_name,
         i.brand,
         i.variety,
-        i.name,
+        i.ingredient_name,
         i.fullname,
         i.description,
         i.image
       FROM ingredient i
-      INNER JOIN ingredient_type t ON t.id = i.ingredient_type_id
+      INNER JOIN ingredient_type t ON t.ingredient_type_id = i.ingredient_type_id
       WHERE i.owner_id = ?
     `;
 
     // order matters
 
-    const params: Array<number|string> = [ownerId];
+    const params: Array<number|string> = [owner_id];
 
     if (term) {
       sql += ` AND i.fullname LIKE ?`;
       params.push(`%${term}%`);
     }
 
-    const ingredientTypes = filters?.ingredientTypes ?? [];
+    const ingredient_types = filters?.ingredient_types ?? [];
 
-    if (ingredientTypes.length > 0) {
-      const placeholders = '?,'.repeat(ingredientTypes.length).slice(0, -1);
-      sql += ` AND t.name IN (${placeholders})`;
-      params.push(...ingredientTypes);
+    if (ingredient_types.length > 0) {
+      const placeholders = '?,'.repeat(ingredient_types.length).slice(0, -1);
+      sql += ` AND t.ingredient_type_name IN (${placeholders})`;
+      params.push(...ingredient_types);
     }
 
-    //if (neededSorts)
+    //if (needed_sorts)
 
     const [ [ { count } ] ] = await this.pool.execute<RowDataPacket[]>(`SELECT COUNT(*) AS count FROM (${sql}) results`, params);
-    const totalResults = Number(count);
+    const total_results = Number(count);
     
-    const limit =  resultsPerPage ? Number(resultsPerPage)            : 20;
-    const offset = currentPage    ? (Number(currentPage) - 1) * limit : 0;
+    const limit =  results_per_page ? Number(results_per_page)           : 20;
+    const offset = current_page     ? (Number(current_page) - 1) * limit : 0;
 
     sql += ` LIMIT ? OFFSET ?`;
 
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [...params, `${limit}`, `${offset}`]);  // order matters
 
-    const totalPages = (totalResults <= limit) ? 1 : Math.ceil(totalResults / limit);
+    const total_pages = (total_results <= limit) ? 1 : Math.ceil(total_results / limit);
 
-    return {results: rows, totalResults, totalPages};
+    return {results: rows, total_results, total_pages};
   }
 
-  async viewAll(authorId: number, ownerId: number) {
+  async viewAll(params: ViewAllParams) {
     const sql = `
       SELECT
-        i.id,
+        i.ingredient_id,
         i.ingredient_type_id,
+        t.ingredient_type_name,
         i.owner_id,
-        t.name AS ingredient_type_name,
         i.brand,
         i.variety,
-        i.name,
+        i.ingredient_name,
         i.fullname,
         i.description,
         i.image
       FROM ingredient i
-      INNER JOIN ingredient_type t ON i.ingredient_type_id = t.id
-      WHERE i.author_id = ? AND i.owner_id = ?
-      ORDER BY i.name ASC
+      INNER JOIN ingredient_type t ON i.ingredient_type_id = t.ingredient_type_id
+      WHERE i.author_id = :author_id AND i.owner_id = :owner_id
+      ORDER BY i.ingredient_name ASC
     `;
-    const [ row ] = await this.pool.execute<Ingredient[]>(sql, [authorId, ownerId]);
+    const [ row ] = await this.pool.execute<IngredientView[]>(sql, params);
     return row;
   }
 
-  async viewOne(id: number, authorId: number, ownerId: number) {
+  async viewOne(params: ViewOneParams) {
     const sql = `
       SELECT
-        i.id,
-        t.name AS ingredient_type_name,
+        i.ingredient_id,
+        i.ingredient_type_id
+        t.ingredient_type_name,
+        i.owner_id,
         i.brand,
         i.variety,
-        i.name,
+        i.ingredient_name,
         i.fullname,
         i.description,
         i.image
       FROM ingredient i
-      INNER JOIN ingredient_type t ON i.ingredient_type_id = t.id
-      WHERE owner_id = 1 AND i.id = ?
+      INNER JOIN ingredient_type t ON i.ingredient_type_id = t.ingredient_type_id
+      WHERE i.ingredient_id = :ingredient_id AND i.author_id = :author_id AND i.owner_id = :owner_id
     `;
-    const [ row ] = await this.pool.execute<Ingredient[]>(sql, [id, authorId, ownerId]);
+    const [ [ row ] ] = await this.pool.execute<IngredientView[]>(sql, params);
     return row;
   }
 
-  async create(ingredient: ICreatingIngredient) {
+  async insert(params: InsertParams) {
     const sql = `
       INSERT INTO ingredient (
+        ingredient_id
         ingredient_type_id,
         author_id,
         owner_id,
         brand,
         variety,
-        name,
+        ingredient_name,
         description,
         image
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (
+        :ingredient_id
+        :ingredient_type_id,
+        :author_id,
+        :owner_id,
+        :brand,
+        :variety,
+        :ingredient_name,
+        :description,
+        :image
+      )
     `;
-    const [ row ] = await this.pool.execute<Ingredient[] & ResultSetHeader>(sql, [
-      ingredient.ingredientTypeId,
-      ingredient.authorId,
-      ingredient.ownerId,
-      ingredient.brand,
-      ingredient.variety,
-      ingredient.name,
-      ingredient.description,
-      ingredient.image
-    ]);
-    return row;  // is this needed?
+    await this.pool.execute(sql, params);
   }
 
-  async update(ingredient: IUpdatingIngredient) {
+  async update(params: InsertParams) {
     const sql = `
       UPDATE ingredient
       SET
-        ingredient_type_id = ?,
-        brand = ?,
-        variety = ?,
-        name = ?,
-        description = ?,
-        image = ?
-      WHERE id = ?
+        ingredient_type_id = :ingredient_type_id,
+        brand              = :brand,
+        variety            = :variety,
+        ingredient_name    = :ingredient_name,
+        description        = :description,
+        image              = :image
+      WHERE ingredient_id = :ingredient_id
       LIMIT 1
     `;
-    await this.pool.execute(sql, [
-      ingredient.ingredientTypeId,
-      ingredient.brand,
-      ingredient.variety,
-      ingredient.name,
-      ingredient.description,
-      ingredient.image,
-      ingredient.id
-    ]);
+    await this.pool.execute(sql, params);
   }
 
-  async deleteAll(ownerId: number) {
+  async deleteAll(owner_id: number) {
     const sql = `DELETE FROM ingredient WHERE owner_id = ?`;
-    await this.pool.execute(sql, [ownerId]);
+    await this.pool.execute(sql, [owner_id]);
   }
 
-  async deleteOne(id: number, ownerId: number) {
+  async deleteOne(params: DeleteOneParams) {
     const sql = `DELETE FROM ingredient WHERE owner_id = ? AND id = ? LIMIT 1`;
-    await this.pool.execute(sql, [ownerId, id]);
+    await this.pool.execute(sql, params);
   }
 }
 
 export interface IIngredientRepo {
-  auto:      (term: string) =>                                  Promise<IngredientSuggestion[]>;
-  search:    (searchRequest: SearchRequest) =>                  Promise<SearchResponse>;
-  viewAll:   (authorId: number, ownerId: number) =>             Promise<Ingredient[]>;
-  viewOne:   (id: number, authorId: number, ownerId: number) => Promise<Ingredient[]>;
-  create:    (ingredient: ICreatingIngredient) =>               Promise<Ingredient[] & ResultSetHeader>;
-  update:    (ingredient: IUpdatingIngredient) =>               Promise<void>;
-  deleteAll: (ownerId: number) =>                               Promise<void>;
-  deleteOne: (id: number, ownerId: number) =>                   Promise<void>;
+  auto:      (term: string) =>                 Promise<IngredientSuggestion[]>;
+  search:    (searchRequest: SearchRequest) => Promise<SearchResponse>;
+  viewAll:   (params: ViewAllParams) =>        Promise<IngredientView[]>;
+  viewOne:   (params: ViewOneParams) =>        Promise<IngredientView>;
+  insert:    (params: InsertParams) =>         Promise<void>;
+  update:    (params: InsertParams) =>         Promise<void>;
+  deleteAll: (owner_id: number) =>             Promise<void>;
+  deleteOne: (params: DeleteOneParams) => Promise<void>;
 }
 
-type Ingredient = RowDataPacket & {
-  id:                   number;
+type IngredientView = RowDataPacket & {
+  ingredient_id:        string;
   ingredient_type_id:   number;
-  owner_id:             number;
   ingredient_type_name: string;
+  owner_id:             string;
   brand:                string;
   variety:              string;
-  name:                 string;
+  ingredient_name:      string;
   fullname:             string;
   description:          string;
   image:                string;
 };
 
-type ICreatingIngredient = {
-  ingredientTypeId: number;
-  authorId:         number;
-  ownerId:          number;
-  brand:            string;
-  variety:          string;
-  name:             string;
-  description:      string;
-  image:            string;
-};
-
-type IUpdatingIngredient = ICreatingIngredient & {
-  id: number;
+type InsertParams = {
+  ingredient_id:      string;
+  ingredient_type_id: number;
+  author_id:          string;
+  owner_id:           string;
+  brand:              string;
+  variety:            string;
+  ingredient_name:    string;
+  description:        string;
+  image:              string;
 };
 
 type IngredientSuggestion = RowDataPacket & {
-  id:      number;
-  brand:   string;
-  variety: string;
-  name:    string;
-  text:    string;
+  ingredient_id:   string;
+  brand:           string;
+  variety:         string;
+  ingredient_name: string;
+  text:            string;
+};
+
+type ViewAllParams = {
+  author_id: string;
+  owner_id:  string;
+};
+
+type ViewOneParams = {
+  ingredient_id: string;
+  author_id:     string;
+  owner_id:      string;
+};
+
+type DeleteOneParams = {
+  ingredient_id: string;
+  owner_id:      string;
 };
 
 /*

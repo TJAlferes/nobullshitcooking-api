@@ -1,4 +1,4 @@
-import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
+import { RowDataPacket } from 'mysql2/promise';
 
 import type { SearchRequest, SearchResponse } from '../../lib/validations';
 import { MySQLRepo } from './MySQL';
@@ -59,60 +59,78 @@ export class EquipmentRepo extends MySQLRepo implements IEquipmentRepo {
     return {results: rows, total_results, total_pages};
   }
 
-  async viewAll(author_id: number, owner_id: number) {
+  async viewAll(params: ViewAllParams) {
     const sql = `
       SELECT
         e.equipment_id,
         e.equipment_type_id,
-        e.owner_id,
         t.equipment_type_name,
+        e.owner_id,
         e.equipment_name,
         e.description,
         e.image
       FROM equipment e
       INNER JOIN equipment_type t ON e.equipment_type_id = t.equipment_type_id
-      WHERE e.author_id = ? AND e.owner_id = ?
-      ORDER BY e.name ASC
+      WHERE e.author_id = :author_id AND e.owner_id = :owner_id
+      ORDER BY e.equipment_name ASC
     `;
-    const [ rows ] = await this.pool.execute<Equipment[]>(sql, [author_id, owner_id]);
+    const [ rows ] = await this.pool.execute<EquipmentView[]>(sql, params);
     return rows;
   }
 
-  async viewOne(id: number, author_id: number, owner_id: number) {
+  async viewOne(params: ViewOneParams) {
     const sql = `
       SELECT
         e.equipment_id,
         e.equipment_type_id,
-        e.owner_id,
         t.equipment_type_name,
+        e.owner_id,
         e.equipment_name,
         e.description,
         e.image
       FROM equipment e
       INNER JOIN equipment_type t ON e.equipment_type_id = t.equipment_type_id
-      WHERE e.equipment_id = ? AND e.author_id = ? AND e.owner_id = ?
+      WHERE e.equipment_id = :equipment_id AND e.author_id = :author_id AND e.owner_id = :owner_id
     `;
-    const [ row ] = await this.pool.execute<Equipment[]>(sql, [id, author_id, owner_id]);
+    const [ [ row ] ] = await this.pool.execute<EquipmentView[]>(sql, params);
     return row;
   }
 
-  async create(equipment: ICreatingEquipment) {
+  async insert(params: InsertParams) {
     const sql = `
-      INSERT INTO equipment (equipment_id, equipment_type_id, author_id, owner_id, equipment_name, description, image)
-      VALUES (:equipment_id, :equipment_type_id, :author_id, :owner_id, :equipment_name, :description, :image)
+      INSERT INTO equipment (
+        equipment_id,
+        equipment_type_id,
+        author_id,
+        owner_id,
+        equipment_name,
+        description,
+        image
+      ) VALUES (
+        :equipment_id,
+        :equipment_type_id,
+        :author_id,
+        :owner_id,
+        :equipment_name,
+        :description,
+        :image
+      )
     `;
-    const [ row ] = await this.pool.execute<Equipment[] & ResultSetHeader>(sql, equipment);
-    return row;  // is this needed?
+    await this.pool.execute(sql, params);
   }
 
-  async update(equipment: ICreatingEquipment) {
+  async update(params: InsertParams) {
     const sql = `
       UPDATE equipment
-      SET equipment_type_id = :equipment_type_id, equipment_name = :equipment_name, description = :description, image = :image
+      SET
+        equipment_type_id = :equipment_type_id,
+        equipment_name    = :equipment_name,
+        description       = :description,
+        image             = :image
       WHERE equipment_id = :equipment_id
       LIMIT 1
     `;
-    await this.pool.execute(sql, equipment);
+    await this.pool.execute(sql, params);
   }
 
   async deleteAll(owner_id: number) {
@@ -120,44 +138,61 @@ export class EquipmentRepo extends MySQLRepo implements IEquipmentRepo {
     await this.pool.execute(sql, [owner_id]);
   }
 
-  async deleteOne(equipment_id: number, owner_id: number) {
-    const sql = `DELETE FROM equipment WHERE owner_id = ? AND equipment_id = ? LIMIT 1`;
-    await this.pool.execute(sql, [owner_id, equipment_id]);
+  async deleteOne(params: DeleteOneParams) {
+    const sql = `DELETE FROM equipment WHERE owner_id = :owner_id AND equipment_id = :equipment_id LIMIT 1`;
+    await this.pool.execute(sql, params);
   }
 }
 
 export interface IEquipmentRepo {
-  auto:      (term: string) =>                                  Promise<EquipmentSuggestion[]>;
-  search:    (searchRequest: SearchRequest) =>                  Promise<SearchResponse>;
-  viewAll:   (author_id: number, owner_id: number) =>             Promise<Equipment[]>;
-  viewOne:   (id: number, author_id: number, owner_id: number) => Promise<Equipment[]>;
-  create:    (equipment: ICreatingEquipment) =>                 Promise<Equipment[] & ResultSetHeader>;
-  update:    (equipment: ICreatingEquipment) =>                 Promise<void>;
-  deleteAll: (owner_id: number) =>                               Promise<void>;
-  deleteOne: (id: number, owner_id: number) =>                   Promise<void>;
+  auto:      (term: string) =>                  Promise<EquipmentSuggestion[]>;
+  search:    (search_request: SearchRequest) => Promise<SearchResponse>;
+  viewAll:   (params: ViewAllParams) =>         Promise<EquipmentView[]>;
+  viewOne:   (params: ViewOneParams) =>         Promise<EquipmentView>;
+  insert:    (params: InsertParams) =>          Promise<void>;
+  update:    (params: InsertParams) =>          Promise<void>;
+  deleteAll: (owner_id: number) =>              Promise<void>;
+  deleteOne: (params: DeleteOneParams) =>       Promise<void>;
 }
 
-type Equipment = RowDataPacket & {
-  equipment_id:        number;
+type EquipmentView = RowDataPacket & {
+  equipment_id:        string;
   equipment_type_id:   number;
-  owner_id:            number;
+  owner_id:            string;
   equipment_type_name: string;
   equipment_name:      string;
   description:         string;
   image:               string;
 };
 
-type ICreatingEquipment = {
-  equipment_id:      number;
+// or EquipmentRow???
+type InsertParams = {
+  equipment_id:      string;
   equipment_type_id: number;
-  author_id:         number;
-  owner_id:          number;
+  author_id:         string;
+  owner_id:          string;
   equipment_name:    string;
   description:       string;
   image:             string;
 };
 
 type EquipmentSuggestion = RowDataPacket & {
-  equipment_id:   number;
+  equipment_id:   string;
   equipment_name: string;
+};
+
+type ViewAllParams = {
+  author_id: string;
+  owner_id:  string;
+};
+
+type ViewOneParams = {
+  equipment_id: string;
+  author_id:    string;
+  owner_id:     string;
+};
+
+type DeleteOneParams = {
+  equipment_id: string;
+  owner_id:     string;
 };

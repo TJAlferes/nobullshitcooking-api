@@ -4,61 +4,67 @@ import { RowDataPacket } from 'mysql2/promise';
 import { MySQLRepo } from './MySQL';
 
 export class PlanRepo extends MySQLRepo implements IPlanRepo {
-  async viewAll(ownerId: number) {
-    const sql = `SELECT id, name, data FROM plan WHERE owner_id = ?`;
-    const [ rows ] = await this.pool.execute<Plan[]>(sql, [ownerId]);
+  async viewAll(owner_id: string) {
+    const sql = `SELECT plan_id, plan_name FROM plan WHERE owner_id = ?`;
+    const [ rows ] = await this.pool.execute<PlanView[]>(sql, [owner_id]);
     return rows;
   }
 
-  async viewOne(id: number, ownerId: number) {
-    const sql = `SELECT id, name, data FROM plan WHERE owner_id = ? AND id = ?`;
-    const [ row ] = await this.pool.execute<Plan[]>(sql, [ownerId, id]);
+  async viewOne(params: ViewOneParams) {
+    const sql = `SELECT plan_id, plan_name FROM plan WHERE plan_id = :plan_id AND owner_id = :owner_id`;
+    const [ [ row ] ] = await this.pool.execute<PlanView[]>(sql, params);
     return row;
   }
 
-  async create({ authorId, ownerId, name, data }: ICreatingPlan) {
-    const sql = `INSERT INTO plan (id, owner_id, name, data) VALUES (?, ?, ?, ?)`;
-    await this.pool.execute(sql, [authorId, ownerId, name, data]);
+  async insert(params: InsertParams) {
+    const sql = `INSERT INTO plan (plan_id, author_id, owner_id, plan_name) VALUES (:plan_id, :author_id, :owner_id, :plan_name)`;
+    await this.pool.execute(sql, params);
   }
 
-  async update({ id, ownerId, name, data }: IUpdatingPlan) {
-    const sql = `UPDATE plan SET name = ?, data = ? WHERE owner_id = ? AND id = ? LIMIT 1`;
-    await this.pool.execute(sql, [name, data, ownerId, id]);
+  async update(params: InsertParams) {
+    const sql = `UPDATE plan SET plan_name = :plan_name WHERE plan_id = :plan_id AND owner_id = :owner_id LIMIT 1`;
+    await this.pool.execute(sql, params);
   }
 
-  async deleteAll(ownerId: number) {
+  async deleteAll(owner_id: string) {
     const sql = `DELETE FROM plan WHERE owner_id = ?`;
-    await this.pool.execute(sql, [ownerId]);
+    await this.pool.execute(sql, [owner_id]);
   }
 
-  async deleteOne(id: number, ownerId: number) {
-    const sql = `DELETE FROM plan WHERE owner_id = ? AND id = ? LIMIT 1`;
-    await this.pool.execute(sql, [ownerId, id]);
+  async deleteOne(params: DeleteOneParams) {
+    const sql = `DELETE FROM plan WHERE plan_id = :plan_id AND owner_id = :owner_id LIMIT 1`;
+    await this.pool.execute(sql, params);
   }
 }
 
 export interface IPlanRepo {
-  viewAll:   (ownerId: number) =>             Promise<Plan[]>;
-  viewOne:   (id: number, ownerId: number) => Promise<Plan[]>;
-  create:    (plan: ICreatingPlan) =>         Promise<void>;
-  update:    (plan: IUpdatingPlan) =>         Promise<void>;
-  deleteAll: (ownerId: number) =>             Promise<void>;
-  deleteOne: (id: number, ownerId: number) => Promise<void>;
+  viewAll:   (owner_id: string) =>        Promise<PlanView[]>;  // TO DO: JOIN on day and day_recipe
+  viewOne:   (params: ViewOneParams) =>   Promise<PlanView>;    // TO DO: JOIN on day and day_recipe
+  insert:    (params: InsertParams) =>    Promise<void>;
+  update:    (params: InsertParams) =>    Promise<void>;
+  deleteAll: (owner_id: string) =>        Promise<void>;
+  deleteOne: (params: DeleteOneParams) => Promise<void>;
 }
 
-type Plan = RowDataPacket & {
-  id:   number;
-  name: string;
-  data: string;
+type PlanView = RowDataPacket & {
+  plan_id:   string;
+  plan_name: string;
+  //data: ;  // TO DO: JOIN on day and day_recipe
 };
 
-type ICreatingPlan = {
-  authorId: number;
-  ownerId:  number;
-  name:     string;
-  data:     string;
+type InsertParams = {
+  plan_id:   string;
+  author_id: string;
+  owner_id:  string;
+  plan_name: string;
 };
 
-type IUpdatingPlan = ICreatingPlan & {
-  id: number;
+type ViewOneParams = {
+  plan_id:  string;
+  owner_id: string;
 };
+
+type DeleteOneParams = {
+  plan_id:  string;
+  owner_id: string;
+}

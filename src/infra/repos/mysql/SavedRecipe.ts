@@ -3,62 +3,72 @@ import { RowDataPacket } from 'mysql2/promise';
 import { MySQLRepo } from './MySQL';
 
 export class SavedRecipeRepo extends MySQLRepo implements ISavedRecipeRepo {
-  async viewByUserId(userId: number) {
+  async viewByUserId(user_id: string) {
     const sql = `
       SELECT 
-        s.recipe_id AS id,
-        r.title,
-        r.recipe_image,
-        r.owner_id,
+        s.recipe_id,
         r.recipe_type_id,
         r.cuisine_id,
-        u.username AS author
+        r.owner_id,
+        u.username AS author,
+        r.title,
+        r.recipe_image
       FROM saved_recipe s
-      INNER JOIN recipe r ON r.id = s.recipe_id
-      INNER JOIN user u ON u.id = r.author_id
+      INNER JOIN recipe r ON r.recipe_id = s.recipe_id
+      INNER JOIN user u ON u.user_id = r.author_id
       WHERE s.user_id = ?
       ORDER BY title
     `;
-    const [ rows ] = await this.pool.execute<SavedRecipe[]>(sql, [userId]);
+    const [ rows ] = await this.pool.execute<SavedRecipeView[]>(sql, [user_id]);
     return rows;
   }
 
-  async create(userId: number, recipeId: number) {
-    await this.delete(userId, recipeId);
-    const sql = `INSERT INTO saved_recipe (user_id, recipe_id) VALUES (?, ?)`;
-    await this.pool.execute(sql, [userId, recipeId]);
+  async insert(params: InsertParams) {
+    await this.delete(params);
+    const sql = `INSERT INTO saved_recipe (user_id, recipe_id) VALUES (:user_id, :recipe_id)`;
+    await this.pool.execute(sql, params);
   }
 
-  async delete(userId: number, recipeId: number) {
-    const sql = `DELETE FROM saved_recipe WHERE user_id = ? AND recipe_id = ? LIMIT 1`;
-    await this.pool.execute(sql, [userId, recipeId]);
+  async delete(params: DeleteParams) {
+    const sql = `DELETE FROM saved_recipe WHERE user_id = :user_id AND recipe_id = :recipe_id LIMIT 1`;
+    await this.pool.execute(sql, params);
   }
 
-  async deleteAllByRecipeId(recipeId: number) {
+  async deleteAllByRecipeId(recipe_id: string) {
     const sql = `DELETE FROM saved_recipe WHERE recipe_id = ?`;
-    await this.pool.execute(sql, [recipeId]);
+    await this.pool.execute(sql, [recipe_id]);
   }
 
-  async deleteAllByUserId(userId: number) {
+  async deleteAllByUserId(user_id: string) {
     const sql = `DELETE FROM saved_recipe WHERE user_id = ?`;
-    await this.pool.execute(sql, [userId]);
+    await this.pool.execute(sql, [user_id]);
   }
 }
 
 export interface ISavedRecipeRepo {
-  viewByUserId:        (userId: number) =>                   Promise<SavedRecipe[]>;
-  create:              (userId: number, recipeId: number) => Promise<void>;
-  delete:              (userId: number, recipeId: number) => Promise<void>;
-  deleteAllByRecipeId: (recipeId: number) =>                 Promise<void>;
-  deleteAllByUserId:   (userId: number) =>                   Promise<void>;
+  viewByUserId:        (user_id: string) =>      Promise<SavedRecipeView[]>;
+  insert:              (params: InsertParams) => Promise<void>;
+  delete:              (params: DeleteParams) => Promise<void>;
+  deleteAllByRecipeId: (recipe_id: string) =>    Promise<void>;
+  deleteAllByUserId:   (user_id: string) =>      Promise<void>;
 }
 
-type SavedRecipe = RowDataPacket & {
-  id:             number;
-  title:          string;
-  recipe_image:   string;
-  owner_id:       number;
+type SavedRecipeView = RowDataPacket & {
+  recipe_id:      string;
   recipe_type_id: number;
   cuisine_id:     number;
+  owner_id:       string;
   author:         string;
+  title:          string;
+  recipe_image:   string;
+};
+
+type InsertParams = {
+  user_id:   string;
+  recipe_id: string;
+};
+
+type DeleteParams = {
+  user_id:   string;
+  recipe_id: string;
 };

@@ -4,24 +4,24 @@ import { MySQLRepo } from './MySQL';
 
 export class MethodRepo extends MySQLRepo implements IMethodRepo {
   async viewAll() {
-    const sql = `SELECT id, name FROM method`;
-    const [ methods ] = await this.pool.execute<Method[]>(sql);
-    return methods;
+    const sql = `SELECT method_id, method_name FROM method`;
+    const [ rows ] = await this.pool.execute<MethodView[]>(sql);
+    return rows;
   }
 
-  async viewOne(id: number) {
-    const sql = `SELECT id, name FROM method WHERE id = ?`;
-    const [ method ] = await this.pool.execute<Method[]>(sql, [id]);
-    return method;
+  async viewOne(method_id: number) {
+    const sql = `SELECT method_id, method_name FROM method WHERE method_id = ?`;
+    const [ [ row ] ] = await this.pool.execute<MethodView[]>(sql, [method_id]);
+    return row;
   }
 }
 
 export interface IMethodRepo {
-  viewAll: () =>           Promise<Method[]>;
-  viewOne: (id: number) => Promise<Method[]>;
+  viewAll: () =>                  Promise<MethodView[]>;
+  viewOne: (method_id: number) => Promise<MethodView>;
 }
 
-type Method = RowDataPacket & {
-  id:   number;
-  name: string;
+type MethodView = RowDataPacket & {
+  method_id:   number;
+  method_name: string;
 };
