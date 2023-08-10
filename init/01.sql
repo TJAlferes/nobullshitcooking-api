@@ -4,45 +4,47 @@ CREATE DATABASE nobsc CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 USE nobsc;
 
--- validation tables
--- there are only so many records (< 1,000)
+-- validation tables, only so many records (< 1,000)
 
 CREATE TABLE cuisine (
-  `cuisine_id`   TINYINT UNSIGNED NOT NULL DEFAULT '0' PRIMARY KEY,
-  `continent`    VARCHAR(2)       NOT NULL DEFAULT '',
-  `code`         VARCHAR(3)       NOT NULL DEFAULT ''  UNIQUE,
-  `cuisine_name` VARCHAR(40)      NOT NULL DEFAULT '',
-  `country`      VARCHAR(40)      NOT NULL DEFAULT ''  UNIQUE
+  `cuisine_id`           TINYINT UNSIGNED PRIMARY KEY,
+  `cuisine_name`         VARCHAR(50) NOT NULL DEFAULT '',
+  `cuisine_continent`    CHAR(2)     NOT NULL DEFAULT '',
+  `cuisine_country_code` CHAR(3)     NOT NULL DEFAULT '' UNIQUE,
+  `cuisine_country_name` VARCHAR(50) NOT NULL DEFAULT '' UNIQUE
+);
+
+CREATE TABLE entity_type (
+  `entity_type_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `entity_type_name` VARCHAR(50) NOT NULL DEFAULT ''
 );
 
 CREATE TABLE equipment_type (
-  `equipment_type_id`   TINYINT UNSIGNED NOT NULL DEFAULT '0' PRIMARY KEY,
-  `equipment_type_name` VARCHAR(25)               DEFAULT NULL
+  `equipment_type_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `equipment_type_name` VARCHAR(25) NOT NULL DEFAULT ''
 );
 
 CREATE TABLE ingredient_type (
-  `ingredient_type_id`   TINYINT UNSIGNED NOT NULL DEFAULT '0' PRIMARY KEY,
-  `ingredient_type_name` VARCHAR(25)               DEFAULT NULL
+  `ingredient_type_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `ingredient_type_name` VARCHAR(25) NOT NULL DEFAULT ''
 );
 
--- unit = amount unit
 CREATE TABLE unit (
-  `unit_id`   TINYINT UNSIGNED NOT NULL DEFAULT '0' PRIMARY KEY,
-  `unit_name` VARCHAR(25)               DEFAULT NULL
+  `unit_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `unit_name` VARCHAR(25) NOT NULL DEFAULT ''
 );
 
 CREATE TABLE method (
-  `method_id`   TINYINT UNSIGNED NOT NULL DEFAULT '0' PRIMARY KEY,
-  `method_name` VARCHAR(25)               DEFAULT NULL
+  `method_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `method_name` VARCHAR(25) NOT NULL DEFAULT ''
 );
 
 CREATE TABLE recipe_type (
-  `recipe_type_id`   TINYINT UNSIGNED NOT NULL DEFAULT '0' PRIMARY KEY,
-  `recipe_type_name` VARCHAR(25)               DEFAULT NULL
+  `recipe_type_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `recipe_type_name` VARCHAR(25) NOT NULL DEFAULT ''
 );
 
--- primary tables
--- there are potentially very many records (> 100,000)
+-- primary tables, potentially very many records (> 100,000)
 
 CREATE TABLE staff (
   `staff_id`          CHAR(36)     PRIMARY KEY,
@@ -94,25 +96,24 @@ CREATE TABLE equipment (
 );
 
 CREATE TABLE ingredient (
-  `ingredient_id`       CHAR(36)         PRIMARY KEY,
-  `ingredient_type_id`  TINYINT UNSIGNED NOT NULL DEFAULT '0',
-  `author_id`           CHAR(36)         NOT NULL,
-  `owner_id`            CHAR(36)         NOT NULL,
-  `brand`               VARCHAR(50)      NOT NULL DEFAULT '',
-  `variety`             VARCHAR(50)      NOT NULL DEFAULT '',
-  `ingredient_name`     VARCHAR(50)      NOT NULL DEFAULT '',
-  `ingredient_fullname` VARCHAR(152)     GENERATED ALWAYS AS (CONCAT(brand, ' ', variety, ' ', ingredient_name)) STORED NOT NULL UNIQUE,
-  `description`         TEXT             NOT NULL DEFAULT '',
-  `image`               VARCHAR(100)     NOT NULL DEFAULT '',
+  `ingredient_id`          CHAR(36)         PRIMARY KEY,
+  `ingredient_type_id`     TINYINT UNSIGNED NOT NULL DEFAULT '0',
+  `author_id`              CHAR(36)         NOT NULL,
+  `owner_id`               CHAR(36)         NOT NULL,
+  `ingredient_brand`       VARCHAR(50)      NOT NULL DEFAULT '',
+  `ingredient_variety`     VARCHAR(50)      NOT NULL DEFAULT '',
+  `ingredient_name`        VARCHAR(50)      NOT NULL DEFAULT '',
+  `ingredient_description` TEXT             NOT NULL DEFAULT '',
+  `ingredient_image`       VARCHAR(100)     NOT NULL DEFAULT '',
   FOREIGN KEY (`ingredient_type_id`) REFERENCES `ingredient_type` (`ingredient_type_id`),
   FOREIGN KEY (`author_id`)          REFERENCES `user` (`user_id`) ON DELETE CASCADE,
   FOREIGN KEY (`owner_id`)           REFERENCES `user` (`user_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE ingredient_alt_name (
-  `ingredient_alt_name_id` CHAR(36),
-  `ingredient_id`          CHAR(36),
-  `alt_name`               VARCHAR(50),
+  `ingredient_alt_name_id`   CHAR(36) PRIMARY KEY,
+  `ingredient_id`            CHAR(36),
+  `ingredient_alt_name_name` VARCHAR(50),
   FOREIGN KEY (`ingredient_id`) REFERENCES `ingredient` (`ingredient_id`) ON DELETE CASCADE,
 );
 
@@ -245,39 +246,44 @@ INSERT INTO user (email, password, username) VALUES
 ("tjalferes@gmail.com",     "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "Unknown"),
 ("testman@testman.com",     "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "Testman");
 
-INSERT INTO equipment_type (equipment_type_id, equipment_type_name) VALUES (1, "Cleaning"), (2, "Preparing"), (3, "Cooking"), (4, "Dining"), (5, "Storage");
+INSERT INTO equipment_type (equipment_type_name) VALUES
+("Cleaning"),
+("Preparing"),
+("Cooking"),
+("Dining"),
+("Storage");
 
-INSERT INTO ingredient_type (ingredient_type_id, ingredient_type_name) VALUES
-(1,  "Fish"),
-(2,  "Shellfish"),
-(3,  "Beef"),
-(4,  "Pork"),
-(5,  "Poultry"),
-(6,  "Egg"),
-(7,  "Dairy"),
-(8,  "Oil"),
-(9,  "Grain"),
-(10, "Bean"),
-(11, "Vegetable"),
-(12, "Fruit"),
-(13, "Nut"),
-(14, "Seed"),
-(15, "Spice"),
-(16, "Herb"),
-(17, "Acid"),
-(18, "Product");
+INSERT INTO ingredient_type (ingredient_type_name) VALUES
+("Fish"),
+("Shellfish"),
+("Beef"),
+("Pork"),
+("Poultry"),
+("Egg"),
+("Dairy"),
+("Oil"),
+("Grain"),
+("Bean"),
+("Vegetable"),
+("Fruit"),
+("Nut"),
+("Seed"),
+("Spice"),
+("Herb"),
+("Acid"),
+("Product");
 
-INSERT INTO unit (unit_id, unit_name) VALUES
-(1,  "teaspoon"),
-(2,  "Tablespoon"),
-(3,  "cup"),
-(4,  "ounce"),
-(5,  "pound"),
-(6,  "milliliter"),
-(7,  "liter"),
-(8,  "gram"),
-(9,  "kilogram"),
-(10, "NA");
+INSERT INTO unit (unit_name) VALUES
+("teaspoon"),
+("Tablespoon"),
+("cup"),
+("ounce"),
+("pound"),
+("milliliter"),
+("liter"),
+("gram"),
+("kilogram"),
+("NA");
 
 INSERT INTO method (method_id, method_name) VALUES
 (1,  "No-Cook"),
