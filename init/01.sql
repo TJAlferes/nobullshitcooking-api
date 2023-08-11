@@ -7,51 +7,56 @@ USE nobsc;
 -- validation tables, only so many records (< 1,000)
 
 CREATE TABLE cuisine (
-  `cuisine_id`           TINYINT UNSIGNED PRIMARY KEY,
-  `cuisine_name`         VARCHAR(50) NOT NULL DEFAULT '',
-  `cuisine_continent`    CHAR(2)     NOT NULL DEFAULT '',
-  `cuisine_country_code` CHAR(3)     NOT NULL DEFAULT '' UNIQUE,
-  `cuisine_country_name` VARCHAR(50) NOT NULL DEFAULT '' UNIQUE
+  `cuisine_id`             TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `cuisine_name`           VARCHAR(50)      NOT NULL DEFAULT '',
+  `cuisine_continent_code` CHAR(2)          NOT NULL DEFAULT '',
+  `cuisine_country_code`   CHAR(3)          NOT NULL DEFAULT '' UNIQUE,
+  `cuisine_country_name`   VARCHAR(50)      NOT NULL DEFAULT '' UNIQUE
 );
 
-CREATE TABLE entity_type (
-  `entity_type_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  `entity_type_name` VARCHAR(50) NOT NULL DEFAULT ''
+CREATE TABLE custom_cuisine (
+  `custom_cuisine_id`   INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `custom_cuisine_name` VARCHAR(50)  NOT NULL DEFAULT ''
 );
 
 CREATE TABLE equipment_type (
   `equipment_type_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  `equipment_type_name` VARCHAR(25) NOT NULL DEFAULT ''
+  `equipment_type_name` VARCHAR(25)      NOT NULL DEFAULT ''
 );
 
 CREATE TABLE ingredient_type (
   `ingredient_type_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  `ingredient_type_name` VARCHAR(25) NOT NULL DEFAULT ''
+  `ingredient_type_name` VARCHAR(25)      NOT NULL DEFAULT ''
 );
 
 CREATE TABLE unit (
   `unit_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  `unit_name` VARCHAR(25) NOT NULL DEFAULT ''
+  `unit_name` VARCHAR(25)      NOT NULL DEFAULT ''
 );
 
 CREATE TABLE method (
   `method_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  `method_name` VARCHAR(25) NOT NULL DEFAULT ''
+  `method_name` VARCHAR(25)      NOT NULL DEFAULT ''
 );
 
 CREATE TABLE recipe_type (
   `recipe_type_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  `recipe_type_name` VARCHAR(25) NOT NULL DEFAULT ''
+  `recipe_type_name` VARCHAR(25)      NOT NULL DEFAULT ''
 );
 
+--CREATE TABLE default_image (`default_image_id` SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,);
+
 -- primary tables, potentially very many records (> 100,000)
+-- 1-to-many relationships
 
 CREATE TABLE staff (
   `staff_id`          CHAR(36)     PRIMARY KEY,
   `email`             VARCHAR(60)  NOT NULL UNIQUE,
   `password`          CHAR(60)     NOT NULL,
   `staffname`         VARCHAR(20)  NOT NULL UNIQUE,
-  `confirmation_code` VARCHAR(255) DEFAULT NULL
+  `confirmation_code` VARCHAR(255) DEFAULT NULL,
+  `created_at`        TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`        TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE user (
@@ -59,22 +64,33 @@ CREATE TABLE user (
   `email`             VARCHAR(60)  NOT NULL UNIQUE,
   `password`          CHAR(60)     NOT NULL,
   `username`          VARCHAR(20)  NOT NULL UNIQUE,
-  `confirmation_code` VARCHAR(255) DEFAULT NULL
+  `confirmation_code` VARCHAR(255) DEFAULT NULL,
+  `created_at`        TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`        TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE image (
+  `image_id`   CHAR(36)     PRIMARY KEY,
+  `url`        VARCHAR(100) NOT NULL,
+  `alt_text`   VARCHAR(255) NOT NULL DEFAULT '',
+  `caption`    VARCHAR(255) NOT NULL DEFAULT '',
+  `created_at` TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE chatroom (
-  `chatroom_id`   CHAR(36) PRIMARY KEY,
+  `chatroom_id`   CHAR(36)    PRIMARY KEY,
   `chatroom_name` VARCHAR(50) NOT NULL,
-  `created_at`    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `updated_at`    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `created_at`    TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`    TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE chatmessage (
-  `chatmessage_id` CHAR(36) PRIMARY KEY,
-  `chatroom_id`    CHAR(36) NOT NULL,
-  `sender_id`      CHAR(36) NOT NULL,
-  `receiver_id`    CHAR(36) NOT NULL,
-  `content`        TEXT NOT NULL,
+  `chatmessage_id` CHAR(36)  PRIMARY KEY,
+  `chatroom_id`    CHAR(36)  NOT NULL,
+  `sender_id`      CHAR(36)  NOT NULL,
+  `receiver_id`    CHAR(36)  NOT NULL,
+  `content`        TEXT      NOT NULL,
   `created_at`     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at`     TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (`chatroom_id`) REFERENCES `chatroom` (`chatroom_id`) ON DELETE CASCADE,
@@ -82,14 +98,17 @@ CREATE TABLE chatmessage (
   FOREIGN KEY (`receiver_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE,
 );
 
+-- CREATE TABLE page ();
+-- CREATE TABLE post ();
+
 CREATE TABLE equipment (
   `equipment_id`      CHAR(36)         PRIMARY KEY,
   `equipment_type_id` TINYINT UNSIGNED NOT NULL DEFAULT '0',
   `author_id`         CHAR(36)         NOT NULL,
   `owner_id`          CHAR(36)         NOT NULL,
   `equipment_name`    VARCHAR(100)     NOT NULL,
-  `description`       TEXT             NOT NULL DEFAULT '',
-  `image`             VARCHAR(100)     NOT NULL DEFAULT '',
+  `notes`             TEXT             NOT NULL DEFAULT '',
+  `default_image_id`  CHAR(36)         NOT NULL,
   FOREIGN KEY (`equipment_type_id`) REFERENCES `equipment_type` (`equipment_type_id`),
   FOREIGN KEY (`author_id`)         REFERENCES `user` (`user_id`) ON DELETE CASCADE,
   FOREIGN KEY (`owner_id`)          REFERENCES `user` (`user_id`) ON DELETE CASCADE
@@ -103,17 +122,17 @@ CREATE TABLE ingredient (
   `ingredient_brand`       VARCHAR(50)      NOT NULL DEFAULT '',
   `ingredient_variety`     VARCHAR(50)      NOT NULL DEFAULT '',
   `ingredient_name`        VARCHAR(50)      NOT NULL DEFAULT '',
-  `ingredient_description` TEXT             NOT NULL DEFAULT '',
-  `ingredient_image`       VARCHAR(100)     NOT NULL DEFAULT '',
+  `notes`                  TEXT             NOT NULL DEFAULT '',
+  `default_image_id`       CHAR(36)         NOT NULL,
   FOREIGN KEY (`ingredient_type_id`) REFERENCES `ingredient_type` (`ingredient_type_id`),
   FOREIGN KEY (`author_id`)          REFERENCES `user` (`user_id`) ON DELETE CASCADE,
   FOREIGN KEY (`owner_id`)           REFERENCES `user` (`user_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE ingredient_alt_name (
-  `ingredient_alt_name_id`   CHAR(36) PRIMARY KEY,
-  `ingredient_id`            CHAR(36),
-  `ingredient_alt_name_name` VARCHAR(50),
+  `ingredient_alt_name_id` CHAR(36)    PRIMARY KEY,
+  `ingredient_id`          CHAR(36),
+  `alt_name`               VARCHAR(50),
   FOREIGN KEY (`ingredient_id`) REFERENCES `ingredient` (`ingredient_id`) ON DELETE CASCADE,
 );
 
@@ -128,11 +147,10 @@ CREATE TABLE recipe (
   `active_time`       TIME             NOT NULL,
   `total_time`        TIME             NOT NULL,
   `directions`        TEXT             NOT NULL,
-  `recipe_image`      VARCHAR(100)     NOT NULL DEFAULT '',
-  `equipment_image`   VARCHAR(100)     NOT NULL DEFAULT '',
-  `ingredients_image` VARCHAR(100)     NOT NULL DEFAULT '',
-  `cooking_image`     VARCHAR(100)     NOT NULL DEFAULT '',
-  `video`             VARCHAR(100)     NOT NULL DEFAULT '',
+  `default_image_id`  CHAR(36)         NOT NULL,
+  --`video`             VARCHAR(100)     NOT NULL DEFAULT '',
+  `created_at`        TIMESTAMP                 DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`        TIMESTAMP                 DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (`recipe_type_id`) REFERENCES `recipe_type` (`recipe_type_id`),
   FOREIGN KEY (`cuisine_id`)     REFERENCES `cuisine` (`cuisine_id`),
   FOREIGN KEY (`author_id`)      REFERENCES `user` (`user_id`),
@@ -155,8 +173,33 @@ CREATE TABLE day (
   FOREIGN KEY (`plan_id`) REFERENCES plan (`plan_id`) ON DELETE CASCADE
 );
 
--- linking/intersection/cross-reference tables
--- used for many-to-many relationships
+-- CREATE TABLE page_image ();
+-- CREATE TABLE post_image ();
+-- CREATE TABLE product_image ();
+
+CREATE TABLE equipment_image (
+  `equipment_id` CHAR(36) NOT NULL,
+  `image_id`     CHAR(36) NOT NULL,
+  FOREIGN KEY (`equipment_id`) REFERENCES `equipment` (`equipment_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`image_id`)     REFERENCES `image` (`image_id`) ON DELETE CASCADE
+);
+
+CREATE TABLE ingredient_image (
+  `ingredient_id` CHAR(36) PRIMARY KEY,
+  `image_id`      CHAR(36) NOT NULL,
+  FOREIGN KEY (`ingredient_id`) REFERENCES `ingredient` (`ingredient_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`image_id`)      REFERENCES `image` (`image_id`) ON DELETE CASCADE
+);
+
+CREATE TABLE recipe_image (
+  `recipe_id` CHAR(36) PRIMARY KEY,
+  `image_id`  CHAR(36) NOT NULL,
+  FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`recipe_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`image_id`)  REFERENCES `image` (`image_id`) ON DELETE CASCADE
+);
+
+-- linking/intersection/junction/cross-reference tables
+-- many-to-many relationships
 -- example: a chatroom can have many users, a user can be in many chatrooms
 -- example: a user can favorite many recipes, a recipe can be favorited by many users
 
@@ -285,247 +328,247 @@ INSERT INTO unit (unit_name) VALUES
 ("kilogram"),
 ("NA");
 
-INSERT INTO method (method_id, method_name) VALUES
-(1,  "No-Cook"),
-(2,  "Chill"),
-(3,  "Freeze"),
-(4,  "Microwave"),
-(5,  "Toast"),
-(6,  "Steam"),
-(7,  "Poach"),
-(8,  "Simmer"),
-(9,  "Boil"),
-(10, "Blanch"),
-(11, "Stew"),
-(12, "Braise"),
-(13, "Bake"),
-(14, "Roast"),
-(15, "Broil"),
-(16, "Saute"),
-(17, "Pan-Fry"),
-(18, "Shallow-Fry"),
-(19, "Deep-Fry"),
-(20, "Stir-Fry"),
-(21, "Glaze"),
-(22, "BBQ"),
-(23, "Grill"),
-(24, "Smoke");
+INSERT INTO method (method_name) VALUES
+("No-Cook"),
+("Chill"),
+("Freeze"),
+("Microwave"),
+("Toast"),
+("Steam"),
+("Poach"),
+("Simmer"),
+("Boil"),
+("Blanch"),
+("Stew"),
+("Braise"),
+("Bake"),
+("Roast"),
+("Broil"),
+("Saute"),
+("Pan-Fry"),
+("Shallow-Fry"),
+("Deep-Fry"),
+("Stir-Fry"),
+("Glaze"),
+("BBQ"),
+("Grill"),
+("Smoke");
 
-INSERT INTO recipe_type (recipe_type_id, recipe_type_name) VALUES
-(1,  "Drink"),
-(2,  "Appetizer"),
-(3,  "Main"),
-(4,  "Side"),
-(5,  "Dessert"),
-(6,  "Soup"),
-(7,  "Salad"),
-(8,  "Stew"),
-(9,  "Casserole"),
-(10, "Sauce"),
-(11, "Dressing"),
-(12, "Condiment");
+INSERT INTO recipe_type (recipe_type_name) VALUES
+("Drink"),
+("Appetizer"),
+("Main"),
+("Side"),
+("Dessert"),
+("Soup"),
+("Salad"),
+("Stew"),
+("Casserole"),
+("Sauce"),
+("Dressing"),
+("Condiment");
 
-INSERT INTO cuisine (cuisine_id, continent, code, cuisine_name, country) VALUES
-(1,  "AF", "DZA", "Algerian",                 "Algeria"),
-(2,  "AF", "AGO", "Angolan",                  "Angola"),
-(3,  "AF", "BEN", "Benin",                    "Benin"),
-(4,  "AF", "BWA", "Botswana",                 "Botswana"),
-(5,  "AF", "BFA", "Burkinabe",                "Burkina Faso"),
-(6,  "AF", "BDI", "Burundian",                "Burundi"),
-(7,  "AF", "CPV", "Cape Verdean",             "Cabo Verde"),
-(8,  "AF", "CMR", "Cameroonian",              "Cameroon"),
-(9,  "AF", "CAF", "Central African Republic", "Central African Republic"),
-(10, "AF", "TCD", "Chadian",                  "Chad"),
-(11, "AF", "COM", "Comoros",                  "Comoros"),
-(12, "AF", "COD", "Congolese (Democratic)",   "Congo, Democratic Republic of the"),
-(13, "AF", "COG", "Congolese",                "Congo, Republic of the"),
-(14, "AF", "CIV", "Ivorian",                  "Côte d'Ivoire"),
-(15, "AF", "DJI", "Djiboutian",               "Djibouti"),
-(16, "AF", "EGY", "Egyptian",                 "Egypt"),
-(17, "AF", "GNQ", "Equatorial Guinea",        "Equatorial Guinea"),
-(18, "AF", "ERI", "Eritrean",                 "Eritrea"),
-(19, "AF", "SWZ", "Eswatini",                 "Eswatini"),
-(20, "AF", "ETH", "Ethiopian",                "Ethiopia"),
-(21, "AF", "GAB", "Gabonese",                 "Gabon"),
-(22, "AF", "GMB", "Gambian",                  "Gambia"),
-(23, "AF", "GHA", "Ghanaian",                 "Ghana"),
-(24, "AF", "GIN", "Guinea",                   "Guinea"),
-(25, "AF", "GNB", "Guinea-Bissauan",          "Guinea-Bissau"),
-(26, "AF", "KEN", "Kenyan",                   "Kenya"),
-(27, "AF", "LSO", "Basotho",                  "Lesotho"),
-(28, "AF", "LBR", "Liberian",                 "Liberia"),
-(29, "AF", "LBY", "Libyan",                   "Libya"),
-(30, "AF", "MDG", "Malagasy",                 "Madagascar"),
-(31, "AF", "MWI", "Malawian",                 "Malawi"),
-(32, "AF", "MLI", "Malian",                   "Mali"),
-(33, "AF", "MRT", "Mauritanian",              "Mauritania"),
-(34, "AF", "MUS", "Mauritius",                "Mauritius"),
-(35, "AF", "MAR", "Moroccan",                 "Morocco"),
-(36, "AF", "MOZ", "Mozambique",               "Mozambique"),
-(37, "AF", "NAM", "Namibian",                 "Namibia"),
-(38, "AF", "NER", "Niger",                    "Niger"),
-(39, "AF", "NGA", "Nigerian",                 "Nigeria"),
-(40, "AF", "RWA", "Rwandan",                  "Rwanda"),
-(41, "AF", "STP", "Sao Tome and Principe",    "Sao Tome and Principe"),
-(42, "AF", "SEN", "Senegalese",               "Senegal"),
-(43, "AF", "SYC", "Seychellois",              "Seychelles"),
-(44, "AF", "SLE", "Sierra Leonean",           "Sierra Leone"),
-(45, "AF", "SOM", "Somali",                   "Somalia"),
-(46, "AF", "ZAF", "South African",            "South Africa"),
-(47, "AF", "SSD", "South Sudanese",           "South Sudan"),
-(48, "AF", "SDN", "Sudanese",                 "Sudan"),
-(49, "AF", "TZA", "Tanzanian",                "Tanzania"),
-(50, "AF", "TGO", "Togolese",                 "Togo"),
-(51, "AF", "TUN", "Tunisian",                 "Tunisia"),
-(52, "AF", "UGA", "Ugandan",                  "Uganda"),
-(53, "AF", "ZMB", "Zambian",                  "Zambia"),
-(54, "AF", "ZWE", "Zimbabwean",               "Zimbabwe"),
+INSERT INTO cuisine (cuisine_continent_code, cuisine_country_code, cuisine_name, cuisine_country_name) VALUES
+("AF", "DZA", "Algerian",                 "Algeria"),
+("AF", "AGO", "Angolan",                  "Angola"),
+("AF", "BEN", "Benin",                    "Benin"),
+("AF", "BWA", "Botswana",                 "Botswana"),
+("AF", "BFA", "Burkinabe",                "Burkina Faso"),
+("AF", "BDI", "Burundian",                "Burundi"),
+("AF", "CPV", "Cape Verdean",             "Cabo Verde"),
+("AF", "CMR", "Cameroonian",              "Cameroon"),
+("AF", "CAF", "Central African Republic", "Central African Republic"),
+("AF", "TCD", "Chadian",                  "Chad"),
+("AF", "COM", "Comoros",                  "Comoros"),
+("AF", "COD", "Congolese (Democratic)",   "Congo, Democratic Republic of the"),
+("AF", "COG", "Congolese",                "Congo, Republic of the"),
+("AF", "CIV", "Ivorian",                  "Côte d'Ivoire"),
+("AF", "DJI", "Djiboutian",               "Djibouti"),
+("AF", "EGY", "Egyptian",                 "Egypt"),
+("AF", "GNQ", "Equatorial Guinea",        "Equatorial Guinea"),
+("AF", "ERI", "Eritrean",                 "Eritrea"),
+("AF", "SWZ", "Eswatini",                 "Eswatini"),
+("AF", "ETH", "Ethiopian",                "Ethiopia"),
+("AF", "GAB", "Gabonese",                 "Gabon"),
+("AF", "GMB", "Gambian",                  "Gambia"),
+("AF", "GHA", "Ghanaian",                 "Ghana"),
+("AF", "GIN", "Guinea",                   "Guinea"),
+("AF", "GNB", "Guinea-Bissauan",          "Guinea-Bissau"),
+("AF", "KEN", "Kenyan",                   "Kenya"),
+("AF", "LSO", "Basotho",                  "Lesotho"),
+("AF", "LBR", "Liberian",                 "Liberia"),
+("AF", "LBY", "Libyan",                   "Libya"),
+("AF", "MDG", "Malagasy",                 "Madagascar"),
+("AF", "MWI", "Malawian",                 "Malawi"),
+("AF", "MLI", "Malian",                   "Mali"),
+("AF", "MRT", "Mauritanian",              "Mauritania"),
+("AF", "MUS", "Mauritius",                "Mauritius"),
+("AF", "MAR", "Moroccan",                 "Morocco"),
+("AF", "MOZ", "Mozambique",               "Mozambique"),
+("AF", "NAM", "Namibian",                 "Namibia"),
+("AF", "NER", "Niger",                    "Niger"),
+("AF", "NGA", "Nigerian",                 "Nigeria"),
+("AF", "RWA", "Rwandan",                  "Rwanda"),
+("AF", "STP", "Sao Tome and Principe",    "Sao Tome and Principe"),
+("AF", "SEN", "Senegalese",               "Senegal"),
+("AF", "SYC", "Seychellois",              "Seychelles"),
+("AF", "SLE", "Sierra Leonean",           "Sierra Leone"),
+("AF", "SOM", "Somali",                   "Somalia"),
+("AF", "ZAF", "South African",            "South Africa"),
+("AF", "SSD", "South Sudanese",           "South Sudan"),
+("AF", "SDN", "Sudanese",                 "Sudan"),
+("AF", "TZA", "Tanzanian",                "Tanzania"),
+("AF", "TGO", "Togolese",                 "Togo"),
+("AF", "TUN", "Tunisian",                 "Tunisia"),
+("AF", "UGA", "Ugandan",                  "Uganda"),
+("AF", "ZMB", "Zambian",                  "Zambia"),
+("AF", "ZWE", "Zimbabwean",               "Zimbabwe"),
 
-(55, "AM", "USA", "American",               "United States of America"),
-(56, "AM", "ATG", "Antigua and Barbuda",    "Antigua and Barbuda"),
-(57, "AM", "ARG", "Argentine",              "Argentina"),
-(58, "AM", "BHS", "Bahamian",               "Bahamas"),
-(59, "AM", "BRB", "Bajan",                  "Barbados"),
-(60, "AM", "BLZ", "Belizean",               "Belize"),
-(61, "AM", "BOL", "Bolivian",               "Bolivia"),
-(62, "AM", "BRA", "Brazilian",              "Brazil"),
-(63, "AM", "CAN", "Canadian",               "Canada"),
-(64, "AM", "CHL", "Chilean",                "Chile"),
-(65, "AM", "COL", "Colombian",              "Colombia"),
-(66, "AM", "CRI", "Costa Rican",            "Costa Rica"),
-(67, "AM", "CUB", "Cuban",                  "Cuba"),
-(68, "AM", "DMA", "Dominica",               "Dominica"),
-(69, "AM", "DOM", "Dominican Republic",     "Dominican Republic"),
-(70, "AM", "ECU", "Ecuadorian",             "Ecuador"),
-(71, "AM", "GRD", "Grenada",                "Grenada"),
-(72, "AM", "GTM", "Guatemalan",             "Guatemala"),
-(73, "AM", "GUY", "Guyanese",               "Guyana"),
-(74, "AM", "HTI", "Haitian",                "Haiti"),
-(75, "AM", "HND", "Honduran",               "Honduras"),
-(76, "AM", "JAM", "Jamaican",               "Jamaica"),
-(77, "AM", "MEX", "Mexican",                "Mexico"),
-(78, "AM", "NIC", "Nicaraguan",             "Nicaragua"),
-(79, "AM", "PAN", "Panamanian",             "Panama"),
-(80, "AM", "PRY", "Paraguayan",             "Paraguay"),
-(81, "AM", "PER", "Peruvian",               "Peru"),
-(82, "AM", "KNA", "Kittian Nevisian",       "Saint Kitts and Nevis"),
-(83, "AM", "LCA", "Saint Lucian",           "Saint Lucia"),
-(84, "AM", "VCT", "Vincentian Grenadinian", "Saint Vincent and the Grenadines"),
-(85, "AM", "SLV", "Salvadoran",             "El Salvador"),
-(86, "AM", "SUR", "Surinamese",             "Suriname"),
-(87, "AM", "TTO", "Trinidad and Tobago",    "Trinidad and Tobago"),
-(88, "AM", "URY", "Uruguayan",              "Uruguay"),
-(89, "AM", "VEN", "Venezuelan",             "Venezuala"),
+("AM", "USA", "American",               "United States of America"),
+("AM", "ATG", "Antigua and Barbuda",    "Antigua and Barbuda"),
+("AM", "ARG", "Argentine",              "Argentina"),
+("AM", "BHS", "Bahamian",               "Bahamas"),
+("AM", "BRB", "Bajan",                  "Barbados"),
+("AM", "BLZ", "Belizean",               "Belize"),
+("AM", "BOL", "Bolivian",               "Bolivia"),
+("AM", "BRA", "Brazilian",              "Brazil"),
+("AM", "CAN", "Canadian",               "Canada"),
+("AM", "CHL", "Chilean",                "Chile"),
+("AM", "COL", "Colombian",              "Colombia"),
+("AM", "CRI", "Costa Rican",            "Costa Rica"),
+("AM", "CUB", "Cuban",                  "Cuba"),
+("AM", "DMA", "Dominica",               "Dominica"),
+("AM", "DOM", "Dominican Republic",     "Dominican Republic"),
+("AM", "ECU", "Ecuadorian",             "Ecuador"),
+("AM", "GRD", "Grenada",                "Grenada"),
+("AM", "GTM", "Guatemalan",             "Guatemala"),
+("AM", "GUY", "Guyanese",               "Guyana"),
+("AM", "HTI", "Haitian",                "Haiti"),
+("AM", "HND", "Honduran",               "Honduras"),
+("AM", "JAM", "Jamaican",               "Jamaica"),
+("AM", "MEX", "Mexican",                "Mexico"),
+("AM", "NIC", "Nicaraguan",             "Nicaragua"),
+("AM", "PAN", "Panamanian",             "Panama"),
+("AM", "PRY", "Paraguayan",             "Paraguay"),
+("AM", "PER", "Peruvian",               "Peru"),
+("AM", "KNA", "Kittian Nevisian",       "Saint Kitts and Nevis"),
+("AM", "LCA", "Saint Lucian",           "Saint Lucia"),
+("AM", "VCT", "Vincentian Grenadinian", "Saint Vincent and the Grenadines"),
+("AM", "SLV", "Salvadoran",             "El Salvador"),
+("AM", "SUR", "Surinamese",             "Suriname"),
+("AM", "TTO", "Trinidad and Tobago",    "Trinidad and Tobago"),
+("AM", "URY", "Uruguayan",              "Uruguay"),
+("AM", "VEN", "Venezuelan",             "Venezuala"),
 
-(90,  "AS", "AFG", "Afghan",        "Afghanistan"),
-(91,  "AS", "ARM", "Armenian",      "Armenia"),
-(92,  "AS", "AZE", "Azerbaijani",   "Azerbaijan"),
-(93,  "AS", "BHR", "Bahraini",      "Bahrain"),
-(94,  "AS", "BGD", "Bangladeshi",   "Bangladesh"),
-(95,  "AS", "BTN", "Bhutanese",     "Bhutan"),
-(96,  "AS", "BRN", "Bruneian",      "Brunei"),
-(97,  "AS", "KHM", "Cambodian",     "Cambodia"),
-(98,  "AS", "CHN", "Chinese",       "China"),
-(99,  "AS", "CYP", "Cypriot",       "Cyprus"),
-(100, "AS", "GEO", "Georgian",      "Georgia"),
-(101, "AS", "IND", "Indian",        "India"),
-(102, "AS", "IDN", "Indonesian",    "Indonesia"),
-(103, "AS", "IRN", "Iranian",       "Iran"),
-(104, "AS", "IRQ", "Iraqi",         "Iraq"),
-(105, "AS", "ISR", "Israeli",       "Israel"),
-(106, "AS", "JPN", "Japanese",      "Japan"),
-(107, "AS", "JOR", "Jordanian",     "Jordan"),
-(108, "AS", "KAZ", "Kazakh",        "Kazakhstan"),
-(109, "AS", "KWT", "Kuwaiti",       "Kuwait"),
-(110, "AS", "KGZ", "Kyrgyz",        "Kyrgyzstan"),
-(111, "AS", "LAO", "Lao",           "Laos"),
-(112, "AS", "LBN", "Lebanese",      "Lebanon"),
-(113, "AS", "MYS", "Malaysian",     "Malaysia"),
-(114, "AS", "MDV", "Maldivian",     "Maldives"),
-(115, "AS", "MNG", "Mongolian",     "Mongolia"),
-(116, "AS", "MMR", "Burmese",       "Myanmar"),
-(117, "AS", "NPL", "Nepalese",      "Nepal"),
-(118, "AS", "PRK", "North Korean",  "North Korea"),
-(119, "AS", "OMN", "Omani",         "Oman"),
-(120, "AS", "PAK", "Pakistani",     "Pakistan"),
-(121, "AS", "PSE", "Palestinian",   "Palestine"),
-(122, "AS", "PHL", "Filipino",      "Philippines"),
-(123, "AS", "QAT", "Qatari",        "Qatar"),
-(124, "AS", "RUS", "Russian",       "Russia"),
-(125, "AS", "SAU", "Saudi Arabian", "Saudi Arabia"),
-(126, "AS", "SGP", "Singaporean",   "Singapore"),
-(127, "AS", "KOR", "South Korean",  "South Korea"),
-(128, "AS", "LKA", "Sri Lankan",    "Sri Lanka"),
-(129, "AS", "SYR", "Syrian",        "Syria"),
-(130, "AS", "TWN", "Taiwanese",     "Taiwan"),
-(131, "AS", "TJK", "Tajik",         "Tajikistan"),
-(132, "AS", "THA", "Thai",          "Thailand"),
-(133, "AS", "TLS", "Timorese",      "Timor-Leste"),
-(134, "AS", "TUR", "Turkish",       "Turkey"),
-(135, "AS", "TKM", "Turkmen",       "Turkmenistan"),
-(136, "AS", "ARE", "Emirati",       "United Arab Emirates"),
-(137, "AS", "UZB", "Uzbek",         "Uzbekistan"),
-(138, "AS", "VNM", "Vietnamese",    "Vietnam"),
-(139, "AS", "YEM", "Yemeni",        "Yemen"),
+("AS", "AFG", "Afghan",        "Afghanistan"),
+("AS", "ARM", "Armenian",      "Armenia"),
+("AS", "AZE", "Azerbaijani",   "Azerbaijan"),
+("AS", "BHR", "Bahraini",      "Bahrain"),
+("AS", "BGD", "Bangladeshi",   "Bangladesh"),
+("AS", "BTN", "Bhutanese",     "Bhutan"),
+("AS", "BRN", "Bruneian",      "Brunei"),
+("AS", "KHM", "Cambodian",     "Cambodia"),
+("AS", "CHN", "Chinese",       "China"),
+("AS", "CYP", "Cypriot",       "Cyprus"),
+("AS", "GEO", "Georgian",      "Georgia"),
+("AS", "IND", "Indian",        "India"),
+("AS", "IDN", "Indonesian",    "Indonesia"),
+("AS", "IRN", "Iranian",       "Iran"),
+("AS", "IRQ", "Iraqi",         "Iraq"),
+("AS", "ISR", "Israeli",       "Israel"),
+("AS", "JPN", "Japanese",      "Japan"),
+("AS", "JOR", "Jordanian",     "Jordan"),
+("AS", "KAZ", "Kazakh",        "Kazakhstan"),
+("AS", "KWT", "Kuwaiti",       "Kuwait"),
+("AS", "KGZ", "Kyrgyz",        "Kyrgyzstan"),
+("AS", "LAO", "Lao",           "Laos"),
+("AS", "LBN", "Lebanese",      "Lebanon"),
+("AS", "MYS", "Malaysian",     "Malaysia"),
+("AS", "MDV", "Maldivian",     "Maldives"),
+("AS", "MNG", "Mongolian",     "Mongolia"),
+("AS", "MMR", "Burmese",       "Myanmar"),
+("AS", "NPL", "Nepalese",      "Nepal"),
+("AS", "PRK", "North Korean",  "North Korea"),
+("AS", "OMN", "Omani",         "Oman"),
+("AS", "PAK", "Pakistani",     "Pakistan"),
+("AS", "PSE", "Palestinian",   "Palestine"),
+("AS", "PHL", "Filipino",      "Philippines"),
+("AS", "QAT", "Qatari",        "Qatar"),
+("AS", "RUS", "Russian",       "Russia"),
+("AS", "SAU", "Saudi Arabian", "Saudi Arabia"),
+("AS", "SGP", "Singaporean",   "Singapore"),
+("AS", "KOR", "South Korean",  "South Korea"),
+("AS", "LKA", "Sri Lankan",    "Sri Lanka"),
+("AS", "SYR", "Syrian",        "Syria"),
+("AS", "TWN", "Taiwanese",     "Taiwan"),
+("AS", "TJK", "Tajik",         "Tajikistan"),
+("AS", "THA", "Thai",          "Thailand"),
+("AS", "TLS", "Timorese",      "Timor-Leste"),
+("AS", "TUR", "Turkish",       "Turkey"),
+("AS", "TKM", "Turkmen",       "Turkmenistan"),
+("AS", "ARE", "Emirati",       "United Arab Emirates"),
+("AS", "UZB", "Uzbek",         "Uzbekistan"),
+("AS", "VNM", "Vietnamese",    "Vietnam"),
+("AS", "YEM", "Yemeni",        "Yemen"),
 
-(140, "EU", "ALB", "Albanian",               "Albania"),
-(141, "EU", "AND", "Catalan",                "Andorra"),
-(142, "EU", "AUT", "Austrian",               "Austria"),
-(143, "EU", "BLR", "Belarusian",             "Belarus"),
-(144, "EU", "BEL", "Belgian",                "Belgium"),
-(145, "EU", "BIH", "Bosnia and Herzegovina", "Bosnia and Herzegovina"),
-(146, "EU", "BGR", "Bulgarian",              "Bulgaria"),
-(147, "EU", "HRV", "Croatian",               "Croatia"),
-(148, "EU", "CZE", "Czech",                  "Czechia"),
-(149, "EU", "DNK", "Danish",                 "Denmark"),
-(150, "EU", "EST", "Estonian",               "Estonia"),
-(151, "EU", "FIN", "Finnish",                "Finland"),
-(152, "EU", "FRA", "French",                 "France"),
-(153, "EU", "DEU", "German",                 "Germany"),
-(154, "EU", "GRC", "Greek",                  "Greece"),
-(155, "EU", "HUN", "Hungarian",              "Hungary"),
-(156, "EU", "ISL", "Icelandic",              "Iceland"),
-(157, "EU", "IRL", "Irish",                  "Ireland"),
-(158, "EU", "ITA", "Italian",                "Italy"),
-(160, "EU", "XXK", "Kosovan",                "Kosovo"),
-(161, "EU", "LVA", "Latvian",                "Latvia"),
-(162, "EU", "LIE", "Liechtensteiner",        "Liechtenstein"),
-(163, "EU", "LTU", "Lithuanian",             "Lithuania"),
-(164, "EU", "LUX", "Luxembourg",             "Luxembourg"),
-(165, "EU", "MLT", "Maltese",                "Malta"),
-(166, "EU", "MDA", "Moldovan",               "Moldova"),
-(167, "EU", "MCO", "Monégasque",             "Monaco"),
-(168, "EU", "MNE", "Montenegrin",            "Montenegro"),
-(169, "EU", "NLD", "Dutch",                  "Netherlands"),
-(170, "EU", "MKD", "Macedonian",             "North Macedonia"),
-(171, "EU", "NOR", "Norwegian",              "Norway"),
-(172, "EU", "POL", "Polish",                 "Poland"),
-(173, "EU", "PRT", "Portuguese",             "Portugal"),
-(174, "EU", "ROU", "Romanian",               "Romania"),
-(175, "EU", "SMR", "Sammarinese",            "San Marino"),
-(176, "EU", "SRB", "Serbian",                "Serbia"),
-(177, "EU", "SVK", "Slovak",                 "Slovakia"),
-(178, "EU", "SVN", "Slovenian",              "Slovenia"),
-(179, "EU", "ESP", "Spanish",                "Spain"),
-(180, "EU", "SWE", "Swedish",                "Sweden"),
-(181, "EU", "CHE", "Swiss",                  "Switzerland"),
-(182, "EU", "UKR", "Ukrainian",              "Ukraine"),
-(183, "EU", "GBR", "British",                "United Kingdom"),
+("EU", "ALB", "Albanian",               "Albania"),
+("EU", "AND", "Catalan",                "Andorra"),
+("EU", "AUT", "Austrian",               "Austria"),
+("EU", "BLR", "Belarusian",             "Belarus"),
+("EU", "BEL", "Belgian",                "Belgium"),
+("EU", "BIH", "Bosnia and Herzegovina", "Bosnia and Herzegovina"),
+("EU", "BGR", "Bulgarian",              "Bulgaria"),
+("EU", "HRV", "Croatian",               "Croatia"),
+("EU", "CZE", "Czech",                  "Czechia"),
+("EU", "DNK", "Danish",                 "Denmark"),
+("EU", "EST", "Estonian",               "Estonia"),
+("EU", "FIN", "Finnish",                "Finland"),
+("EU", "FRA", "French",                 "France"),
+("EU", "DEU", "German",                 "Germany"),
+("EU", "GRC", "Greek",                  "Greece"),
+("EU", "HUN", "Hungarian",              "Hungary"),
+("EU", "ISL", "Icelandic",              "Iceland"),
+("EU", "IRL", "Irish",                  "Ireland"),
+("EU", "ITA", "Italian",                "Italy"),
+("EU", "XXK", "Kosovan",                "Kosovo"),
+("EU", "LVA", "Latvian",                "Latvia"),
+("EU", "LIE", "Liechtensteiner",        "Liechtenstein"),
+("EU", "LTU", "Lithuanian",             "Lithuania"),
+("EU", "LUX", "Luxembourg",             "Luxembourg"),
+("EU", "MLT", "Maltese",                "Malta"),
+("EU", "MDA", "Moldovan",               "Moldova"),
+("EU", "MCO", "Monégasque",             "Monaco"),
+("EU", "MNE", "Montenegrin",            "Montenegro"),
+("EU", "NLD", "Dutch",                  "Netherlands"),
+("EU", "MKD", "Macedonian",             "North Macedonia"),
+("EU", "NOR", "Norwegian",              "Norway"),
+("EU", "POL", "Polish",                 "Poland"),
+("EU", "PRT", "Portuguese",             "Portugal"),
+("EU", "ROU", "Romanian",               "Romania"),
+("EU", "SMR", "Sammarinese",            "San Marino"),
+("EU", "SRB", "Serbian",                "Serbia"),
+("EU", "SVK", "Slovak",                 "Slovakia"),
+("EU", "SVN", "Slovenian",              "Slovenia"),
+("EU", "ESP", "Spanish",                "Spain"),
+("EU", "SWE", "Swedish",                "Sweden"),
+("EU", "CHE", "Swiss",                  "Switzerland"),
+("EU", "UKR", "Ukrainian",              "Ukraine"),
+("EU", "GBR", "British",                "United Kingdom"),
 
-(184, "OC", "AUS", "Australian",        "Australia"),
-(185, "OC", "FJI", "Fijian",            "Fiji"),
-(186, "OC", "KIR", "Kiribati",          "Kiribati"),
-(187, "OC", "MHL", "Marshallese",       "Marshall Islands"),
-(188, "OC", "FSM", "Micronesian",       "Micronesia"),
-(189, "OC", "NRU", "Nauruan",           "Nauru"),
-(190, "OC", "NZL", "New Zealand",       "New Zealand"),
-(191, "OC", "PLW", "Palauan",           "Palau"),
-(192, "OC", "PNG", "Papua New Guinean", "Papua New Guinea"),
-(193, "OC", "WSM", "Samoan",            "Samoa"),
-(194, "OC", "SLB", "Solomon Islander",  "Solomon Islands"),
-(195, "OC", "TON", "Tongan",            "Tonga"),
-(196, "OC", "TUV", "Tuvaluan",          "Tuvalu"),
-(197, "OC", "VUT", "Vanuatuan",         "Vanuatu");
+("OC", "AUS", "Australian",        "Australia"),
+("OC", "FJI", "Fijian",            "Fiji"),
+("OC", "KIR", "Kiribati",          "Kiribati"),
+("OC", "MHL", "Marshallese",       "Marshall Islands"),
+("OC", "FSM", "Micronesian",       "Micronesia"),
+("OC", "NRU", "Nauruan",           "Nauru"),
+("OC", "NZL", "New Zealand",       "New Zealand"),
+("OC", "PLW", "Palauan",           "Palau"),
+("OC", "PNG", "Papua New Guinean", "Papua New Guinea"),
+("OC", "WSM", "Samoan",            "Samoa"),
+("OC", "SLB", "Solomon Islander",  "Solomon Islands"),
+("OC", "TON", "Tongan",            "Tonga"),
+("OC", "TUV", "Tuvaluan",          "Tuvalu"),
+("OC", "VUT", "Vanuatuan",         "Vanuatu");
 
 INSERT INTO equipment
 (equipment_type_id, author_id, owner_id, equipment_name, image)
@@ -590,7 +633,7 @@ VALUES
 (3, 1, 1, "Ladle",                            "ladle");
 
 INSERT INTO ingredient
-(ingredient_type_id, author_id, owner_id, variety, ingredient_name, image)
+(ingredient_type_id, author_id, owner_id, ingredient_variety, ingredient_name, image)
 VALUES
 (1, 1, 1, "",                    "Tuna",                                     "tuna"),
 (1, 1, 1, "",                    "Salmon",                                   "salmon"),
@@ -993,7 +1036,7 @@ VALUES
 (18, 1, 1, "Light",              "Soy Sauce",                                "light-soy-sauce");
 
 INSERT INTO ingredient
-(ingredient_type_id, author_id, owner_id, brand, ingredient_name, description, image)
+(ingredient_type_id, author_id, owner_id, ingredient_brand, ingredient_name, description, image)
 VALUES
 (18, 1, 1, "Tobasco",            "Hot Sauce",                                "tobasco-hot-sauce");
 
