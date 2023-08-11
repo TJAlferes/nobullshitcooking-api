@@ -21,11 +21,12 @@ export class RecipeRepo extends MySQLRepo implements IRecipeRepo {
         c.cuisine_name,
         r.title,
         r.description,
-        r.recipe_image
+        i.image_url
       FROM recipe r
       INNER JOIN user u         ON u.user_id = r.author_id
       INNER JOIN recipe_type rt ON rt.recipe_type_id = r.recipe_type_id
       INNER JOIN cuisine c      ON c.cuisine_id = r.cuisine_id
+      INNER JOIN image i        ON i.image_id = r.image_id
       WHERE r.owner_id = ?
     `;
 
@@ -230,32 +231,34 @@ export type InsertParams = {
   active_time:       string;
   total_time:        string;
   directions:        string;
-  recipe_image:      string;
-  equipment_image:   string;
-  ingredients_image: string;
-  cooking_image:     string;
+  image_url:         string;
+  //recipe_image:      string;
+  //equipment_image:   string;
+  //ingredients_image: string;
+  //cooking_image:     string;
   //  what about prev_image ?
   video:             string;
 };
 
 export type RecipeView = RowDataPacket & {
-  recipe_id:         string;
-  recipe_type_id:    number;
-  recipe_type_name:  string;
-  cuisine_id:        number;
-  author_id:         string;
-  owner_id:          string;
-  title:             string;
-  description:       string;
-  active_time:       string;  // Date on insert?
-  total_time:        string;  // Date on insert?
-  directions:        string;
-  recipe_image:      string;
-  equipment_image:   string;
-  ingredients_image: string;
-  cooking_image:     string;
+  recipe_id:            string;
+  recipe_type_id:       number;
+  recipe_type_name:     string;
+  cuisine_id:           number;
+  author_id:            string;
+  owner_id:             string;
+  title:                string;
+  description:          string;
+  active_time:          string;  // Date on insert?
+  total_time:           string;  // Date on insert?
+  directions:           string;
+  image_url:            string
+  //recipe_image:         string;
+  //equipment_image:      string;
+  //ingredients_image:    string;
+  //cooking_image:        string;
   //  what about prev_image ?
-  video:             string;
+  video:                string;
   required_methods:     RequiredMethodView[];
   required_equipment:   RequiredEquipmentView[];
   required_ingredients: RequiredIngredientView[];

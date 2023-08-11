@@ -45,7 +45,7 @@ export class IngredientRepo extends MySQLRepo implements IIngredientRepo {
           IFNULL(GROUP_CONCAT(n.alt_name SEPARATOR ' '), '')
         ) AS fullname,
         i.description,
-        m.image
+        m.image_url
       FROM ingredient i
       INNER JOIN ingredient_type t     ON t.ingredient_type_id = i.ingredient_type_id
       INNER JOIN ingredient_alt_name n ON i.ingredient_id      = n.ingredient_id
@@ -218,7 +218,7 @@ type IngredientView = RowDataPacket & {
   ingredient_name:      string;
   fullname:             string;
   description:          string;
-  image:                string;
+  image_url:            string;
 };
 
 type InsertParams = {
@@ -230,7 +230,7 @@ type InsertParams = {
   variety:            string;
   ingredient_name:    string;
   description:        string;
-  image:              string;
+  image_url:          string;
 };
 
 type IngredientSuggestion = RowDataPacket & {

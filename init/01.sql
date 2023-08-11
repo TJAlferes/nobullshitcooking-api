@@ -7,11 +7,11 @@ USE nobsc;
 -- validation tables, only so many records (< 1,000)
 
 CREATE TABLE cuisine (
-  `cuisine_id`             TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  `cuisine_name`           VARCHAR(50)      NOT NULL DEFAULT '',
-  `cuisine_continent_code` CHAR(2)          NOT NULL DEFAULT '',
-  `cuisine_country_code`   CHAR(3)          NOT NULL DEFAULT '' UNIQUE,
-  `cuisine_country_name`   VARCHAR(50)      NOT NULL DEFAULT '' UNIQUE
+  `cuisine_id`     TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `cuisine_name`   VARCHAR(50)      NOT NULL DEFAULT '',
+  `continent_code` CHAR(2)          NOT NULL DEFAULT '',
+  `country_code`   CHAR(3)          NOT NULL DEFAULT '' UNIQUE,
+  `country_name`   VARCHAR(50)      NOT NULL DEFAULT '' UNIQUE
 );
 
 CREATE TABLE custom_cuisine (

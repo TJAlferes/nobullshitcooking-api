@@ -19,7 +19,7 @@ export class EquipmentRepo extends MySQLRepo implements IEquipmentRepo {
         t.equipment_type_name,
         e.equipment_name,
         e.description,
-        i.image
+        i.image_url
       FROM equipment e
       INNER JOIN equipment_type t ON e.equipment_type_id = t.equipment_type_id
       INNER JOIN image i          ON e.image_id          = i.image_id
@@ -69,7 +69,7 @@ export class EquipmentRepo extends MySQLRepo implements IEquipmentRepo {
         e.owner_id,
         e.equipment_name,
         e.description,
-        i.image
+        i.image_url
       FROM equipment e
       INNER JOIN equipment_type t ON e.equipment_type_id = t.equipment_type_id
       INNER JOIN image i          ON e.image_id          = i.image_id
@@ -89,7 +89,7 @@ export class EquipmentRepo extends MySQLRepo implements IEquipmentRepo {
         e.owner_id,
         e.equipment_name,
         e.description,
-        i.image
+        i.image_url
       FROM equipment e
       INNER JOIN equipment_type t ON e.equipment_type_id = t.equipment_type_id
       INNER JOIN image i          ON e.image_id          = i.image_id
@@ -162,7 +162,7 @@ type EquipmentView = RowDataPacket & {
   equipment_type_name: string;
   equipment_name:      string;
   description:         string;
-  image:               string;
+  image_url:           string;
 };
 
 // or EquipmentRow???
@@ -173,7 +173,7 @@ type InsertParams = {
   owner_id:          string;
   equipment_name:    string;
   description:       string;
-  image:             string;
+  image_url:         string;
 };
 
 type EquipmentSuggestion = RowDataPacket & {
