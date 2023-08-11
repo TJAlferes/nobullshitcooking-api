@@ -12,12 +12,13 @@ export class SavedRecipeRepo extends MySQLRepo implements ISavedRecipeRepo {
         r.owner_id,
         u.username AS author,
         r.title,
-        r.recipe_image
+        i.image_url
       FROM saved_recipe s
       INNER JOIN recipe r ON r.recipe_id = s.recipe_id
-      INNER JOIN user u ON u.user_id = r.author_id
+      INNER JOIN user u   ON u.user_id = r.author_id
+      INNER JOIN image i  ON i.image_id = r.image_id
       WHERE s.user_id = ?
-      ORDER BY title
+      ORDER BY r.title
     `;
     const [ rows ] = await this.pool.execute<SavedRecipeView[]>(sql, [user_id]);
     return rows;
@@ -60,7 +61,7 @@ type SavedRecipeView = RowDataPacket & {
   owner_id:       string;
   author:         string;
   title:          string;
-  recipe_image:   string;
+  image_url:      string;
 };
 
 type InsertParams = {

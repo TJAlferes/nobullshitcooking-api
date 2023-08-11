@@ -2,36 +2,37 @@ import { RowDataPacket } from 'mysql2/promise';
 
 import { MySQLRepo } from './MySQL';
 
+// TO DO: store fullname instead of name???
 export class RecipeIngredientRepo extends MySQLRepo implements IRecipeIngredientRepo{
-  async viewByRecipeId(id: number) {
+  async viewByRecipeId(recipe_id: string) {
     const sql = `
-      SELECT ri.amount, m.name AS measurement_name, i.name AS ingredient_name
+      SELECT ri.amount, u.unit_name, i.ingredient_name
       FROM recipe_ingredient ri
-      INNER JOIN measurement m ON m.id = ri.measurement_id
-      INNER JOIN ingredient i ON i.id = ri.ingredient_id
+      INNER JOIN unit u       ON u.unit_id = ri.unit_id
+      INNER JOIN ingredient i ON i.ingredient_id = ri.ingredient_id
       WHERE ri.recipe_id = ?
       ORDER BY i.ingredient_type_id
     `;
-    const [ rows ] = await this.pool.execute<RecipeIngredient[]>(sql, [id]);
+    const [ rows ] = await this.pool.execute<RecipeIngredientView[]>(sql, [recipe_id]);
     return rows;
   }
 
-  async create(placeholders: string, recipeIngredients: number[]) {
-    const sql = `INSERT INTO recipe_ingredient (recipe_id, amount, measurement_id, ingredient_id) VALUES ${placeholders}`;  // may be wrong, test these
-    await this.pool.execute(sql, recipeIngredients);
+  async insert({ placeholders, recipe_ingredients }: InsertParams) {  // TO DO: change to namedPlaceholders using example below
+    const sql = `INSERT INTO recipe_ingredient (recipe_id, amount, unit_id, ingredient_id) VALUES ${placeholders}`;  // may be wrong, test these
+    await this.pool.execute(sql, recipe_ingredients);
   }
   
-  async update(recipeId: number, placeholders: string, recipeIngredients: number[]) {
+  async update({ recipe_id, placeholders, recipe_ingredients }: UpdateParams) {  // TO DO: change to namedPlaceholders using example below
     const sql1 = `DELETE FROM recipe_ingredient WHERE recipe_id = ?`;
-    const sql2 = recipeIngredients.length ? `INSERT INTO recipe_ingredients (recipe_id, amount, measurement_id, ingredient_id) VALUES ${placeholders}` : undefined;
+    const sql2 = recipe_ingredients.length ? `INSERT INTO recipe_ingredients (recipe_id, amount, unit_id, ingredient_id) VALUES ${placeholders}` : undefined;
     const conn = await this.pool.getConnection();
     await conn.beginTransaction();
     try {
       // Rather than updating current values in the database, we delete them...
-      await conn.query(sql1, [recipeId]);
+      await conn.query(sql1, [recipe_id]);
       // ... and, if there are new values, we insert them.
       if (sql2) {
-        await conn.query(sql2, recipeIngredients);
+        await conn.query(sql2, recipe_ingredients);
       }
       await conn.commit();
     } catch (err) {
@@ -42,39 +43,70 @@ export class RecipeIngredientRepo extends MySQLRepo implements IRecipeIngredient
     }
   }
 
-  async deleteByIngredientId(id: number) {
+  async deleteByIngredientId(ingredient_id: string) {
     const sql = `DELETE FROM recipe_ingredient WHERE ingredient_id = ?`;
-    await this.pool.execute(sql, [id]);
+    await this.pool.execute(sql, [ingredient_id]);
   }
 
-  async deleteByRecipeId(id: number) {
+  async deleteByRecipeId(recipe_id: string) {
     const sql = `DELETE FROM recipe_ingredient WHERE recipe_id = ?`;
-    await this.pool.execute(sql, [id]);
+    await this.pool.execute(sql, [recipe_id]);
   }
 
+  /* not needed because of ON CASCADE DELETE ???
   async deleteByRecipeIds(ids: number[]) {
     const sql = `DELETE FROM recipe_ingredient WHERE recipe_id = ANY(?)`;
     await this.pool.execute(sql, ids);
-  }
+  }*/
 }
 
 export interface IRecipeIngredientRepo {
-  viewByRecipeId:       (id: number) =>                                                          Promise<RecipeIngredient[]>;
-  create:               (placeholders: string, recipeIngredients: number[]) =>                   Promise<void>;
-  update:               (recipeId: number, placeholders: string, recipeIngredients: number[]) => Promise<void>;
-  deleteByIngredientId: (id: number) =>                                                          Promise<void>;
-  deleteByRecipeId:     (id: number) =>                                                          Promise<void>;
-  deleteByRecipeIds:    (ids: number[]) =>                                                       Promise<void>;
+  viewByRecipeId:       (recipe_id: string) =>     Promise<RecipeIngredientView[]>;
+  insert:               (params: InsertParams) =>  Promise<void>;
+  update:               (params: UpdateParams) =>  Promise<void>;
+  deleteByIngredientId: (ingredient_id: string) => Promise<void>;
+  deleteByRecipeId:     (recipe_id: string) =>     Promise<void>;
+  //deleteByRecipeIds:    (ids: string[]) =>         Promise<void>;
 }
 
-export type IMakeRecipeIngredient = {
+/*export type IMakeRecipeIngredient = {
   amount:        number;
-  measurementId: number;
-  id:            number;
+  unit_id: number;
+  ingredient_id:            number;
+};*/
+
+type RecipeIngredientRow = {
+  recipe_id:     string;
+  amount:        number;
+  unit_id:       number;
+  ingredient_id: string;
 };
 
-export type RecipeIngredient = RowDataPacket & {
-  amount:           number;
-  measurement_name: string;
-  ingredient_name:  string;
+type InsertParams = {
+  placeholders:       string;
+  recipe_ingredients: RecipeIngredientRow[];
 };
+
+type UpdateParams = {
+  recipe_id:          string;
+  placeholders:       string;
+  recipe_ingredients: RecipeIngredientRow[];
+};
+
+type RecipeIngredientView = RowDataPacket & {
+  amount:          number;
+  unit_name:       string;
+  ingredient_name: string;
+};
+
+/*
+async function bulkInsertMultipleRows(dataArray) {
+  const sql = `
+    INSERT INTO equipment
+    (id, name)
+    VALUES
+    ${dataArr.map((_, index) => `(:id${index}, :name${index})`).join(', ')}
+  `;
+  await this.pool.execute.(sql, dataArr);
+}
+*/

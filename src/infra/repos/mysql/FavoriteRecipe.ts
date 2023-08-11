@@ -12,10 +12,11 @@ export class FavoriteRecipeRepo extends MySQLRepo implements IFavoriteRecipeRepo
         r.owner_id,
         u.username AS author,
         r.title,
-        r.recipe_image
+        i.image_url
       FROM favorite_recipe f
       INNER JOIN recipe r ON r.recipe_id = f.recipe_id
-      INNER JOIN user u ON u.user_id = r.author_id
+      INNER JOIN user u   ON u.user_id = r.author_id
+      INNER JOIN image i  ON i.image_id = r.image_id
       WHERE f.user_id = ?
       ORDER BY r.title
     `;
@@ -60,7 +61,7 @@ type FavoriteRecipeView = RowDataPacket & {
   owner_id:       string;
   author:         string;
   title:          string;
-  recipe_image:   string;
+  image_url:      string;
 };
 
 type InsertParams = {
