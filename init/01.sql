@@ -71,7 +71,7 @@ CREATE TABLE user (
 
 CREATE TABLE image (
   `image_id`   CHAR(36)     PRIMARY KEY,
-  `url`        VARCHAR(100) NOT NULL,
+  `image_url`  VARCHAR(100) NOT NULL,
   `alt_text`   VARCHAR(255) NOT NULL DEFAULT '',
   `caption`    VARCHAR(255) NOT NULL DEFAULT '',
   `created_at` TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
@@ -108,7 +108,7 @@ CREATE TABLE equipment (
   `owner_id`          CHAR(36)         NOT NULL,
   `equipment_name`    VARCHAR(100)     NOT NULL,
   `notes`             TEXT             NOT NULL DEFAULT '',
-  `default_image_id`  CHAR(36)         NOT NULL,
+  `image_id`          CHAR(36)         NOT NULL,
   FOREIGN KEY (`equipment_type_id`) REFERENCES `equipment_type` (`equipment_type_id`),
   FOREIGN KEY (`author_id`)         REFERENCES `user` (`user_id`) ON DELETE CASCADE,
   FOREIGN KEY (`owner_id`)          REFERENCES `user` (`user_id`) ON DELETE CASCADE
@@ -123,7 +123,7 @@ CREATE TABLE ingredient (
   `ingredient_variety`     VARCHAR(50)      NOT NULL DEFAULT '',
   `ingredient_name`        VARCHAR(50)      NOT NULL DEFAULT '',
   `notes`                  TEXT             NOT NULL DEFAULT '',
-  `default_image_id`       CHAR(36)         NOT NULL,
+  `image_id`               CHAR(36)         NOT NULL,
   FOREIGN KEY (`ingredient_type_id`) REFERENCES `ingredient_type` (`ingredient_type_id`),
   FOREIGN KEY (`author_id`)          REFERENCES `user` (`user_id`) ON DELETE CASCADE,
   FOREIGN KEY (`owner_id`)           REFERENCES `user` (`user_id`) ON DELETE CASCADE
@@ -147,7 +147,7 @@ CREATE TABLE recipe (
   `active_time`       TIME             NOT NULL,
   `total_time`        TIME             NOT NULL,
   `directions`        TEXT             NOT NULL,
-  `default_image_id`  CHAR(36)         NOT NULL,
+  `image_id`          CHAR(36)         NOT NULL,
   --`video`             VARCHAR(100)     NOT NULL DEFAULT '',
   `created_at`        TIMESTAMP                 DEFAULT CURRENT_TIMESTAMP,
   `updated_at`        TIMESTAMP                 DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -177,7 +177,7 @@ CREATE TABLE day (
 -- CREATE TABLE post_image ();
 -- CREATE TABLE product_image ();
 
-CREATE TABLE equipment_image (
+/*CREATE TABLE equipment_image (
   `equipment_id` CHAR(36) NOT NULL,
   `image_id`     CHAR(36) NOT NULL,
   FOREIGN KEY (`equipment_id`) REFERENCES `equipment` (`equipment_id`) ON DELETE CASCADE,
@@ -189,7 +189,7 @@ CREATE TABLE ingredient_image (
   `image_id`      CHAR(36) NOT NULL,
   FOREIGN KEY (`ingredient_id`) REFERENCES `ingredient` (`ingredient_id`) ON DELETE CASCADE,
   FOREIGN KEY (`image_id`)      REFERENCES `image` (`image_id`) ON DELETE CASCADE
-);
+);*/
 
 CREATE TABLE recipe_image (
   `recipe_id` CHAR(36) PRIMARY KEY,

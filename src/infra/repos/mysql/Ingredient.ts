@@ -5,16 +5,23 @@ import { MySQLRepo } from './MySQL';
 
 export class IngredientRepo extends MySQLRepo implements IIngredientRepo {
   async auto(term: string) {
-    const owner_id = 1;  // only public ingredients are suggestible
+    const owner_id = 1;  // only public ingredients are suggestible (this should be in the service, not in the repo)
     const sql = `
       SELECT
-        ingredient_id,
-        brand,
-        variety,
-        ingredient_name,
-        fullname AS text
-      FROM ingredient
-      WHERE fullname LIKE ? AND owner_id = ?
+        i.ingredient_id,
+        i.ingredient_brand,
+        i.ingredient_variety,
+        i.ingredient_name,
+        CONCAT_WS(
+          ' ',
+          i.ingredient_brand,
+          i.ingredient_variety,
+          i.ingredient_name,
+          IFNULL(GROUP_CONCAT(n.alt_name SEPARATOR ' '), '')
+        ) AS text,
+      FROM ingredient i
+      INNER JOIN ingredient_alt_name n ON i.ingredient_id = n.ingredient_id
+      WHERE text LIKE ? AND i.owner_id = ?
       LIMIT 5
     `;
     const [ rows ] = await this.pool.execute<IngredientSuggestion[]>(sql, [`%${term}%`, owner_id]);
@@ -22,19 +29,27 @@ export class IngredientRepo extends MySQLRepo implements IIngredientRepo {
   }
 
   async search({ term, filters, sorts, current_page, results_per_page }: SearchRequest) {
-    const owner_id = 1;  // only public ingredients are searchable
+    const owner_id = 1;  // only public ingredients are searchable (this should be in the service, not in the repo)
     let sql = `
       SELECT
-        i.ingredient_d,
+        i.ingredient_id,
         t.ingredient_type_name,
-        i.brand,
-        i.variety,
+        i.ingredient_brand,
+        i.ingredient_variety,
         i.ingredient_name,
-        i.fullname,
+        CONCAT_WS(
+          ' ',
+          i.ingredient_brand,
+          i.ingredient_variety,
+          i.ingredient_name,
+          IFNULL(GROUP_CONCAT(n.alt_name SEPARATOR ' '), '')
+        ) AS fullname,
         i.description,
-        i.image
+        m.image
       FROM ingredient i
-      INNER JOIN ingredient_type t ON t.ingredient_type_id = i.ingredient_type_id
+      INNER JOIN ingredient_type t     ON t.ingredient_type_id = i.ingredient_type_id
+      INNER JOIN ingredient_alt_name n ON i.ingredient_id      = n.ingredient_id
+      INNER JOIN image m               ON i.image_id           = m.image_id
       WHERE i.owner_id = ?
     `;
 
@@ -79,14 +94,22 @@ export class IngredientRepo extends MySQLRepo implements IIngredientRepo {
         i.ingredient_type_id,
         t.ingredient_type_name,
         i.owner_id,
-        i.brand,
-        i.variety,
+        i.ingredient_brand,
+        i.ingredient_variety,
         i.ingredient_name,
-        i.fullname,
+        CONCAT_WS(
+          ' ',
+          i.ingredient_brand,
+          i.ingredient_variety,
+          i.ingredient_name,
+          IFNULL(GROUP_CONCAT(n.alt_name SEPARATOR ' '), '')
+        ) AS fullname,
         i.description,
-        i.image
+        m.image_url
       FROM ingredient i
-      INNER JOIN ingredient_type t ON i.ingredient_type_id = t.ingredient_type_id
+      INNER JOIN ingredient_type t     ON i.ingredient_type_id = t.ingredient_type_id
+      INNER JOIN ingredient_alt_name n ON i.ingredient_id      = n.ingredient_id
+      INNER JOIN image m               ON i.image_id           = m.image_id
       WHERE i.author_id = :author_id AND i.owner_id = :owner_id
       ORDER BY i.ingredient_name ASC
     `;
@@ -101,14 +124,22 @@ export class IngredientRepo extends MySQLRepo implements IIngredientRepo {
         i.ingredient_type_id
         t.ingredient_type_name,
         i.owner_id,
-        i.brand,
-        i.variety,
+        i.ingredient_brand,
+        i.ingredient_variety,
         i.ingredient_name,
-        i.fullname,
+        CONCAT_WS(
+          ' ',
+          i.ingredient_brand,
+          i.ingredient_variety,
+          i.ingredient_name,
+          IFNULL(GROUP_CONCAT(n.alt_name SEPARATOR ' '), '')
+        ) AS fullname,
         i.description,
-        i.image
+        m.image_url
       FROM ingredient i
-      INNER JOIN ingredient_type t ON i.ingredient_type_id = t.ingredient_type_id
+      INNER JOIN ingredient_type t     ON i.ingredient_type_id = t.ingredient_type_id
+      INNER JOIN ingredient_alt_name n ON i.ingredient_id      = n.ingredient_id
+      INNER JOIN image m               ON i.image_id           = m.image_id
       WHERE i.ingredient_id = :ingredient_id AND i.author_id = :author_id AND i.owner_id = :owner_id
     `;
     const [ [ row ] ] = await this.pool.execute<IngredientView[]>(sql, params);
@@ -122,21 +153,19 @@ export class IngredientRepo extends MySQLRepo implements IIngredientRepo {
         ingredient_type_id,
         author_id,
         owner_id,
-        brand,
-        variety,
+        ingredient_brand,
+        ingredient_variety,
         ingredient_name,
-        description,
-        image
+        description
       ) VALUES (
         :ingredient_id
         :ingredient_type_id,
         :author_id,
         :owner_id,
-        :brand,
-        :variety,
+        :ingredient_brand,
+        :ingredient_variety,
         :ingredient_name,
-        :description,
-        :image
+        :description
       )
     `;
     await this.pool.execute(sql, params);
@@ -147,24 +176,23 @@ export class IngredientRepo extends MySQLRepo implements IIngredientRepo {
       UPDATE ingredient
       SET
         ingredient_type_id = :ingredient_type_id,
-        brand              = :brand,
-        variety            = :variety,
+        ingredient_brand   = :ingredient_brand,
+        ingredient_variety = :ingredient_variety,
         ingredient_name    = :ingredient_name,
-        description        = :description,
-        image              = :image
+        description        = :description
       WHERE ingredient_id = :ingredient_id
       LIMIT 1
     `;
     await this.pool.execute(sql, params);
   }
 
-  async deleteAll(owner_id: number) {
+  async deleteAll(owner_id: string) {
     const sql = `DELETE FROM ingredient WHERE owner_id = ?`;
     await this.pool.execute(sql, [owner_id]);
   }
 
   async deleteOne(params: DeleteOneParams) {
-    const sql = `DELETE FROM ingredient WHERE owner_id = ? AND id = ? LIMIT 1`;
+    const sql = `DELETE FROM ingredient WHERE ingredient_id = :ingredient_id AND owner_id = :owner_id LIMIT 1`;
     await this.pool.execute(sql, params);
   }
 }
@@ -176,8 +204,8 @@ export interface IIngredientRepo {
   viewOne:   (params: ViewOneParams) =>        Promise<IngredientView>;
   insert:    (params: InsertParams) =>         Promise<void>;
   update:    (params: InsertParams) =>         Promise<void>;
-  deleteAll: (owner_id: number) =>             Promise<void>;
-  deleteOne: (params: DeleteOneParams) => Promise<void>;
+  deleteAll: (owner_id: string) =>             Promise<void>;
+  deleteOne: (params: DeleteOneParams) =>      Promise<void>;
 }
 
 type IngredientView = RowDataPacket & {
