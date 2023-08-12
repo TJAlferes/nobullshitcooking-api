@@ -91,11 +91,13 @@ CREATE TABLE chatmessage (
   `sender_id`      CHAR(36)  NOT NULL,
   `receiver_id`    CHAR(36)  NOT NULL,
   `content`        TEXT      NOT NULL,
+  `image_id`       CHAR(36)  DEFAULT NULL,
   `created_at`     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at`     TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (`chatroom_id`) REFERENCES `chatroom` (`chatroom_id`) ON DELETE CASCADE,
   FOREIGN KEY (`sender_id`)   REFERENCES `user` (`user_id`) ON DELETE CASCADE,
   FOREIGN KEY (`receiver_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`image_id`)    REFERENCES `image` (`image_id`)
 );
 
 -- CREATE TABLE page ();
