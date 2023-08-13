@@ -44,8 +44,6 @@ CREATE TABLE recipe_type (
   `recipe_type_name` VARCHAR(25)      NOT NULL DEFAULT ''
 );
 
---CREATE TABLE default_image (`default_image_id` SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,);
-
 -- primary tables, potentially very many records (> 100,000)
 -- 1-to-many relationships
 
@@ -92,6 +90,7 @@ CREATE TABLE chatmessage (
   `receiver_id`    CHAR(36)  NOT NULL,
   `content`        TEXT      NOT NULL,
   `image_id`       CHAR(36)  DEFAULT NULL,
+  `video_id`       CHAR(36)  DEFAULT NULL,
   `created_at`     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at`     TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (`chatroom_id`) REFERENCES `chatroom` (`chatroom_id`) ON DELETE CASCADE,
@@ -176,22 +175,10 @@ CREATE TABLE day (
 );
 
 -- CREATE TABLE page_image ();
+
 -- CREATE TABLE post_image ();
+
 -- CREATE TABLE product_image ();
-
-/*CREATE TABLE equipment_image (
-  `equipment_id` CHAR(36) NOT NULL,
-  `image_id`     CHAR(36) NOT NULL,
-  FOREIGN KEY (`equipment_id`) REFERENCES `equipment` (`equipment_id`) ON DELETE CASCADE,
-  FOREIGN KEY (`image_id`)     REFERENCES `image` (`image_id`) ON DELETE CASCADE
-);
-
-CREATE TABLE ingredient_image (
-  `ingredient_id` CHAR(36) PRIMARY KEY,
-  `image_id`      CHAR(36) NOT NULL,
-  FOREIGN KEY (`ingredient_id`) REFERENCES `ingredient` (`ingredient_id`) ON DELETE CASCADE,
-  FOREIGN KEY (`image_id`)      REFERENCES `image` (`image_id`) ON DELETE CASCADE
-);*/
 
 CREATE TABLE recipe_image (
   `recipe_id` CHAR(36) PRIMARY KEY,
@@ -210,7 +197,7 @@ CREATE TABLE chatroom_user (
   `user_id`     CHAR(36) NOT NULL,
   `is_admin`,
   `is_muted`,
-  PRIMARY KEY (`chatroom_id`, `user_id`),
+  PRIMARY KEY (`chatroom_id`, `user_id`),  -- do this for other junction tables???
   FOREIGN KEY (`chatroom_id`) REFERENCES `chatroom` (`chatroom_id`) ON DELETE CASCADE,
   FOREIGN KEY (`user_id`)     REFERENCES `user` (`user_id`) ON DELETE CASCADE
 );
@@ -233,7 +220,7 @@ CREATE TABLE friendship (
 
 CREATE TABLE recipe_equipment (
   `recipe_id`    CHAR(36)         NOT NULL,
-  `amount`       TINYINT UNSIGNED NOT NULL,
+  `amount`       TINYINT UNSIGNED DEFAULT NULL,
   `equipment_id` CHAR(36)         NOT NULL,
   FOREIGN KEY (`recipe_id`)    REFERENCES `recipe` (`recipe_id`) ON DELETE CASCADE,
   FOREIGN KEY (`equipment_id`) REFERENCES `equipment` (`equipment_id`) ON DELETE CASCADE
@@ -241,8 +228,8 @@ CREATE TABLE recipe_equipment (
 
 CREATE TABLE recipe_ingredient (
   `recipe_id`     CHAR(36)         NOT NULL DEFAULT '0',
-  `amount`        DECIMAL(5,2)     NOT NULL,
-  `unit_id`       TINYINT UNSIGNED NOT NULL,
+  `amount`        DECIMAL(5,2)     DEFAULT NULL,
+  `unit_id`       TINYINT UNSIGNED DEFAULT NULL,
   `ingredient_id` CHAR(36)         NOT NULL DEFAULT '0',
   FOREIGN KEY (`recipe_id`)     REFERENCES `recipe` (`recipe_id`)  ON DELETE CASCADE,
   FOREIGN KEY (`unit_id`)       REFERENCES `unit` (`unit_id`),
@@ -258,8 +245,8 @@ CREATE TABLE recipe_method (
 
 CREATE TABLE recipe_subrecipe (
   `recipe_id`    CHAR(36)         NOT NULL,
-  `amount`       DECIMAL(5,2)     NOT NULL,
-  `unit_id`      TINYINT UNSIGNED NOT NULL,
+  `amount`       DECIMAL(5,2)     DEFAULT NULL,
+  `unit_id`      TINYINT UNSIGNED DEFAULT NULL,
   `subrecipe_id` CHAR(36)         NOT NULL,
   FOREIGN KEY (`recipe_id`)    REFERENCES `recipe` (`recipe_id`) ON DELETE CASCADE,
   FOREIGN KEY (`unit_id`)      REFERENCES `unit` (`unit_id`),
@@ -328,6 +315,11 @@ INSERT INTO unit (unit_name) VALUES
 ("liter"),
 ("gram"),
 ("kilogram"),
+("pinch"),
+("dash"),
+("drop"),
+("clove"),
+("head"),
 ("NA");
 
 INSERT INTO method (method_name) VALUES
@@ -370,7 +362,7 @@ INSERT INTO recipe_type (recipe_type_name) VALUES
 ("Dressing"),
 ("Condiment");
 
-INSERT INTO cuisine (cuisine_continent_code, cuisine_country_code, cuisine_name, cuisine_country_name) VALUES
+INSERT INTO cuisine (continent_code, country_code, cuisine_name, country_name) VALUES
 ("AF", "DZA", "Algerian",                 "Algeria"),
 ("AF", "AGO", "Angolan",                  "Angola"),
 ("AF", "BEN", "Benin",                    "Benin"),
@@ -573,7 +565,7 @@ INSERT INTO cuisine (cuisine_continent_code, cuisine_country_code, cuisine_name,
 ("OC", "VUT", "Vanuatuan",         "Vanuatu");
 
 INSERT INTO equipment
-(equipment_type_id, author_id, owner_id, equipment_name, image)
+(equipment_type_id, author_id, owner_id, equipment_name, image_id)
 VALUES
 (2, 1, 1, "Ceramic Stone",                    "ceramic-stone"),
 (2, 1, 1, "Chef\'s Knife",                    "chefs-knife"),
@@ -635,7 +627,7 @@ VALUES
 (3, 1, 1, "Ladle",                            "ladle");
 
 INSERT INTO ingredient
-(ingredient_type_id, author_id, owner_id, ingredient_variety, ingredient_name, image)
+(ingredient_type_id, author_id, owner_id, ingredient_variety, ingredient_name, image_id)
 VALUES
 (1, 1, 1, "",                    "Tuna",                                     "tuna"),
 (1, 1, 1, "",                    "Salmon",                                   "salmon"),
@@ -1038,7 +1030,7 @@ VALUES
 (18, 1, 1, "Light",              "Soy Sauce",                                "light-soy-sauce");
 
 INSERT INTO ingredient
-(ingredient_type_id, author_id, owner_id, ingredient_brand, ingredient_name, description, image)
+(ingredient_type_id, author_id, owner_id, ingredient_brand, ingredient_name, description, image_id)
 VALUES
 (18, 1, 1, "Tobasco",            "Hot Sauce",                                "tobasco-hot-sauce");
 
