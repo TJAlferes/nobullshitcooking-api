@@ -14,12 +14,12 @@ export function userPublicRecipeRouter() {
   // TO DO: sanitize the requireds with *
   const recipeInfo = [
     'ownership',
-    'recipeTypeId',
-    'cuisineId',
+    'recipe_type_id',
+    'cuisine_id',
     'title',
     'description',
-    'activeTime',
-    'totalTime',
+    'active_time',
+    'total_time',
     'directions',
     //'methods.*.id',
     //'equipment*',
@@ -39,7 +39,7 @@ export function userPublicRecipeRouter() {
 
   router.post(
     '/public/one',
-    sanitize('id'),
+    sanitize('recipe_id'),
     catchExceptions(controller.viewOne)
   );
 
@@ -60,7 +60,7 @@ export function userPublicRecipeRouter() {
   router.put(
     '/update',
     userIsAuth,
-    sanitize(['id', ...recipeInfo]),
+    sanitize(['recipe_id', ...recipeInfo]),
     catchExceptions(controller.update)
   );
 

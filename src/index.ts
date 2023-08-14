@@ -1,19 +1,24 @@
 'use strict';
 
 import * as dotenv from 'dotenv';
+
 dotenv.config();
 
-import { redisClients } from './lib/connections/redis';
-import { appServer }    from './app';
+import { redisClients } from './infra/lib/connections/redis';
+import { appServer }    from './infra/app';
 
 export const { httpServer, io } = appServer(redisClients);
 
-const PORT = (process.env.NODE_ENV === 'production')
+const PORT = process.env.NODE_ENV === 'production'
   ? Number(process.env.PORT) || 8081
   : Number(process.env.PORT) || 3003;
 
-const HOST = (process.env.NODE_ENV === 'production')
+const HOST = process.env.NODE_ENV === 'production'
   ? '127.0.0.1'
   : '0.0.0.0';
 
-httpServer.listen(PORT, HOST, () => console.log('HTTP server listening on port ' + PORT));
+httpServer.listen(
+  PORT,
+  HOST,
+  () => console.log('HTTP server listening on port ' + PORT)
+);

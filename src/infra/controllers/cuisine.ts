@@ -13,7 +13,7 @@ export class CuisineController {
     const id = Number(req.params.id);
     
     const repo = new CuisineRepo();
-    const [ row ] = await repo.viewOne(id);
+    const row = await repo.viewOne(id);
     return res.send(row);
   }
 }

@@ -12,7 +12,12 @@ export function recipeTypeRouter() {
   const controller = new RecipeTypeController();
 
   router.get('/', catchExceptions(controller.viewAll));
-  router.get('/:id', [param('id').not().isEmpty().trim().escape()], catchExceptions(controller.viewOne));
+
+  router.get(
+    '/:recipe_type_id',
+    [param('recipe_type_id').not().isEmpty().trim().escape()],
+    catchExceptions(controller.viewOne)
+  );
 
   return router;
 }

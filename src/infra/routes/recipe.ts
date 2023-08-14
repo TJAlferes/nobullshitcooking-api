@@ -13,7 +13,12 @@ export function recipeRouter() {
 
   //router.get('/', catchExceptions(controller.viewAll));  // remove ? you need these for the planner
   router.get('/titles', catchExceptions(controller.viewTitles));
-  router.get('/:title', [param('title').not().isEmpty().trim().escape()], catchExceptions(controller.viewOne));
+
+  router.get(
+    '/:title',
+    [param('title').not().isEmpty().trim().escape()],
+    catchExceptions(controller.viewOne)
+  );
 
   return router;
 }

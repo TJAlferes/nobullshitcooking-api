@@ -6,7 +6,7 @@ import {
   EquipmentTypeRepo,
   IngredientRepo,
   IngredientTypeRepo,
-  MeasurementRepo,
+  UnitRepo,
   MethodRepo,
   RecipeRepo,
   RecipeTypeRepo
@@ -14,15 +14,15 @@ import {
 
 export class DataInitController {
   async viewInitialData(req: Request, res: Response) {
-    const authorId = 1;
-    const ownerId =  1;
+    const authorId = 1;  // TO DO: fix/finish/move to domain
+    const ownerId =  1;  // TO DO: fix/finish/move to domain
 
     const cuisineRepo =        new CuisineRepo();
     const equipmentRepo =      new EquipmentRepo();
     const equipmentTypeRepo =  new EquipmentTypeRepo();
     const ingredientRepo =     new IngredientRepo();
     const ingredientTypeRepo = new IngredientTypeRepo();
-    const measurementRepo =    new MeasurementRepo();
+    const measurementRepo =    new UnitRepo();
     const methodRepo =         new MethodRepo();
     const recipeRepo =         new RecipeRepo();
     const recipeTypeRepo =     new RecipeTypeRepo();

@@ -12,7 +12,12 @@ export function equipmentTypeRouter() {
   const controller = new EquipmentTypeController();
 
   router.get('/', catchExceptions(controller.viewAll));
-  router.get('/:id', [param('id').not().isEmpty().trim().escape()], catchExceptions(controller.viewOne));
+
+  router.get(
+    '/:equipment_type_id',
+    [param('equipment_type_id').not().isEmpty().trim().escape()],
+    catchExceptions(controller.viewOne)
+  );
 
   return router;
 }

@@ -12,7 +12,12 @@ export function methodRouter() {
   const controller = new MethodController();
 
   router.get('/', catchExceptions(controller.viewAll));
-  router.get('/:id', [param('id').not().isEmpty().trim().escape()], catchExceptions(controller.viewOne));
+  
+  router.get(
+    '/:method_id',
+    [param('method_id').not().isEmpty().trim().escape()],
+    catchExceptions(controller.viewOne)
+  );
 
   return router;
 }

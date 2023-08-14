@@ -12,7 +12,12 @@ export function ingredientRouter() {
   const controller = new IngredientController();
 
   router.get('/', catchExceptions(controller.viewAll));
-  router.get('/:id', [param('id').not().isEmpty().trim().escape()], catchExceptions(controller.viewOne));
+
+  router.get(
+    '/:ingredient_id',
+    [param('ingredient_id').not().isEmpty().trim().escape()],
+    catchExceptions(controller.viewOne)
+  );
 
   return router;
 }

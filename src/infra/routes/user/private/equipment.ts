@@ -12,10 +12,10 @@ export function userEquipmentRouter() {
   const controller = new UserEquipmentController();
 
   const equipmentInfo = [
-    'equipmentTypeId',
-    'name',
+    'equipment_type_id',
+    'equipment_name',
     'description',
-    'image'
+    'image_id'
   ];
 
   router.post(
@@ -27,7 +27,7 @@ export function userEquipmentRouter() {
   router.post(
     '/one',
     userIsAuth,
-    bodySanitizer('id'),
+    bodySanitizer('equipment_id'),
     catchExceptions(controller.viewOne)
   );
 
@@ -47,14 +47,14 @@ export function userEquipmentRouter() {
   router.put(
     '/update',
     userIsAuth,
-    bodySanitizer(['id', ...equipmentInfo]),
+    bodySanitizer(['equipment_id', ...equipmentInfo]),
     catchExceptions(controller.update)
   );
 
   router.delete(
     '/delete',
     userIsAuth,
-    bodySanitizer('id'),
+    bodySanitizer('equipment_id'),
     catchExceptions(controller.deleteOne)
   );
 

@@ -20,28 +20,28 @@ export function userPrivatePlanRouter() {
   router.post(
     '/one',
     userIsAuth,
-    sanitize('id'),
+    sanitize('plan_id'),
     catchExceptions(controller.viewOne)
   );
 
   router.post(
     '/create',
     userIsAuth,
-    sanitize(['name', 'data']),
+    sanitize(['plan_name', 'plan_data']),
     catchExceptions(controller.create)
   );
 
   router.put(
     '/update',
     userIsAuth,
-    sanitize(['id', 'name', 'data']),
+    sanitize(['plan_id', 'plan_name', 'plan_data']),
     catchExceptions(controller.update)
   );
 
   router.delete(
     '/delete',
     userIsAuth,
-    sanitize('id'),
+    sanitize('plan_id'),
     catchExceptions(controller.deleteOne)
   );
 

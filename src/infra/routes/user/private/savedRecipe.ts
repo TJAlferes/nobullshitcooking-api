@@ -20,14 +20,14 @@ export function userSavedRecipeRouter() {
   router.post(
     '/create',
     userIsAuth,
-    body('id').not().isEmpty().trim().escape(),
+    body('recipe_id').not().isEmpty().trim().escape(),
     catchExceptions(controller.create)
   );
 
   router.delete(
     '/delete',
     userIsAuth,
-    body('id').not().isEmpty().trim().escape(),
+    body('recipe_id').not().isEmpty().trim().escape(),
     catchExceptions(controller.delete)
   );
 

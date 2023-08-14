@@ -11,7 +11,11 @@ const router = Router();
 export function profileRouter() {
   const controller = new ProfileController();
 
-  router.get('/:username', [param('username').not().isEmpty().trim().escape()], catchExceptions(controller.view));
+  router.get(
+    '/:username',
+    [param('username').not().isEmpty().trim().escape()],
+    catchExceptions(controller.view)
+  );
 
   return router;
 }

@@ -11,13 +11,14 @@ const router = Router();
 export function userIngredientRouter() {
   const controller = new UserIngredientController();
 
+  // TO DO: ingredient alt names
   const ingredientInfo = [
-    'ingredientTypeId',
-    'brand',
-    'variety',
-    'name',
+    'ingredient_type_id',
+    'ingredient_brand',
+    'ingredient_variety',
+    'ingredient_name',
     'description',
-    'image'
+    'image_id'
   ];
 
   router.post(
@@ -29,7 +30,7 @@ export function userIngredientRouter() {
   router.post(
     '/one',
     userIsAuth,
-    sanitize('id'),
+    sanitize('ingredient_id'),
     catchExceptions(controller.viewOne)
   );
 
@@ -49,14 +50,14 @@ export function userIngredientRouter() {
   router.put(
     '/update',
     userIsAuth,
-    sanitize(['id', ...ingredientInfo]),
+    sanitize(['ingredient_id', ...ingredientInfo]),
     catchExceptions(controller.update)
   );
 
   router.delete(
     '/delete',
     userIsAuth,
-    sanitize('id'),
+    sanitize('ingredient_id'),
     catchExceptions(controller.deleteOne)
   );
 
