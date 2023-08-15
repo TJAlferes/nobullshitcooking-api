@@ -159,10 +159,10 @@ CREATE TABLE recipe (
 );
 
 CREATE TABLE plan (
-  `plan_id`   CHAR(36)     PRIMARY KEY,
-  `author_id` CHAR(36)     NOT NULL,
-  `owner_id`  CHAR(36)     NOT NULL,
-  `plan_name` VARCHAR(100) NOT NULL DEFAULT '',
+  `plan_id`   CHAR(36)    PRIMARY KEY,
+  `author_id` CHAR(36)    NOT NULL,
+  `owner_id`  CHAR(36)    NOT NULL,
+  `plan_name` VARCHAR(50) NOT NULL DEFAULT '',
   FOREIGN KEY (`author_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE,
   FOREIGN KEY (`owner_id`)  REFERENCES `user` (`user_id`) ON DELETE CASCADE
 );
@@ -1030,7 +1030,7 @@ VALUES
 (18, 1, 1, "Light",              "Soy Sauce",                                "light-soy-sauce");
 
 INSERT INTO ingredient
-(ingredient_type_id, author_id, owner_id, ingredient_brand, ingredient_name, description, image_id)
+(ingredient_type_id, author_id, owner_id, ingredient_brand, ingredient_name, notes, image_id)
 VALUES
 (18, 1, 1, "Tobasco",            "Hot Sauce",                                "tobasco-hot-sauce");
 

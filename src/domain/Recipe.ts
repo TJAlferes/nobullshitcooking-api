@@ -1,6 +1,6 @@
-import { assert, defaulted, number, string } from 'superstruct';
+import { assert, string } from 'superstruct';
 
-import { GenerateUUIDv7StringId, UUIDv7StringId, NumberId, Description } from './shared';
+import { GenerateUUIDv7StringId, UUIDv7StringId, NumberId } from './shared';
 
 export class Recipe {
   private recipe_id;
@@ -60,6 +60,14 @@ export function Title(title: string) {
   return title;
 }
 
+export function Description(description: string) {
+  assert(description, string());
+  if (description.length > 150) {
+    throw new Error("Recipe description must be no more than 150 characters.");
+  }
+  return description;
+}
+
 export function ActiveTime(time: string) {
   assert(time, string());
   if (time.length > 8) {
@@ -78,6 +86,9 @@ export function TotalTime(time: string) {
 
 export function Directions(directions: string) {
   assert(directions, string());
+  if (directions.length > 1000) {
+    throw new Error("Recipe directions must be no more than 2,000 characters.");
+  }
   return directions;
 }
 

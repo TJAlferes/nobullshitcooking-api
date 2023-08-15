@@ -23,9 +23,12 @@ export function Amount(amount: number) {
   return amount;
 }
 
-export function Description(description: string) {
-  assert(description, string());
-  return description;
+export function Notes(notes: string | undefined) {
+  assert(notes, defaulted(string(), ''));
+  if (notes.length > 1000) {
+    throw new Error("Notes must be no more than 1,000 characters.");
+  }
+  return notes;
 }
 
 export function Image(image: string) {

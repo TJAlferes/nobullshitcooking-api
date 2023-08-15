@@ -1,6 +1,6 @@
 import { assert, defaulted, string } from 'superstruct';
 
-import { GenerateUUIDv7StringId, UUIDv7StringId, NumberId, Description } from './shared';
+import { GenerateUUIDv7StringId, UUIDv7StringId, NumberId, Notes } from './shared';
 
 export class Ingredient {
   private ingredient_id;
@@ -11,7 +11,7 @@ export class Ingredient {
   private ingredient_variety;
   private ingredient_name;
   //private alternativeNames;  // should NOT be here, should be in a separate view model or DTO
-  private description;
+  private notes;
   private image_id;
 
   private constructor(params: ConstructorParams) {
@@ -22,7 +22,7 @@ export class Ingredient {
     this.ingredient_brand   = IngredientBrand(params.ingredient_brand);
     this.ingredient_variety = IngredientVariety(params.ingredient_variety)
     this.ingredient_name    = IngredientName(params.ingredient_name);
-    this.description        = Description(params.description);
+    this.notes              = Notes(params.notes);
     this.image_id           = UUIDv7StringId(params.image_id);
   }
 
@@ -35,7 +35,7 @@ export class Ingredient {
   }
 }
 
-export function IngredientBrand(brand: string) {
+export function IngredientBrand(brand: string | undefined) {
   assert(brand, defaulted(string(), ''));
   if (brand.length > 50) {
     throw new Error("Ingredient brand must be no more than 50 characters.");
@@ -43,7 +43,7 @@ export function IngredientBrand(brand: string) {
   return brand;
 }
 
-export function IngredientVariety(variety: string) {
+export function IngredientVariety(variety: string | undefined) {
   assert(variety, defaulted(string(), ''));
   if (variety.length > 50) {
     throw new Error("Ingredient variety must be no more than 50 characters.");
@@ -83,7 +83,7 @@ type CreateParams = {
   ingredient_brand:   string;
   ingredient_variety: string;
   ingredient_name:    string;
-  description:        string;
+  notes:              string;
   image_id:           string;
 };
 

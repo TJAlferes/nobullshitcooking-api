@@ -1,6 +1,6 @@
 import { assert, string } from 'superstruct';
 
-import { GenerateUUIDv7StringId, UUIDv7StringId, NumberId, Description } from './shared';
+import { GenerateUUIDv7StringId, UUIDv7StringId, NumberId, Notes } from './shared';
 
 export class Equipment {
   private equipment_id;
@@ -8,7 +8,7 @@ export class Equipment {
   private author_id;
   private owner_id;
   private equipment_name;
-  private description;
+  private notes;
   private image_id;
 
   private constructor(params: ConstructorParams) {
@@ -17,7 +17,7 @@ export class Equipment {
     this.author_id         = UUIDv7StringId(params.author_id);
     this.owner_id          = UUIDv7StringId(params.owner_id);
     this.equipment_name    = EquipmentName(params.equipment_name);
-    this.description       = Description(params.description);
+    this.notes             = Notes(params.notes);
     this.image_id          = UUIDv7StringId(params.image_id);
   }
 
@@ -45,7 +45,7 @@ type CreateParams = {
   author_id:         string;
   owner_id:          string;
   equipment_name:    string;
-  description:       string;
+  notes:             string;
   image_id:          string;
 };
 
