@@ -1,7 +1,7 @@
 import { assert, defaulted, number, string } from 'superstruct';
 import { uuidv7 }                    from 'uuidv7';
 
-export function GenerateId() {
+export function GenerateUUIDv7StringId() {
   return uuidv7();
 }
 

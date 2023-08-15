@@ -1,20 +1,30 @@
 import { array, assert, defaulted, number, object, string } from 'superstruct';
 
-import { GenerateId, Id } from './shared';
+import { GenerateUUIDv7StringId, UUIDv7StringId } from './shared';
 
 export class Plan {
-  private id;
-  private authorId;
-  private ownerId;
-  private name;
-  private data;
+  private plan_id;
+  private author_id;
+  private owner_id;
+  private plan_name;
+  //private data;
 
-  private constructor(params: PlanParams) {
-    this.id       = GenerateId();
-    this.authorId = Id(params.authorId);
-    this.ownerId  = Id(params.ownerId);
-    this.name     = PlanName(params.name);
-    this.data     = PlanData(params.data);
+  private constructor(params: ConstructorParams) {
+    this.plan_id   = UUIDv7StringId(params.plan_id);
+    this.author_id = UUIDv7StringId(params.author_id);
+    this.owner_id  = UUIDv7StringId(params.owner_id);
+    this.plan_name = PlanName(params.plan_name);
+    //this.data     = PlanData(params.data);
+  }
+
+  static create(params: CreateParams) {
+    const plan_id = GenerateUUIDv7StringId();
+
+    const plan = new Plan({...params, plan_id});
+
+    // persist HERE? using a repo interface?
+
+    return plan;
   }
 }
 
@@ -53,21 +63,27 @@ export function PlanData(data: string) {
   return data;
 }
 
-type PlanParams = {
-  authorId: string;
-  ownerId:  string;
-  name:     string;
-  data:     string;
+type CreateParams = {
+  author_id: string;
+  owner_id:  string;
+  plan_name: string;
+  //plan_data: string;
 };
+
+type UpdateParams = CreateParams & {
+  plan_id: string;
+}
+
+type ConstructorParams = UpdateParams;
+
 
 /*export class PlanDay {}
 export class Day {}
-export class DayTask {}
-export class Task {}*/
+export class DayRecipe {}*/
 
 export const validPlan = object({
-  authorId: number(),
-  ownerId:  number(),
+  author_id: number(),
+  owner_id:  number(),
   name:     string(),
   data: defaulted(
     string(),

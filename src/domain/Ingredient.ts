@@ -1,41 +1,38 @@
-import { assert, defaulted, number, string } from 'superstruct';
+import { assert, defaulted, string } from 'superstruct';
 
-import { GenerateId, Id, Description, Image } from './shared';
+import { GenerateUUIDv7StringId, UUIDv7StringId, NumberId, Description } from './shared';
 
 export class Ingredient {
-  private id;
-  private ingredientTypeId;
-  private authorId;
-  private ownerId;
-  private brand;
-  private variety;
-  private name;
-  private alternativeNames;  // should NOT be here, should be in a separate view model or DTO
+  private ingredient_id;
+  private ingredient_type_id;
+  private author_id;
+  private owner_id;
+  private ingredient_brand;
+  private ingredient_variety;
+  private ingredient_name;
+  //private alternativeNames;  // should NOT be here, should be in a separate view model or DTO
   private description;
-  private image;
+  private image_id;
 
-  private constructor(params: IngredientParams) {
-    this.id               = GenerateId();
-    this.ingredientTypeId = IngredientTypeId(params.ingredientTypeId);
-    this.authorId         = Id(params.authorId);
-    this.ownerId          = Id(params.ownerId);
-    this.brand            = IngredientBrand(params.brand);
-    this.variety          = IngredientVariety(params.variety)
-    this.name             = IngredientName(params.name);
-    this.alternativeNames = IngredientAlternativeNames(params.alternativeNames);
-    this.description      = Description(params.description);
-    this.image            = Image(params.image);
+  private constructor(params: ConstructorParams) {
+    this.ingredient_id      = UUIDv7StringId(params.ingredient_id);
+    this.ingredient_type_id = NumberId(params.ingredient_type_id);
+    this.author_id          = UUIDv7StringId(params.author_id);
+    this.owner_id           = UUIDv7StringId(params.owner_id);
+    this.ingredient_brand   = IngredientBrand(params.ingredient_brand);
+    this.ingredient_variety = IngredientVariety(params.ingredient_variety)
+    this.ingredient_name    = IngredientName(params.ingredient_name);
+    this.description        = Description(params.description);
+    this.image_id           = UUIDv7StringId(params.image_id);
   }
 
-  static create(params: IngredientParams) {
-    const ingredient = new Ingredient(params);
+  static create(params: CreateParams) {
+    const ingredient_id = GenerateUUIDv7StringId();
+
+    const ingredient = new Ingredient({...params, ingredient_id});
+
     return ingredient;  // only return id ???
   }
-}
-
-export function IngredientTypeId(ingredientTypeId: number) {
-  assert(ingredientTypeId, number());
-  return ingredientTypeId;
 }
 
 export function IngredientBrand(brand: string) {
@@ -62,7 +59,8 @@ export function IngredientName(name: string) {
   return name;
 }
 
-export function IngredientAlternativeNames(alternativeNames: string[]) {
+//alternative_names: string[];
+/*export function IngredientAlternativeNames(alternativeNames: string[]) {
   if (alternativeNames.length < 1) {
     return [];
   }
@@ -76,16 +74,21 @@ export function IngredientAlternativeNames(alternativeNames: string[]) {
     }
   });
   return alternativeNames;
+}*/
+
+type CreateParams = {
+  ingredient_type_id: number;
+  author_id:          string;
+  owner_id:           string;
+  ingredient_brand:   string;
+  ingredient_variety: string;
+  ingredient_name:    string;
+  description:        string;
+  image_id:           string;
+};
+
+type UpdateParams = CreateParams & {
+  ingredient_id: string;
 }
 
-type IngredientParams = {
-  ingredientTypeId: number;
-  authorId:         string;
-  ownerId:          string;
-  brand:            string;
-  variety:          string;
-  name:             string;
-  alternativeNames: string[];
-  description:      string;
-  image:            string;
-};
+type ConstructorParams = UpdateParams;

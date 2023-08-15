@@ -1,9 +1,9 @@
 import { assert, defaulted, number, string } from 'superstruct';
 
-import { GenerateId, Id, Description, Image } from './shared';
+import { GenerateUUIDv7StringId, UUIDv7StringId, NumberId, Description } from './shared';
 
 export class Recipe {
-  private id;
+  private recipe_id;
   private recipe_type_id;
   private cuisine_id;
   private author_id;
@@ -24,25 +24,61 @@ export class Recipe {
   //private video;
 
   private constructor(params: ConstructorParams) {
-    this.id               = GenerateId();
-    this.author_id         = Id(params.author_id);
-    this.owner_id          = Id(params.owner_id);
-    this.description      = Description(params.description);
-    //this.recipeImage      = Image(params.recipeImage);
-    //this.equipmentImage   = Image(params.equipmentImage);
-    //this.ingredientsImage = Image(params.ingredientsImage);
-    //this.cookingImage     = Image(params.cookingImage);
+    this.recipe_id      = UUIDv7StringId(params.recipe_id);
+    this.recipe_type_id = NumberId(params.recipe_type_id);
+    this.cuisine_id     = NumberId(params.cuisine_id);
+    this.author_id      = UUIDv7StringId(params.author_id);
+    this.owner_id       = UUIDv7StringId(params.owner_id);
+    this.title          = Title(params.title);
+    this.description    = Description(params.description);
+    this.active_time    = ActiveTime(params.active_time);
+    this.total_time     = TotalTime(params.active_time);
+    this.directions     = Directions(params.directions);
+    //this.image_id = (params.image_id);
   }
 
   static create(params: CreateParams) {
-    const recipe_id = GenerateId();
-    const recipe = new Recipe(params);
+    const recipe_id = GenerateUUIDv7StringId();
+
+    const recipe = new Recipe({...params, recipe_id});
+
+    // persist HERE? using a repo interface?
+
     return recipe;  // only return id ???
   }
 
   static update(params: UpdateParams) {
 
   }
+}
+
+export function Title(title: string) {
+  assert(title, string());
+  if (title.length > 100) {
+    throw new Error ("Recipe title must be no more than 100 characters.")
+  }
+  return title;
+}
+
+export function ActiveTime(time: string) {
+  assert(time, string());
+  if (time.length > 8) {
+    throw new Error ("Recipe active time must be no more than 8 characters.")
+  }
+  return time;
+}
+
+export function TotalTime(time: string) {
+  assert(time, string());
+  if (time.length > 8) {
+    throw new Error ("Recipe total time must be no more than 8 characters.")
+  }
+  return time;
+}
+
+export function Directions(directions: string) {
+  assert(directions, string());
+  return directions;
 }
 
 type CreateParams = {
