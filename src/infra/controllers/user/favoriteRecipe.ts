@@ -6,38 +6,42 @@ import { validFavoriteRecipe }            from '../../lib/validations';
 
 export class UserFavoriteRecipeController {
   async viewByUserId(req: Request, res: Response) {
-    const userId = req.session.userInfo!.id;
+    const user_id = req.session.userInfo!.id;
     
     const favoriteRecipeRepo = new FavoriteRecipeRepo();
-    const rows = await favoriteRecipeRepo.viewByUserId(userId);
+    const rows = await favoriteRecipeRepo.viewByUserId(user_id);
     return res.send(rows);
   }
 
   async create(req: Request, res: Response) {
-    const recipeId = Number(req.body.id);
-    const userId =   req.session.userInfo!.id;
-    const ownerId =  1;  // only public recipes may be favorited
+    const recipe_id = req.body.recipe_id;
+    const user_id   = req.session.userInfo!.id;
+    const owner_id   = 1;  // only public recipes may be favorited  // TO DO: move to domain??? and change to string char(36)
 
-    assert({userId, recipeId}, validFavoriteRecipe);
+    assert({user_id, recipe_id}, validFavoriteRecipe);  // TO DO: move to domain???
 
     const recipeRepo = new RecipeRepo();
-    const recipe = await recipeRepo.viewOneById(recipeId, userId, ownerId);
-    if (!recipe) return res.send({message: 'Not Found'});
-    if (recipe.author_id === userId) return res.send({message: 'May not favorite own recipe.'});
+    const recipe = await recipeRepo.viewOneById({recipe_id, user_id, owner_id});
+    if (!recipe) {
+      return res.send({message: 'Not Found'});
+    }
+    if (recipe.author_id === user_id) {
+      return res.send({message: 'May not favorite own recipe.'});
+    }
 
     const favoriteRecipeRepo = new FavoriteRecipeRepo();
-    await favoriteRecipeRepo.create(userId, recipeId);
+    await favoriteRecipeRepo.insert({user_id, recipe_id});
     return res.send({message: 'Favorited.'});
   }
 
   async delete(req: Request, res: Response) {
-    const recipeId = Number(req.body.id);
-    const userId =   req.session.userInfo!.id;
+    const recipe_id = req.body.recipe_id;
+    const user_id   = req.session.userInfo!.id;
 
-    assert({userId, recipeId}, validFavoriteRecipe);
+    assert({user_id, recipe_id}, validFavoriteRecipe);  // TO DO: move to domain???
 
     const favoriteRecipeRepo = new FavoriteRecipeRepo();
-    await favoriteRecipeRepo.delete(userId, recipeId);
+    await favoriteRecipeRepo.delete({user_id, recipe_id});
     return res.send({message: 'Unfavorited.'});
   }
 }

@@ -14,51 +14,51 @@ import {
 
 export class DataInitController {
   async viewInitialData(req: Request, res: Response) {
-    const authorId = 1;  // TO DO: fix/finish/move to domain
-    const ownerId =  1;  // TO DO: fix/finish/move to domain
+    const author_id = 1;  // TO DO: fix/finish/move to domain
+    const owner_id  = 1;  // TO DO: fix/finish/move to domain
 
-    const cuisineRepo =        new CuisineRepo();
-    const equipmentRepo =      new EquipmentRepo();
-    const equipmentTypeRepo =  new EquipmentTypeRepo();
-    const ingredientRepo =     new IngredientRepo();
+    const cuisineRepo        = new CuisineRepo();
+    const equipmentRepo      = new EquipmentRepo();
+    const equipmentTypeRepo  = new EquipmentTypeRepo();
+    const ingredientRepo     = new IngredientRepo();
     const ingredientTypeRepo = new IngredientTypeRepo();
-    const measurementRepo =    new UnitRepo();
-    const methodRepo =         new MethodRepo();
-    const recipeRepo =         new RecipeRepo();
-    const recipeTypeRepo =     new RecipeTypeRepo();
+    const unitRepo           = new UnitRepo();
+    const methodRepo         = new MethodRepo();
+    const recipeRepo         = new RecipeRepo();
+    const recipeTypeRepo     = new RecipeTypeRepo();
 
     const [
       cuisines,
       equipments,
-      equipmentTypes,
+      equipment_types,
       ingredients,
-      ingredientTypes,
-      measurements,
+      ingredient_types,
+      units,
       methods,
       recipes,
-      recipeTypes
+      recipe_types
     ] = await Promise.all([
       cuisineRepo.viewAll(),
-      equipmentRepo.viewAll(authorId, ownerId),
+      equipmentRepo.viewAll(author_id, owner_id),
       equipmentTypeRepo.viewAll(),
-      ingredientRepo.viewAll(authorId, ownerId),
+      ingredientRepo.viewAll(author_id, owner_id),
       ingredientTypeRepo.viewAll(),
-      measurementRepo.viewAll(),
+      unitRepo.viewAll(),
       methodRepo.viewAll(),
-      recipeRepo.viewAll(authorId, ownerId),
+      recipeRepo.viewAll(author_id, owner_id),
       recipeTypeRepo.viewAll()
     ]);
 
     return res.send({
       cuisines,
       equipment: equipments,
-      equipmentTypes,
+      equipment_types,
       ingredients,
-      ingredientTypes,
-      measurements,
+      ingredient_types,
+      units,
       methods,
       recipes,
-      recipeTypes
+      recipe_types
     });
   }
 }

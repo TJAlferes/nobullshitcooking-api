@@ -8,26 +8,26 @@ import {
   RecipeMethodRepo,
   RecipeSubrecipeRepo
 } from '../../../repos/mysql';
-import { createRecipeService, updateRecipeService } from '../../../lib/services';
-import { validRecipe }                              from '../../../lib/validations';
+import { RecipeService } from '../../../../app/services';
+import { validRecipe }   from '../../../lib/validations';  // TO DO: use domain
 
 export class UserPrivateRecipeController {
   async viewAll(req: Request, res: Response) {
-    const authorId = req.session.userInfo!.id;
-    const ownerId =  req.session.userInfo!.id;
+    const author_id = req.session.userInfo!.id;
+    const owner_id  = req.session.userInfo!.id;
 
     const recipeRepo = new RecipeRepo();
-    const rows = await recipeRepo.viewAll(authorId, ownerId);
+    const rows = await recipeRepo.viewAll({author_id, owner_id});
     return res.send(rows);
   }
 
   async viewOne(req: Request, res: Response) {
     const title =    req.body.title;  // still use id ?
-    const authorId = req.session.userInfo!.id;
-    const ownerId =  req.session.userInfo!.id;
+    const author_id = req.session.userInfo!.id;
+    const owner_id =  req.session.userInfo!.id;
 
     const recipeRepo = new RecipeRepo();
-    const [ row ] = await recipeRepo.viewOne(title, authorId, ownerId);
+    const row = await recipeRepo.viewOne({title, author_id, owner_id});
     return res.send(row);
   }
 
@@ -50,14 +50,14 @@ export class UserPrivateRecipeController {
       cookingImage,
       video
     } = req.body.recipeInfo;
-    const authorId = req.session.userInfo!.id;
-    const ownerId =  req.session.userInfo!.id;
+    const author_id = req.session.userInfo!.id;
+    const owner_id =  req.session.userInfo!.id;
 
     const creatingRecipe = {
       recipeTypeId,
       cuisineId,
-      authorId,
-      ownerId,
+      author_id,
+      owner_id,
       title,
       description,
       activeTime,
@@ -114,15 +114,15 @@ export class UserPrivateRecipeController {
       cookingImage,
       video
     }= req.body.recipeInfo;
-    const authorId = req.session.userInfo!.id;
-    const ownerId =  req.session.userInfo!.id;
+    const author_id = req.session.userInfo!.id;
+    const owner_id =  req.session.userInfo!.id;
     if (!id) return res.send({message: 'Invalid recipe ID!'});
 
     const updatingRecipe = {
       recipeTypeId,
       cuisineId,
-      authorId,
-      ownerId,
+      author_id,
+      owner_id,
       title,
       description,
       activeTime,
@@ -163,7 +163,7 @@ export class UserPrivateRecipeController {
   async deleteOne(req: Request, res: Response) {
     // transaction(s)?: TO DO: TRIGGERS
     const id =       Number(req.body.id);
-    const ownerId =  req.session.userInfo!.id;
+    const owner_id =  req.session.userInfo!.id;
 
     //const favoriteRecipeRepo =   new FavoriteRecipeRepo();
     //const savedRecipeRepo =      new SavedRecipeRepo();
@@ -183,7 +183,7 @@ export class UserPrivateRecipeController {
 
     // TO DO: what about deleting from plans???
     const recipeRepo = new RecipeRepo();
-    await recipeRepo.deleteOneByOwnerId(id, ownerId);
+    await recipeRepo.deleteOneByOwnerId(id, owner_id);
 
     return res.send({message: 'Recipe deleted.'});
   }

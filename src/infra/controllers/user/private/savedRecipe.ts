@@ -6,40 +6,45 @@ import { validSavedRecipe }            from '../../../lib/validations';
 
 export class UserSavedRecipeController {
   async viewByUserId(req: Request, res: Response) {
-    const userId = req.session.userInfo!.id;
+    const user_id = req.session.userInfo!.id;
 
     const savedRecipeRepo = new SavedRecipeRepo();
-    const rows = await savedRecipeRepo.viewByUserId(userId);
+    const rows = await savedRecipeRepo.viewByUserId(user_id);
     return res.send(rows);
   }
 
   async create(req: Request, res: Response) {
-    const recipeId = Number(req.body.id);
-    const userId =   req.session.userInfo!.id;
-    const ownerId =  1;  // only public recipes may be saved
+    const recipe_id = req.body.recipe_id;
+    const user_id   = req.session.userInfo!.id;
+    const owner_id  = 1;  // only public recipes may be saved  // TO DO: move to domain??? and change to string char(36)
 
-    assert({userId, recipeId}, validSavedRecipe);
+    assert({user_id, recipe_id}, validSavedRecipe);  // TO DO: move to domain???
 
     const recipeRepo = new RecipeRepo();
-    const recipe = await recipeRepo.viewOneById(recipeId, userId, ownerId);
-    if (!recipe)
+    const recipe = await recipeRepo.viewOneById({recipe_id, user_id, owner_id});
+    if (!recipe) {
       return res.send({message: 'Not Found'});
-    if (recipe.author_id === userId)
-      return res.send({message: 'Your recipes are saved when you create or update them. This "Save" is so you may save public recipes created by others.'});
+    }
+    if (recipe.author_id === user_id) {
+      return res.send({message: `
+        Your recipes are saved when you create or update them.
+        This "Save" is so you may save public recipes created by others.
+      `});
+    }
 
     const savedRecipeRepo = new SavedRecipeRepo();
-    await savedRecipeRepo.create(userId, recipeId);
+    await savedRecipeRepo.insert({user_id, recipe_id});
     return res.send({message: 'Saved.'});
   }
 
   async delete(req: Request, res: Response) {
-    const recipeId = Number(req.body.id);
-    const userId =   req.session.userInfo!.id;
+    const recipe_id = req.body.recipe_id;
+    const user_id =   req.session.userInfo!.id;
 
-    assert({userId, recipeId}, validSavedRecipe);
+    assert({user_id, recipe_id}, validSavedRecipe);  // TO DO: move to domain???
     
     const savedRecipeRepo = new SavedRecipeRepo();
-    await savedRecipeRepo.delete(userId, recipeId);
+    await savedRecipeRepo.delete({user_id, recipe_id});
     return res.send({message: 'Unsaved.'});
   }
 }

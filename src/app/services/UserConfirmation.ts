@@ -22,9 +22,9 @@ export class UserConfirmationService {
       throw new Error("Incorrect email or password.");  // throw error message from this layer? or just return json message?
     }
   
-    const confirmationCode = ConfirmationCode(params.confirmationCode);
-    const correctConfirmationCode = confirmationCode === user.confirmation_code;
-    if (!correctConfirmationCode) {
+    const confirmation_code = ConfirmationCode(params.confirmation_code);
+    const correctCode = confirmation_code === user.confirmation_code;
+    if (!correctCode) {
       throw new Error("An issue occurred, please double check your info and try again.");
     }
 
@@ -88,9 +88,9 @@ export class UserConfirmationService {
 }
 
 type ConfirmParams = {
-  email:            string;
-  password:         string;
-  confirmationCode: string;       
+  email:             string;
+  password:          string;
+  confirmation_code: string;       
 };
 
 type ResendConfirmationCodeParams = {
