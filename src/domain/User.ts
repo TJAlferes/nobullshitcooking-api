@@ -1,6 +1,6 @@
 import { assert, defaulted, string } from 'superstruct';
 
-import { Id, GenerateId } from './shared';
+import { UUIDv7StringId, GenerateId } from './shared';
 
 export class User {
   private readonly user_id;
@@ -14,11 +14,11 @@ export class User {
   //private events: DomainEvent = [];
 
   private constructor(params: ConstructorParams) {
-    this.user_id           = Id(params.user_id);
+    this.user_id           = UUIDv7StringId(params.user_id);
     this.email             = Email(params.email);
     this.password          = Password(params.password);
     this.username          = Username(params.username);
-    this.confirmation_code = Id(params.confirmation_code);
+    this.confirmation_code = UUIDv7StringId(params.confirmation_code);
   }
 
   static create(params: CreateParams): User {

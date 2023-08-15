@@ -10,10 +10,10 @@ export class CuisineController {
   }
 
   async viewOne(req: Request, res: Response) {
-    const id = Number(req.params.id);
+    const cuisine_id = Number(req.params.cuisine_id);
     
     const repo = new CuisineRepo();
-    const row = await repo.viewOne(id);
+    const row = await repo.viewOne(cuisine_id);
     return res.send(row);
   }
 }

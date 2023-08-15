@@ -1,24 +1,27 @@
 import { Request, Response } from 'express';
 
+import { EquipmentService } from '../../app/services/Equipment';
 import { EquipmentRepo } from '../repos/mysql';
 
 export class EquipmentController {
   async viewAll(req: Request, res: Response) {
-    const authorId = 1;
-    const ownerId =  1;
+    const author_id = 1;  // TO DO: move to equipmentService
+    const owner_id  = 1;  // TO DO: move to equipmentService
 
-    const repo = new EquipmentRepo();
-    const rows = await repo.viewAll(authorId, ownerId);
+    const equipmentRepo = new EquipmentRepo();
+    const equipmentService = new EquipmentService(equipmentRepo)
+    const rows = await equipmentService.viewAll();
     return res.send(rows);
   }
 
   async viewOne(req: Request, res: Response) {
-    const id =       Number(req.params.id);
-    const authorId = 1;
-    const ownerId =  1;
+    const equipment_id = req.params.equipment_id;
+    const author_id = 1;  // TO DO: move to equipmentService
+    const owner_id  = 1;  // TO DO: move to equipmentService
 
-    const repo = new EquipmentRepo();
-    const [ row ] = await repo.viewOne(id, authorId, ownerId);
+    const equipmentRepo = new EquipmentRepo();
+    const equipmentService = new EquipmentService(equipmentRepo)
+    const row = await equipmentService.viewOne(equipment_id);
     return res.send(row);
   }
 }
