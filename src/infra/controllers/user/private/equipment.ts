@@ -6,33 +6,29 @@ import { validEquipment }                     from '../../../lib/validations';
 
 export class UserEquipmentController {
   async viewAll(req: Request, res: Response) {
-    const author_id = req.session.userInfo!.id;
     const owner_id  = req.session.userInfo!.id;
 
     const equipmentRepo = new EquipmentRepo();
-    const rows = await equipmentRepo.viewAll({author_id, owner_id});
+    const rows = await equipmentRepo.viewAll(owner_id);
     return res.send(rows);
   }
 
   async viewOne(req: Request, res: Response) {
     const equipment_id = req.body.equipment_id;
-    const author_id    = req.session.userInfo!.id;
     const owner_id     = req.session.userInfo!.id;
 
     const equipmentRepo = new EquipmentRepo();
-    const row = await equipmentRepo.viewOne({equipment_id, author_id, owner_id});
+    const row = await equipmentRepo.viewOne({equipment_id, owner_id});
     return res.send(row);
   }
 
   async create(req: Request, res: Response) {
     const { equipment_name, description, image_id } = req.body.equipmentInfo;
     const equipment_type_id = Number(req.body.equipmentInfo.equipment_type_id);
-    const author_id = req.session.userInfo!.id;
     const owner_id  = req.session.userInfo!.id;
 
     const args = {
       equipment_type_id,
-      author_id,
       owner_id,
       equipment_name,
       description,
@@ -54,13 +50,11 @@ export class UserEquipmentController {
       image_id
     } = req.body.equipmentInfo;
     const equipment_type_id = Number(req.body.equipmentInfo.equipment_type_id);
-    const author_id = req.session.userInfo!.id;
     const owner_id  = req.session.userInfo!.id;
 
     const args = {
       equipment_id,
       equipment_type_id,
-      author_id,
       owner_id,
       equipment_name,
       description,

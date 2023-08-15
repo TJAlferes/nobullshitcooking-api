@@ -6,21 +6,19 @@ import { validIngredient }                      from '../../../lib/validations';
 
 export class UserIngredientController {
   async viewAll(req: Request, res: Response) {
-    const author_id = req.session.userInfo!.id;
     const owner_id  = req.session.userInfo!.id;
 
     const ingredientRepo = new IngredientRepo();
-    const rows = await ingredientRepo.viewAll({author_id, owner_id});
+    const rows = await ingredientRepo.viewAll(owner_id);
     return res.send(rows);
   }
 
   async viewOne(req: Request, res: Response) {
     const ingredient_id = req.body.id;
-    const author_id     = req.session.userInfo!.id;
     const owner_id      = req.session.userInfo!.id;
 
     const ingredientRepo = new IngredientRepo();
-    const row = await ingredientRepo.viewOne({ingredient_id, author_id, owner_id});
+    const row = await ingredientRepo.viewOne({ingredient_id, owner_id});
     return res.send(row);
   }
 
@@ -34,12 +32,10 @@ export class UserIngredientController {
       image_id
     } = req.body.ingredientInfo;
     const ingredient_type_id = Number(req.body.ingredientInfo.ingredient_type_id);
-    const author_id = req.session.userInfo!.id;
     const owner_id  = req.session.userInfo!.id;
 
     const args = {
       ingredient_type_id,
-      author_id,
       owner_id,
       ingredient_brand,
       ingredient_variety,
@@ -69,12 +65,10 @@ export class UserIngredientController {
       image_id
     } = req.body.ingredientInfo;
     const ingredient_type_id = Number(req.body.ingredientInfo.ingredient_type_id);
-    const author_id = req.session.userInfo!.id;
     const owner_id  = req.session.userInfo!.id;
     
     const args = {
       ingredient_type_id,
-      author_id,
       owner_id,
       ingredient_brand,
       ingredient_variety,

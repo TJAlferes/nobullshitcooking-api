@@ -78,9 +78,11 @@ CREATE TABLE image (
 
 CREATE TABLE chatroom (
   `chatroom_id`   CHAR(36)    PRIMARY KEY,
-  `chatroom_name` VARCHAR(50) NOT NULL,
+  `owner_id`      CHAR(36)    NOT NULL,
+  `chatroom_name` VARCHAR(32) NOT NULL,
   `created_at`    TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
-  `updated_at`    TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `updated_at`    TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (`owner_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE chatmessage (
@@ -105,20 +107,18 @@ CREATE TABLE chatmessage (
 CREATE TABLE equipment (
   `equipment_id`      CHAR(36)         PRIMARY KEY,
   `equipment_type_id` TINYINT UNSIGNED NOT NULL DEFAULT '0',
-  `author_id`         CHAR(36)         NOT NULL,
   `owner_id`          CHAR(36)         NOT NULL,
   `equipment_name`    VARCHAR(100)     NOT NULL,
   `notes`             TEXT             NOT NULL DEFAULT '',
   `image_id`          CHAR(36)         NOT NULL,
   FOREIGN KEY (`equipment_type_id`) REFERENCES `equipment_type` (`equipment_type_id`),
-  FOREIGN KEY (`author_id`)         REFERENCES `user` (`user_id`) ON DELETE CASCADE,
+  --FOREIGN KEY (`author_id`)         REFERENCES `user` (`user_id`) ON DELETE CASCADE,
   FOREIGN KEY (`owner_id`)          REFERENCES `user` (`user_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE ingredient (
   `ingredient_id`          CHAR(36)         PRIMARY KEY,
   `ingredient_type_id`     TINYINT UNSIGNED NOT NULL DEFAULT '0',
-  `author_id`              CHAR(36)         NOT NULL,
   `owner_id`               CHAR(36)         NOT NULL,
   `ingredient_brand`       VARCHAR(50)      NOT NULL DEFAULT '',
   `ingredient_variety`     VARCHAR(50)      NOT NULL DEFAULT '',
@@ -126,7 +126,7 @@ CREATE TABLE ingredient (
   `notes`                  TEXT             NOT NULL DEFAULT '',
   `image_id`               CHAR(36)         NOT NULL,
   FOREIGN KEY (`ingredient_type_id`) REFERENCES `ingredient_type` (`ingredient_type_id`),
-  FOREIGN KEY (`author_id`)          REFERENCES `user` (`user_id`) ON DELETE CASCADE,
+  --FOREIGN KEY (`author_id`)          REFERENCES `user` (`user_id`) ON DELETE CASCADE,
   FOREIGN KEY (`owner_id`)           REFERENCES `user` (`user_id`) ON DELETE CASCADE
 );
 
@@ -160,10 +160,8 @@ CREATE TABLE recipe (
 
 CREATE TABLE plan (
   `plan_id`   CHAR(36)    PRIMARY KEY,
-  `author_id` CHAR(36)    NOT NULL,
   `owner_id`  CHAR(36)    NOT NULL,
   `plan_name` VARCHAR(50) NOT NULL DEFAULT '',
-  FOREIGN KEY (`author_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE,
   FOREIGN KEY (`owner_id`)  REFERENCES `user` (`user_id`) ON DELETE CASCADE
 );
 

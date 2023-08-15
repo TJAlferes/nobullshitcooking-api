@@ -35,8 +35,8 @@ export class UserDataInitController {
       favoriteRecipeRepo.viewByUserId(user_id),
       friendshipRepo.view(user_id),
       planRepo.viewAll(user_id),
-      equipmentRepo.viewAll(user_id, user_id),
-      ingredientRepo.viewAll(user_id, user_id),
+      equipmentRepo.viewAll(user_id),
+      ingredientRepo.viewAll(user_id),
       recipeRepo.viewAll(user_id, user_id),
       recipeRepo.viewAll(user_id, 1),
       savedRecipeRepo.viewByUserId(user_id)

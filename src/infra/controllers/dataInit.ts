@@ -39,9 +39,9 @@ export class DataInitController {
       recipe_types
     ] = await Promise.all([
       cuisineRepo.viewAll(),
-      equipmentRepo.viewAll(author_id, owner_id),
+      equipmentRepo.viewAll(owner_id),
       equipmentTypeRepo.viewAll(),
-      ingredientRepo.viewAll(author_id, owner_id),
+      ingredientRepo.viewAll(owner_id),
       ingredientTypeRepo.viewAll(),
       unitRepo.viewAll(),
       methodRepo.viewAll(),

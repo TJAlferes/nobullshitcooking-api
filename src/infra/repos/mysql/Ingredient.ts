@@ -87,7 +87,7 @@ export class IngredientRepo extends MySQLRepo implements IIngredientRepo {
     return {results: rows, total_results, total_pages};
   }
 
-  async viewAll(params: ViewAllParams) {
+  async viewAll(owner_id: string) {
     const sql = `
       SELECT
         i.ingredient_id,
@@ -110,10 +110,10 @@ export class IngredientRepo extends MySQLRepo implements IIngredientRepo {
       INNER JOIN ingredient_type t     ON i.ingredient_type_id = t.ingredient_type_id
       INNER JOIN ingredient_alt_name n ON i.ingredient_id      = n.ingredient_id
       INNER JOIN image m               ON i.image_id           = m.image_id
-      WHERE i.author_id = :author_id AND i.owner_id = :owner_id
+      WHERE i.owner_id = ?
       ORDER BY i.ingredient_name ASC
     `;
-    const [ row ] = await this.pool.execute<IngredientView[]>(sql, params);
+    const [ row ] = await this.pool.execute<IngredientView[]>(sql, owner_id);
     return row;
   }
 
@@ -140,7 +140,7 @@ export class IngredientRepo extends MySQLRepo implements IIngredientRepo {
       INNER JOIN ingredient_type t     ON i.ingredient_type_id = t.ingredient_type_id
       INNER JOIN ingredient_alt_name n ON i.ingredient_id      = n.ingredient_id
       INNER JOIN image m               ON i.image_id           = m.image_id
-      WHERE i.ingredient_id = :ingredient_id AND i.author_id = :author_id AND i.owner_id = :owner_id
+      WHERE i.ingredient_id = :ingredient_id AND i.owner_id = :owner_id
     `;
     const [ [ row ] ] = await this.pool.execute<IngredientView[]>(sql, params);
     return row;
@@ -151,7 +151,6 @@ export class IngredientRepo extends MySQLRepo implements IIngredientRepo {
       INSERT INTO ingredient (
         ingredient_id
         ingredient_type_id,
-        author_id,
         owner_id,
         ingredient_brand,
         ingredient_variety,
@@ -160,7 +159,6 @@ export class IngredientRepo extends MySQLRepo implements IIngredientRepo {
       ) VALUES (
         :ingredient_id
         :ingredient_type_id,
-        :author_id,
         :owner_id,
         :ingredient_brand,
         :ingredient_variety,
@@ -200,7 +198,7 @@ export class IngredientRepo extends MySQLRepo implements IIngredientRepo {
 export interface IIngredientRepo {
   auto:      (term: string) =>                 Promise<IngredientSuggestion[]>;
   search:    (searchRequest: SearchRequest) => Promise<SearchResponse>;
-  viewAll:   (params: ViewAllParams) =>        Promise<IngredientView[]>;
+  viewAll:   (owner_id: string) =>             Promise<IngredientView[]>;
   viewOne:   (params: ViewOneParams) =>        Promise<IngredientView>;
   insert:    (params: InsertParams) =>         Promise<void>;
   update:    (params: InsertParams) =>         Promise<void>;
@@ -224,7 +222,6 @@ type IngredientView = RowDataPacket & {
 type InsertParams = {
   ingredient_id:      string;
   ingredient_type_id: number;
-  author_id:          string;
   owner_id:           string;
   brand:              string;
   variety:            string;
@@ -241,14 +238,8 @@ type IngredientSuggestion = RowDataPacket & {
   text:            string;
 };
 
-type ViewAllParams = {
-  author_id: string;
-  owner_id:  string;
-};
-
 type ViewOneParams = {
   ingredient_id: string;
-  author_id:     string;
   owner_id:      string;
 };
 

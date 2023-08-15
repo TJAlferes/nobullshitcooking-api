@@ -60,7 +60,7 @@ export class EquipmentRepo extends MySQLRepo implements IEquipmentRepo {
     return {results: rows, total_results, total_pages};
   }
 
-  async viewAll(params: ViewAllParams) {
+  async viewAll(owner_id:  string) {
     const sql = `
       SELECT
         e.equipment_id,
@@ -73,10 +73,10 @@ export class EquipmentRepo extends MySQLRepo implements IEquipmentRepo {
       FROM equipment e
       INNER JOIN equipment_type t ON e.equipment_type_id = t.equipment_type_id
       INNER JOIN image i          ON e.image_id          = i.image_id
-      WHERE e.author_id = :author_id AND e.owner_id = :owner_id
+      WHERE e.owner_id = ?
       ORDER BY e.equipment_name ASC
     `;
-    const [ rows ] = await this.pool.execute<EquipmentView[]>(sql, params);
+    const [ rows ] = await this.pool.execute<EquipmentView[]>(sql, owner_id);
     return rows;
   }
 
@@ -93,7 +93,7 @@ export class EquipmentRepo extends MySQLRepo implements IEquipmentRepo {
       FROM equipment e
       INNER JOIN equipment_type t ON e.equipment_type_id = t.equipment_type_id
       INNER JOIN image i          ON e.image_id          = i.image_id
-      WHERE e.equipment_id = :equipment_id AND e.author_id = :author_id AND e.owner_id = :owner_id
+      WHERE e.equipment_id = :equipment_id AND e.owner_id = :owner_id
     `;
     const [ [ row ] ] = await this.pool.execute<EquipmentView[]>(sql, params);
     return row;
@@ -104,14 +104,12 @@ export class EquipmentRepo extends MySQLRepo implements IEquipmentRepo {
       INSERT INTO equipment (
         equipment_id,
         equipment_type_id,
-        author_id,
         owner_id,
         equipment_name,
         description
       ) VALUES (
         :equipment_id,
         :equipment_type_id,
-        :author_id,
         :owner_id,
         :equipment_name,
         :description
@@ -147,7 +145,7 @@ export class EquipmentRepo extends MySQLRepo implements IEquipmentRepo {
 export interface IEquipmentRepo {
   auto:      (term: string) =>                  Promise<EquipmentSuggestion[]>;
   search:    (search_request: SearchRequest) => Promise<SearchResponse>;
-  viewAll:   (params: ViewAllParams) =>         Promise<EquipmentView[]>;
+  viewAll:   (owner_id: string) =>              Promise<EquipmentView[]>;
   viewOne:   (params: ViewOneParams) =>         Promise<EquipmentView>;
   insert:    (params: InsertParams) =>          Promise<void>;
   update:    (params: InsertParams) =>          Promise<void>;
@@ -169,7 +167,6 @@ type EquipmentView = RowDataPacket & {
 type InsertParams = {
   equipment_id:      string;
   equipment_type_id: number;
-  author_id:         string;
   owner_id:          string;
   equipment_name:    string;
   description:       string;
@@ -181,14 +178,8 @@ type EquipmentSuggestion = RowDataPacket & {
   equipment_name: string;
 };
 
-type ViewAllParams = {
-  author_id: string;
-  owner_id:  string;
-};
-
 type ViewOneParams = {
   equipment_id: string;
-  author_id:    string;
   owner_id:     string;
 };
 
