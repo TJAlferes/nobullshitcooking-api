@@ -8,22 +8,28 @@ import {
   RecipeMethodRepo,
   RecipeSubrecipeRepo
 } from '../../repos/mysql';
-import { createRecipeService, updateRecipeService } from '../../lib/services';
-import { validRecipe }                              from '../../lib/validations';
+import { RecipeService } from '../../../app/services';
+import { validRecipe } from '../../lib/validations';
 
 export class UserPublicRecipeController {
   async viewAll(req: Request, res: Response) {
-    const authorId = req.session.userInfo!.id;
-    const ownerId =  1;
+    const author_id = req.session.userInfo!.id;
+    const owner_id  = 1;  // TO DO: move and change
 
     const recipeRepo = new RecipeRepo();
-    const rows = await recipeRepo.viewAll(authorId, ownerId);
+    // const recipeService = new RecipeService(recipeRepo);
+    //const rows = await RecipeService.viewAll(author_id);
+    const rows = await recipeRepo.viewAll({author_id, owner_id});
     return res.send(rows);
   }
 
   async viewOne(req: Request, res: Response) {
+    // TO DO: move to shared
     function unslugify(title: string) {
-      return title.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+      return title
+        .split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
     }
 
     const title = unslugify(req.params.title);

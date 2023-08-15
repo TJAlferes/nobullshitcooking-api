@@ -3,7 +3,7 @@ import { assert, defaulted, string } from 'superstruct';
 import { Id, GenerateId } from './shared';
 
 export class User {
-  private readonly id;
+  private readonly user_id;
   private email;
   private password;
   private username;
@@ -13,8 +13,8 @@ export class User {
   private updated_at: Date | null = null;
   //private events: DomainEvent = [];
 
-  private constructor(params: UpdateParams) {
-    this.id                = Id(params.id);
+  private constructor(params: ConstructorParams) {
+    this.user_id           = Id(params.user_id);
     this.email             = Email(params.email);
     this.password          = Password(params.password);
     this.username          = Username(params.username);
@@ -22,11 +22,14 @@ export class User {
   }
 
   static create(params: CreateParams): User {
-    const id                = GenerateId();
+    const user_id           = GenerateId();
     const confirmation_code = GenerateId();
-    const user              = new User({...params, id, confirmation_code});
+
+    const user = new User({...params, user_id, confirmation_code});
+
     //const event = new UserCreatedEvent(user.getId());  // email?
     //this.events.push(event);
+
     return user;
   }
 
@@ -109,6 +112,8 @@ export type CreateParams = {
 };
 
 export type UpdateParams = CreateParams & {
-  id:                string;
+  user_id:           string;
   confirmation_code: string;
 };
+
+export type ConstructorParams = UpdateParams;

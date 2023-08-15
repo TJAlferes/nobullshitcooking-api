@@ -4,32 +4,37 @@ import { GenerateId, Id, Description, Image } from './shared';
 
 export class Equipment {
   private id;
-  private equipmentTypeId;
-  private authorId;
-  private ownerId;
-  private name;
+  private equipment_type_id;
+  private author_id;
+  private owner_id;
+  private equipment_name;
   private description;
   private image;
 
-  private constructor(params: EquipmentParams) {
+  private constructor(params: ConstructorParams) {
     this.id              = GenerateId();
-    this.equipmentTypeId = EquipmentTypeId(params.equipmentTypeId);
-    this.authorId        = Id(params.authorId);
-    this.ownerId         = Id(params.ownerId);
-    this.name            = EquipmentName(params.name);
+    this.equipment_type_id = EquipmentTypeId(params.equipment_type_id);
+    this.author_id        = Id(params.author_id);
+    this.owner_id         = Id(params.owner_id);
+    this.equipment_name  = EquipmentName(params.equipment_name);
     this.description     = Description(params.description);
     this.image           = Image(params.image);
   }
 
-  static create(params: EquipmentParams) {
-    const equipment = new Equipment(params);
+  static create(params: CreateParams) {
+    const equipment_id = GenerateId();
+
+    const equipment = new Equipment({...params, equipment_id});
+
     return equipment;  // only return id ???
   }
+
+  static update(params: UpdateParams) {}
 }
 
-export function EquipmentTypeId(equipmentTypeId: number) {
-  assert(equipmentTypeId, number());
-  return equipmentTypeId;
+export function EquipmentTypeId(equipment_type_id: number) {
+  assert(equipment_type_id, number());
+  return equipment_type_id;
 }
 
 export function EquipmentName(name: string) {
@@ -40,11 +45,17 @@ export function EquipmentName(name: string) {
   return ;
 }
 
-type EquipmentParams = {
-  equipmentTypeId: number;
-  authorId:        string;
-  ownerId:         string;
-  name:            string;
+type CreateParams = {
+  equipment_type_id: number;
+  author_id:         string;
+  owner_id:          string;
+  equipment_name:            string;
   description:     string;
   image:           string;
 };
+
+type UpdateParams = CreateParams & {
+  equipment_id: string;
+}
+
+type ConstructorParams = UpdateParams;

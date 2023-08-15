@@ -4,62 +4,61 @@ import { GenerateId, Id, Description, Image } from './shared';
 
 export class Recipe {
   private id;
-  private recipeTypeId;
-  private cuisineId;
-  private authorId;
-  private ownerId;
+  private recipe_type_id;
+  private cuisine_id;
+  private author_id;
+  private owner_id;
   private title;
   private description;
-  private activeTime;
-  private totalTime;
+  private active_time;
+  private total_time;
   private directions;
+  //private image_id;  // of recipe_image
   // Is it really best to limit images to 4 jpg/png/webp? What about gif?
-  private recipeImage;
-  private equipmentImage;
-  private ingredientsImage;
-  private cookingImage;
-  private video;
+  // move to Image
+  //private recipeImage;
+  //private equipmentImage;
+  //private ingredientsImage;
+  //private cookingImage;
+  // move to Video
+  //private video;
 
-  private constructor(params: RecipeParams) {
+  private constructor(params: ConstructorParams) {
     this.id               = GenerateId();
-    this.authorId         = Id(params.authorId);
-    this.ownerId          = Id(params.ownerId);
+    this.author_id         = Id(params.author_id);
+    this.owner_id          = Id(params.owner_id);
     this.description      = Description(params.description);
-    this.recipeImage      = Image(params.recipeImage);
-    this.equipmentImage   = Image(params.equipmentImage);
-    this.ingredientsImage = Image(params.ingredientsImage);
-    this.cookingImage     = Image(params.cookingImage);
+    //this.recipeImage      = Image(params.recipeImage);
+    //this.equipmentImage   = Image(params.equipmentImage);
+    //this.ingredientsImage = Image(params.ingredientsImage);
+    //this.cookingImage     = Image(params.cookingImage);
   }
 
-  static create(params: RecipeParams) {
+  static create(params: CreateParams) {
+    const recipe_id = GenerateId();
     const recipe = new Recipe(params);
     return recipe;  // only return id ???
   }
+
+  static update(params: UpdateParams) {
+
+  }
 }
 
-/*export const validRecipe = object({
-  recipeTypeId:     number(),
-  cuisineId:        number(),
-  title:            string(),
-  activeTime:       string(),
-  totalTime:        string(),
-  directions:       string(),
-  video:            defaulted(string(), '')
-});*/
-
-type RecipeParams = {
-  recipeTypeId:     number;
-  cuisineId:        number;
-  authorId:         string;
-  ownerId:          string;
-  title:            string;
-  description:      string;
-  activeTime:       string;
-  totalTime:        string;
-  directions:       string;
-  recipeImage:      string;
-  equipmentImage:   string;
-  ingredientsImage: string;
-  cookingImage:     string;
-  video:            string;
+type CreateParams = {
+  recipe_type_id: number;
+  cuisine_id:     number;
+  author_id:      string;
+  owner_id:       string;
+  title:          string;
+  description:    string;
+  active_time:    string;
+  total_time:     string;
+  directions:     string;
 };
+
+type UpdateParams = CreateParams & {
+  recipe_id: string;
+}
+
+type ConstructorParams = UpdateParams;

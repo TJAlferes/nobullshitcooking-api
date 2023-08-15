@@ -20,11 +20,7 @@ import { Recipe }      from '../../domain/Recipe';
 import { IRecipeRepo } from '../../infra/repos/mysql';
 
 export class RecipeService {
-  repo: IRecipeRepo;  //recipe,
-  recipeEquipment,
-  recipeIngredient,
-  recipeMethod,
-  recipeSubrecipe
+  repo: IRecipeRepo;
 
   constructor(repo: IRecipeRepo) {
     this.repo = repo;
@@ -32,76 +28,16 @@ export class RecipeService {
   
   async create({
     recipeInfo,
-    // move to RecipeEquipmentService???
-    equipment,
-    ingredients,
-    methods,
-    subrecipes,
   }: CreateRecipeService) {
     const recipe = Recipe.create(recipeInfo);
-    const createdRecipe = await this.repo.create(recipe);
-    const recipeId = createdRecipe.insertId;
-  
-    /*
-    myabe not? namedPlaceholders now
-
-    NOTE: order matters! (because these inserts must match the database tables column orders)
-  
-    recipeId, (method)Id
-    recipeId, amount, (equipment)Id
-    recipeId, amount, measurementId, (ingredient)Id
-    recipeId, amount, measurementId, (subrecipe)Id
-    */
-
-    if (methods.length) {
-      methods.map(({ id }) => assert({recipeId, id}, validRecipeMethod));
-
-      const placeholders =     '(?, ?),'.repeat(methods.length).slice(0, -1);  // if 3 methods, then: (?, ?),(?, ?),(?, ?)
-      const values: number[] = [];
-      methods.map(({ id }) => values.push(recipeId, id));
-      
-      await recipeMethod.create(placeholders, values);
-    }
-
-    if (equipment.length) {
-      equipment.map(({ amount, id }) => assert({recipeId, amount, id}, validRecipeEquipment));
-
-      const placeholders =     '(?, ?, ?),'.repeat(equipment.length).slice(0, -1);
-      const values: number[] = [];
-      equipment.map(({ amount, id }) => values.push(recipeId, amount, id));
-  
-      await recipeEquipment.create(placeholders, values);
-    }
-
-    if (ingredients.length) {
-      ingredients.map(({ amount, measurementId, id }) => assert({recipeId, amount, measurementId, id}, validRecipeIngredient));
-  
-      const placeholders =     '(?, ?, ?, ?),'.repeat(ingredients.length).slice(0, -1);
-      const values: number[] = [];
-      ingredients.map(({ amount, measurementId, id }) => values.push(recipeId, amount, measurementId, id));
-  
-      await recipeIngredient.create(placeholders, values);
-    }
-
-    if (subrecipes.length) {
-      subrecipes.map(({ amount, measurementId, id }) => assert({recipeId, amount, measurementId, id}, validRecipeSubrecipe));
-  
-      const placeholders =     '(?, ?, ?, ?),'.repeat(subrecipes.length).slice(0, -1);
-      const values: number[] = [];
-      subrecipes.map(({ amount, measurementId, id }) => values.push(recipeId, amount, measurementId, id));
-  
-      await recipeSubrecipe.create(placeholders, values);
-    }
+    const createdRecipe = await this.repo.insert(recipe);
+    //const recipeId = createdRecipe.insertId;
+    return recipe.getRecipeId();
   }
 
   async update({
     recipeId,
-    updatingRecipe,
-    // move to RecipeEquipmentService???
-    equipment,
-    ingredients,
-    methods,
-    subrecipes
+    updatingRecipe
   }: UpdateRecipeService) {
     await recipe.update({id: recipeId, ...updatingRecipe});
   
