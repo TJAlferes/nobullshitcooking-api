@@ -1,7 +1,7 @@
 import { RowDataPacket } from 'mysql2/promise';
 
 import { UserTableRow } from '../../../../types';
-import { MySQLRepo } from './MySQL';
+import { MySQLRepo } from '../shared/MySQL';
 
 // TO DO: make only one specific explicit method for getting password ???
 

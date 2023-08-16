@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
 import { assert }            from 'superstruct';
 
-import { SavedRecipeRepo, RecipeRepo } from '../../../repos/mysql';
-import { validSavedRecipe }            from '../../../lib/validations';
+import { RecipeRepo } from '../../../recipe/repo';
+//import { SavedRecipe } from './model';
+import { SavedRecipeRepo } from './repo';
 
 export class UserSavedRecipeController {
   async viewByUserId(req: Request, res: Response) {

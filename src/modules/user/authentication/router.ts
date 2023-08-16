@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
-import { UserAuthenticationController } from '../../controllers/user';
-import { catchExceptions, userIsAuth }  from '../../lib/utils';
+import { UserAuthenticationController } from './controller';
+import { catchExceptions, userIsAuth }  from '../../../utils';
 
 const router = Router();
 

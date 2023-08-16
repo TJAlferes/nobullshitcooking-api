@@ -5,15 +5,14 @@ import { UserController }              from './controller';
 import { catchExceptions, userIsAuth } from '../../utils';
 
 import { userPrivateRouter }        from './private';
+import { userPublicRouter }         from './public';
 import { userAuthenticationRouter } from './authentication';
-import { userConfirmationRouter }   from './confirmation';
+//import { userAuthorizationRouter } from './authorization';
+import { userConfirmationRouter }   from './confirmation/router';
 import { userDataInitRouter  }      from './dataInit';
-import { userFavoriteRecipeRouter } from './favoriteRecipe';
-import { userFriendshipRouter }     from './friendship';
-import { userPublicPlanRouter }     from './plan';
-//import { userProfileRouter }        from './profile';
-import { userPublicRecipeRouter }   from './recipe';
-import { userSignedUrlRouter }      from './signed-url';
+import { userFavoriteRecipeRouter } from './favorite-recipe/router';
+import { userFriendshipRouter }     from './friendship/router';
+import { userSignedUrlRouter }      from './signed-url/router';
 
 const router = Router();
 

@@ -1,6 +1,7 @@
-import { User }      from '../../domain/User';
-import { IUserRepo } from '../../infra/repos/mysql';
-import { UserAuthenticationService, UserConfirmationService } from '.';
+import { User }      from './model';
+import { IUserRepo } from './repo';
+import { UserAuthenticationService } from './authentication/service';
+import { UserConfirmationService } from './confirmation/service';
 
 export class UserService {
   private readonly repo: IUserRepo;
@@ -32,7 +33,7 @@ export class UserService {
       throw new Error("Username already in use.");
     }
   
-    await this.repo.create(user);
+    await this.repo.insert(user);
 
     const userConfirmationService = new UserConfirmationService(this.repo);
 

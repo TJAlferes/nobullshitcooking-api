@@ -1,16 +1,16 @@
 import { assert, string } from 'superstruct';
 
-import { Id } from './shared';
+import { UUIDv7StringId } from '../../shared/model';
 
 export class Friendship {
-  private userId;
-  private friendId;
+  private user_id;
+  private friend_id;
   private status;
 
   private constructor(params: FriendshipParams) {
-    this.userId   = Id(params.userId);
-    this.friendId = Id(params.friendId);
-    this.status   = FriendshipStatus(params.status);
+    this.user_id   = UUIDv7StringId(params.user_id);
+    this.friend_id = UUIDv7StringId(params.friend_id);
+    this.status    = FriendshipStatus(params.status);
   }
 }
 
@@ -28,7 +28,7 @@ export function FriendshipStatus(status: string) {
 }
 
 type FriendshipParams = {
-  userId:   string;
-  friendId: string;
-  status:   string;
+  user_id:   string;
+  friend_id: string;
+  status:    string;
 };

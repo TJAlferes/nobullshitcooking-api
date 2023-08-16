@@ -1,6 +1,6 @@
 import { assert, defaulted, string } from 'superstruct';
 
-import { UUIDv7StringId, GenerateUUIDv7StringId } from './shared';
+import { UUIDv7StringId, GenerateUUIDv7StringId } from '../shared/model';
 
 export class User {
   private readonly user_id;

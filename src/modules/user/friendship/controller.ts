@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
 import { assert }            from 'superstruct';
 
-import { FriendshipRepo, UserRepo } from '../../repos/mysql';
-import { validFriendship }          from '../../lib/validations';
+import { UserRepo } from '../repo';
+import { FriendshipRepo } from './repo';
+import { Friendship } from './model';
 
 export class UserFriendshipController {
   async view(req: Request, res: Response) {

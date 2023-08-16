@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 
-import { UserAuthenticationService } from '../../../app/services';
+import { UserAuthenticationService } from './service';
+import { UserRepo }                  from '../repo';
 import { io }                        from '../../../index';
-import { UserRepo }                  from '../../repos/mysql';
 
 export class UserAuthenticationController {
   async login(req: Request, res: Response) {

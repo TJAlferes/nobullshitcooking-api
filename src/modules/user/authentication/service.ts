@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 
-import { Email, Password } from '../../domain/User';
-import { IUserRepo }       from '../../infra/repos/mysql';
+import { Email, Password } from '../model';
+import { IUserRepo }       from '../repo';
 //crypto.timingSafeEqual() ???
 
 // DRY the repeated validation logic

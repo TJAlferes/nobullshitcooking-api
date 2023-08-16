@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { assert }            from 'superstruct';
 
-import { FavoriteRecipeRepo, RecipeRepo } from '../../repos/mysql';
+import { FavoriteRecipeRepo, RecipeRepo } from './repo';
 import { validFavoriteRecipe }            from '../../lib/validations';
 
 export class UserFavoriteRecipeController {

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
-import { UserService } from '../../../app/services';
-import { UserRepo }    from '../../repos/mysql';
+import { UserService } from './service';
+import { UserRepo }    from './repo';
 
 export class UserController {
   async create(req: Request, res: Response) {
@@ -16,31 +16,22 @@ export class UserController {
   
   async update(req: Request, res: Response) {
     const { email, password, username, confirmation_code } = req.body.userInfo;
-    const id = req.session.userInfo!.id;
+    const user_id = req.session.userInfo!.user_id;  // res.locals? either way, clean up
 
     const userRepo    = new UserRepo();
     const userService = new UserService(userRepo);
-    await userService.update({id, email, password, username, confirmation_code});
+    await userService.update({user_id, email, password, username, confirmation_code});
 
-    return res.send({message: 'Account updated.'});
+    return res.send({message: 'User account updated.'});
   }
 
   async delete(req: Request, res: Response) {
-    const id = req.session.userInfo!.id;
+    const user_id = req.session.userInfo!.user_id;
 
     const userRepo    = new UserRepo();
     const userService = new UserService(userRepo);
-    await userService.delete(id);
+    await userService.delete(user_id);
 
-    return res.send({message: 'Account deleted.'});
+    return res.send({message: 'User account deleted.'});
   }
 }
-
-export { UserAuthenticationController } from './authentication';
-export { UserConfirmationController }   from './confirmation';
-export { UserDataInitController }       from './dataInit';
-export { UserFavoriteRecipeController } from './favoriteRecipe';
-export { UserFriendshipController }     from './friendship';
-export { UserPublicPlanController }     from './plan';
-export { UserPublicRecipeController }   from './recipe';
-export { UserSignedUrlController }      from './signed-url';

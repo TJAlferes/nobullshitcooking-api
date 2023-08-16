@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
-import { UserConfirmationService } from '../../../app/services';
-import { UserRepo }                from '../../repos/mysql';
+import { UserConfirmationService } from './service';
+import { UserRepo }                from '../repo';
 
 export class UserConfirmationController {
   async confirm(req: Request, res: Response) {

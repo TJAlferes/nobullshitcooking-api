@@ -13,7 +13,8 @@ const USER_SECRET_ACCESS_KEY = process.env.AWS_S3_USER_SECRET_ACCESS_KEY!;
 export const UserSignedUrlController = {
   s3RequestPresign: async function(req: Request, res: Response) {
     const folder: Folder = req.body.folder;
-    const filename = slugify(req.body.filename);  // name/fullname/title
+    const filename       = slugify(req.body.filename);  // name/fullname/title
+
     // TO DO: use superstruct to validate folder and filename
 
     const s3 = new S3Client({
@@ -28,17 +29,56 @@ export const UserSignedUrlController = {
       ? `${folder}${req.session.userInfo!.username}`
       : `${folder}${req.session.userInfo!.username}/${filename}-${uuidv7()}`;
 
-    if ( (folder === AVATAR) || (folder === PRIVATE_EQUIPMENT) || (folder === PRIVATE_INGREDIENT) ) {
-      const fullSignature = await getSignedUrl(s3, new PutObjectCommand({Bucket: USER_BUCKET, Key: objectKey,           ContentType: "image/jpeg"}));
-      const tinySignature = await getSignedUrl(s3, new PutObjectCommand({Bucket: USER_BUCKET, Key: `${objectKey}-tiny`, ContentType: "image/jpeg"}));
-      return res.json({success: true, fullSignature, tinySignature, objectKey});
+    if ( (folder === AVATAR)
+      || (folder === PRIVATE_EQUIPMENT)
+      || (folder === PRIVATE_INGREDIENT)
+    ) {
+      const fullSignature = await getSignedUrl(s3, new PutObjectCommand({
+        Bucket: USER_BUCKET,
+        Key: objectKey,
+        ContentType: "image/jpeg"
+      }));
+
+      const tinySignature = await getSignedUrl(s3, new PutObjectCommand({
+        Bucket: USER_BUCKET,
+        Key: `${objectKey}-tiny`,
+        ContentType: "image/jpeg"
+      }));
+
+      return res.json({
+        success: true,
+        fullSignature,
+        tinySignature,
+        objectKey
+      });
     }
 
     if ( (folder === PUBLIC_RECIPE) || (folder === PRIVATE_RECIPE) ) {
-      const fullSignature =  await getSignedUrl(s3, new PutObjectCommand({Bucket: USER_BUCKET, Key: objectKey,            ContentType: "image/jpeg"}));
-      const thumbSignature = await getSignedUrl(s3, new PutObjectCommand({Bucket: USER_BUCKET, Key: `${objectKey}-thumb`, ContentType: "image/jpeg"}));
-      const tinySignature =  await getSignedUrl(s3, new PutObjectCommand({Bucket: USER_BUCKET, Key: `${objectKey}-tiny`,  ContentType: "image/jpeg"}));
-      return res.json({success: true, fullSignature, thumbSignature, tinySignature, objectKey});
+      const fullSignature =  await getSignedUrl(s3, new PutObjectCommand({
+        Bucket: USER_BUCKET,
+        Key: objectKey,
+        ContentType: "image/jpeg"
+      }));
+
+      const thumbSignature = await getSignedUrl(s3, new PutObjectCommand({
+        Bucket: USER_BUCKET,
+        Key: `${objectKey}-thumb`,
+        ContentType: "image/jpeg"
+      }));
+
+      const tinySignature =  await getSignedUrl(s3, new PutObjectCommand({
+        Bucket: USER_BUCKET,
+        Key: `${objectKey}-tiny`,
+        ContentType: "image/jpeg"
+      }));
+
+      return res.json({
+        success: true,
+        fullSignature,
+        thumbSignature,
+        tinySignature,
+        objectKey
+      });
     }
 
     if ( (folder === PUBLIC_RECIPE_COOKING)
@@ -48,15 +88,27 @@ export const UserSignedUrlController = {
       || (folder === PRIVATE_RECIPE_EQUIPMENT)
       || (folder === PRIVATE_RECIPE_INGREDIENTS)
     ) {
-      const fullSignature = await getSignedUrl(s3, new PutObjectCommand({Bucket: USER_BUCKET, Key: objectKey, ContentType: "image/jpeg"}));
-      return res.json({success: true, fullSignature, objectKey});
+      const fullSignature = await getSignedUrl(s3, new PutObjectCommand({
+        Bucket: USER_BUCKET,
+        Key: objectKey,
+        ContentType: "image/jpeg"
+      }));
+
+      return res.json({
+        success: true,
+        fullSignature,
+        objectKey
+      });
     }
   }
 };
 
 // Convert to lowercase, replace spaces with dashes, remove non-alphanumeric characters except dashes
 function slugify(str: string): string {
-  return str.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+  return str
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w-]+/g, '');
 }
 
 type Folder =

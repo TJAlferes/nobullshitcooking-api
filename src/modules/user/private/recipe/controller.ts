@@ -1,15 +1,13 @@
 import { Request, Response } from 'express';
 import { assert }            from 'superstruct';
 
-import {
-  RecipeRepo,
-  RecipeEquipmentRepo,
-  RecipeIngredientRepo,
-  RecipeMethodRepo,
-  RecipeSubrecipeRepo
-} from '../../../repos/mysql';
-import { RecipeService } from '../../../../app/services';
-import { validRecipe }   from '../../../lib/validations';  // TO DO: use domain
+import { RecipeEquipmentRepo } from '../../../recipe/required-equipment/repo';
+import { RecipeIngredientRepo } from '../../../recipe/required-ingredient/repo';
+import { RecipeMethodRepo } from '../../../recipe/required-method/repo';
+import { RecipeSubrecipeRepo } from '../../../recipe/required-subrecipe/repo';
+import { Recipe } from '../../../recipe/model';
+import { RecipeRepo } from '../../../recipe/repo';
+import { RecipeService } from '../../../recipe/service';
 
 export class UserPrivateRecipeController {
   async viewAll(req: Request, res: Response) {

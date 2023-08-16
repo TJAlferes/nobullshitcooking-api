@@ -1,9 +1,9 @@
 import bcrypt     from 'bcrypt';
 import { uuidv7 } from 'uuidv7';
 
-import { Email, Password, ConfirmationCode } from '../../domain/User';
-import { IUserRepo }                         from '../../infra/repos/mysql';
-import { emailUser }                         from './simple-email-service';
+import { Email, Password, ConfirmationCode } from '../model';
+import { IUserRepo }                         from '..//repo';
+import { emailUser }                         from '../shared/simple-email-service';
 //crypto.timingSafeEqual() ???
 
 // DRY the repeated validation logic
