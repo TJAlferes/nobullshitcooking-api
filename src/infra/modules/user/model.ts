@@ -1,6 +1,6 @@
 import { assert, defaulted, string } from 'superstruct';
 
-import { UUIDv7StringId, GenerateId } from './shared';
+import { UUIDv7StringId, GenerateUUIDv7StringId } from './shared';
 
 export class User {
   private readonly user_id;
@@ -22,8 +22,8 @@ export class User {
   }
 
   static create(params: CreateParams): User {
-    const user_id           = GenerateId();
-    const confirmation_code = GenerateId();
+    const user_id           = GenerateUUIDv7StringId();
+    const confirmation_code = GenerateUUIDv7StringId();
 
     const user = new User({...params, user_id, confirmation_code});
 
@@ -35,8 +35,10 @@ export class User {
 
   static update(params: UpdateParams): User {
     const user = new User(params);
+
     //const event = new UserUpdatedEvent(user.getId());  // email?
     //this.events.push(event);
+    
     return user;
   }
 

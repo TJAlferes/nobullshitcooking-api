@@ -14,8 +14,8 @@ import { Server as SocketIOServer, Socket }         from 'socket.io';
 import { createAdapter, RedisAdapter }              from '@socket.io/redis-adapter';
 const pino = require('pino-http')();
 
-import { sendMessage, sendPrivateMessage, joinRoom, disconnecting, getOnlineFriends, getUsersInRoom, rejoinRoom, IMessage } from '../app/chat';
-import { FriendshipRepo, UserRepo, ChatmessageRepo, ChatroomRepo, ChatroomUserRepo } from './repos/mysql';
+import { sendMessage, sendPrivateMessage, joinRoom, disconnecting, getOnlineFriends, getUsersInRoom, rejoinRoom, Message } from '../app/chat';
+import { FriendshipRepo, UserRepo, ChatMessageRepo, ChatRoomRepo, ChatRoomUserRepo } from './repos/mysql';
 //import { ChatStore }        from './repos/redis';
 import { chatCleanUp }      from './lib/jobs/chatCleanUp';
 import { routesInit }       from './routes';
@@ -258,7 +258,7 @@ interface IServerToClientEvents {
   UsersInRoomRefetched: (users: string[], room: string) => void;
   UserJoinedRoom:       (user: string) =>                  void;
   UserLeftRoom:         (user: string) =>                  void;
-  Message:              (message: IMessage) =>             void;
-  PrivateMessage:       (message: IMessage) =>             void;
+  Message:              (message: Message) =>              void;  // MessageSent ???
+  PrivateMessage:       (message: Message) =>              void;  // PrivateMessageSent ???
   FailedPrivateMessage: (feedback: string) =>              void;
 }

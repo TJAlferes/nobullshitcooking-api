@@ -4,48 +4,14 @@ CREATE DATABASE nobsc CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 USE nobsc;
 
--- validation tables, only so many records (< 1,000)
-
-CREATE TABLE cuisine (
-  `cuisine_id`     TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  `cuisine_name`   VARCHAR(50)      NOT NULL DEFAULT '',
-  `continent_code` CHAR(2)          NOT NULL DEFAULT '',
-  `country_code`   CHAR(3)          NOT NULL DEFAULT '' UNIQUE,
-  `country_name`   VARCHAR(50)      NOT NULL DEFAULT '' UNIQUE
-);
-
-CREATE TABLE custom_cuisine (
-  `custom_cuisine_id`   INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  `custom_cuisine_name` VARCHAR(50)  NOT NULL DEFAULT ''
-);
-
-CREATE TABLE equipment_type (
-  `equipment_type_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  `equipment_type_name` VARCHAR(25)      NOT NULL DEFAULT ''
-);
-
-CREATE TABLE ingredient_type (
-  `ingredient_type_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  `ingredient_type_name` VARCHAR(25)      NOT NULL DEFAULT ''
-);
+--==============================================================================
 
 CREATE TABLE unit (
   `unit_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `unit_name` VARCHAR(25)      NOT NULL DEFAULT ''
 );
 
-CREATE TABLE method (
-  `method_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  `method_name` VARCHAR(25)      NOT NULL DEFAULT ''
-);
-
-CREATE TABLE recipe_type (
-  `recipe_type_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  `recipe_type_name` VARCHAR(25)      NOT NULL DEFAULT ''
-);
-
--- primary tables, potentially very many records (> 100,000)
--- 1-to-many relationships
+--==============================================================================
 
 CREATE TABLE staff (
   `staff_id`          CHAR(36)     PRIMARY KEY,
@@ -57,6 +23,8 @@ CREATE TABLE staff (
   `updated_at`        TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+--==============================================================================
+
 CREATE TABLE user (
   `user_id`           CHAR(36)     PRIMARY KEY,
   `email`             VARCHAR(60)  NOT NULL UNIQUE,
@@ -67,6 +35,17 @@ CREATE TABLE user (
   `updated_at`        TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+-- this may need improvement
+CREATE TABLE friendship (
+  `user_id`   CHAR(36)    NOT NULL,
+  `friend_id` CHAR(36)    NOT NULL,
+  `status`    VARCHAR(20) NOT NULL,
+  FOREIGN KEY (`user_id`)   REFERENCES `user` (`user_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`friend_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
+);
+
+--==============================================================================
+
 CREATE TABLE image (
   `image_id`   CHAR(36)     PRIMARY KEY,
   `image_url`  VARCHAR(100) NOT NULL,
@@ -75,6 +54,20 @@ CREATE TABLE image (
   `created_at` TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+--==============================================================================
+
+CREATE TABLE video (
+  `video_id`   CHAR(36)     PRIMARY KEY,
+  `video_url`  VARCHAR(100) NOT NULL,
+  `title`      VARCHAR(100) NOT NULL DEFAULT '',
+  `alt_text`   VARCHAR(255) NOT NULL DEFAULT '',
+  `caption`    VARCHAR(255) NOT NULL DEFAULT '',
+  `created_at` TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+--==============================================================================
 
 CREATE TABLE chatroom (
   `chatroom_id`   CHAR(36)    PRIMARY KEY,
@@ -101,8 +94,22 @@ CREATE TABLE chatmessage (
   FOREIGN KEY (`image_id`)    REFERENCES `image` (`image_id`)
 );
 
--- CREATE TABLE page ();
--- CREATE TABLE post ();
+CREATE TABLE chatroom_user (
+  `chatroom_id` CHAR(36) NOT NULL,
+  `user_id`     CHAR(36) NOT NULL,
+  `is_admin`,
+  `is_muted`,
+  PRIMARY KEY (`chatroom_id`, `user_id`),  -- do this for other junction tables???
+  FOREIGN KEY (`chatroom_id`) REFERENCES `chatroom` (`chatroom_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`user_id`)     REFERENCES `user` (`user_id`) ON DELETE CASCADE
+);
+
+--==============================================================================
+
+CREATE TABLE equipment_type (
+  `equipment_type_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `equipment_type_name` VARCHAR(25)      NOT NULL DEFAULT ''
+);
 
 CREATE TABLE equipment (
   `equipment_id`      CHAR(36)         PRIMARY KEY,
@@ -112,8 +119,14 @@ CREATE TABLE equipment (
   `notes`             TEXT             NOT NULL DEFAULT '',
   `image_id`          CHAR(36)         NOT NULL,
   FOREIGN KEY (`equipment_type_id`) REFERENCES `equipment_type` (`equipment_type_id`),
-  --FOREIGN KEY (`author_id`)         REFERENCES `user` (`user_id`) ON DELETE CASCADE,
   FOREIGN KEY (`owner_id`)          REFERENCES `user` (`user_id`) ON DELETE CASCADE
+);
+
+--==============================================================================
+
+CREATE TABLE ingredient_type (
+  `ingredient_type_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `ingredient_type_name` VARCHAR(25)      NOT NULL DEFAULT ''
 );
 
 CREATE TABLE ingredient (
@@ -126,7 +139,6 @@ CREATE TABLE ingredient (
   `notes`                  TEXT             NOT NULL DEFAULT '',
   `image_id`               CHAR(36)         NOT NULL,
   FOREIGN KEY (`ingredient_type_id`) REFERENCES `ingredient_type` (`ingredient_type_id`),
-  --FOREIGN KEY (`author_id`)          REFERENCES `user` (`user_id`) ON DELETE CASCADE,
   FOREIGN KEY (`owner_id`)           REFERENCES `user` (`user_id`) ON DELETE CASCADE
 );
 
@@ -135,6 +147,49 @@ CREATE TABLE ingredient_alt_name (
   `ingredient_id`          CHAR(36),
   `alt_name`               VARCHAR(50),
   FOREIGN KEY (`ingredient_id`) REFERENCES `ingredient` (`ingredient_id`) ON DELETE CASCADE,
+);
+
+--==============================================================================
+
+-- CREATE TABLE page ();
+
+-- CREATE TABLE page_image ();
+
+--==============================================================================
+
+-- CREATE TABLE post ();
+
+-- CREATE TABLE post_image ();
+
+--==============================================================================
+
+-- CREATE TABLE product ();
+
+-- CREATE TABLE product_image ();
+
+--==============================================================================
+
+CREATE TABLE recipe_type (
+  `recipe_type_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `recipe_type_name` VARCHAR(25)      NOT NULL DEFAULT ''
+);
+
+CREATE TABLE method (
+  `method_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `method_name` VARCHAR(25)      NOT NULL DEFAULT ''
+);
+
+CREATE TABLE cuisine (
+  `cuisine_id`     TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `cuisine_name`   VARCHAR(50)      NOT NULL DEFAULT '',
+  `continent_code` CHAR(2)          NOT NULL DEFAULT '',
+  `country_code`   CHAR(3)          NOT NULL DEFAULT '' UNIQUE,
+  `country_name`   VARCHAR(50)      NOT NULL DEFAULT '' UNIQUE
+);
+
+CREATE TABLE custom_cuisine (
+  `custom_cuisine_id`   INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `custom_cuisine_name` VARCHAR(50)  NOT NULL DEFAULT ''
 );
 
 CREATE TABLE recipe (
@@ -158,62 +213,11 @@ CREATE TABLE recipe (
   FOREIGN KEY (`owner_id`)       REFERENCES `user` (`user_id`)
 );
 
-CREATE TABLE plan (
-  `plan_id`   CHAR(36)    PRIMARY KEY,
-  `owner_id`  CHAR(36)    NOT NULL,
-  `plan_name` VARCHAR(50) NOT NULL DEFAULT '',
-  FOREIGN KEY (`owner_id`)  REFERENCES `user` (`user_id`) ON DELETE CASCADE
-);
-
-CREATE TABLE day (
-  `day_id`     CHAR(36) PRIMARY KEY,
-  `plan_id`    CHAR(36) NOT NULL,
-  `day_number` TINYINT  NOT NULL,
-  FOREIGN KEY (`plan_id`) REFERENCES plan (`plan_id`) ON DELETE CASCADE
-);
-
--- CREATE TABLE page_image ();
-
--- CREATE TABLE post_image ();
-
--- CREATE TABLE product_image ();
-
 CREATE TABLE recipe_image (
   `recipe_id` CHAR(36) PRIMARY KEY,
   `image_id`  CHAR(36) NOT NULL,
   FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`recipe_id`) ON DELETE CASCADE,
   FOREIGN KEY (`image_id`)  REFERENCES `image` (`image_id`) ON DELETE CASCADE
-);
-
--- linking/intersection/junction/cross-reference tables
--- many-to-many relationships
--- example: a chatroom can have many users, a user can be in many chatrooms
--- example: a user can favorite many recipes, a recipe can be favorited by many users
-
-CREATE TABLE chatroom_user (
-  `chatroom_id` CHAR(36) NOT NULL,
-  `user_id`     CHAR(36) NOT NULL,
-  `is_admin`,
-  `is_muted`,
-  PRIMARY KEY (`chatroom_id`, `user_id`),  -- do this for other junction tables???
-  FOREIGN KEY (`chatroom_id`) REFERENCES `chatroom` (`chatroom_id`) ON DELETE CASCADE,
-  FOREIGN KEY (`user_id`)     REFERENCES `user` (`user_id`) ON DELETE CASCADE
-);
-
-CREATE TABLE favorite_recipe (
-  `user_id`   CHAR(36) NOT NULL,
-  `recipe_id` CHAR(36) NOT NULL,
-  FOREIGN KEY (`user_id`)   REFERENCES `user` (`user_id`) ON DELETE CASCADE,
-  FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`recipe_id`) ON DELETE CASCADE
-);
-
--- this may need improvement
-CREATE TABLE friendship (
-  `user_id`   CHAR(36)    NOT NULL,
-  `friend_id` CHAR(36)    NOT NULL,
-  `status`    VARCHAR(20) NOT NULL,
-  FOREIGN KEY (`user_id`)   REFERENCES `user` (`user_id`) ON DELETE CASCADE,
-  FOREIGN KEY (`friend_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE recipe_equipment (
@@ -251,11 +255,34 @@ CREATE TABLE recipe_subrecipe (
   FOREIGN KEY (`subrecipe_id`) REFERENCES `recipe` (`recipe_id`) ON DELETE CASCADE
 );
 
+CREATE TABLE favorite_recipe (
+  `user_id`   CHAR(36) NOT NULL,
+  `recipe_id` CHAR(36) NOT NULL,
+  FOREIGN KEY (`user_id`)   REFERENCES `user` (`user_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`recipe_id`) ON DELETE CASCADE
+);
+
 CREATE TABLE saved_recipe (
   `user_id`   CHAR(36) NOT NULL,
   `recipe_id` CHAR(36) NOT NULL,
   FOREIGN KEY (`user_id`)   REFERENCES `user` (`user_id`) ON DELETE CASCADE,
   FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`recipe_id`) ON DELETE CASCADE
+);
+
+--==============================================================================
+
+CREATE TABLE plan (
+  `plan_id`   CHAR(36)    PRIMARY KEY,
+  `owner_id`  CHAR(36)    NOT NULL,
+  `plan_name` VARCHAR(50) NOT NULL DEFAULT '',
+  FOREIGN KEY (`owner_id`)  REFERENCES `user` (`user_id`) ON DELETE CASCADE
+);
+
+CREATE TABLE day (
+  `day_id`     CHAR(36) PRIMARY KEY,
+  `plan_id`    CHAR(36) NOT NULL,
+  `day_number` TINYINT  NOT NULL,
+  FOREIGN KEY (`plan_id`) REFERENCES plan (`plan_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE day_recipe (
@@ -266,7 +293,7 @@ CREATE TABLE day_recipe (
   FOREIGN KEY (`recipe_id`) REFERENCES recipe (`recipe_id`) ON DELETE CASCADE
 );
 
-
+--==============================================================================
 
 INSERT INTO staff (email, password, staffname) VALUES
 ("tjalferes@tjalferes.com", "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "T. J. Alferes");
