@@ -16,8 +16,8 @@ import {
   IRecipeSubrecipe
 } from '../../access/mysql';
 import { validRecipeEquipment, validRecipeIngredient, validRecipeMethod, validRecipeSubrecipe } from '../validations';
-import { Recipe }      from '../../domain/Recipe';
-import { IRecipeRepo } from '../../infra/repos/mysql';
+import { Recipe }      from './model';
+import { IRecipeRepo } from './repo';
 
 export class RecipeService {
   repo: IRecipeRepo;

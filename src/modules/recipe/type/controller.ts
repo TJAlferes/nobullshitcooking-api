@@ -1,19 +1,21 @@
 import { Request, Response } from 'express';
 
-import { RecipeTypeRepo } from '../repos/mysql';
+import { RecipeTypeRepo } from './repo';
 
 export class RecipeTypeController {
   async viewAll(req: Request, res: Response) {
     const repo = new RecipeTypeRepo();
     const rows = await repo.viewAll();
+
     return res.send(rows);
   }
 
   async viewOne(req: Request, res: Response) {
-    const id = Number(req.params.id);
+    const recipe_type_id = Number(req.params.recipe_type_id);
     
     const repo = new RecipeTypeRepo();
-    const [ row ] = await repo.viewOne(id);
+    const row = await repo.viewOne(recipe_type_id);
+
     return res.send(row);
   }
 }

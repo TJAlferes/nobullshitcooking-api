@@ -1,60 +1,60 @@
 import { RowDataPacket } from 'mysql2/promise';
 
-import { MySQLRepo } from './MySQL';
+import { MySQLRepo } from '../../../shared/MySQL';
 
-export class FavoriteRecipeRepo extends MySQLRepo implements IFavoriteRecipeRepo {
+export class SavedRecipeRepo extends MySQLRepo implements ISavedRecipeRepo {
   async viewByUserId(user_id: string) {
     const sql = `
-      SELECT
-        f.recipe_id,
+      SELECT 
+        s.recipe_id,
         r.recipe_type_id,
         r.cuisine_id,
         r.owner_id,
         u.username AS author,
         r.title,
         i.image_url
-      FROM favorite_recipe f
-      INNER JOIN recipe r ON r.recipe_id = f.recipe_id
+      FROM saved_recipe s
+      INNER JOIN recipe r ON r.recipe_id = s.recipe_id
       INNER JOIN user u   ON u.user_id = r.author_id
       INNER JOIN image i  ON i.image_id = r.image_id
-      WHERE f.user_id = ?
+      WHERE s.user_id = ?
       ORDER BY r.title
     `;
-    const [ rows ] = await this.pool.execute<FavoriteRecipeView[]>(sql, [user_id]);
+    const [ rows ] = await this.pool.execute<SavedRecipeView[]>(sql, [user_id]);
     return rows;
   }
 
   async insert(params: InsertParams) {
     await this.delete(params);
-    const sql = `INSERT INTO favorite_recipe (user_id, recipe_id) VALUES (:user_id, :recipe_id)`;
+    const sql = `INSERT INTO saved_recipe (user_id, recipe_id) VALUES (:user_id, :recipe_id)`;
     await this.pool.execute(sql, params);
   }
 
   async delete(params: DeleteParams) {
-    const sql = `DELETE FROM favorite_recipe WHERE user_id = :user_id AND recipe_id = :recipe_id LIMIT 1`;
+    const sql = `DELETE FROM saved_recipe WHERE user_id = :user_id AND recipe_id = :recipe_id LIMIT 1`;
     await this.pool.execute(sql, params);
   }
 
   async deleteAllByRecipeId(recipe_id: string) {
-    const sql = `DELETE FROM favorite_recipe WHERE recipe_id = ?`;
+    const sql = `DELETE FROM saved_recipe WHERE recipe_id = ?`;
     await this.pool.execute(sql, [recipe_id]);
   }
 
   async deleteAllByUserId(user_id: string) {
-    const sql = `DELETE FROM favorite_recipe WHERE user_id = ?`;
+    const sql = `DELETE FROM saved_recipe WHERE user_id = ?`;
     await this.pool.execute(sql, [user_id]);
   }
 }
 
-export interface IFavoriteRecipeRepo {
-  viewByUserId:        (user_id: string) =>      Promise<FavoriteRecipeView[]>;
+export interface ISavedRecipeRepo {
+  viewByUserId:        (user_id: string) =>      Promise<SavedRecipeView[]>;
   insert:              (params: InsertParams) => Promise<void>;
   delete:              (params: DeleteParams) => Promise<void>;
   deleteAllByRecipeId: (recipe_id: string) =>    Promise<void>;
   deleteAllByUserId:   (user_id: string) =>      Promise<void>;
 }
 
-type FavoriteRecipeView = RowDataPacket & {
+type SavedRecipeView = RowDataPacket & {
   recipe_id:      string;
   recipe_type_id: number;
   cuisine_id:     number;

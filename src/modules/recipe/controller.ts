@@ -1,28 +1,32 @@
 import { Request, Response } from 'express';
 
-import { RecipeRepo } from '../repos/mysql';
+import { RecipeRepo } from './repo';
 
 // Only for official recipes. See:
-// controllers/user/recipe.ts         for public  user recipes and
-// controllers/user/private/recipe.ts for private user recipes.
+// src/modules/user/public/recipe/controller.ts for public user recipes and
+// src/modules/user/private/recipe/controllerts for private user recipes.
 export class RecipeController {
   // for Next.js getStaticPaths
   async viewAllPublicTitles(req: Request, res: Response) {
-    const authorId = 1;
-    const ownerId =  1;
+    const author_id = 1;  // MOVE
+    const owner_id =  1;  // MOVE
 
+    // use a service
     const repo = new RecipeRepo();
-    const rows = await repo.viewAllPublicTitles(authorId, ownerId);
+    const rows = await repo.viewAllPublicTitles(author_id, owner_id);
+
     return res.send(rows);
   }
 
   async viewOneByTitle(req: Request, res: Response) {
     const title = unslugify(req.params.title);
-    const authorId = 1;
-    const ownerId =  1;
+    const author_id = 1;  // MOVE
+    const owner_id =  1;  // MOVE
 
+    // use a service
     const repo = new RecipeRepo();
-    const row = await repo.viewOneByTitle(title, authorId, ownerId);
+    const row = await repo.viewOneByTitle(title, author_id, owner_id);
+
     return res.send(row);
   }
 }

@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { param }  from 'express-validator';  // query ?
 
-import { RecipeController } from '../controllers';
-import { catchExceptions }  from '../lib/utils';
+import { RecipeController } from './controller';
+import { catchExceptions }  from '../../utils';
 
 const router = Router();
 
@@ -12,12 +12,12 @@ export function recipeRouter() {
   const controller = new RecipeController();
 
   //router.get('/', catchExceptions(controller.viewAll));  // remove ? you need these for the planner
-  router.get('/titles', catchExceptions(controller.viewTitles));
+  router.get('/titles', catchExceptions(controller.viewAllPublicTitles));
 
   router.get(
     '/:title',
     [param('title').not().isEmpty().trim().escape()],
-    catchExceptions(controller.viewOne)
+    catchExceptions(controller.viewOneByTitle)
   );
 
   return router;

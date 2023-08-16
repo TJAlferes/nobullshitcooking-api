@@ -1,4 +1,4 @@
-import { IRecipeEquipmentRepo } from "../../infra/repos/mysql";
+import { IRecipeEquipmentRepo } from "./repo";
 
 export class RecipeEquipmentService {
   repo: IRecipeEquipmentRepo;

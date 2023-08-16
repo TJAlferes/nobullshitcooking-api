@@ -1,4 +1,4 @@
-import { Amount, NumberId, UUIDv7StringId } from './shared';
+import { Amount, NumberId, UUIDv7StringId } from '../../shared/model';
 
 export class RecipeSubrecipe {
   private recipe_id;

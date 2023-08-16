@@ -1,11 +1,12 @@
 import { Request, Response } from 'express';
 
-import { CuisineRepo } from '../repos/mysql';
+import { CuisineRepo } from './repo';
 
 export class CuisineController {
   async viewAll(req: Request, res: Response) {
     const repo = new CuisineRepo();
     const rows = await repo.viewAll();
+
     return res.send(rows);
   }
 
@@ -14,6 +15,7 @@ export class CuisineController {
     
     const repo = new CuisineRepo();
     const row = await repo.viewOne(cuisine_id);
+    
     return res.send(row);
   }
 }

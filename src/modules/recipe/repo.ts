@@ -1,7 +1,7 @@
 import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
-import type { SearchRequest, SearchResponse } from '../../lib/validations';
-import { MySQLRepo } from './MySQL';
+import type { SearchRequest, SearchResponse } from '../search/model';
+import { MySQLRepo } from '../shared/MySQL';
 
 export class RecipeRepo extends MySQLRepo implements IRecipeRepo {
   async autosuggest(term: string) {

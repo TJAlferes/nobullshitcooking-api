@@ -30,7 +30,7 @@ export class DayRepo extends MySQLRepo implements IDayRepo {
 interface IDayRepo {
   insert: (params: InsertParams) => Promise<void>;
   update: (params: InsertParams) => Promise<void>;
-  delete: (day_id: string) => Promise<void>;
+  delete: (day_id: string) =>       Promise<void>;
 }
 
 type InsertParams = {
