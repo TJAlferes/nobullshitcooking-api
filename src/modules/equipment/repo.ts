@@ -1,10 +1,10 @@
 import { RowDataPacket } from 'mysql2/promise';
 
-import type { SearchRequest, SearchResponse } from '../../lib/validations';
-import { MySQLRepo } from './MySQL';
+import type { SearchRequest, SearchResponse } from '../search/model';
+import { MySQLRepo } from '../shared/MySQL';
 
 export class EquipmentRepo extends MySQLRepo implements IEquipmentRepo {
-  async auto(term: string) {
+  async autosuggest(term: string) {
     const owner_id = 1;  // only public equipment are searchable (this should be in the service, not in the repo)
     const sql = `SELECT equipment_id, equipment_name AS text FROM equipment WHERE equipment_name LIKE ? AND owner_id = ? LIMIT 5`;
     const [ rows ] = await this.pool.execute<EquipmentSuggestion[]>(sql, [`%${term}%`, owner_id]);
@@ -143,14 +143,14 @@ export class EquipmentRepo extends MySQLRepo implements IEquipmentRepo {
 }
 
 export interface IEquipmentRepo {
-  auto:      (term: string) =>                  Promise<EquipmentSuggestion[]>;
-  search:    (search_request: SearchRequest) => Promise<SearchResponse>;
-  viewAll:   (owner_id: string) =>              Promise<EquipmentView[]>;
-  viewOne:   (params: ViewOneParams) =>         Promise<EquipmentView>;
-  insert:    (params: InsertParams) =>          Promise<void>;
-  update:    (params: InsertParams) =>          Promise<void>;
-  deleteAll: (owner_id: string) =>              Promise<void>;
-  deleteOne: (params: DeleteOneParams) =>       Promise<void>;
+  autosuggest: (term: string) =>                  Promise<EquipmentSuggestion[]>;
+  search:      (search_request: SearchRequest) => Promise<SearchResponse>;
+  viewAll:     (owner_id: string) =>              Promise<EquipmentView[]>;
+  viewOne:     (params: ViewOneParams) =>         Promise<EquipmentView>;
+  insert:      (params: InsertParams) =>          Promise<void>;
+  update:      (params: InsertParams) =>          Promise<void>;
+  deleteAll:   (owner_id: string) =>              Promise<void>;
+  deleteOne:   (params: DeleteOneParams) =>       Promise<void>;
 }
 
 type EquipmentView = RowDataPacket & {

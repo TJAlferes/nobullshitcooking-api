@@ -1,4 +1,4 @@
-import { MySQLRepo } from './MySQL';
+import { MySQLRepo } from '../shared/MySQL';
 
 export class ImageRepo extends MySQLRepo implements IImageRepo {
   async insert(params: InsertParams) {

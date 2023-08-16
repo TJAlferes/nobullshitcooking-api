@@ -1,6 +1,6 @@
 import { RowDataPacket } from 'mysql2/promise';
 
-import { MySQLRepo } from './MySQL';
+import { MySQLRepo } from '../../shared/MySQL';
 
 export class EquipmentTypeRepo extends MySQLRepo implements IEquipmentTypeRepo {
   async viewAll() {

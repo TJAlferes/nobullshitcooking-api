@@ -1,24 +1,24 @@
 import { Request, Response } from 'express';
 
-import { IngredientRepo } from '../repos/mysql';
+import { IngredientRepo } from './repo';
 
 export class IngredientController {
   async viewAll(req: Request, res: Response) {
-    const authorId = 1;
-    const ownerId =  1;
+    const owner_id =  1;  // MOVE
 
     const repo = new IngredientRepo();
-    const rows = await repo.viewAll(authorId, ownerId);
+    const rows = await repo.viewAll(owner_id);
+    
     return res.send(rows);
   }
 
   async viewOne(req: Request, res: Response) {
-    const id =       Number(req.params.id);
-    const authorId = 1;
-    const ownerId =  1;
+    const ingredient_id = req.params.ingredient_id;
+    const owner_id = 1;  // MOVE
 
     const repo = new IngredientRepo();
-    const [ row ] = await repo.viewOne(id, authorId, ownerId);
+    const [ row ] = await repo.viewOne(ingredient_id, owner_id);
+
     return res.send(row);
   }
 }

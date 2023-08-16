@@ -1,16 +1,14 @@
 import { Request, Response } from 'express';
 
-import {
-  CuisineRepo,
-  EquipmentRepo,
-  EquipmentTypeRepo,
-  IngredientRepo,
-  IngredientTypeRepo,
-  UnitRepo,
-  MethodRepo,
-  RecipeRepo,
-  RecipeTypeRepo
-} from '../repos/mysql';
+import { EquipmentRepo }      from '../equipment/repo';
+import { EquipmentTypeRepo }  from '../equipment/type/repo';
+import { IngredientRepo }     from '../ingredient/repo';
+import { IngredientTypeRepo } from '../ingredient/type/repo';
+import { RecipeRepo }         from '../recipe/repo';
+import { CuisineRepo }        from '../recipe/cuisine/repo';
+import { MethodRepo }         from '../recipe/method/repo';
+import { RecipeTypeRepo }     from '../recipe/type/repo';
+import { UnitRepo }           from '../shared/unit/repo';
 
 export class DataInitController {
   async viewInitialData(req: Request, res: Response) {

@@ -1,14 +1,6 @@
 import { RowDataPacket } from 'mysql2/promise';
 import { array, Infer, number, object, optional, string } from 'superstruct';
 
-export const validRecipeMethod =     object({recipeId: number(), id: number()});
-export const validRecipeEquipment =  object({recipeId: number(), amount: number(), id: number()});
-export const validRecipeIngredient = object({recipeId: number(), amount: number(), measurementId: number(), id: number()});
-export const validRecipeSubrecipe =  object({recipeId: number(), amount: number(), measurementId: number(), id: number()});
-
-export const validFavoriteRecipe = object({userId: number(), recipeId: number()});
-export const validSavedRecipe =    object({userId: number(), recipeId: number()});
-
 export const validSearchTerm = string();
 
 export const validSearchRequest = object({

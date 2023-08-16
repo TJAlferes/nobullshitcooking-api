@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
-import { DataInitController } from '../controllers';
-import { catchExceptions }    from '../lib/utils';
+import { DataInitController } from './controller';
+import { catchExceptions }    from '../../utils';
 
 const router = Router();
 
