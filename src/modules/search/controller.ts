@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
 import { assert, create }    from 'superstruct';
 
-import { EquipmentRepo, IngredientRepo, RecipeRepo } from '../repos/mysql';
-import { validSearchTerm, validSearchRequest }       from '../lib/validations';
-
-// "auto" here means "autosuggest" (live search suggestions)
+import { EquipmentRepo } from '../equipment/repo';
+import { IngredientRepo } from '../ingredient/repo';
+import { RecipeRepo } from '../recipe/repo';
+import { validSearchTerm, validSearchRequest } from './model';
 
 export class SearchController {
-  async autoEquipment(req: Request, res: Response) {
+  async autosuggestEquipment(req: Request, res: Response) {
     const { term } = req.query;
     assert(term, validSearchTerm);
     const repo = new EquipmentRepo();
@@ -15,7 +15,7 @@ export class SearchController {
     return res.json({found});
   }
 
-  async autoIngredients(req: Request, res: Response) {
+  async autosuggestIngredients(req: Request, res: Response) {
     const { term } = req.query;
     assert(term, validSearchTerm);
     const repo = new IngredientRepo();
@@ -23,15 +23,7 @@ export class SearchController {
     return res.json({found});
   }
 
-  /*async autoProducts(req: Request, res: Response) {
-    const { term } = req.query;
-    assert(term, validSearchTerm);
-    const repo = new ProductRepo();
-    const found = await repo.autosuggest(term);
-    return res.json({found});
-  }*/
-
-  async autoRecipes(req: Request, res: Response) {
+  async autosuggestRecipes(req: Request, res: Response) {
     const { term } = req.query;
     assert(term, validSearchTerm);
     const repo = new RecipeRepo();
@@ -54,14 +46,6 @@ export class SearchController {
     const found = await repo.search(searchRequest);
     return res.json({found});
   }
-
-  /*async searchProducts(req: Request, res: Response) {
-    const { term, filters, sorts, currentPage, resultsPerPage } = req.query;
-    const searchRequest = create({term, filters, sorts, currentPage, resultsPerPage}, validSearchRequest);
-    const repo = new ProductRepo();
-    const found = await repo.search(searchRequest);
-    return res.json({found});
-  }*/
 
   async searchRecipes(req: Request, res: Response) {
     const { term, filters, sorts, currentPage, resultsPerPage } = req.query;

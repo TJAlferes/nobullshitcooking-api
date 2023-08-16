@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { query }  from 'express-validator';
 
-import { SearchController } from '../controllers';
-import { catchExceptions }  from '../lib/utils';
+import { SearchController } from './controller';
+import { catchExceptions }  from '../../utils';
 
 const router = Router();
 
@@ -30,9 +30,9 @@ export function searchRouter() {
     sanitizeCurrentPage
   ];
 
-  router.get('/auto/equipment',   [sanitizeTerm], catchExceptions(controller.autoEquipment));
-  router.get('/auto/ingredients', [sanitizeTerm], catchExceptions(controller.autoIngredients));
-  router.get('/auto/recipes',     [sanitizeTerm], catchExceptions(controller.autoRecipes));
+  router.get('/auto/equipment',   [sanitizeTerm], catchExceptions(controller.autosuggestEquipment));
+  router.get('/auto/ingredients', [sanitizeTerm], catchExceptions(controller.autosuggestIngredients));
+  router.get('/auto/recipes',     [sanitizeTerm], catchExceptions(controller.autosuggestRecipes));
   
   router.get('/find/equipment',   [...defaults, sanitizeEquipmentFilters],  catchExceptions(controller.searchEquipment));
   router.get('/find/ingredients', [...defaults, sanitizeIngredientFilters], catchExceptions(controller.searchIngredients));

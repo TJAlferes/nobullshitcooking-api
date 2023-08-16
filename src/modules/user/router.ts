@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
-import { UserController }              from '../../controllers/user';
-import { catchExceptions, userIsAuth } from '../../lib/utils';
+import { UserController }              from './controller';
+import { catchExceptions, userIsAuth } from '../../utils';
 
 import { userPrivateRouter }        from './private';
 import { userAuthenticationRouter } from './authentication';

@@ -1,6 +1,6 @@
 import { array, assert, defaulted, number, object, string } from 'superstruct';
 
-import { GenerateUUIDv7StringId, UUIDv7StringId } from './shared';
+import { GenerateUUIDv7StringId, UUIDv7StringId } from '../shared/model';
 
 export class Plan {
   private plan_id;

@@ -1,7 +1,7 @@
 import { RowDataPacket } from 'mysql2/promise';
 //import { Plan } from '../domain/plan';
 
-import { MySQLRepo } from './MySQL';
+import { MySQLRepo } from '../shared/MySQL';
 
 export class PlanRepo extends MySQLRepo implements IPlanRepo {
   async viewAll(owner_id: string) {

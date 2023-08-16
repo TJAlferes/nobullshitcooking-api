@@ -1,6 +1,6 @@
 import { Pool } from 'mysql2/promise';
 
-import { pool } from '../../lib/connections/mysql';
+import { pool } from '../../connections/mysql';
 
 // Base abstract class to be extended
 export abstract class MySQLRepo {

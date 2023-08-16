@@ -1,4 +1,4 @@
-import { MySQLRepo } from "./MySQL"
+import { MySQLRepo } from "../../shared/MySQL"
 
 export class DayRepo extends MySQLRepo implements IDayRepo {
   async insert(params: InsertParams) {
