@@ -2,7 +2,7 @@ import bcrypt     from 'bcrypt';
 import { uuidv7 } from 'uuidv7';
 
 import { Email, Password, ConfirmationCode } from '../model';
-import { IUserRepo }                         from '..//repo';
+import { IUserRepo }                         from '../repo';
 import { emailUser }                         from '../shared/simple-email-service';
 //crypto.timingSafeEqual() ???
 
@@ -15,27 +15,17 @@ export class UserConfirmationService {
     this.repo = repo;
   }
 
-  async confirm(params: ConfirmParams) {
-    const email = Email(params.email);
-    const user = await this.repo.getByEmail(email);
-    if (!user) {
-      throw new Error("Incorrect email or password.");  // throw error message from this layer? or just return json message?
-    }
-  
-    const confirmation_code = ConfirmationCode(params.confirmation_code);
-    const correctCode = confirmation_code === user.confirmation_code;
+  async confirm(confirmation_code: string) {
+    const validCode = ConfirmationCode(confirmation_code);
+
+    // const user = userService.getByConfirmationCode(validCode);
+
+    const correctCode = validCode === user.confirmation_code;
     if (!correctCode) {
       throw new Error("An issue occurred, please double check your info and try again.");
     }
 
-    // MOVE TO UserAuthenticationService
-    const password = Password(params.password);
-    const correctPassword = await bcrypt.compare(password, user.password);
-    if (!correctPassword) {
-      throw new Error("Incorrect email or password.");
-    }
-  
-    await this.repo.verify(email);
+    await this.repo.update(email);
   }
 
   async sendConfirmationCode(user: ) {

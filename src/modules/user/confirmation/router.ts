@@ -13,7 +13,7 @@ export function userConfirmationRouter() {
 
   router.post(
     '/confirm',
-    sanitize(['email', 'password', 'confirmation_code']),
+    sanitize(['confirmation_code']),
     catchExceptions(controller.confirm)
   );
 

@@ -78,13 +78,14 @@ export class UserRepo extends MySQLRepo implements IUserRepo {
 }
 
 export interface IUserRepo {
-  getById:       (user_id: string) =>       Promise<UserTableRow>
-  getByEmail:    (email: string) =>    Promise<UserTableRow>;
-  getByUsername: (username: string) => Promise<UserTableRow>;
+  getById:               (user_id: string) =>       Promise<UserTableRow>
+  getByEmail:            (email: string) =>    Promise<UserTableRow>;
+  getByUsername:         (username: string) => Promise<UserTableRow>;
+  getByConfirmationCode: (confirmation_code: string) => Promise<UserTableRow>;
   //viewById:   (userId: number) =>     Promise<Username>;
   //viewByName: (username: string) =>   Promise<UserId>;
-  insert:     (user: UserTableRow) => Promise<void>;
+  insert:                (user: UserTableRow) => Promise<void>;
   //verify:     (email: string) =>      Promise<void>;
-  update:     (user: UserTableRow) => Promise<void>;
-  delete:     (user_id: string) =>     Promise<void>;
+  update:                (user: UserTableRow) => Promise<void>;
+  delete:                (user_id: string) =>     Promise<void>;
 }
