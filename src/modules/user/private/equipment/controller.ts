@@ -1,17 +1,19 @@
 import { Request, Response } from 'express';
 import { assert }            from 'superstruct';
 
-import { EquipmentRepo, RecipeEquipmentRepo } from '../../../repos/mysql';
-import { validEquipment }                     from '../../../lib/validations';
+import { RecipeEquipmentRepo } from '../../../recipe/required-equipment/repo';
+import { EquipmentRepo }       from '../../../equipment/repo';     // should be in THIS dir './repo';
+import { EquipmentService }    from '../../../equipment/service';  // should be in THIS dir './service';
 
-export class UserEquipmentController {
+export const userPrivateEquipmentController = {
   async viewAll(req: Request, res: Response) {
     const owner_id  = req.session.userInfo!.id;
 
     const equipmentRepo = new EquipmentRepo();
     const rows = await equipmentRepo.viewAll(owner_id);
+
     return res.send(rows);
-  }
+  },
 
   async viewOne(req: Request, res: Response) {
     const equipment_id = req.body.equipment_id;
@@ -19,8 +21,9 @@ export class UserEquipmentController {
 
     const equipmentRepo = new EquipmentRepo();
     const row = await equipmentRepo.viewOne({equipment_id, owner_id});
+
     return res.send(row);
-  }
+  },
 
   async create(req: Request, res: Response) {
     const { equipment_name, description, image_id } = req.body.equipmentInfo;
@@ -40,7 +43,7 @@ export class UserEquipmentController {
     await equipmentRepo.insert(args);
     
     return res.send({message: 'Equipment created.'});
-  }
+  },
 
   async update(req: Request, res: Response) {
     const {
@@ -66,7 +69,7 @@ export class UserEquipmentController {
     await equipmentRepo.update(args);
 
     return res.send({message: 'Equipment updated.'});
-  }
+  },
 
   async deleteOne(req: Request, res: Response) {
     const equipment_id = req.body.equipment_id;
@@ -80,4 +83,4 @@ export class UserEquipmentController {
 
     return res.send({message: 'Equipment deleted.'});
   }
-}
+};

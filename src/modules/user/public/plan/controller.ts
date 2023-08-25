@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import { assert }            from 'superstruct';
 
-import { PlanRepo }  from '../../repos/mysql';
-import { validPlan } from '../../lib/validations';
+import { PlanRepo }  from '../../../plan/repo';
+//import { validPlan } from '../../lib/validations';  // TO DO: make sure NO private recipes go into public plan
 
-export class UserPublicPlanController {
+export const userPublicPlanController = {
   async viewAll(req: Request, res: Response) {
     const owner_id = req.session.userInfo!.id;
 
@@ -12,7 +12,7 @@ export class UserPublicPlanController {
     const rows = await planRepo.viewAll(owner_id);
 
     return res.send(rows);
-  }
+  },
 
   async viewOne(req: Request, res: Response) {
     const plan_id  = req.body.plan_id;
@@ -22,7 +22,7 @@ export class UserPublicPlanController {
     const row = await planRepo.viewOne({plan_id, owner_id});
 
     return res.send(row);
-  }
+  },
 
   async create(req: Request, res: Response) {
     const { plan_name, plan_data } = req.body.planInfo;
@@ -32,8 +32,9 @@ export class UserPublicPlanController {
     assert(args, validPlan);
     const planRepo = new PlanRepo();
     await planRepo.create(args);
+
     return res.send({message: 'Plan created.'});
-  }
+  },
 
   async update(req: Request, res: Response) {
     const { plan_id, plan_name, plan_data } = req.body.planInfo;
@@ -44,8 +45,9 @@ export class UserPublicPlanController {
 
     const planRepo = new PlanRepo();
     await planRepo.update({plan_id, ...args});
+
     return res.send({message: 'Plan updated.'});
-  }
+  },
 
   async deleteOne(req: Request, res: Response) {
     const plan_id  = req.body.plan_id;
@@ -53,6 +55,7 @@ export class UserPublicPlanController {
 
     const planRepo = new PlanRepo();
     await planRepo.deleteOne({plan_id, owner_id});
+
     return res.send({message: 'Plan deleted.'});
   }
-}
+};

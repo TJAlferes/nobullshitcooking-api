@@ -1,16 +1,14 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
-import { UserFavoriteRecipeController } from './controller';
-import { catchExceptions, userIsAuth }  from '../../../utils';
+import { userFavoriteRecipeController as controller } from './controller';
+import { catchExceptions, userIsAuth } from '../../../../utils';
 
 const router = Router();
 
 // for /user/favorite-recipe/...
 
 export function userFavoriteRecipeRouter() {
-  const controller = new UserFavoriteRecipeController();
-
   router.post(
     '/all',
     userIsAuth,

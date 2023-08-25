@@ -1,16 +1,14 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
-import { UserPublicRecipeController }  from '../../controllers/user';
-import { catchExceptions, userIsAuth } from '../../lib/utils';
+import { userPublicRecipeController as controller }  from './controller';
+import { catchExceptions, userIsAuth } from '../../../../utils';
 
 const router = Router();
 
-// for /user/recipe/...
+// for /user/public/recipe/...
 
 export function userPublicRecipeRouter() {
-  const controller = new UserPublicRecipeController();
-  
   // TO DO: sanitize the requireds with *
   const recipeInfo = [
     'ownership',
@@ -33,12 +31,12 @@ export function userPublicRecipeRouter() {
   ];
 
   router.post(
-    '/public/all',
+    '/all',
     catchExceptions(controller.viewAll)
   );
 
   router.post(
-    '/public/one',
+    '/one',
     sanitize('recipe_id'),
     catchExceptions(controller.viewOne)
   );

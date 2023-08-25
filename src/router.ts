@@ -4,7 +4,7 @@ import { Application } from 'express';
 
 import { userRouter }           from './user/index';
 import { cuisineRouter }        from './cuisine';
-import { dataInitRouter }       from './dataInit';
+import { dataInitRouter }       from './modules/data-init/router';
 import { equipmentRouter }      from './equipment';
 import { equipmentTypeRouter }  from './equipmentType';
 import { ingredientRouter }     from './ingredient';
@@ -18,7 +18,10 @@ import { searchRouter }         from './search';
 
 // TO DO: add grocer
 export function routesInit(app: Application) {
-  app.get('/', (req, res) => res.send(`No Bullshit Cooking Backend API. Documentation at https://github.com/tjalferes/nobullshitcooking-api`));
+  app.get('/', (req, res) => res.send(`
+    No Bullshit Cooking Backend API.
+    Documentation at https://github.com/tjalferes/nobullshitcooking-api
+  `));
   
   app.use('/user',            userRouter());
 

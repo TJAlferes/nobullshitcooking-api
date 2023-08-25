@@ -1,2 +1,2 @@
 export { catchExceptions } from './catchExceptions';
-export { userIsAuth } from './userIsAuth';
+export { userIsAuth }      from './userIsAuth';

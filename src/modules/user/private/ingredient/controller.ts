@@ -1,17 +1,18 @@
 import { Request, Response } from 'express';
 import { assert }            from 'superstruct';
 
-import { IngredientRepo, RecipeIngredientRepo } from '../../../repos/mysql';
-import { validIngredient }                      from '../../../lib/validations';
+import { RecipeIngredientRepo } from '../../../recipe/required-ingredient/repo';
+import { IngredientRepo }       from '../../../ingredient/repo';
+import { IngredientService }    from '../../../ingredient/service';
 
-export class UserIngredientController {
+export const userPrivateIngredientController = {
   async viewAll(req: Request, res: Response) {
     const owner_id  = req.session.userInfo!.id;
 
     const ingredientRepo = new IngredientRepo();
     const rows = await ingredientRepo.viewAll(owner_id);
     return res.send(rows);
-  }
+  },
 
   async viewOne(req: Request, res: Response) {
     const ingredient_id = req.body.id;
@@ -20,7 +21,7 @@ export class UserIngredientController {
     const ingredientRepo = new IngredientRepo();
     const row = await ingredientRepo.viewOne({ingredient_id, owner_id});
     return res.send(row);
-  }
+  },
 
   async create(req: Request, res: Response) {
     const {
@@ -52,7 +53,7 @@ export class UserIngredientController {
     //await ingredientAltNamesRepo.insert(alt_names);
 
     return res.send({message: 'Ingredient created.'});
-  }
+  },
 
   async update(req: Request, res: Response) {
     const {
@@ -85,7 +86,7 @@ export class UserIngredientController {
     //await ingredientAltNamesRepo.insert(alt_names);
 
     return res.send({message: 'Ingredient updated.'});
-  }
+  },
 
   async deleteOne(req: Request, res: Response) {
     const ingredient_id = req.body.ingredient_id;
@@ -99,4 +100,4 @@ export class UserIngredientController {
     
     return res.send({message: 'Ingredient deleted.'});
   }
-}
+};

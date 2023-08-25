@@ -1,15 +1,15 @@
 import { Request, Response } from 'express';
 import { assert }            from 'superstruct';
 
-import { RecipeEquipmentRepo } from '../../../recipe/required-equipment/repo';
+import { RecipeEquipmentRepo }  from '../../../recipe/required-equipment/repo';
 import { RecipeIngredientRepo } from '../../../recipe/required-ingredient/repo';
-import { RecipeMethodRepo } from '../../../recipe/required-method/repo';
-import { RecipeSubrecipeRepo } from '../../../recipe/required-subrecipe/repo';
-import { Recipe } from '../../../recipe/model';
-import { RecipeRepo } from '../../../recipe/repo';
-import { RecipeService } from '../../../recipe/service';
+import { RecipeMethodRepo }     from '../../../recipe/required-method/repo';
+import { RecipeSubrecipeRepo }  from '../../../recipe/required-subrecipe/repo';
+import { Recipe }               from '../../../recipe/model';
+import { RecipeRepo }           from '../../../recipe/repo';
+import { RecipeService }        from '../../../recipe/service';
 
-export class UserPrivateRecipeController {
+export const userPrivateRecipeController = {
   async viewAll(req: Request, res: Response) {
     const author_id = req.session.userInfo!.id;
     const owner_id  = req.session.userInfo!.id;
@@ -17,7 +17,7 @@ export class UserPrivateRecipeController {
     const recipeRepo = new RecipeRepo();
     const rows = await recipeRepo.viewAll({author_id, owner_id});
     return res.send(rows);
-  }
+  },
 
   async viewOne(req: Request, res: Response) {
     const title     = req.body.title;  // still use id ?
@@ -27,7 +27,7 @@ export class UserPrivateRecipeController {
     const recipeRepo = new RecipeRepo();
     const row = await recipeRepo.viewOne({title, author_id, owner_id});
     return res.send(row);
-  }
+  },
 
   async create(req: Request, res: Response) {
     const {
@@ -94,7 +94,7 @@ export class UserPrivateRecipeController {
     await imageService.create({});
 
     return res.send({message: 'Recipe created.'});
-  }
+  },
 
   async update(req: Request, res: Response) {
     const id =           Number(req.body.recipeInfo.id);
@@ -166,7 +166,7 @@ export class UserPrivateRecipeController {
     await imageService.update({});
 
     return res.send({message: 'Recipe updated.'});
-  }
+  },
 
   async deleteOne(req: Request, res: Response) {
     // transaction(s)?: TO DO: TRIGGERS
@@ -195,4 +195,4 @@ export class UserPrivateRecipeController {
 
     return res.send({message: 'Recipe deleted.'});
   }
-}
+};

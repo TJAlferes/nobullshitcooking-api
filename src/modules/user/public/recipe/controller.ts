@@ -11,7 +11,7 @@ import {
 import { RecipeService } from '../../../app/services';
 import { validRecipe } from '../../lib/validations';
 
-export class UserPublicRecipeController {
+export const userPublicRecipeController = {
   async viewAll(req: Request, res: Response) {
     const author_id = req.session.userInfo!.id;
     const owner_id  = 1;  // TO DO: move and change
@@ -21,7 +21,7 @@ export class UserPublicRecipeController {
     //const rows = await RecipeService.viewAll(author_id);
     const rows = await recipeRepo.viewAll({author_id, owner_id});
     return res.send(rows);
-  }
+  },
 
   async viewOne(req: Request, res: Response) {
     // TO DO: move to shared
@@ -41,7 +41,7 @@ export class UserPublicRecipeController {
     const recipeRepo = new RecipeRepo()
     const [ row ] = await recipeRepo.viewOne(title, authorId, ownerId);
     return res.send(row);
-  }
+  },
 
   async create(req: Request, res: Response) {
     const recipeTypeId = Number(req.body.recipeInfo.recipeTypeId);
@@ -104,7 +104,7 @@ export class UserPublicRecipeController {
     });
 
     return res.send({message: 'Recipe created.'});
-  }
+  },
 
   async update(req: Request, res: Response) {
     const id =           Number(req.body.recipeInfo.id);
@@ -170,7 +170,7 @@ export class UserPublicRecipeController {
     });
 
     return res.send({message: 'Recipe updated.'});
-  }
+  },
 
   async disownOne(req: Request, res: Response) {
     const id =       Number(req.body.id);
@@ -181,4 +181,4 @@ export class UserPublicRecipeController {
 
     return res.send({message: 'Recipe disowned.'});
   }
-}
+};

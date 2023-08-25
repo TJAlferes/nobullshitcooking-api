@@ -1,16 +1,14 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
-import { UserIngredientController }    from '../../../controllers/user/private';
-import { catchExceptions, userIsAuth } from '../../../lib/utils';
+import { userPrivateIngredientController as controller } from './controller';
+import { catchExceptions, userIsAuth } from '../../../../utils';
 
 const router = Router();
 
 // for /user/private/ingredient/...
 
-export function userIngredientRouter() {
-  const controller = new UserIngredientController();
-
+export function userPrivateIngredientRouter() {
   // TO DO: ingredient alt names
   const ingredientInfo = [
     'ingredient_type_id',

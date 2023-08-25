@@ -17,7 +17,6 @@ const pino = require('pino-http')();
 import { sendMessage, sendPrivateMessage, joinRoom, disconnecting, getOnlineFriends, getUsersInRoom, rejoinRoom, Message } from '../app/chat';
 import { FriendshipRepo, UserRepo, ChatMessageRepo, ChatRoomRepo, ChatRoomUserRepo } from './repos/mysql';
 //import { ChatStore }        from './repos/redis';
-import { chatCleanUp }      from './lib/jobs/chatCleanUp';
 import { routesInit }       from './routes';
 
 export function appServer({ sessionClient, pubClient, subClient }: RedisClients) {
@@ -59,7 +58,9 @@ export function appServer({ sessionClient, pubClient, subClient }: RedisClients)
   app.use(sessionMiddleware);
   app.use(cors({
     credentials: true,
-    origin: (app.get('env') === 'production') ? ['https://nobullshitcooking.com'] : ['http://localhost:3000', 'http://localhost:8080']
+    origin: (app.get('env') === 'production')
+      ? ['https://nobullshitcooking.com']
+      : ['http://localhost:3000', 'http://localhost:8080']
   }));
   //app.options('*', cors());  // //
   app.use(helmet());
@@ -172,8 +173,6 @@ export function appServer({ sessionClient, pubClient, subClient }: RedisClients)
       }
     });*/
   });
-
-  if (app.get('env') !== 'test') chatCleanUp(pubClient);
 
   /*
 

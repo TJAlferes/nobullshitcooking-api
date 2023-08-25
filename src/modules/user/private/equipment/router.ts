@@ -1,16 +1,14 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
-import { UserEquipmentController }     from '../../../controllers/user/private';
-import { catchExceptions, userIsAuth } from '../../../lib/utils';
+import { userPrivateEquipmentController as controller } from './controller';
+import { catchExceptions, userIsAuth } from '../../../../utils';
 
 const router = Router();
 
 // for /user/private/equipment/...
 
 export function userEquipmentRouter() {
-  const controller = new UserEquipmentController();
-
   const equipmentInfo = [
     'equipment_type_id',
     'equipment_name',

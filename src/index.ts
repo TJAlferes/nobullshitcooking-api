@@ -4,8 +4,8 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-import { redisClients } from './infra/lib/connections/redis';
-import { appServer }    from './infra/app';
+import { redisClients } from './connections/redis';
+import { appServer }    from './app';
 
 export const { httpServer, io } = appServer(redisClients);
 

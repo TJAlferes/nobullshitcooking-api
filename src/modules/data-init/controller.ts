@@ -10,7 +10,8 @@ import { MethodRepo }         from '../recipe/method/repo';
 import { RecipeTypeRepo }     from '../recipe/type/repo';
 import { UnitRepo }           from '../shared/unit/repo';
 
-export class DataInitController {
+// RENAME, THIS IS TOO VAGUE
+export const dataInitController = {
   async viewInitialData(req: Request, res: Response) {
     const author_id = 1;  // TO DO: fix/finish/move to domain
     const owner_id  = 1;  // TO DO: fix/finish/move to domain
@@ -59,4 +60,4 @@ export class DataInitController {
       recipe_types
     });
   }
-}
+};

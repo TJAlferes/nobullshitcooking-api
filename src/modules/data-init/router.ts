@@ -1,16 +1,15 @@
 import { Router } from 'express';
 
-import { DataInitController } from './controller';
+import { dataInitController } from './controller';
 import { catchExceptions }    from '../../utils';
 
 const router = Router();
 
 // for /data-init/...
 
+// RENAME, THIS IS TOO VAGUE
 export function dataInitRouter() {
-  const controller = new DataInitController();
-
-  router.get('/', catchExceptions(controller.viewInitialData));
+  router.get('/', catchExceptions(dataInitController.viewInitialData));
 
   return router;
 }

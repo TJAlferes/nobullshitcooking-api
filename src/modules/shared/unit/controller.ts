@@ -2,13 +2,13 @@ import { Request, Response } from 'express';
 
 import { UnitRepo } from './repo';
 
-export class UnitController {
+export const unitController = {
   async viewAll(req: Request, res: Response) {
     const repo = new UnitRepo();
     const rows = await repo.viewAll();
 
     return res.send(rows);
-  }
+  },
 
   async viewOne(req: Request, res: Response) {
     const unit_id = Number(req.params.unit_id);
@@ -18,4 +18,4 @@ export class UnitController {
 
     return res.send(row);
   }
-}
+};

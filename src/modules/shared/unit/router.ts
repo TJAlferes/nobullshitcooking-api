@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { param }  from 'express-validator';
 
-import { UnitController }  from './controller';
+import { unitController }  from './controller';
 import { catchExceptions } from '../../../utils';
 
 const router = Router();
@@ -9,14 +9,12 @@ const router = Router();
 // for /unit/...
 
 export function unitRouter() {
-  const controller = new UnitController();
-
-  router.get('/', catchExceptions(controller.viewAll));
+  router.get('/', catchExceptions(unitController.viewAll));
 
   router.get(
     '/:unit_id',
     [param('unit_id').not().isEmpty().trim().escape()],
-    catchExceptions(controller.viewOne)
+    catchExceptions(unitController.viewOne)
   );
 
   return router;

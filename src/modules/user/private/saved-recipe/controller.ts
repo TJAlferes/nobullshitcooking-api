@@ -5,14 +5,15 @@ import { RecipeRepo } from '../../../recipe/repo';
 //import { SavedRecipe } from './model';
 import { SavedRecipeRepo } from './repo';
 
-export class UserSavedRecipeController {
+export const userSavedRecipeController = {
   async viewByUserId(req: Request, res: Response) {
     const user_id = req.session.userInfo!.id;
 
     const savedRecipeRepo = new SavedRecipeRepo();
     const rows = await savedRecipeRepo.viewByUserId(user_id);
+
     return res.send(rows);
-  }
+  },
 
   async create(req: Request, res: Response) {
     const recipe_id = req.body.recipe_id;
@@ -28,15 +29,16 @@ export class UserSavedRecipeController {
     }
     if (recipe.author_id === user_id) {
       return res.send({message: `
-        Your recipes are saved when you create or update them.
-        This "Save" is so you may save public recipes created by others.
+        Your own recipes are saved whenever you create or update them.
+        Use this "Save" to bookmark official recipes and public recipes created by other users.
       `});
     }
 
     const savedRecipeRepo = new SavedRecipeRepo();
     await savedRecipeRepo.insert({user_id, recipe_id});
+
     return res.send({message: 'Saved.'});
-  }
+  },
 
   async delete(req: Request, res: Response) {
     const recipe_id = req.body.recipe_id;
@@ -46,6 +48,7 @@ export class UserSavedRecipeController {
     
     const savedRecipeRepo = new SavedRecipeRepo();
     await savedRecipeRepo.delete({user_id, recipe_id});
+
     return res.send({message: 'Unsaved.'});
   }
-}
+};

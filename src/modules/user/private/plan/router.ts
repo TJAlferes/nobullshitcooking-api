@@ -1,16 +1,14 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
-import { UserPrivatePlanController }   from '../../../controllers/user/private';
-import { catchExceptions, userIsAuth } from '../../../lib/utils';
+import { userPrivatePlanController as controller } from './controller';
+import { catchExceptions, userIsAuth } from '../../../../utils';
 
 const router = Router();
 
 // for /user/private/plan/...
 
 export function userPrivatePlanRouter() {
-  const controller = new UserPrivatePlanController();
-
   router.post(
     '/all',
     userIsAuth,

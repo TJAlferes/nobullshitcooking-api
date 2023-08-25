@@ -2,13 +2,13 @@ import { Request, Response } from 'express';
 
 import { EquipmentTypeRepo } from './repo';
 
-export class EquipmentTypeController {
+export const equipmentTypeController = {
   async viewAll(req: Request, res: Response) {
     const repo = new EquipmentTypeRepo();
     const rows = await repo.viewAll();
 
     return res.send(rows);
-  }
+  },
 
   async viewOne(req: Request, res: Response) {
     const equipment_type_id = Number(req.params.equipment_type_id);
@@ -18,4 +18,4 @@ export class EquipmentTypeController {
 
     return res.send(row);
   }
-}
+};

@@ -26,6 +26,12 @@ export class UserRepo extends MySQLRepo implements IUserRepo {
     return row as UserTableRow;
   }
 
+  async getByConfirmationCode(confirmation_code: string) {
+    const sql = `SELECT user_id, email, password, username, confirmation_code FROM users WHERE confirmation_code = ?`;
+    const [ [ row ] ] = await this.pool.execute<RowDataPacket[]>(sql, [confirmation_code]);
+    return row as UserTableRow;
+  }
+
   /*async viewById(user_id: string) {
     const sql = `SELECT email, username FROM users WHERE user_id = ?`;
     const [ [ row ] ] = await this.pool.execute<Username[]>(sql, [user_id]);
@@ -78,14 +84,14 @@ export class UserRepo extends MySQLRepo implements IUserRepo {
 }
 
 export interface IUserRepo {
-  getById:               (user_id: string) =>       Promise<UserTableRow>
-  getByEmail:            (email: string) =>    Promise<UserTableRow>;
-  getByUsername:         (username: string) => Promise<UserTableRow>;
+  getById:               (user_id: string) =>           Promise<UserTableRow>
+  getByEmail:            (email: string) =>             Promise<UserTableRow>;
+  getByUsername:         (username: string) =>          Promise<UserTableRow>;
   getByConfirmationCode: (confirmation_code: string) => Promise<UserTableRow>;
-  //viewById:   (userId: number) =>     Promise<Username>;
-  //viewByName: (username: string) =>   Promise<UserId>;
-  insert:                (user: UserTableRow) => Promise<void>;
-  //verify:     (email: string) =>      Promise<void>;
-  update:                (user: UserTableRow) => Promise<void>;
-  delete:                (user_id: string) =>     Promise<void>;
+  //viewById:              (user_id: number) =>           Promise<Username>;
+  //viewByUsername:        (username: string) =>          Promise<UserId>;
+  insert:                (user: UserTableRow) =>        Promise<void>;
+  //verify:                (email: string) =>             Promise<void>;
+  update:                (user: UserTableRow) =>        Promise<void>;
+  delete:                (user_id: string) =>           Promise<void>;
 }

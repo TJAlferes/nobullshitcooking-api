@@ -1,5 +1,5 @@
-import { RowDataPacket } from 'mysql2/promise';
-import { array, Infer, number, object, optional, string } from 'superstruct';
+import { RowDataPacket }                          from 'mysql2/promise';
+import { array, Infer, object, optional, string } from 'superstruct';
 
 export const validSearchTerm = string();
 

@@ -4,14 +4,14 @@ import { assert }            from 'superstruct';
 import { FavoriteRecipeRepo, RecipeRepo } from './repo';
 import { validFavoriteRecipe }            from '../../lib/validations';
 
-export class UserFavoriteRecipeController {
+export const userFavoriteRecipeController = {
   async viewByUserId(req: Request, res: Response) {
     const user_id = req.session.userInfo!.id;
     
     const favoriteRecipeRepo = new FavoriteRecipeRepo();
     const rows = await favoriteRecipeRepo.viewByUserId(user_id);
     return res.send(rows);
-  }
+  },
 
   async create(req: Request, res: Response) {
     const recipe_id = req.body.recipe_id;
@@ -32,7 +32,7 @@ export class UserFavoriteRecipeController {
     const favoriteRecipeRepo = new FavoriteRecipeRepo();
     await favoriteRecipeRepo.insert({user_id, recipe_id});
     return res.send({message: 'Favorited.'});
-  }
+  },
 
   async delete(req: Request, res: Response) {
     const recipe_id = req.body.recipe_id;
@@ -44,4 +44,4 @@ export class UserFavoriteRecipeController {
     await favoriteRecipeRepo.delete({user_id, recipe_id});
     return res.send({message: 'Unfavorited.'});
   }
-}
+};
