@@ -1,15 +1,13 @@
 import { Request, Response } from 'express';
 import { assert }            from 'superstruct';
 
-import {
-  RecipeRepo,
-  RecipeEquipmentRepo,
-  RecipeIngredientRepo,
-  RecipeMethodRepo,
-  RecipeSubrecipeRepo
-} from '../../repos/mysql';
-import { RecipeService } from '../../../app/services';
-import { validRecipe } from '../../lib/validations';
+import { RecipeEquipmentRepo }  from '../../../recipe/required-equipment/repo';
+import { RecipeIngredientRepo } from '../../../recipe/required-ingredient/repo';
+import { RecipeMethodRepo }     from '../../../recipe/required-method/repo';
+import { RecipeSubrecipeRepo }  from '../../../recipe/required-subrecipe/repo';
+import { Recipe }               from '../../../recipe/model';
+import { RecipeRepo }           from '../../../recipe/repo';
+import { RecipeService }        from '../../../recipe/service';
 
 export const userPublicRecipeController = {
   async viewAll(req: Request, res: Response) {
@@ -20,18 +18,11 @@ export const userPublicRecipeController = {
     // const recipeService = new RecipeService(recipeRepo);
     //const rows = await RecipeService.viewAll(author_id);
     const rows = await recipeRepo.viewAll({author_id, owner_id});
+
     return res.send(rows);
   },
 
   async viewOne(req: Request, res: Response) {
-    // TO DO: move to shared
-    function unslugify(title: string) {
-      return title
-        .split('-')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
-    }
-
     const title = unslugify(req.params.title);
     const author = unslugify(req.params.usename);
     //const title =    req.body.title;
@@ -40,6 +31,7 @@ export const userPublicRecipeController = {
 
     const recipeRepo = new RecipeRepo()
     const [ row ] = await recipeRepo.viewOne(title, authorId, ownerId);
+    
     return res.send(row);
   },
 
@@ -182,3 +174,11 @@ export const userPublicRecipeController = {
     return res.send({message: 'Recipe disowned.'});
   }
 };
+
+// TO DO: move to shared
+function unslugify(title: string) {
+  return title
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}

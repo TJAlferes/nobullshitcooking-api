@@ -1,16 +1,14 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
-import { UserConfirmationController } from './controller';
-import { catchExceptions }            from '../../../utils';
+import { userConfirmationController as controller } from './controller';
+import { catchExceptions } from '../../../utils';
 
 const router = Router();
 
 // for /user/confirmation
 
 export function userConfirmationRouter() {
-  const controller = new UserConfirmationController();
-
   router.post(
     '/confirm',
     sanitize(['confirmation_code']),

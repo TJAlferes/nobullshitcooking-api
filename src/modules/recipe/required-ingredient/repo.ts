@@ -18,28 +18,45 @@ export class RecipeIngredientRepo extends MySQLRepo implements IRecipeIngredient
   }
 
   async insert({ placeholders, recipe_ingredients }: InsertParams) {  // TO DO: change to namedPlaceholders using example below
-    const sql = `INSERT INTO recipe_ingredient (recipe_id, amount, unit_id, ingredient_id) VALUES ${placeholders}`;  // may be wrong, test these
+    const sql = `
+      INSERT INTO recipe_ingredient (recipe_id, amount, unit_id, ingredient_id)
+      VALUES ${placeholders}
+    `;  // may be wrong, test these
     await this.pool.execute(sql, recipe_ingredients);
   }
   
   async update({ recipe_id, placeholders, recipe_ingredients }: UpdateParams) {  // TO DO: change to namedPlaceholders using example below
-    const sql1 = `DELETE FROM recipe_ingredient WHERE recipe_id = ?`;
-    const sql2 = recipe_ingredients.length ? `INSERT INTO recipe_ingredients (recipe_id, amount, unit_id, ingredient_id) VALUES ${placeholders}` : undefined;
+    // Rather than updating current values in the database, we delete them,
+    // and if there are new values, we insert them.
     const conn = await this.pool.getConnection();
     await conn.beginTransaction();
+
     try {
-      // Rather than updating current values in the database, we delete them...
-      await conn.query(sql1, [recipe_id]);
-      // ... and, if there are new values, we insert them.
-      if (sql2) {
-        await conn.query(sql2, recipe_ingredients);
+
+      let sql = `DELETE FROM recipe_ingredient WHERE recipe_id = ?`;
+
+      await conn.query(sql, [recipe_id]);
+
+      if (recipe_ingredients.length) {
+        let sql = `
+        INSERT INTO recipe_ingredients (recipe_id, amount, unit_id, ingredient_id)
+        VALUES ${placeholders}
+        `;
+
+        await conn.query(sql, recipe_ingredients);
       }
+
       await conn.commit();
+
     } catch (err) {
+
       await conn.rollback();
       throw err;
+
     } finally {
+
       conn.release();
+
     }
   }
 
@@ -68,12 +85,6 @@ export interface IRecipeIngredientRepo {
   deleteByRecipeId:     (recipe_id: string) =>     Promise<void>;
   //deleteByRecipeIds:    (ids: string[]) =>         Promise<void>;
 }
-
-/*export type IMakeRecipeIngredient = {
-  amount:        number;
-  unit_id: number;
-  ingredient_id:            number;
-};*/
 
 type RecipeIngredientRow = {
   recipe_id:     string;

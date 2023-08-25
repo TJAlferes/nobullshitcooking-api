@@ -174,6 +174,11 @@ CREATE TABLE recipe_type (
   `recipe_type_name` VARCHAR(25)      NOT NULL DEFAULT ''
 );
 
+CREATE TABLE recipe_image_type (
+  `recipe_image_type_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `recipe_image_type_name` VARCHAR(25)      NOT NULL DEFAULT ''
+);
+
 CREATE TABLE method (
   `method_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `method_name` VARCHAR(25)      NOT NULL DEFAULT ''
@@ -214,8 +219,10 @@ CREATE TABLE recipe (
 );
 
 CREATE TABLE recipe_image (
-  `recipe_id` CHAR(36) PRIMARY KEY,
-  `image_id`  CHAR(36) NOT NULL,
+  `recipe_id`            CHAR(36) NOT NULL,
+  `image_id`             CHAR(36) NOT NULL,
+  `recipe_image_type_id` TINYINT UNSIGNED NOT NULL,
+  `order`                TINYINT UNSIGNED NOT NULL,
   FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`recipe_id`) ON DELETE CASCADE,
   FOREIGN KEY (`image_id`)  REFERENCES `image` (`image_id`) ON DELETE CASCADE
 );
@@ -386,6 +393,12 @@ INSERT INTO recipe_type (recipe_type_name) VALUES
 ("Sauce"),
 ("Dressing"),
 ("Condiment");
+
+INSERT INTO recipe_image_type (recipe_image_type_name) VALUES
+("primary"),
+("equipment"),
+("ingredients"),
+("action");
 
 INSERT INTO cuisine (continent_code, country_code, cuisine_name, country_name) VALUES
 ("AF", "DZA", "Algerian",                 "Algeria"),

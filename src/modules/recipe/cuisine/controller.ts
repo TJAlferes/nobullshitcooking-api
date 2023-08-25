@@ -2,13 +2,13 @@ import { Request, Response } from 'express';
 
 import { CuisineRepo } from './repo';
 
-export class CuisineController {
+export const cuisineController = {
   async viewAll(req: Request, res: Response) {
     const repo = new CuisineRepo();
     const rows = await repo.viewAll();
 
     return res.send(rows);
-  }
+  },
 
   async viewOne(req: Request, res: Response) {
     const cuisine_id = Number(req.params.cuisine_id);
@@ -18,4 +18,4 @@ export class CuisineController {
     
     return res.send(row);
   }
-}
+};

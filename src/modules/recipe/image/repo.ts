@@ -8,7 +8,7 @@ export class RecipeImageRepo extends MySQLRepo implements IRecipeImageRepo {
   }
 
   async insert(params: InsertParams) {
-
+    `recipe_id, image_id, recipe_image_type_id, order`
   }
 
   async update(params: InsertParams) {

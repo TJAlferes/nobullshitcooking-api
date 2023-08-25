@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { UserConfirmationService } from './service';
 import { UserRepo }                from '../repo';
 
-export class UserConfirmationController {
+export const userConfirmationController = {
   async confirm(req: Request, res: Response) {
     const { confirmation_code } = req.body.userInfo;
 
@@ -13,7 +13,7 @@ export class UserConfirmationController {
     await userConfirmationService.confirm(confirmation_code);
 
     return res.send({message: 'User account confirmed.'});
-  }
+  },
 
   async resendConfirmationCode(req: Request, res: Response) {
     const { email, password } = req.body.userInfo;
@@ -25,4 +25,4 @@ export class UserConfirmationController {
 
     return res.send({message: 'Confirmation code re-sent.'});
   }
-}
+};

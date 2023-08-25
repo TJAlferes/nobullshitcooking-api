@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { param }  from 'express-validator';
 
-import { CuisineController } from './controller';
+import { cuisineController as controller } from './controller';
 import { catchExceptions }   from '../../../utils';
 
 const router = Router();
@@ -9,8 +9,6 @@ const router = Router();
 // for /cuisine/...
 
 export function cuisineRouter() {
-  const controller = new CuisineController();
-
   router.get('/', catchExceptions(controller.viewAll));
 
   router.get(
@@ -20,4 +18,4 @@ export function cuisineRouter() {
   );
 
   return router;
-}
+};

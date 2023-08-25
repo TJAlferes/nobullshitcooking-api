@@ -2,13 +2,13 @@ import { Request, Response } from 'express';
 
 import { RecipeTypeRepo } from './repo';
 
-export class RecipeTypeController {
+export const recipeTypeController = {
   async viewAll(req: Request, res: Response) {
     const repo = new RecipeTypeRepo();
     const rows = await repo.viewAll();
 
     return res.send(rows);
-  }
+  },
 
   async viewOne(req: Request, res: Response) {
     const recipe_type_id = Number(req.params.recipe_type_id);
@@ -18,4 +18,4 @@ export class RecipeTypeController {
 
     return res.send(row);
   }
-}
+};

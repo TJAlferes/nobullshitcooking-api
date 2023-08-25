@@ -16,6 +16,7 @@ export const userPrivateRecipeController = {
 
     const recipeRepo = new RecipeRepo();
     const rows = await recipeRepo.viewAll({author_id, owner_id});
+
     return res.send(rows);
   },
 
@@ -26,6 +27,7 @@ export const userPrivateRecipeController = {
 
     const recipeRepo = new RecipeRepo();
     const row = await recipeRepo.viewOne({title, author_id, owner_id});
+    
     return res.send(row);
   },
 

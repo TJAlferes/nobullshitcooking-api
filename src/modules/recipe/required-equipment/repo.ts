@@ -16,28 +16,45 @@ export class RecipeEquipmentRepo extends MySQLRepo implements IRecipeEquipmentRe
   }
 
   async insert({ placeholders, recipe_equipment }: InsertParams) {  // TO DO: change to namedPlaceholders using example below
-    const sql = `INSERT INTO recipe_equipment (recipe_id, amount, equipment_id) VALUES ${placeholders}`;
+    const sql = `
+      INSERT INTO recipe_equipment (recipe_id, amount, equipment_id)
+      VALUES ${placeholders}
+    `;
     await this.pool.execute(sql, recipe_equipment);
   }
 
   async update({ recipe_id, placeholders, recipe_equipment }: UpdateParams) {  // TO DO: change to namedPlaceholders using example below
-    const sql1 = `DELETE FROM recipe_equipment WHERE recipe_id = ?`;
-    const sql2 = recipe_equipment.length ? `INSERT INTO recipe_equipment (recipe_id, amount, equipment_id) VALUES ${placeholders}` : undefined;
+    // Rather than updating current values in the database, we delete them,
+    // and if there are new values, we insert them.
     const conn = await this.pool.getConnection();
     await conn.beginTransaction();
+
     try {
-      // Rather than updating current values in the database, we delete them...
-      await conn.query(sql1, [recipe_id]);
-      // ... and, if there are new values, we insert them.
-      if (sql2) {
-        await conn.query(sql2, recipe_equipment);
+
+      let sql = `DELETE FROM recipe_equipment WHERE recipe_id = ?`;
+
+      await conn.query(sql, [recipe_id]);
+
+      if (recipe_equipment.length) {
+        let sql = `
+          INSERT INTO recipe_equipment (recipe_id, amount, equipment_id)
+          VALUES ${placeholders}
+        `;
+
+        await conn.query(sql, recipe_equipment);
       }
+
       await conn.commit();
+
     } catch (err) {
+
       await conn.rollback();
       throw err;
+
     } finally {
+
       conn.release();
+
     }
   }
 

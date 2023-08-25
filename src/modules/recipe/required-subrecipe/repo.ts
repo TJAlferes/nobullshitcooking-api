@@ -22,23 +22,35 @@ export class RecipeSubrecipeRepo extends MySQLRepo implements IRecipeSubrecipeRe
   }
   
   async update({ recipe_id, placeholders, recipe_subrecipes }: UpdateParams) {  // TO DO: change to namedPlaceholders using example below
-    const sql1 = `DELETE FROM recipe_subrecipe WHERE recipe_id = ?`;
-    const sql2 = recipe_subrecipes.length ? `INSERT INTO recipe_subrecipe (recipe_id, amount, unit_id, subrecipe_id) VALUES ${placeholders}` : undefined;
+    // Rather than updating current values in the database, we delete them,
+    // and if there are new values, we insert them.
     const conn = await this.pool.getConnection();
     await conn.beginTransaction();
+
     try {
-      // Rather than updating current values in the database, we delete them...
-      await conn.query(sql1, [recipe_id]);
-      // ... and, if there are new values, we insert them.
-      if (sql2) {
-        await conn.query(sql2, recipe_subrecipes);
+      let sql = `DELETE FROM recipe_subrecipe WHERE recipe_id = ?`;
+      await conn.query(sql, [recipe_id]);
+
+      if (recipe_subrecipes.length) {
+        let sql = `
+          INSERT INTO recipe_subrecipe (recipe_id, amount, unit_id, subrecipe_id)
+          VALUES ${placeholders}
+        `;
+
+        await conn.query(sql, recipe_subrecipes);
       }
+
       await conn.commit();
+
     } catch (err) {
+
       await conn.rollback();
       throw err;
+
     } finally {
+
       conn.release();
+
     }
   }
 

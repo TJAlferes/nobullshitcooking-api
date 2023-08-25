@@ -4,7 +4,7 @@ import { UserAuthenticationService } from './service';
 import { UserRepo }                  from '../repo';
 import { io }                        from '../../../index';
 
-export class UserAuthenticationController {
+export const userAuthenticationController = {
   async login(req: Request, res: Response) {
     const loggedIn = req.session.userInfo?.id;
     if (loggedIn) {
@@ -19,7 +19,7 @@ export class UserAuthenticationController {
     const username = await userAuthenticationService.login({email, password, session: req.session});
 
     return res.json({message: 'Logged in.', username});
-  }
+  },
 
   async logout(req: Request, res: Response) {
     const sessionId = req.session.id;
@@ -31,4 +31,4 @@ export class UserAuthenticationController {
 
     return res.end();
   }
-}
+};

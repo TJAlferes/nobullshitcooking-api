@@ -10,7 +10,7 @@ const USER_BUCKET =            process.env.AWS_S3_USER_BUCKET!;
 const USER_ACCESS_KEY_ID =     process.env.AWS_S3_USER_ACCESS_KEY_ID!;
 const USER_SECRET_ACCESS_KEY = process.env.AWS_S3_USER_SECRET_ACCESS_KEY!;
 
-export const UserSignedUrlController = {
+export const userSignedUrlController = {
   s3RequestPresign: async function(req: Request, res: Response) {
     const folder: Folder = req.body.folder;
     const filename       = slugify(req.body.filename);  // name/fullname/title
@@ -81,12 +81,12 @@ export const UserSignedUrlController = {
       });
     }
 
-    if ( (folder === PUBLIC_RECIPE_COOKING)
-      || (folder === PUBLIC_RECIPE_EQUIPMENT)
-      || (folder === PUBLIC_RECIPE_INGREDIENTS)
-      || (folder === PRIVATE_RECIPE_COOKING)
-      || (folder === PRIVATE_RECIPE_EQUIPMENT)
-      || (folder === PRIVATE_RECIPE_INGREDIENTS)
+    if ( folder === PUBLIC_RECIPE_COOKING
+      || folder === PUBLIC_RECIPE_EQUIPMENT
+      || folder === PUBLIC_RECIPE_INGREDIENTS
+      || folder === PRIVATE_RECIPE_COOKING
+      || folder === PRIVATE_RECIPE_EQUIPMENT
+      || folder === PRIVATE_RECIPE_INGREDIENTS
     ) {
       const fullSignature = await getSignedUrl(s3, new PutObjectCommand({
         Bucket: USER_BUCKET,
