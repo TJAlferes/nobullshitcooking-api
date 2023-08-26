@@ -1,118 +1,13 @@
 import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
-import type { SearchRequest, SearchResponse } from '../search/model';
-import { MySQLRepo } from '../shared/MySQL';
+import { MySQLRepo } from '../../../shared/MySQL';
 
-export class RecipeRepo extends MySQLRepo implements IRecipeRepo {
-  async autosuggest(term: string) {
-    const owner_id = 1;  // only public recipes are searchable  // const owner_id = nobsc_user_id
-
-    const sql = `
-      SELECT
-        recipe_id,
-        title AS text
-      FROM recipe
-      WHERE title LIKE ? AND owner_id = ?
-      LIMIT 5
-    `;
-
-    const [ rows ] = await this.pool.execute<Suggestion[]>(sql, [
-      `%${term}%`,
-      owner_id
-    ]);
-
+export class PublicRecipeRepo extends MySQLRepo implements IPublicRecipeRepo {
+  async viewAllPublicTitles(owner_id:  string) {
+    const sql = `SELECT title FROM recipe WHERE owner_id = ?`;
+    const [ rows ] = await this.pool.execute<Title[]>(sql, [owner_id]);
     return rows;
-  }
-
-  async search({ term, filters, sorts, current_page, results_per_page }: SearchRequest) {
-    const owner_id = 1;  // only public recipes are searchable  // const owner_id = nobsc_user_id
-    let sql = `
-      SELECT
-        r.recipe_id,
-        u.username AS author,
-        rt.recipe_type_name,
-        c.cuisine_name,
-        r.title,
-        r.description,
-        i.image_url
-      FROM recipe r
-      INNER JOIN user u         ON u.user_id = r.owner_id
-      INNER JOIN recipe_type rt ON rt.recipe_type_id = r.recipe_type_id
-      INNER JOIN cuisine c      ON c.cuisine_id = r.cuisine_id
-      INNER JOIN image i        ON i.image_id = r.image_id
-      WHERE r.owner_id = ?
-    `;
-
-    // order matters
-
-    let params: Array<number|string> = [owner_id];
-
-    if (term) {
-      sql += ` AND r.title LIKE ?`;
-      params.push(`%${term}%`);
-    }
-
-    const recipe_types = filters?.recipe_types ?? [];
-    const cuisines     = filters?.cuisines ?? [];
-    const methods      = filters?.methods ?? [];
-
-    if (recipe_types.length > 0) {
-      const placeholders = '?,'.repeat(recipe_types.length).slice(0, -1);
-      sql += ` AND rt.recipe_type_name IN (${placeholders})`;
-      params.push(...recipe_types);
-    }
-
-    if (cuisines.length > 0) {
-      const placeholders = '?,'.repeat(cuisines.length).slice(0, -1);
-      sql += ` AND c.code IN (${placeholders})`;  
-      params.push(...cuisines);
-    }
-
-    if (methods.length > 0) {
-      const placeholders = '?,'.repeat(methods.length).slice(0, -1);
-
-      // Probably not optimal, but best solution I know for now.
-      // -- tjalferes, March 19th 2023
-      sql += ` AND JSON_OVERLAPS(
-        JSON_ARRAY(${placeholders}),
-        (
-          SELECT JSON_ARRAYAGG(m.method_name)
-          FROM method m
-          INNER JOIN recipe_method rm ON rm.method_id = m.method_id
-          WHERE rm.recipe_id = r.recipe_id
-        )
-      )`;
-
-      params.push(...methods);
-    }
-
-    //if (needed_sorts)
-
-    const [ [ { count } ] ] = await this.pool.execute<RowDataPacket[]>(
-      `SELECT COUNT(*) AS count FROM (${sql}) results`,
-      params
-    );
-    const total_results = Number(count);
-    
-    const limit  = results_per_page ? Number(results_per_page)           : 20;
-    const offset = current_page     ? (Number(current_page) - 1) * limit : 0;
-
-    sql += ` LIMIT ? OFFSET ?`;
-
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [
-      ...params,
-      `${limit}`,
-      `${offset}`
-    ]);  // order matters
-
-    const total_pages = total_results <= limit ? 1 : Math.ceil(total_results / limit);
-
-    return {
-      results: rows,
-      total_results,
-      total_pages
-    };
-  }
+  }  // for Next.js getStaticPaths
 
   async viewOneByRecipeId(params: ViewOneByRecipeIdParams) {
     const sql = `${viewOneSQL} AND r.recipe_id = ?`;
@@ -186,25 +81,38 @@ export class RecipeRepo extends MySQLRepo implements IRecipeRepo {
     `;
     await this.pool.execute<RowDataPacket[]>(sql, params);
   }
-  
-  async deleteOne(recipe_id: string) {
+
+  async disownAllByOwnerId(params: DisownAllByOwnerIdParams) {
+    // TO DO: move to service
+    //if (owner_id === nobsc_user_id || owner_id === unknown_user_id) return;
     const sql = `
-      DELETE FROM recipe
-      WHERE recipe_id = ?
-      LIMIT 1
+      UPDATE public_recipe
+      SET owner_id = :unknown_user_id
+      WHERE owner_id = :owner_id
     `;
-    await this.pool.execute(sql, [recipe_id]);
+    await this.pool.execute(sql, params);
+  }
+
+  async disownOneByOwnerId(params: DisownOneByOwnerIdParams) {
+    // TO DO: move to service
+    //if (owner_id === nobsc_user_id || owner_id === unknown_user_id) return;
+    const sql = `
+      UPDATE public_recipe
+      SET owner_id = :unknown_user_id
+      WHERE owner_id = :owner_id AND recipe_id = :recipe_id
+    `;
+    await this.pool.execute(sql, params);
   }
 }
 
-export interface IRecipeRepo {
-  autosuggest:       (term: string) =>                    Promise<Suggestion[]>;
-  search:            (searchRequest: SearchRequest) =>    Promise<SearchResponse>;
-  viewOneByRecipeId: (params: ViewOneByRecipeIdParams) => Promise<RecipeView>;
-  viewOneByTitle:    (params: ViewOneByTitleParams) =>    Promise<RecipeView>;
-  insert:            (params: InsertParams) =>            Promise<ResultSetHeader>;
-  update:            (params: InsertParams) =>            Promise<void>;
-  deleteOne:         (recipe_id: string) =>               Promise<void>;
+export interface IPublicRecipeRepo {
+  viewAllPublicTitles: (owner_id: string) =>                 Promise<Title[]>;
+  viewOneByRecipeId:   (params: ViewOneByRecipeIdParams) =>  Promise<RecipeView>;
+  viewOneByTitle:      (params: ViewOneByTitleParams) =>     Promise<RecipeView>;
+  insert:              (params: InsertParams) =>             Promise<ResultSetHeader>;
+  update:              (params: InsertParams) =>             Promise<void>;
+  disownAllByOwnerId: (params: DisownAllByOwnerIdParams) => Promise<void>;
+  disownOneByOwnerId: (params: DisownOneByOwnerIdParams) => Promise<void>;
 }
 
 export type InsertParams = {
@@ -281,9 +189,8 @@ type RequiredSubrecipeView = {
   subrecipe_title: string;
 };
 
-type Suggestion = RowDataPacket & {
-  recipe_id: string;
-  text:      string;
+type Title = RowDataPacket & {
+  title: string;
 };
 
 type ViewOneByRecipeIdParams = {
@@ -292,8 +199,19 @@ type ViewOneByRecipeIdParams = {
 };
 
 type ViewOneByTitleParams = {
-  title:     string;
-  owner_id:  string;
+  title:    string;
+  owner_id: string;
+};
+
+type DisownAllByOwnerIdParams = {
+  owner_id:      string;
+  nobsc_user_id: string
+};
+
+type DisownOneByOwnerIdParams = {
+  recipe_id:     string;
+  owner_id:      string;
+  nobsc_user_id: string
 };
 
 const viewOneSQL = `

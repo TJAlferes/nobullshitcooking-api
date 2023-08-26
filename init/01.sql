@@ -198,7 +198,6 @@ CREATE TABLE recipe (
   `recipe_id`         CHAR(36)         PRIMARY KEY,
   `recipe_type_id`    TINYINT UNSIGNED NOT NULL,
   `cuisine_id`        TINYINT UNSIGNED NOT NULL,
-  `author_id`         CHAR(36)         NOT NULL,
   `owner_id`          CHAR(36)         NOT NULL,
   `title`             VARCHAR(100)     NOT NULL DEFAULT '',
   `description`       VARCHAR(150)     NOT NULL DEFAULT '',
@@ -211,15 +210,48 @@ CREATE TABLE recipe (
   `updated_at`        TIMESTAMP                 DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (`recipe_type_id`) REFERENCES `recipe_type` (`recipe_type_id`),
   FOREIGN KEY (`cuisine_id`)     REFERENCES `cuisine` (`cuisine_id`),
-  FOREIGN KEY (`author_id`)      REFERENCES `user` (`user_id`),
   FOREIGN KEY (`owner_id`)       REFERENCES `user` (`user_id`)
 );
 
 -- created by users, only creator can view
-CREATE TABLE private_recipe ();
+CREATE TABLE private_recipe (
+  `recipe_id`         CHAR(36)         PRIMARY KEY,
+  `recipe_type_id`    TINYINT UNSIGNED NOT NULL,
+  `cuisine_id`        TINYINT UNSIGNED NOT NULL,
+  `owner_id`          CHAR(36)         NOT NULL,
+  `title`             VARCHAR(100)     NOT NULL DEFAULT '',
+  `description`       VARCHAR(150)     NOT NULL DEFAULT '',
+  `active_time`       TIME             NOT NULL,
+  `total_time`        TIME             NOT NULL,
+  `directions`        TEXT             NOT NULL,
+  `image_id`          CHAR(36)         NOT NULL,
+  --`video_id`          CHAR(36)         NOT NULL,
+  `created_at`        TIMESTAMP                 DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`        TIMESTAMP                 DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (`recipe_type_id`) REFERENCES `recipe_type` (`recipe_type_id`),
+  FOREIGN KEY (`cuisine_id`)     REFERENCES `cuisine` (`cuisine_id`),
+  FOREIGN KEY (`owner_id`)       REFERENCES `user` (`user_id`)
+);
 
 -- created by users, anyone can view
-CREATE TABLE public_recipe ();
+CREATE TABLE public_recipe (
+  `recipe_id`         CHAR(36)         PRIMARY KEY,
+  `recipe_type_id`    TINYINT UNSIGNED NOT NULL,
+  `cuisine_id`        TINYINT UNSIGNED NOT NULL,
+  `owner_id`          CHAR(36)         NOT NULL,
+  `title`             VARCHAR(100)     NOT NULL DEFAULT '',
+  `description`       VARCHAR(150)     NOT NULL DEFAULT '',
+  `active_time`       TIME             NOT NULL,
+  `total_time`        TIME             NOT NULL,
+  `directions`        TEXT             NOT NULL,
+  `image_id`          CHAR(36)         NOT NULL,
+  --`video_id`          CHAR(36)         NOT NULL,
+  `created_at`        TIMESTAMP                 DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`        TIMESTAMP                 DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (`recipe_type_id`) REFERENCES `recipe_type` (`recipe_type_id`),
+  FOREIGN KEY (`cuisine_id`)     REFERENCES `cuisine` (`cuisine_id`),
+  FOREIGN KEY (`owner_id`)       REFERENCES `user` (`user_id`)
+);
 
 CREATE TABLE recipe_image (
   `recipe_id` CHAR(36) NOT NULL,
