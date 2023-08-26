@@ -87,12 +87,6 @@ export interface IRecipeSubrecipeRepo {
   //deleteByRecipeIds:    (ids: string;[]) =>       Promise<void>;
 }
 
-/*export type MakeRecipeSubrecipe = {
-  amount:        number;
-  unitId: number;
-  id:            number;
-};*/
-
 type RecipeSubrecipeRow = {
   recipe_id:    string;
   amount:       number;

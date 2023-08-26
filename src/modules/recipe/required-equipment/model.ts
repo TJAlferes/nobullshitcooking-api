@@ -15,6 +15,14 @@ export class RecipeEquipment {
     const recipeEquipment = new RecipeEquipment(params);
     return recipeEquipment;
   }
+
+  getDTO() {
+    return {
+      recipe_id:    this.recipe_id,
+      amount:       this.amount,
+      equipment_id: this.equipment_id
+    };
+  }
 }
 
 type CreateParams = {

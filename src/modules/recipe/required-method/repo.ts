@@ -74,10 +74,6 @@ export interface IRecipeMethodRepo {
   //deleteByRecipeIds: (ids: string[]) =>        Promise<void>;
 }
 
-/*export type MakeRecipeMethod = {
-  id: number;
-};*/
-
 type RecipeMethodRow = {
   recipe_id: string;
   method_id: number;

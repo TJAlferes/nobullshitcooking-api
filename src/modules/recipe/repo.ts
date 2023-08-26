@@ -6,8 +6,21 @@ import { MySQLRepo } from '../shared/MySQL';
 export class RecipeRepo extends MySQLRepo implements IRecipeRepo {
   async autosuggest(term: string) {
     const owner_id = 1;  // only public recipes are searchable  // const owner_id = nobsc_user_id
-    const sql = `SELECT recipe_id, title AS text FROM recipe WHERE title LIKE ? AND owner_id = ? LIMIT 5`;
-    const [ rows ] = await this.pool.execute<Suggestion[]>(sql, [`%${term}%`, owner_id]);
+
+    const sql = `
+      SELECT
+        recipe_id,
+        title AS text
+      FROM recipe
+      WHERE title LIKE ? AND owner_id = ?
+      LIMIT 5
+    `;
+
+    const [ rows ] = await this.pool.execute<Suggestion[]>(sql, [
+      `%${term}%`,
+      owner_id
+    ]);
+
     return rows;
   }
 
@@ -40,8 +53,8 @@ export class RecipeRepo extends MySQLRepo implements IRecipeRepo {
     }
 
     const recipe_types = filters?.recipe_types ?? [];
-    const methods      = filters?.methods ?? [];
     const cuisines     = filters?.cuisines ?? [];
+    const methods      = filters?.methods ?? [];
 
     if (recipe_types.length > 0) {
       const placeholders = '?,'.repeat(recipe_types.length).slice(0, -1);
@@ -49,9 +62,17 @@ export class RecipeRepo extends MySQLRepo implements IRecipeRepo {
       params.push(...recipe_types);
     }
 
+    if (cuisines.length > 0) {
+      const placeholders = '?,'.repeat(cuisines.length).slice(0, -1);
+      sql += ` AND c.code IN (${placeholders})`;  
+      params.push(...cuisines);
+    }
+
     if (methods.length > 0) {
       const placeholders = '?,'.repeat(methods.length).slice(0, -1);
-      // I don't believe this is optimal, but it's the best solution I know of for now. -- tjalferes, March 19th 2023
+
+      // Probably not optimal, but best solution I know for now.
+      // -- tjalferes, March 19th 2023
       sql += ` AND JSON_OVERLAPS(
         JSON_ARRAY(${placeholders}),
         (
@@ -61,31 +82,36 @@ export class RecipeRepo extends MySQLRepo implements IRecipeRepo {
           WHERE rm.recipe_id = r.recipe_id
         )
       )`;
-      params.push(...methods);
-    }
 
-    if (cuisines.length > 0) {
-      const placeholders = '?,'.repeat(cuisines.length).slice(0, -1);
-      sql += ` AND c.code IN (${placeholders})`;  
-      params.push(...cuisines);
+      params.push(...methods);
     }
 
     //if (needed_sorts)
 
-    const [ [ { count } ] ] = await this.pool.execute<RowDataPacket[]>(`SELECT COUNT(*) AS count FROM (${sql}) results`, params);
+    const [ [ { count } ] ] = await this.pool.execute<RowDataPacket[]>(
+      `SELECT COUNT(*) AS count FROM (${sql}) results`,
+      params
+    );
     const total_results = Number(count);
     
-    const limit =  results_per_page ? Number(results_per_page)           : 20;
+    const limit  = results_per_page ? Number(results_per_page)           : 20;
     const offset = current_page     ? (Number(current_page) - 1) * limit : 0;
 
     sql += ` LIMIT ? OFFSET ?`;
 
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [...params, `${limit}`, `${offset}`]);  // order matters
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [
+      ...params,
+      `${limit}`,
+      `${offset}`
+    ]);  // order matters
 
-    const total_pages = (total_results <= limit) ? 1 : Math.ceil(total_results / limit);
-    console.log('>>>total_pages', total_pages);
+    const total_pages = total_results <= limit ? 1 : Math.ceil(total_results / limit);
 
-    return {results: rows, total_results, total_pages};
+    return {
+      results: rows,
+      total_results,
+      total_pages
+    };
   }
 
   async getPrivateIds(user_id: string) {
@@ -94,7 +120,7 @@ export class RecipeRepo extends MySQLRepo implements IRecipeRepo {
     const ids: number[] = [];
     rows.forEach(({ id }) => ids.push(id));
     return ids;
-  }
+  }  // is this needed?
 
   async viewAllPublicTitles(params: ViewAllPublicTitlesParams) {  // for Next.js getStaticPaths
     const sql = `SELECT title FROM recipe WHERE author_id = ? AND owner_id = ?`;
@@ -182,14 +208,22 @@ export class RecipeRepo extends MySQLRepo implements IRecipeRepo {
   async disownAllByAuthorId(author_id: string, nobsc_author_id: string) {
     //if (author_id === nobsc_author_id || author_id === nobsc_unknown_id) return;  // TO DO: move to service
     //const new_author_id = 2;  // double check
-    const sql = `UPDATE recipe SET author_id = :nobsc_author_id WHERE author_id = :author_id AND owner_id = 1`;
+    const sql = `
+      UPDATE recipe
+      SET author_id = :nobsc_author_id
+      WHERE author_id = :author_id AND owner_id = 1
+    `;
     await this.pool.execute(sql, params);
   }
 
   // TO DO: change this name. you're not actually disowning, you're unauthoring
   async disownOneByAuthorId(recipe_id: string, author_id: string, nobsc_author_id: string) {
     //const newAuthorId = 2;  // double check
-    const sql = `UPDATE recipe SET author_id = :nobsc_author_id WHERE recipe_id = :recipe_id AND author_id = :author_id AND owner_id = 1`;
+    const sql = `
+      UPDATE recipe
+      SET author_id = :nobsc_author_id
+      WHERE recipe_id = :recipe_id AND author_id = :author_id AND owner_id = 1
+    `;
     await this.pool.execute(sql, params);
   }
 
@@ -200,7 +234,11 @@ export class RecipeRepo extends MySQLRepo implements IRecipeRepo {
   }
   
   async deleteOneByOwnerId(params: DeleteOneByOwnerIdParams) {
-    const sql = `DELETE FROM recipe WHERE recipe_id = :recipe_id AND owner_id = :owner_id LIMIT 1`;
+    const sql = `
+      DELETE FROM recipe
+      WHERE recipe_id = :recipe_id AND owner_id = :owner_id
+      LIMIT 1
+    `;
     await this.pool.execute(sql, params);
   }
 }

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
-import { userPublicRecipeController as controller }  from './controller';
+import { userPublicRecipeController as controller } from './controller';
 import { catchExceptions, userIsAuth } from '../../../../utils';
 
 const router = Router();
@@ -9,9 +9,7 @@ const router = Router();
 // for /user/public/recipe/...
 
 export function userPublicRecipeRouter() {
-  // TO DO: sanitize the requireds with *
   const recipeInfo = [
-    'ownership',
     'recipe_type_id',
     'cuisine_id',
     'title',
@@ -19,15 +17,16 @@ export function userPublicRecipeRouter() {
     'active_time',
     'total_time',
     'directions',
-    //'methods.*.id',
-    //'equipment*',
-    //'ingredients*',
-    //'subrecipes*',
-    'recipeImage',
-    'equipmentImage',
-    'ingredientsImage',
-    'cookingImage',
-    'video'
+
+    'required_methods.*',
+    'required_equipment.*',
+    'required_ingredients.*',
+    'required_subrecipes.*',
+
+    'recipe_image',
+    'equipment_image',
+    'ingredients_image',
+    'cooking_image'
   ];
 
   router.post(
@@ -53,14 +52,14 @@ export function userPublicRecipeRouter() {
     userIsAuth,
     sanitize(['id', ...recipeInfo]),
     catchExceptions(controller.edit)
-  );*/
+  ); this is now handled with /one ??? */
 
   router.put(
     '/update',
     userIsAuth,
     sanitize(['recipe_id', ...recipeInfo]),
     catchExceptions(controller.update)
-  );
+  );  // TO DO: what about prev images???
 
   router.delete(
     '/disown',

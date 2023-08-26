@@ -174,11 +174,6 @@ CREATE TABLE recipe_type (
   `recipe_type_name` VARCHAR(25)      NOT NULL DEFAULT ''
 );
 
-CREATE TABLE recipe_image_type (
-  `recipe_image_type_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  `recipe_image_type_name` VARCHAR(25)      NOT NULL DEFAULT ''
-);
-
 CREATE TABLE method (
   `method_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `method_name` VARCHAR(25)      NOT NULL DEFAULT ''
@@ -209,7 +204,7 @@ CREATE TABLE recipe (
   `total_time`        TIME             NOT NULL,
   `directions`        TEXT             NOT NULL,
   `image_id`          CHAR(36)         NOT NULL,
-  --`video`             VARCHAR(100)     NOT NULL DEFAULT '',
+  --`video_id`          CHAR(36)         NOT NULL,
   `created_at`        TIMESTAMP                 DEFAULT CURRENT_TIMESTAMP,
   `updated_at`        TIMESTAMP                 DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (`recipe_type_id`) REFERENCES `recipe_type` (`recipe_type_id`),
@@ -219,10 +214,10 @@ CREATE TABLE recipe (
 );
 
 CREATE TABLE recipe_image (
-  `recipe_id`            CHAR(36) NOT NULL,
-  `image_id`             CHAR(36) NOT NULL,
-  `recipe_image_type_id` TINYINT UNSIGNED NOT NULL,
-  `order`                TINYINT UNSIGNED NOT NULL,
+  `recipe_id` CHAR(36) NOT NULL,
+  `image_id`  CHAR(36) NOT NULL,
+  `type`      TINYINT UNSIGNED NOT NULL,
+  `order`     TINYINT UNSIGNED NOT NULL,
   FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`recipe_id`) ON DELETE CASCADE,
   FOREIGN KEY (`image_id`)  REFERENCES `image` (`image_id`) ON DELETE CASCADE
 );
@@ -236,10 +231,10 @@ CREATE TABLE recipe_equipment (
 );
 
 CREATE TABLE recipe_ingredient (
-  `recipe_id`     CHAR(36)         NOT NULL DEFAULT '0',
+  `recipe_id`     CHAR(36)         NOT NULL,
   `amount`        DECIMAL(5,2)     DEFAULT NULL,
   `unit_id`       TINYINT UNSIGNED DEFAULT NULL,
-  `ingredient_id` CHAR(36)         NOT NULL DEFAULT '0',
+  `ingredient_id` CHAR(36)         NOT NULL,
   FOREIGN KEY (`recipe_id`)     REFERENCES `recipe` (`recipe_id`)  ON DELETE CASCADE,
   FOREIGN KEY (`unit_id`)       REFERENCES `unit` (`unit_id`),
   FOREIGN KEY (`ingredient_id`) REFERENCES `ingredient` (`ingredient_id`) ON DELETE CASCADE
@@ -393,12 +388,6 @@ INSERT INTO recipe_type (recipe_type_name) VALUES
 ("Sauce"),
 ("Dressing"),
 ("Condiment");
-
-INSERT INTO recipe_image_type (recipe_image_type_name) VALUES
-("primary"),
-("equipment"),
-("ingredients"),
-("action");
 
 INSERT INTO cuisine (continent_code, country_code, cuisine_name, country_name) VALUES
 ("AF", "DZA", "Algerian",                 "Algeria"),

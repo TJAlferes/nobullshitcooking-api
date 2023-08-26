@@ -9,8 +9,6 @@ const router = Router();
 // for /recipe/...
 
 export function recipeRouter() {
-  //router.get('/', catchExceptions(controller.viewAll));  // remove ? you need these for the planner
-
   router.get('/titles', catchExceptions(controller.viewAllPublicTitles));
 
   router.get(

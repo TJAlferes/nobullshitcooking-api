@@ -1,3 +1,5 @@
+
+import { RecipeEquipment } from "./model";
 import { IRecipeEquipmentRepo } from "./repo";
 
 export class RecipeEquipmentService {
@@ -10,22 +12,18 @@ export class RecipeEquipmentService {
   async create({ recipe_id, required_equipment }: CreateParams) {
     if (!required_equipment.length) return;
 
-    required_equipment.map(({ amount, equipment_id }) =>
-      assert({recipe_id, amount, equipment_id}, validRecipeEquipment));
-
     const placeholders = '(?, ?, ?),'.repeat(required_equipment.length).slice(0, -1);
 
-    const values: number[] = [];
+    const recipe_equipment = required_equipment.map(re => 
+      RecipeEquipment.create({...re, recipe_id}).getDTO()
+    );
 
-    required_equipment.map(({ amount, equipment_id }) =>
-      values.push(recipe_id, amount, equipment_id));
-
-    await this.repo.insert(placeholders, values);
+    await this.repo.insert({placeholders, recipe_equipment});
   }
 }
 
 type CreateParams = {
-  recipe_id:            string;
+  recipe_id:          string;
   required_equipment: RequiredEquipment[];
 };
 

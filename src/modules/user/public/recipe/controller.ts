@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { assert }            from 'superstruct';
 
 import { RecipeEquipmentRepo }  from '../../../recipe/required-equipment/repo';
 import { RecipeIngredientRepo } from '../../../recipe/required-ingredient/repo';
@@ -15,85 +14,86 @@ export const userPublicRecipeController = {
     const owner_id  = 1;  // TO DO: move and change
 
     const recipeRepo = new RecipeRepo();
-    // const recipeService = new RecipeService(recipeRepo);
-    //const rows = await RecipeService.viewAll(author_id);
-    const rows = await recipeRepo.viewAll({author_id, owner_id});
+    const recipeService = new RecipeService(recipeRepo);
+    const rows = await RecipeService.viewAll(author_id);
+    //const rows = await recipeRepo.viewAll({author_id, owner_id});
 
     return res.send(rows);
   },
 
   async viewOne(req: Request, res: Response) {
-    const title = unslugify(req.params.title);
-    const author = unslugify(req.params.usename);
-    //const title =    req.body.title;
-    //const authorId = req.session.userInfo!.id;
-    const ownerId =  1;
+    const title     = unslugify(req.params.title);
+    const author    = unslugify(req.params.usename);
+    const author_id = req.session.userInfo!.id;
+    const owner_id  = 1;
 
     const recipeRepo = new RecipeRepo()
-    const [ row ] = await recipeRepo.viewOne(title, authorId, ownerId);
+    const row = await recipeRepo.viewOne({title, authorId, ownerId});
     
     return res.send(row);
   },
 
   async create(req: Request, res: Response) {
-    const recipeTypeId = Number(req.body.recipeInfo.recipeTypeId);
-    const cuisineId =    Number(req.body.recipeInfo.cuisineId);
     const {
       title,
       description,
-      activeTime,
-      totalTime,
+      active_time,
+      total_time,
       directions,
-      methods,
-      equipment,
-      ingredients,
-      subrecipes,
-      recipeImage,
-      equipmentImage,
-      ingredientsImage,
-      cookingImage,
-      video
+      required_methods,
+      required_equipment,
+      required_ingredients,
+      required_subrecipes,
+      recipe_image,
+      equipment_image,
+      ingredients_image,
+      cooking_image
     } = req.body.recipeInfo;
-    const authorId = req.session.userInfo!.id;
-    const ownerId =  1;
+    const recipe_type_id = Number(req.body.recipeInfo.recipe_type_id);
+    const cuisine_id     = Number(req.body.recipeInfo.cuisine_id);
+    const author_id      = req.session.userInfo!.id;
+    const owner_id       = 1;
 
     const creatingRecipe = {
-      recipeTypeId,
-      cuisineId,
-      authorId,
-      ownerId,
+      recipe_type_id,
+      cuisine_id,
+      author_id,
+      owner_id,
       title,
       description,
-      activeTime,
-      totalTime,
+      active_time,
+      total_time,
       directions,
-      recipeImage,
-      equipmentImage,
-      ingredientsImage,
-      cookingImage,
-      video
+      
+      recipe_image,
+      equipment_image,
+      ingredients_image,
+      cooking_image
     };
-    assert(creatingRecipe, validRecipe);
 
-    const recipeRepo =           new RecipeRepo();
-    const recipeMethodRepo =     new RecipeMethodRepo();
-    const recipeEquipmentRepo =  new RecipeEquipmentRepo();
-    const recipeIngredientRepo = new RecipeIngredientRepo();
-    const recipeSubrecipeRepo =  new RecipeSubrecipeRepo();
-    await createRecipeService({
-      creatingRecipe,
+    const recipeRepo    = new RecipeRepo();
+    const recipeService = new RecipeService(recipeRepo);
+    await recipeService.create(creatingRecipe);
 
-      methods,
-      equipment,
-      ingredients,
-      subrecipes,
+    const recipeMethodRepo    = new RecipeMethodRepo();
+    const recipeMethodService = new RecipeMethodService(recipeMethodRepo);
+    await recipeMethodService.create(required_methods);
 
-      recipeRepo,
-      recipeMethodRepo,
-      recipeEquipmentRepo,
-      recipeIngredientRepo,
-      recipeSubrecipeRepo
-    });
+    const recipeEquipmentRepo    = new RecipeEquipmentRepo();
+    const recipeEquipmentService = new RecipeEquipmentService(recipeEquipmentRepo);
+    await recipeEquipmentService.create(required_equipment);
+
+    const recipeIngredientRepo    = new RecipeIngredientRepo();
+    const recipeIngredientService = new RecipeIngredientService(recipeIngredientRepo);
+    await recipeIngredientService.create(required_ingredients);
+
+    const recipeSubrecipeRepo    = new RecipeSubrecipeRepo();
+    const recipeSubrecipeService = new RecipeSubrecipeService(recipeSubrecipeRepo);
+    await recipeSubrecipeService.create(required_subrecipes);
+
+    const imageRepo    = new ImageRepo();
+    const imageService = new ImageService(imageRepo);
+    await imageService.create({});
 
     return res.send({message: 'Recipe created.'});
   },
@@ -103,63 +103,67 @@ export const userPublicRecipeController = {
     const recipeTypeId = Number(req.body.recipeInfo.recipeTypeId);
     const cuisineId =    Number(req.body.recipeInfo.cuisineId);
     const {
+      recipe_id,
       title,
       description,
-      activeTime,
-      totalTime,
+      active_time,
+      total_time,
       directions,
-      methods,
-      equipment,
-      ingredients,
-      subrecipes,
-      recipeImage,
-      equipmentImage,
-      ingredientsImage,
-      cookingImage,
-      video
+      required_methods,
+      required_equipment,
+      required_ingredients,
+      required_subrecipes,
+      recipe_image,
+      equipment_image,
+      ingredients_image,
+      cooking_image
     }= req.body.recipeInfo;
-    const authorId = req.session.userInfo!.id;
-    const ownerId =  1;
-    if (!id) return res.send({message: 'Invalid recipe ID!'});
+    const recipe_type_id = Number(req.body.recipeInfo.recipe_type_id);
+    const cuisine_id     = Number(req.body.recipeInfo.cuisine_id);
+    const author_id      = req.session.userInfo!.id;
+    const owner_id       = 1;
 
     const updatingRecipe = {
-      recipeTypeId,
-      cuisineId,
-      authorId,
-      ownerId,
+      recipe_id,
+      recipe_type_id,
+      cuisine_id,
+      author_id,
+      owner_id,
       title,
       description,
-      activeTime,
-      totalTime,
+      active_time,
+      total_time,
       directions,
-      recipeImage,
-      equipmentImage,
-      ingredientsImage,
-      cookingImage,
-      video
+      
+      recipe_image,
+      equipment_image,
+      ingredients_image,
+      cooking_image
     };
-    assert(updatingRecipe, validRecipe);
 
-    const recipeRepo =           new RecipeRepo();
-    const recipeMethodRepo =     new RecipeMethodRepo();
-    const recipeEquipmentRepo =  new RecipeEquipmentRepo();
-    const recipeIngredientRepo = new RecipeIngredientRepo();
-    const recipeSubrecipeRepo =  new RecipeSubrecipeRepo();
-    await updateRecipeService({
-      recipeId: id,
-      updatingRecipe,
+    const recipeRepo    = new RecipeRepo();
+    const recipeService = new RecipeService(recipeRepo);
+    await recipeService.update(updatingRecipe);
 
-      methods,
-      equipment,
-      ingredients,
-      subrecipes,
+    const recipeMethodRepo    = new RecipeMethodRepo();
+    const recipeMethodService = new RecipeMethodService(recipeMethodRepo);
+    await recipeMethodService.update(required_methods);
 
-      recipeRepo,
-      recipeMethodRepo,
-      recipeEquipmentRepo,
-      recipeIngredientRepo,
-      recipeSubrecipeRepo
-    });
+    const recipeEquipmentRepo    = new RecipeEquipmentRepo();
+    const recipeEquipmentService = new RecipeEquipmentService(recipeEquipmentRepo);
+    await recipeEquipmentService.update(required_equipment);
+
+    const recipeIngredientRepo    = new RecipeIngredientRepo();
+    const recipeIngredientService = new RecipeIngredientService(recipeIngredientRepo);
+    await recipeIngredientService.update(required_ingredients);
+
+    const recipeSubrecipeRepo    = new RecipeSubrecipeRepo();
+    const recipeSubrecipeService = new RecipeSubrecipeService(recipeSubrecipeRepo);
+    await recipeSubrecipeService.update(required_subrecipes);
+
+    const imageRepo    = new ImageRepo();
+    const imageService = new ImageService(imageRepo);
+    await imageService.update({});
 
     return res.send({message: 'Recipe updated.'});
   },

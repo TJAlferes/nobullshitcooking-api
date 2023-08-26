@@ -98,10 +98,8 @@ type InsertParams = {
   recipe_ingredients: RecipeIngredientRow[];
 };
 
-type UpdateParams = {
-  recipe_id:          string;
-  placeholders:       string;
-  recipe_ingredients: RecipeIngredientRow[];
+type UpdateParams = InsertParams & {
+  recipe_id: string;
 };
 
 type RecipeIngredientView = RowDataPacket & {

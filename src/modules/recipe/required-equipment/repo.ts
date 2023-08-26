@@ -84,14 +84,9 @@ export interface IRecipeEquipmentRepo {
   //deleteByRecipeIds:   (ids: string[]) =>        Promise<void>;
 }
 
-/*export type MakeRecipeEquipment = {
-  amount:       number;
-  equipment_id: string;
-};*/
-
 type RecipeEquipmentRow = {
   recipe_id:    string;
-  amount:       number;
+  amount?:       number;
   equipment_id: string;
 };
 

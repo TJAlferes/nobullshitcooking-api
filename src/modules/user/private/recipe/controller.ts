@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { assert }            from 'superstruct';
 
 import { RecipeEquipmentRepo }  from '../../../recipe/required-equipment/repo';
 import { RecipeIngredientRepo } from '../../../recipe/required-ingredient/repo';
@@ -21,7 +20,8 @@ export const userPrivateRecipeController = {
   },
 
   async viewOne(req: Request, res: Response) {
-    const title     = req.body.title;  // still use id ?
+    const title     = unslugify(req.params.title);
+    const author    = unslugify(req.params.usename);
     const author_id = req.session.userInfo!.id;
     const owner_id  = req.session.userInfo!.id;
 
@@ -42,11 +42,10 @@ export const userPrivateRecipeController = {
       required_equipment,
       required_ingredients,
       required_subrecipes,
-      recipeImage,
-      equipmentImage,
-      ingredientsImage,
-      cookingImage,
-      video
+      recipe_image,
+      equipment_image,
+      ingredients_image,
+      cooking_image
     } = req.body.recipeInfo;
     const recipe_type_id = Number(req.body.recipeInfo.recipe_type_id);
     const cuisine_id     = Number(req.body.recipeInfo.cuisine_id);
@@ -63,13 +62,12 @@ export const userPrivateRecipeController = {
       active_time,
       total_time,
       directions,
-      recipeImage,
-      equipmentImage,
-      ingredientsImage,
-      cookingImage,
-      video
+
+      recipe_image,
+      equipment_image,
+      ingredients_image,
+      cooking_image
     };
-    assert(creatingRecipe, validRecipe);
 
     const recipeRepo    = new RecipeRepo();
     const recipeService = new RecipeService(recipeRepo);
@@ -99,7 +97,6 @@ export const userPrivateRecipeController = {
   },
 
   async update(req: Request, res: Response) {
-    const id =           Number(req.body.recipeInfo.id);
     const {
       recipe_id,
       title,
@@ -111,18 +108,15 @@ export const userPrivateRecipeController = {
       required_equipment,
       required_ingredients,
       required_subrecipes,
-      recipeImage,
-      equipmentImage,
-      ingredientsImage,
-      cookingImage,
-      video
+      recipe_image,
+      equipment_image,
+      ingredients_image,
+      cooking_image
     }= req.body.recipeInfo;
     const recipe_type_id = Number(req.body.recipeInfo.recipe_type_id);
     const cuisine_id     = Number(req.body.recipeInfo.cuisine_id);
     const author_id      = req.session.userInfo!.id;
     const owner_id       = req.session.userInfo!.id;
-
-    if (!recipe_id) return res.send({message: 'Invalid recipe ID!'});  // is this needed?
 
     const updatingRecipe = {
       recipe_id,
@@ -135,13 +129,12 @@ export const userPrivateRecipeController = {
       active_time,
       total_time,
       directions,
-      recipeImage,
-      equipmentImage,
-      ingredientsImage,
-      cookingImage,
-      video
+
+      recipe_image,
+      equipment_image,
+      ingredients_image,
+      cooking_image
     };
-    assert(updatingRecipe, validRecipe);
 
     const recipeRepo    = new RecipeRepo();
     const recipeService = new RecipeService(recipeRepo);
@@ -198,3 +191,11 @@ export const userPrivateRecipeController = {
     return res.send({message: 'Recipe deleted.'});
   }
 };
+
+// TO DO: move to shared
+function unslugify(title: string) {
+  return title
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}

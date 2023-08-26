@@ -15,10 +15,10 @@ export class Recipe {
   private directions;
   // NO. DO NOT DO THIS. Query the recipe_image table to find images with this recipe_id
   // and have a column which shows its type and a column which shows its order (in that type)
-  private recipe_image_id;
-  private equipment_image_id;
-  private ingredients_image_id;
-  private cooking_image_id;
+  //private recipe_image_id;
+  //private equipment_image_id;
+  //private ingredients_image_id;
+  //private cooking_image_id;
 
   private constructor(params: ConstructorParams) {
     this.recipe_id            = UUIDv7StringId(params.recipe_id);
@@ -31,10 +31,10 @@ export class Recipe {
     this.active_time          = ActiveTime(params.active_time);
     this.total_time           = TotalTime(params.active_time);
     this.directions           = Directions(params.directions);
-    this.recipe_image_id      = UUIDv7StringId(params.recipe_image_id);
-    this.equipment_image_id   = UUIDv7StringId(params.equipment_image_id);
-    this.ingredients_image_id = UUIDv7StringId(params.ingredients_image_id);
-    this.cooking_image_id     = UUIDv7StringId(params.cooking_image_id);
+    //this.recipe_image_id      = UUIDv7StringId(params.recipe_image_id);
+    //this.equipment_image_id   = UUIDv7StringId(params.equipment_image_id);
+    //this.ingredients_image_id = UUIDv7StringId(params.ingredients_image_id);
+    //this.cooking_image_id     = UUIDv7StringId(params.cooking_image_id);
   }
 
   static create(params: CreateParams) {
@@ -102,10 +102,10 @@ type CreateParams = {
   active_time:          string;
   total_time:           string;
   directions:           string;
-  recipe_image_id:      string;
-  equipment_image_id:   string;
-  ingredients_image_id: string;
-  cooking_image_id:     string;
+  //recipe_image_id:      string;
+  //equipment_image_id:   string;
+  //ingredients_image_id: string;
+  //cooking_image_id:     string;
 };
 
 type UpdateParams = CreateParams & {

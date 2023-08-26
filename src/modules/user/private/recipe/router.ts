@@ -9,9 +9,7 @@ const router = Router();
 // for /user/private/recipe/...
 
 export function userPrivateRecipeRouter() {
-  // TO DO: sanitize the requireds with *
   const recipeInfo = [
-    'ownership',
     'recipe_type_id',
     'cuisine_id',
     'title',
@@ -19,15 +17,16 @@ export function userPrivateRecipeRouter() {
     'active_time',
     'total_time',
     'directions',
-    //'methods.*.id',
-    //'equipment*',
-    //'ingredients*',
-    //'subrecipes*',
-    'recipeImage',
-    'equipmentImage',
-    'ingredientsImage',
-    'cookingImage',
-    'video'
+
+    'required_methods.*',
+    'required_equipment.*',
+    'required_ingredients.*',
+    'required_subrecipes.*',
+
+    'recipe_image',
+    'equipment_image',
+    'ingredients_image',
+    'cooking_image'
   ];
 
   router.post(
@@ -55,15 +54,14 @@ export function userPrivateRecipeRouter() {
     userIsAuth,
     sanitize(['id', ...recipeInfo]),
     catchExceptions(controller.edit)
-  );*/
+  ); this is now handled with /one ??? */
 
-  // TO DO: what about prev images???
   router.put(
     '/update',
     userIsAuth,
     sanitize(['recipe_id', ...recipeInfo]),
     catchExceptions(controller.update)
-  );
+  );  // TO DO: what about prev images???
 
   router.delete(
     '/delete',

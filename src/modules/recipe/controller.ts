@@ -9,23 +9,21 @@ export const recipeController = {
   // for Next.js getStaticPaths
   async viewAllPublicTitles(req: Request, res: Response) {
     const author_id = 1;  // MOVE
-    const owner_id =  1;  // MOVE
-
-    // use a service
-    const repo = new RecipeRepo();
-    const rows = await repo.viewAllPublicTitles(author_id, owner_id);
+    const owner_id  = 1;  // MOVE
+    
+    const repo = new RecipeRepo();  // use a service
+    const rows = await repo.viewAllPublicTitles({author_id, owner_id});
 
     return res.send(rows);
   },
 
   async viewOneByTitle(req: Request, res: Response) {
-    const title = unslugify(req.params.title);
+    const title     = unslugify(req.params.title);
     const author_id = 1;  // MOVE
-    const owner_id =  1;  // MOVE
+    const owner_id  = 1;  // MOVE
 
-    // use a service
-    const repo = new RecipeRepo();
-    const row = await repo.viewOneByTitle(title, author_id, owner_id);
+    const repo = new RecipeRepo();  // use a service
+    const row = await repo.viewOneByTitle({title, author_id, owner_id});
 
     return res.send(row);
   }
