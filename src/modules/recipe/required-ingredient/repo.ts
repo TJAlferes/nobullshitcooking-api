@@ -88,8 +88,8 @@ export interface IRecipeIngredientRepo {
 
 type RecipeIngredientRow = {
   recipe_id:     string;
-  amount:        number;
-  unit_id:       number;
+  amount?:        number;
+  unit_id?:       number;
   ingredient_id: string;
 };
 

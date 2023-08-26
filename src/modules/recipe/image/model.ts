@@ -13,6 +13,20 @@ export class RecipeImage {
     this.type      = RecipeImageType(params.type);
     this.order     = RecipeImageOrder(params.order);
   }
+
+  static create(params: CreateParams) {
+    const recipeImage = new RecipeImage(params);
+    return recipeImage;
+  }
+
+  getDTO() {
+    return {
+      recipe_id: this.recipe_id,
+      image_id:  this.image_id,
+      type:      this.type,
+      order:     this.order
+    };
+  }
 }
 
 function RecipeImageType(type: number) {

@@ -186,12 +186,14 @@ CREATE TABLE cuisine (
   `country_code`   CHAR(3)          NOT NULL DEFAULT '' UNIQUE,
   `country_name`   VARCHAR(50)      NOT NULL DEFAULT '' UNIQUE
 );
-
+-- TO DO: FK to owner_id ???
 CREATE TABLE custom_cuisine (
   `custom_cuisine_id`   INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  `custom_cuisine_name` VARCHAR(50)  NOT NULL DEFAULT ''
+  `custom_cuisine_name` VARCHAR(50)  NOT NULL DEFAULT '',
+  `owner_id`          CHAR(36)         NOT NULL,
 );
 
+-- official recipes created by staff
 CREATE TABLE recipe (
   `recipe_id`         CHAR(36)         PRIMARY KEY,
   `recipe_type_id`    TINYINT UNSIGNED NOT NULL,
@@ -212,6 +214,12 @@ CREATE TABLE recipe (
   FOREIGN KEY (`author_id`)      REFERENCES `user` (`user_id`),
   FOREIGN KEY (`owner_id`)       REFERENCES `user` (`user_id`)
 );
+
+-- created by users, only creator can view
+CREATE TABLE private_recipe ();
+
+-- created by users, anyone can view
+CREATE TABLE public_recipe ();
 
 CREATE TABLE recipe_image (
   `recipe_id` CHAR(36) NOT NULL,

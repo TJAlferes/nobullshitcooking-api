@@ -89,8 +89,8 @@ export interface IRecipeSubrecipeRepo {
 
 type RecipeSubrecipeRow = {
   recipe_id:    string;
-  amount:       number;
-  unit_id:      number;
+  amount?:       number;
+  unit_id?:      number;
   subrecipe_id: string;
 };
 

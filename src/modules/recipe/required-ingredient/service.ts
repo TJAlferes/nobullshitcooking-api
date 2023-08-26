@@ -1,3 +1,4 @@
+import { RecipeIngredient } from "./model";
 import { IRecipeIngredientRepo } from "./repo";
 
 export class RecipeIngredientService {
@@ -10,20 +11,15 @@ export class RecipeIngredientService {
   async create({ recipe_id, required_ingredients }: CreateParams) {
     if (!required_ingredients.length) return;
 
-    // TO DO: use domain
-    required_ingredients.map(({ amount, unit_id, ingredient_id }) =>
-      assert({recipe_id, amount, unit_id, ingredient_id}, validRecipeIngredient));
-
     const placeholders = '(?, ?, ?, ?),'
       .repeat(required_ingredients.length)
       .slice(0, -1);
 
-    const values: number[] = [];
+      const recipe_ingredients = required_ingredients.map(ri => 
+        RecipeIngredient.create({recipe_id, ...ri}).getDTO()
+      );
 
-    required_ingredients.map(({ amount, unit_id, ingredient_id }) =>
-      values.push(recipe_id, amount, unit_id, ingredient_id));
-
-    await this.repo.insert(placeholders, values);
+    await this.repo.insert({placeholders, recipe_ingredients});
   }
 }
 

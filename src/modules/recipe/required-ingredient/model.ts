@@ -17,6 +17,15 @@ export class RecipeIngredient {
     const recipeIngredient = new RecipeIngredient(params);
     return recipeIngredient;
   }
+
+  getDTO() {
+    return {
+      recipe_id:     this.recipe_id,
+      amount:        this.amount,
+      unit_id:       this.unit_id,
+      ingredient_id: this.ingredient_id
+    };
+  }
 }
 
 type CreateParams = {

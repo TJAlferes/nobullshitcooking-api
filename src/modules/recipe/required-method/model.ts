@@ -13,6 +13,13 @@ export class RecipeMethod {
     const recipeMethod = new RecipeMethod(params);
     return recipeMethod;
   }
+
+  getDTO() {
+    return {
+      recipe_id: this.recipe_id,
+      method_id: this.method_id
+    };
+  }
 }
 
 type CreateParams = {

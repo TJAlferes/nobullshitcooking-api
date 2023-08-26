@@ -1,5 +1,4 @@
-
-import { RecipeEquipment } from "./model";
+import { RecipeEquipment }      from "./model";
 import { IRecipeEquipmentRepo } from "./repo";
 
 export class RecipeEquipmentService {
@@ -15,7 +14,7 @@ export class RecipeEquipmentService {
     const placeholders = '(?, ?, ?),'.repeat(required_equipment.length).slice(0, -1);
 
     const recipe_equipment = required_equipment.map(re => 
-      RecipeEquipment.create({...re, recipe_id}).getDTO()
+      RecipeEquipment.create({recipe_id, ...re}).getDTO()
     );
 
     await this.repo.insert({placeholders, recipe_equipment});

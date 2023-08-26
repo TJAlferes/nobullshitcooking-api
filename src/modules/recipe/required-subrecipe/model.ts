@@ -17,6 +17,15 @@ export class RecipeSubrecipe {
     const recipeSubrecipe = new RecipeSubrecipe(params);
     return recipeSubrecipe;
   }
+
+  getDTO() {
+    return {
+      recipe_id:    this.recipe_id,
+      amount:       this.amount,
+      unit_id:      this.unit_id,
+      subrecipe_id: this.subrecipe_id
+    };
+  }
 }
 
 type CreateParams = {

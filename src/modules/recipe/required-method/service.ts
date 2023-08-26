@@ -1,3 +1,4 @@
+import { RecipeMethod } from "./model";
 import { IRecipeMethodRepo } from "./repo";
 
 export class RecipeMethodService {
@@ -10,17 +11,13 @@ export class RecipeMethodService {
   async create({ recipe_id, required_methods }: CreateParams) {
     if (!required_methods.length) return;
 
-    // TO DO: use domain
-    required_methods.map(({ method_id }) =>
-      assert({recipe_id, method_id}, validRecipeMethod));
-
     const placeholders = '(?, ?),'.repeat(required_methods.length).slice(0, -1);  // if 3 methods, then: (?, ?),(?, ?),(?, ?)
     
-    const values: number[] = [];
-    
-    required_methods.map(({ method_id }) => values.push(recipe_id, method_id));
+    const recipe_methods = required_methods.map(rm =>
+      RecipeMethod.create({recipe_id, ...rm}).getDTO()
+    );
 
-    await this.repo.insert(placeholders, values);
+    await this.repo.insert({placeholders, recipe_methods});
   }
 }
 
@@ -30,5 +27,5 @@ type CreateParams = {
 };
 
 type RequiredMethod = {
-  method_id: string;
+  method_id: number;
 };

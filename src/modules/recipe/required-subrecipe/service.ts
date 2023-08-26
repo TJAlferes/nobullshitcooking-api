@@ -1,3 +1,4 @@
+import { RecipeSubrecipe } from "./model";
 import { IRecipeSubrecipeRepo } from "./repo";
 
 export class RecipeSubrecipeService {
@@ -10,19 +11,15 @@ export class RecipeSubrecipeService {
   async create({ recipe_id, required_subrecipes }: CreateParams) {
     if (!required_subrecipes.length) return;
 
-    required_subrecipes.map(({ amount, unit_id, subrecipe_id }) =>
-      assert({recipe_id, amount, unit_id, subrecipe_id}, validRecipeSubrecipe));
-
     const placeholders = '(?, ?, ?, ?),'
       .repeat(required_subrecipes.length)
       .slice(0, -1);  // use namedPlaceholders instead???
 
-    const values: number[] = [];
+    const recipe_subrecipes = required_subrecipes.map(rs =>
+      RecipeSubrecipe.create({recipe_id, ...rs}).getDTO()
+    );
 
-    required_subrecipes.map(({ amount, unit_id, subrecipe_id }) =>
-      values.push(recipe_id, amount, unit_id, subrecipe_id));
-
-    await this.repo.insert(placeholders, values);
+    await this.repo.insert({placeholders, recipe_subrecipes});
   }
 }
 

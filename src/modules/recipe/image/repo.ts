@@ -82,7 +82,7 @@ export interface IRecipeImageRepo {
 type RecipeImageRow = {
   recipe_id: string;
   image_id:  string;
-  type:      number;  // "primary" | "equipment" | "ingredients" | "detail"
+  type:      number;  // 1 "primary/main/face/presentation/recipe" | 2 "equipment" | 3 "ingredients" | 4 "detail/action/step/process/preparing/cooking"
   order:     number;  // 1|2|3
 };
 
@@ -97,7 +97,7 @@ type UpdateParams = InsertParams & {
 };
 
 type RecipeImageView = RowDataPacket & {
-  type:      number;  // 1 "primary" | 2 "equipment" | 3 "ingredients" | 4 "detail"
+  type:      number;  // 1 "primary/main/face/presentation/recipe" | 2 "equipment" | 3 "ingredients" | 4 "detail/action/step/process/preparing/cooking"
   order:     number;  // 1|2|3
   image_url: string;
 };
