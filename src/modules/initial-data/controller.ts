@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 
+import { NOBSC_USER_ID }      from '../shared/model';
 import { EquipmentRepo }      from '../equipment/repo';
 import { EquipmentTypeRepo }  from '../equipment/type/repo';
 import { IngredientRepo }     from '../ingredient/repo';
@@ -11,7 +12,10 @@ import { RecipeTypeRepo }     from '../recipe/type/repo';
 import { UnitRepo }           from '../shared/unit/repo';
 
 export const initialDataController = {
-  async viewInitialData(req: Request, res: Response) {
+  async view(req: Request, res: Response) {
+    const author_id = NOBSC_USER_ID;
+    const owner_id  = NOBSC_USER_ID;
+
     const cuisineRepo        = new CuisineRepo();
     const equipmentRepo      = new EquipmentRepo();
     const equipmentTypeRepo  = new EquipmentTypeRepo();
@@ -34,13 +38,13 @@ export const initialDataController = {
       recipe_types
     ] = await Promise.all([
       cuisineRepo.viewAll(),
-      equipmentRepo.viewAll(),
+      equipmentRepo.overviewAll(owner_id),
       equipmentTypeRepo.viewAll(),
-      ingredientRepo.viewAll(),
+      ingredientRepo.overviewAll(owner_id),
       ingredientTypeRepo.viewAll(),
       unitRepo.viewAll(),
       methodRepo.viewAll(),
-      recipeRepo.viewAll(),
+      recipeRepo.overviewAll({author_id, owner_id}),
       recipeTypeRepo.viewAll()
     ]);
 

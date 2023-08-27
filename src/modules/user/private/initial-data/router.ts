@@ -5,10 +5,10 @@ import { userInitialDataController as controller } from './controller';
 
 const router = Router();
 
-// for /user/data-init/...
+// for /user/initial-data/...
 
 export function userInitialDataRouter() {
-  router.post('/', userIsAuth, catchExceptions(controller.viewData));
+  router.post('/', userIsAuth, catchExceptions(controller.view));
 
   return router;
 }

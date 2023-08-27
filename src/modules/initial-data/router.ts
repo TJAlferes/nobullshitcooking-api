@@ -8,7 +8,7 @@ const router = Router();
 // for /initial-data/...
 
 export function initialDataRouter() {
-  router.get('/', catchExceptions(initialDataController.viewData));
+  router.get('/', catchExceptions(initialDataController.view));
 
   return router;
 }
