@@ -1,21 +1,21 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
-import { userPrivateIngredientController as controller } from './controller';
+import { privateIngredientController as controller } from './controller';
 import { catchExceptions, userIsAuth } from '../../../../utils';
 
 const router = Router();
 
 // for /user/private/ingredient/...
 
-export function userPrivateIngredientRouter() {
+export function privateIngredientRouter() {
   // TO DO: ingredient alt names
   const ingredientInfo = [
     'ingredient_type_id',
     'ingredient_brand',
     'ingredient_variety',
     'ingredient_name',
-    'description',
+    'notes',
     'image_id'
   ];
 

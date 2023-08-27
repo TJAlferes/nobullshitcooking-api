@@ -1,16 +1,15 @@
 import { Request, Response } from 'express';
-import { assert }            from 'superstruct';
 
-import { RecipeEquipmentRepo } from '../../../recipe/required-equipment/repo';
-import { EquipmentRepo }       from '../../../equipment/repo';     // should be in THIS dir './repo';
-import { EquipmentService }    from '../../../equipment/service';  // should be in THIS dir './service';
+import { RecipeEquipmentRepo }  from '../../../recipe/required-equipment/repo';
+import { PrivateEquipmentRepo } from './repo';
+import { PrivateEquipment }     from './model';
 
-export const userPrivateEquipmentController = {
+export const privateEquipmentController = {
   async viewAll(req: Request, res: Response) {
     const owner_id  = req.session.userInfo!.id;
 
-    const equipmentRepo = new EquipmentRepo();
-    const rows = await equipmentRepo.viewAll(owner_id);
+    const repo = new PrivateEquipmentRepo();
+    const rows = await repo.viewAll(owner_id);
 
     return res.send(rows);
   },
@@ -19,28 +18,28 @@ export const userPrivateEquipmentController = {
     const equipment_id = req.body.equipment_id;
     const owner_id     = req.session.userInfo!.id;
 
-    const equipmentRepo = new EquipmentRepo();
-    const row = await equipmentRepo.viewOne({equipment_id, owner_id});
+    const repo = new PrivateEquipmentRepo();
+    const row = await repo.viewOne({equipment_id, owner_id});
 
     return res.send(row);
   },
 
   async create(req: Request, res: Response) {
-    const { equipment_name, description, image_id } = req.body.equipmentInfo;
+    const { equipment_name, notes, image_id } = req.body.equipmentInfo;
     const equipment_type_id = Number(req.body.equipmentInfo.equipment_type_id);
-    const owner_id  = req.session.userInfo!.id;
+    const owner_id          = req.session.userInfo!.id;
 
     const args = {
       equipment_type_id,
       owner_id,
       equipment_name,
-      description,
+      notes,
       image_id
     };
-    assert(args, validEquipment);
 
-    const equipmentRepo = new EquipmentRepo();
-    await equipmentRepo.insert(args);
+    const repo = new PrivateEquipmentRepo();
+    const equipment = PrivateEquipment.create(args).getDTO();
+    await repo.insert(equipment);
     
     return res.send({message: 'Equipment created.'});
   },
@@ -49,24 +48,24 @@ export const userPrivateEquipmentController = {
     const {
       equipment_id,
       equipment_name,
-      description,
+      notes,
       image_id
     } = req.body.equipmentInfo;
     const equipment_type_id = Number(req.body.equipmentInfo.equipment_type_id);
-    const owner_id  = req.session.userInfo!.id;
+    const owner_id          = req.session.userInfo!.id;
 
     const args = {
       equipment_id,
       equipment_type_id,
       owner_id,
       equipment_name,
-      description,
+      notes,
       image_id
     };
-    assert(args, validEquipment);
 
-    const equipmentRepo = new EquipmentRepo();
-    await equipmentRepo.update(args);
+    const repo = new PrivateEquipmentRepo();
+    const equipment = PrivateEquipment.create(args).getDTO();
+    await repo.update(equipment);
 
     return res.send({message: 'Equipment updated.'});
   },
@@ -78,8 +77,8 @@ export const userPrivateEquipmentController = {
     const recipeEquipmentRepo = new RecipeEquipmentRepo();
     await recipeEquipmentRepo.deleteByEquipmentId(equipment_id);
 
-    const equipmentRepo = new EquipmentRepo();
-    await equipmentRepo.deleteOne({equipment_id, owner_id});
+    const privateEquipmentRepo = new PrivateEquipmentRepo();
+    await privateEquipmentRepo.deleteOne({equipment_id, owner_id});
 
     return res.send({message: 'Equipment deleted.'});
   }

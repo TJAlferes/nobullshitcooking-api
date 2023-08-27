@@ -2,15 +2,15 @@ import { Request, Response } from 'express';
 import { assert }            from 'superstruct';
 
 import { RecipeIngredientRepo } from '../../../recipe/required-ingredient/repo';
-import { IngredientRepo }       from '../../../ingredient/repo';
-import { IngredientService }    from '../../../ingredient/service';
+import { PrivateIngredientRepo }       from './repo';
+import { PrivateIngredient }    from './model';
 
-export const userPrivateIngredientController = {
+export const privateIngredientController = {
   async viewAll(req: Request, res: Response) {
     const owner_id  = req.session.userInfo!.id;
 
-    const ingredientRepo = new IngredientRepo();
-    const rows = await ingredientRepo.viewAll(owner_id);
+    const repo = new PrivateIngredientRepo();
+    const rows = await repo.viewAll(owner_id);
     return res.send(rows);
   },
 
@@ -18,8 +18,8 @@ export const userPrivateIngredientController = {
     const ingredient_id = req.body.id;
     const owner_id      = req.session.userInfo!.id;
 
-    const ingredientRepo = new IngredientRepo();
-    const row = await ingredientRepo.viewOne({ingredient_id, owner_id});
+    const repo = new PrivateIngredientRepo();
+    const row = await repo.viewOne({ingredient_id, owner_id});
     return res.send(row);
   },
 
@@ -29,11 +29,11 @@ export const userPrivateIngredientController = {
       ingredient_variety,
       ingredient_name,
       alt_names,
-      description,
+      notes,
       image_id
     } = req.body.ingredientInfo;
     const ingredient_type_id = Number(req.body.ingredientInfo.ingredient_type_id);
-    const owner_id  = req.session.userInfo!.id;
+    const owner_id           = req.session.userInfo!.id;
 
     const args = {
       ingredient_type_id,
@@ -41,15 +41,16 @@ export const userPrivateIngredientController = {
       ingredient_brand,
       ingredient_variety,
       ingredient_name,
-      description,
+      notes,
       image_id
     };
-    assert(args, validIngredient);
 
-    const ingredientRepo = new IngredientRepo();
-    await ingredientRepo.insert(args);
+    const ingredient = PrivateIngredient.create(args).getDTO();
+    const ingredientRepo = new PrivateIngredientRepo();
+    await ingredientRepo.insert(ingredient);
 
     // validate alt_names
+    //const ingredientAltNamesRepo = new IngredientAltNamesRepo();
     //await ingredientAltNamesRepo.insert(alt_names);
 
     return res.send({message: 'Ingredient created.'});
@@ -62,27 +63,29 @@ export const userPrivateIngredientController = {
       ingredient_variety,
       ingredient_name,
       alt_names,
-      description,
+      notes,
       image_id
     } = req.body.ingredientInfo;
     const ingredient_type_id = Number(req.body.ingredientInfo.ingredient_type_id);
-    const owner_id  = req.session.userInfo!.id;
+    const owner_id           = req.session.userInfo!.id;
     
     const args = {
+      ingredient_id,
       ingredient_type_id,
       owner_id,
       ingredient_brand,
       ingredient_variety,
       ingredient_name,
-      description,
+      notes,
       image_id
     };
-    assert(args, validIngredient);
 
-    const ingredientRepo = new IngredientRepo();
-    await ingredientRepo.update(args);
+    const ingredient = PrivateIngredient.create(args).getDTO();
+    const ingredientRepo = new PrivateIngredientRepo();
+    await ingredientRepo.update(ingredient);
 
     // validate alt_names
+    //const ingredientAltNamesRepo = new IngredientAltNamesRepo();
     //await ingredientAltNamesRepo.insert(alt_names);
 
     return res.send({message: 'Ingredient updated.'});
@@ -95,8 +98,8 @@ export const userPrivateIngredientController = {
     const recipeIngredientRepo = new RecipeIngredientRepo();
     await recipeIngredientRepo.deleteByIngredientId(ingredient_id);
 
-    const ingredientRepo = new IngredientRepo();
-    await ingredientRepo.deleteOne({ingredient_id, owner_id});
+    const privateIngredientRepo = new PrivateIngredientRepo();
+    await privateIngredientRepo.deleteOne({ingredient_id, owner_id});
     
     return res.send({message: 'Ingredient deleted.'});
   }

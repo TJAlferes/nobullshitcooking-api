@@ -5,7 +5,8 @@ import { MySQLRepo } from '../shared/MySQL';
 
 export class RecipeRepo extends MySQLRepo implements IRecipeRepo {
   async autosuggest(term: string) {
-    const owner_id = 1;  // only public recipes are searchable  // const owner_id = nobsc_user_id
+    const owner_id = 1;  // only public recipes are searchable
+    // const owner_id = nobsc_user_id AND unknown_user_id
 
     const sql = `
       SELECT
@@ -44,6 +45,7 @@ export class RecipeRepo extends MySQLRepo implements IRecipeRepo {
     `;
 
     // order matters
+    // order may not matter if we used named placeholders instead of ? placeholders
 
     let params: Array<number|string> = [owner_id];
 

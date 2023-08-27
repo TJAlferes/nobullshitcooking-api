@@ -119,6 +119,17 @@ CREATE TABLE equipment (
   `notes`             TEXT             NOT NULL DEFAULT '',
   `image_id`          CHAR(36)         NOT NULL,
   FOREIGN KEY (`equipment_type_id`) REFERENCES `equipment_type` (`equipment_type_id`),
+  FOREIGN KEY (`owner_id`)          REFERENCES `staff` (`staff_id`) ON DELETE CASCADE
+);
+
+CREATE TABLE private_equipment (
+  `equipment_id`      CHAR(36)         PRIMARY KEY,
+  `equipment_type_id` TINYINT UNSIGNED NOT NULL DEFAULT '0',
+  `owner_id`          CHAR(36)         NOT NULL,
+  `equipment_name`    VARCHAR(100)     NOT NULL,
+  `notes`             TEXT             NOT NULL DEFAULT '',
+  `image_id`          CHAR(36)         NOT NULL,
+  FOREIGN KEY (`equipment_type_id`) REFERENCES `equipment_type` (`equipment_type_id`),
   FOREIGN KEY (`owner_id`)          REFERENCES `user` (`user_id`) ON DELETE CASCADE
 );
 
@@ -130,6 +141,19 @@ CREATE TABLE ingredient_type (
 );
 
 CREATE TABLE ingredient (
+  `ingredient_id`          CHAR(36)         PRIMARY KEY,
+  `ingredient_type_id`     TINYINT UNSIGNED NOT NULL DEFAULT '0',
+  `owner_id`               CHAR(36)         NOT NULL,
+  `ingredient_brand`       VARCHAR(50)      NOT NULL DEFAULT '',
+  `ingredient_variety`     VARCHAR(50)      NOT NULL DEFAULT '',
+  `ingredient_name`        VARCHAR(50)      NOT NULL DEFAULT '',
+  `notes`                  TEXT             NOT NULL DEFAULT '',
+  `image_id`               CHAR(36)         NOT NULL,
+  FOREIGN KEY (`ingredient_type_id`) REFERENCES `ingredient_type` (`ingredient_type_id`),
+  FOREIGN KEY (`owner_id`)           REFERENCES `staff` (`staff_id`) ON DELETE CASCADE
+);
+
+CREATE TABLE private_ingredient (
   `ingredient_id`          CHAR(36)         PRIMARY KEY,
   `ingredient_type_id`     TINYINT UNSIGNED NOT NULL DEFAULT '0',
   `owner_id`               CHAR(36)         NOT NULL,
@@ -210,7 +234,7 @@ CREATE TABLE recipe (
   `updated_at`        TIMESTAMP                 DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (`recipe_type_id`) REFERENCES `recipe_type` (`recipe_type_id`),
   FOREIGN KEY (`cuisine_id`)     REFERENCES `cuisine` (`cuisine_id`),
-  FOREIGN KEY (`owner_id`)       REFERENCES `user` (`user_id`)
+  FOREIGN KEY (`owner_id`)       REFERENCES `staff` (`staff_id`)
 );
 
 -- created by users, only creator can view

@@ -1,8 +1,8 @@
 import { assert, string } from 'superstruct';
 
-import { GenerateUUIDv7StringId, UUIDv7StringId, NumberId, Notes } from '../shared/model';
+import { GenerateUUIDv7StringId, UUIDv7StringId, NumberId, Notes } from '../../../shared/model';
 
-export class Equipment {
+export class PrivateEquipment {
   private equipment_id;
   private equipment_type_id;
   private owner_id;
@@ -22,7 +22,7 @@ export class Equipment {
   static create(params: CreateParams) {
     const equipment_id = GenerateUUIDv7StringId();
 
-    const equipment = new Equipment({...params, equipment_id});
+    const equipment = new PrivateEquipment({...params, equipment_id});
 
     return equipment;  // only return id ???
   }
@@ -46,7 +46,7 @@ export function EquipmentName(name: string) {
   if (name.length > 100) {
     throw new Error("Equipment name must be no more than 100 characters.");
   }
-  return ;
+  return name;
 }
 
 type CreateParams = {

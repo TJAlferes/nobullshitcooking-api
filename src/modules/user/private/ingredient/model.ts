@@ -1,8 +1,8 @@
 import { assert, defaulted, string } from 'superstruct';
 
-import { GenerateUUIDv7StringId, UUIDv7StringId, NumberId, Notes } from '../shared/model';
+import { GenerateUUIDv7StringId, UUIDv7StringId, NumberId, Notes } from '../../../shared/model';
 
-export class Ingredient {
+export class PrivateIngredient {
   private ingredient_id;
   private ingredient_type_id;
   private owner_id;
@@ -27,7 +27,7 @@ export class Ingredient {
   static create(params: CreateParams) {
     const ingredient_id = GenerateUUIDv7StringId();
 
-    const ingredient = new Ingredient({...params, ingredient_id});
+    const ingredient = new PrivateIngredient({...params, ingredient_id});
 
     return ingredient;  // only return id ???
   }
