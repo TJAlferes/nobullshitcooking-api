@@ -9,7 +9,7 @@ const router = Router();
 // for /recipe/...
 
 export function recipeRouter() {
-  router.get('/titles', catchExceptions(controller.viewAllPublicTitles));
+  router.get('/titles', catchExceptions(controller.viewAllTitles));
 
   router.get(
     '/:title',

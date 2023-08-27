@@ -1,11 +1,12 @@
 import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
-import { MySQLRepo } from '../../../shared/MySQL';
+import { MySQLRepo }       from '../../../shared/MySQL';
+import { UNKNOWN_USER_ID } from '../../../shared/model';
 
-export class PublicRecipeRepo extends MySQLRepo implements IPublicRecipeRepo {
-  async viewAllPublicTitles(owner_id:  string) {
-    const sql = `SELECT title FROM recipe WHERE owner_id = ?`;
-    const [ rows ] = await this.pool.execute<Title[]>(sql, [owner_id]);
+export class PublicRecipeRepo extends MySQLRepo implements PublicRecipeRepoInterface {
+  async viewAllTitles() {
+    const sql = `SELECT title FROM public_recipe`;
+    const [ rows ] = await this.pool.execute<TitleView[]>(sql);
     return rows;
   }  // for Next.js getStaticPaths
 
@@ -23,7 +24,7 @@ export class PublicRecipeRepo extends MySQLRepo implements IPublicRecipeRepo {
 
   async insert(params: InsertParams) {
     const sql = `
-      INSERT INTO recipe (
+      INSERT INTO public_recipe (
         recipe_id,
         recipe_type_id,
         cuisine_id,
@@ -61,7 +62,7 @@ export class PublicRecipeRepo extends MySQLRepo implements IPublicRecipeRepo {
 
   async update(params: InsertParams) {
     const sql = `
-      UPDATE recipe
+      UPDATE public_recipe
       SET
         recipe_type_id    = :recipe_type_id,
         cuisine_id        = :cuisine_id,
@@ -82,37 +83,33 @@ export class PublicRecipeRepo extends MySQLRepo implements IPublicRecipeRepo {
     await this.pool.execute<RowDataPacket[]>(sql, params);
   }
 
-  async disownAllByOwnerId(params: DisownAllByOwnerIdParams) {
-    // TO DO: move to service
-    //if (owner_id === nobsc_user_id || owner_id === unknown_user_id) return;
+  async disownAll(owner_id: string) {
     const sql = `
       UPDATE public_recipe
-      SET owner_id = :unknown_user_id
+      SET owner_id = :UNKNOWN_USER_ID
       WHERE owner_id = :owner_id
     `;
-    await this.pool.execute(sql, params);
-  }
+    await this.pool.execute(sql, {UNKNOWN_USER_ID, owner_id});
+  }  // used when user account is deleted
 
-  async disownOneByOwnerId(params: DisownOneByOwnerIdParams) {
-    // TO DO: move to service
-    //if (owner_id === nobsc_user_id || owner_id === unknown_user_id) return;
+  async disownOne(params: DisownOneParams) {
     const sql = `
       UPDATE public_recipe
-      SET owner_id = :unknown_user_id
+      SET owner_id = :UNKNOWN_USER_ID
       WHERE owner_id = :owner_id AND recipe_id = :recipe_id
     `;
-    await this.pool.execute(sql, params);
+    await this.pool.execute(sql, {UNKNOWN_USER_ID, ...params});
   }
 }
 
-export interface IPublicRecipeRepo {
-  viewAllPublicTitles: (owner_id: string) =>                 Promise<Title[]>;
-  viewOneByRecipeId:   (params: ViewOneByRecipeIdParams) =>  Promise<RecipeView>;
-  viewOneByTitle:      (params: ViewOneByTitleParams) =>     Promise<RecipeView>;
-  insert:              (params: InsertParams) =>             Promise<ResultSetHeader>;
-  update:              (params: InsertParams) =>             Promise<void>;
-  disownAllByOwnerId: (params: DisownAllByOwnerIdParams) => Promise<void>;
-  disownOneByOwnerId: (params: DisownOneByOwnerIdParams) => Promise<void>;
+export interface PublicRecipeRepoInterface {
+  viewAllTitles:     () =>                                Promise<TitleView[]>;
+  viewOneByRecipeId: (params: ViewOneByRecipeIdParams) => Promise<RecipeView>;
+  viewOneByTitle:    (params: ViewOneByTitleParams) =>    Promise<RecipeView>;
+  insert:            (params: InsertParams) =>            Promise<ResultSetHeader>;
+  update:            (params: InsertParams) =>            Promise<void>;
+  disownAll:         (owner_id: string) =>                Promise<void>;
+  disownOne:         (params: DisownOneParams) =>         Promise<void>;
 }
 
 export type InsertParams = {
@@ -132,6 +129,10 @@ export type InsertParams = {
   //cooking_image:     string;
   //  what about prev_image ?
   video:             string;
+};
+
+type TitleView = RowDataPacket & {
+  title: string;
 };
 
 export type RecipeView = RowDataPacket & {
@@ -189,10 +190,6 @@ type RequiredSubrecipeView = {
   subrecipe_title: string;
 };
 
-type Title = RowDataPacket & {
-  title: string;
-};
-
 type ViewOneByRecipeIdParams = {
   recipe_id: string;
   owner_id:  string;
@@ -203,15 +200,9 @@ type ViewOneByTitleParams = {
   owner_id: string;
 };
 
-type DisownAllByOwnerIdParams = {
-  owner_id:      string;
-  nobsc_user_id: string
-};
-
-type DisownOneByOwnerIdParams = {
-  recipe_id:     string;
-  owner_id:      string;
-  nobsc_user_id: string
+type DisownOneParams = {
+  recipe_id: string;
+  owner_id:  string;
 };
 
 const viewOneSQL = `
@@ -263,7 +254,7 @@ const viewOneSQL = `
       ))
       FROM ingredients i
       INNER JOIN recipe_ingredient ri ON ri.ingredient_id = i.ingredient_id
-      INNER JOIN unit u ON u.unit_id = ri.unit_id
+      INNER JOIN unit u               ON u.unit_id = ri.unit_id
       WHERE ri.recipe_id = r.recipe_id
     ) ingredients,
     (
@@ -278,10 +269,10 @@ const viewOneSQL = `
       ))
       FROM recipes r
       INNER JOIN recipe_subrecipe rs ON rs.subrecipe_id = r.recipe_id
-      INNER JOIN unit u       ON u.unit_id = rs.unit_id
+      INNER JOIN unit u              ON u.unit_id = rs.unit_id
       WHERE rs.recipe_id = r.recipe_id
     ) subrecipes
-  FROM recipes r
+  FROM public_recipe r
   INNER JOIN user u         ON u.user_id = r.owner_id
   INNER JOIN recipe_type rt ON rt.recipe_type_id = r.recipe_type_id
   INNER JOIN cuisine c      ON c.cuisine_id = r.cuisine_id

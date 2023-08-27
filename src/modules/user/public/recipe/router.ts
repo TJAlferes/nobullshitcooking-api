@@ -1,14 +1,14 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
-import { userPublicRecipeController as controller } from './controller';
+import { publicRecipeController as controller } from './controller';
 import { catchExceptions, userIsAuth } from '../../../../utils';
 
 const router = Router();
 
 // for /user/public/recipe/...
 
-export function userPublicRecipeRouter() {
+export function publicRecipeRouter() {
   const recipeInfo = [
     'recipe_type_id',
     'cuisine_id',
@@ -64,7 +64,7 @@ export function userPublicRecipeRouter() {
   router.delete(
     '/disown',
     userIsAuth,
-    sanitize('title'),
+    sanitize('recipe_id'),
     catchExceptions(controller.disownOne)
   );  // router.put ?
 

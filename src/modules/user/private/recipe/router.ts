@@ -1,14 +1,14 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
-import { userPrivateRecipeController as controller } from './controller';
+import { privateRecipeController as controller } from './controller';
 import { catchExceptions, userIsAuth } from '../../../../utils';
 
 const router = Router();
 
 // for /user/private/recipe/...
 
-export function userPrivateRecipeRouter() {
+export function privateRecipeRouter() {
   const recipeInfo = [
     'recipe_type_id',
     'cuisine_id',

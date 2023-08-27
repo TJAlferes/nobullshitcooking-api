@@ -5,19 +5,19 @@ import { RecipeIngredientRepo } from '../../../recipe/required-ingredient/repo';
 import { RecipeMethodRepo }     from '../../../recipe/required-method/repo';
 import { RecipeSubrecipeRepo }  from '../../../recipe/required-subrecipe/repo';
 import { Recipe }               from '../../../recipe/model';
-import { RecipeRepo }           from '../../../recipe/repo';
+import { PrivateRecipeRepo }    from './repo';
 import { RecipeService }        from '../../../recipe/service';
 
-export const userPrivateRecipeController = {
-  async viewAll(req: Request, res: Response) {
+export const privateRecipeController = {
+  /*async viewAll(req: Request, res: Response) {
     const author_id = req.session.userInfo!.id;
     const owner_id  = req.session.userInfo!.id;
 
-    const recipeRepo = new RecipeRepo();
-    const rows = await recipeRepo.viewAll({author_id, owner_id});
+    const repo = new PrivateRecipeRepo();
+    const rows = await repo.viewAll(owner_id);
 
     return res.send(rows);
-  },
+  },*/
 
   async viewOne(req: Request, res: Response) {
     const title     = unslugify(req.params.title);
@@ -25,8 +25,8 @@ export const userPrivateRecipeController = {
     const author_id = req.session.userInfo!.id;
     const owner_id  = req.session.userInfo!.id;
 
-    const recipeRepo = new RecipeRepo();
-    const row = await recipeRepo.viewOne({title, author_id, owner_id});
+    const repo = new PrivateRecipeRepo();
+    const row = await repo.viewOne({title, owner_id});
     
     return res.send(row);
   },

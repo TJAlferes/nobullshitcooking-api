@@ -38,3 +38,7 @@ export function Image(image: string) {
   }
   return image;
 }
+
+export const UNKNOWN_USER_ID = "00000000-0000-0000-0000-000000000000";
+export const NOBSC_USER_ID   = "11111111-1111-1111-1111-111111111111";
+//"22222222-2222-2222-2222-222222222222"

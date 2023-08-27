@@ -2,7 +2,7 @@ import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
 import { MySQLRepo } from '../../../shared/MySQL';
 
-export class PrivateRecipeRepo extends MySQLRepo implements IPrivateRecipeRepo {
+export class PrivateRecipeRepo extends MySQLRepo implements PrivateRecipeRepoInterface {
   async viewOneByRecipeId(params: ViewOneByRecipeIdParams) {
     const sql = `${viewOneSQL} AND r.recipe_id = ?`;
     const [ [ row ] ] = await this.pool.execute<RecipeView[]>(sql, params);
@@ -55,7 +55,7 @@ export class PrivateRecipeRepo extends MySQLRepo implements IPrivateRecipeRepo {
 
   async update(params: InsertParams) {
     const sql = `
-      UPDATE recipe
+      UPDATE private_recipe
       SET
         recipe_type_id    = :recipe_type_id,
         cuisine_id        = :cuisine_id,
@@ -77,14 +77,13 @@ export class PrivateRecipeRepo extends MySQLRepo implements IPrivateRecipeRepo {
   }
 
   async deleteAllByOwnerId(owner_id: string) {
-    //if (owner_id === nobsc_user_id || owner_id === nobsc_unknown_id) return;  // TO DO: move to service
-    const sql = `DELETE FROM recipe WHERE owner_id = ?`;
+    const sql = `DELETE FROM private_recipe WHERE owner_id = ?`;
     await this.pool.execute(sql, [owner_id]);
   }
   
   async deleteOneByOwnerId(params: DeleteOneByOwnerIdParams) {
     const sql = `
-      DELETE FROM recipe
+      DELETE FROM private_recipe
       WHERE recipe_id = :recipe_id AND owner_id = :owner_id
       LIMIT 1
     `;
@@ -92,7 +91,7 @@ export class PrivateRecipeRepo extends MySQLRepo implements IPrivateRecipeRepo {
   }
 }
 
-export interface IPrivateRecipeRepo {
+export interface PrivateRecipeRepoInterface {
   //getPrivateIds:      (user_id: string) =>                  Promise<number[]>;  // ???
   viewOneByRecipeId:  (params: ViewOneByRecipeIdParams) =>  Promise<RecipeView>;
   viewOneByTitle:     (params: ViewOneByTitleParams) =>     Promise<RecipeView>;
@@ -240,7 +239,7 @@ const viewOneSQL = `
       ))
       FROM ingredients i
       INNER JOIN recipe_ingredient ri ON ri.ingredient_id = i.ingredient_id
-      INNER JOIN unit u ON u.unit_id = ri.unit_id
+      INNER JOIN unit u               ON u.unit_id = ri.unit_id
       WHERE ri.recipe_id = r.recipe_id
     ) ingredients,
     (
@@ -253,9 +252,9 @@ const viewOneSQL = `
         'cuisine_id',      r.cuisine_id,
         'subrecipe_id',    rs.subrecipe_id
       ))
-      FROM recipes r
+      FROM private_recipe r
       INNER JOIN recipe_subrecipe rs ON rs.subrecipe_id = r.recipe_id
-      INNER JOIN unit u       ON u.unit_id = rs.unit_id
+      INNER JOIN unit u              ON u.unit_id = rs.unit_id
       WHERE rs.recipe_id = r.recipe_id
     ) subrecipes
   FROM recipes r

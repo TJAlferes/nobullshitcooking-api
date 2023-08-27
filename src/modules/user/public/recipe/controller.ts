@@ -5,21 +5,27 @@ import { RecipeIngredientRepo } from '../../../recipe/required-ingredient/repo';
 import { RecipeMethodRepo }     from '../../../recipe/required-method/repo';
 import { RecipeSubrecipeRepo }  from '../../../recipe/required-subrecipe/repo';
 import { Recipe }               from '../../../recipe/model';
-import { RecipeRepo }           from '../../../recipe/repo';
+import { PublicRecipeRepo }     from './repo';
 import { RecipeService }        from '../../../recipe/service';
 
-export const userPublicRecipeController = {
-  async viewAll(req: Request, res: Response) {
-    const author_id = req.session.userInfo!.id;
-    const owner_id  = 1;  // TO DO: move and change
+export const publicRecipeController = {
+  async viewAllTitles(req: Request, res: Response) {
+    const repo = new PublicRecipeRepo();
+    const rows = await repo.viewAllTitles();
 
-    const recipeRepo = new RecipeRepo();
+    return res.send(rows);
+  },  // for Next.js getStaticPaths
+
+  /*async viewAll(req: Request, res: Response) {
+    const owner_id = req.session.userInfo!.id;
+
+    const recipeRepo = new PublicRecipeRepo();
     const recipeService = new RecipeService(recipeRepo);
     const rows = await RecipeService.viewAll(author_id);
     //const rows = await recipeRepo.viewAll({author_id, owner_id});
 
     return res.send(rows);
-  },
+  },*/
 
   async viewOne(req: Request, res: Response) {
     const title     = unslugify(req.params.title);
@@ -27,7 +33,7 @@ export const userPublicRecipeController = {
     const author_id = req.session.userInfo!.id;
     const owner_id  = 1;
 
-    const recipeRepo = new RecipeRepo()
+    const recipeRepo = new PublicRecipeRepo()
     const row = await recipeRepo.viewOne({title, authorId, ownerId});
     
     return res.send(row);
@@ -71,7 +77,7 @@ export const userPublicRecipeController = {
       cooking_image
     };
 
-    const recipeRepo    = new RecipeRepo();
+    const recipeRepo    = new PublicRecipeRepo();
     const recipeService = new RecipeService(recipeRepo);
     await recipeService.create(creatingRecipe);
 
@@ -141,7 +147,7 @@ export const userPublicRecipeController = {
       cooking_image
     };
 
-    const recipeRepo    = new RecipeRepo();
+    const recipeRepo    = new PublicRecipeRepo();
     const recipeService = new RecipeService(recipeRepo);
     await recipeService.update(updatingRecipe);
 
@@ -169,11 +175,11 @@ export const userPublicRecipeController = {
   },
 
   async disownOne(req: Request, res: Response) {
-    const id =       Number(req.body.id);
-    const authorId = req.session.userInfo!.id;
+    const recipe_id = req.body.recipe_id;
+    const owner_id  = req.session.userInfo!.id;
 
-    const recipeRepo = new RecipeRepo();
-    await recipeRepo.disownOneByAuthorId(id, authorId);
+    const repo = new PublicRecipeRepo();
+    await repo.disownOne({recipe_id, owner_id});
 
     return res.send({message: 'Recipe disowned.'});
   }

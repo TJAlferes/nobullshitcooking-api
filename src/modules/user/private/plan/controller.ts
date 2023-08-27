@@ -4,7 +4,7 @@ import { assert }            from 'superstruct';
 import { PlanRepo } from '../../../plan/repo';
 import { Plan }     from '../../../plan/model';
 
-export const userPrivatePlanController = {
+export const privatePlanController = {
   async viewAll(req: Request, res: Response) {
     const owner_id = req.session.userInfo!.id;
 
