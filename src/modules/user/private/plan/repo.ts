@@ -3,7 +3,7 @@ import { RowDataPacket } from 'mysql2/promise';
 
 import { MySQLRepo } from '../shared/MySQL';
 
-export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
+export class PrivatePlanRepo extends MySQLRepo implements PrivatePlanRepoInterface {
   async viewAll(owner_id: string) {
     const sql = `SELECT plan_id, plan_name FROM plan WHERE owner_id = ?`;
     const [ rows ] = await this.pool.execute<PlanView[]>(sql, [owner_id]);
@@ -37,7 +37,7 @@ export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
   }
 }
 
-export interface PlanRepoInterface {
+export interface PrivatePlanRepoInterface {
   viewAll:   (owner_id: string) =>        Promise<PlanView[]>;  // TO DO: JOIN on day and day_recipe
   viewOne:   (params: ViewOneParams) =>   Promise<PlanView>;    // TO DO: JOIN on day and day_recipe
   insert:    (params: InsertParams) =>    Promise<void>;

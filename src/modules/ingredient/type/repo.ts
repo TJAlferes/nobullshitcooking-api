@@ -2,7 +2,7 @@ import { RowDataPacket } from 'mysql2/promise';
 
 import { MySQLRepo } from '../../shared/MySQL';
 
-export class IngredientTypeRepo extends MySQLRepo implements IIngredientTypeRepo {
+export class IngredientTypeRepo extends MySQLRepo implements IngredientTypeRepoInterface {
   async viewAll() {
     const sql = `SELECT ingredient_type_id, ingredient_type_name FROM ingredient_type`;
     const [ rows ] = await this.pool.execute<IngredientTypeView[]>(sql);
@@ -16,7 +16,7 @@ export class IngredientTypeRepo extends MySQLRepo implements IIngredientTypeRepo
   }
 }
 
-export interface IIngredientTypeRepo {
+export interface IngredientTypeRepoInterface {
   viewAll: () =>                           Promise<IngredientTypeView[]>;
   viewOne: (ingredient_type_id: number) => Promise<IngredientTypeView>;
 }

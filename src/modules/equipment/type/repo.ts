@@ -2,7 +2,7 @@ import { RowDataPacket } from 'mysql2/promise';
 
 import { MySQLRepo } from '../../shared/MySQL';
 
-export class EquipmentTypeRepo extends MySQLRepo implements IEquipmentTypeRepo {
+export class EquipmentTypeRepo extends MySQLRepo implements EquipmentTypeRepoInterface {
   async viewAll() {
     const sql = `SELECT equipment_type_id, equipment_type_name FROM equipment_type`;
     const [ rows ] = await this.pool.execute<EquipmentTypeView[]>(sql);
@@ -16,7 +16,7 @@ export class EquipmentTypeRepo extends MySQLRepo implements IEquipmentTypeRepo {
   }
 }
 
-export interface IEquipmentTypeRepo {
+export interface EquipmentTypeRepoInterface {
   viewAll: () =>                          Promise<EquipmentTypeView[]>;
   viewOne: (equipment_type_id: number) => Promise<EquipmentTypeView>;
 }

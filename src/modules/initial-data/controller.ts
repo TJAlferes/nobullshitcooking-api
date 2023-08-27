@@ -10,12 +10,8 @@ import { MethodRepo }         from '../recipe/method/repo';
 import { RecipeTypeRepo }     from '../recipe/type/repo';
 import { UnitRepo }           from '../shared/unit/repo';
 
-// RENAME, THIS IS TOO VAGUE
-export const dataInitController = {
+export const initialDataController = {
   async viewInitialData(req: Request, res: Response) {
-    const author_id = 1;  // TO DO: fix/finish/move to domain
-    const owner_id  = 1;  // TO DO: fix/finish/move to domain
-
     const cuisineRepo        = new CuisineRepo();
     const equipmentRepo      = new EquipmentRepo();
     const equipmentTypeRepo  = new EquipmentTypeRepo();
@@ -38,13 +34,13 @@ export const dataInitController = {
       recipe_types
     ] = await Promise.all([
       cuisineRepo.viewAll(),
-      equipmentRepo.viewAll(owner_id),
+      equipmentRepo.viewAll(),
       equipmentTypeRepo.viewAll(),
-      ingredientRepo.viewAll(owner_id),
+      ingredientRepo.viewAll(),
       ingredientTypeRepo.viewAll(),
       unitRepo.viewAll(),
       methodRepo.viewAll(),
-      recipeRepo.viewAll(author_id, owner_id),
+      recipeRepo.viewAll(),
       recipeTypeRepo.viewAll()
     ]);
 

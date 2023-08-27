@@ -3,7 +3,7 @@ import { RowDataPacket } from 'mysql2/promise';
 import type { SearchRequest, SearchResponse } from '../search/model';
 import { MySQLRepo } from '../shared/MySQL';
 
-export class EquipmentRepo extends MySQLRepo implements IEquipmentRepo {
+export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
   async autosuggest(term: string) {
     const sql = `
       SELECT
@@ -155,7 +155,7 @@ export class EquipmentRepo extends MySQLRepo implements IEquipmentRepo {
   }
 }
 
-export interface IEquipmentRepo {
+export interface EquipmentRepoInterface {
   autosuggest: (term: string) =>                  Promise<EquipmentSuggestion[]>;
   search:      (search_request: SearchRequest) => Promise<SearchResponse>;
   viewAll:     () =>                              Promise<EquipmentView[]>;

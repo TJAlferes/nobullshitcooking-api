@@ -3,7 +3,7 @@ import { RowDataPacket } from 'mysql2/promise';
 import type { SearchRequest, SearchResponse } from '../search/model';
 import { MySQLRepo } from '../shared/MySQL';
 
-export class IngredientRepo extends MySQLRepo implements IIngredientRepo {
+export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface {
   async autosuggest(term: string) {
     const sql = `
       SELECT
@@ -198,7 +198,7 @@ export class IngredientRepo extends MySQLRepo implements IIngredientRepo {
   }
 }
 
-export interface IIngredientRepo {
+export interface IngredientRepoInterface {
   autosuggest: (term: string) =>                 Promise<IngredientSuggestion[]>;
   search:      (searchRequest: SearchRequest) => Promise<SearchResponse>;
   viewAll:     () =>                             Promise<IngredientView[]>;
