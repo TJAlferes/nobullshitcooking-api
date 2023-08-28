@@ -293,23 +293,17 @@ CREATE TABLE plan (
   `author_id` CHAR(36)    NOT NULL,
   `owner_id`  CHAR(36)    NOT NULL,
   `plan_name` VARCHAR(50) NOT NULL DEFAULT '',
-  FOREIGN KEY (`author_id`)  REFERENCES `user` (`user_id`) ON DELETE CASCADE
+  FOREIGN KEY (`author_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
   FOREIGN KEY (`owner_id`)  REFERENCES `user` (`user_id`) ON DELETE CASCADE
 );
 
-CREATE TABLE plan_day (
-  `day_id`     CHAR(36) PRIMARY KEY,
-  `plan_id`    CHAR(36) NOT NULL,
-  `day_number` TINYINT  NOT NULL,
-  FOREIGN KEY (`plan_id`) REFERENCES `plan` (`plan_id`) ON DELETE CASCADE
-);
-
-CREATE TABLE plan_day_recipe (
-  `day_id`        CHAR(36) NOT NULL,
+CREATE TABLE plan_recipe (
+  `plan_id`       CHAR(36) NOT NULL,
   `recipe_id`     CHAR(36) NOT NULL,
-  `recipe_number` TINYINT NOT NULL,
+  `day_number`    TINYINT  NOT NULL,
+  `recipe_number` TINYINT  NOT NULL,
   --PRIMARY KEY (day_id, recipe_id),
-  FOREIGN KEY (`day_id`)    REFERENCES `plan_day` (`day_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`plan_id`)   REFERENCES `plan` (`plan_id`) ON DELETE CASCADE,
   FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`recipe_id`) ON DELETE CASCADE
 );
 

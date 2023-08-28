@@ -40,8 +40,8 @@ export class RecipeIngredientRepo extends MySQLRepo implements IRecipeIngredient
 
       if (recipe_ingredients.length) {
         let sql = `
-        INSERT INTO recipe_ingredients (recipe_id, amount, unit_id, ingredient_id)
-        VALUES ${placeholders}
+          INSERT INTO recipe_ingredients (recipe_id, amount, unit_id, ingredient_id)
+          VALUES ${placeholders}
         `;
 
         await conn.query(sql, recipe_ingredients);

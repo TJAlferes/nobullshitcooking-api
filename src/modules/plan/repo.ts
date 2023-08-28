@@ -24,18 +24,16 @@ export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
         JSON_ARRAYAGG(
           JSON_ARRAYAGG(
             JSON_OBJECT(
-              'recipe_id', r.recipe_id,
               'title',     r.title,
               'image_url', r.img_url
             )
-          ) ORDER BY pdr.recipe_number
+          ) ORDER BY pr.recipe_number
         ) AS plan_data
       FROM plan p
-      LEFT JOIN plan_day pd         ON p.plan_id     = pd.plan_id
-      LEFT JOIN plan_day_recipe pdr ON pd.day_id     = pdr.day_id
-      LEFT JOIN recipe r            ON pdr.recipe_id = r.recipe_id
+      LEFT JOIN plan_recipe pr ON p.plan_id     = pr.plan_id
+      LEFT JOIN recipe r       ON pr.recipe_id = r.recipe_id
       WHERE p.plan_id = ?
-      ORDER pd.day_number
+      ORDER pr.day_number
       WHERE p.author_id = :author_id AND p.owner_id = :owner_id AND p.plan_id = :plan_id
     `;
     const [ [ row ] ] = await this.pool.execute<PlanView[]>(sql, params);
@@ -51,18 +49,16 @@ export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
         JSON_ARRAYAGG(
           JSON_ARRAYAGG(
             JSON_OBJECT(
-              'recipe_id', r.recipe_id,
               'title',     r.title,
               'image_url', r.img_url
             )
-          ) ORDER BY pdr.recipe_number
+          ) ORDER BY pr.recipe_number
         ) AS plan_data
       FROM plan p
-      LEFT JOIN plan_day pd         ON p.plan_id     = pd.plan_id
-      LEFT JOIN plan_day_recipe pdr ON pd.day_id     = pdr.day_id
-      LEFT JOIN recipe r            ON pdr.recipe_id = r.recipe_id
+      LEFT JOIN plan_recipe pr ON p.plan_id     = pr.plan_id
+      LEFT JOIN recipe r       ON pr.recipe_id = r.recipe_id
       WHERE p.plan_id = ?
-      ORDER pd.day_number
+      ORDER pr.day_number
       WHERE p.author_id = :author_id AND p.owner_id = :owner_id AND p.plan_name = :plan_name
     `;
     const [ [ row ] ] = await this.pool.execute<PlanView[]>(sql, params);
