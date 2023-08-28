@@ -305,8 +305,9 @@ CREATE TABLE plan_day (
 );
 
 CREATE TABLE plan_day_recipe (
-  `day_id`    CHAR(36) NOT NULL,
-  `recipe_id` CHAR(36) NOT NULL,
+  `day_id`        CHAR(36) NOT NULL,
+  `recipe_id`     CHAR(36) NOT NULL,
+  `recipe_number` TINYINT NOT NULL,
   --PRIMARY KEY (day_id, recipe_id),
   FOREIGN KEY (`day_id`)    REFERENCES `plan_day` (`day_id`) ON DELETE CASCADE,
   FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`recipe_id`) ON DELETE CASCADE
