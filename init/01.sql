@@ -163,9 +163,8 @@ CREATE TABLE ingredient (
 );
 
 CREATE TABLE ingredient_alt_name (
-  `ingredient_alt_name_id` CHAR(36)    PRIMARY KEY,
-  `ingredient_id`          CHAR(36),
-  `alt_name`               VARCHAR(50),
+  `ingredient_id` CHAR(36),
+  `alt_name`      VARCHAR(50),
   FOREIGN KEY (`ingredient_id`) REFERENCES `ingredient` (`ingredient_id`) ON DELETE CASCADE,
 );
 

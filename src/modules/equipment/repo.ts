@@ -1,23 +1,29 @@
 import { RowDataPacket } from 'mysql2/promise';
 
 import type { SearchRequest, SearchResponse } from '../search/model';
+import { NOBSC_USER_ID } from '../shared/model';
 import { MySQLRepo } from '../shared/MySQL';
 
 export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
   async autosuggest(term: string) {
+    const owner_id = NOBSC_USER_ID;  // only public equipment are searchable
     const sql = `
       SELECT
         equipment_id,
         equipment_name AS text
       FROM equipment
-      WHERE equipment_name LIKE ?
+      WHERE owner_id = ? AND equipment_name LIKE ?
       LIMIT 5
     `;
-    const [ rows ] = await this.pool.execute<EquipmentSuggestion[]>(sql, [`%${term}%`]);
+    const [ rows ] = await this.pool.execute<EquipmentSuggestionView[]>(sql, [
+      owner_id,
+      `%${term}%`
+    ]);
     return rows;
   }
 
   async search({ term, filters, sorts, current_page, results_per_page }: SearchRequest) {
+    const owner_id = NOBSC_USER_ID;  // only public equipment are searchable
     let sql = `
       SELECT
         e.equipment_id,
@@ -28,11 +34,12 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
       FROM equipment e
       INNER JOIN equipment_type t ON e.equipment_type_id = t.equipment_type_id
       INNER JOIN image i          ON e.image_id          = i.image_id
+      WHERE e.owner_id = ?
     `;
 
     // order matters
 
-    const params: Array<number|string> = [];
+    const params: Array<number|string> = [owner_id];
 
     if (term) {
       sql += ` AND e.equipment_name LIKE ?`;
@@ -75,7 +82,7 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
     };
   }
 
-  async viewAll() {
+  async viewAll(owner_id: string) {
     const sql = `
       SELECT
         e.equipment_id,
@@ -88,13 +95,14 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
       FROM equipment e
       INNER JOIN equipment_type t ON e.equipment_type_id = t.equipment_type_id
       INNER JOIN image i          ON e.image_id          = i.image_id
+      WHERE e.owner_id = :owner_id
       ORDER BY e.equipment_name ASC
     `;
-    const [ rows ] = await this.pool.execute<EquipmentView[]>(sql);
+    const [ rows ] = await this.pool.execute<EquipmentView[]>(sql, owner_id);
     return rows;
   }
 
-  async viewOne(equipment_id: string) {
+  async viewOne(params: ViewOneParams) {
     const sql = `
       SELECT
         e.equipment_id,
@@ -107,9 +115,9 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
       FROM equipment e
       INNER JOIN equipment_type t ON e.equipment_type_id = t.equipment_type_id
       INNER JOIN image i          ON e.image_id          = i.image_id
-      WHERE e.equipment_id = :equipment_id
+      WHERE e.owner_id = :owner_id AND e.equipment_id = :equipment_id
     `;
-    const [ [ row ] ] = await this.pool.execute<EquipmentView[]>(sql, equipment_id);
+    const [ [ row ] ] = await this.pool.execute<EquipmentView[]>(sql, params);
     return row;
   }
 
@@ -132,38 +140,55 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
     await this.pool.execute(sql, params);
   }
 
-  async update(params: InsertParams) {
+  async update({
+    equipment_type_id,
+    equipment_name,
+    notes,
+    owner_id,
+    equipment_id
+  }: UpdateParams) {
     const sql = `
       UPDATE equipment
       SET
         equipment_type_id = :equipment_type_id,
         equipment_name    = :equipment_name,
         notes             = :notes
-      WHERE equipment_id = :equipment_id
+      WHERE owner_id = :owner_id AND equipment_id = :equipment_id
+      LIMIT 1
+    `;
+    await this.pool.execute(sql, {
+      equipment_type_id,
+      equipment_name,
+      notes,
+      owner_id,
+      equipment_id
+    });
+  }
+
+  async deleteOne(params: DeleteOneParams) {
+    const sql = `
+      DELETE FROM equipment
+      WHERE owner_id = :owner_id AND equipment_id = :equipment_id
       LIMIT 1
     `;
     await this.pool.execute(sql, params);
   }
-
-  async deleteOne(equipment_id: string) {
-    const sql = `
-      DELETE FROM equipment
-      WHERE equipment_id = :equipment_id
-      LIMIT 1
-    `;
-    await this.pool.execute(sql, equipment_id);
-  }
 }
 
 export interface EquipmentRepoInterface {
-  autosuggest: (term: string) =>                  Promise<EquipmentSuggestion[]>;
+  autosuggest: (term: string) =>                  Promise<EquipmentSuggestionView[]>;
   search:      (search_request: SearchRequest) => Promise<SearchResponse>;
-  viewAll:     () =>                              Promise<EquipmentView[]>;
-  viewOne:     (equipment_id: string) =>          Promise<EquipmentView>;
+  viewAll:     (owner_id: string) =>              Promise<EquipmentView[]>;
+  viewOne:     (params: ViewOneParams) =>         Promise<EquipmentView>;
   insert:      (params: InsertParams) =>          Promise<void>;
-  update:      (params: InsertParams) =>          Promise<void>;
-  deleteOne:   (equipment_id: string) =>          Promise<void>;
+  update:      (params: UpdateParams) =>          Promise<void>;
+  deleteOne:   (params: DeleteOneParams) =>       Promise<void>;
 }
+
+type EquipmentSuggestionView = RowDataPacket & {
+  equipment_id:   string;
+  equipment_name: string;
+};
 
 type EquipmentView = RowDataPacket & {
   equipment_id:        string;
@@ -184,7 +209,11 @@ type InsertParams = {
   image_id:          string;
 };
 
-type EquipmentSuggestion = RowDataPacket & {
-  equipment_id:   string;
-  equipment_name: string;
+type UpdateParams = InsertParams;
+
+type ViewOneParams = {
+  owner_id:     string;
+  equipment_id: string;
 };
+
+type DeleteOneParams = ViewOneParams;

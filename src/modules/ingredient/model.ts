@@ -9,7 +9,6 @@ export class Ingredient {
   private ingredient_brand;
   private ingredient_variety;
   private ingredient_name;
-  //private alternativeNames;  // should NOT be here, should be in a separate view model or DTO
   private notes;
   private image_id;
 
@@ -26,11 +25,10 @@ export class Ingredient {
 
   static create(params: CreateParams) {
     const ingredient_id = GenerateUUIDv7StringId();
-
-    const ingredient = new Ingredient({...params, ingredient_id});
-
-    return ingredient;  // only return id ???
+    return new Ingredient({...params, ingredient_id});
   }
+
+  //static update(params: UpdateParams) {}
 
   getDTO() {
     return {
@@ -69,23 +67,6 @@ export function IngredientName(name: string) {
   }
   return name;
 }
-
-//alternative_names: string[];
-/*export function IngredientAlternativeNames(alternativeNames: string[]) {
-  if (alternativeNames.length < 1) {
-    return [];
-  }
-  if (alternativeNames.length > 50) {
-    throw new Error("Ingredient must have no more than 50 alternative names.");
-  }
-  alternativeNames.forEach(altName => {
-    assert(altName, string());
-    if (altName.length > 50) {
-      throw new Error("Ingredient alternative name must be no more than 50 characters.");
-    }
-  });
-  return alternativeNames;
-}*/
 
 type CreateParams = {
   ingredient_type_id: number;

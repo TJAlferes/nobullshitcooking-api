@@ -9,12 +9,12 @@ const router = Router();
 // for /user/private/ingredient/...
 
 export function privateIngredientRouter() {
-  // TO DO: ingredient alt names
   const ingredientInfo = [
     'ingredient_type_id',
     'ingredient_brand',
     'ingredient_variety',
     'ingredient_name',
+    'alt_names.*',
     'notes',
     'image_id'
   ];

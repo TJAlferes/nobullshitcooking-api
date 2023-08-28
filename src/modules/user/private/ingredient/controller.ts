@@ -1,15 +1,17 @@
 import { Request, Response } from 'express';
 import { assert }            from 'superstruct';
 
-import { RecipeIngredientRepo } from '../../../recipe/required-ingredient/repo';
-import { PrivateIngredientRepo }       from './repo';
-import { PrivateIngredient }    from './model';
+import { RecipeIngredientRepo }  from '../../../recipe/required-ingredient/repo';
+import { IngredientAltName }     from '../../../ingredient/alt-name/model';
+import { IngredientAltNameRepo } from '../../../ingredient/alt-name/repo';
+import { Ingredient }            from '../../../ingredient/model';
+import { IngredientRepo }        from '../../../ingredient/repo';
 
 export const privateIngredientController = {
   async viewAll(req: Request, res: Response) {
     const owner_id  = req.session.userInfo!.id;
 
-    const repo = new PrivateIngredientRepo();
+    const repo = new IngredientRepo();
     const rows = await repo.viewAll(owner_id);
     return res.send(rows);
   },
@@ -18,8 +20,8 @@ export const privateIngredientController = {
     const ingredient_id = req.body.id;
     const owner_id      = req.session.userInfo!.id;
 
-    const repo = new PrivateIngredientRepo();
-    const row = await repo.viewOne({ingredient_id, owner_id});
+    const repo = new IngredientRepo();
+    const row = await repo.viewOne({owner_id, ingredient_id});
     return res.send(row);
   },
 
@@ -45,13 +47,21 @@ export const privateIngredientController = {
       image_id
     };
 
-    const ingredient = PrivateIngredient.create(args).getDTO();
-    const ingredientRepo = new PrivateIngredientRepo();
+    const ingredient = Ingredient.create(args).getDTO();
+    const ingredientRepo = new IngredientRepo();
     await ingredientRepo.insert(ingredient);
 
-    // validate alt_names
-    //const ingredientAltNamesRepo = new IngredientAltNamesRepo();
-    //await ingredientAltNamesRepo.insert(alt_names);
+    if (alt_names.length) {
+      const placeholders = '(?, ?),'.repeat(alt_names.length).slice(0, -1);
+      const valid_alt_names = alt_names.map((alt_name: string) =>
+        IngredientAltName.create({
+          ingredient_id: ingredient.ingredient_id,
+          alt_name
+        }).getDTO()
+      );
+      const ingredientAltNamesRepo = new IngredientAltNameRepo();
+      await ingredientAltNamesRepo.insert(alt_names);
+    }
 
     return res.send({message: 'Ingredient created.'});
   },

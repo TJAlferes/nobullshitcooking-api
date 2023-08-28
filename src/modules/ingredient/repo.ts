@@ -1,10 +1,12 @@
 import { RowDataPacket } from 'mysql2/promise';
 
 import type { SearchRequest, SearchResponse } from '../search/model';
+import { NOBSC_USER_ID } from '../shared/model';
 import { MySQLRepo } from '../shared/MySQL';
 
 export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface {
   async autosuggest(term: string) {
+    const owner_id = NOBSC_USER_ID;  // only public equipment are searchable
     const sql = `
       SELECT
         i.ingredient_id,
@@ -14,17 +16,21 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
           i.ingredient_variety,
           i.ingredient_name,
           IFNULL(GROUP_CONCAT(n.alt_name SEPARATOR ' '), '')
-        ) AS text,
+        ) AS fullname,
       FROM ingredient i
       INNER JOIN ingredient_alt_name n ON i.ingredient_id = n.ingredient_id
-      WHERE text LIKE ?
+      WHERE owner_id = ? AND fullname LIKE ?
       LIMIT 5
     `;
-    const [ rows ] = await this.pool.execute<IngredientSuggestion[]>(sql, [`%${term}%`]);
+    const [ rows ] = await this.pool.execute<IngredientSuggestionView[]>(sql, [
+      owner_id,
+      `%${term}%`
+    ]);
     return rows;
   }
 
   async search({ term, filters, sorts, current_page, results_per_page }: SearchRequest) {
+    const owner_id = NOBSC_USER_ID;  // only public equipment are searchable
     let sql = `
       SELECT
         i.ingredient_id,
@@ -45,11 +51,12 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
       INNER JOIN ingredient_type t     ON t.ingredient_type_id = i.ingredient_type_id
       INNER JOIN ingredient_alt_name n ON i.ingredient_id      = n.ingredient_id
       INNER JOIN image m               ON i.image_id           = m.image_id
+      WHERE i.owner_id = ?
     `;
 
     // order matters
 
-    const params: Array<number|string> = [];
+    const params: Array<number|string> = [owner_id];
 
     if (term) {
       sql += ` AND i.fullname LIKE ?`;
@@ -92,7 +99,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
     };
   }
 
-  async viewAll() {
+  async viewAll(owner_id: string) {
     const sql = `
       SELECT
         i.ingredient_id,
@@ -115,13 +122,14 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
       INNER JOIN ingredient_type t     ON i.ingredient_type_id = t.ingredient_type_id
       INNER JOIN ingredient_alt_name n ON i.ingredient_id      = n.ingredient_id
       INNER JOIN image m               ON i.image_id           = m.image_id
+      WHERE i.owner_id = :owner_id
       ORDER BY i.ingredient_name ASC
     `;
-    const [ rows ] = await this.pool.execute<IngredientView[]>(sql);
+    const [ rows ] = await this.pool.execute<IngredientView[]>(sql, owner_id);
     return rows;
   }
 
-  async viewOne(ingredient_id: string) {
+  async viewOne(params: ViewOneParams) {
     const sql = `
       SELECT
         i.ingredient_id,
@@ -144,9 +152,9 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
       INNER JOIN ingredient_type t     ON i.ingredient_type_id = t.ingredient_type_id
       INNER JOIN ingredient_alt_name n ON i.ingredient_id      = n.ingredient_id
       INNER JOIN image m               ON i.image_id           = m.image_id
-      WHERE i.ingredient_id = :ingredient_id
+      WHERE i.owner_id = :owner_id AND i.ingredient_id = :ingredient_id
     `;
-    const [ [ row ] ] = await this.pool.execute<IngredientView[]>(sql, ingredient_id);
+    const [ [ row ] ] = await this.pool.execute<IngredientView[]>(sql, params);
     return row;
   }
 
@@ -173,7 +181,15 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
     await this.pool.execute(sql, params);
   }
 
-  async update(params: InsertParams) {
+  async update({
+    ingredient_type_id,
+    ingredient_brand,
+    ingredient_variety,
+    ingredient_name,
+    notes,
+    owner_id,
+    ingredient_id
+  }: UpdateParams) {
     const sql = `
       UPDATE ingredient
       SET
@@ -182,30 +198,38 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
         ingredient_variety = :ingredient_variety,
         ingredient_name    = :ingredient_name,
         notes              = :notes
-      WHERE ingredient_id = :ingredient_id
+      WHERE owner_id = :owner_id AND ingredient_id = :ingredient_id
+      LIMIT 1
+    `;
+    await this.pool.execute(sql, {
+      ingredient_type_id,
+      ingredient_brand,
+      ingredient_variety,
+      ingredient_name,
+      notes,
+      owner_id,
+      ingredient_id
+    });
+  }
+
+  async deleteOne(params: DeleteOneParams) {
+    const sql = `
+      DELETE FROM ingredient
+      WHERE owner_id = :owner_id AND ingredient_id = :ingredient_id
       LIMIT 1
     `;
     await this.pool.execute(sql, params);
   }
-
-  async deleteOne(ingredient_id: string) {
-    const sql = `
-      DELETE FROM ingredient
-      WHERE ingredient_id = :ingredient_id
-      LIMIT 1
-    `;
-    await this.pool.execute(sql, ingredient_id);
-  }
 }
 
 export interface IngredientRepoInterface {
-  autosuggest: (term: string) =>                 Promise<IngredientSuggestion[]>;
+  autosuggest: (term: string) =>                 Promise<IngredientSuggestionView[]>;
   search:      (searchRequest: SearchRequest) => Promise<SearchResponse>;
-  viewAll:     () =>                             Promise<IngredientView[]>;
-  viewOne:     (ingredient_id: string) =>        Promise<IngredientView>;
+  viewAll:     (owner_id: string) =>             Promise<IngredientView[]>;
+  viewOne:     (params: ViewOneParams) =>        Promise<IngredientView>;
   insert:      (params: InsertParams) =>         Promise<void>;
   update:      (params: InsertParams) =>         Promise<void>;
-  deleteOne:   (ingredient_id: string) =>        Promise<void>;
+  deleteOne:   (params: DeleteOneParams) =>      Promise<void>;
 }
 
 type IngredientView = RowDataPacket & {
@@ -221,21 +245,27 @@ type IngredientView = RowDataPacket & {
   image_url:            string;
 };
 
+type IngredientSuggestionView = RowDataPacket & {
+  ingredient_id: string;
+  text:          string;
+};
+
 type InsertParams = {
   ingredient_id:      string;
   ingredient_type_id: number;
   owner_id:           string;
-  brand:              string;
-  variety:            string;
+  ingredient_brand:   string;
+  ingredient_variety: string;
   ingredient_name:    string;
   notes:              string;
   image_id:           string;
 };
 
-type IngredientSuggestion = RowDataPacket & {
-  ingredient_id:   string;
-  brand:           string;
-  variety:         string;
-  ingredient_name: string;
-  text:            string;
+type UpdateParams = InsertParams;
+
+type ViewOneParams = {
+  owner_id:      string;
+  ingredient_id: string;
 };
+
+type DeleteOneParams = ViewOneParams;

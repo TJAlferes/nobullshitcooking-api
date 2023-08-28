@@ -361,3 +361,5 @@ const viewOneSQL = `
   INNER JOIN recipe_type rt ON rt.recipe_type_id = r.recipe_type_id
   INNER JOIN cuisine c      ON c.cuisine_id = r.cuisine_id
 `;
+
+// TO DO: ingredient_fullname

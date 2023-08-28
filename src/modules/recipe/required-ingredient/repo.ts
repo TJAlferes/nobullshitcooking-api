@@ -5,6 +5,7 @@ import { MySQLRepo } from '../../shared/MySQL';
 // TO DO: store fullname instead of name???
 export class RecipeIngredientRepo extends MySQLRepo implements IRecipeIngredientRepo{
   async viewByRecipeId(recipe_id: string) {
+    // TO DO: ingredient_fullname
     const sql = `
       SELECT ri.amount, u.unit_name, i.ingredient_name
       FROM recipe_ingredient ri
