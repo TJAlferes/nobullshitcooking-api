@@ -1,5 +1,5 @@
 import { assert, defaulted, number, string } from 'superstruct';
-import { uuidv7 }                    from 'uuidv7';
+import { uuidv7 }                            from 'uuidv7';
 
 export function GenerateUUIDv7StringId() {
   return uuidv7();
@@ -31,6 +31,7 @@ export function Notes(notes: string | undefined) {
   return notes;
 }
 
+// rename to ImageURL ???
 export function Image(image: string) {
   assert(image, defaulted(string(), ''));
   if (image.length > 100) {

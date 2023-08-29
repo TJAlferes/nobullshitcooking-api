@@ -2,146 +2,120 @@ import { RowDataPacket } from 'mysql2/promise';
 
 import { MySQLRepo } from '../../shared/MySQL';
 
-export class FriendshipRepo extends MySQLRepo implements IFriendshipRepo {
-  /*
-  each relationship is represented by two records in the table,
-  one for each side (each user) (except for block/unblock, which must be one-sided)
+// Each friendship is represented by TWO records in the table:
+//
+//   user_id: 1, friend_id: 2, status: "pending-sent"
+//   user_id: 2, friend_id: 1, status: "pending-received"
+//
+// Only user 2 can accept (update these records) or reject (delete these records)
+//
+//   user_id: 1, friend_id: 2, status: "accepted"
+//   user_id: 2, friend_id: 1, status: "accepted"
+//
+// Now either user can unfriend (delete these records)
 
-  as you will see below, double (reversed params) execution is needed in any INSERT, UPDATE, and DELETE queries
-  to affect both sides of the relationship (again, except for block/unblock, which must be one-sided)
-  */
 
-  async getByFriendId(params: FriendParams) {
-    const sql = `SELECT user_id, friend_id, status FROM friendship WHERE user_id = ? AND friend_id = ?`;
-    const [ [ row ] ] = await this.pool.execute<Friendship[]>(sql, params);
-    return row;
-  }
 
-  async checkIfBlockedBy(params: FriendParams) {
-    const sql = `SELECT user_id, friend_id, status FROM friendship WHERE user_id = ? AND friend_id = ? AND status = "blocked"`;
-    const [ [ row ] ] = await this.pool.execute<Friendship[]>(sql, params);
-    return row;
-  }
+// Blocking is represented by ONE AND ONLY ONE record in the table:
+//
+//   user_id: 1, friend_id: 2, status: "blocked"
+//   Here, user 1 blocked user 2 (user 2 is blocked by user 1)
 
-  // change (DON'T let hem view the user_id???)
-  async view(user_id: string) {
+// Only user 1 can unblock (delete this record)
+
+
+
+export class FriendshipRepo extends MySQLRepo implements FriendshipRepoInterface {
+  async getOneByFriendId(params: GetOneByFriendIdParams) {
     const sql = `
-      SELECT u.id AS user_id, u.username, f.status
-      FROM user u
-      INNER JOIN friendship f ON u.id = f.friend_id
+      SELECT status
+      FROM friendship
+      WHERE user_id = ? AND friend_id = ?
+    `;
+    const [ [ row ] ] = await this.pool.execute<Friendship[]>(sql, params);
+    return row;
+  }
+
+  async viewAll(user_id: string) {
+    const sql = `
+      SELECT u.username, f.status
+      FROM friendship f
+      INNER JOIN user u ON u.user_id = f.friend_id
       WHERE
-        f.user_id = ? AND
-        f.status IN ("accepted", "pending-received", "blocked")
+        f.user_id = ?
+        AND f.status IN ("accepted", "pending-received", "blocked")
     `;
     const [ rows ] = await this.pool.execute<FriendView[]>(sql, [user_id]);
     return rows;
   }
 
-  async viewAccepted(user_id: string) {
+  async viewAllOfStatus({ user_id, status }: ViewAllOfStatusParams) {
     const sql = `
-      SELECT u.id AS user_id, u.username, f.status
-      FROM user u
-      INNER JOIN friendship f ON u.id = f.friend_id
-      WHERE f.user_id = ? AND f.status = "accepted"
+      SELECT u.username, f.status
+      FROM friendship f
+      INNER JOIN user u ON u.user_id = f.friend_id
+      WHERE f.user_id = ? AND f.status = ?
     `;
-    const [ rows ] = await this.pool.execute<FriendView[]>(sql, [user_id]);
+    const [ rows ] = await this.pool.execute<FriendView[]>(sql, [user_id, status]);
     return rows;
   }
 
-  async viewPending(user_id: string) {
+  async insert({ user_id, friend_id, status }: InsertParams) {
     const sql = `
-      SELECT u.id AS user_id, u.username, f.status
-      FROM user u
-      INNER JOIN friendship f ON u.id = f.friend_id
-      WHERE f.user_id = ? AND f.status = "pending-received"
+      INSERT INTO friendship (user_id, friend_id, status)
+      VALUES (?, ?, ?)
     `;
-    const [ rows ] = await this.pool.execute<FriendView[]>(sql, [user_id]);
-    return rows;
+    await this.pool.execute(sql, [user_id, friend_id, status]);
   }
 
-  async viewBlocked(user_id: string) {
+  async update({ user_id, friend_id, status }: UpdateParams) {
     const sql = `
-      SELECT u.id AS user_id, u.username, f.status
-      FROM user u
-      INNER JOIN friendship f ON u.id = f.friend_id
-      WHERE f.user_id = ? AND f.status = "blocked"
+      UPDATE friendship
+      SET status = ?
+      WHERE user_id = ? AND friend_id = ?
+      LIMIT 1
     `;
-    const [ rows ] = await this.pool.execute<FriendView[]>(sql, [user_id]);
-    return rows;
+    await this.pool.execute(sql, [status, user_id, friend_id]);
   }
 
-  // this may need improvement
-  async insert({ user_id, friend_id, status1, status2 }: InsertParams) {
-    const sql = `INSERT INTO friendship (user_id, friend_id, status) VALUES (?, ?, ?)`;
-    await this.pool.execute(sql, [user_id, friend_id, status1]);
-    await this.pool.execute(sql, [friend_id, user_id, status2]);
-  }
-
-  async accept({ user_id, friend_id }: FriendParams) {
-    const sql1 = `UPDATE friendship SET status = "accepted" WHERE user_id = ? AND friend_id = ? AND status = "pending-received" LIMIT 1`;
-    const sql2 = `UPDATE friendship SET status = "accepted" WHERE user_id = ? AND friend_id = ? AND status = "pending-sent" LIMIT 1`;
-    await this.pool.execute(sql1, [user_id, friend_id]);
-    await this.pool.execute(sql2, [friend_id, user_id]);
-  }
-
-  async reject({ user_id, friend_id }: FriendParams) {
-    const sql = `DELETE FROM friendship WHERE user_id = ? AND friend_id = ? AND status != "blocked" LIMIT 1`;
+  async delete({ user_id, friend_id }: DeleteParams) {
+    const sql = `
+      DELETE FROM friendship
+      WHERE user_id = ? AND friend_id = ?
+      LIMIT 1
+    `;
     await this.pool.execute(sql, [user_id, friend_id]);
-    await this.pool.execute(sql, [friend_id, user_id]);
-  }
-
-  async delete({ user_id, friend_id }: FriendParams) {
-    const sql = `DELETE FROM friendship WHERE user_id = ? AND friend_id = ? AND status != "blocked" LIMIT 1`;
-    await this.pool.execute(sql, [user_id, friend_id]);
-    await this.pool.execute(sql, [friend_id, user_id]);
-  }
-
-  async block({ user_id, friend_id }: FriendParams) {
-    const sql1 = `DELETE FROM friendship WHERE user_id = ? AND friend_id = ? LIMIT 1`;
-    await this.pool.execute(sql1, [user_id, friend_id]);
-    await this.pool.execute(sql1, [friend_id, user_id]);
-
-    const sql2 = `INSERT INTO friendship (user_id, friend_id, status) VALUES (?, ?, "blocked")`;
-    await this.pool.execute(sql2, [user_id, friend_id]);
-  }
-  
-  async unblock(params: FriendParams) {
-    const sql = `DELETE FROM friendship WHERE user_id = ? AND friend_id = ? LIMIT 1`;
-    await this.pool.execute(sql, params);
-  }
-
-  async deleteAllByUserId(user_id: string) {
-    const sql1 = `DELETE FROM friendship WHERE user_id = ?`;
-    const sql2 = `DELETE FROM friendship WHERE friend_id = ?`;
-    await this.pool.execute(sql1, [user_id]);
-    await this.pool.execute(sql2, [user_id]);
   }
 }
 
-export interface IFriendshipRepo {
-  getByFriendId:     (params: FriendParams) => Promise<Friendship>;
-  checkIfBlockedBy:  (params: FriendParams) => Promise<Friendship>;
-  view:              (user_id: string) =>      Promise<FriendView[]>;
-  viewAccepted:      (user_id: string) =>      Promise<FriendView[]>;
-  viewPending:       (user_id: string) =>      Promise<FriendView[]>;
-  viewBlocked:       (user_id: string) =>      Promise<FriendView[]>;
-  insert:            (params: InsertParams) => Promise<void>;
-  accept:            (params: FriendParams) => Promise<void>;
-  reject:            (params: FriendParams) => Promise<void>;
-  delete:            (params: FriendParams) => Promise<void>;
-  block:             (params: FriendParams) => Promise<void>;
-  unblock:           (params: FriendParams) => Promise<void>;
-  deleteAllByUserId: (user_id: string) =>      Promise<void>;
+export interface FriendshipRepoInterface {
+  getOneByFriendId: (params: GetOneByFriendIdParams) => Promise<Friendship>;
+  viewAll:          (user_id: string) =>                Promise<FriendView[]>;
+  viewAllOfStatus:  (params: ViewAllOfStatusParams) =>  Promise<FriendView[]>;
+  insert:           (params: InsertParams) =>           Promise<void>;
+  update:           (params: UpdateParams) =>           Promise<void>;
+  delete:           (params: DeleteParams) =>           Promise<void>;
 }
+
+type GetOneByFriendIdParams = {
+  user_id:   string;
+  friend_id: string;
+};
+
+type ViewAllOfStatusParams = {
+  user_id:   string;
+  status:    string;
+};
 
 type InsertParams = {
   user_id:   string;
   friend_id: string;
-  status1:   string;
-  status2:   string;
+  status:    string;
 };
 
-type FriendParams = {
+type UpdateParams = InsertParams;
+
+type DeleteParams = {
   user_id:   string;
   friend_id: string;
 };
@@ -153,7 +127,6 @@ type Friendship = RowDataPacket & {
 };
 
 type FriendView = RowDataPacket & {
-  //user_id:  string;  // ??? why ???
   username: string;
   status:   string;
 };

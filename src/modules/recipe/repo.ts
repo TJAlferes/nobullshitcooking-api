@@ -1,8 +1,8 @@
 import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
 import type { SearchRequest, SearchResponse } from '../search/model';
-import { NOBSC_USER_ID, UNKNOWN_USER_ID } from '../shared/model';
-import { MySQLRepo }     from '../shared/MySQL';
+import { NOBSC_USER_ID, UNKNOWN_USER_ID }     from '../shared/model';
+import { MySQLRepo }                          from '../shared/MySQL';
 
 export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
   async autosuggest(term: string) {
@@ -54,6 +54,8 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
     const recipe_types = filters?.recipe_types ?? [];
     const cuisines     = filters?.cuisines ?? [];
     const methods      = filters?.methods ?? [];
+
+    //const { recipe_types, cuisines, methods } = filters!;
 
     if (recipe_types.length > 0) {
       const placeholders = '?,'.repeat(recipe_types.length).slice(0, -1);

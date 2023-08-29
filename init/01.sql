@@ -109,9 +109,9 @@ CREATE TABLE chatgroup_user (
   `user_id`      CHAR(36) NOT NULL,
   `is_admin`,
   `is_muted`,
-  PRIMARY KEY (`chatgroup_id`, `user_id`),  -- do this for other junction tables???
+  PRIMARY KEY (`chatgroup_id`, `user_id`),
   FOREIGN KEY (`chatgroup_id`) REFERENCES `chatgroup` (`chatgroup_id`) ON DELETE CASCADE,
-  FOREIGN KEY (`user_id`)     REFERENCES `user` (`user_id`) ON DELETE CASCADE
+  FOREIGN KEY (`user_id`)      REFERENCES `user` (`user_id`) ON DELETE CASCADE
 );
 
 CREATE TABLE chatroom_user (
@@ -119,7 +119,7 @@ CREATE TABLE chatroom_user (
   `user_id`     CHAR(36) NOT NULL,
   `is_admin`,
   `is_muted`,
-  PRIMARY KEY (`chatroom_id`, `user_id`),  -- do this for other junction tables???
+  PRIMARY KEY (`chatroom_id`, `user_id`),
   FOREIGN KEY (`chatroom_id`) REFERENCES `chatroom` (`chatroom_id`) ON DELETE CASCADE,
   FOREIGN KEY (`user_id`)     REFERENCES `user` (`user_id`) ON DELETE CASCADE
 );

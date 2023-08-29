@@ -1,10 +1,9 @@
 import { assert, string } from 'superstruct';
 
-import { GenerateUUIDv7StringId, UUIDv7StringId } from './shared';
+import { GenerateUUIDv7StringId, UUIDv7StringId } from '../../shared/model';
 
 export class Chatmessage {
   private chatmessage_id;
-  private kind;
   private chatroom_id;
   private sender_id;
   private receiver_id;
@@ -12,12 +11,11 @@ export class Chatmessage {
   private image_id;
   private video_id;
   // Timestamps -- handled by MySQL
-  private created_at: Date | null = null;
-  private updated_at: Date | null = null;
+  //private created_at: Date | null = null;  // not needed?
+  //private updated_at: Date | null = null;  // not needed?
 
   private constructor(params: ConstructorParams) {
     this.chatmessage_id = UUIDv7StringId(params.chatmessage_id);
-    this.kind           = Kind(params.kind);
     this.chatroom_id    = UUIDv7StringId(params.chatroom_id);
     this.sender_id      = Username(params.sender_id);    // ALSO ALLOW SOCKETS ?
     this.receiver_id    = Username(params.receiver_id);  // ALSO ALLOW SOCKETS ?
@@ -28,20 +26,32 @@ export class Chatmessage {
 
   static create(params: CreateParams) {
     const chatmessage_id = GenerateUUIDv7StringId();
-
-    const chatMessage = new Chatmessage({...params, chatmessage_id});
-
-    return chatMessage;
+    return new Chatmessage({...params, chatmessage_id});
   }
 
   //static update(params: UpdateParams) {}
+
+  getDTO() {
+    return {
+      chatmessage_id: this.chatmessage_id,
+      chatroom_id:    this.chatroom_id,
+      sender_id:      this.sender_id,
+      receiver_id:    this.receiver_id,
+      content:        this.content,
+      image_id:       this.image_id,
+      video_id:       this.video_id
+    };
+  }
 }
+
+export const PRIVATE = "private" as const;
+export const PUBLIC  = "public" as const;
 
 export function Kind(kind: typeof PRIVATE | typeof PUBLIC) {
   if (kind === "private" || kind === "public") {
     return kind;
   }
-  throw new Error ("Chat message kind must be 'private' or 'public'");
+  throw new Error ("Chatmessage kind must be 'private' or 'public'");
 }
 
 export function Username(username: string) {
@@ -64,8 +74,7 @@ export function Content(content: string) {
 }
 
 export type CreateParams = {
-  kind:        typeof PRIVATE | typeof PUBLIC;
-  chatroom_id: string;  // make optional and provide default?
+  chatroom_id: string;
   sender_id:   string;
   receiver_id: string;
   content:     string;
@@ -78,6 +87,3 @@ export type UpdateParams = CreateParams & {
 }
 
 export type ConstructorParams = UpdateParams;
-
-export const PRIVATE = "private" as const;
-export const PUBLIC  = "public" as const;

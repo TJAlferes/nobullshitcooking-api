@@ -1,4 +1,4 @@
-import { MySQLRepo } from './MySQL';
+import { MySQLRepo } from "../../shared/MySQL";
 
 export class ChatMessageRepo extends MySQLRepo implements IChatMessageRepo {
   async insert(params: InsertParams) {
@@ -39,5 +39,6 @@ type InsertParams = {
   sender_id:      string;
   receiver_id:    string;
   content:        string;
-  //image_url:      string;
+  //image_id:       string;
+  //video_id:       string;
 };

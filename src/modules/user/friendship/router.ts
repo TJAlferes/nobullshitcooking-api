@@ -1,16 +1,14 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
-import { UserFriendshipController }    from './controller';
-import { catchExceptions, userIsAuth } from '../../../utils';
+import { catchExceptions, userIsAuth }            from '../../../utils';
+import { userFriendshipController as controller } from './controller';
 
 const router = Router();
 
 // for /user/friendship/...
 
 export function userFriendshipRouter() {
-  const controller = new UserFriendshipController();
-
   router.post(  '/',        userIsAuth,                     catchExceptions(controller.view));
   router.post(  '/create',  userIsAuth, sanitize('friend'), catchExceptions(controller.create));
   router.put(   '/accept',  userIsAuth, sanitize('friend'), catchExceptions(controller.accept));

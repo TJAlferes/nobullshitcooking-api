@@ -237,11 +237,11 @@ export function appServer({ sessionClient, pubClient, subClient }: RedisClients)
 export type ModifiedSession = Session & {
   authenticated: boolean;
   staffInfo?: {
-    id:        string;
+    staff_id:  string;
     staffname: string;
   };
   userInfo?: {
-    id:       string;
+    user_id:  string;
     username: string;
   };
 };

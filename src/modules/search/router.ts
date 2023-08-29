@@ -55,7 +55,7 @@ function querySanitizer(params: string | string[]) {  // sanitizeParams ?
     .optional({
       nullable:   true,
       checkFalsy: true
-    );
+    });
 }
 
 const sanitizeTerm              = query('term').trim().escape().notEmpty();
