@@ -70,12 +70,12 @@ CREATE TABLE video (
 --==============================================================================
 
 CREATE TABLE chatgroup (
-  `chatroom_id`   CHAR(36)    PRIMARY KEY,
-  `owner_id`      CHAR(36)    NOT NULL,
-  `chatroom_name` VARCHAR(32) NOT NULL,
-  `invite_code`   CHAR(36)    NOT NULL,
-  `created_at`    TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
-  `updated_at`    TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `chatroom_id`    CHAR(36)    PRIMARY KEY,
+  `owner_id`       CHAR(36)    NOT NULL,
+  `chatgroup_name` VARCHAR(32) NOT NULL,
+  `invite_code`    CHAR(36)    NOT NULL,
+  `created_at`     TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`     TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (`owner_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
 );
 

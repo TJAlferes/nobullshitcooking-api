@@ -16,7 +16,11 @@ export const userAuthenticationController = {
     const userRepo                  = new UserRepo();
     const userAuthenticationService = new UserAuthenticationService(userRepo);
 
-    const username = await userAuthenticationService.login({email, password, session: req.session});
+    const username = await userAuthenticationService.login({
+      email,
+      password,
+      session: req.session
+    });
 
     return res.json({message: 'Logged in.', username});
   },

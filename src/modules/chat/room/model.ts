@@ -1,28 +1,35 @@
 import { assert, string } from 'superstruct';
 
-import { GenerateUUIDv7StringId, UUIDv7StringId } from './shared';
+import { GenerateUUIDv7StringId, UUIDv7StringId } from "../../shared/model";
 
 export class Chatroom {
   private chatroom_id;
-  private owner_id;
+  private chatgroup_id;
   private chatroom_name;
   // Timestamps -- handled by MySQL
-  private created_at: Date | null = null;
-  private updated_at: Date | null = null;
+  //private created_at: Date | null = null;  // not needed?
+  //private updated_at: Date | null = null;  // not needed?
 
   private constructor(params: ConstructorParams) {
     this.chatroom_id   = UUIDv7StringId(params.chatroom_id);
-    this.owner_id      = UUIDv7StringId(params.owner_id);
+    this.chatgroup_id  = UUIDv7StringId(params.chatgroup_id);
     this.chatroom_name = ChatroomName(params.chatroom_name);
   }
 
   static create(params: CreateParams) {
     const chatroom_id = GenerateUUIDv7StringId();
-    const chatRoom = new Chatroom({...params, chatroom_id});
-    return chatRoom;  // only return the id?
+    return new Chatroom({...params, chatroom_id});  // only return the id?
   }
 
   //static update(params: UpdateParams) {}
+
+  getDTO() {
+    return {
+      chatroom_id:   this.chatroom_id,
+      chatgroup_id:  this.chatgroup_id,
+      chatroom_name: this.chatroom_name
+    };
+  }
 }
 
 export function ChatroomName(name: string) {
@@ -37,12 +44,12 @@ export function ChatroomName(name: string) {
 }
 
 type CreateParams = {
-  owner_id:      string;
+  chatgroup_id:  string;
   chatroom_name: string;
 };
 
 type UpdateParams = CreateParams & {
-  chatroom_id:   string;
+  chatroom_id: string;
 };
 
 type ConstructorParams = UpdateParams;

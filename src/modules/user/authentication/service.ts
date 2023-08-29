@@ -1,10 +1,9 @@
 import bcrypt from 'bcrypt';
 
+import { ModifiedSession } from '../../../app';
 import { Email, Password } from '../model';
 import { IUserRepo }       from '../repo';
 //crypto.timingSafeEqual() ???
-
-// DRY the repeated validation logic
 
 export class UserAuthenticationService {
   private readonly repo: IUserRepo;
@@ -19,52 +18,55 @@ export class UserAuthenticationService {
     return encryptedPassword;
   }
 
-  async comparePassword(password: string, currentHash: string) {  // no, this should get it from repo itself
-    const validPassword = Password(password);
-    const currentHash = await this.repo.getPasswor
+  async isCorrectPassword(params: IsCorrectPasswordParams) {
+    const email = Email(params.email);
+    const password = Password(params.password);
+    const user = await this.repo.getByEmail(email);
     const correctPassword = await bcrypt.compare(password, user.password);
     if (!correctPassword) {
       throw new Error("Incorrect email or password.");
     }
   }
 
-  async login(params: LoginParams) {
-    const email = Email(params.email);
-    const user = await this.repo.getByEmail(email);
+  async doesUserExist(email: string) {
+    const validEmail = Email(email);
+    const user = await this.repo.getByEmail(validEmail);
     if (!user) {
       throw new Error("Incorrect email or password.");
     }
-  
+    return user;
+  }
+
+  async isUserConfirmed(email: string) {
+    const validEmail = Email(email);
+    const user = await this.repo.getByEmail(validEmail);
     const confirmed = user.confirmation_code === null;
     if (!confirmed) {
       throw new Error("Please check your email for your confirmation code.");
     }
+  }
 
-    this.comparePassword(params.password);
-    const password = Password(params.password);
-    const correctPassword = await bcrypt.compare(password, user.password);
-    if (!correctPassword) {
-      throw new Error("Incorrect email or password.");
-    }
+  async login({ email, password, session }: LoginParams) {
+    const user = await this.doesUserExist(email);
+    await this.isUserConfirmed(email);
+    await this.isCorrectPassword({email, password});
 
-    params.session.userInfo = {
-      id:       user.id,
+    session.userInfo = {
+      id:       user.user_id,
       username: user.username
     };
   
     return user.username;
   }
-
-  // logout is handled in the controller???
 }
 
 type LoginParams = {
   email:    string;
   password: string;
-  session: 
+  session:  ModifiedSession;
 };
 
-type ComparePasswordParams = {
+type IsCorrectPasswordParams = {
+  email:    string;
   password: string;
-  hash:     string;
 };

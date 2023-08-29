@@ -4,7 +4,8 @@ import compression                                  from 'compression';
 import RedisStore                                   from "connect-redis"
 import cors                                         from 'cors';
 import express, { Request, Response, NextFunction } from 'express';
-import expressRateLimit                             from 'express-rate-limit';  // Use https://github.com/animir/node-rate-limiter-flexible instead?
+// Use https://github.com/animir/node-rate-limiter-flexible instead?
+import expressRateLimit                             from 'express-rate-limit';
 import expressSession, { Session }                  from 'express-session';
 import helmet                                       from 'helmet';
 import hpp                                          from 'hpp';
@@ -12,24 +13,39 @@ import { createServer, IncomingMessage }            from 'http';
 import { Redis }                                    from 'ioredis';
 import { Server as SocketIOServer, Socket }         from 'socket.io';
 import { createAdapter, RedisAdapter }              from '@socket.io/redis-adapter';
-const pino = require('pino-http')();
+const pino = require('pino-http')();  // logger
 
-import { sendMessage, sendPrivateMessage, joinRoom, disconnecting, getOnlineFriends, getUsersInRoom, rejoinRoom, Message } from '../app/chat';
-import { FriendshipRepo, UserRepo, ChatMessageRepo, ChatRoomRepo, ChatRoomUserRepo } from './repos/mysql';
-//import { ChatStore }        from './repos/redis';
-import { routesInit }       from './routes';
+import {
+  sendMessage,
+  sendPrivateMessage,
+  joinRoom,
+  disconnecting,
+  getOnlineFriends,
+  getUsersInRoom,
+  rejoinRoom
+} from '';
+import type { Message Chatmessage
+import {
+  FriendshipRepo,
+  UserRepo,
+  ChatMessageRepo,
+  ChatRoomRepo,
+  ChatRoomUserRepo,
+  ChatGroupRepo,
+  ChatGroupUserRepo
+} from './repos/mysql';
+import { routesInit } from './router';
 
 export function appServer({ sessionClient, pubClient, subClient }: RedisClients) {
-  const app =        express();
+  const app = express();
+
   const httpServer = createServer(app);
 
-  if (app.get('env') === 'production') app.set('trust proxy', 1);  // trust first proxy  // insufficient?
+  if (app.get('env') === 'production') {
+    app.set('trust proxy', 1);  // trust first proxy  // insufficient?
+  }
 
-  /*
-
-  Express Middleware
-  
-  */
+  // Express Middleware ========================================================
   
   const redisStore = new RedisStore({client: sessionClient});
   const sessionMiddleware = expressSession({
@@ -51,10 +67,13 @@ export function appServer({ sessionClient, pubClient, subClient }: RedisClients)
     unset:             "destroy"
   });
 
-  app.use(pino);
+  app.use(pino);  // logger
   app.use(express.json());
   app.use(express.urlencoded({extended: true}));
-  app.use(expressRateLimit({max: 100, windowMs: 1 * 60 * 1000}));  // limit each IP address's requests per minute
+  app.use(expressRateLimit({
+    max: 100,
+    windowMs: 1 * 60 * 1000
+  }));  // limit each IP address's requests per minute
   app.use(sessionMiddleware);
   app.use(cors({
     credentials: true,
@@ -78,38 +97,38 @@ export function appServer({ sessionClient, pubClient, subClient }: RedisClients)
       'sorts',
     ]
   }));
-  //app.use(csurf());  // no longer maintained! is csrf protection still necessary? if so, find a different solution
+  // no longer maintained!
+  // is csrf protection still necessary? if so, find a different solution
+  //app.use(csurf());
   app.use(compression());
 
-  /*
-
-  Routes
-
-  */
+  // Routes
 
   routesInit(app);
-  
-  /*
 
-  Socket.IO
+  // Socket.IO
 
-  */
-
-  const io = new SocketIOServer<IClientToServerEvents, IServerToClientEvents>(httpServer, {
-    cors: {
-      allowedHeaders: ["sessionId", "userInfo"],
-      credentials:    true,
-      methods:        ["GET", "POST"],
-      origin:         ["https://nobullshitcooking.com", "http://localhost:3000", "http://localhost:8080"]
-    },
-    pingTimeout: 60000
-  });
+  const io = new SocketIOServer<ClientToServerEvents, ServerToClientEvents>(
+    httpServer, 
+    {
+      cors: {
+        allowedHeaders: ["sessionId", "userInfo"],
+        credentials:    true,
+        methods:        ["GET", "POST"],
+        origin:         [
+          "https://nobullshitcooking.com",
+          "http://localhost:3000",
+          "http://localhost:8080"
+        ]
+      },
+      pingTimeout: 60000
+    }
+  );
 
   io.adapter(createAdapter(pubClient, subClient));
 
   // new way
   io.engine.use(sessionMiddleware);
-
   // old way
   /*io.use((socket, next) => {
     sessionMiddleware(socket.request as Request, {} as Response, next as NextFunction);
@@ -145,27 +164,44 @@ export function appServer({ sessionClient, pubClient, subClient }: RedisClients)
 
     socket.join(sessionId);
 
-    /*
+    // Handlers for our events
 
-    Handlers for our events  // TO DO: no longer appear online for users blocked and friends deleted during that same session (so emit ShowOffline)
+    // TO DO: no longer appear online for
+    // users blocked and friends deleted
+    // during that same session (so emit ShowOffline)
 
-    */
+    socket.on('GetOnlineFriends', async () => {
+      await getOnlineFriends({id, username, socket, chatStore, friendship});
+    });
 
-    socket.on('GetOnlineFriends',   async () =>                         await getOnlineFriends({id, username, socket, chatStore, friendship}));
-    socket.on('GetUsersInRoom',     async (room) =>                     await getUsersInRoom({room, socket, chatStore}));
-    socket.on('JoinRoom',           async (room: string) =>             await joinRoom({room, sessionId, username, socket, chatStore}));
-    socket.on('RejoinRoom',         async (room: string) =>             await rejoinRoom({room, username, socket, chatStore}));
-    socket.on('SendMessage',        async (text: string) =>             await sendMessage({from: username, text, sessionId, socket, chatStore}));
-    socket.on('SendPrivateMessage', async (text: string, to: string) => await sendPrivateMessage({to, from: username, text, socket, chatStore, friendship, user}));
+    socket.on('GetUsersInRoom', async (room) => {
+      await getUsersInRoom({room, socket, chatStore});
+    });
 
-    /*
+    socket.on('JoinRoom', async (room: string) => {
+      await joinRoom({room, sessionId, username, socket, chatStore});
+    });
 
-    Handlers for Socket.IO reserved events
+    socket.on('RejoinRoom', async (room: string) => {
+      await rejoinRoom({room, username, socket, chatStore});
+    });
 
-    */
+    socket.on('SendMessage', async (text: string) => {
+      await sendMessage({from: username, text, sessionId, socket, chatStore});
+    });
 
-    socket.on('error',         (error: Error) => console.log('error: ', error));
-    socket.on('disconnecting', async (reason: string) => await disconnecting({sessionId, id, username, socket, chatStore, friendship}));
+    socket.on('SendPrivateMessage', async (text: string, to: string) => {
+      await sendPrivateMessage({to, from: username, text, socket, chatStore, friendship, user});
+    });
+
+    // Handlers for Socket.IO reserved events
+
+    socket.on('error', (error: Error) => console.log('error: ', error));
+
+    socket.on('disconnecting', async (reason: string) => {
+      await disconnecting({sessionId, id, username, socket, chatStore, friendship});
+    });
+
     /*socket.on('disconnect',    async (reason: string) => {
       const sockets = await io.in(sessionId).fetchSockets();
       if (sockets.length === 0) {  // no more active connections for the given user
@@ -174,11 +210,7 @@ export function appServer({ sessionClient, pubClient, subClient }: RedisClients)
     });*/
   });
 
-  /*
-
-  Rejections, Errors
-
-  */
+  // Rejections, Exceptions, Errors
 
   process.on('unhandledRejection', (reason, promise: Promise<any>) => {
     console.log('Unhandled Rejection at: ', reason);
@@ -196,38 +228,29 @@ export function appServer({ sessionClient, pubClient, subClient }: RedisClients)
     });
   }
 
-  return {httpServer, io};
+  return {
+    httpServer,
+    io
+  };
 }
+
+export type ModifiedSession = Session & {
+  authenticated: boolean;
+  staffInfo?: {
+    id:        string;
+    staffname: string;
+  };
+  userInfo?: {
+    id:       string;
+    username: string;
+  };
+};
 
 declare module "http" {
   interface IncomingMessage {
-    session: Session & {
-      authenticated: boolean;
-      staffInfo?: {
-        id:        string;
-        staffname: string;
-      };
-      userInfo?: {
-        id:       string;
-        username: string;
-      };
-    }
+    session: ModifiedSession;
   }
 }
-
-//interface Session {}
-/*declare module "express-session" {
-  interface SessionData {
-    staffInfo?: {
-      id: number;
-      staffname: string;
-    };
-    userInfo?: {
-      id: number;
-      username: string;
-    };
-  }
-}*/
 
 export type RedisClients = {
   pubClient:     Redis;  // | Cluster;
@@ -239,7 +262,7 @@ export type RedisClients = {
 //import { ExtendedError } from 'socket.io/dist/namespace';
 //type Next = (err?: ExtendedError | undefined) => void;
 
-interface IClientToServerEvents {
+interface ClientToServerEvents {
   GetOnlineFriends:   () =>                         void;
   GetUsersInRoom:     (room: string) =>             void;
   JoinRoom:           (room: string) =>             void;
@@ -249,7 +272,7 @@ interface IClientToServerEvents {
   //disconnecting
 }
 
-interface IServerToClientEvents {
+interface ServerToClientEvents {
   OnlineFriends:        (friends: string[]) =>             void;
   FriendCameOnline:     (friend: string) =>                void;
   FriendWentOffline:    (friend: string) =>                void;
@@ -257,7 +280,7 @@ interface IServerToClientEvents {
   UsersInRoomRefetched: (users: string[], room: string) => void;
   UserJoinedRoom:       (user: string) =>                  void;
   UserLeftRoom:         (user: string) =>                  void;
-  Message:              (message: Message) =>              void;  // MessageSent ???
-  PrivateMessage:       (message: Message) =>              void;  // PrivateMessageSent ???
-  FailedPrivateMessage: (feedback: string) =>              void;
+  MessageSent:          (message: Message) =>              void;
+  PrivateMessageSent:   (message: Message) =>              void;
+  PrivateMessageFailed: (feedback: string) =>              void;
 }
