@@ -1,6 +1,8 @@
-import { MySQLRepo } from './MySQL';
+import { RowDataPacket } from "mysql2";
 
-export class ChatRoomUserRepo extends MySQLRepo {
+import { MySQLRepo } from "../../../shared/MySQL";
+
+export class ChatroomUserRepo extends MySQLRepo {
   async insert() {
     const sql = `INSERT INTO chatroom_user (chatroom_id, user_id) VALUES (?, ?)`;
   }
@@ -15,7 +17,7 @@ export class ChatRoomUserRepo extends MySQLRepo {
     `;
   }
 
-  async delete() {
+  async deleteOne() {
     const sql = `DELETE FROM chatroom_user WHERE LIMIT 1`;
   }
 }

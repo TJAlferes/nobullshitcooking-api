@@ -70,7 +70,7 @@ CREATE TABLE video (
 --==============================================================================
 
 CREATE TABLE chatgroup (
-  `chatroom_id`    CHAR(36)    PRIMARY KEY,
+  `chatgroup_id`   CHAR(36)    PRIMARY KEY,
   `owner_id`       CHAR(36)    NOT NULL,
   `chatgroup_name` VARCHAR(32) NOT NULL,
   `invite_code`    CHAR(36)    NOT NULL,
