@@ -1,24 +1,30 @@
 import { Request, Response } from 'express';
 
+import { RecipeRepo }         from '../../recipe/repo';
+import { NOBSC_USER_ID }      from '../../shared/model';
 import { FavoriteRecipeRepo } from '../public/favorite-recipe/repo';
-import { RecipeRepo } from '../public/recipe/repo';  // TO DO: implement??? or just a service???
-import { UserRepo } from '../repo';
+import { UserRepo }           from '../repo';
 
 export const profileController = {
   async view(req: Request, res: Response) {
     const { username } = req.params;
 
-    const userRepo = new UserRepo();
-    const userExists = await userRepo.getByUsername(username);
-    if (!userExists) return res.send({message: 'User does not exist.'});
+    const { getByUsername } = new UserRepo();
+    const userExists = await getByUsername(username);
+    if (!userExists) {
+      return res.send({message: 'User not found.'});
+    }
 
     const { user_id } = userExists;
 
-    const recipeRepo = new RecipeRepo();
-    const publicRecipes = await recipeRepo.viewAll(user_id, 1);
+    const { overviewAll } = new RecipeRepo();
+    const publicRecipes = await overviewAll({
+      author_id: user_id,
+      owner_id:  NOBSC_USER_ID
+    });
 
-    const favoriteRecipeRepo = new FavoriteRecipeRepo();
-    const favoriteRecipes = await favoriteRecipeRepo.viewByUserId(user_id);
+    const { viewByUserId } = new FavoriteRecipeRepo();
+    const favoriteRecipes = await viewByUserId(user_id);
     
     return res.send({
       message: 'Success.',

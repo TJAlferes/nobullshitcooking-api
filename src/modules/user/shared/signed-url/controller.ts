@@ -14,9 +14,7 @@ export const userSignedUrlController = {
   s3RequestPresign: async function(req: Request, res: Response) {
     const folder: Folder = req.body.folder;
     const filename       = slugify(req.body.filename);  // name/fullname/title
-
-    // TO DO: use superstruct to validate folder and filename
-
+    // TO DO: validate folder and filename
     const s3 = new S3Client({
       credentials: {
         accessKeyId:     USER_ACCESS_KEY_ID,
@@ -24,54 +22,14 @@ export const userSignedUrlController = {
       }, 
       region
     });
-
     const objectKey = (folder === AVATAR)
       ? `${folder}${req.session.userInfo!.username}`
       : `${folder}${req.session.userInfo!.username}/${filename}-${uuidv7()}`;
 
-    if ( (folder === AVATAR)
-      || (folder === PRIVATE_EQUIPMENT)
-      || (folder === PRIVATE_INGREDIENT)
-    ) {
-      const fullSignature = await getSignedUrl(s3, new PutObjectCommand({
-        Bucket: USER_BUCKET,
-        Key: objectKey,
-        ContentType: "image/jpeg"
-      }));
-
-      const tinySignature = await getSignedUrl(s3, new PutObjectCommand({
-        Bucket: USER_BUCKET,
-        Key: `${objectKey}-tiny`,
-        ContentType: "image/jpeg"
-      }));
-
-      return res.json({
-        success: true,
-        fullSignature,
-        tinySignature,
-        objectKey
-      });
-    }
-
     if ( (folder === PUBLIC_RECIPE) || (folder === PRIVATE_RECIPE) ) {
-      const fullSignature =  await getSignedUrl(s3, new PutObjectCommand({
-        Bucket: USER_BUCKET,
-        Key: objectKey,
-        ContentType: "image/jpeg"
-      }));
-
-      const thumbSignature = await getSignedUrl(s3, new PutObjectCommand({
-        Bucket: USER_BUCKET,
-        Key: `${objectKey}-thumb`,
-        ContentType: "image/jpeg"
-      }));
-
-      const tinySignature =  await getSignedUrl(s3, new PutObjectCommand({
-        Bucket: USER_BUCKET,
-        Key: `${objectKey}-tiny`,
-        ContentType: "image/jpeg"
-      }));
-
+      const fullSignature  = await sign(s3, objectKey, "full");
+      const thumbSignature = await sign(s3, objectKey, "thumb");
+      const tinySignature  = await sign(s3, objectKey, "tiny");
       return res.json({
         success: true,
         fullSignature,
@@ -81,19 +39,28 @@ export const userSignedUrlController = {
       });
     }
 
-    if ( folder === PUBLIC_RECIPE_COOKING
-      || folder === PUBLIC_RECIPE_EQUIPMENT
-      || folder === PUBLIC_RECIPE_INGREDIENTS
-      || folder === PRIVATE_RECIPE_COOKING
-      || folder === PRIVATE_RECIPE_EQUIPMENT
-      || folder === PRIVATE_RECIPE_INGREDIENTS
+    if ( (folder === AVATAR)
+      || (folder === PRIVATE_EQUIPMENT)
+      || (folder === PRIVATE_INGREDIENT)
     ) {
-      const fullSignature = await getSignedUrl(s3, new PutObjectCommand({
-        Bucket: USER_BUCKET,
-        Key: objectKey,
-        ContentType: "image/jpeg"
-      }));
+      const fullSignature = await sign(s3, objectKey, "full");
+      const tinySignature = await sign(s3, objectKey, "tiny");
+      return res.json({
+        success: true,
+        fullSignature,
+        tinySignature,
+        objectKey
+      });
+    }
 
+    if ( (folder === PUBLIC_RECIPE_COOKING)
+      || (folder === PUBLIC_RECIPE_EQUIPMENT)
+      || (folder === PUBLIC_RECIPE_INGREDIENTS)
+      || (folder === PRIVATE_RECIPE_COOKING)
+      || (folder === PRIVATE_RECIPE_EQUIPMENT)
+      || (folder === PRIVATE_RECIPE_INGREDIENTS)
+    ) {
+      const fullSignature  = await sign(s3, objectKey, "full");
       return res.json({
         success: true,
         fullSignature,
@@ -109,6 +76,21 @@ function slugify(str: string): string {
     .toLowerCase()
     .replace(/\s+/g, '-')
     .replace(/[^\w-]+/g, '');
+}
+
+async function sign(s3: S3Client, objectKey: string, imageSize: string) {
+  let Key = "";
+  if (imageSize === "full")  Key = objectKey;
+  if (imageSize === "thumb") Key = `${objectKey}-thumb`;
+  if (imageSize === "tiny")  Key = `${objectKey}-tiny`;
+
+  const signature = await getSignedUrl(s3, new PutObjectCommand({
+    Bucket: USER_BUCKET,
+    Key,
+    ContentType: "image/jpeg"
+  }));
+
+  return signature;
 }
 
 type Folder =
@@ -138,15 +120,10 @@ const PRIVATE_RECIPE_EQUIPMENT   = "nobsc/image/user/private/recipe-equipment/" 
 const PRIVATE_RECIPE_INGREDIENTS = "nobsc/image/user/private/recipe-ingredients/" as const;
 
 /*
-    
-    objectKey =
-    nobsc/user/public/avatar/${username}.jpeg
-    nobsc/user/public/recipe/${username}/${title}-${uuidv4()}.jpeg
-
-    nobsc/user/private/equipment/${username}/${name}-${uuidv4()}.jpeg
-    nobsc/user/private/ingredient/${username}/${fullname}-${uuidv4()}.jpeg
-    nobsc/user/private/recipe/${username}/${title}-${uuidv4()}.jpeg
-
-    TO DO: you have Private and Public, but you should also make (Accepted)FriendsOnly
-
-    */
+objectKey =
+nobsc/user/public/avatar/${username}.jpeg
+nobsc/user/public/recipe/${username}/${title}-${uuidv4()}.jpeg
+nobsc/user/private/equipment/${username}/${name}-${uuidv4()}.jpeg
+nobsc/user/private/ingredient/${username}/${fullname}-${uuidv4()}.jpeg
+nobsc/user/private/recipe/${username}/${title}-${uuidv4()}.jpeg
+*/

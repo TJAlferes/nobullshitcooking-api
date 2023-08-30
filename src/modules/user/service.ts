@@ -1,3 +1,4 @@
+import { NOBSC_USER_ID, UNKNOWN_USER_ID } from '../shared/model';
 import { User }                      from './model';
 import { UserRepoInterface }         from './repo';
 import { UserAuthenticationService } from './authentication/service';
@@ -98,10 +99,11 @@ export class UserService {
     await this.repo.update(user);
   }
 
-  async recoverAccount() {}
+  //async recoverAccount() {}
 
-  /*async delete(userId: string) {
-    if (userId === 1) return;  // IMPORTANT: Never allow user 1, NOBSC, to be deleted.
+  async delete(user_id: string) {
+    if (user_id === NOBSC_USER_ID) return;    // IMPORTANT: Never allow this user to be deleted.
+    if (user_id === UNKNOWN_USER_ID) return;  // IMPORTANT: Never allow this user to be deleted.
 
     // NOTE: Due to MySQL foreign keys, deletes must be in this order.
     // TO DO: Let MySQL ON DELETE CASCADE handle most of this.
@@ -130,7 +132,7 @@ export class UserService {
 
     // ... Then delete the user.
     await this.repo.delete(userId);
-  }*/
+  }
 }
 
 type CreateParams = {

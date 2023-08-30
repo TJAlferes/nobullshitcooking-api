@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
-import { UserConfirmationService } from './service';
 import { UserRepo }                from '../repo';
+import { UserConfirmationService } from './service';
 
 export const userConfirmationController = {
   async confirm(req: Request, res: Response) {

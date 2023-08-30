@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 
 import { UserRepo }       from '../repo';
-import { FriendshipRepo } from './repo';
 import { Friendship }     from './model';
+import { FriendshipRepo } from './repo';
 
 export const userFriendshipController = {
   async viewAll(req: Request, res: Response) {

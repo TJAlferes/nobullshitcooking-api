@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
+import { catchExceptions }                          from '../../../utils';
 import { userConfirmationController as controller } from './controller';
-import { catchExceptions } from '../../../utils';
 
 const router = Router();
 

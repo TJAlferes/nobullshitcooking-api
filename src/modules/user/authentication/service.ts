@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt';
 
-import { ModifiedSession } from '../../../app';
-import { Email, Password } from '../model';
-import { UserRepoInterface }       from '../repo';
+import { ModifiedSession }   from '../../../app';
+import { Email, Password }   from '../model';
+import { UserRepoInterface } from '../repo';
 //crypto.timingSafeEqual() ???
 
 export class UserAuthenticationService {

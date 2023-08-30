@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 
-import { UserAuthenticationService } from './service';
-import { UserRepo }                  from '../repo';
 import { io }                        from '../../../index';
+import { UserRepo }                  from '../repo';
+import { UserAuthenticationService } from './service';
 
 export const userAuthenticationController = {
   async login(req: Request, res: Response) {
@@ -13,10 +13,10 @@ export const userAuthenticationController = {
     
     const { email, password } = req.body.userInfo;
 
-    const userRepo                  = new UserRepo();
-    const userAuthenticationService = new UserAuthenticationService(userRepo);
+    const repo = new UserRepo();
+    const { login } = new UserAuthenticationService(repo);
 
-    const username = await userAuthenticationService.login({
+    const username = await login({
       email,
       password,
       session: req.session

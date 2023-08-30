@@ -1,11 +1,8 @@
-import bcrypt     from 'bcrypt';
-import { uuidv7 } from 'uuidv7';
-
-import { UUIDv7StringId }        from '../../shared/model';
-import { Email, Password, User } from '../model';
-import { UserRepoInterface }     from '../repo';
-import { emailUser }             from '../shared/simple-email-service';
+import { UUIDv7StringId }            from '../../shared/model';
 import { UserAuthenticationService } from '../authentication/service';
+import { emailUser }                 from '../shared/simple-email-service';
+import { User }                      from '../model';
+import { UserRepoInterface }         from '../repo';
 //crypto.timingSafeEqual() ???
 
 export class UserConfirmationService {
