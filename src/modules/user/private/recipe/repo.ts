@@ -2,6 +2,7 @@ import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
 import { MySQLRepo } from '../../../shared/MySQL';
 
+// MERGE WITH RecipeRepo???
 export class PrivateRecipeRepo extends MySQLRepo implements PrivateRecipeRepoInterface {
   async viewOneByRecipeId(params: ViewOneByRecipeIdParams) {
     const sql = `${viewOneSQL} AND r.recipe_id = ?`;

@@ -31,7 +31,7 @@ export function publicRecipeRouter() {
 
   router.post(
     '/all',
-    catchExceptions(controller.viewAll)
+    catchExceptions(controller.overviewAll)
   );
 
   router.post(

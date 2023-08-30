@@ -19,12 +19,26 @@ export class RecipeEquipmentService {
 
     await this.repo.insert({placeholders, recipe_equipment});
   }
+
+  async update({ recipe_id, required_equipment }: UpdateParams) {
+    if (!required_equipment.length) return;
+
+    const placeholders = '(?, ?, ?),'.repeat(required_equipment.length).slice(0, -1);
+
+    const recipe_equipment = required_equipment.map(re => 
+      RecipeEquipment.create({recipe_id, ...re}).getDTO()
+    );
+
+    await this.repo.update({recipe_id, placeholders, recipe_equipment});
+  }
 }
 
 type CreateParams = {
   recipe_id:          string;
   required_equipment: RequiredEquipment[];
 };
+
+type UpdateParams = CreateParams;
 
 type RequiredEquipment = {
   amount?:      number;

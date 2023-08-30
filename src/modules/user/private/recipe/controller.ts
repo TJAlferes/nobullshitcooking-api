@@ -8,22 +8,23 @@ import { Recipe }               from '../../../recipe/model';
 import { PrivateRecipeRepo }    from './repo';
 import { RecipeService }        from '../../../recipe/service';
 
+// MERGE WITH recipeController???
 export const privateRecipeController = {
-  /*async viewAll(req: Request, res: Response) {
+  async overviewAll(req: Request, res: Response) {
     const author_id = req.session.userInfo!.id;
     const owner_id  = req.session.userInfo!.id;
 
-    const repo = new PrivateRecipeRepo();
-    const rows = await repo.viewAll(owner_id);
+    const repo = new RecipeRepo();
+    const rows = await repo.overviewAll({author_id, owner_id});
 
     return res.send(rows);
-  },*/
+  },
 
   async viewOne(req: Request, res: Response) {
     const title     = unslugify(req.params.title);
     const author    = unslugify(req.params.usename);
-    const author_id = req.session.userInfo!.id;
-    const owner_id  = req.session.userInfo!.id;
+    const author_id = req.session.userInfo!.user_id;
+    const owner_id  = req.session.userInfo!.user_id;
 
     const repo = new PrivateRecipeRepo();
     const row = await repo.viewOne({title, owner_id});
@@ -115,8 +116,8 @@ export const privateRecipeController = {
     }= req.body.recipeInfo;
     const recipe_type_id = Number(req.body.recipeInfo.recipe_type_id);
     const cuisine_id     = Number(req.body.recipeInfo.cuisine_id);
-    const author_id      = req.session.userInfo!.id;
-    const owner_id       = req.session.userInfo!.id;
+    const author_id      = req.session.userInfo!.user_id;
+    const owner_id       = req.session.userInfo!.user_id;
 
     const updatingRecipe = {
       recipe_id,

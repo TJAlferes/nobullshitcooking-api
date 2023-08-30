@@ -8,6 +8,7 @@ import { Recipe }               from '../../../recipe/model';
 import { PublicRecipeRepo }     from './repo';
 import { RecipeService }        from '../../../recipe/service';
 
+// MERGE WITH recipeController???
 export const publicRecipeController = {
   async viewAllTitles(req: Request, res: Response) {
     const repo = new PublicRecipeRepo();
@@ -16,7 +17,7 @@ export const publicRecipeController = {
     return res.send(rows);
   },  // for Next.js getStaticPaths
 
-  /*async viewAll(req: Request, res: Response) {
+  async overviewAll(req: Request, res: Response) {
     const owner_id = req.session.userInfo!.id;
 
     const recipeRepo = new PublicRecipeRepo();
@@ -25,7 +26,7 @@ export const publicRecipeController = {
     //const rows = await recipeRepo.viewAll({author_id, owner_id});
 
     return res.send(rows);
-  },*/
+  },
 
   async viewOne(req: Request, res: Response) {
     const title     = unslugify(req.params.title);

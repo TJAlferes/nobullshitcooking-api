@@ -3,6 +3,7 @@ import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 import { MySQLRepo }       from '../../../shared/MySQL';
 import { UNKNOWN_USER_ID } from '../../../shared/model';
 
+// MERGE WITH RecipeRepo???
 export class PublicRecipeRepo extends MySQLRepo implements PublicRecipeRepoInterface {
   async viewAllTitles() {
     const sql = `SELECT title FROM public_recipe`;

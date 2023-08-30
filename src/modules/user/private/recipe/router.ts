@@ -32,7 +32,7 @@ export function privateRecipeRouter() {
   router.post(
     '/all',
     userIsAuth,
-    catchExceptions(controller.viewAll)
+    catchExceptions(controller.overviewAll)
   );
 
   router.post(

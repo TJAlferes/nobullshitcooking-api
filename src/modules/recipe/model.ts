@@ -15,6 +15,7 @@ export class Recipe {
   private directions;
   // NO. DO NOT DO THIS. Query the recipe_image table to find images with this recipe_id
   // and have a column which shows its type and a column which shows its order (in that type)
+  // ... maybe okay for now? decide soon
   //private recipe_image_id;
   //private equipment_image_id;
   //private ingredients_image_id;

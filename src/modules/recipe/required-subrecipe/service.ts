@@ -21,12 +21,28 @@ export class RecipeSubrecipeService {
 
     await this.repo.insert({placeholders, recipe_subrecipes});
   }
+
+  async update({ recipe_id, required_subrecipes }: UpdateParams) {
+    if (!required_subrecipes.length) return;
+
+    const placeholders = '(?, ?, ?, ?),'
+      .repeat(required_subrecipes.length)
+      .slice(0, -1);  // use namedPlaceholders instead???
+
+    const recipe_subrecipes = required_subrecipes.map(rs =>
+      RecipeSubrecipe.create({recipe_id, ...rs}).getDTO()
+    );
+
+    await this.repo.update({recipe_id, placeholders, recipe_subrecipes});
+  }
 }
 
 type CreateParams = {
   recipe_id:           string;
   required_subrecipes: RequiredSubrecipe[];
 };
+
+type UpdateParams = CreateParams;
 
 type RequiredSubrecipe = {
   amount?:      number;

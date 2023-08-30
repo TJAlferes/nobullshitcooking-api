@@ -38,9 +38,9 @@ export const initialDataController = {
       recipe_types
     ] = await Promise.all([
       cuisineRepo.viewAll(),
-      equipmentRepo.overviewAll(owner_id),
+      equipmentRepo.overviewAll(owner_id),  // viewAll fine?
       equipmentTypeRepo.viewAll(),
-      ingredientRepo.overviewAll(owner_id),
+      ingredientRepo.overviewAll(owner_id),  // viewAll fine?
       ingredientTypeRepo.viewAll(),
       unitRepo.viewAll(),
       methodRepo.viewAll(),
