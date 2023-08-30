@@ -26,7 +26,7 @@ import { MySQLRepo } from '../../shared/MySQL';
 
 
 export class FriendshipRepo extends MySQLRepo implements FriendshipRepoInterface {
-  async getOneByFriendId(params: GetOneByFriendIdParams) {
+  async getOne(params: GetOneParams) {
     const sql = `
       SELECT status
       FROM friendship
@@ -89,15 +89,15 @@ export class FriendshipRepo extends MySQLRepo implements FriendshipRepoInterface
 }
 
 export interface FriendshipRepoInterface {
-  getOneByFriendId: (params: GetOneByFriendIdParams) => Promise<Friendship>;
-  viewAll:          (user_id: string) =>                Promise<FriendView[]>;
-  viewAllOfStatus:  (params: ViewAllOfStatusParams) =>  Promise<FriendView[]>;
-  insert:           (params: InsertParams) =>           Promise<void>;
-  update:           (params: UpdateParams) =>           Promise<void>;
-  delete:           (params: DeleteParams) =>           Promise<void>;
+  getOne:          (params: GetOneParams) =>          Promise<Friendship>;
+  viewAll:         (user_id: string) =>               Promise<FriendView[]>;
+  viewAllOfStatus: (params: ViewAllOfStatusParams) => Promise<FriendView[]>;
+  insert:          (params: InsertParams) =>          Promise<void>;
+  update:          (params: UpdateParams) =>          Promise<void>;
+  delete:          (params: DeleteParams) =>          Promise<void>;
 }
 
-type GetOneByFriendIdParams = {
+type GetOneParams = {
   user_id:   string;
   friend_id: string;
 };

@@ -5,12 +5,12 @@ import { UUIDv7StringId, GenerateUUIDv7StringId } from '../shared/model';
 export class User {
   private readonly user_id;
   private email;
-  private password;
+  private password;  // encrypted/hashed, not raw request body payload
   private username;
   private confirmation_code;
   // Timestamps -- handled by MySQL
-  private created_at: Date | null = null;
-  private updated_at: Date | null = null;
+  //private created_at: Date | null = null;  // not needed?
+  //private updated_at: Date | null = null;  // not needed?
   //private events: DomainEvent = [];
 
   private constructor(params: ConstructorParams) {
@@ -24,44 +24,33 @@ export class User {
   static create(params: CreateParams): User {
     const user_id           = GenerateUUIDv7StringId();
     const confirmation_code = GenerateUUIDv7StringId();
-
     const user = new User({...params, user_id, confirmation_code});
-
     //const event = new UserCreatedEvent(user.getId());  // email?
     //this.events.push(event);
-
     return user;
   }
 
   static update(params: UpdateParams): User {
     const user = new User(params);
-
     //const event = new UserUpdatedEvent(user.getId());  // email?
     //this.events.push(event);
-    
     return user;
   }
 
-  getEmail() {
-    return this.email;
-  }
-
-  getUsername() {
-    return this.username;
-  }
-
-  getConfirmationCode() {
-    return this.confirmation_code;
+  getDTO() {
+    return {
+      user_id:           this.user_id,
+      email:             this.email,
+      password:          this.password,
+      username:          this.username,
+      confirmation_code: this.confirmation_code
+    };
   }
 
   /*commandMethod(input, context) {
     // validate args, validate state transitions, record domain events
   }
-
-  queryMethod(): ReturnType {
-
-  }
-
+  queryMethod(): ReturnType {}
   releaseEvents(): DomainEvent[] {
     // return recorded domain events
   }*/
@@ -99,11 +88,14 @@ export function Username(username: string) {
 }
 
 export function ConfirmationCode(confirmation_code: string) {
-  assert(confirmation_code, defaulted(string(), null));  // IMPORTANT: double check this defaulted to null is not fucking things up
+  // IMPORTANT: double check this defaulted to null is not fucking things up
+  assert(confirmation_code, defaulted(string(), null));
   if (!confirmation_code) return null;
-  //const userRepo = new UserRepository(pool);
-  //const confirmed = exists.confirmation_code === null;
-  //if (!confirmed) return {feedback: "Please check your email for your confirmation code."};
+  /*const userRepo = new UserRepository(pool);
+  const confirmed = exists.confirmation_code === null;
+  if (!confirmed) return {
+    feedback: "Please check your email for your confirmation code."
+  };*/
   return confirmation_code;
 }
 

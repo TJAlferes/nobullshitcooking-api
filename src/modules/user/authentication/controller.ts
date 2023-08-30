@@ -6,7 +6,7 @@ import { io }                        from '../../../index';
 
 export const userAuthenticationController = {
   async login(req: Request, res: Response) {
-    const loggedIn = req.session.userInfo?.id;
+    const loggedIn = req.session.userInfo?.user_id;
     if (loggedIn) {
       return res.json({message: 'Already logged in.'});  // throw in this layer?
     }

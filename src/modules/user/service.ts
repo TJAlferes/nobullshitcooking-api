@@ -1,60 +1,63 @@
-import { User }      from './model';
-import { IUserRepo } from './repo';
+import { User }                      from './model';
+import { UserRepoInterface }         from './repo';
 import { UserAuthenticationService } from './authentication/service';
-import { UserConfirmationService } from './confirmation/service';
+import { UserConfirmationService }   from './confirmation/service';
 
 export class UserService {
-  private readonly repo: IUserRepo;
+  private readonly repo: UserRepoInterface;
 
-  constructor(repo: IUserRepo) {
+  constructor(repo: UserRepoInterface) {
     this.repo = repo;
   }
 
   async create(params: CreateParams) {
-
-    const userAuthenticationService = new UserAuthenticationService(this.repo);
-    const encryptedPassword =
-      await userAuthenticationService.hashPassword(params.password);
+    const { hashPassword } = new UserAuthenticationService(this.repo);
+    const encryptedPassword = await hashPassword(params.password);
 
     const user = User.create({
       email:    params.email,
       password: encryptedPassword,
       username: params.username
-    });
+    }).getDTO();
 
     // should this also be done inside the value object constructor? (using a repo interface)
-    const emailExists = await this.repo.getByEmail(user.getEmail());
+    const emailExists = await this.repo.getByEmail(user.email);
     if (emailExists) {
       throw new Error("Email already in use.");  // throw in this layer? or return json?
     }
 
-    const nameExists = await this.repo.getByName(user.getUsername());
-    if (nameExists) {
+    const usernameExists = await this.repo.getByUsername(user.username);
+    if (usernameExists) {
       throw new Error("Username already in use.");
     }
   
     await this.repo.insert(user);
 
-    const userConfirmationService = new UserConfirmationService(this.repo);
-
-    userConfirmationService.sendConfirmationCode(user);
+    const { sendConfirmationCode } = new UserConfirmationService(this.repo);
+    await sendConfirmationCode(user);
   }
 
-  async update(params: UpdateParams) {
-    const { id, email, password, username, confirmation_code } = params;
+  async updateEmail(old_email, new_email) {
+    const { email, password, username } = params;
 
-    if (id === 1) {  // IMPORTANT: Do not allow user 1, NOBSC, to be changed.
-      throw new Error("Unauthorized.");
-    }
-    // await this.repo.getById(id);  // necessary???
-
-    //const encryptedPass = await bcrypt.hash(password, 10);  // ???
-    const user = User.update(params);
-
+    const existingUser = await this.repo.getByUsername(params.username);
+    if (!existingUser) return;
+    //
+    const user = User.update(params).getDTO();
     await this.repo.update(user);
   }
 
-  async delete(userId: string) {
+  async updatePassword(old_password, new_password) {
+
+  }
+
+  async updateUsername(old_username, new_username) {
+
+  }
+
+  async recoverAccount
+
+  /*async delete(userId: string) {
     if (userId === 1) return;  // IMPORTANT: Never allow user 1, NOBSC, to be deleted.
 
     // NOTE: Due to MySQL foreign keys, deletes must be in this order.
@@ -84,7 +87,7 @@ export class UserService {
 
     // ... Then delete the user.
     await this.repo.delete(userId);
-  }
+  }*/
 }
 
 type CreateParams = {
@@ -94,6 +97,5 @@ type CreateParams = {
 };
 
 type UpdateParams = CreateParams & {
-  id:                string;
-  confirmation_code: string;
+  user_id: string;
 };

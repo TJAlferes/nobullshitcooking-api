@@ -2,13 +2,13 @@ import bcrypt from 'bcrypt';
 
 import { ModifiedSession } from '../../../app';
 import { Email, Password } from '../model';
-import { IUserRepo }       from '../repo';
+import { UserRepoInterface }       from '../repo';
 //crypto.timingSafeEqual() ???
 
 export class UserAuthenticationService {
-  private readonly repo: IUserRepo;
+  private readonly repo: UserRepoInterface;
 
-  constructor(repo: IUserRepo) {
+  constructor(repo: UserRepoInterface) {
     this.repo = repo;
   }
 
@@ -21,8 +21,8 @@ export class UserAuthenticationService {
   async isCorrectPassword(params: IsCorrectPasswordParams) {
     const email = Email(params.email);
     const password = Password(params.password);
-    const user = await this.repo.getByEmail(email);
-    const correctPassword = await bcrypt.compare(password, user.password);
+    const currentHash = await this.repo.getPassword(email);
+    const correctPassword = await bcrypt.compare(password, currentHash);
     if (!correctPassword) {
       throw new Error("Incorrect email or password.");
     }
@@ -47,16 +47,16 @@ export class UserAuthenticationService {
   }
 
   async login({ email, password, session }: LoginParams) {
-    const user = await this.doesUserExist(email);
+    const { user_id, username } = await this.doesUserExist(email);
     await this.isUserConfirmed(email);
     await this.isCorrectPassword({email, password});
 
     session.userInfo = {
-      id:       user.user_id,
-      username: user.username
+      user_id,
+      username
     };
   
-    return user.username;
+    return username;
   }
 }
 

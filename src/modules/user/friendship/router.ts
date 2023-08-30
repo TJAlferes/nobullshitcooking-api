@@ -9,13 +9,13 @@ const router = Router();
 // for /user/friendship/...
 
 export function userFriendshipRouter() {
-  router.post(  '/',        userIsAuth,                     catchExceptions(controller.view));
-  router.post(  '/create',  userIsAuth, sanitize('friend'), catchExceptions(controller.create));
-  router.put(   '/accept',  userIsAuth, sanitize('friend'), catchExceptions(controller.accept));
-  router.put(   '/reject',  userIsAuth, sanitize('friend'), catchExceptions(controller.reject));
-  router.delete('/delete',  userIsAuth, sanitize('friend'), catchExceptions(controller.delete));
-  router.post(  '/block',   userIsAuth, sanitize('friend'), catchExceptions(controller.block));
-  router.delete('/unblock', userIsAuth, sanitize('friend'), catchExceptions(controller.unblock));
+  router.post(  '/',        userIsAuth,                         catchExceptions(controller.viewAll));
+  router.post(  '/create',  userIsAuth, sanitize('friendname'), catchExceptions(controller.create));
+  router.put(   '/accept',  userIsAuth, sanitize('friendname'), catchExceptions(controller.accept));
+  router.put(   '/reject',  userIsAuth, sanitize('friendname'), catchExceptions(controller.reject));
+  router.delete('/delete',  userIsAuth, sanitize('friendname'), catchExceptions(controller.delete));
+  router.post(  '/block',   userIsAuth, sanitize('friendname'), catchExceptions(controller.block));
+  router.delete('/unblock', userIsAuth, sanitize('friendname'), catchExceptions(controller.unblock));
 
   return router;
 }

@@ -1,42 +1,55 @@
 import bcrypt     from 'bcrypt';
 import { uuidv7 } from 'uuidv7';
 
-import { Email, Password, ConfirmationCode } from '../model';
-import { IUserRepo }                         from '../repo';
+import { Email, Password, ConfirmationCode, User } from '../model';
+import { UserRepoInterface }                 from '../repo';
 import { emailUser }                         from '../shared/simple-email-service';
 //crypto.timingSafeEqual() ???
 
 // DRY the repeated validation logic
 
 export class UserConfirmationService {
-  private readonly repo: IUserRepo;
+  private readonly repo: UserRepoInterface;
 
-  constructor(repo: IUserRepo) {
+  constructor(repo: UserRepoInterface) {
     this.repo = repo;
   }
 
   async confirm(confirmation_code: string) {
-    const validCode = ConfirmationCode(confirmation_code);
-
-    // const user = userService.getByConfirmationCode(validCode);
-
-    const correctCode = validCode === user.confirmation_code;
-    if (!correctCode) {
+    const code = ConfirmationCode(confirmation_code);
+    if (!code) {
       throw new Error("An issue occurred, please double check your info and try again.");
     }
 
-    await this.repo.update(email);
+    const user = await this.repo.getByConfirmationCode(code);
+
+    if (null === user.confirmation_code) {
+      throw new Error("Already confirmed.");
+    }
+
+    if (code !== user.confirmation_code) {
+      throw new Error("An issue occurred, please double check your info and try again.");
+    }
+
+    const password = await this.repo.getPassword(user.email);
+    await this.repo.update({
+      user_id:           user.user_id,
+      email:             user.email,
+      password,
+      username:          user.username,
+      confirmation_code: null
+    });
   }
 
-  async sendConfirmationCode(user: ) {
+  async sendConfirmationCode({ email, confirmation_code }: SendConfirmationCodeParams) {
     const charset  = "UTF-8";
     const from     = "No Bullshit Cooking <staff@nobullshitcooking.com>";
-    const to       = user.getEmail();
+    const to       = email;
     const subject  = "Confirmation Code For No Bullshit Cooking";
     const bodyText = "Confirmation Code For No Bullshit Cooking\r\n"
       + "Please enter the following confirmation code at:\r\n"
       + "https://nobullshitcooking.com/verify\r\n"
-      + user.getConfirmationCode();
+      + confirmation_code;
     const bodyHtml = `
       <html>
       <head></head>
@@ -44,7 +57,7 @@ export class UserConfirmationService {
         <h1>Confirmation Code For No Bullshit Cooking</h1>
         <p>Please enter the following confirmation code at:</p>
         <p>https://nobullshitcooking.com/verify</p>
-        ${user.getConfirmationCode()}
+        ${confirmation_code}
       </body>
       </html>
     `;
@@ -61,7 +74,7 @@ export class UserConfirmationService {
 
     const confirmed = user.confirmation_code === null;  // IMPORTANT: double check your struct is not fucking with this
     if (confirmed) {
-      throw new Error("Already verified.");
+      throw new Error("Already confirmed.");
     }
   
     // MOVE TO UserAuthenticationService
@@ -77,10 +90,9 @@ export class UserConfirmationService {
   }
 }
 
-type ConfirmParams = {
+type SendConfirmationCodeParams = {
   email:             string;
-  password:          string;
-  confirmation_code: string;       
+  confirmation_code: string;
 };
 
 type ResendConfirmationCodeParams = {

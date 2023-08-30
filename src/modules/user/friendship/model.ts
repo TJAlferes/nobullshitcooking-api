@@ -3,7 +3,7 @@ import { assert, string } from 'superstruct';
 import { UUIDv7StringId } from '../../shared/model';
 
 // problem: you're not expliciting defining valid state transitions in here,
-// you're doing it in a mix of repo and controller
+// you're doing most of it in the controller and some of it in the repo
 export class Friendship {
   private user_id;
   private friend_id;
