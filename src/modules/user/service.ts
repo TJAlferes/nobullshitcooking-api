@@ -31,31 +31,74 @@ export class UserService {
       throw new Error("Username already in use.");
     }
   
-    await this.repo.insert(user);
+    await this.repo.insert({
+      user_id:           user.user_id,
+      email:             user.email,
+      password:          user.password,
+      username:          user.username,
+      confirmation_code: user.confirmation_code!
+    });
 
     const { sendConfirmationCode } = new UserConfirmationService(this.repo);
-    await sendConfirmationCode(user);
+    await sendConfirmationCode({
+      email:             user.email,
+      confirmation_code: user.confirmation_code!
+    });
   }
 
-  async updateEmail(old_email, new_email) {
-    const { email, password, username } = params;
-
-    const existingUser = await this.repo.getByUsername(params.username);
+  async updateEmail({ user_id, new_email }: UpdateEmailParams) {
+    const existingUser = await this.repo.getByUserId(user_id);
     if (!existingUser) return;
-    //
-    const user = User.update(params).getDTO();
+
+    const password = await this.repo.getPassword(existingUser.email);
+    
+    const user = User.update({
+      user_id,
+      email:             new_email,  // the update
+      password,
+      username:          existingUser.username,
+      confirmation_code: existingUser.confirmation_code
+    }).getDTO();
+
     await this.repo.update(user);
   }
 
-  async updatePassword(old_password, new_password) {
+  async updatePassword({ user_id, new_password }: UpdatePasswordParams) {
+    const existingUser = await this.repo.getByUserId(user_id);
+    if (!existingUser) return;
 
+    const { hashPassword } = new UserAuthenticationService(this.repo);
+    const encryptedPassword = await hashPassword(new_password);
+    
+    const user = User.update({
+      user_id,
+      email:             existingUser.email,
+      password:          encryptedPassword,  // the update
+      username:          existingUser.username,
+      confirmation_code: existingUser.confirmation_code
+    }).getDTO();
+
+    await this.repo.update(user);
   }
 
-  async updateUsername(old_username, new_username) {
+  async updateUsername({ user_id, new_username }: UpdateUsernameParams) {
+    const existingUser = await this.repo.getByUserId(user_id);
+    if (!existingUser) return;
 
+    const password = await this.repo.getPassword(existingUser.email);
+    
+    const user = User.update({
+      user_id,
+      email:             existingUser.email,
+      password,
+      username:          new_username,  // the update
+      confirmation_code: existingUser.confirmation_code
+    }).getDTO();
+
+    await this.repo.update(user);
   }
 
-  async recoverAccount
+  async recoverAccount() {}
 
   /*async delete(userId: string) {
     if (userId === 1) return;  // IMPORTANT: Never allow user 1, NOBSC, to be deleted.
@@ -96,6 +139,17 @@ type CreateParams = {
   username: string;
 };
 
-type UpdateParams = CreateParams & {
-  user_id: string;
+type UpdateEmailParams = {
+  user_id:   string;
+  new_email: string;
+};
+
+type UpdatePasswordParams = {
+  user_id:      string;
+  new_password: string;
+};
+
+type UpdateUsernameParams = {
+  user_id:      string;
+  new_username: string;
 };

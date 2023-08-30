@@ -1,4 +1,4 @@
-import { assert, defaulted, string } from 'superstruct';
+import { assert, string } from 'superstruct';
 
 import { UUIDv7StringId, GenerateUUIDv7StringId } from '../shared/model';
 
@@ -18,7 +18,10 @@ export class User {
     this.email             = Email(params.email);
     this.password          = Password(params.password);
     this.username          = Username(params.username);
-    this.confirmation_code = UUIDv7StringId(params.confirmation_code);
+
+    this.confirmation_code = params.confirmation_code === null
+      ? null
+      : UUIDv7StringId(params.confirmation_code);
   }
 
   static create(params: CreateParams): User {
@@ -87,18 +90,6 @@ export function Username(username: string) {
   return username;
 }
 
-export function ConfirmationCode(confirmation_code: string) {
-  // IMPORTANT: double check this defaulted to null is not fucking things up
-  assert(confirmation_code, defaulted(string(), null));
-  if (!confirmation_code) return null;
-  /*const userRepo = new UserRepository(pool);
-  const confirmed = exists.confirmation_code === null;
-  if (!confirmed) return {
-    feedback: "Please check your email for your confirmation code."
-  };*/
-  return confirmation_code;
-}
-
 export type CreateParams = {
   email:    string;
   password: string;
@@ -107,7 +98,7 @@ export type CreateParams = {
 
 export type UpdateParams = CreateParams & {
   user_id:           string;
-  confirmation_code: string;
+  confirmation_code: string | null;
 };
 
 export type ConstructorParams = UpdateParams;

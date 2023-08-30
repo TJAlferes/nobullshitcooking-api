@@ -19,8 +19,9 @@ export class UserAuthenticationService {
   }
 
   async isCorrectPassword(params: IsCorrectPasswordParams) {
-    const email = Email(params.email);
+    const email    = Email(params.email);
     const password = Password(params.password);
+
     const currentHash = await this.repo.getPassword(email);
     const correctPassword = await bcrypt.compare(password, currentHash);
     if (!correctPassword) {
@@ -40,15 +41,17 @@ export class UserAuthenticationService {
   async isUserConfirmed(email: string) {
     const validEmail = Email(email);
     const user = await this.repo.getByEmail(validEmail);
-    const confirmed = user.confirmation_code === null;
-    if (!confirmed) {
-      throw new Error("Please check your email for your confirmation code.");
-    }
+    return user.confirmation_code === null;
   }
 
   async login({ email, password, session }: LoginParams) {
     const { user_id, username } = await this.doesUserExist(email);
-    await this.isUserConfirmed(email);
+
+    const confirmed = await this.isUserConfirmed(email);
+    if (!confirmed) {
+      throw new Error("Please check your email for your confirmation code.");
+    }
+
     await this.isCorrectPassword({email, password});
 
     session.userInfo = {

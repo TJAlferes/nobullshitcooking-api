@@ -12,14 +12,37 @@ export const userController = {
     return res.send({message: 'User account created.'});  // or .status and .json ???
   },
   
-  async update(req: Request, res: Response) {
-    const user_id = req.session.userInfo!.user_id;  // res.locals? either way, clean up
+  async updateEmail(req: Request, res: Response) {
+    const new_email = req.body.new_email;
+    const user_id   = req.session.userInfo!.user_id;  // res.locals?
 
     const userRepo    = new UserRepo();
     const userService = new UserService(userRepo);
-    await userService.update({user_id, ...req.body.userInfo});
+    await userService.updateEmail({user_id, new_email});
 
-    return res.send({message: 'User account updated.'});
+    return res.send({message: 'Email updated.'});
+  },
+
+  async updatePassword(req: Request, res: Response) {
+    const new_password = req.body.new_password;
+    const user_id      = req.session.userInfo!.user_id;  // res.locals?
+
+    const userRepo    = new UserRepo();
+    const userService = new UserService(userRepo);
+    await userService.updatePassword({user_id, new_password});
+
+    return res.send({message: 'Password updated.'});
+  },
+
+  async updateUsername(req: Request, res: Response) {
+    const new_username = req.body.new_username;
+    const user_id      = req.session.userInfo!.user_id;  // res.locals?
+
+    const userRepo    = new UserRepo();
+    const userService = new UserService(userRepo);
+    await userService.updateUsername({user_id, new_username});
+
+    return res.send({message: 'Username updated.'});
   },
 
   async delete(req: Request, res: Response) {

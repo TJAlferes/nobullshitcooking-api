@@ -1,12 +1,12 @@
 import bcrypt     from 'bcrypt';
 import { uuidv7 } from 'uuidv7';
 
-import { Email, Password, ConfirmationCode, User } from '../model';
-import { UserRepoInterface }                 from '../repo';
-import { emailUser }                         from '../shared/simple-email-service';
+import { UUIDv7StringId }        from '../../shared/model';
+import { Email, Password, User } from '../model';
+import { UserRepoInterface }     from '../repo';
+import { emailUser }             from '../shared/simple-email-service';
+import { UserAuthenticationService } from '../authentication/service';
 //crypto.timingSafeEqual() ???
-
-// DRY the repeated validation logic
 
 export class UserConfirmationService {
   private readonly repo: UserRepoInterface;
@@ -16,29 +16,32 @@ export class UserConfirmationService {
   }
 
   async confirm(confirmation_code: string) {
-    const code = ConfirmationCode(confirmation_code);
+    const code = UUIDv7StringId(confirmation_code);
     if (!code) {
       throw new Error("An issue occurred, please double check your info and try again.");
     }
 
-    const user = await this.repo.getByConfirmationCode(code);
+    const existingUser = await this.repo.getByConfirmationCode(code);
 
-    if (null === user.confirmation_code) {
+    if (null === existingUser.confirmation_code) {
       throw new Error("Already confirmed.");
     }
 
-    if (code !== user.confirmation_code) {
+    if (code !== existingUser.confirmation_code) {
       throw new Error("An issue occurred, please double check your info and try again.");
     }
 
-    const password = await this.repo.getPassword(user.email);
-    await this.repo.update({
-      user_id:           user.user_id,
-      email:             user.email,
+    const password = await this.repo.getPassword(existingUser.email);
+
+    const user = User.update({
+      user_id:           existingUser.user_id,
+      email:             existingUser.email,
       password,
-      username:          user.username,
+      username:          existingUser.username,
       confirmation_code: null
-    });
+    }).getDTO();
+
+    await this.repo.update(user);
   }
 
   async sendConfirmationCode({ email, confirmation_code }: SendConfirmationCodeParams) {
@@ -64,29 +67,27 @@ export class UserConfirmationService {
 
     await emailUser({from, to, subject, bodyText, bodyHtml, charset});
   }
+  
+  async resendConfirmationCode({ email, password }: ResendConfirmationCodeParams) {
+    const {
+      doesUserExist,
+      isCorrectPassword,
+      isUserConfirmed
+    } = new UserAuthenticationService(this.repo);
 
-  async resendConfirmationCode(params: ResendConfirmationCodeParams) {
-    const email = Email(params.email);
-    const user = await this.repo.getByEmail(email);
-    if (!user) {
-      throw new Error("Incorrect email or password.");  // throw error message from this layer? or just return json message?
-    }
+    const user = await doesUserExist(email);
 
-    const confirmed = user.confirmation_code === null;  // IMPORTANT: double check your struct is not fucking with this
+    const confirmed = await isUserConfirmed(email);
     if (confirmed) {
       throw new Error("Already confirmed.");
     }
-  
-    // MOVE TO UserAuthenticationService
-    const password = Password(params.password);
-    const correctPassword = await bcrypt.compare(password, user.password);
-    if (!correctPassword) {
-      throw new Error("Incorrect email or password.");
-    }
-  
-    const confirmationCode = uuidv7();  // NO!!! get it from the userRepo!!!
 
-    await this.sendConfirmationCode(user);
+    await isCorrectPassword({email, password});
+  
+    await this.sendConfirmationCode({
+      email:             user.email,
+      confirmation_code: user.confirmation_code
+    });
   }
 }
 

@@ -7,7 +7,7 @@ export class UserRepo extends MySQLRepo implements UserRepoInterface {
     const sql = `SELECT password FROM users WHERE email = ?`;
     const [ [ row ] ] = await this.pool.query<PasswordData[]>(sql, [email]);
     return row.password;
-  }  // ONLY for use in UserAuthenticationService.isCorrectPassword
+  }  // be very careful with this
 
   async getByUserId(user_id: string) {
     const sql = `

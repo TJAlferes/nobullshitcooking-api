@@ -32,10 +32,24 @@ export function userRouter() {
   );
 
   router.post(
-    '/update',
+    '/update-email',
     userIsAuth,
-    sanitize(['email', 'password', 'username']),
-    catchExceptions(userController.update)
+    sanitize('new_email'),
+    catchExceptions(userController.updateEmail)
+  );  // why POST?
+
+  router.post(
+    '/update-password',
+    userIsAuth,
+    sanitize('new_password'),
+    catchExceptions(userController.updatePassword)
+  );  // why POST?
+
+  router.post(
+    '/update-username',
+    userIsAuth,
+    sanitize('new_username'),
+    catchExceptions(userController.updateUsername)
   );  // why POST?
 
   router.post(
