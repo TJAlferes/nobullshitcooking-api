@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
-import { userSignedUrlController as controller } from './controller';
 import { catchExceptions, userIsAuth }           from '../../../../utils';
+import { userSignedUrlController as controller } from './controller';
 
 const router = Router();
 
@@ -12,7 +12,7 @@ export function userSignedUrlRouter() {
   router.post(
     '/',
     userIsAuth,
-    body('folder').not().isEmpty().trim().escape(),
+    body(['folder', 'filname']).not().isEmpty().trim().escape(),
     catchExceptions(controller.s3RequestPresign)
   );
 
