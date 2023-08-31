@@ -17,7 +17,7 @@ export class RecipeService {
   }
   
   async create({ recipeInfo }: CreateRecipeService) {
-    const recipe = Recipe.create(recipeInfo);
+    const recipe = Recipe.create(recipeInfo).getDTO();
     const createdRecipe = await this.repo.insert(recipe);
     //const recipeId = createdRecipe.insertId;
     return recipe.getRecipeId();

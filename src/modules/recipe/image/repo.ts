@@ -95,7 +95,6 @@ type InsertParams = {
 
 type UpdateParams = InsertParams & {
   recipe_id: string;
-  image_id:  string;
 };
 
 type RecipeImageView = RowDataPacket & {

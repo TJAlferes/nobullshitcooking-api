@@ -32,12 +32,18 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
         c.cuisine_name,
         r.title,
         r.description,
-        i.image_url
+        (
+          SELECT
+            i.image_url
+          FROM recipe_image ri
+          INNER JOIN recipe_image ri ON ri.recipe_id = r.recipe_id
+          INNER JOIN image i         ON i.image_id = ri.image_id
+          WHERE ri.type = 1
+        ) image_url
       FROM recipe r
-      INNER JOIN user u         ON u.user_id = r.author_id
-      INNER JOIN recipe_type rt ON rt.recipe_type_id = r.recipe_type_id
-      INNER JOIN cuisine c      ON c.cuisine_id = r.cuisine_id
-      INNER JOIN image i        ON i.image_id = r.image_id
+      INNER JOIN user u          ON u.user_id = r.author_id
+      INNER JOIN recipe_type rt  ON rt.recipe_type_id = r.recipe_type_id
+      INNER JOIN cuisine c       ON c.cuisine_id = r.cuisine_id
       WHERE r.owner_id = ?
     `;
 
@@ -123,6 +129,13 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
     return rows;
   }  // for Next.js getStaticPaths
 
+  /*async viewAllPublicTitles() {
+    const owner_id  = NOBSC_USER_ID;
+    const sql = `SELECT title FROM recipe WHERE owner_id = ?`;
+    const [ rows ] = await this.pool.execute<TitleView[]>(sql, owner_id);
+    return rows;
+  }  // for Next.js getStaticPaths (use this???)*/
+
   async viewOneByRecipeId(params: ViewOneByRecipeIdParams) {
     const sql = `${viewOneSQL} AND r.recipe_id = ?`;
     const [ [ row ] ] = await this.pool.execute<RecipeView[]>(sql, params);
@@ -147,12 +160,7 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
         description,
         active_time,
         total_time,
-        directions,
-        recipe_image,
-        equipment_image,
-        ingredients_image,
-        cooking_image,
-        video
+        directions
       ) VALUES (
         :recipe_id,
         :recipe_type_id,
@@ -163,12 +171,7 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
         :description,
         :active_time,
         :total_time,
-        :directions,
-        :recipe_image,
-        :equipment_image,
-        :ingredients_image,
-        :cooking_image,
-        :video
+        :directions
       )
     `;
     const [ row ] = await this.pool.execute<ResultSetHeader>(sql, params);
@@ -187,12 +190,7 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
         description       = :description,
         active_time       = :active_time,
         total_time        = :total_time,
-        directions        = :directions,
-        recipe_image      = :recipe_image,
-        equipment_image   = :equipment_image,
-        ingredients_image = :ingredients_image,
-        cooking_image     = :cooking_image,
-        video             = :video
+        directions        = :directions
       WHERE recipe_id = :recipe_id
       LIMIT 1
     `;
@@ -212,7 +210,9 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
     const sql = `
       UPDATE recipe
       SET author_id = :unknown_user_id
-      WHERE author_id = :author_id AND owner_id = :owner_id
+      WHERE
+            author_id = :author_id
+        AND owner_id  = :owner_id
     `;
     await this.pool.execute(sql, {unknown_user_id, author_id, owner_id});
   }
@@ -238,7 +238,7 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
     await this.pool.execute(sql, {unknown_user_id, author_id, owner_id, recipe_id});
   }
   
-  async deleteOne({ owner_id, recipe_id}: DeleteOneParams) {
+  async deleteOne({ owner_id, recipe_id }: DeleteOneParams) {
     const sql = `
       DELETE FROM recipe
       WHERE owner_id = ? AND recipe_id = ?
@@ -275,23 +275,28 @@ export type RecipeView = RowDataPacket & {
   recipe_type_id:       number;
   recipe_type_name:     string;
   cuisine_id:           number;
+  cuisine_name:         string;
   owner_id:             string;
   title:                string;
   description:          string;
   active_time:          string;  // Date on insert?
   total_time:           string;  // Date on insert?
   directions:           string;
-  image_url:            string
-  //recipe_image:         string;
-  //equipment_image:      string;
-  //ingredients_image:    string;
-  //cooking_image:        string;
-  //  what about prev_image ?
-  video:                string;
+  images:               AssociatedImageView[];
+  //video:                string;
   required_methods:     RequiredMethodView[];
   required_equipment:   RequiredEquipmentView[];
   required_ingredients: RequiredIngredientView[];
   required_subrecipes:  RequiredSubrecipeView[];
+};
+
+type AssociatedImageView = {
+  type:      number;
+  order:     number;
+  image_id:  string;
+  image_url: string;
+  alt_text:  string;
+  caption:   string;
 };
 
 type RequiredMethodView = {
@@ -338,22 +343,15 @@ type ViewOneByTitleParams = {
 };
 
 export type InsertParams = {
-  recipe_id:         string;
-  recipe_type_id:    number;
-  cuisine_id:        number;
-  owner_id:          string;
-  title:             string;
-  description:       string;
-  active_time:       string;
-  total_time:        string;
-  directions:        string;
-  image_id:          string;
-  //recipe_image:      string;
-  //equipment_image:   string;
-  //ingredients_image: string;
-  //cooking_image:     string;
-  //  what about prev_image ?
-  video:             string;
+  recipe_id:      string;
+  recipe_type_id: number;
+  cuisine_id:     number;
+  owner_id:       string;
+  title:          string;
+  description:    string;
+  active_time:    string;
+  total_time:     string;
+  directions:     string;
 };
 
 type UpdateParams = InsertParams;
@@ -383,10 +381,18 @@ const viewOneSQL = `
     r.active_time,
     r.total_time,
     r.directions,
-    r.recipe_image,
-    r.equipment_image,
-    r.ingredients_image,
-    r.cooking_image,
+    (
+      SELECT
+        rim.type,
+        rim.order,
+        im.image_id,
+        im.image_url,
+        im.alt_text,
+        im.caption
+      FROM recipe_images rim
+      INNER JOIN recipe_images rim ON rim.image_id = im.image_id
+      WHERE rim.recipe_id = r.recipe_id
+    ) images,
     (
       SELECT JSON_ARRAYAGG(JSON_OBJECT(
         'method_name', m.method_name,
@@ -444,3 +450,13 @@ const viewOneSQL = `
 `;
 
 // TO DO: ingredient_fullname
+
+/*
+async getPrivateIds(user_id: string) {
+  const sql = `SELECT recipe_id FROM recipe WHERE author_id = ? AND owner_id = ?`;
+  const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [user_id, user_id]);
+  const ids: number[] = [];
+  rows.forEach(({ id }) => ids.push(id));
+  return ids;
+}  // is this needed?
+*/
