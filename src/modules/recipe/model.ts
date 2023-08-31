@@ -13,29 +13,18 @@ export class Recipe {
   private active_time;
   private total_time;
   private directions;
-  // NO. DO NOT DO THIS. Query the recipe_image table to find images with this recipe_id
-  // and have a column which shows its type and a column which shows its order (in that type)
-  // ... maybe okay for now? decide soon
-  //private recipe_image_id;
-  //private equipment_image_id;
-  //private ingredients_image_id;
-  //private cooking_image_id;
 
   private constructor(params: ConstructorParams) {
-    this.recipe_id            = UUIDv7StringId(params.recipe_id);
-    this.recipe_type_id       = NumberId(params.recipe_type_id);
-    this.cuisine_id           = NumberId(params.cuisine_id);
-    this.author_id            = UUIDv7StringId(params.author_id);
-    this.owner_id             = UUIDv7StringId(params.owner_id);
-    this.title                = Title(params.title);
-    this.description          = Description(params.description);
-    this.active_time          = ActiveTime(params.active_time);
-    this.total_time           = TotalTime(params.active_time);
-    this.directions           = Directions(params.directions);
-    //this.recipe_image_id      = UUIDv7StringId(params.recipe_image_id);
-    //this.equipment_image_id   = UUIDv7StringId(params.equipment_image_id);
-    //this.ingredients_image_id = UUIDv7StringId(params.ingredients_image_id);
-    //this.cooking_image_id     = UUIDv7StringId(params.cooking_image_id);
+    this.recipe_id      = UUIDv7StringId(params.recipe_id);
+    this.recipe_type_id = NumberId(params.recipe_type_id);
+    this.cuisine_id     = NumberId(params.cuisine_id);
+    this.author_id      = UUIDv7StringId(params.author_id);
+    this.owner_id       = UUIDv7StringId(params.owner_id);
+    this.title          = Title(params.title);
+    this.description    = Description(params.description);
+    this.active_time    = ActiveTime(params.active_time);
+    this.total_time     = TotalTime(params.active_time);
+    this.directions     = Directions(params.directions);
   }
 
   static create(params: CreateParams) {
@@ -104,19 +93,15 @@ export function Directions(directions: string) {
 }
 
 type CreateParams = {
-  recipe_type_id:       number;
-  cuisine_id:           number;
-  author_id:            string;
-  owner_id:             string;
-  title:                string;
-  description:          string;
-  active_time:          string;
-  total_time:           string;
-  directions:           string;
-  //recipe_image_id:      string;
-  //equipment_image_id:   string;
-  //ingredients_image_id: string;
-  //cooking_image_id:     string;
+  recipe_type_id: number;
+  cuisine_id:     number;
+  author_id:      string;
+  owner_id:       string;
+  title:          string;
+  description:    string;
+  active_time:    string;
+  total_time:     string;
+  directions:     string;
 };
 
 type UpdateParams = CreateParams & {

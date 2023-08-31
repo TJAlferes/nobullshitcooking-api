@@ -1,4 +1,5 @@
 import { assert, number } from 'superstruct';
+
 import { UUIDv7StringId } from '../../shared/model';
 
 export class RecipeImage {
