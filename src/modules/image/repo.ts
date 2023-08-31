@@ -1,6 +1,6 @@
 import { MySQLRepo } from '../shared/MySQL';
 
-export class ImageRepo extends MySQLRepo implements IImageRepo {
+export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
   async insert(params: InsertParams) {
     const sql = `
       INSERT INTO image (image_id, image_url, alt_text, caption)
@@ -28,7 +28,7 @@ export class ImageRepo extends MySQLRepo implements IImageRepo {
   }
 }
 
-interface IImageRepo {
+interface ImageRepoInterface {
   insert: (params: InsertParams) => Promise<void>;
   update: (params: InsertParams) => Promise<void>;
   delete: (image_id: string) =>     Promise<void>;

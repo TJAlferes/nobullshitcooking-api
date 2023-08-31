@@ -20,9 +20,7 @@ export class Image {
     return new Image({image_id, ...params});
   }
 
-  static update(params: UpdateParams) {
-
-  }
+  static update(params: UpdateParams) {}
 
   getDTO() {
     return {
@@ -36,19 +34,28 @@ export class Image {
 
 function ImageUrl(url: string) {
   assert(url, string());
-  //
+  if (url.length < 36) {
+    throw new Error("Image URL must be no less than 36 characters.");
+  }
+  if (url.length > 100) {
+    throw new Error("Image URL must be no more than 100 characters.");
+  }
   return url;
 }
 
 function AltText(text: string) {
   assert(text, string());
-  //
+  if (text.length > 100) {
+    throw new Error("Alt text must be no more than 100 characters.");
+  }
   return text;
 }
 
 function Caption(caption: string) {
   assert(caption, string());
-  //
+  if (caption.length > 150) {
+    throw new Error("Caption must be no more than 100 characters.");
+  }
   return caption;
 }
 

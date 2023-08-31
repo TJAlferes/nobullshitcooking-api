@@ -2,7 +2,7 @@ import { RowDataPacket } from 'mysql2/promise';
 
 import { MySQLRepo } from '../../shared/MySQL';
 
-export class RecipeImageRepo extends MySQLRepo implements IRecipeImageRepo {
+export class RecipeImageRepo extends MySQLRepo implements RecipeImageRepoInterface {
   async viewByRecipeId(recipe_id: string) {
     const sql = `
       SELECT ri.type, ri.order, i.image_url
@@ -58,7 +58,7 @@ export class RecipeImageRepo extends MySQLRepo implements IRecipeImageRepo {
   }
 
   async deleteByImageId(image_id: string) {
-    const sql = `DELETE FROM recipe_image WHERE image_id = ?`;
+    const sql = `DELETE FROM recipe_image WHERE image_id = ? LIMIT 1`;
     await this.pool.execute(sql, [image_id]);
   }
 
@@ -73,16 +73,18 @@ export class RecipeImageRepo extends MySQLRepo implements IRecipeImageRepo {
   }*/
 }
 
-export interface IRecipeImageRepo {
-  viewByRecipeId: (recipe_id: string) =>    Promise<RecipeImageView[]>;
-  insert:         (params: InsertParams) => Promise<void>;
-  update:         (params: UpdateParams) => Promise<void>;
+export interface RecipeImageRepoInterface {
+  viewByRecipeId:   (recipe_id: string) =>    Promise<RecipeImageView[]>;
+  insert:           (params: InsertParams) => Promise<void>;
+  update:           (params: UpdateParams) => Promise<void>;
+  deleteByImageId:  (image_id: string) =>     Promise<void>;
+  deleteByRecipeId: (recipe_id: string) =>    Promise<void>;
 }
 
 type RecipeImageRow = {
   recipe_id: string;
   image_id:  string;
-  type:      number;  // 1 "primary/main/face/presentation/recipe" | 2 "equipment" | 3 "ingredients" | 4 "detail/action/step/process/preparing/cooking"
+  type:      number;  // 1|2|3|4
   order:     number;  // 1|2|3
 };
 

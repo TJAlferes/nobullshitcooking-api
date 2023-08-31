@@ -1,14 +1,18 @@
 import { Request, Response } from 'express';
 
-import { RecipeEquipmentRepo }  from '../../../recipe/required-equipment/repo';
-import { RecipeIngredientRepo } from '../../../recipe/required-ingredient/repo';
-import { RecipeMethodRepo }     from '../../../recipe/required-method/repo';
-import { RecipeSubrecipeRepo }  from '../../../recipe/required-subrecipe/repo';
-import { Recipe }               from '../../../recipe/model';
-import { PrivateRecipeRepo }    from './repo';
-import { RecipeService }        from '../../../recipe/service';
+import { RecipeEquipmentRepo }     from '../../../recipe/required-equipment/repo';
+import { RecipeEquipmentService }  from '../../../recipe/required-equipment/service';
+import { RecipeIngredientRepo }    from '../../../recipe/required-ingredient/repo';
+import { RecipeIngredientService } from '../../../recipe/required-ingredient/service';
+import { RecipeMethodRepo }        from '../../../recipe/required-method/repo';
+import { RecipeMethodService }     from '../../../recipe/required-method/service';
+import { RecipeSubrecipeRepo }     from '../../../recipe/required-subrecipe/repo';
+import { RecipeSubrecipeService }  from '../../../recipe/required-subrecipe/service';
+//import { PrivateRecipeRepo }       from './repo';
+import { RecipeRepo }              from '../../../recipe/repo';
+import { RecipeService }           from '../../../recipe/service';
 
-// MERGE WITH recipeController???
+// MERGE WITH recipeController??? DON'T if possible
 export const privateRecipeController = {
   async overviewAll(req: Request, res: Response) {
     const author_id = req.session.userInfo!.id;

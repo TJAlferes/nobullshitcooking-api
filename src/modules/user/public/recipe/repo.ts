@@ -123,12 +123,7 @@ export type InsertParams = {
   active_time:       string;
   total_time:        string;
   directions:        string;
-  image_url:         string;
-  //recipe_image:      string;
-  //equipment_image:   string;
-  //ingredients_image: string;
-  //cooking_image:     string;
-  //  what about prev_image ?
+  image_url:         string;  // needed????
   video:             string;
 };
 
@@ -140,18 +135,17 @@ export type RecipeView = RowDataPacket & {
   recipe_id:            string;
   recipe_type_id:       number;
   recipe_type_name:     string;
-  cuisine_id:           number;
+  cuisine_id:           number;  // cuisine_name???
   owner_id:             string;
   title:                string;
   description:          string;
   active_time:          string;  // Date on insert?
   total_time:           string;  // Date on insert?
   directions:           string;
-  image_url:            string
-  //recipe_image:         string;
-  //equipment_image:      string;
-  //ingredients_image:    string;
-  //cooking_image:        string;
+  recipe_image:         string;
+  equipment_image:      string;
+  ingredients_image:    string;
+  cooking_image:        string;
   //  what about prev_image ?
   video:                string;
   required_methods:     RequiredMethodView[];
@@ -220,10 +214,17 @@ const viewOneSQL = `
     r.active_time,
     r.total_time,
     r.directions,
-    r.recipe_image,
-    r.equipment_image,
-    r.ingredients_image,
-    r.cooking_image,
+    (
+      SELECT
+        rim.type,
+        rim.order,
+        im.image_url,
+        im.alt_text,
+        im.caption
+      FROM recipe_images rim
+      INNER JOIN recipe_images rim ON rim.image_id = im.image_id
+      WHERE rim.recipe_id = r.recipe_id
+    ) images,
     (
       SELECT JSON_ARRAYAGG(JSON_OBJECT(
         'method_name', m.method_name,

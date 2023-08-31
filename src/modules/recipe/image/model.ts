@@ -32,18 +32,18 @@ export class RecipeImage {
 
 function RecipeImageType(type: number) {
   assert(type, number());
-  if (type === 1) return type;
-  if (type === 2) return type;
-  if (type === 3) return type;
-  if (type === 4) return type;
+  if (type === 1) return type;  // 1 image      of completed and plated recipe (primary image)
+  if (type === 2) return type;  // 1 image      of required equipment image
+  if (type === 3) return type;  // 1 image      of required ingredients image
+  if (type === 4) return type;  // 1-3 image(s) of prepping/cooking detail/process/action
   throw new Error("Invalid recipe image type.");
 }
 
 function RecipeImageOrder(order: number) {
   assert(order, number());
-  if (order === 1) return order;
+  if (order === 1) return order;  // to be shown first in UI
   if (order === 2) return order;
-  if (order === 3) return order;
+  if (order === 3) return order;  // to be shown last in UI
   throw new Error("Invalid recipe image order.");
 }
 

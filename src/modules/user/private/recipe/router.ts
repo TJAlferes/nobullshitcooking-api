@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
+import { catchExceptions, userIsAuth }           from '../../../../utils';
 import { privateRecipeController as controller } from './controller';
-import { catchExceptions, userIsAuth } from '../../../../utils';
 
 const router = Router();
 
@@ -17,12 +17,10 @@ export function privateRecipeRouter() {
     'active_time',
     'total_time',
     'directions',
-
     'required_methods.*',
     'required_equipment.*',
     'required_ingredients.*',
     'required_subrecipes.*',
-
     'recipe_image',
     'equipment_image',
     'ingredients_image',

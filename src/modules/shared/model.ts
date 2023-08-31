@@ -10,6 +10,10 @@ export function UUIDv7StringId(id: string) {
   if (id.length !== 36) {
     throw new Error("Invalid ID.");
   }
+  const pattern = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+  if (pattern.test(id) === false) {
+    throw new Error("Invalid ID.");
+  }
   return id;
 }
 
