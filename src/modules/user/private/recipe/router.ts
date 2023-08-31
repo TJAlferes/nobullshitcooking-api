@@ -24,7 +24,7 @@ export function privateRecipeRouter() {
     'recipe_image',
     'equipment_image',
     'ingredients_image',
-    'cooking_image'
+    'cooking_image'  // TO DO: FINISH
   ];
 
   router.post(

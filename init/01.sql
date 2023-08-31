@@ -139,7 +139,8 @@ CREATE TABLE equipment (
   `notes`             TEXT             NOT NULL DEFAULT '',
   `image_id`          CHAR(36)         NOT NULL,
   FOREIGN KEY (`equipment_type_id`) REFERENCES `equipment_type` (`equipment_type_id`),
-  FOREIGN KEY (`owner_id`)          REFERENCES `user` (`user_id`) ON DELETE CASCADE
+  FOREIGN KEY (`owner_id`)          REFERENCES `user` (`user_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`image_id`)          REFERENCES `image` (`image_id`)
 );
 
 --==============================================================================
@@ -159,7 +160,8 @@ CREATE TABLE ingredient (
   `notes`                  TEXT             NOT NULL DEFAULT '',
   `image_id`               CHAR(36)         NOT NULL,
   FOREIGN KEY (`ingredient_type_id`) REFERENCES `ingredient_type` (`ingredient_type_id`),
-  FOREIGN KEY (`owner_id`)           REFERENCES `user` (`user_id`) ON DELETE CASCADE
+  FOREIGN KEY (`owner_id`)           REFERENCES `user` (`user_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`image_id`)           REFERENCES `image` (`image_id`)
 );
 
 CREATE TABLE ingredient_alt_name (

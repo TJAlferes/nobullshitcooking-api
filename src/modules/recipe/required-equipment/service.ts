@@ -21,7 +21,10 @@ export class RecipeEquipmentService {
   }
 
   async update({ recipe_id, required_equipment }: UpdateParams) {
-    if (!required_equipment.length) return;
+    if (!required_equipment.length) {
+      await this.repo.deleteByRecipeId(recipe_id);
+      return;
+    }
 
     const placeholders = '(?, ?, ?),'.repeat(required_equipment.length).slice(0, -1);
 

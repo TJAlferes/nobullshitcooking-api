@@ -1,14 +1,13 @@
 import { Request, Response } from 'express';
 
-import { RecipeEquipmentRepo }  from '../../../recipe/required-equipment/repo';
-import { PrivateEquipmentRepo } from './repo';
-import { PrivateEquipment }     from './model';
+import { Equipment }     from '../../../equipment/model';
+import { EquipmentRepo } from '../../../equipment/repo';
 
 export const privateEquipmentController = {
   async viewAll(req: Request, res: Response) {
-    const owner_id  = req.session.userInfo!.id;
+    const owner_id  = req.session.userInfo!.user_id;
 
-    const repo = new PrivateEquipmentRepo();
+    const repo = new EquipmentRepo();
     const rows = await repo.viewAll(owner_id);
 
     return res.send(rows);
@@ -16,9 +15,9 @@ export const privateEquipmentController = {
 
   async viewOne(req: Request, res: Response) {
     const equipment_id = req.body.equipment_id;
-    const owner_id     = req.session.userInfo!.id;
+    const owner_id     = req.session.userInfo!.user_id;
 
-    const repo = new PrivateEquipmentRepo();
+    const repo = new EquipmentRepo();
     const row = await repo.viewOne({equipment_id, owner_id});
 
     return res.send(row);
@@ -27,18 +26,16 @@ export const privateEquipmentController = {
   async create(req: Request, res: Response) {
     const { equipment_name, notes, image_id } = req.body.equipmentInfo;
     const equipment_type_id = Number(req.body.equipmentInfo.equipment_type_id);
-    const owner_id          = req.session.userInfo!.id;
+    const owner_id          = req.session.userInfo!.user_id;
 
-    const args = {
+    const repo = new EquipmentRepo();
+    const equipment = Equipment.create({
       equipment_type_id,
       owner_id,
       equipment_name,
       notes,
       image_id
-    };
-
-    const repo = new PrivateEquipmentRepo();
-    const equipment = PrivateEquipment.create(args).getDTO();
+    }).getDTO();
     await repo.insert(equipment);
     
     return res.send({message: 'Equipment created.'});
@@ -52,19 +49,17 @@ export const privateEquipmentController = {
       image_id
     } = req.body.equipmentInfo;
     const equipment_type_id = Number(req.body.equipmentInfo.equipment_type_id);
-    const owner_id          = req.session.userInfo!.id;
+    const owner_id          = req.session.userInfo!.user_id;
 
-    const args = {
+    const repo = new EquipmentRepo();
+    const equipment = Equipment.update({
       equipment_id,
       equipment_type_id,
       owner_id,
       equipment_name,
       notes,
       image_id
-    };
-
-    const repo = new PrivateEquipmentRepo();
-    const equipment = PrivateEquipment.create(args).getDTO();
+    }).getDTO();
     await repo.update(equipment);
 
     return res.send({message: 'Equipment updated.'});
@@ -72,13 +67,10 @@ export const privateEquipmentController = {
 
   async deleteOne(req: Request, res: Response) {
     const equipment_id = req.body.equipment_id;
-    const owner_id     = req.session.userInfo!.id;
+    const owner_id     = req.session.userInfo!.user_id;
 
-    const recipeEquipmentRepo = new RecipeEquipmentRepo();
-    await recipeEquipmentRepo.deleteByEquipmentId(equipment_id);
-
-    const privateEquipmentRepo = new PrivateEquipmentRepo();
-    await privateEquipmentRepo.deleteOne({equipment_id, owner_id});
+    const repo = new EquipmentRepo();
+    await repo.deleteOne({equipment_id, owner_id});
 
     return res.send({message: 'Equipment deleted.'});
   }

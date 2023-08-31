@@ -12,7 +12,6 @@ import { RecipeSubrecipeService }  from '../../../recipe/required-subrecipe/serv
 import { RecipeRepo }              from '../../../recipe/repo';
 import { RecipeService }           from '../../../recipe/service';
 
-// MERGE WITH recipeController??? DON'T if possible
 export const privateRecipeController = {
   async overviewAll(req: Request, res: Response) {
     const author_id = req.session.userInfo!.id;

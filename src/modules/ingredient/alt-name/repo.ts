@@ -53,7 +53,6 @@ export interface IngredientAltNameRepoInterface {
 }
 
 type IngredientAltNameRow = {
-  alt_name_id:   string;
   ingredient_id: string;
   alt_name:      string;
 }

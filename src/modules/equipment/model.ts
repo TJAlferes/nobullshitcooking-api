@@ -21,13 +21,12 @@ export class Equipment {
 
   static create(params: CreateParams) {
     const equipment_id = GenerateUUIDv7StringId();
-
-    const equipment = new Equipment({...params, equipment_id});
-
-    return equipment;  // only return id ???
+    return new Equipment({...params, equipment_id});
   }
 
-  static update(params: UpdateParams) {}
+  static update(params: UpdateParams) {
+    return new Equipment(params);
+  }
 
   getDTO() {
     return {
@@ -46,7 +45,7 @@ export function EquipmentName(name: string) {
   if (name.length > 100) {
     throw new Error("Equipment name must be no more than 100 characters.");
   }
-  return ;
+  return name;
 }
 
 type CreateParams = {

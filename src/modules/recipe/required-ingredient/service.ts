@@ -23,7 +23,10 @@ export class RecipeIngredientService {
   }
 
   async update({ recipe_id, required_ingredients }: UpdateParams) {
-    if (!required_ingredients.length) return;
+    if (!required_ingredients.length) {
+      await this.repo.deleteByRecipeId(recipe_id);
+      return;
+    }
 
     const placeholders = '(?, ?, ?, ?),'
       .repeat(required_ingredients.length)

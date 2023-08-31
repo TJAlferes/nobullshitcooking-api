@@ -128,13 +128,15 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
         equipment_type_id,
         owner_id,
         equipment_name,
-        notes
+        notes,
+        image_id
       ) VALUES (
         :equipment_id,
         :equipment_type_id,
         :owner_id,
         :equipment_name,
-        :notes
+        :notes,
+        :image_id
       )
     `;
     await this.pool.execute(sql, params);
@@ -144,6 +146,7 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
     equipment_type_id,
     equipment_name,
     notes,
+    image_id,
     owner_id,
     equipment_id
   }: UpdateParams) {
@@ -153,6 +156,7 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
         equipment_type_id = :equipment_type_id,
         equipment_name    = :equipment_name,
         notes             = :notes
+        image_id          = :image_id
       WHERE owner_id = :owner_id AND equipment_id = :equipment_id
       LIMIT 1
     `;
@@ -160,6 +164,7 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
       equipment_type_id,
       equipment_name,
       notes,
+      image_id,
       owner_id,
       equipment_id
     });

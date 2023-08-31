@@ -1,8 +1,8 @@
 import { RowDataPacket } from 'mysql2/promise';
 
 import type { SearchRequest, SearchResponse } from '../search/model';
-import { NOBSC_USER_ID } from '../shared/model';
-import { MySQLRepo } from '../shared/MySQL';
+import { NOBSC_USER_ID }                      from '../shared/model';
+import { MySQLRepo }                          from '../shared/MySQL';
 
 export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface {
   async autosuggest(term: string) {
@@ -59,7 +59,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
     const params: Array<number|string> = [owner_id];
 
     if (term) {
-      sql += ` AND i.fullname LIKE ?`;
+      sql += ` AND fullname LIKE ?`;
       params.push(`%${term}%`);
     }
 
@@ -167,7 +167,8 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
         ingredient_brand,
         ingredient_variety,
         ingredient_name,
-        notes
+        notes,
+        image_id
       ) VALUES (
         :ingredient_id
         :ingredient_type_id,
@@ -175,7 +176,8 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
         :ingredient_brand,
         :ingredient_variety,
         :ingredient_name,
-        :notes
+        :notes,
+        :image_id
       )
     `;
     await this.pool.execute(sql, params);
@@ -187,6 +189,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
     ingredient_variety,
     ingredient_name,
     notes,
+    image_id,
     owner_id,
     ingredient_id
   }: UpdateParams) {
@@ -197,7 +200,8 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
         ingredient_brand   = :ingredient_brand,
         ingredient_variety = :ingredient_variety,
         ingredient_name    = :ingredient_name,
-        notes              = :notes
+        notes              = :notes,
+        image_id           = :image_id
       WHERE owner_id = :owner_id AND ingredient_id = :ingredient_id
       LIMIT 1
     `;
@@ -207,6 +211,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
       ingredient_variety,
       ingredient_name,
       notes,
+      image_id,
       owner_id,
       ingredient_id
     });
@@ -237,8 +242,8 @@ type IngredientView = RowDataPacket & {
   ingredient_type_id:   number;
   ingredient_type_name: string;
   owner_id:             string;
-  brand:                string;
-  variety:              string;
+  ingredient_brand:     string;
+  ingredient_variety:   string;
   ingredient_name:      string;
   fullname:             string;
   notes:                string;

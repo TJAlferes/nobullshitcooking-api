@@ -28,7 +28,9 @@ export class Ingredient {
     return new Ingredient({...params, ingredient_id});
   }
 
-  //static update(params: UpdateParams) {}
+  static update(params: UpdateParams) {
+    return new Ingredient(params);
+  }
 
   getDTO() {
     return {

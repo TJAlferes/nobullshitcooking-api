@@ -23,7 +23,10 @@ export class RecipeSubrecipeService {
   }
 
   async update({ recipe_id, required_subrecipes }: UpdateParams) {
-    if (!required_subrecipes.length) return;
+    if (!required_subrecipes.length) {
+      await this.repo.deleteByRecipeId(recipe_id);
+      return;
+    }
 
     const placeholders = '(?, ?, ?, ?),'
       .repeat(required_subrecipes.length)

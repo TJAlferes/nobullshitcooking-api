@@ -21,7 +21,10 @@ export class RecipeMethodService {
   }
 
   async update({ recipe_id, required_methods }: UpdateParams) {
-    if (!required_methods.length) return;
+    if (!required_methods.length) {
+      await this.repo.deleteByRecipeId(recipe_id);
+      return;
+    }
 
     const placeholders = '(?, ?),'.repeat(required_methods.length).slice(0, -1);
 
