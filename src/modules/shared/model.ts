@@ -35,13 +35,11 @@ export function Notes(notes: string | undefined) {
   return notes;
 }
 
-// rename to ImageURL ???
-export function Image(image: string) {
-  assert(image, defaulted(string(), ''));
-  if (image.length > 100) {
+export function ImageURL(url: string) {
+  if (url.length > 100) {
     throw new Error("Image URL must be no more than 100 characters.");
   }
-  return image;
+  return url;
 }
 
 export const UNKNOWN_USER_ID = "00000000-0000-0000-0000-000000000000";

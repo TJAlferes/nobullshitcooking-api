@@ -136,6 +136,27 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
     return rows;
   }  // for Next.js getStaticPaths (use this???)*/
 
+  async overviewAll({ author_id, owner_id }: OverviewAllParams) {
+    let sql = `
+      SELECT
+        r.recipe_id,
+        r.owner_id,
+        r.title,
+        (
+          SELECT
+            i.image_url
+          FROM recipe_image ri
+          INNER JOIN recipe_image ri ON ri.recipe_id = r.recipe_id
+          INNER JOIN image i         ON i.image_id = ri.image_id
+          WHERE ri.type = 1
+        ) image_url
+      FROM recipe r
+      WHERE r.author_id = ? AND r.owner_id = ?
+    `;
+    const [ rows ] = await this.pool.execute<RecipeOverview[]>(sql, [author_id, owner_id]);
+    return rows;
+  }  // for logged in user
+
   async viewOneByRecipeId(params: ViewOneByRecipeIdParams) {
     const sql = `${viewOneSQL} AND r.recipe_id = ?`;
     const [ [ row ] ] = await this.pool.execute<RecipeView[]>(sql, params);
@@ -252,6 +273,7 @@ export interface RecipeRepoInterface {
   autosuggest:           (term: string) =>                    Promise<SuggestionView[]>;
   search:                (searchRequest: SearchRequest) =>    Promise<SearchResponse>;
   viewAllOfficialTitles: () =>                                Promise<TitleView[]>;
+  overviewAll:           (params: OverviewAllParams) =>       Promise<RecipeOverview[]>;
   viewOneByRecipeId:     (params: ViewOneByRecipeIdParams) => Promise<RecipeView>;
   viewOneByTitle:        (params: ViewOneByTitleParams) =>    Promise<RecipeView>;
   insert:                (params: InsertParams) =>            Promise<ResultSetHeader>;
@@ -268,6 +290,13 @@ type SuggestionView = RowDataPacket & {
 
 type TitleView = RowDataPacket & {
   title: string;
+};
+
+export type RecipeOverview = RowDataPacket & {
+  recipe_id: string;
+  owner_id:  string;
+  title:     string;
+  image_url: string;
 };
 
 export type RecipeView = RowDataPacket & {
@@ -328,6 +357,11 @@ type RequiredSubrecipeView = {
   recipe_type_id:  number;
   cuisine_id:      number;
   subrecipe_title: string;
+};
+
+type OverviewAllParams = {
+  author_id: string;
+  owner_id:  string;
 };
 
 type ViewOneByRecipeIdParams = {
@@ -450,13 +484,3 @@ const viewOneSQL = `
 `;
 
 // TO DO: ingredient_fullname
-
-/*
-async getPrivateIds(user_id: string) {
-  const sql = `SELECT recipe_id FROM recipe WHERE author_id = ? AND owner_id = ?`;
-  const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [user_id, user_id]);
-  const ids: number[] = [];
-  rows.forEach(({ id }) => ids.push(id));
-  return ids;
-}  // is this needed?
-*/

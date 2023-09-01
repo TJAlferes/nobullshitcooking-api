@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 
-import { IngredientAltNameRepo } from '../../../ingredient/alt-name/repo';
+import { IngredientAltNameRepo }    from '../../../ingredient/alt-name/repo';
 import { IngredientAltNameService } from '../../../ingredient/alt-name/service';
-import { Ingredient }            from '../../../ingredient/model';
-import { IngredientRepo }        from '../../../ingredient/repo';
+import { Ingredient }               from '../../../ingredient/model';
+import { IngredientRepo }           from '../../../ingredient/repo';
 
 export const privateIngredientController = {
   async viewAll(req: Request, res: Response) {

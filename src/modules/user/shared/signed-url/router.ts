@@ -12,7 +12,7 @@ export function userSignedUrlRouter() {
   router.post(
     '/',
     userIsAuth,
-    body(['folder', 'filname']).not().isEmpty().trim().escape(),
+    body('subfolder').not().isEmpty().trim().escape(),
     catchExceptions(controller.s3RequestPresign)
   );
 

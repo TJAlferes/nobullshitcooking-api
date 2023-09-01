@@ -55,15 +55,18 @@ export const userSignedUrlController = {
       const fullSignature  = await sign(s3, objectKey, "full");
       return res.json({filename, fullSignature});
     }
+
+    //throw new Error("Invalid request.");
   }
 };
 
 async function sign(s3: S3Client, objectKey: string, imageSize: string) {
   let Key = "";
-  //if (imageSize === "large") Key = `${objectKey}-large`;  // 560/344
-  if (imageSize === "full")  Key = `${objectKey}-full`;   // 280/172
-  if (imageSize === "thumb") Key = `${objectKey}-thumb`;  // 100/62
-  if (imageSize === "tiny")  Key = `${objectKey}-tiny`;   // 28/18
+  //if (imageSize === "large")  Key = `${objectKey}-large`;   // 
+  if (imageSize === "medium") Key = `${objectKey}-medium`;  // 560/344
+  if (imageSize === "small")  Key = `${objectKey}-small`;   // 280/172
+  if (imageSize === "thumb") Key = `${objectKey}-thumb`;    // 100/62
+  if (imageSize === "tiny")  Key = `${objectKey}-tiny`;     // 28/18
 
   const signature = await getSignedUrl(s3, new PutObjectCommand({
     Bucket: USER_BUCKET,

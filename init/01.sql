@@ -49,10 +49,13 @@ CREATE TABLE friendship (
 CREATE TABLE image (
   `image_id`   CHAR(36)     PRIMARY KEY,
   `image_url`  VARCHAR(100) NOT NULL,
-  `alt_text`   VARCHAR(100) NOT NULL DEFAULT '',
   `caption`    VARCHAR(150) NOT NULL DEFAULT '',
+  `author_id`  CHAR(36)     NOT NULL,
+  `owner_id`   CHAR(36)     NOT NULL,
   `created_at` TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `updated_at` TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (`author_id`)      REFERENCES `user` (`user_id`),
+  FOREIGN KEY (`owner_id`)       REFERENCES `user` (`user_id`)
 );
 
 --==============================================================================
@@ -61,7 +64,6 @@ CREATE TABLE video (
   `video_id`   CHAR(36)     PRIMARY KEY,
   `video_url`  VARCHAR(100) NOT NULL,
   `title`      VARCHAR(100) NOT NULL DEFAULT '',
-  `alt_text`   VARCHAR(100) NOT NULL DEFAULT '',
   `caption`    VARCHAR(150) NOT NULL DEFAULT '',
   `created_at` TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -213,20 +215,18 @@ CREATE TABLE recipe (
   `recipe_id`         CHAR(36)         PRIMARY KEY,
   `recipe_type_id`    TINYINT UNSIGNED NOT NULL,
   `cuisine_id`        TINYINT UNSIGNED NOT NULL,
-  `author_id`          CHAR(36)         NOT NULL,
+  `author_id`         CHAR(36)         NOT NULL,
   `owner_id`          CHAR(36)         NOT NULL,
   `title`             VARCHAR(100)     NOT NULL UNIQUE,
   `description`       VARCHAR(150)     NOT NULL DEFAULT '',
   `active_time`       TIME             NOT NULL,
   `total_time`        TIME             NOT NULL,
   `directions`        TEXT             NOT NULL,
-  `image_id`          CHAR(36)         NOT NULL,
-  --`video_id`          CHAR(36)         NOT NULL,
   `created_at`        TIMESTAMP                 DEFAULT CURRENT_TIMESTAMP,
   `updated_at`        TIMESTAMP                 DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (`recipe_type_id`) REFERENCES `recipe_type` (`recipe_type_id`),
   FOREIGN KEY (`cuisine_id`)     REFERENCES `cuisine` (`cuisine_id`),
-  FOREIGN KEY (`author_id`)       REFERENCES `user` (`user_id`)
+  FOREIGN KEY (`author_id`)      REFERENCES `user` (`user_id`),
   FOREIGN KEY (`owner_id`)       REFERENCES `user` (`user_id`)
 );
 
