@@ -35,11 +35,11 @@ export function Notes(notes: string | undefined) {
   return notes;
 }
 
-export function ImageURL(url: string) {
-  if (url.length > 100) {
-    throw new Error("Image URL must be no more than 100 characters.");
+export function ImageFilename(filename: string) {
+  if (filename.length > 100) {
+    throw new Error("Image filename must be no more than 100 characters.");
   }
-  return url;
+  return filename;
 }
 
 export const UNKNOWN_USER_ID = "00000000-0000-0000-0000-000000000000";

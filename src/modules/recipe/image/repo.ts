@@ -5,7 +5,7 @@ import { MySQLRepo } from '../../shared/MySQL';
 export class RecipeImageRepo extends MySQLRepo implements RecipeImageRepoInterface {
   async viewByRecipeId(recipe_id: string) {
     const sql = `
-      SELECT ri.type, ri.order, i.image_url
+      SELECT ri.type, ri.order, i.image_filename, i.caption
       FROM recipe_image ri
       INNER JOIN image i ON i.image_id = ri.image_id
       WHERE ri.recipe_id = ?
@@ -98,7 +98,8 @@ type UpdateParams = InsertParams & {
 };
 
 type RecipeImageView = RowDataPacket & {
-  type:      number;  // 1 "primary/main/face/presentation/recipe" | 2 "equipment" | 3 "ingredients" | 4 "detail/action/step/process/preparing/cooking"
-  order:     number;  // 1|2|3
-  image_url: string;
+  type:           number;  // 1 "primary/main/face/presentation/recipe" | 2 "equipment" | 3 "ingredients" | 4 "detail/action/step/process/preparing/cooking"
+  order:          number;  // 1|2|3
+  image_filename: string;
+  caption:        string;
 };

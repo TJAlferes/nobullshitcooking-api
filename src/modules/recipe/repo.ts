@@ -23,7 +23,7 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
   }
 
   async search({ term, filters, sorts, current_page, results_per_page }: SearchRequest) {
-    const owner_id = NOBSC_USER_ID;  // only public recipes are searchable 
+    const owner_id = NOBSC_USER_ID;  // only public recipes are searchable
     let sql = `
       SELECT
         r.recipe_id,
@@ -34,12 +34,12 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
         r.description,
         (
           SELECT
-            i.image_url
+            i.image_filename
           FROM recipe_image ri
           INNER JOIN recipe_image ri ON ri.recipe_id = r.recipe_id
           INNER JOIN image i         ON i.image_id = ri.image_id
           WHERE ri.type = 1
-        ) image_url
+        ) image_filename
       FROM recipe r
       INNER JOIN user u          ON u.user_id = r.author_id
       INNER JOIN recipe_type rt  ON rt.recipe_type_id = r.recipe_type_id
@@ -144,12 +144,12 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
         r.title,
         (
           SELECT
-            i.image_url
+            i.image_filename
           FROM recipe_image ri
           INNER JOIN recipe_image ri ON ri.recipe_id = r.recipe_id
           INNER JOIN image i         ON i.image_id = ri.image_id
           WHERE ri.type = 1
-        ) image_url
+        ) image_filename
       FROM recipe r
       WHERE r.author_id = ? AND r.owner_id = ?
     `;
@@ -296,7 +296,7 @@ export type RecipeOverview = RowDataPacket & {
   recipe_id: string;
   owner_id:  string;
   title:     string;
-  image_url: string;
+  image_filename: string;  // Hmm...
 };
 
 export type RecipeView = RowDataPacket & {
@@ -311,6 +311,7 @@ export type RecipeView = RowDataPacket & {
   active_time:          string;  // Date on insert?
   total_time:           string;  // Date on insert?
   directions:           string;
+  // FINISH
   images:               AssociatedImageView[];
   //video:                string;
   required_methods:     RequiredMethodView[];
@@ -320,12 +321,11 @@ export type RecipeView = RowDataPacket & {
 };
 
 type AssociatedImageView = {
-  type:      number;
-  order:     number;
-  image_id:  string;
-  image_url: string;
-  alt_text:  string;
-  caption:   string;
+  type:           number;
+  order:          number;
+  image_id:       string;
+  image_filename: string;
+  caption:        string;
 };
 
 type RequiredMethodView = {
@@ -403,13 +403,13 @@ type DeleteOneParams = {
 const viewOneSQL = `
   SELECT
     r.recipe_id,
-    u.username AS author,
-    rt.recipe_type_name,
-    c.cuisine_name,
-    r.recipe_type_id,
-    r.cuisine_id,
     r.author_id,
     r.owner_id,
+    u.username AS author,
+    r.recipe_type_id,
+    rt.recipe_type_name,
+    r.cuisine_id,
+    c.cuisine_name,
     r.title,
     r.description,
     r.active_time,
@@ -420,8 +420,7 @@ const viewOneSQL = `
         rim.type,
         rim.order,
         im.image_id,
-        im.image_url,
-        im.alt_text,
+        im.image_filename,
         im.caption
       FROM recipe_images rim
       INNER JOIN recipe_images rim ON rim.image_id = im.image_id
@@ -467,7 +466,7 @@ const viewOneSQL = `
         'unit_name',       u.unit_name,
         'subrecipe_title', r.title,
         'unit_id',         rs.unit_id,
-        'recipe_type_id',  r.recipe_type_id,
+        'subrecipe_type_id',  r.recipe_type_id,
         'cuisine_id',      r.cuisine_id,
         'subrecipe_id',    rs.subrecipe_id
       ))

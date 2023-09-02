@@ -4,7 +4,7 @@ import { MySQLRepo }                      from '../shared/MySQL';
 export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
   async bulkInsert({ placeholders, images }: BulkInsertParams) {
     const sql = `
-      INSERT INTO recipe_ingredient (image_id, image_url, alt_text, caption)
+      INSERT INTO recipe_ingredient (image_id, image_filename, caption, author_id, owner_id)
       VALUES ${placeholders}
     `;
     await this.pool.execute(sql, images);
@@ -12,8 +12,8 @@ export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
 
   async insert(params: InsertParams) {
     const sql = `
-      INSERT INTO image (image_id, image_url, alt_text, caption)
-      VALUES (:image_id, :image_url, :alt_text, :caption)
+      INSERT INTO image (image_id, image_filename, caption, author_id, owner_id)
+      VALUES (:image_id, :image_filename, :caption, :author_id, :owner_id)
     `;
     await this.pool.execute(sql, params);
   }
@@ -22,9 +22,8 @@ export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
     const sql = `
       UPDATE image
       SET
-        image_url = :image_url,
-        alt_text  = :alt_text,
-        caption   = :caption
+        image_filename = :image_filename,
+        caption        = :caption
       WHERE image_id = :image_id
       LIMIT 1
     `;
@@ -97,10 +96,11 @@ type BulkInsertParams = {
 };
 
 type InsertParams = {
-  image_id:  string;
-  image_url: string;
-  alt_text:  string;
-  caption:   string;
+  image_id:       string;
+  image_filename: string;
+  caption:        string;
+  author_id:      string;
+  owner_id:       string;
 };
 
 type UpdateParams = InsertParams;

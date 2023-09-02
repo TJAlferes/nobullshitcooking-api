@@ -47,15 +47,15 @@ CREATE TABLE friendship (
 --==============================================================================
 
 CREATE TABLE image (
-  `image_id`   CHAR(36)     PRIMARY KEY,
-  `image_url`  VARCHAR(100) NOT NULL,
-  `caption`    VARCHAR(150) NOT NULL DEFAULT '',
-  `author_id`  CHAR(36)     NOT NULL,
-  `owner_id`   CHAR(36)     NOT NULL,
-  `created_at` TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (`author_id`)      REFERENCES `user` (`user_id`),
-  FOREIGN KEY (`owner_id`)       REFERENCES `user` (`user_id`)
+  `image_id`       CHAR(36)     PRIMARY KEY,
+  `image_filename` VARCHAR(100) NOT NULL,
+  `caption`        VARCHAR(150) NOT NULL DEFAULT '',
+  `author_id`      CHAR(36)     NOT NULL,
+  `owner_id`       CHAR(36)     NOT NULL,
+  `created_at`     TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`     TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (`author_id`) REFERENCES `user` (`user_id`),
+  FOREIGN KEY (`owner_id`)  REFERENCES `user` (`user_id`)
 );
 
 --==============================================================================

@@ -1,20 +1,20 @@
 import { assert, string } from "superstruct";
 
-import { GenerateUUIDv7StringId, UUIDv7StringId, ImageURL } from "../shared/model";
+import { GenerateUUIDv7StringId, UUIDv7StringId, ImageFilename } from "../shared/model";
 
 export class Image {
   private image_id;
-  private image_url;
+  private image_filename;
   private caption;
   private author_id;
   private owner_id;
 
   private constructor(params: ConstructorParams) {
-    this.image_id  = UUIDv7StringId(params.image_id);
-    this.image_url = ImageURL(params.image_url);
-    this.caption   = Caption(params.caption);
-    this.author_id = UUIDv7StringId(params.author_id);
-    this.owner_id  = UUIDv7StringId(params.owner_id);
+    this.image_id       = UUIDv7StringId(params.image_id);
+    this.image_filename = ImageFilename(params.image_filename);
+    this.caption        = Caption(params.caption);
+    this.author_id      = UUIDv7StringId(params.author_id);
+    this.owner_id       = UUIDv7StringId(params.owner_id);
   }
 
   static create(params: CreateParams) {
@@ -26,11 +26,11 @@ export class Image {
 
   getDTO() {
     return {
-      image_id:  this.image_id,
-      image_url: this.image_url,
-      caption:   this.caption,
-      author_id: this.author_id,
-      owner_id:  this.owner_id
+      image_id:       this.image_id,
+      image_filename: this.image_filename,
+      caption:        this.caption,
+      author_id:      this.author_id,
+      owner_id:       this.owner_id
     };
   }
 }
@@ -44,10 +44,10 @@ function Caption(caption: string) {
 }
 
 type CreateParams = {
-  image_url: string;
-  caption:   string;
-  author_id: string;
-  owner_id:  string;
+  image_filename: string;
+  caption:        string;
+  author_id:      string;
+  owner_id:       string;
 };
 
 type UpdateParams = CreateParams & {

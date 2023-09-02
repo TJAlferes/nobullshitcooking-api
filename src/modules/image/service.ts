@@ -11,7 +11,7 @@ export class ImageService {
   async bulkCreate(images: ImageInfo[]) {
     if (!images) return;
 
-    const placeholders = '(?, ?, ?, ?),'
+    const placeholders = '(?, ?, ?, ?, ?),'
       .repeat(images.length)
       .slice(0, -1);
 
@@ -28,7 +28,8 @@ export class ImageService {
 }
 
 type ImageInfo = {
-  image_url: string;
-  alt_text:  string;
-  caption:   string;
+  image_filename: string;
+  caption:        string;
+  author_id:      string;
+  owner_id:       string;
 };
