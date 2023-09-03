@@ -1,12 +1,6 @@
-'use strict';
-
-import { assert } from 'superstruct';
-
-import { EquipmentRepoInterface }  from '../equipment/repo';
-import { IngredientRepoInterface } from '../ingredient/repo';
-import { Recipe }                  from './model';
-import { RecipeRepoInterface }     from './repo';
-import { NOBSC_USER_ID } from '../shared/model';
+import { EquipmentRepoInterface }  from '../../../equipment/repo';
+import { IngredientRepoInterface } from '../../../ingredient/repo';
+import { RecipeRepoInterface }     from '../../../recipe/repo';
 
 // (Official)RecipeController, PrivateRecipeController, PublicRecipeController may use this
 export class PublicRecipeService {
@@ -20,61 +14,47 @@ export class PublicRecipeService {
     this.recipeRepo     = recipeRepo;
   }
   
-  async create(params: CreateParams) {
-    const isPublic = params.owner_id === NOBSC_USER_ID;
-    if (isPublic) {
-      // Examine each required equipment/ingredient/subrecipe.
-      // If any are private, abort the creation of this recipe,
-      // as public user recipes may NOT contain private content.
-      if (params.required_equipment.length) {
-        const equipment_ids = params.required_equipment.map(re => re.equipment_id);
-        const hasPrivate = await this.equipmentRepo.hasPrivate(equipment_ids);
-        if (hasPrivate) {
-          throw new Error('Public content may not contain private content.');
-        }
-      }
-      if (params.required_ingredients.length) {
-        const ingredient_ids = params.required_ingredients.map(re => re.ingredient_id);
-        const hasPrivate = await this.ingredientRepo.hasPrivate(ingredient_ids);
-        if (hasPrivate) {
-          throw new Error('Public content may not contain private content.');
-        }
-      }
-      if (params.required_subrecipes.length) {
-        const subrecipe_ids = params.required_subrecipes.map(re => re.subrecipe_id);
-        const hasPrivate = await this.recipeRepo.hasPrivate(subrecipe_ids);
-        if (hasPrivate) {
-          throw new Error('Public content may not contain private content.');
-        }
+  async checkForPrivateContent(params: CheckForPrivateContentParams) {
+    // Examine each required equipment/ingredient/subrecipe.
+    // If any are private, abort the creation of this recipe,
+    // as public user recipes may NOT contain private content.
+    if (params.required_equipment.length) {
+      const equipment_ids = params.required_equipment.map(re => re.equipment_id);
+      const hasPrivate = await this.equipmentRepo.hasPrivate(equipment_ids);
+      if (hasPrivate) {
+        throw new Error('Public content may not contain private content.');
       }
     }
-
-
-    // and then...
-
-    const recipe = Recipe.create().getDTO();
-    const createdRecipe = await this.repo.insert(recipe);
-    //const recipeId = createdRecipe.insertId;
-    return recipe.getRecipeId();
-  }
-
-  async update(recipe_update_upload: UpdateParams) {
-    await recipe.update({id: recipeId, ...updatingRecipe});
+    if (params.required_ingredients.length) {
+      const ingredient_ids = params.required_ingredients.map(ri => ri.ingredient_id);
+      const hasPrivate = await this.ingredientRepo.hasPrivate(ingredient_ids);
+      if (hasPrivate) {
+        throw new Error('Public content may not contain private content.');
+      }
+    }
+    if (params.required_subrecipes.length) {
+      const subrecipe_ids = params.required_subrecipes.map(rs => rs.subrecipe_id);
+      const hasPrivate = await this.recipeRepo.hasPrivate(subrecipe_ids);
+      if (hasPrivate) {
+        throw new Error('Public content may not contain private content.');
+      }
+    }
   }
 }
-
-type CreateParams = RecipeUpload & {
-  author_id: string;
-  owner_id:  string;
-};
-
-type UpdateParams = RecipeUpdateUpload;
 
 type ConstructorParams = {
   equipmentRepo:  EquipmentRepoInterface;
   ingredientRepo: IngredientRepoInterface;
   recipeRepo:     RecipeRepoInterface;
 };
+
+type CheckForPrivateContentParams = {
+  required_equipment:   RequiredEquipment[];
+  required_ingredients: RequiredIngredient[];
+  required_subrecipes:  RequiredSubrecipe[];
+};
+
+
 
 export type RecipeUpload = {
   recipe_type_id:       number;

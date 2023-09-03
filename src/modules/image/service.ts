@@ -8,7 +8,7 @@ export class ImageService {
     this.repo = repo;
   }
 
-  async bulkCreate(images: ImageInfo[]) {
+  async bulkCreate({ author_id, owner_id, images }: BulkCreateParams) {
     if (!images) return;
 
     const placeholders = '(?, ?, ?, ?, ?),'
@@ -16,7 +16,12 @@ export class ImageService {
       .slice(0, -1);
 
     const valid_images = images.map(image =>
-      Image.create(image).getDTO()
+      Image.create({
+        author_id,
+        owner_id,
+        image_filename: image.image_filename,
+        caption: image.caption
+      }).getDTO()
     );
 
     await this.repo.bulkInsert({placeholders, images: valid_images});
@@ -27,9 +32,15 @@ export class ImageService {
   }
 }
 
-type ImageInfo = {
+type BulkCreateParams = {
+  author_id: string;
+  owner_id:  string;
+  images:    ImageInfo[];
+}
+
+type ImageUpload = {
   image_filename: string;
   caption:        string;
-  author_id:      string;
-  owner_id:       string;
+  medium: null;
+  thumb?: null;
 };

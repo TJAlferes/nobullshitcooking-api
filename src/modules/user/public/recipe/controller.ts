@@ -14,6 +14,7 @@ import { RecipeMethodRepo }        from '../../../recipe/required-method/repo';
 import { RecipeMethodService }     from '../../../recipe/required-method/service';
 import { RecipeSubrecipeRepo }     from '../../../recipe/required-subrecipe/repo';
 import { RecipeSubrecipeService }  from '../../../recipe/required-subrecipe/service';
+import { Recipe }                  from '../../../recipe/model';
 import { RecipeRepo }              from '../../../recipe/repo';
 import { NOBSC_USER_ID }           from '../../../shared/model';
 import { PublicRecipeService }     from './service';
@@ -80,11 +81,21 @@ export const publicRecipeController = {
     const author_id      = req.session.userInfo!.user_id;
     const owner_id       = NOBSC_USER_ID;
 
-    const equipmentRepo = new EquipmentRepo();
+    const equipmentRepo  = new EquipmentRepo();
     const ingredientRepo = new IngredientRepo();
-    const recipeRepo    = new RecipeRepo();
-    const recipeService = new RecipeService(recipeRepo);
-    const recipe_id = await recipeService.create({
+    const recipeRepo     = new RecipeRepo();
+    const { checkForPrivateContent } = new PublicRecipeService({
+      equipmentRepo,
+      ingredientRepo,
+      recipeRepo
+    });
+    await checkForPrivateContent({
+      required_equipment,
+      required_ingredients,
+      required_subrecipes,
+    });  // important
+
+    const recipe = Recipe.create({
       recipe_type_id,
       cuisine_id,
       author_id,
@@ -93,12 +104,8 @@ export const publicRecipeController = {
       description,
       active_time,
       total_time,
-      directions,
-      recipe_image,
-      equipment_image,
-      ingredients_image,
-      cooking_image
-    });
+      directions
+    }).getDTO();
 
     const recipeMethodRepo    = new RecipeMethodRepo();
     const recipeMethodService = new RecipeMethodService(recipeMethodRepo);
@@ -118,11 +125,20 @@ export const publicRecipeController = {
 
     const imageRepo    = new ImageRepo();
     const imageService = new ImageService(imageRepo);
-    const associated_images = await imageService.create({});
+    const associated_images = await imageService.bulkCreate({
+      author_id,
+      owner_id,
+      images: [
+        recipe_image,
+        equipment_image,
+        ingredients_image,
+        cooking_image
+      ]
+    });
 
     const recipeImageRepo    = new RecipeImageRepo();
     const recipeImageService = new RecipeImageService(recipeImageRepo);
-    await recipeImageService.create({recipe_id, associated_images});
+    await recipeImageService.create({recipe_id: recipe.recipe_id, associated_images});
 
     return res.send({message: 'Recipe created.'});
   },

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
-import { RecipeRepo } from './repo';
 import { NOBSC_USER_ID } from '../shared/model';
+import { RecipeRepo }    from './repo';
 
 // Only for official recipes. See:
 // src/modules/user/public/recipe/controller.ts for public  user recipes and
