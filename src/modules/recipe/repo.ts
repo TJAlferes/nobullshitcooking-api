@@ -400,6 +400,7 @@ type DeleteOneParams = {
   owner_id:  string;
 };
 
+// split this into two view, one for RecipeDetailViewSQL and one for ExistingRecipeToEditViewSQL
 const viewOneSQL = `
   SELECT
     r.recipe_id,
@@ -422,8 +423,9 @@ const viewOneSQL = `
         im.image_id,
         im.image_filename,
         im.caption
-      FROM recipe_images rim
-      INNER JOIN recipe_images rim ON rim.image_id = im.image_id
+      FROM recipe_image rim
+      INNER JOIN recipe_image rim ON rim.recipe_id = r.recipe_id
+      INNER JOIN image i          ON i.image_id = rim.image
       WHERE rim.recipe_id = r.recipe_id
     ) images,
     (
@@ -483,3 +485,97 @@ const viewOneSQL = `
 `;
 
 // TO DO: ingredient_fullname
+
+const RecipeDetailViewSQL = `
+SELECT
+r.recipe_id,
+r.author_id,
+u.username AS author,
+(
+  i.image_filename
+  FROM image i
+  INNER JOIN user_image ui ON i.image_id = ui.image_id
+  WHERE ui.user_id = r.author_id AND ui.current = true
+) AS author_avatar,
+rt.recipe_type_name,
+c.cuisine_name,
+r.title,
+r.description,
+r.active_time,
+r.total_time,
+r.directions,
+(
+  SELECT i.image_filename, i.caption
+  FROM image i
+  INNER JOIN recipe_image ri ON i.image_id = ri.image_id
+  WHERE ri.recipe_id = r.recipe_id AND ri.type = 1
+) AS recipe_image,
+(
+  SELECT i.image_filename, i.caption
+  FROM image i
+  INNER JOIN recipe_image ri ON i.image_id = ri.image_id
+  WHERE ri.recipe_id = r.recipe_id AND ri.type = 2
+) AS equipment_image,
+(
+  SELECT i.image_filename, i.caption
+  FROM image i
+  INNER JOIN recipe_image ri ON i.image_id = ri.image_id
+  WHERE ri.recipe_id = r.recipe_id AND ri.type = 3
+) AS ingredients_image,
+(
+  SELECT i.image_filename, i.caption
+  FROM image i
+  INNER JOIN recipe_image ri ON i.image_id = ri.image_id
+  WHERE ri.recipe_id = r.recipe_id AND ri.type = 4
+) AS cooking_image,
+(
+  SELECT JSON_ARRAYAGG(JSON_OBJECT(
+    'method_name', m.method_name
+  ))
+  FROM methods m
+  INNER JOIN recipe_method rm ON rm.method_id = m.method_id
+  WHERE rm.recipe_id = r.recipe_id
+) methods,
+(
+  SELECT JSON_ARRAYAGG(JSON_OBJECT(
+    'amount',         re.amount,
+    'equipment_name', e.equipment_name
+  ))
+  FROM equipment e
+  INNER JOIN recipe_equipment re ON re.equipment_id = e.equipment_id
+  WHERE re.recipe_id = r.recipe_id
+) equipment,
+(
+  SELECT JSON_ARRAYAGG(JSON_OBJECT(
+    'amount',              ri.amount,
+    'unit_name',           u.unit_name,
+    'ingredient_fullname', CONCAT_WS(
+                             ' ',
+                             i.ingredient_brand,
+                             i.ingredient_variety,
+                             i.ingredient_name,
+                             IFNULL(GROUP_CONCAT(n.alt_name SEPARATOR ' '), '')
+                           )
+  ))
+  FROM ingredients i
+  INNER JOIN recipe_ingredient ri  ON ri.ingredient_id = i.ingredient_id
+  INNER JOIN unit u                ON u.unit_id = ri.unit_id
+  INNER JOIN ingredient_alt_name n ON n.ingredient_id = i.ingredient_id
+  WHERE ri.recipe_id = r.recipe_id
+) ingredients,
+(
+  SELECT JSON_ARRAYAGG(JSON_OBJECT(
+    'amount',          rs.amount,
+    'unit_name',       u.unit_name,
+    'subrecipe_title', r.title
+  ))
+  FROM recipes r
+  INNER JOIN recipe_subrecipe rs ON rs.subrecipe_id = r.recipe_id
+  INNER JOIN unit u              ON u.unit_id = rs.unit_id
+  WHERE rs.recipe_id = r.recipe_id
+) subrecipes
+
+`;
+const ExistingRecipeToEditViewSQL = `
+
+`;

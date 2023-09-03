@@ -4,14 +4,10 @@ CREATE DATABASE nobsc CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 USE nobsc;
 
---==============================================================================
-
 CREATE TABLE unit (
   `unit_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `unit_name` VARCHAR(25)      NOT NULL DEFAULT ''
 );
-
---==============================================================================
 
 CREATE TABLE staff (
   `staff_id`          CHAR(36)     PRIMARY KEY,
@@ -23,8 +19,6 @@ CREATE TABLE staff (
   `updated_at`        TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
---==============================================================================
-
 CREATE TABLE user (
   `user_id`           CHAR(36)     PRIMARY KEY,
   `email`             VARCHAR(60)  NOT NULL UNIQUE,
@@ -35,7 +29,6 @@ CREATE TABLE user (
   `updated_at`        TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- this may need improvement
 CREATE TABLE friendship (
   `user_id`   CHAR(36)    NOT NULL,
   `friend_id` CHAR(36)    NOT NULL,
@@ -43,8 +36,6 @@ CREATE TABLE friendship (
   FOREIGN KEY (`user_id`)   REFERENCES `user` (`user_id`) ON DELETE CASCADE,
   FOREIGN KEY (`friend_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
 );
-
---==============================================================================
 
 CREATE TABLE image (
   `image_id`       CHAR(36)     PRIMARY KEY,
@@ -58,18 +49,22 @@ CREATE TABLE image (
   FOREIGN KEY (`owner_id`)  REFERENCES `user` (`user_id`)
 );
 
---==============================================================================
+CREATE TABLE user_image (
+  `user_id`  CHAR(36) NOT NULL,
+  `image_id` CHAR(36) NOT NULL,
+  `current`  BOOLEAN  NOT NULL DEFAULT false,
+  FOREIGN KEY (`user_id`)  REFERENCES `user` (`user_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`image_id`) REFERENCES `image` (`image_id`) ON DELETE CASCADE
+);
 
-CREATE TABLE video (
+/*CREATE TABLE video (
   `video_id`   CHAR(36)     PRIMARY KEY,
   `video_url`  VARCHAR(100) NOT NULL,
   `title`      VARCHAR(100) NOT NULL DEFAULT '',
   `caption`    VARCHAR(150) NOT NULL DEFAULT '',
   `created_at` TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
---==============================================================================
+);*/
 
 CREATE TABLE chatgroup (
   `chatgroup_id`   CHAR(36)    PRIMARY KEY,
@@ -126,8 +121,6 @@ CREATE TABLE chatroom_user (
   FOREIGN KEY (`user_id`)     REFERENCES `user` (`user_id`) ON DELETE CASCADE
 );
 
---==============================================================================
-
 CREATE TABLE equipment_type (
   `equipment_type_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   `equipment_type_name` VARCHAR(25)      NOT NULL DEFAULT ''
@@ -144,8 +137,6 @@ CREATE TABLE equipment (
   FOREIGN KEY (`owner_id`)          REFERENCES `user` (`user_id`) ON DELETE CASCADE,
   FOREIGN KEY (`image_id`)          REFERENCES `image` (`image_id`)
 );
-
---==============================================================================
 
 CREATE TABLE ingredient_type (
   `ingredient_type_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -172,25 +163,17 @@ CREATE TABLE ingredient_alt_name (
   FOREIGN KEY (`ingredient_id`) REFERENCES `ingredient` (`ingredient_id`) ON DELETE CASCADE,
 );
 
---==============================================================================
-
 -- CREATE TABLE page ();
 
 -- CREATE TABLE page_image ();
-
---==============================================================================
 
 -- CREATE TABLE post ();
 
 -- CREATE TABLE post_image ();
 
---==============================================================================
-
 -- CREATE TABLE product ();
 
 -- CREATE TABLE product_image ();
-
---==============================================================================
 
 CREATE TABLE recipe_type (
   `recipe_type_id`   TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -210,7 +193,6 @@ CREATE TABLE cuisine (
   `country_name`   VARCHAR(50)      NOT NULL DEFAULT '' UNIQUE
 );
 
--- official recipes created by staff
 CREATE TABLE recipe (
   `recipe_id`         CHAR(36)         PRIMARY KEY,
   `recipe_type_id`    TINYINT UNSIGNED NOT NULL,
@@ -287,8 +269,6 @@ CREATE TABLE saved_recipe (
   FOREIGN KEY (`user_id`)   REFERENCES `user` (`user_id`) ON DELETE CASCADE,
   FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`recipe_id`) ON DELETE CASCADE
 );
-
---==============================================================================
 
 CREATE TABLE plan (
   `plan_id`   CHAR(36)    PRIMARY KEY,

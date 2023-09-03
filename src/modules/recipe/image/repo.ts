@@ -75,8 +75,8 @@ export class RecipeImageRepo extends MySQLRepo implements RecipeImageRepoInterfa
 
 export interface RecipeImageRepoInterface {
   viewByRecipeId:   (recipe_id: string) =>    Promise<RecipeImageView[]>;
-  insert:           (params: InsertParams) => Promise<void>;
-  update:           (params: UpdateParams) => Promise<void>;
+  insert:           (params: InsertParams) => Promise<void>;  // rename to bulkInsert
+  update:           (params: UpdateParams) => Promise<void>;  // rename to bulkUpdate
   deleteByImageId:  (image_id: string) =>     Promise<void>;
   deleteByRecipeId: (recipe_id: string) =>    Promise<void>;
 }
