@@ -128,7 +128,7 @@ export const publicRecipeController = {
     const associated_images = await imageService.bulkCreate({
       author_id,
       owner_id,
-      images: [
+      uploaded_images: [
         recipe_image,
         equipment_image,
         ingredients_image,
@@ -136,9 +136,11 @@ export const publicRecipeController = {
       ]
     });
 
-    const recipeImageRepo    = new RecipeImageRepo();
-    const recipeImageService = new RecipeImageService(recipeImageRepo);
-    await recipeImageService.create({recipe_id: recipe.recipe_id, associated_images});
+    if (associated_images && associated_images.length) {
+      const recipeImageRepo    = new RecipeImageRepo();
+      const recipeImageService = new RecipeImageService(recipeImageRepo);
+      await recipeImageService.create({recipe_id: recipe.recipe_id, associated_images});
+    }
 
     return res.send({message: 'Recipe created.'});
   },
@@ -165,7 +167,7 @@ export const publicRecipeController = {
     }= req.body.recipeInfo;
     const recipe_type_id = Number(req.body.recipeInfo.recipe_type_id);
     const cuisine_id     = Number(req.body.recipeInfo.cuisine_id);
-    const author_id      = req.session.userInfo!.id;
+    const author_id      = req.session.userInfo!.user_id;
     const owner_id       = 1;
 
     const updatingRecipe = {

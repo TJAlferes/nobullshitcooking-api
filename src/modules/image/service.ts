@@ -8,39 +8,65 @@ export class ImageService {
     this.repo = repo;
   }
 
-  async bulkCreate({ author_id, owner_id, images }: BulkCreateParams) {
-    if (!images) return;
+  async bulkCreate({ author_id, owner_id, uploaded_images }: BulkCreateParams) {
+    if (!uploaded_images) return;
 
     const placeholders = '(?, ?, ?, ?, ?),'
-      .repeat(images.length)
+      .repeat(uploaded_images.length)
       .slice(0, -1);
-
-    const valid_images = images.map(image =>
-      Image.create({
+    
+    const images: ImageDTO[] = [];
+    const associated_images: AssociatedImage[] = [];  // needed for recipe_image table (see: recipe controllers)
+    
+    uploaded_images.map(uploaded_image => {
+      const image = Image.create({
         author_id,
         owner_id,
-        image_filename: image.image_filename,
-        caption: image.caption
-      }).getDTO()
-    );
+        image_filename: uploaded_image.image_filename,
+        caption:        uploaded_image.caption
+      }).getDTO();
 
-    await this.repo.bulkInsert({placeholders, images: valid_images});
+      images.push(image);
 
-    const image_ids = valid_images.map(image => image.image_id);
+      associated_images.push({
+        image_id: image.image_id,
+        type:     uploaded_image.type,
+        order:    uploaded_image.order
+      });
+    });
 
-    return image_ids;
+    await this.repo.bulkInsert({placeholders, images});
+
+    return associated_images;
   }
 }
 
 type BulkCreateParams = {
-  author_id: string;
-  owner_id:  string;
-  images:    ImageInfo[];
+  author_id:       string;
+  owner_id:        string;
+  uploaded_images: ImageUpload[];
 }
 
 type ImageUpload = {
   image_filename: string;
   caption:        string;
-  medium: null;
-  thumb?: null;
+  type:           number;
+  order:          number;
+  medium:         null;
+  thumb?:         null;
+  tiny?:          null;
+};
+
+type ImageDTO = {
+  image_id:       string;
+  image_filename: string;
+  caption:        string;
+  author_id:      string;
+  owner_id:       string;
+};
+
+type AssociatedImage = {
+  image_id: string;
+  type:     number;
+  order:    number;
 };
