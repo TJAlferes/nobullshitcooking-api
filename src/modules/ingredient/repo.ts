@@ -99,6 +99,16 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
     };
   }
 
+  async hasPrivate(ingredient_ids: string[]) {
+    const sql = `
+      SELECT *
+      FROM ingredient
+      WHERE ingredient_id IN ? AND (author_id = owner_id)
+    `;
+    const rows = await this.pool.execute(sql, ingredient_ids);
+    return rows.length ? true : false;
+  }
+
   async viewAll(owner_id: string) {
     const sql = `
       SELECT
@@ -230,6 +240,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
 export interface IngredientRepoInterface {
   autosuggest: (term: string) =>                 Promise<IngredientSuggestionView[]>;
   search:      (searchRequest: SearchRequest) => Promise<SearchResponse>;
+  hasPrivate:  (ingredient_ids: string[]) =>     Promise<boolean>;
   viewAll:     (owner_id: string) =>             Promise<IngredientView[]>;
   viewOne:     (params: ViewOneParams) =>        Promise<IngredientView>;
   insert:      (params: InsertParams) =>         Promise<void>;

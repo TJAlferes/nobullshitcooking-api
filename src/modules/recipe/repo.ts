@@ -121,6 +121,16 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
     };
   }
 
+  async hasPrivate(recipe_ids: string[]) {
+    const sql = `
+      SELECT *
+      FROM recipe
+      WHERE recipe_id IN ? AND (author_id = owner_id)
+    `;
+    const rows = await this.pool.execute(sql, recipe_ids);
+    return rows.length ? true : false;
+  }
+
   async viewAllOfficialTitles() {
     const author_id = NOBSC_USER_ID;
     const owner_id  = NOBSC_USER_ID;
@@ -278,6 +288,7 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
 export interface RecipeRepoInterface {
   autosuggest:           (term: string) =>                    Promise<SuggestionView[]>;
   search:                (searchRequest: SearchRequest) =>    Promise<SearchResponse>;
+  hasPrivate:            (recipe_ids: string[]) =>            Promise<boolean>;
   viewAllOfficialTitles: () =>                                Promise<TitleView[]>;
   overviewAll:           (params: OverviewAllParams) =>       Promise<RecipeOverview[]>;
   viewOneByRecipeId:     (params: ViewOneByRecipeIdParams) => Promise<RecipeView>;

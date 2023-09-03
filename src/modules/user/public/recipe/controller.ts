@@ -1,5 +1,11 @@
 import { Request, Response } from 'express';
 
+import { EquipmentRepo }           from '../../../equipment/repo';
+import { IngredientRepo }          from '../../../ingredient/repo';
+import { ImageRepo }               from '../../../image/repo';
+import { ImageService }            from '../../../image/service';
+import { RecipeImageRepo }         from '../../../recipe/image/repo';
+import { RecipeImageService }      from '../../../recipe/image/service';
 import { RecipeEquipmentRepo }     from '../../../recipe/required-equipment/repo';
 import { RecipeEquipmentService }  from '../../../recipe/required-equipment/service';
 import { RecipeIngredientRepo }    from '../../../recipe/required-ingredient/repo';
@@ -8,41 +14,50 @@ import { RecipeMethodRepo }        from '../../../recipe/required-method/repo';
 import { RecipeMethodService }     from '../../../recipe/required-method/service';
 import { RecipeSubrecipeRepo }     from '../../../recipe/required-subrecipe/repo';
 import { RecipeSubrecipeService }  from '../../../recipe/required-subrecipe/service';
-//import { PublicRecipeRepo }        from './repo';
 import { RecipeRepo }              from '../../../recipe/repo';
-import { RecipeService }           from '../../../recipe/service';
+import { NOBSC_USER_ID }           from '../../../shared/model';
+import { PublicRecipeService }     from './service';
 
-// MERGE WITH recipeController??? DON'T if possible
 export const publicRecipeController = {
-  async viewAllTitles(req: Request, res: Response) {
-    const repo = new PublicRecipeRepo();
-    const rows = await repo.viewAllTitles();
-
-    return res.send(rows);
-  },  // for Next.js getStaticPaths
-
   async overviewAll(req: Request, res: Response) {
-    const owner_id = req.session.userInfo!.id;
+    const author_id = req.session.userInfo!.user_id;
+    const owner_id  = NOBSC_USER_ID
 
-    const recipeRepo = new PublicRecipeRepo();
-    const recipeService = new RecipeService(recipeRepo);
-    const rows = await RecipeService.viewAll(author_id);
-    //const rows = await recipeRepo.viewAll({author_id, owner_id});
+    const repo = new RecipeRepo();
+    const rows = await repo.overviewAll({author_id, owner_id});
 
     return res.send(rows);
   },
 
   async viewOne(req: Request, res: Response) {
     const title     = unslugify(req.params.title);
-    const author    = unslugify(req.params.usename);
-    const author_id = req.session.userInfo!.id;
-    const owner_id  = 1;
+    const author    = unslugify(req.params.usename);  // hmm...
+    const author_id = req.session.userInfo!.user_id;
+    const owner_id  = NOBSC_USER_ID;
 
-    const recipeRepo = new PublicRecipeRepo()
-    const row = await recipeRepo.viewOne({title, authorId, ownerId});
+    const repo = new RecipeRepo()
+    const row = await repo.viewOneByTitle({title, author_id, owner_id});
     
     return res.send(row);
   },
+
+  async edit(req: Request, res: Response) {
+    const recipe_id = req.body.recipe_id;
+    const author_id = req.session.userInfo!.user_id;
+    const owner_id  = NOBSC_USER_ID;
+
+    const repo = new RecipeRepo();
+    const rows = await repo.viewExistingRecipeToEdit({recipe_id, author_id, owner_id});
+
+    return res.send(rows);
+  },
+
+  async viewAllTitles(req: Request, res: Response) {
+    const repo = new RecipeRepo();
+    const rows = await repo.viewPublicAllTitles();
+
+    return res.send(rows);
+  },  // for Next.js getStaticPaths
 
   async create(req: Request, res: Response) {
     const {
@@ -59,13 +74,17 @@ export const publicRecipeController = {
       equipment_image,
       ingredients_image,
       cooking_image
-    } = req.body.recipeInfo;
+    } = req.body.recipe_upload;
     const recipe_type_id = Number(req.body.recipeInfo.recipe_type_id);
     const cuisine_id     = Number(req.body.recipeInfo.cuisine_id);
-    const author_id      = req.session.userInfo!.id;
-    const owner_id       = 1;
+    const author_id      = req.session.userInfo!.user_id;
+    const owner_id       = NOBSC_USER_ID;
 
-    const creatingRecipe = {
+    const equipmentRepo = new EquipmentRepo();
+    const ingredientRepo = new IngredientRepo();
+    const recipeRepo    = new RecipeRepo();
+    const recipeService = new RecipeService(recipeRepo);
+    const recipe_id = await recipeService.create({
       recipe_type_id,
       cuisine_id,
       author_id,
@@ -75,16 +94,11 @@ export const publicRecipeController = {
       active_time,
       total_time,
       directions,
-      
       recipe_image,
       equipment_image,
       ingredients_image,
       cooking_image
-    };
-
-    const recipeRepo    = new PublicRecipeRepo();
-    const recipeService = new RecipeService(recipeRepo);
-    await recipeService.create(creatingRecipe);
+    });
 
     const recipeMethodRepo    = new RecipeMethodRepo();
     const recipeMethodService = new RecipeMethodService(recipeMethodRepo);
@@ -104,7 +118,11 @@ export const publicRecipeController = {
 
     const imageRepo    = new ImageRepo();
     const imageService = new ImageService(imageRepo);
-    await imageService.create({});
+    const associated_images = await imageService.create({});
+
+    const recipeImageRepo    = new RecipeImageRepo();
+    const recipeImageService = new RecipeImageService(recipeImageRepo);
+    await recipeImageService.create({recipe_id, associated_images});
 
     return res.send({message: 'Recipe created.'});
   },

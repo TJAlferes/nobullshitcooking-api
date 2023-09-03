@@ -82,6 +82,16 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
     };
   }
 
+  async hasPrivate(equipment_ids: string[]) {
+    const sql = `
+      SELECT *
+      FROM equipment
+      WHERE equipment_id IN ? AND (author_id = owner_id)
+    `;
+    const rows = await this.pool.execute(sql, equipment_ids);
+    return rows.length ? true : false;
+  }
+
   async viewAll(owner_id: string) {
     const sql = `
       SELECT
@@ -183,6 +193,7 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
 export interface EquipmentRepoInterface {
   autosuggest: (term: string) =>                  Promise<EquipmentSuggestionView[]>;
   search:      (search_request: SearchRequest) => Promise<SearchResponse>;
+  hasPrivate:  (equipment_ids: string[]) =>       Promise<boolean>;
   viewAll:     (owner_id: string) =>              Promise<EquipmentView[]>;
   viewOne:     (params: ViewOneParams) =>         Promise<EquipmentView>;
   insert:      (params: InsertParams) =>          Promise<void>;

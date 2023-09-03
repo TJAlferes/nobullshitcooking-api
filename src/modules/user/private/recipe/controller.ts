@@ -14,7 +14,6 @@ import { RecipeSubrecipeRepo }     from '../../../recipe/required-subrecipe/repo
 import { RecipeSubrecipeService }  from '../../../recipe/required-subrecipe/service';
 import { Recipe }                  from '../../../recipe/model';
 import { RecipeRepo }              from '../../../recipe/repo';
-//import { RecipeService }           from '../../../recipe/service';
 
 export const privateRecipeController = {
   async overviewAll(req: Request, res: Response) {
@@ -71,7 +70,7 @@ export const privateRecipeController = {
       cooking_image3
       ]
 
-    } = req.body.recipeInfo;
+    } = req.body.recipe_upload;
     const recipe_type_id = Number(req.body.recipeInfo.recipe_type_id);
     const cuisine_id     = Number(req.body.recipeInfo.cuisine_id);
     const author_id      = req.session.userInfo!.user_id;
@@ -95,17 +94,6 @@ export const privateRecipeController = {
     const recipeRepo = new RecipeRepo();
     await recipeRepo.insert(recipe);
 
-    const imageRepo    = new ImageRepo();
-    const imageService = new ImageService(imageRepo);
-
-    const associated_images = await Promise.all([
-      imageRepo.insert
-    ]);
-
-    const recipeImageRepo = new RecipeImageRepo();
-    const recipeImageService = new RecipeImageService(recipeImageRepo);
-    await recipeImageService.create({recipe_id: recipe.recipe_id, associated_images});
-
     const recipeMethodRepo    = new RecipeMethodRepo();
     const recipeMethodService = new RecipeMethodService(recipeMethodRepo);
     await recipeMethodService.create(required_methods);
@@ -121,6 +109,16 @@ export const privateRecipeController = {
     const recipeSubrecipeRepo    = new RecipeSubrecipeRepo();
     const recipeSubrecipeService = new RecipeSubrecipeService(recipeSubrecipeRepo);
     await recipeSubrecipeService.create(required_subrecipes);
+
+    const imageRepo    = new ImageRepo();
+    const imageService = new ImageService(imageRepo);
+    const associated_images = await Promise.all([
+      imageRepo.insert
+    ]);
+
+    const recipeImageRepo    = new RecipeImageRepo();
+    const recipeImageService = new RecipeImageService(recipeImageRepo);
+    await recipeImageService.create({recipe_id: recipe.recipe_id, associated_images});
 
     return res.send({message: 'Recipe created.'});
   },
