@@ -38,6 +38,17 @@ export const privateRecipeController = {
     return res.send(row);
   },
 
+  async edit(req: Request, res: Response) {
+    const recipe_id = req.body.recipe_id;
+    const author_id = req.session.userInfo!.user_id;
+    const owner_id  = req.session.userInfo!.user_id;
+
+    const repo = new RecipeRepo();
+    const rows = await repo.viewExistingRecipeToEdit({recipe_id, author_id, owner_id});
+
+    return res.send(rows);
+  },
+
   async create(req: Request, res: Response) {
     const {
       title,

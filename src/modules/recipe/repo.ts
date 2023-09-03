@@ -158,13 +158,19 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
   }  // for logged in user
 
   async viewOneByRecipeId(params: ViewOneByRecipeIdParams) {
-    const sql = `${viewOneSQL} AND r.recipe_id = ?`;
+    const sql = `${recipeDetailViewSQL} AND r.recipe_id = ?`;
     const [ [ row ] ] = await this.pool.execute<RecipeView[]>(sql, params);
     return row;
   }
 
   async viewOneByTitle(params: ViewOneByTitleParams) {
-    const sql = `${viewOneSQL} AND r.title = ?`;
+    const sql = `${recipeDetailViewSQL} AND r.title = ?`;
+    const [ [ row ] ] = await this.pool.execute<RecipeView[]>(sql, params);
+    return row;
+  }
+
+  async viewExistingRecipeToEdit(params: ViewExistingRecipeToEditParams) {
+    const sql = `${existingRecipeToEditViewSQL} AND r.recipe_id = ?`;
     const [ [ row ] ] = await this.pool.execute<RecipeView[]>(sql, params);
     return row;
   }
@@ -376,6 +382,8 @@ type ViewOneByTitleParams = {
   owner_id:  string;
 };
 
+type ViewExistingRecipeToEditParams = ViewOneByRecipeIdParams;
+
 export type InsertParams = {
   recipe_id:      string;
   recipe_type_id: number;
@@ -400,16 +408,18 @@ type DeleteOneParams = {
   owner_id:  string;
 };
 
-// split this into two view, one for RecipeDetailViewSQL and one for ExistingRecipeToEditViewSQL
-const viewOneSQL = `
+const recipeDetailViewSQL = `
   SELECT
     r.recipe_id,
     r.author_id,
-    r.owner_id,
     u.username AS author,
-    r.recipe_type_id,
+    (
+      i.image_filename
+      FROM image i
+      INNER JOIN user_image ui ON i.image_id = ui.image_id
+      WHERE ui.user_id = r.author_id AND ui.current = true
+    ) AS author_avatar,
     rt.recipe_type_name,
-    r.cuisine_id,
     c.cuisine_name,
     r.title,
     r.description,
@@ -417,66 +427,75 @@ const viewOneSQL = `
     r.total_time,
     r.directions,
     (
-      SELECT
-        rim.type,
-        rim.order,
-        im.image_id,
-        im.image_filename,
-        im.caption
-      FROM recipe_image rim
-      INNER JOIN recipe_image rim ON rim.recipe_id = r.recipe_id
-      INNER JOIN image i          ON i.image_id = rim.image
-      WHERE rim.recipe_id = r.recipe_id
-    ) images,
+      SELECT i.image_filename, i.caption
+      FROM image i
+      INNER JOIN recipe_image ri ON i.image_id = ri.image_id
+      WHERE ri.recipe_id = r.recipe_id AND ri.type = 1
+    ) AS recipe_image,
+    (
+      SELECT i.image_filename, i.caption
+      FROM image i
+      INNER JOIN recipe_image ri ON i.image_id = ri.image_id
+      WHERE ri.recipe_id = r.recipe_id AND ri.type = 2
+    ) AS equipment_image,
+    (
+      SELECT i.image_filename, i.caption
+      FROM image i
+      INNER JOIN recipe_image ri ON i.image_id = ri.image_id
+      WHERE ri.recipe_id = r.recipe_id AND ri.type = 3
+    ) AS ingredients_image,
+    (
+      SELECT i.image_filename, i.caption
+      FROM image i
+      INNER JOIN recipe_image ri ON i.image_id = ri.image_id
+      WHERE ri.recipe_id = r.recipe_id AND ri.type = 4
+    ) AS cooking_image,
     (
       SELECT JSON_ARRAYAGG(JSON_OBJECT(
-        'method_name', m.method_name,
-        'method_id',   rm.method_id
+        'method_name', m.method_name
       ))
       FROM methods m
       INNER JOIN recipe_method rm ON rm.method_id = m.method_id
       WHERE rm.recipe_id = r.recipe_id
-    ) methods,
+    ) required_methods,
     (
       SELECT JSON_ARRAYAGG(JSON_OBJECT(
-        'amount',            re.amount,
-        'equipment_name',    e.equipment_name,
-        'equipment_type_id', e.equipment_type_id,
-        'equipment_id',      re.equipment_id
+        'amount',         re.amount,
+        'equipment_name', e.equipment_name
       ))
       FROM equipment e
       INNER JOIN recipe_equipment re ON re.equipment_id = e.equipment_id
       WHERE re.recipe_id = r.recipe_id
-    ) equipment,
+    ) required_equipment,
     (
       SELECT JSON_ARRAYAGG(JSON_OBJECT(
-        'amount',             ri.amount,
-        'unit_name',          u.unit_name,
-        'ingredient_name',    i.ingredient_name,
-        'unit_id',            ri.unit_id,
-        'ingredient_type_id', i.ingredient_type_id,
-        'ingredient_id',      ri.ingredient_id
+        'amount',              ri.amount,
+        'unit_name',           u.unit_name,
+        'ingredient_fullname', CONCAT_WS(
+                                 ' ',
+                                 i.ingredient_brand,
+                                 i.ingredient_variety,
+                                 i.ingredient_name,
+                                 IFNULL(GROUP_CONCAT(n.alt_name SEPARATOR ' '), '')
+                               )
       ))
       FROM ingredients i
-      INNER JOIN recipe_ingredient ri ON ri.ingredient_id = i.ingredient_id
-      INNER JOIN unit u               ON u.unit_id = ri.unit_id
+      INNER JOIN recipe_ingredient ri  ON ri.ingredient_id = i.ingredient_id
+      INNER JOIN unit u                ON u.unit_id = ri.unit_id
+      INNER JOIN ingredient_alt_name n ON n.ingredient_id = i.ingredient_id
       WHERE ri.recipe_id = r.recipe_id
-    ) ingredients,
+    ) required_ingredients,
     (
       SELECT JSON_ARRAYAGG(JSON_OBJECT(
         'amount',          rs.amount,
         'unit_name',       u.unit_name,
-        'subrecipe_title', r.title,
-        'unit_id',         rs.unit_id,
-        'subrecipe_type_id',  r.recipe_type_id,
-        'cuisine_id',      r.cuisine_id,
-        'subrecipe_id',    rs.subrecipe_id
+        'subrecipe_title', r.title
       ))
       FROM recipes r
       INNER JOIN recipe_subrecipe rs ON rs.subrecipe_id = r.recipe_id
       INNER JOIN unit u              ON u.unit_id = rs.unit_id
       WHERE rs.recipe_id = r.recipe_id
-    ) subrecipes
+    ) required_subrecipes
   FROM recipe r
   INNER JOIN user u         ON u.user_id = r.author_id
   INNER JOIN recipe_type rt ON rt.recipe_type_id = r.recipe_type_id
@@ -484,98 +503,78 @@ const viewOneSQL = `
   WHERE r.author_id = ? AND r.owner_id = ?
 `;
 
-// TO DO: ingredient_fullname
-
-const RecipeDetailViewSQL = `
-SELECT
-r.recipe_id,
-r.author_id,
-u.username AS author,
-(
-  i.image_filename
-  FROM image i
-  INNER JOIN user_image ui ON i.image_id = ui.image_id
-  WHERE ui.user_id = r.author_id AND ui.current = true
-) AS author_avatar,
-rt.recipe_type_name,
-c.cuisine_name,
-r.title,
-r.description,
-r.active_time,
-r.total_time,
-r.directions,
-(
-  SELECT i.image_filename, i.caption
-  FROM image i
-  INNER JOIN recipe_image ri ON i.image_id = ri.image_id
-  WHERE ri.recipe_id = r.recipe_id AND ri.type = 1
-) AS recipe_image,
-(
-  SELECT i.image_filename, i.caption
-  FROM image i
-  INNER JOIN recipe_image ri ON i.image_id = ri.image_id
-  WHERE ri.recipe_id = r.recipe_id AND ri.type = 2
-) AS equipment_image,
-(
-  SELECT i.image_filename, i.caption
-  FROM image i
-  INNER JOIN recipe_image ri ON i.image_id = ri.image_id
-  WHERE ri.recipe_id = r.recipe_id AND ri.type = 3
-) AS ingredients_image,
-(
-  SELECT i.image_filename, i.caption
-  FROM image i
-  INNER JOIN recipe_image ri ON i.image_id = ri.image_id
-  WHERE ri.recipe_id = r.recipe_id AND ri.type = 4
-) AS cooking_image,
-(
-  SELECT JSON_ARRAYAGG(JSON_OBJECT(
-    'method_name', m.method_name
-  ))
-  FROM methods m
-  INNER JOIN recipe_method rm ON rm.method_id = m.method_id
-  WHERE rm.recipe_id = r.recipe_id
-) methods,
-(
-  SELECT JSON_ARRAYAGG(JSON_OBJECT(
-    'amount',         re.amount,
-    'equipment_name', e.equipment_name
-  ))
-  FROM equipment e
-  INNER JOIN recipe_equipment re ON re.equipment_id = e.equipment_id
-  WHERE re.recipe_id = r.recipe_id
-) equipment,
-(
-  SELECT JSON_ARRAYAGG(JSON_OBJECT(
-    'amount',              ri.amount,
-    'unit_name',           u.unit_name,
-    'ingredient_fullname', CONCAT_WS(
-                             ' ',
-                             i.ingredient_brand,
-                             i.ingredient_variety,
-                             i.ingredient_name,
-                             IFNULL(GROUP_CONCAT(n.alt_name SEPARATOR ' '), '')
-                           )
-  ))
-  FROM ingredients i
-  INNER JOIN recipe_ingredient ri  ON ri.ingredient_id = i.ingredient_id
-  INNER JOIN unit u                ON u.unit_id = ri.unit_id
-  INNER JOIN ingredient_alt_name n ON n.ingredient_id = i.ingredient_id
-  WHERE ri.recipe_id = r.recipe_id
-) ingredients,
-(
-  SELECT JSON_ARRAYAGG(JSON_OBJECT(
-    'amount',          rs.amount,
-    'unit_name',       u.unit_name,
-    'subrecipe_title', r.title
-  ))
-  FROM recipes r
-  INNER JOIN recipe_subrecipe rs ON rs.subrecipe_id = r.recipe_id
-  INNER JOIN unit u              ON u.unit_id = rs.unit_id
-  WHERE rs.recipe_id = r.recipe_id
-) subrecipes
-
-`;
-const ExistingRecipeToEditViewSQL = `
-
+const existingRecipeToEditViewSQL = `
+  SELECT
+    r.recipe_id,
+    r.recipe_type_id,
+    r.cuisine_id,
+    r.title,
+    r.description,
+    r.active_time,
+    r.total_time,
+    r.directions,
+    (
+      SELECT i.image_filename, i.caption
+      FROM image i
+      INNER JOIN recipe_image ri ON i.image_id = ri.image_id
+      WHERE ri.recipe_id = r.recipe_id AND ri.type = 1
+    ) AS recipe_image,
+    (
+      SELECT i.image_filename, i.caption
+      FROM image i
+      INNER JOIN recipe_image ri ON i.image_id = ri.image_id
+      WHERE ri.recipe_id = r.recipe_id AND ri.type = 2
+    ) AS equipment_image,
+    (
+      SELECT i.image_filename, i.caption
+      FROM image i
+      INNER JOIN recipe_image ri ON i.image_id = ri.image_id
+      WHERE ri.recipe_id = r.recipe_id AND ri.type = 3
+    ) AS ingredients_image,
+    (
+      SELECT i.image_filename, i.caption
+      FROM image i
+      INNER JOIN recipe_image ri ON i.image_id = ri.image_id
+      WHERE ri.recipe_id = r.recipe_id AND ri.type = 4
+    ) AS cooking_image,
+    (
+      SELECT rm.method_id
+      FROM recipe_method rm
+      WHERE rm.recipe_id = r.recipe_id
+    ) methods,
+    (
+      SELECT JSON_ARRAYAGG(JSON_OBJECT(
+        'amount',            re.amount,
+        'equipment_type_id', e.equipment_type_id,
+        'equipment_id',      re.equipment_id
+      ))
+      FROM recipe_equipment re
+      WHERE re.recipe_id = r.recipe_id
+    ) equipment,
+    (
+      SELECT JSON_ARRAYAGG(JSON_OBJECT(
+        'amount',             ri.amount,
+        'unit_id',            ri.unit_id,
+        'ingredient_type_id', i.ingredient_type_id,
+        'ingredient_id',      ri.ingredient_id
+      ))
+      FROM ingredients recipe_ingredient ri
+      WHERE ri.recipe_id = r.recipe_id
+    ) ingredients,
+    (
+      SELECT JSON_ARRAYAGG(JSON_OBJECT(
+        'amount',          rs.amount,
+        'unit_id',         rs.unit_id,
+        'recipe_type_id',  r.recipe_type_id,
+        'cuisine_id',      r.cuisine_id,
+        'subrecipe_id',    rs.subrecipe_id
+      ))
+      FROM recipes recipe_subrecipe rs
+      WHERE rs.recipe_id = r.recipe_id
+    ) subrecipes
+  FROM recipe r
+  INNER JOIN user u         ON u.user_id = r.author_id
+  INNER JOIN recipe_type rt ON rt.recipe_type_id = r.recipe_type_id
+  INNER JOIN cuisine c      ON c.cuisine_id = r.cuisine_id
+  WHERE r.author_id = ? AND r.owner_id = ?
 `;

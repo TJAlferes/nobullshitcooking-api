@@ -47,12 +47,12 @@ export function privateRecipeRouter() {
     catchExceptions(controller.create)
   );
 
-  /*router.post(
+  router.post(
     '/edit',
     userIsAuth,
-    sanitize(['id', ...recipeInfo]),
+    sanitize('recipe_id'),
     catchExceptions(controller.edit)
-  ); this is now handled with /one ??? */
+  );
 
   router.put(
     '/update',
