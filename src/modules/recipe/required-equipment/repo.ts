@@ -1,4 +1,4 @@
-import { RowDataPacket } from 'mysql2/promise';
+import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
 import { MySQLRepo } from '../../shared/MySQL';
 
@@ -20,7 +20,8 @@ export class RecipeEquipmentRepo extends MySQLRepo implements IRecipeEquipmentRe
       INSERT INTO recipe_equipment (recipe_id, amount, equipment_id)
       VALUES ${placeholders}
     `;
-    await this.pool.execute(sql, recipe_equipment);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, recipe_equipment);
+    if (!result) throw new Error('Query not successful.');
   }
 
   async update({ recipe_id, placeholders, recipe_equipment }: UpdateParams) {  // TO DO: change to namedPlaceholders using example below

@@ -219,7 +219,7 @@ export function appServer({ sessionClient, pubClient, subClient }: RedisClients)
   // TO DO: change again?
   if (process.env.NODE_ENV === 'production') {
     app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
-      res.status(500).json({error: error.message || 'something went wrong'});
+      res.status(500).json({error: error.message || 'An error occurred.'});
     });
   } else {
     app.use((error: Error, req: Request, res: Response, next: NextFunction) => {

@@ -1,7 +1,9 @@
+import { ResultSetHeader } from 'mysql2';
+
 import { NOBSC_USER_ID, UNKNOWN_USER_ID } from '../shared/model';
 import { MySQLRepo }                      from '../shared/MySQL';
 
-// TO DO: wrap with try/catch (in MySQLRepo perhaps?)
+// IMPORTANT: TO DO: wrap ALL methods with try/catch (in MySQLRepo perhaps?)
 export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
   async bulkInsert({ placeholders, images }: BulkInsertParams) {
     const sql = `
@@ -16,7 +18,8 @@ export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
       INSERT INTO image (image_id, image_filename, caption, author_id, owner_id)
       VALUES (:image_id, :image_filename, :caption, :author_id, :owner_id)
     `;
-    await this.pool.execute(sql, params);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
+    if (!result) throw new Error('Query not successful.');
   }
 
   async update(params: InsertParams) {
@@ -28,7 +31,8 @@ export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
       WHERE image_id = :image_id
       LIMIT 1
     `;
-    await this.pool.execute(sql, params);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
+    if (!result) throw new Error('Query not successful.');
   }
 
   // TO DO: change this name. you're not actually disowning, you're unauthoring

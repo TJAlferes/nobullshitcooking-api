@@ -1,4 +1,4 @@
-import { RowDataPacket } from 'mysql2/promise';
+import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
 import { MySQLRepo } from '../../shared/MySQL';
 
@@ -19,7 +19,8 @@ export class RecipeImageRepo extends MySQLRepo implements RecipeImageRepoInterfa
       INSERT INTO recipe_image (recipe_id, image_id, type, order)
       VALUES ${placeholders}
     `;
-    await this.pool.execute(sql, recipe_images);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, recipe_images);
+    if (!result) throw new Error('Query not successful.');
   }
 
   async update({ recipe_id, placeholders, recipe_images }: UpdateParams) {

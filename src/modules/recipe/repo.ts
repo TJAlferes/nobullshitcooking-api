@@ -211,8 +211,8 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
         :directions
       )
     `;
-    const [ row ] = await this.pool.execute<ResultSetHeader>(sql, params);
-    return row;
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
+    if (!result) throw new Error('Query not successful.');
   }
 
   async update(params: InsertParams) {
@@ -231,7 +231,8 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
       WHERE recipe_id = :recipe_id
       LIMIT 1
     `;
-    await this.pool.execute<RowDataPacket[]>(sql, params);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
+    if (!result) throw new Error('Query not successful.');
   }
 
   // TO DO: change this name. you're not actually disowning, you're unauthoring
@@ -293,7 +294,7 @@ export interface RecipeRepoInterface {
   overviewAll:           (params: OverviewAllParams) =>       Promise<RecipeOverview[]>;
   viewOneByRecipeId:     (params: ViewOneByRecipeIdParams) => Promise<RecipeView>;
   viewOneByTitle:        (params: ViewOneByTitleParams) =>    Promise<RecipeView>;
-  insert:                (params: InsertParams) =>            Promise<ResultSetHeader>;
+  insert:                (params: InsertParams) =>            Promise<void>;
   update:                (params: UpdateParams) =>            Promise<void>;
   disownAll:             (author_id: string) =>               Promise<void>;
   disownOne:             (params: DisownOneParams) =>         Promise<void>;
