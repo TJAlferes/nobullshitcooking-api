@@ -252,7 +252,12 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
             author_id = :author_id
         AND owner_id  = :owner_id
     `;
-    await this.pool.execute(sql, {unknown_user_id, author_id, owner_id});
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, {
+      unknown_user_id,
+      author_id,
+      owner_id
+    });
+    if (!result) throw new Error('Query not successful.');
   }
 
   // TO DO: change this name. you're not actually disowning, you're unauthoring
@@ -273,7 +278,13 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
         AND owner_id  = :owner_id
         AND recipe_id = :recipe_id
     `;
-    await this.pool.execute(sql, {unknown_user_id, author_id, owner_id, recipe_id});
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, {
+      unknown_user_id,
+      author_id,
+      owner_id,
+      recipe_id
+    });
+    if (!result) throw new Error('Query not successful.');
   }
   
   async deleteOne({ owner_id, recipe_id }: DeleteOneParams) {
@@ -282,7 +293,8 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
       WHERE owner_id = ? AND recipe_id = ?
       LIMIT 1
     `;
-    await this.pool.execute(sql, [owner_id, recipe_id]);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [owner_id, recipe_id]);
+    if (!result) throw new Error('Query not successful.');
   }
 }
 
@@ -311,10 +323,10 @@ type TitleView = RowDataPacket & {
 };
 
 export type RecipeOverview = RowDataPacket & {
-  recipe_id: string;
-  owner_id:  string;
-  title:     string;
-  image_filename: string;  // Hmm...
+  recipe_id:      string;
+  owner_id:       string;
+  title:          string;
+  image_filename: string;
 };
 
 export type RecipeView = RowDataPacket & {
@@ -326,12 +338,10 @@ export type RecipeView = RowDataPacket & {
   owner_id:             string;
   title:                string;
   description:          string;
-  active_time:          string;  // Date on insert?
-  total_time:           string;  // Date on insert?
+  active_time:          string;
+  total_time:           string;
   directions:           string;
-  // FINISH
   images:               AssociatedImageView[];
-  //video:                string;
   required_methods:     RequiredMethodView[];
   required_equipment:   RequiredEquipmentView[];
   required_ingredients: RequiredIngredientView[];

@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 
 import { ImageRepo }               from '../../../image/repo';
-import { ImageService }            from '../../../image/service';
 import { RecipeImageRepo }         from '../../../recipe/image/repo';
 import { RecipeImageService }      from '../../../recipe/image/service';
 import { RecipeEquipmentRepo }     from '../../../recipe/required-equipment/repo';
@@ -55,31 +54,21 @@ export const privateRecipeController = {
       active_time,
       total_time,
       directions,
-
       required_methods,
       required_equipment,
       required_ingredients,
       required_subrecipes,
-
-      images: [
-        recipe_image,
+      recipe_image,
       equipment_image,
       ingredients_image,
-      cooking_image1,
-      cooking_image2,
-      cooking_image3
-      ]
-
-    } = req.body.recipe_upload;
+      cooking_image
+    } = req.body;
     const recipe_type_id = Number(req.body.recipeInfo.recipe_type_id);
     const cuisine_id     = Number(req.body.recipeInfo.cuisine_id);
     const author_id      = req.session.userInfo!.user_id;
     const owner_id       = req.session.userInfo!.user_id;
 
-    // MOVE ALL THIS BELOW TO RecipeService.create() ???
-
-    //const recipeService = new RecipeService(recipeRepo);
-    //const recipe_id = await recipeService.create(creatingRecipe);
+    const recipeRepo = new RecipeRepo();
     const recipe = Recipe.create({
       recipe_type_id,
       cuisine_id,
@@ -91,7 +80,6 @@ export const privateRecipeController = {
       total_time,
       directions
     }).getDTO();
-    const recipeRepo = new RecipeRepo();
     await recipeRepo.insert(recipe);
 
     const recipeMethodRepo    = new RecipeMethodRepo();
@@ -110,15 +98,20 @@ export const privateRecipeController = {
     const recipeSubrecipeService = new RecipeSubrecipeService(recipeSubrecipeRepo);
     await recipeSubrecipeService.create(required_subrecipes);
 
-    const imageRepo    = new ImageRepo();
-    const imageService = new ImageService(imageRepo);
-    const associated_images = await Promise.all([
-      imageRepo.insert
-    ]);
-
+    const imageRepo          = new ImageRepo();
     const recipeImageRepo    = new RecipeImageRepo();
-    const recipeImageService = new RecipeImageService(recipeImageRepo);
-    await recipeImageService.create({recipe_id: recipe.recipe_id, associated_images});
+    const recipeImageService = new RecipeImageService({imageRepo, recipeImageRepo});
+    await recipeImageService.bulkCreate({
+      recipe_id: recipe.recipe_id,
+      author_id,
+      owner_id,
+      uploaded_images: [
+        recipe_image,
+        equipment_image,
+        ingredients_image,
+        cooking_image
+      ]
+    });
 
     return res.send({message: 'Recipe created.'});
   },
@@ -139,13 +132,14 @@ export const privateRecipeController = {
       equipment_image,
       ingredients_image,
       cooking_image
-    }= req.body.recipeInfo;
+    }= req.body;
     const recipe_type_id = Number(req.body.recipeInfo.recipe_type_id);
     const cuisine_id     = Number(req.body.recipeInfo.cuisine_id);
     const author_id      = req.session.userInfo!.user_id;
     const owner_id       = req.session.userInfo!.user_id;
 
-    const updatingRecipe = {
+    const recipeRepo     = new RecipeRepo();
+    const recipe = Recipe.update({
       recipe_id,
       recipe_type_id,
       cuisine_id,
@@ -155,17 +149,9 @@ export const privateRecipeController = {
       description,
       active_time,
       total_time,
-      directions,
-
-      recipe_image,
-      equipment_image,
-      ingredients_image,
-      cooking_image
-    };
-
-    const recipeRepo    = new RecipeRepo();
-    const recipeService = new RecipeService(recipeRepo);
-    await recipeService.update(updatingRecipe);
+      directions
+    }).getDTO();
+    await recipeRepo.update(recipe);
 
     const recipeMethodRepo    = new RecipeMethodRepo();
     const recipeMethodService = new RecipeMethodService(recipeMethodRepo);
@@ -183,37 +169,30 @@ export const privateRecipeController = {
     const recipeSubrecipeService = new RecipeSubrecipeService(recipeSubrecipeRepo);
     await recipeSubrecipeService.update(required_subrecipes);
 
-    const imageRepo    = new ImageRepo();
-    const imageService = new ImageService(imageRepo);
-    await imageService.update({});
+    const imageRepo          = new ImageRepo();
+    const recipeImageRepo    = new RecipeImageRepo();
+    const recipeImageService = new RecipeImageService({imageRepo, recipeImageRepo});
+    await recipeImageService.bulkUpdate({
+      recipe_id: recipe.recipe_id,
+      author_id,
+      owner_id,
+      uploaded_images: [
+        recipe_image,
+        equipment_image,
+        ingredients_image,
+        cooking_image
+      ]
+    });
 
     return res.send({message: 'Recipe updated.'});
   },
 
   async deleteOne(req: Request, res: Response) {
-    // transaction(s)?: TO DO: TRIGGERS
     const recipe_id = req.body.recipe_id;
     const owner_id  = req.session.userInfo!.user_id;
 
-    //const favoriteRecipeRepo = new FavoriteRecipeRepo();
-    //const savedRecipeRepo    = new SavedRecipeRepo();
-    const recipeEquipmentRepo  = new RecipeEquipmentRepo();
-    const recipeIngredientRepo = new RecipeIngredientRepo();
-    const recipeMethodRepo     = new RecipeMethodRepo();
-    const recipeSubrecipeRepo  = new RecipeSubrecipeRepo();
-    await Promise.all([
-      //favoriteRecipeRepo.deleteAllByRecipeId(id),
-      //savedRecipeRepo.deleteAllByRecipeId(id),
-      recipeEquipmentRepo.deleteByRecipeId(recipe_id),
-      recipeIngredientRepo.deleteByRecipeId(recipe_id),
-      recipeMethodRepo.deleteByRecipeId(recipe_id),
-      recipeSubrecipeRepo.deleteByRecipeId(recipe_id),
-      recipeSubrecipeRepo.deleteBySubrecipeId(recipe_id)
-    ]);
-
-    // TO DO: what about deleting from plans???
     const recipeRepo = new RecipeRepo();
-    await recipeRepo.deleteOneByOwnerId({recipe_id, owner_id});
+    await recipeRepo.deleteOne({owner_id, recipe_id});
 
     return res.send({message: 'Recipe deleted.'});
   }

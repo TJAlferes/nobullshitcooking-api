@@ -5,7 +5,7 @@ import { UserConfirmationService } from './service';
 
 export const userConfirmationController = {
   async confirm(req: Request, res: Response) {
-    const { confirmation_code } = req.body.userInfo;
+    const { confirmation_code } = req.body;
 
     const userRepo                = new UserRepo();
     const userConfirmationService = new UserConfirmationService(userRepo);
@@ -16,7 +16,7 @@ export const userConfirmationController = {
   },
 
   async resendConfirmationCode(req: Request, res: Response) {
-    const { email, password } = req.body.userInfo;
+    const { email, password } = req.body;
 
     const userRepo                = new UserRepo();
     const userConfirmationService = new UserConfirmationService(userRepo);

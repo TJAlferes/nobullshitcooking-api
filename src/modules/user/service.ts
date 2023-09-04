@@ -21,7 +21,6 @@ export class UserService {
       username: params.username
     }).getDTO();
 
-    // should this also be done inside the value object constructor? (using a repo interface)
     const emailExists = await this.repo.getByEmail(user.email);
     if (emailExists) {
       throw new Error("Email already in use.");  // throw in this layer? or return json?
@@ -105,33 +104,21 @@ export class UserService {
     if (user_id === NOBSC_USER_ID) return;    // IMPORTANT: Never allow this user to be deleted.
     if (user_id === UNKNOWN_USER_ID) return;  // IMPORTANT: Never allow this user to be deleted.
 
-    // NOTE: Due to MySQL foreign keys, deletes must be in this order.
-    // TO DO: Let MySQL ON DELETE CASCADE handle most of this.
+    const owner_id = user_id;
 
-    // First delete/disown the user's relationships and content...
+    await imageRepo.deleteAll(user_id);
+    await planRepo.deleteAll(user_id);  // before or after recipes???
+    await planRepo.deleteAll(user_id);  // before or after recipes???
+
+    await recipeRepo.disownAllByAuthorId(user_id);  // ???
+    await recipeRepo.deleteAllByOwnerId(user_id);  // CAREFUL! Double check this.
+
     await Promise.all([
-      friendshipRepo.deleteAllByUserId(userId),      // ok
-      planRepo.deleteAll(userId),                    // NOT OK???
-      favoriteRecipeRepo.deleteAllByUserId(userId),  // ok
-      savedRecipeRepo.deleteAllByUserId(userId)      // ok
+      equipmentRepo.deleteAll(user_id),
+      ingredientRepo.deleteAll(user_id)
     ]);
 
-    await recipeRepo.disownAllByAuthorId(userId);  // ???
-
-    const recipeIds = await recipeRepo.getPrivateIds(userId);  // CAREFUL! Double check this.
-    await Promise.all([
-      recipeEquipmentRepo.deleteByRecipeIds(recipeIds),
-      recipeIngredientRepo.deleteByRecipeIds(recipeIds),
-      recipeMethodRepo.deleteByRecipeIds(recipeIds),
-      recipeSubrecipeRepo.deleteByRecipeIds(recipeIds),
-      recipeSubrecipeRepo.deleteBySubrecipeIds(recipeIds)
-    ]);
-    await recipeRepo.deleteAllByOwnerId(userId);  // CAREFUL! Double check this.
-
-    await Promise.all([equipmentRepo.deleteAll(userId), ingredientRepo.deleteAll(userId)]);  // ok
-
-    // ... Then delete the user.
-    await this.repo.delete(userId);
+    await this.repo.delete(user_id);
   }
 }
 

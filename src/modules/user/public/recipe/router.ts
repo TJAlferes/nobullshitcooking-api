@@ -9,7 +9,7 @@ const router = Router();
 // for /user/public/recipe/...
 
 export function publicRecipeRouter() {
-  const recipeInfo = [
+  const recipe_upload = [
     'recipe_type_id',
     'cuisine_id',
     'title',
@@ -21,10 +21,10 @@ export function publicRecipeRouter() {
     'required_equipment.*',
     'required_ingredients.*',
     'required_subrecipes.*',
-    'recipe_image',
-    'equipment_image',
-    'ingredients_image',
-    'cooking_image'
+    'recipe_image*',
+    'equipment_image*',
+    'ingredients_image*',
+    'cooking_image*'
   ];
 
   router.post(
@@ -41,30 +41,30 @@ export function publicRecipeRouter() {
   router.post(
     '/create',
     userIsAuth,
-    sanitize(recipeInfo),
+    sanitize(recipe_upload),
     catchExceptions(controller.create)
   );
 
-  /*router.post(
+  router.post(
     '/edit',
     userIsAuth,
-    sanitize(['id', ...recipeInfo]),
+    sanitize('recipe_id'),
     catchExceptions(controller.edit)
-  ); this is now handled with /one ??? */
+  );
 
   router.put(
     '/update',
     userIsAuth,
-    sanitize(['recipe_id', ...recipeInfo]),
+    sanitize(['recipe_id', ...recipe_upload]),
     catchExceptions(controller.update)
-  );  // TO DO: what about prev images???
+  );
 
   router.delete(
     '/disown',
     userIsAuth,
     sanitize('recipe_id'),
     catchExceptions(controller.disownOne)
-  );  // router.put ?
+  );
 
   return router;
 }

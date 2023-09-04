@@ -74,7 +74,7 @@ export const publicRecipeController = {
       equipment_image,
       ingredients_image,
       cooking_image
-    } = req.body.recipe_upload;
+    } = req.body;
     const recipe_type_id = Number(req.body.recipeInfo.recipe_type_id);
     const cuisine_id     = Number(req.body.recipeInfo.cuisine_id);
     const author_id      = req.session.userInfo!.user_id;
@@ -124,8 +124,6 @@ export const publicRecipeController = {
     const recipeSubrecipeService = new RecipeSubrecipeService(recipeSubrecipeRepo);
     await recipeSubrecipeService.create(required_subrecipes);
 
-    // TO DO: subtle bug(s) here???
-    // if image_filename = "default", does a DB row need to be made??? (I think yes)
     const imageRepo          = new ImageRepo();
     const recipeImageRepo    = new RecipeImageRepo();
     const recipeImageService = new RecipeImageService({imageRepo, recipeImageRepo});
@@ -160,7 +158,7 @@ export const publicRecipeController = {
       equipment_image,
       ingredients_image,
       cooking_image
-    }= req.body.recipeInfo;
+    }= req.body;
     const recipe_type_id = Number(req.body.recipeInfo.recipe_type_id);
     const cuisine_id     = Number(req.body.recipeInfo.cuisine_id);
     const author_id      = req.session.userInfo!.user_id;
@@ -211,8 +209,6 @@ export const publicRecipeController = {
     const recipeSubrecipeService = new RecipeSubrecipeService(recipeSubrecipeRepo);
     await recipeSubrecipeService.update(required_subrecipes);
 
-    // TO DO: subtle bug(s) here???
-    // if image_filename = "default", does a DB row need to be made??? (I think yes)
     const imageRepo          = new ImageRepo();
     const recipeImageRepo    = new RecipeImageRepo();
     const recipeImageService = new RecipeImageService({imageRepo, recipeImageRepo});

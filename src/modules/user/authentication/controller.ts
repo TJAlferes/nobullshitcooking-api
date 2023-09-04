@@ -11,7 +11,7 @@ export const userAuthenticationController = {
       return res.json({message: 'Already logged in.'});  // throw in this layer?
     }
     
-    const { email, password } = req.body.userInfo;
+    const { email, password } = req.body;
 
     const repo = new UserRepo();
     const { login } = new UserAuthenticationService(repo);

@@ -9,7 +9,7 @@ const router = Router();
 // for /user/private/recipe/...
 
 export function privateRecipeRouter() {
-  const recipeInfo = [
+  const recipe_upload = [
     'recipe_type_id',
     'cuisine_id',
     'title',
@@ -24,7 +24,7 @@ export function privateRecipeRouter() {
     'recipe_image',
     'equipment_image',
     'ingredients_image',
-    'cooking_image'  // TO DO: FINISH
+    'cooking_image'
   ];
 
   router.post(
@@ -43,7 +43,7 @@ export function privateRecipeRouter() {
   router.post(
     '/create',
     userIsAuth,
-    sanitize(recipeInfo),
+    sanitize(recipe_upload),
     catchExceptions(controller.create)
   );
 
@@ -57,9 +57,9 @@ export function privateRecipeRouter() {
   router.put(
     '/update',
     userIsAuth,
-    sanitize(['recipe_id', ...recipeInfo]),
+    sanitize(['recipe_id', ...recipe_upload]),
     catchExceptions(controller.update)
-  );  // TO DO: what about prev images???
+  );
 
   router.delete(
     '/delete',

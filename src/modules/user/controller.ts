@@ -7,7 +7,7 @@ export const userController = {
   async create(req: Request, res: Response) {
     const userRepo    = new UserRepo();
     const userService = new UserService(userRepo);
-    await userService.create(req.body.userInfo);  // return message from here???
+    await userService.create(req.body);
 
     return res.send({message: 'User account created.'});  // or .status and .json ???
   },

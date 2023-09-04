@@ -2,7 +2,6 @@ import { EquipmentRepoInterface }  from '../../../equipment/repo';
 import { IngredientRepoInterface } from '../../../ingredient/repo';
 import { RecipeRepoInterface }     from '../../../recipe/repo';
 
-// (Official)RecipeController, PrivateRecipeController, PublicRecipeController may use this
 export class PublicRecipeService {
   equipmentRepo:  EquipmentRepoInterface;
   ingredientRepo: IngredientRepoInterface;
