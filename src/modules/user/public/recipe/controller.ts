@@ -3,7 +3,6 @@ import { Request, Response } from 'express';
 import { EquipmentRepo }           from '../../../equipment/repo';
 import { IngredientRepo }          from '../../../ingredient/repo';
 import { ImageRepo }               from '../../../image/repo';
-import { ImageService }            from '../../../image/service';
 import { RecipeImageRepo }         from '../../../recipe/image/repo';
 import { RecipeImageService }      from '../../../recipe/image/service';
 import { RecipeEquipmentRepo }     from '../../../recipe/required-equipment/repo';
@@ -89,6 +88,7 @@ export const publicRecipeController = {
       ingredientRepo,
       recipeRepo
     });
+    // ALSO CHECK FOR PRIVATE IMAGES???
     await checkForPrivateContent({
       required_equipment,
       required_ingredients,
@@ -106,6 +106,7 @@ export const publicRecipeController = {
       total_time,
       directions
     }).getDTO();
+    await recipeRepo.insert(recipe);
 
     const recipeMethodRepo    = new RecipeMethodRepo();
     const recipeMethodService = new RecipeMethodService(recipeMethodRepo);
@@ -123,9 +124,13 @@ export const publicRecipeController = {
     const recipeSubrecipeService = new RecipeSubrecipeService(recipeSubrecipeRepo);
     await recipeSubrecipeService.create(required_subrecipes);
 
-    const imageRepo    = new ImageRepo();
-    const imageService = new ImageService(imageRepo);
-    const associated_images = await imageService.bulkCreate({
+    // TO DO: subtle bug(s) here???
+    // if image_filename = "default", does a DB row need to be made??? (I think yes)
+    const imageRepo          = new ImageRepo();
+    const recipeImageRepo    = new RecipeImageRepo();
+    const recipeImageService = new RecipeImageService({imageRepo, recipeImageRepo});
+    await recipeImageService.bulkCreate({
+      recipe_id: recipe.recipe_id,
       author_id,
       owner_id,
       uploaded_images: [
@@ -136,19 +141,10 @@ export const publicRecipeController = {
       ]
     });
 
-    if (associated_images && associated_images.length) {
-      const recipeImageRepo    = new RecipeImageRepo();
-      const recipeImageService = new RecipeImageService(recipeImageRepo);
-      await recipeImageService.create({recipe_id: recipe.recipe_id, associated_images});
-    }
-
     return res.send({message: 'Recipe created.'});
   },
 
   async update(req: Request, res: Response) {
-    const id =           Number(req.body.recipeInfo.id);
-    const recipeTypeId = Number(req.body.recipeInfo.recipeTypeId);
-    const cuisineId =    Number(req.body.recipeInfo.cuisineId);
     const {
       recipe_id,
       title,
@@ -168,9 +164,24 @@ export const publicRecipeController = {
     const recipe_type_id = Number(req.body.recipeInfo.recipe_type_id);
     const cuisine_id     = Number(req.body.recipeInfo.cuisine_id);
     const author_id      = req.session.userInfo!.user_id;
-    const owner_id       = 1;
+    const owner_id       = NOBSC_USER_ID;
 
-    const updatingRecipe = {
+    const equipmentRepo  = new EquipmentRepo();
+    const ingredientRepo = new IngredientRepo();
+    const recipeRepo     = new RecipeRepo();
+    const { checkForPrivateContent } = new PublicRecipeService({
+      equipmentRepo,
+      ingredientRepo,
+      recipeRepo
+    });
+    // ALSO CHECK FOR PRIVATE IMAGES???
+    await checkForPrivateContent({
+      required_equipment,
+      required_ingredients,
+      required_subrecipes,
+    });  // important
+
+    const recipe = Recipe.update({
       recipe_id,
       recipe_type_id,
       cuisine_id,
@@ -180,17 +191,9 @@ export const publicRecipeController = {
       description,
       active_time,
       total_time,
-      directions,
-      
-      recipe_image,
-      equipment_image,
-      ingredients_image,
-      cooking_image
-    };
-
-    const recipeRepo    = new PublicRecipeRepo();
-    const recipeService = new RecipeService(recipeRepo);
-    await recipeService.update(updatingRecipe);
+      directions
+    }).getDTO();
+    await recipeRepo.update(recipe);
 
     const recipeMethodRepo    = new RecipeMethodRepo();
     const recipeMethodService = new RecipeMethodService(recipeMethodRepo);
@@ -208,19 +211,32 @@ export const publicRecipeController = {
     const recipeSubrecipeService = new RecipeSubrecipeService(recipeSubrecipeRepo);
     await recipeSubrecipeService.update(required_subrecipes);
 
-    const imageRepo    = new ImageRepo();
-    const imageService = new ImageService(imageRepo);
-    await imageService.update({});
+    // TO DO: subtle bug(s) here???
+    // if image_filename = "default", does a DB row need to be made??? (I think yes)
+    const imageRepo          = new ImageRepo();
+    const recipeImageRepo    = new RecipeImageRepo();
+    const recipeImageService = new RecipeImageService({imageRepo, recipeImageRepo});
+    await recipeImageService.bulkUpdate({
+      recipe_id: recipe.recipe_id,
+      author_id,
+      owner_id,
+      uploaded_images: [
+        recipe_image,
+        equipment_image,
+        ingredients_image,
+        cooking_image
+      ]
+    });
 
     return res.send({message: 'Recipe updated.'});
   },
 
   async disownOne(req: Request, res: Response) {
     const recipe_id = req.body.recipe_id;
-    const owner_id  = req.session.userInfo!.id;
+    const author_id = req.session.userInfo!.user_id;
 
-    const repo = new PublicRecipeRepo();
-    await repo.disownOne({recipe_id, owner_id});
+    const repo = new RecipeRepo();
+    await repo.disownOne({author_id, recipe_id});
 
     return res.send({message: 'Recipe disowned.'});
   }

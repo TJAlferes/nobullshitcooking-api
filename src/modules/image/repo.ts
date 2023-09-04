@@ -1,6 +1,7 @@
 import { NOBSC_USER_ID, UNKNOWN_USER_ID } from '../shared/model';
 import { MySQLRepo }                      from '../shared/MySQL';
 
+// TO DO: wrap with try/catch (in MySQLRepo perhaps?)
 export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
   async bulkInsert({ placeholders, images }: BulkInsertParams) {
     const sql = `

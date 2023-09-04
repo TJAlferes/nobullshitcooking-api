@@ -29,17 +29,9 @@ CREATE TABLE user (
   `updated_at`        TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE TABLE friendship (
-  `user_id`   CHAR(36)    NOT NULL,
-  `friend_id` CHAR(36)    NOT NULL,
-  `status`    VARCHAR(20) NOT NULL,
-  FOREIGN KEY (`user_id`)   REFERENCES `user` (`user_id`) ON DELETE CASCADE,
-  FOREIGN KEY (`friend_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
-);
-
 CREATE TABLE image (
   `image_id`       CHAR(36)     PRIMARY KEY,
-  `image_filename` VARCHAR(100) NOT NULL,
+  `image_filename` VARCHAR(100) NOT NULL DEFAULT 'default',
   `caption`        VARCHAR(150) NOT NULL DEFAULT '',
   `author_id`      CHAR(36)     NOT NULL,
   `owner_id`       CHAR(36)     NOT NULL,
@@ -57,14 +49,13 @@ CREATE TABLE user_image (
   FOREIGN KEY (`image_id`) REFERENCES `image` (`image_id`) ON DELETE CASCADE
 );
 
-/*CREATE TABLE video (
-  `video_id`   CHAR(36)     PRIMARY KEY,
-  `video_url`  VARCHAR(100) NOT NULL,
-  `title`      VARCHAR(100) NOT NULL DEFAULT '',
-  `caption`    VARCHAR(150) NOT NULL DEFAULT '',
-  `created_at` TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);*/
+CREATE TABLE friendship (
+  `user_id`   CHAR(36)    NOT NULL,
+  `friend_id` CHAR(36)    NOT NULL,
+  `status`    VARCHAR(20) NOT NULL,
+  FOREIGN KEY (`user_id`)   REFERENCES `user` (`user_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`friend_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
+);
 
 CREATE TABLE chatgroup (
   `chatgroup_id`   CHAR(36)    PRIMARY KEY,
@@ -128,7 +119,7 @@ CREATE TABLE equipment_type (
 
 CREATE TABLE equipment (
   `equipment_id`      CHAR(36)         PRIMARY KEY,
-  `equipment_type_id` TINYINT UNSIGNED NOT NULL DEFAULT '0',
+  `equipment_type_id` TINYINT UNSIGNED NOT NULL,
   `owner_id`          CHAR(36)         NOT NULL,
   `equipment_name`    VARCHAR(100)     NOT NULL,
   `notes`             TEXT             NOT NULL DEFAULT '',
@@ -145,7 +136,7 @@ CREATE TABLE ingredient_type (
 
 CREATE TABLE ingredient (
   `ingredient_id`          CHAR(36)         PRIMARY KEY,
-  `ingredient_type_id`     TINYINT UNSIGNED NOT NULL DEFAULT '0',
+  `ingredient_type_id`     TINYINT UNSIGNED NOT NULL,
   `owner_id`               CHAR(36)         NOT NULL,
   `ingredient_brand`       VARCHAR(50)      NOT NULL DEFAULT '',
   `ingredient_variety`     VARCHAR(50)      NOT NULL DEFAULT '',

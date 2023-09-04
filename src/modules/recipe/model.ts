@@ -22,8 +22,8 @@ export class Recipe {
     this.owner_id       = UUIDv7StringId(params.owner_id);
     this.title          = Title(params.title);
     this.description    = Description(params.description);
-    this.active_time    = ActiveTime(params.active_time);
-    this.total_time     = TotalTime(params.active_time);
+    this.active_time    = Time(params.active_time);
+    this.total_time     = Time(params.active_time);
     this.directions     = Directions(params.directions);
   }
 
@@ -34,7 +34,10 @@ export class Recipe {
     return recipe;  // only return id ???
   }
 
-  static update(params: UpdateParams) {}
+  static update(params: UpdateParams) {
+    const recipe = new Recipe(params);
+    return recipe;
+  }
 
   getDTO() {
     return {
@@ -68,19 +71,23 @@ export function Description(description: string) {
   return description;
 }
 
-export function ActiveTime(time: string) {
+function Time(time: string) {
   assert(time, string());
-  if (time.length > 8) {
-    throw new Error ("Recipe active time must be no more than 8 characters.")
-  }
-  return time;
-}
 
-export function TotalTime(time: string) {
-  assert(time, string());
-  if (time.length > 8) {
-    throw new Error ("Recipe total time must be no more than 8 characters.")
+  const [ hours, minutes ] = time.split(':');
+  if (hours.length !== 2) {
+    throw new Error("Invalid time.");
   }
+  if (minutes.length !== 2) {
+    throw new Error("Invalid time.");
+  }
+  
+  const hrs = parseInt(hours);
+  const mins = parseInt(minutes);
+  if (isNaN(hrs) || isNaN(mins) || hrs < 0 || hrs > 23 || mins < 0 || mins > 59) {
+    throw new Error("Invalid time.");
+  }
+  
   return time;
 }
 
