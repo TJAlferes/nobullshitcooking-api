@@ -31,28 +31,28 @@ export function userRouter() {
     catchExceptions(userController.create)
   );
 
-  router.post(
+  router.put(
     '/update-email',
     userIsAuth,
     sanitize('new_email'),
     catchExceptions(userController.updateEmail)
   );  // why POST?
 
-  router.post(
+  router.put(
     '/update-password',
     userIsAuth,
     sanitize('new_password'),
     catchExceptions(userController.updatePassword)
   );  // why POST?
 
-  router.post(
+  router.put(
     '/update-username',
     userIsAuth,
     sanitize('new_username'),
     catchExceptions(userController.updateUsername)
   );  // why POST?
 
-  router.post(
+  router.delete(
     '/delete',
     userIsAuth,
     catchExceptions(userController.delete)

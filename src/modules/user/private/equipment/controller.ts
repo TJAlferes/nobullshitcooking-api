@@ -24,8 +24,8 @@ export const privateEquipmentController = {
   },
 
   async create(req: Request, res: Response) {
-    const { equipment_name, notes, image_id } = req.body.equipmentInfo;
-    const equipment_type_id = Number(req.body.equipmentInfo.equipment_type_id);
+    const { equipment_name, notes, image_id } = req.body;
+    const equipment_type_id = Number(req.body.equipment_type_id);
     const owner_id          = req.session.userInfo!.user_id;
 
     const repo = new EquipmentRepo();
@@ -42,13 +42,8 @@ export const privateEquipmentController = {
   },
 
   async update(req: Request, res: Response) {
-    const {
-      equipment_id,
-      equipment_name,
-      notes,
-      image_id
-    } = req.body.equipmentInfo;
-    const equipment_type_id = Number(req.body.equipmentInfo.equipment_type_id);
+    const { equipment_id, equipment_name, notes, image_id } = req.body;
+    const equipment_type_id = Number(req.body.equipment_type_id);
     const owner_id          = req.session.userInfo!.user_id;
 
     const repo = new EquipmentRepo();

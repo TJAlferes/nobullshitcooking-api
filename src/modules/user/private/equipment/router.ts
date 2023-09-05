@@ -9,11 +9,11 @@ const router = Router();
 // for /user/private/equipment/...
 
 export function privateEquipmentRouter() {
-  const equipmentInfo = [
+  const equipment_upload = [
     'equipment_type_id',
     'equipment_name',
     'notes',
-    'image_id'
+    'image*'
   ];
 
   router.post(
@@ -32,20 +32,21 @@ export function privateEquipmentRouter() {
   router.post(
     '/create',
     userIsAuth,
-    bodySanitizer(equipmentInfo),
+    bodySanitizer(equipment_upload),
     catchExceptions(controller.create)
   );
 
-  /*router.post(
+  router.post(
     '/edit',
     userIsAuth,
+    bodySanitizer('equipment_id'),
     catchExceptions(controller.edit)
-  );*/
+  );
 
   router.put(
     '/update',
     userIsAuth,
-    bodySanitizer(['equipment_id', ...equipmentInfo]),
+    bodySanitizer(['equipment_id', ...equipment_upload]),
     catchExceptions(controller.update)
   );
 

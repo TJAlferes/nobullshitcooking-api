@@ -1,4 +1,4 @@
-import { RowDataPacket } from 'mysql2/promise';
+import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
 import { MySQLRepo } from '../shared/MySQL';
 
@@ -54,7 +54,8 @@ export class UserRepo extends MySQLRepo implements UserRepoInterface {
       INSERT INTO users (user_id, email, password, username, confirmation_code)
       VALUES (:user_id, :email, :password, :username, :confirmation_code)
     `;
-    await this.pool.execute<RowDataPacket[]>(sql, params);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
+    if (!result) throw new Error('Query not successful.');
   }
 
   async update(params: UpdateParams) {
@@ -69,12 +70,14 @@ export class UserRepo extends MySQLRepo implements UserRepoInterface {
       WHERE user_id = :user_id
       LIMIT 1
     `;
-    await this.pool.execute(sql, params);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
+    if (!result) throw new Error('Query not successful.');
   }
 
   async delete(user_id: string) {
     const sql = `DELETE FROM users WHERE user_id = ? LIMIT 1`;
-    await this.pool.execute(sql, [user_id]);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, user_id);
+    if (!result) throw new Error('Query not successful.');
   }
 }
 
