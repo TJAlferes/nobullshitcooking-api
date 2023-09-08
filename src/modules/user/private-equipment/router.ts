@@ -6,7 +6,7 @@ import { privateEquipmentController as controller } from './controller';
 
 const router = Router();
 
-// for /user/private/equipment/...
+// for /users/:username/private-equipment
 
 export function privateEquipmentRouter() {
   const equipment_upload = [
@@ -16,27 +16,27 @@ export function privateEquipmentRouter() {
     'image*'
   ];
 
-  router.post(
-    '/all',
+  router.get(
+    '/',
     userIsAuth,
     catchExceptions(controller.viewAll)
   );
 
-  router.post(
-    '/one',
+  router.get(
+    '/:equipment_id',
     userIsAuth,
     bodySanitizer('equipment_id'),
     catchExceptions(controller.viewOne)
   );
 
   router.post(
-    '/create',
+    '/',
     userIsAuth,
     bodySanitizer(equipment_upload),
     catchExceptions(controller.create)
   );
 
-  router.post(
+  router.get(
     '/edit',
     userIsAuth,
     bodySanitizer('equipment_id'),
@@ -44,14 +44,14 @@ export function privateEquipmentRouter() {
   );
 
   router.put(
-    '/update',
+    '/',
     userIsAuth,
     bodySanitizer(['equipment_id', ...equipment_upload]),
     catchExceptions(controller.update)
   );
 
   router.delete(
-    '/delete',
+    '/',
     userIsAuth,
     bodySanitizer('equipment_id'),
     catchExceptions(controller.deleteOne)

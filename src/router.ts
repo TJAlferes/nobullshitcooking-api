@@ -1,40 +1,41 @@
-'use strict';
+import { Router } from 'express';
 
-import { Application } from 'express';
+import { cuisineRouter }        from './modules/recipe/cuisine/router';
+import { initialDataRouter }    from './modules//initial-data/router';
+import { equipmentRouter }      from './modules/equipment/router';
+import { equipmentTypeRouter }  from './modules/equipment/type/router';
+import { ingredientRouter }     from './modules/ingredient/router';
+import { ingredientTypeRouter } from './modules/ingredient/type/router';
+import { methodRouter }         from './modules/recipe/method/router';
+import { profileRouter }        from './modules/user/profile/router';
+import { recipeRouter }         from './modules/recipe/router';
+import { recipeTypeRouter }     from './modules/recipe/type/router';
+import { searchRouter }         from './modules/search/router';
+import { unitRouter }           from './modules/shared/unit/router';
+import { userRouter }           from './modules/user/router';
 
-import { userRouter }           from './user/index';
-import { cuisineRouter }        from './cuisine';
-import { dataInitRouter }       from './modules/data-init/router';
-import { equipmentRouter }      from './equipment';
-import { equipmentTypeRouter }  from './equipmentType';
-import { ingredientRouter }     from './ingredient';
-import { ingredientTypeRouter } from './ingredientType';
-import { measurementRouter }    from './measurement';
-import { methodRouter }         from './method';
-import { profileRouter }        from './profile';
-import { recipeRouter }         from './recipe';
-import { recipeTypeRouter }     from './recipeType';
-import { searchRouter }         from './search';
+const router = Router();
 
-// TO DO: add grocer
-export function routesInit(app: Application) {
-  app.get('/', (req, res) => res.send(`
+export function apiV1Router() {
+  router.get('/', (req, res) => res.send(`
     No Bullshit Cooking Backend API.
     Documentation at https://github.com/tjalferes/nobullshitcooking-api
   `));
   
-  app.use('/user',            userRouter());
+  router.use('/user',            userRouter());
 
-  app.use('/cuisine',         cuisineRouter());
-  app.use('/data-init',       dataInitRouter());
-  app.use('/equipment',       equipmentRouter());
-  app.use('/equipment-type',  equipmentTypeRouter());
-  app.use('/ingredient',      ingredientRouter());
-  app.use('/ingredient-type', ingredientTypeRouter());
-  app.use('/measurement',     measurementRouter());
-  app.use('/method',          methodRouter());
-  app.use('/profile',         profileRouter());
-  app.use('/recipe',          recipeRouter());
-  app.use('/recipe-type',     recipeTypeRouter());
-  app.use('/search',          searchRouter());
+  router.use('/cuisine',         cuisineRouter());
+  router.use('/data-init',       initialDataRouter());
+  router.use('/equipment',       equipmentRouter());
+  router.use('/equipment-type',  equipmentTypeRouter());
+  router.use('/ingredient',      ingredientRouter());
+  router.use('/ingredient-type', ingredientTypeRouter());
+  router.use('/unit',            unitRouter());
+  router.use('/method',          methodRouter());
+  router.use('/profile',         profileRouter());
+  router.use('/recipe',          recipeRouter());
+  router.use('/recipe-type',     recipeTypeRouter());
+  router.use('/search',          searchRouter());
 }
+
+// TO DO: add grocer

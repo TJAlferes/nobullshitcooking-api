@@ -34,7 +34,7 @@ import {
   ChatGroupRepo,
   ChatGroupUserRepo
 } from './repos/mysql';
-import { routesInit } from './router';
+import { apiV1Router } from './router';
 
 export function appServer({ sessionClient, pubClient, subClient }: RedisClients) {
   const app = express();
@@ -45,7 +45,7 @@ export function appServer({ sessionClient, pubClient, subClient }: RedisClients)
     app.set('trust proxy', 1);  // trust first proxy  // insufficient?
   }
 
-  // Express Middleware ========================================================
+  // Express Middleware
   
   const redisStore = new RedisStore({client: sessionClient});
   const sessionMiddleware = expressSession({
@@ -104,9 +104,9 @@ export function appServer({ sessionClient, pubClient, subClient }: RedisClients)
 
   // Routes
 
-  routesInit(app);
+  app.use('/api/v1', apiV1Router);
 
-  // Socket.IO
+  // Socket.IO (TO DO: move to modules/chat)
 
   const io = new SocketIOServer<ClientToServerEvents, ServerToClientEvents>(
     httpServer, 
