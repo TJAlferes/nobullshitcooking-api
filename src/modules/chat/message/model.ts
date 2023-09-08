@@ -8,11 +8,8 @@ export class Chatmessage {
   private sender_id;
   private receiver_id;
   private content;
-  private image_id;
-  private video_id;
-  // Timestamps -- handled by MySQL
-  //private created_at: Date | null = null;  // not needed?
-  //private updated_at: Date | null = null;  // not needed?
+  //private image_id;
+  //private video_id;
 
   private constructor(params: ConstructorParams) {
     this.chatmessage_id = UUIDv7StringId(params.chatmessage_id);
@@ -20,16 +17,14 @@ export class Chatmessage {
     this.sender_id      = Username(params.sender_id);    // ALSO ALLOW SOCKETS ?
     this.receiver_id    = Username(params.receiver_id);  // ALSO ALLOW SOCKETS ?
     this.content        = Content(params.content);
-    this.image_id       = params.image_id ? UUIDv7StringId(params.image_id) : undefined;
-    this.video_id       = params.video_id ? UUIDv7StringId(params.video_id) : undefined;
+    //this.image_id       = params.image_id ? UUIDv7StringId(params.image_id) : undefined;
+    //this.video_id       = params.video_id ? UUIDv7StringId(params.video_id) : undefined;
   }
 
   static create(params: CreateParams) {
     const chatmessage_id = GenerateUUIDv7StringId();
     return new Chatmessage({...params, chatmessage_id});
   }
-
-  //static update(params: UpdateParams) {}
 
   getDTO() {
     return {
@@ -38,8 +33,8 @@ export class Chatmessage {
       sender_id:      this.sender_id,
       receiver_id:    this.receiver_id,
       content:        this.content,
-      image_id:       this.image_id,
-      video_id:       this.video_id
+      //image_id:       this.image_id,
+      //video_id:       this.video_id
     };
   }
 }
@@ -78,8 +73,8 @@ export type CreateParams = {
   sender_id:   string;
   receiver_id: string;
   content:     string;
-  image_id?:   string;
-  video_id?:   string;
+  //image_id?:   string;
+  //video_id?:   string;
 };
 
 export type UpdateParams = CreateParams & {

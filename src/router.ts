@@ -1,13 +1,12 @@
 import { Router } from 'express';
 
 import { cuisineRouter }        from './modules/recipe/cuisine/router';
-import { initialDataRouter }    from './modules//initial-data/router';
+import { initialDataRouter }    from './modules/initial-data/router';
 import { equipmentRouter }      from './modules/equipment/router';
 import { equipmentTypeRouter }  from './modules/equipment/type/router';
 import { ingredientRouter }     from './modules/ingredient/router';
 import { ingredientTypeRouter } from './modules/ingredient/type/router';
 import { methodRouter }         from './modules/recipe/method/router';
-import { profileRouter }        from './modules/user/profile/router';
 import { recipeRouter }         from './modules/recipe/router';
 import { recipeTypeRouter }     from './modules/recipe/type/router';
 import { searchRouter }         from './modules/search/router';
@@ -22,20 +21,19 @@ export function apiV1Router() {
     Documentation at https://github.com/tjalferes/nobullshitcooking-api
   `));
   
-  router.use('/user',            userRouter());
+  router.use('/users', userRouter());
 
-  router.use('/cuisine',         cuisineRouter());
-  router.use('/data-init',       initialDataRouter());
-  router.use('/equipment',       equipmentRouter());
-  router.use('/equipment-type',  equipmentTypeRouter());
-  router.use('/ingredient',      ingredientRouter());
-  router.use('/ingredient-type', ingredientTypeRouter());
-  router.use('/unit',            unitRouter());
-  router.use('/method',          methodRouter());
-  router.use('/profile',         profileRouter());
-  router.use('/recipe',          recipeRouter());
-  router.use('/recipe-type',     recipeTypeRouter());
-  router.use('/search',          searchRouter());
+  router.use('/initial-data', initialDataRouter());
+
+  router.use('/search', searchRouter());
+
+  router.use('/cuisines',         cuisineRouter());
+  router.use('/equipments',       equipmentRouter());
+  router.use('/equipment-types',  equipmentTypeRouter());
+  router.use('/ingredients',      ingredientRouter());
+  router.use('/ingredient-types', ingredientTypeRouter());
+  router.use('/units',            unitRouter());
+  router.use('/methods',          methodRouter());
+  router.use('/recipes',          recipeRouter());
+  router.use('/recipe-types',     recipeTypeRouter());
 }
-
-// TO DO: add grocer

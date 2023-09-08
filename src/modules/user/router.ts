@@ -5,20 +5,22 @@ import { userController }              from './controller';
 import { catchExceptions, userIsAuth } from '../../utils';
 
 import { userInitialDataRouter }   from './initial-data/router';
-import { privateEquipmentRouter }  from './equipment/router';
-import { privateIngredientRouter } from './ingredient/router';
-import { privatePlanRouter }       from './plan/router';
-import { privateRecipeRouter }     from './recipe/router';
-import { userSavedRecipeRouter }   from './saved-recipe/router';
-import { userFavoriteRecipeRouter } from './favorite-recipe/router';
-import { userPublicPlanRouter }     from './plan/router';
-import { userPublicRecipeRouter }   from './recipe/router';
-import { profileRouter }            from './profile/router'
-import { userAuthenticationRouter } from './authentication/router';
-//import { userAuthorizationRouter }  from './authorization/router';
-import { userConfirmationRouter }   from './confirmation/router';
-import { userFriendshipRouter }     from './friendship/router';
-import { userSignedUrlRouter }      from './shared/signed-url/router';
+import { privateEquipmentRouter }  from './private-equipment/router';
+import { privateIngredientRouter } from './private-ingredient/router';
+import { privatePlanRouter }       from './private-plan/router';
+import { privateRecipeRouter }     from './private-recipe/router';
+import { savedRecipeRouter }       from './saved-recipe/router';
+
+import { friendshipRouter }     from './friendship/router';
+
+import { profileRouter }           from './profile/router';
+import { publicPlanRouter }        from './public-plan/router';
+import { publicRecipeRouter }      from './public-recipe/router';
+import { favoriteRecipeRouter }    from './favorite-recipe/router';
+
+import { authenticationRouter } from './authentication/router';
+
+import { signedUrlRouter }      from './shared/signed-url/router';
 
 const router = Router();
 
@@ -40,7 +42,6 @@ export function userRouter() {
   router.use('/:username/saved-recipes',       savedRecipeRouter());
 
   router.use('/authentication', userAuthenticationRouter());  // just send their initial user data right when they login???
-  router.use('/confirmation',   userConfirmationRouter());
   router.use('/friendship',     userFriendshipRouter());
   router.use('/profile',        profileRouter());
   router.use('/signed-url',     userSignedUrlRouter());

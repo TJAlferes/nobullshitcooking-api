@@ -9,6 +9,19 @@ const router = Router();
 // for /user/authentication
 
 export function userAuthenticationRouter() {
+
+  router.post(
+    '/confirm',
+    sanitize(['confirmation_code']),
+    catchExceptions(controller.confirm)
+  );
+
+  router.post(
+    '/resend-confirmation-code',
+    sanitize(['email', 'password']),
+    catchExceptions(controller.resendConfirmationCode)
+  );
+
   router.post(
     '/login',
     sanitize(['email', 'password']),
