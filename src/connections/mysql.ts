@@ -4,7 +4,7 @@ import { createPool } from 'mysql2/promise';
 
 export const pool = createPool(getConfigOptions());  // TO DO: set up proper retry logic
 
-function getConfigOptions() {
+export function getConfigOptions() {
   if (process.env.NODE_ENV === 'production') {
     return productionConfigOptions;
   }
