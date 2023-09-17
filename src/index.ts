@@ -3,11 +3,10 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-import { redisClients } from './connections/redis';
 import { userCron }     from './modules/user/cron';
-import { appServer }    from './app';
+import { createAppServer }    from './app';
 
-export const { httpServer, io } = appServer(redisClients);
+export const { httpServer } = createAppServer();
 
 const PORT = process.env.NODE_ENV === 'production'
   ? Number(process.env.PORT) || 8081

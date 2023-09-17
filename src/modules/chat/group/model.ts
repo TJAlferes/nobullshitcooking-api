@@ -47,6 +47,10 @@ type CreateParams = {
   invite_code:    string;
 };
 
+type UpdateParams = CreateParams & {
+  chatgroup_id: string;
+};
+
 type ConstructorParams = CreateParams & {
   chatgroup_id: string;
 };

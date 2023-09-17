@@ -3,6 +3,8 @@ import { UUIDv7StringId } from "../../../shared/model";
 export class ChatgroupUser {
   private chatgroup_id;
   private user_id;
+  //private is_admin;
+  //private is_muted;
 
   private constructor(params: ConstructorParams) {
     this.chatgroup_id = UUIDv7StringId(params.chatgroup_id);

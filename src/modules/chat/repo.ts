@@ -2,6 +2,7 @@ import { Redis } from 'ioredis';
 
 import { IMessage } from '../../chat';
 
+// TO DO: Don't use Redis for this anymore. Migrate to MySQL.
 export class ChatStore implements IChatStore {
   client: Redis;
 
@@ -18,10 +19,6 @@ export class ChatStore implements IChatStore {
     const sessionId = await this.client.hget(`user:${username}`, 'sessionId');
     return sessionId;
   }
-
-  //async getRooms(cb) {}
-
-  //async getMessages(room: string, cb) {}
 
   async createUser({ sessionId, username }: IUserInfo) {
     await this.client.multi()

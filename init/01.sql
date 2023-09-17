@@ -78,12 +78,11 @@ CREATE TABLE chatroom (
 
 CREATE TABLE chatmessage (
   `chatmessage_id` CHAR(36)  PRIMARY KEY,
-  `chatroom_id`    CHAR(36)  NOT NULL,
+  `chatroom_id`    CHAR(36),
   `sender_id`      CHAR(36)  NOT NULL,
-  `receiver_id`    CHAR(36)  NOT NULL,
+  `receiver_id`    CHAR(36),
   `content`        TEXT      NOT NULL,
   `image_id`       CHAR(36)  DEFAULT NULL,
-  `video_id`       CHAR(36)  DEFAULT NULL,
   `created_at`     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at`     TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (`chatroom_id`) REFERENCES `chatroom` (`chatroom_id`) ON DELETE CASCADE,
@@ -95,8 +94,8 @@ CREATE TABLE chatmessage (
 CREATE TABLE chatgroup_user (
   `chatgroup_id` CHAR(36) NOT NULL,
   `user_id`      CHAR(36) NOT NULL,
-  `is_admin`,
-  `is_muted`,
+  `is_admin`     BOOLEAN  NOT NULL DEFAULT false,
+  `is_muted`     BOOLEAN  NOT NULL DEFAULT false,
   PRIMARY KEY (`chatgroup_id`, `user_id`),
   FOREIGN KEY (`chatgroup_id`) REFERENCES `chatgroup` (`chatgroup_id`) ON DELETE CASCADE,
   FOREIGN KEY (`user_id`)      REFERENCES `user` (`user_id`) ON DELETE CASCADE
@@ -105,8 +104,8 @@ CREATE TABLE chatgroup_user (
 CREATE TABLE chatroom_user (
   `chatroom_id` CHAR(36) NOT NULL,
   `user_id`     CHAR(36) NOT NULL,
-  `is_admin`,
-  `is_muted`,
+  `is_admin`    BOOLEAN  NOT NULL DEFAULT false,
+  `is_muted`    BOOLEAN  NOT NULL DEFAULT false,
   PRIMARY KEY (`chatroom_id`, `user_id`),
   FOREIGN KEY (`chatroom_id`) REFERENCES `chatroom` (`chatroom_id`) ON DELETE CASCADE,
   FOREIGN KEY (`user_id`)     REFERENCES `user` (`user_id`) ON DELETE CASCADE

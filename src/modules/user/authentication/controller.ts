@@ -48,11 +48,12 @@ export const userAuthenticationController = {
   },
 
   async logout(req: Request, res: Response) {
-    const sessionId = req.session.id;
+    const session_id = req.session.id;
 
-    req.session!.destroy(function() {
-      io.in(sessionId).disconnectSockets();
-      res.status(204);
+    req.session!.destroy(() => {
+      // disconnect all Socket.IO connections linked to this session ID
+      io.in(session_id).disconnectSockets();
+      res.status(204).end();
     });
 
     return res.end();

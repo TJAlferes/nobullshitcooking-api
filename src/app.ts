@@ -9,13 +9,15 @@ import expressRateLimit                             from 'express-rate-limit';
 import expressSession, { Session }                  from 'express-session';
 import helmet                                       from 'helmet';
 import hpp                                          from 'hpp';
-import { createServer, IncomingMessage }            from 'http';
-import { Redis }                                    from 'ioredis';
+import { createServer }                             from 'node:http';
+import type { Redis }                               from 'ioredis';
 const pino = require('pino-http')();  // logger
 
-import { apiV1Router } from './router';
+import { redisClients }         from './connections/redis';
+import { createSocketIOServer } from './modules/chat/socketio';
+import { apiV1Router }          from './router';
 
-export function appServer({ sessionClient, pubClient, subClient }: RedisClients) {
+export function createAppServer() {
   const app = express();
 
   const httpServer = createServer(app);
@@ -25,8 +27,8 @@ export function appServer({ sessionClient, pubClient, subClient }: RedisClients)
   }
 
   // Express Middleware
-  
-  const redisStore = new RedisStore({client: sessionClient});
+
+  const redisStore = new RedisStore({client: redisClients.sessionClient});
   const sessionMiddleware = expressSession({
     cookie: (app.get('env') === 'production') ? {
       httpOnly: true,    // if true, client-side JS can NOT see the cookie in document.cookie
@@ -93,6 +95,8 @@ export function appServer({ sessionClient, pubClient, subClient }: RedisClients)
 
   app.use('/api/v1', apiV1Router);
 
+  const socketIOServer = createSocketIOServer(httpServer, sessionMiddleware);
+
   process.on('unhandledRejection', (reason, promise: Promise<any>) => {
     console.log('Unhandled Rejection at: ', reason);
   });
@@ -110,31 +114,26 @@ export function appServer({ sessionClient, pubClient, subClient }: RedisClients)
 
   return {
     httpServer,
-    io
+    socketIOServer
   };
 }
 
 export type ModifiedSession = Session & {
-  authenticated: boolean;
-  staffInfo?: {
-    staff_id:  string;
-    staffname: string;
-  };
-  userInfo?: {
-    user_id:  string;
-    username: string;
-  };
+  //staff_id?:  string;
+  //staffname?: string;
+  user_id?:   string;
+  username?:  string;
 };
 
-declare module "http" {
+declare module "node:http" {
   interface IncomingMessage {
     session: ModifiedSession;
   }
 }
 
 export type RedisClients = {
-  pubClient:     Redis;  // | Cluster;
-  subClient:     Redis;  // | Cluster;
-  sessionClient: RedisStore; //Client;
+  pubClient:     Redis;  //| Cluster;
+  subClient:     Redis;  //| Cluster;
+  sessionClient: RedisStore;  //Client;
   //workerClient:  Redis;
 }

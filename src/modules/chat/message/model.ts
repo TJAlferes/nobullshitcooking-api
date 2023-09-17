@@ -39,7 +39,7 @@ export class Chatmessage {
   }
 }
 
-export const PRIVATE = "private" as const;
+/*export const PRIVATE = "private" as const;
 export const PUBLIC  = "public" as const;
 
 export function Kind(kind: typeof PRIVATE | typeof PUBLIC) {
@@ -47,7 +47,7 @@ export function Kind(kind: typeof PRIVATE | typeof PUBLIC) {
     return kind;
   }
   throw new Error ("Chatmessage kind must be 'private' or 'public'");
-}
+}*/
 
 export function Username(username: string) {
   assert(username, string());

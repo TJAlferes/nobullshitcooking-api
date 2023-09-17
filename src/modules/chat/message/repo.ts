@@ -20,8 +20,6 @@ export class ChatMessageRepo extends MySQLRepo implements IChatMessageRepo {
     await this.pool.execute(sql, params);
   }
 
-  //async update() {}  // not needed?
-
   async delete(chatmessage_id: string) {
     const sql = `DELETE FROM chatmessage WHERE chatmessage_id = ? LIMIT 1`;
     await this.pool.execute(sql, [chatmessage_id]);
@@ -30,7 +28,7 @@ export class ChatMessageRepo extends MySQLRepo implements IChatMessageRepo {
 
 interface IChatMessageRepo {
   insert: (params: InsertParams) =>   Promise<void>;
-  delete: (chatmessage_id: string) => Promise<void>;
+  delete: (chatmessage_id: string) => Promise<void>;  // and owner_id ???
 }
 
 type InsertParams = {

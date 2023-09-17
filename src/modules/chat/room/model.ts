@@ -6,9 +6,6 @@ export class Chatroom {
   private chatroom_id;
   private chatgroup_id;
   private chatroom_name;
-  // Timestamps -- handled by MySQL
-  //private created_at: Date | null = null;  // not needed?
-  //private updated_at: Date | null = null;  // not needed?
 
   private constructor(params: ConstructorParams) {
     this.chatroom_id   = UUIDv7StringId(params.chatroom_id);
@@ -18,7 +15,7 @@ export class Chatroom {
 
   static create(params: CreateParams) {
     const chatroom_id = GenerateUUIDv7StringId();
-    return new Chatroom({...params, chatroom_id});  // only return the id?
+    return new Chatroom({...params, chatroom_id});
   }
 
   //static update(params: UpdateParams) {}

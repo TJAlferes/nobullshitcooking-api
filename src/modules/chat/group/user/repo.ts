@@ -12,6 +12,19 @@ export class ChatgroupUserRepo extends MySQLRepo implements ChatgroupUserRepoInt
     if (!result) throw new Error('Query not successful.');
   }
 
+  async update(params: UpdateParams) {
+    const sql = `
+      UPDATE chatgroup_user
+      SET
+        is_admin = :is_admin,
+        is_muted = :is_muted
+      WHERE chatgroup_id = :chatgroup_id AND user_id = :user_id
+      LIMIT 1
+    `;
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
+    if (!result) throw new Error('Query not successful.');
+  }
+
   async deleteByChatgroupId(chatgroup_id: string) {
     const sql = `DELETE FROM chatgroup_user WHERE chatgroup_id = ? LIMIT 1`;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, chatgroup_id);
@@ -27,6 +40,7 @@ export class ChatgroupUserRepo extends MySQLRepo implements ChatgroupUserRepoInt
 
 export interface ChatgroupUserRepoInterface {
   insert:              (params: InsertParams) => Promise<void>;
+  update:              (params: UpdateParams) => Promise<void>;
   deleteByChatgroupId: (chatgroup_id: string) => Promise<void>;
   deleteByUserId:      (user_id: string) =>      Promise<void>;
 }
@@ -34,4 +48,9 @@ export interface ChatgroupUserRepoInterface {
 type InsertParams = {
   chatgroup_id: string;
   user_id:      string;
+};
+
+type UpdateParams = InsertParams & {
+  is_admin: boolean;
+  is_muted: boolean;
 };
