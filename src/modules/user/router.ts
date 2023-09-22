@@ -3,24 +3,19 @@ import { body }   from 'express-validator';
 
 import { userController }              from './controller';
 import { catchExceptions, userIsAuth } from '../../utils';
-
-import { userInitialDataRouter }   from './initial-data/router';
-import { privateEquipmentRouter }  from './private-equipment/router';
-import { privateIngredientRouter } from './private-ingredient/router';
-import { privatePlanRouter }       from './private-plan/router';
-import { privateRecipeRouter }     from './private-recipe/router';
-import { savedRecipeRouter }       from './saved-recipe/router';
-
-import { friendshipRouter }     from './friendship/router';
-
-import { profileRouter }           from './profile/router';
-import { publicPlanRouter }        from './public-plan/router';
-import { publicRecipeRouter }      from './public-recipe/router';
-import { favoriteRecipeRouter }    from './favorite-recipe/router';
-
-import { authenticationRouter } from './authentication/router';
-
-import { signedUrlRouter }      from './shared/signed-url/router';
+import { userInitialDataRouter }       from './initial-data/router';
+import { privateEquipmentRouter }      from './private-equipment/router';
+import { privateIngredientRouter }     from './private-ingredient/router';
+import { privatePlanRouter }           from './private-plan/router';
+import { privateRecipeRouter }         from './private-recipe/router';
+import { savedRecipeRouter }           from './saved-recipe/router';
+import { friendshipRouter }            from './friendship/router';
+import { profileRouter }               from './profile/router';
+import { publicPlanRouter }            from './public-plan/router';
+import { publicRecipeRouter }          from './public-recipe/router';
+import { favoriteRecipeRouter }        from './favorite-recipe/router';
+import { authenticationRouter }        from './authentication/router';
+import { signedUrlRouter }             from './shared/signed-url/router';
 
 const router = Router();
 

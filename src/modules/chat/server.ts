@@ -69,29 +69,6 @@ export function createSocketIOServer(httpServer: Server, sessionMiddleware: Requ
       await getOnlineFriends({});
     });
 
-    socket.on('createChatgroup', async () => {
-      await createChatgroup();
-    });
-
-    socket.on('joinChatgroup', async () => {
-      await joinChatgroup();
-    });
-
-    socket.on('leaveChatgroup', async () => {
-      await leaveChatGroup();
-    });
-
-    // TO DO: make invite codes easy to generate, make them expire in 1 day
-    // TO DO: make chatgroup owners able to decline all current pending invite requests, not just 1 at a time
-    // TO DO: make chatgroup owners able to toggle the chatroom "invisible" when needed
-    socket.on('inviteUserToChatgroup', async () => {
-      await inviteUserToChatgroup();
-    });
-
-    socket.on('banUserFromChatgroup', async () => {
-      await banUserFromChatgroup();
-    });
-
     socket.on('GetUsersInRoom', async (room) => {
       await getUsersInRoom({});
     });

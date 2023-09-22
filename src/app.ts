@@ -91,7 +91,7 @@ export function createAppServer() {
   //app.use(csurf());
   app.use(compression());
 
-  app.use('/api/v1', apiV1Router);
+  app.use('/v1', apiV1Router);
 
   const socketIOServer = createSocketIOServer(httpServer, sessionMiddleware);
 
