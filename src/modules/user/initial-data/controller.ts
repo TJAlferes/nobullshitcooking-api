@@ -1,17 +1,17 @@
 import { Request, Response } from 'express';
 
-import { NOBSC_USER_ID }      from '../../../shared/model';
-import { EquipmentRepo }      from '../../../equipment/repo';
-import { IngredientRepo }     from '../../../ingredient/repo';
-import { PlanRepo }           from '../../../plan/repo';
-import { RecipeRepo }         from '../../../recipe/repo';
-import { FriendshipRepo }     from '../../friendship/repo';
-import { FavoriteRecipeRepo } from '../../public/favorite-recipe/repo';
+import { NOBSC_USER_ID }      from '../../shared/model';
+import { EquipmentRepo }      from '../../equipment/repo';
+import { IngredientRepo }     from '../../ingredient/repo';
+import { PlanRepo }           from '../../plan/repo';
+import { RecipeRepo }         from '../../recipe/repo';
+import { FriendshipRepo }     from '../friendship/repo';
+import { FavoriteRecipeRepo } from '../favorite-recipe/repo';
 import { SavedRecipeRepo }    from '../saved-recipe/repo';
 
 export const userInitialDataController = {
   async view(req: Request, res: Response) {
-    const user_id = req.session.userInfo!.id;
+    const user_id = req.session.user_id!;
 
     const friendshipRepo     = new FriendshipRepo();
     const equipmentRepo      = new EquipmentRepo();

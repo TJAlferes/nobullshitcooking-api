@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 
 import { RecipeRepo }         from '../../recipe/repo';
 import { NOBSC_USER_ID }      from '../../shared/model';
-import { FavoriteRecipeRepo } from '../public/favorite-recipe/repo';
+import { FavoriteRecipeRepo } from '../favorite-recipe/repo';
 import { UserRepo }           from '../repo';
 
 export const profileController = {

@@ -14,7 +14,7 @@ export const userController = {
   
   async updateEmail(req: Request, res: Response) {
     const new_email = req.body.new_email;
-    const user_id   = req.session.userInfo!.user_id;  // res.locals?
+    const user_id   = req.session.user_id!;  // res.locals?
 
     const userRepo    = new UserRepo();
     const userService = new UserService(userRepo);
@@ -25,7 +25,7 @@ export const userController = {
 
   async updatePassword(req: Request, res: Response) {
     const new_password = req.body.new_password;
-    const user_id      = req.session.userInfo!.user_id;  // res.locals?
+    const user_id      = req.session.user_id!;  // res.locals?
 
     const userRepo    = new UserRepo();
     const userService = new UserService(userRepo);
@@ -36,7 +36,7 @@ export const userController = {
 
   async updateUsername(req: Request, res: Response) {
     const new_username = req.body.new_username;
-    const user_id      = req.session.userInfo!.user_id;  // res.locals?
+    const user_id      = req.session.user_id!;  // res.locals?
 
     const userRepo    = new UserRepo();
     const userService = new UserService(userRepo);
@@ -46,7 +46,7 @@ export const userController = {
   },
 
   async delete(req: Request, res: Response) {
-    const user_id = req.session.userInfo!.user_id;
+    const user_id = req.session.user_id!;
 
     const userRepo    = new UserRepo();
     const userService = new UserService(userRepo);

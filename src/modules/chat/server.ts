@@ -56,6 +56,10 @@ export function createSocketIOServer(httpServer: Server, sessionMiddleware: Requ
     //chatStore.createUser({sessionId, username});
 
     socket.join(session_id);
+
+    // IMPORTANT:
+    // You don't need EVERY chat related functionality performed over socket.io (or any websocket)
+    // Some of it can be done through regular https req and res express routes
   
     // TO DO: no longer appear online for users blocked and friends deleted during that same session (so emit ShowOffline)
   
@@ -64,7 +68,30 @@ export function createSocketIOServer(httpServer: Server, sessionMiddleware: Requ
     socket.on('GetOnlineFriends', async () => {
       await getOnlineFriends({});
     });
-  
+
+    socket.on('createChatgroup', async () => {
+      await createChatgroup();
+    });
+
+    socket.on('joinChatgroup', async () => {
+      await joinChatgroup();
+    });
+
+    socket.on('leaveChatgroup', async () => {
+      await leaveChatGroup();
+    });
+
+    // TO DO: make invite codes easy to generate, make them expire in 1 day
+    // TO DO: make chatgroup owners able to decline all current pending invite requests, not just 1 at a time
+    // TO DO: make chatgroup owners able to toggle the chatroom "invisible" when needed
+    socket.on('inviteUserToChatgroup', async () => {
+      await inviteUserToChatgroup();
+    });
+
+    socket.on('banUserFromChatgroup', async () => {
+      await banUserFromChatgroup();
+    });
+
     socket.on('GetUsersInRoom', async (room) => {
       await getUsersInRoom({});
     });

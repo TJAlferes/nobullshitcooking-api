@@ -6,7 +6,7 @@ dotenv.config();
 import { userCron }        from './modules/user/cron';
 import { createAppServer } from './app';
 
-export const { httpServer } = createAppServer();
+export const { httpServer, socketIOServer } = createAppServer();
 
 const PORT = process.env.NODE_ENV === 'production'
   ? Number(process.env.PORT) || 8081

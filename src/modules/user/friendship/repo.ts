@@ -16,7 +16,7 @@ import { MySQLRepo } from '../../shared/MySQL';
 
 
 
-// Blocking is represented by ONE AND ONLY ONE record in the table:
+// Blocking is represented by ONLY ONE record in the table:
 //
 //   user_id: 1, friend_id: 2, status: "blocked"
 //   Here, user 1 blocked user 2 (user 2 is blocked by user 1)

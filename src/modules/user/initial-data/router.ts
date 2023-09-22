@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { catchExceptions, userIsAuth } from '../../../../utils';
+import { catchExceptions, userIsAuth } from '../../../utils';
 import { userInitialDataController as controller } from './controller';
 
 const router = Router();

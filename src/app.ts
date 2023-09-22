@@ -12,7 +12,7 @@ import type { Redis }                               from 'ioredis';
 const pino = require('pino-http')();  // logger
 
 import { redisClients }         from './connections/redis';
-import { createSocketIOServer } from './modules/chat/socketio';
+import { createSocketIOServer } from './modules/chat/server';
 import { apiV1Router }          from './router';
 
 export function createAppServer() {

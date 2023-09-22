@@ -3,6 +3,8 @@ import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { MySQLRepo } from "../../../shared/MySQL";
 
 export class ChatroomUserRepo extends MySQLRepo implements ChatroomUserRepoInterface {
+  //async viewByChatroomId(chatroom_id: string) {}
+  
   async insert(params: InsertParams) {
     const sql = `
       INSERT INTO chatroom_user (chatroom_id, user_id)

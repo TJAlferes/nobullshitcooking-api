@@ -6,7 +6,7 @@ import { FriendshipRepo } from './repo';
 
 export const userFriendshipController = {
   async viewAll(req: Request, res: Response) {
-    const user_id = req.session.userInfo!.user_id;
+    const user_id = req.session.user_id!;
 
     const friendshipRepo = new FriendshipRepo();
     const rows = await friendshipRepo.viewAll(user_id);
@@ -23,7 +23,7 @@ export const userFriendshipController = {
       return res.send({message: 'User not found.'});
     }
 
-    const user_id   = req.session.userInfo!.user_id;
+    const user_id   = req.session.user_id!;
     const friend_id = friend.user_id;
 
     // do others need this too? probably
@@ -85,7 +85,7 @@ export const userFriendshipController = {
       return res.send({message: 'User not found.'});
     }
 
-    const user_id   = req.session.userInfo!.user_id;
+    const user_id   = req.session.user_id!;
     const friend_id = friend.user_id;
 
     const friendshipRepo = new FriendshipRepo();
@@ -107,7 +107,7 @@ export const userFriendshipController = {
       return res.send({message: 'User not found.'});
     }
 
-    const user_id   = req.session.userInfo!.user_id;
+    const user_id   = req.session.user_id!;
     const friend_id = friend.user_id;
 
     const friendshipRepo = new FriendshipRepo();
@@ -129,7 +129,7 @@ export const userFriendshipController = {
       return res.send({message: 'User not found.'});
     }
 
-    const user_id   = req.session.userInfo!.user_id;
+    const user_id   = req.session.user_id!;
     const friend_id = friend.user_id;
 
     const friendshipRepo = new FriendshipRepo();
@@ -151,7 +151,7 @@ export const userFriendshipController = {
       return res.send({message: 'User not found.'});
     }
 
-    const user_id   = req.session.userInfo!.user_id;
+    const user_id   = req.session.user_id!;
     const friend_id = friend.user_id;
 
     const friendshipRepo = new FriendshipRepo();
@@ -176,7 +176,7 @@ export const userFriendshipController = {
       return res.send({message: 'User not found.'});
     }
 
-    const user_id   = req.session.userInfo!.user_id;
+    const user_id   = req.session.user_id!;
     const friend_id = friend.user_id;
 
     const friendshipRepo = new FriendshipRepo();

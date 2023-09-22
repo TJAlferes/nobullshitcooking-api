@@ -2,9 +2,28 @@ import type { Socket } from "socket.io";
 
 import { FriendshipRepo }   from "../user/friendship/repo";
 import { ChatroomUserRepo } from "./room/user/repo";
+import { ChatuserRepo }     from "./user/repo";
 
 // chatService???
 export const chatController = {
+  async getOnlineFriends({ session_id, username, socket }: GetOnlineFriendsParams) {
+    const friendshipRepo = new FriendshipRepo();
+    const acceptedFriends = await friendshipRepo.viewAccepted(session_id);
+    if (!acceptedFriends.length) return;
+  
+    const chatuserRepo = new ChatuserRepo();
+    const friends = [];
+    for (const acceptedFriend of acceptedFriends) {
+      const friend = await chatStore.getUserSessionId(acceptedFriend.username);
+      if (!friend) continue;
+  
+      socket.broadcast.to(friend).emit('FriendCameOnline', username);
+      friends.push(acceptedFriend.username);
+    }
+    
+    socket.emit('OnlineFriends', friends);
+  },
+
   async disconnecting({ session_id, user_id, username, socket }: DisconnectingParams) {
     const clonedSocket: Partial<Socket> = {...socket};
     
@@ -17,6 +36,7 @@ export const chatController = {
     }
   
     const friendshipRepo = new FriendshipRepo();
+    const chatuserRepo   = new ChatuserRepo();
     const friends = await friendshipRepo.viewAccepted(user_id);
     if (friends.length) {
       for (const friend of friends) {
@@ -28,6 +48,12 @@ export const chatController = {
   
     chatuserRepo.deleteUser(username);
   }
+};
+
+type GetOnlineFriendsParams = {
+  session_id: string;
+  username:   string;
+  socket:     Socket;
 };
 
 type DisconnectingParams = {

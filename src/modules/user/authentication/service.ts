@@ -131,10 +131,8 @@ export class UserAuthenticationService {
 
     await this.isCorrectPassword({email, password});
 
-    session.userInfo = {
-      user_id,
-      username
-    };
+    session.user_id  = user_id;
+    session.username = username;
   
     return username;
   }

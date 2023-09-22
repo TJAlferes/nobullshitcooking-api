@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { io }                        from '../../../index';
+import { socketIOServer }            from '../../..';
 import { UserRepo }                  from '../repo';
 import { UserAuthenticationService } from './service';
 
@@ -28,7 +28,7 @@ export const userAuthenticationController = {
   },
 
   async login(req: Request, res: Response) {
-    const loggedIn = req.session.userInfo?.user_id;
+    const loggedIn = req.session.user_id!;
     if (loggedIn) {
       return res.json({message: 'Already logged in.'});  // throw in this layer?
     }
@@ -52,7 +52,7 @@ export const userAuthenticationController = {
 
     req.session!.destroy(() => {
       // disconnect all Socket.IO connections linked to this session ID
-      io.in(session_id).disconnectSockets();
+      socketIOServer.in(session_id).disconnectSockets();
       res.status(204).end();
     });
 

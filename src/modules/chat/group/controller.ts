@@ -6,5 +6,19 @@ export const chatgroupController = {
     const repo = new ChatgroupRepo();
     const row = await repo.viewOne(chatgroup_id);
     
+  },
+
+  async create() {
+    const repo = new ChatgroupRepo();
+    const chatgroup = Chatgroup.create().getDTO();
+    const row = await repo.insert();
+  },
+
+  async update() {
+
+  },
+
+  async delete() {
+
   }
 };

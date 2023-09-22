@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
-import { assert }            from 'superstruct';
 
-import { FavoriteRecipeRepo, RecipeRepo } from './repo';
-import { validFavoriteRecipe }            from '../../lib/validations';
+import { NOBSC_USER_ID }      from '../../shared/model';
+import { RecipeRepo }         from '../../recipe/repo';
+import { FavoriteRecipe }     from './model';
+import { FavoriteRecipeRepo } from './repo';
 
 export const userFavoriteRecipeController = {
   async viewByUserId(req: Request, res: Response) {
-    const user_id = req.session.userInfo!.id;
+    const user_id = req.session.user_id!;
     
     const favoriteRecipeRepo = new FavoriteRecipeRepo();
     const rows = await favoriteRecipeRepo.viewByUserId(user_id);
@@ -15,13 +16,12 @@ export const userFavoriteRecipeController = {
 
   async create(req: Request, res: Response) {
     const recipe_id = req.body.recipe_id;
-    const user_id   = req.session.userInfo!.id;
-    const owner_id   = 1;  // only public recipes may be favorited  // TO DO: move to domain??? and change to string char(36)
-
-    assert({user_id, recipe_id}, validFavoriteRecipe);  // TO DO: move to domain???
+    const user_id   = req.session.user_id!;
+    const author_id = req.session.user_id!;
+    const owner_id  = NOBSC_USER_ID;
 
     const recipeRepo = new RecipeRepo();
-    const recipe = await recipeRepo.viewOneById({recipe_id, user_id, owner_id});
+    const recipe = await recipeRepo.viewOneByRecipeId({recipe_id, author_id, owner_id});
     if (!recipe) {
       return res.send({message: 'Not Found'});
     }
@@ -29,19 +29,23 @@ export const userFavoriteRecipeController = {
       return res.send({message: 'May not favorite own recipe.'});
     }
 
-    const favoriteRecipeRepo = new FavoriteRecipeRepo();
-    await favoriteRecipeRepo.insert({user_id, recipe_id});
+    const favoriteRecipe = FavoriteRecipe.create({user_id, recipe_id}).getDTO();
+
+    const { insert } = new FavoriteRecipeRepo();
+    await insert(favoriteRecipe);
+
     return res.send({message: 'Favorited.'});
   },
 
   async delete(req: Request, res: Response) {
     const recipe_id = req.body.recipe_id;
-    const user_id   = req.session.userInfo!.id;
+    const user_id   = req.session.user_id!;
 
-    assert({user_id, recipe_id}, validFavoriteRecipe);  // TO DO: move to domain???
+    const favoriteRecipe = FavoriteRecipe.create({user_id, recipe_id}).getDTO();
 
-    const favoriteRecipeRepo = new FavoriteRecipeRepo();
-    await favoriteRecipeRepo.delete({user_id, recipe_id});
+    const repo = new FavoriteRecipeRepo();
+    await repo.delete(favoriteRecipe);
+
     return res.send({message: 'Unfavorited.'});
   }
 };
