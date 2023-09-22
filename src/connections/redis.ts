@@ -1,5 +1,3 @@
-'use strict';
-
 //import Redis from 'ioredis';
 const Redis = require('ioredis');  // temporary "fix" for TypeScript
 //import { Cluster } from 'ioredis';

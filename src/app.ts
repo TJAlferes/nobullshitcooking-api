@@ -1,5 +1,3 @@
-'use strict';
-
 import compression                                  from 'compression';
 import RedisStore                                   from "connect-redis"
 import cors                                         from 'cors';

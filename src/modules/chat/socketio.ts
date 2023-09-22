@@ -5,25 +5,17 @@ import { createAdapter }                    from '@socket.io/redis-adapter';
 
 import { redisClients } from '../../connections/redis';
 
-import {
-  sendMessage,
-  sendPrivateMessage,
-  joinRoom,
-  disconnecting,
-  getOnlineFriends,
-  getUsersInRoom,
-  rejoinRoom
-} from '';
-import type { Message Chatmessage
-import {
-  FriendshipRepo,
-  UserRepo,
-  ChatMessageRepo,
-  ChatRoomRepo,
-  ChatRoomUserRepo,
-  ChatGroupRepo,
-  ChatGroupUserRepo
-} from './repos/mysql';
+//import type { Message Chatmessage
+
+//FriendshipRepo,
+//UserRepo,
+
+//ChatgroupUserController
+//ChatgroupController
+//ChatmessageController   sendMessage, sendPrivateMessage
+//ChatroomUserController  joinRoom, rejoinRoom, getUsersInRoom
+//ChatroomController
+//ChatController          getOnlineFriends, disconnecting
 
 export function createSocketIOServer(httpServer: Server, sessionMiddleware: RequestHandler) {
   const io = new SocketIOServer<ClientToServerEvents, ServerToClientEvents>(
@@ -49,31 +41,26 @@ export function createSocketIOServer(httpServer: Server, sessionMiddleware: Requ
   io.engine.use(sessionMiddleware);
   
   io.on('connection', (socket: Socket) => {
-    const sessionId =        socket.request.session.id;
-    const { user_id, username } = socket.request.session.userInfo!;
+    const session_id = socket.request.session.id;
+    const user_id    = socket.request.session.user_id;
+    const username   = socket.request.session.username;
   
-    if (!sessionId || !id || !username) return;
+    if (!session_id || !user_id || !username) return;
   
     const userRepo         = new UserRepo();
     const friendshipRepo   = new FriendshipRepo();
     const chatmessageRepo  = new ChatmessageRepo();
     const chatroomRepo     = new ChatroomRepo();
     const chatroomUserRepo = new ChatroomUserRepo();
-    // maybe not needed?
-    //userService, friendshipService, chatmessageService, chatroomService, chatroomUserService
-    // old way
-    //const chatStore =  new ChatStore(pubClient);
   
     //chatStore.createUser({sessionId, username});
 
-    socket.join(sessionId);
+    socket.join(session_id);
   
-    // Handlers for our events
+    // TO DO: no longer appear online for users blocked and friends deleted during that same session (so emit ShowOffline)
   
-    // TO DO: no longer appear online for
-    // users blocked and friends deleted
-    // during that same session (so emit ShowOffline)
-  
+    // THINK: do you need a controller? Or just make these the controllers
+    // and use models and repo right here?
     socket.on('GetOnlineFriends', async () => {
       await getOnlineFriends({});
     });
