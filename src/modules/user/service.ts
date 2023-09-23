@@ -2,7 +2,6 @@ import { NOBSC_USER_ID, UNKNOWN_USER_ID } from '../shared/model';
 import { User }                      from './model';
 import { UserRepoInterface }         from './repo';
 import { UserAuthenticationService } from './authentication/service';
-import { UserConfirmationService }   from './confirmation/service';
 
 export class UserService {
   private readonly repo: UserRepoInterface;
@@ -39,7 +38,7 @@ export class UserService {
       confirmation_code: user.confirmation_code!
     });
 
-    const { sendConfirmationCode } = new UserConfirmationService(this.repo);
+    const { sendConfirmationCode } = new UserAuthenticationService(this.repo);
     await sendConfirmationCode({
       email:             user.email,
       confirmation_code: user.confirmation_code!

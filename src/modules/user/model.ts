@@ -8,9 +8,6 @@ export class User {
   private password;  // encrypted/hashed, not raw request body payload
   private username;
   private confirmation_code;
-  // Timestamps -- handled by MySQL
-  //private created_at: Date | null = null;  // not needed?
-  //private updated_at: Date | null = null;  // not needed?
   //private events: DomainEvent = [];
 
   private constructor(params: ConstructorParams) {

@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
-import { catchExceptions, userIsAuth }               from '../../../../utils';
+import { catchExceptions, userIsAuth }               from '../../../utils';
 import { privateIngredientController as controller } from './controller';
 
 const router = Router();
 
-// for /user/private/ingredient/...
+// for /users/:username/private-ingredients
 
 export function privateIngredientRouter() {
   const ingredientInfo = [
@@ -19,21 +19,21 @@ export function privateIngredientRouter() {
     'image_id'
   ];
 
-  router.post(
-    '/all',
+  router.get(
+    '/',
     userIsAuth,
     catchExceptions(controller.viewAll)
   );
 
-  router.post(
-    '/one',
+  router.get(
+    '/:ingredient_id',
     userIsAuth,
     sanitize('ingredient_id'),
     catchExceptions(controller.viewOne)
   );
 
   router.post(
-    '/create',
+    '/',
     userIsAuth,
     sanitize(ingredientInfo),
     catchExceptions(controller.create)
@@ -45,15 +45,15 @@ export function privateIngredientRouter() {
     catchExceptions(controller.edit)
   );*/
 
-  router.put(
-    '/update',
+  router.patch(
+    '/',
     userIsAuth,
     sanitize(['ingredient_id', ...ingredientInfo]),
     catchExceptions(controller.update)
   );
 
   router.delete(
-    '/delete',
+    '/',
     userIsAuth,
     sanitize('ingredient_id'),
     catchExceptions(controller.deleteOne)

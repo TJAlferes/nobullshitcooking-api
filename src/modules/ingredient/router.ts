@@ -6,7 +6,7 @@ import { ingredientController } from './controller';
 
 const router = Router();
 
-// for /ingredients/...
+// for /ingredients
 
 export function ingredientRouter() {
   router.get('/', catchExceptions(ingredientController.viewAll));

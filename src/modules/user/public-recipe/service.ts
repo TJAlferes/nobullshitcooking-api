@@ -1,6 +1,6 @@
-import { EquipmentRepoInterface }  from '../../../equipment/repo';
-import { IngredientRepoInterface } from '../../../ingredient/repo';
-import { RecipeRepoInterface }     from '../../../recipe/repo';
+import { EquipmentRepoInterface }  from '../../equipment/repo';
+import { IngredientRepoInterface } from '../../ingredient/repo';
+import { RecipeRepoInterface }     from '../../recipe/repo';
 
 export class PublicRecipeService {
   equipmentRepo:  EquipmentRepoInterface;

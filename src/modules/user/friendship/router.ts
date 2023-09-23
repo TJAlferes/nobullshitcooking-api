@@ -8,7 +8,7 @@ const router = Router();
 
 // for /user/friendship/...
 
-export function userFriendshipRouter() {
+export function friendshipRouter() {
   router.post(  '/',        userIsAuth,                         catchExceptions(controller.viewAll));
   router.post(  '/create',  userIsAuth, sanitize('friendname'), catchExceptions(controller.create));
   router.put(   '/accept',  userIsAuth, sanitize('friendname'), catchExceptions(controller.accept));

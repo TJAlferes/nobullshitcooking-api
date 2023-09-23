@@ -8,7 +8,7 @@ const router = Router();
 
 // for /user/authentication
 
-export function userAuthenticationRouter() {
+export function authenticationRouter() {
 
   router.post(
     '/confirm',

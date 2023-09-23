@@ -6,7 +6,7 @@ import { catchExceptions } from '../../../utils';
 
 const router = Router();
 
-// for /unit/...
+// for /units
 
 export function unitRouter() {
   router.get('/', catchExceptions(unitController.viewAll));

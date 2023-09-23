@@ -1,23 +1,23 @@
 import { Request, Response } from 'express';
 
-import { ImageRepo }               from '../../../image/repo';
-import { RecipeImageRepo }         from '../../../recipe/image/repo';
-import { RecipeImageService }      from '../../../recipe/image/service';
-import { RecipeEquipmentRepo }     from '../../../recipe/required-equipment/repo';
-import { RecipeEquipmentService }  from '../../../recipe/required-equipment/service';
-import { RecipeIngredientRepo }    from '../../../recipe/required-ingredient/repo';
-import { RecipeIngredientService } from '../../../recipe/required-ingredient/service';
-import { RecipeMethodRepo }        from '../../../recipe/required-method/repo';
-import { RecipeMethodService }     from '../../../recipe/required-method/service';
-import { RecipeSubrecipeRepo }     from '../../../recipe/required-subrecipe/repo';
-import { RecipeSubrecipeService }  from '../../../recipe/required-subrecipe/service';
-import { Recipe }                  from '../../../recipe/model';
-import { RecipeRepo }              from '../../../recipe/repo';
+import { ImageRepo }               from '../../image/repo';
+import { RecipeImageRepo }         from '../../recipe/image/repo';
+import { RecipeImageService }      from '../../recipe/image/service';
+import { RecipeEquipmentRepo }     from '../../recipe/required-equipment/repo';
+import { RecipeEquipmentService }  from '../../recipe/required-equipment/service';
+import { RecipeIngredientRepo }    from '../../recipe/required-ingredient/repo';
+import { RecipeIngredientService } from '../../recipe/required-ingredient/service';
+import { RecipeMethodRepo }        from '../../recipe/required-method/repo';
+import { RecipeMethodService }     from '../../recipe/required-method/service';
+import { RecipeSubrecipeRepo }     from '../../recipe/required-subrecipe/repo';
+import { RecipeSubrecipeService }  from '../../recipe/required-subrecipe/service';
+import { Recipe }                  from '../../recipe/model';
+import { RecipeRepo }              from '../../recipe/repo';
 
 export const privateRecipeController = {
   async overviewAll(req: Request, res: Response) {
-    const author_id = req.session.userInfo!.user_id;
-    const owner_id  = req.session.userInfo!.user_id;
+    const author_id = req.session.user_id!;
+    const owner_id  = req.session.user_id!;
 
     const repo = new RecipeRepo();
     const rows = await repo.overviewAll({author_id, owner_id});
@@ -27,8 +27,8 @@ export const privateRecipeController = {
 
   async viewOne(req: Request, res: Response) {
     const recipe_id = req.body.recipe_id;
-    const author_id = req.session.userInfo!.user_id;
-    const owner_id  = req.session.userInfo!.user_id;
+    const author_id = req.session.user_id!;
+    const owner_id  = req.session.user_id!;
 
     const repo = new RecipeRepo();
     const row = await repo.viewOneByRecipeId({recipe_id, author_id, owner_id});
@@ -38,8 +38,8 @@ export const privateRecipeController = {
 
   async edit(req: Request, res: Response) {
     const recipe_id = req.body.recipe_id;
-    const author_id = req.session.userInfo!.user_id;
-    const owner_id  = req.session.userInfo!.user_id;
+    const author_id = req.session.user_id!;
+    const owner_id  = req.session.user_id!;
 
     const repo = new RecipeRepo();
     const rows = await repo.viewExistingRecipeToEdit({recipe_id, author_id, owner_id});
@@ -65,8 +65,8 @@ export const privateRecipeController = {
     } = req.body;
     const recipe_type_id = Number(req.body.recipeInfo.recipe_type_id);
     const cuisine_id     = Number(req.body.recipeInfo.cuisine_id);
-    const author_id      = req.session.userInfo!.user_id;
-    const owner_id       = req.session.userInfo!.user_id;
+    const author_id      = req.session.user_id!;
+    const owner_id       = req.session.user_id!;
 
     const recipeRepo = new RecipeRepo();
     const recipe = Recipe.create({
@@ -135,8 +135,8 @@ export const privateRecipeController = {
     }= req.body;
     const recipe_type_id = Number(req.body.recipeInfo.recipe_type_id);
     const cuisine_id     = Number(req.body.recipeInfo.cuisine_id);
-    const author_id      = req.session.userInfo!.user_id;
-    const owner_id       = req.session.userInfo!.user_id;
+    const author_id      = req.session.user_id!;
+    const owner_id       = req.session.user_id!;
 
     const recipeRepo     = new RecipeRepo();
     const recipe = Recipe.update({
@@ -189,7 +189,7 @@ export const privateRecipeController = {
 
   async deleteOne(req: Request, res: Response) {
     const recipe_id = req.body.recipe_id;
-    const owner_id  = req.session.userInfo!.user_id;
+    const owner_id  = req.session.user_id!;
 
     const recipeRepo = new RecipeRepo();
     await recipeRepo.deleteOne({owner_id, recipe_id});

@@ -8,7 +8,7 @@ const router = Router();
 
 // for /users/:user_id/saved-recipes
 
-export function userSavedRecipeRouter() {
+export function savedRecipeRouter() {
   router.get(
     '/',
     userIsAuth,

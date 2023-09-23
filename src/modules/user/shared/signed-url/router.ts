@@ -8,7 +8,7 @@ const router = Router();
 
 // for /user/signed-url
 
-export function userSignedUrlRouter() {
+export function signedUrlRouter() {
   router.post(
     '/',
     userIsAuth,

@@ -36,10 +36,10 @@ export function userRouter() {
 
   router.use('/:username/saved-recipes',       savedRecipeRouter());
 
-  router.use('/authentication', userAuthenticationRouter());  // just send their initial user data right when they login???
-  router.use('/friendship',     userFriendshipRouter());
+  router.use('/authentication', authenticationRouter());  // MOVE up into main router???  // just send their initial user data right when they login???
+  router.use('/friendship',     friendshipRouter());
   router.use('/profile',        profileRouter());
-  router.use('/signed-url',     userSignedUrlRouter());
+  router.use('/signed-url',     signedUrlRouter());  // MOVE up into main router??? 
 
   router.post(
     '/',

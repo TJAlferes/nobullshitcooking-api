@@ -5,7 +5,7 @@ import { initialDataController } from './controller';
 
 const router = Router();
 
-// for /initial-data/...
+// for /initial-data
 
 export function initialDataRouter() {
   router.get('/', catchExceptions(initialDataController.view));

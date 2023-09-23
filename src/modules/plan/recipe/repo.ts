@@ -58,7 +58,7 @@ export class PlanRecipeRepo extends MySQLRepo implements PlanRecipeRepoInterface
     }
   }
 
-  async deleteByRecipeId(plan_id: string) {
+  async deleteByPlanId(plan_id: string) {
     const sql = `DELETE FROM plan_recipe WHERE plan_id = ?`;
     await this.pool.execute(sql, [plan_id]);
   }
@@ -84,9 +84,9 @@ type InsertParams = {
 };
 
 type UpdateParams = {
-  day_id:       string;
+  plan_id:      string;
   placeholders: string;
-  day_recipes:  PlanRecipeRow[];
+  values:       PlanRecipeRow[];
 };
 
 // just guessing for now, find out on frontend

@@ -1,26 +1,26 @@
 import { Request, Response } from 'express';
 
-import { EquipmentRepo }           from '../../../equipment/repo';
-import { IngredientRepo }          from '../../../ingredient/repo';
-import { ImageRepo }               from '../../../image/repo';
-import { RecipeImageRepo }         from '../../../recipe/image/repo';
-import { RecipeImageService }      from '../../../recipe/image/service';
-import { RecipeEquipmentRepo }     from '../../../recipe/required-equipment/repo';
-import { RecipeEquipmentService }  from '../../../recipe/required-equipment/service';
-import { RecipeIngredientRepo }    from '../../../recipe/required-ingredient/repo';
-import { RecipeIngredientService } from '../../../recipe/required-ingredient/service';
-import { RecipeMethodRepo }        from '../../../recipe/required-method/repo';
-import { RecipeMethodService }     from '../../../recipe/required-method/service';
-import { RecipeSubrecipeRepo }     from '../../../recipe/required-subrecipe/repo';
-import { RecipeSubrecipeService }  from '../../../recipe/required-subrecipe/service';
-import { Recipe }                  from '../../../recipe/model';
-import { RecipeRepo }              from '../../../recipe/repo';
-import { NOBSC_USER_ID }           from '../../../shared/model';
+import { EquipmentRepo }           from '../../equipment/repo';
+import { IngredientRepo }          from '../../ingredient/repo';
+import { ImageRepo }               from '../../image/repo';
+import { RecipeImageRepo }         from '../../recipe/image/repo';
+import { RecipeImageService }      from '../../recipe/image/service';
+import { RecipeEquipmentRepo }     from '../../recipe/required-equipment/repo';
+import { RecipeEquipmentService }  from '../../recipe/required-equipment/service';
+import { RecipeIngredientRepo }    from '../../recipe/required-ingredient/repo';
+import { RecipeIngredientService } from '../../recipe/required-ingredient/service';
+import { RecipeMethodRepo }        from '../../recipe/required-method/repo';
+import { RecipeMethodService }     from '../../recipe/required-method/service';
+import { RecipeSubrecipeRepo }     from '../../recipe/required-subrecipe/repo';
+import { RecipeSubrecipeService }  from '../../recipe/required-subrecipe/service';
+import { Recipe }                  from '../../recipe/model';
+import { RecipeRepo }              from '../../recipe/repo';
+import { NOBSC_USER_ID }           from '../../shared/model';
 import { PublicRecipeService }     from './service';
 
 export const publicRecipeController = {
   async overviewAll(req: Request, res: Response) {
-    const author_id = req.session.userInfo!.user_id;
+    const author_id = req.session.user_id!;
     const owner_id  = NOBSC_USER_ID
 
     const repo = new RecipeRepo();
@@ -32,7 +32,7 @@ export const publicRecipeController = {
   async viewOne(req: Request, res: Response) {
     const title     = unslugify(req.params.title);
     const author    = unslugify(req.params.usename);  // hmm...
-    const author_id = req.session.userInfo!.user_id;
+    const author_id = req.session.user_id!;
     const owner_id  = NOBSC_USER_ID;
 
     const repo = new RecipeRepo()
@@ -43,7 +43,7 @@ export const publicRecipeController = {
 
   async edit(req: Request, res: Response) {
     const recipe_id = req.body.recipe_id;
-    const author_id = req.session.userInfo!.user_id;
+    const author_id = req.session.user_id!;
     const owner_id  = NOBSC_USER_ID;
 
     const repo = new RecipeRepo();
@@ -77,7 +77,7 @@ export const publicRecipeController = {
     } = req.body;
     const recipe_type_id = Number(req.body.recipeInfo.recipe_type_id);
     const cuisine_id     = Number(req.body.recipeInfo.cuisine_id);
-    const author_id      = req.session.userInfo!.user_id;
+    const author_id      = req.session.user_id!;
     const owner_id       = NOBSC_USER_ID;
 
     const equipmentRepo  = new EquipmentRepo();
@@ -161,7 +161,7 @@ export const publicRecipeController = {
     }= req.body;
     const recipe_type_id = Number(req.body.recipeInfo.recipe_type_id);
     const cuisine_id     = Number(req.body.recipeInfo.cuisine_id);
-    const author_id      = req.session.userInfo!.user_id;
+    const author_id      = req.session.user_id!;
     const owner_id       = NOBSC_USER_ID;
 
     const equipmentRepo  = new EquipmentRepo();
@@ -229,7 +229,7 @@ export const publicRecipeController = {
 
   async disownOne(req: Request, res: Response) {
     const recipe_id = req.body.recipe_id;
-    const author_id = req.session.userInfo!.user_id;
+    const author_id = req.session.user_id!;
 
     const repo = new RecipeRepo();
     await repo.disownOne({author_id, recipe_id});

@@ -14,12 +14,12 @@ export const userSignedUrlController = {
   s3RequestPresign: async function(req: Request, res: Response) {
     const subfolder: Subfolder = req.body.subfolder;  // TO DO: validate subfolder
 
-    if (!req.session.userInfo!.user_id) return;
+    if (!req.session.user_id) return;
 
     const filename = uuidv7();
 
     const objectKey =
-      `nobsc/image/user/${subfolder}${req.session.userInfo!.user_id}/${filename}`;
+      `nobsc/image/user/${subfolder}${req.session.user_id}/${filename}`;
 
     const s3 = new S3Client({
       credentials: {

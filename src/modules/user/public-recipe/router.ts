@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
-import { catchExceptions, userIsAuth }          from '../../../../utils';
+import { catchExceptions, userIsAuth }          from '../../../utils';
 import { publicRecipeController as controller } from './controller';
 
 const router = Router();
 
-// for /user/public/recipe/...
+// for /users/:username/public-recipes
 
 export function publicRecipeRouter() {
   const recipe_upload = [
@@ -27,39 +27,39 @@ export function publicRecipeRouter() {
     'cooking_image*'
   ];
 
-  router.post(
-    '/all',
+  router.get(
+    '/',
     catchExceptions(controller.overviewAll)
   );
 
-  router.post(
-    '/one',
+  router.get(
+    '/:recipe_id',
     sanitize('recipe_id'),
     catchExceptions(controller.viewOne)
   );  // is Next.js using this correctly??? OR is this method and endpoint correct???
 
   router.post(
-    '/create',
+    '/',
     userIsAuth,
     sanitize(recipe_upload),
     catchExceptions(controller.create)
   );
 
-  router.post(
+  router.get(
     '/edit',
     userIsAuth,
     sanitize('recipe_id'),
     catchExceptions(controller.edit)
-  );
+  );  // move up above :recipe_id ???
 
-  router.put(
-    '/update',
+  router.patch(
+    '/',
     userIsAuth,
     sanitize(['recipe_id', ...recipe_upload]),
     catchExceptions(controller.update)
   );
 
-  router.delete(
+  router.patch(
     '/disown',
     userIsAuth,
     sanitize('recipe_id'),

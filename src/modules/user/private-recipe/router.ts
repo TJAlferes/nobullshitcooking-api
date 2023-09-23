@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
-import { catchExceptions, userIsAuth }           from '../../../../utils';
+import { catchExceptions, userIsAuth }           from '../../../utils';
 import { privateRecipeController as controller } from './controller';
 
 const router = Router();
 
-// for /user/private/recipe/...
+// for /users/:username/private-recipes
 
 export function privateRecipeRouter() {
   const recipe_upload = [
@@ -27,42 +27,42 @@ export function privateRecipeRouter() {
     'cooking_image'
   ];
 
-  router.post(
-    '/all',
+  router.get(
+    '/',
     userIsAuth,
     catchExceptions(controller.overviewAll)
   );
 
-  router.post(
-    '/one',
+  router.get(
+    '/:recipe_id',
     userIsAuth,
     sanitize('recipe_id'),
     catchExceptions(controller.viewOne)
   );
 
   router.post(
-    '/create',
+    '/',
     userIsAuth,
     sanitize(recipe_upload),
     catchExceptions(controller.create)
   );
 
-  router.post(
+  router.get(
     '/edit',
     userIsAuth,
     sanitize('recipe_id'),
     catchExceptions(controller.edit)
-  );
+  );  // move up above :recipe_id ???
 
-  router.put(
-    '/update',
+  router.patch(
+    '/',
     userIsAuth,
     sanitize(['recipe_id', ...recipe_upload]),
     catchExceptions(controller.update)
   );
 
   router.delete(
-    '/delete',
+    '/',
     userIsAuth,
     sanitize('recipe_id'),
     catchExceptions(controller.deleteOne)

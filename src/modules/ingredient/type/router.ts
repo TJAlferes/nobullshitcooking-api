@@ -6,7 +6,7 @@ import { catchExceptions }          from '../../../utils';
 
 const router = Router();
 
-// for /ingredient-type/...
+// for /ingredient-types
 
 export function ingredientTypeRouter() {
   router.get('/', catchExceptions(ingredientTypeController.viewAll));

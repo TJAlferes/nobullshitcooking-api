@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
 import { assert }            from 'superstruct';
 
-import { PlanRepo }  from '../../../plan/repo';
+import { PlanRepo }  from '../../plan/repo';
 //import { validPlan } from '../../lib/validations';  // TO DO: make sure NO private recipes go into public plan
 
-export const userPublicPlanController = {
+export const publicPlanController = {
   async viewAll(req: Request, res: Response) {
-    const owner_id = req.session.userInfo!.id;
+    const owner_id = req.session.user_id!;
 
     const planRepo = new PlanRepo();
     const rows = await planRepo.viewAll(owner_id);
@@ -16,7 +16,7 @@ export const userPublicPlanController = {
 
   async viewOne(req: Request, res: Response) {
     const plan_id  = req.body.plan_id;
-    const owner_id = req.session.userInfo!.id;
+    const owner_id = req.session.user_id!;
     
     const planRepo = new PlanRepo();
     const row = await planRepo.viewOne({plan_id, owner_id});
@@ -26,7 +26,7 @@ export const userPublicPlanController = {
 
   async create(req: Request, res: Response) {
     const { plan_name, plan_data } = req.body.planInfo;
-    const owner_id = req.session.userInfo!.id;
+    const owner_id = req.session.user_id!;
 
     const args = {owner_id, plan_name, plan_data};
     assert(args, validPlan);
@@ -38,7 +38,7 @@ export const userPublicPlanController = {
 
   async update(req: Request, res: Response) {
     const { plan_id, plan_name, plan_data } = req.body.planInfo;
-    const owner_id = req.session.userInfo!.id;
+    const owner_id = req.session.user_id!;
 
     const args = {owner_id, plan_name, plan_data};
     assert(args, validPlan);
@@ -51,7 +51,7 @@ export const userPublicPlanController = {
 
   async deleteOne(req: Request, res: Response) {
     const plan_id  = req.body.plan_id;
-    const owner_id = req.session.userInfo!.id;
+    const owner_id = req.session.user_id!;
 
     const planRepo = new PlanRepo();
     await planRepo.deleteOne({plan_id, owner_id});

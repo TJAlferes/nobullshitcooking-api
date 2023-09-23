@@ -37,4 +37,11 @@ export function apiV1Router() {
   router.use('/methods',          methodRouter());
   router.use('/recipes',          recipeRouter());
   router.use('/recipe-types',     recipeTypeRouter());
+
+  /*
+  // If it doesn't need to be a socket event, then prefer https req/res
+  router.use('/chatgroups',   chatgroupsRouter());
+  router.use('/chatrooms',    chatroomsRouter());
+  router.use('/chatmessages', chatmessagesRouter());
+  */
 }

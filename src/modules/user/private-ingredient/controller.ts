@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
 
-import { IngredientAltNameRepo }    from '../../../ingredient/alt-name/repo';
-import { IngredientAltNameService } from '../../../ingredient/alt-name/service';
-import { Ingredient }               from '../../../ingredient/model';
-import { IngredientRepo }           from '../../../ingredient/repo';
+import { IngredientAltNameRepo }    from '../../ingredient/alt-name/repo';
+import { IngredientAltNameService } from '../../ingredient/alt-name/service';
+import { Ingredient }               from '../../ingredient/model';
+import { IngredientRepo }           from '../../ingredient/repo';
 
 export const privateIngredientController = {
   async viewAll(req: Request, res: Response) {
-    const owner_id  = req.session.userInfo!.user_id;
+    const owner_id  = req.session.user_id!;
 
     const repo = new IngredientRepo();
     const rows = await repo.viewAll(owner_id);
@@ -17,7 +17,7 @@ export const privateIngredientController = {
 
   async viewOne(req: Request, res: Response) {
     const ingredient_id = req.body.id;
-    const owner_id      = req.session.userInfo!.user_id;
+    const owner_id      = req.session.user_id!;
 
     const repo = new IngredientRepo();
     const row = await repo.viewOne({owner_id, ingredient_id});
@@ -33,9 +33,9 @@ export const privateIngredientController = {
       alt_names,
       notes,
       image_id
-    } = req.body.ingredientInfo;
-    const ingredient_type_id = Number(req.body.ingredientInfo.ingredient_type_id);
-    const owner_id           = req.session.userInfo!.user_id;
+    } = req.body;
+    const ingredient_type_id = Number(req.body.ingredient_type_id);
+    const owner_id           = req.session.user_id!;
 
     const ingredient = Ingredient.create({
       ingredient_type_id,
@@ -67,9 +67,9 @@ export const privateIngredientController = {
       alt_names,
       notes,
       image_id
-    } = req.body.ingredientInfo;
-    const ingredient_type_id = Number(req.body.ingredientInfo.ingredient_type_id);
-    const owner_id           = req.session.userInfo!.user_id;
+    } = req.body;
+    const ingredient_type_id = Number(req.body.ingredient_type_id);
+    const owner_id           = req.session.user_id!;
 
     const ingredient = Ingredient.update({
       ingredient_id,
@@ -93,7 +93,7 @@ export const privateIngredientController = {
 
   async deleteOne(req: Request, res: Response) {
     const ingredient_id = req.body.ingredient_id;
-    const owner_id      = req.session.userInfo!.user_id;
+    const owner_id      = req.session.user_id!;
 
     const repo = new IngredientRepo();
     await repo.deleteOne({ingredient_id, owner_id});

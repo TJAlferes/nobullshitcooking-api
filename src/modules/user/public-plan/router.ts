@@ -1,43 +1,41 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
-import { userPublicPlanController as controller } from './controller';
-import { catchExceptions, userIsAuth } from '../../../../utils';
+import { catchExceptions, userIsAuth } from '../../../utils';
+import { publicPlanController as controller } from './controller';
 
 const router = Router();
 
-// for /user/plan/...
+// for /users/:username/plans
 
-export function userPublicPlanRouter() {
-  router.post(
-    '/all',
-    userIsAuth,
+export function publicPlanRouter() {
+  router.get(
+    '/',
     catchExceptions(controller.viewAll)
   );
 
-  router.post(
-    '/one',
-    userIsAuth,
+  router.get(
+    '/:plan_id',
     [sanitize('plan_id')],
     catchExceptions(controller.viewOne)
   );
 
   router.post(
-    '/create',
+    '/',
     userIsAuth,
     [sanitize(['plan_name', 'plan_data'])],
     catchExceptions(controller.create)
   );
 
-  router.put(
-    '/update',
+  router.patch(
+    '/',
     userIsAuth,
     [sanitize(['plan_id', 'plan_name', 'plan_data'])],
     catchExceptions(controller.update)
   );
 
   router.delete(
-    '/delete',
+    '/',
     userIsAuth,
     [sanitize('plan_id')],
     catchExceptions(controller.deleteOne)

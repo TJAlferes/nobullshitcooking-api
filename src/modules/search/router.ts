@@ -6,7 +6,7 @@ import { catchExceptions }  from '../../utils';
 
 const router = Router();
 
-// for /search/...
+// for /search
 
 export function searchRouter() {
   router.get(

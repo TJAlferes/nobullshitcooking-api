@@ -8,7 +8,7 @@ const router = Router();
 
 // for /users/:username/favorite-recipes
 
-export function userFavoriteRecipeRouter() {
+export function favoriteRecipeRouter() {
   router.get(
     '/',
     userIsAuth,

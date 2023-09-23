@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
-import { catchExceptions, userIsAuth }              from '../../../../utils';
+import { catchExceptions, userIsAuth }              from '../../../utils';
 import { privateEquipmentController as controller } from './controller';
 
 const router = Router();
@@ -43,7 +43,7 @@ export function privateEquipmentRouter() {
     catchExceptions(controller.edit)
   );
 
-  router.put(
+  router.patch(
     '/',
     userIsAuth,
     bodySanitizer(['equipment_id', ...equipment_upload]),

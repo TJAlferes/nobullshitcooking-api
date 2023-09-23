@@ -6,8 +6,12 @@ import { pool } from '../../connections/mysql';
 export abstract class MySQLRepo {
   pool: Pool = pool;
   
-  /*insert() {}
+  /*
+  insert() {}
   select() {}
   update() {}
-  delete() {}*/
+  delete() {}
+  bulkInsert() {}
+  bulkUpdate() {}
+  */
 }
