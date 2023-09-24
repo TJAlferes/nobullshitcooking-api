@@ -85,12 +85,24 @@ export function createSocketIOServer(httpServer: Server, sessionMiddleware: Requ
       await disconnecting({});
     });
   
-    /*socket.on('disconnect', async (reason: string) => {
-      const sockets = await io.in(sessionId).fetchSockets();
-      if (sockets.length === 0) {  // no more active connections for the given user
-        chatStore.deleteUser(username);
+    socket.on('disconnect', async () => {
+      const sockets = await io.in(session_id).fetchSockets();
+      const isDisconnected = sockets.length === 0;
+      if (isDisconnected) {
+        // notify other users
+        socket.broadcast.emit("user disconnected", user_id);
+
+        //chatStore.deleteUser(username);
+        // or
+        /*
+        sessionStore.saveSession(session_id, {
+          user_id:   socket.user_id,
+          username:  socket.username,
+          connected: false
+        });
+        */
       }
-    });*/
+    });
   });
 
   return io;
