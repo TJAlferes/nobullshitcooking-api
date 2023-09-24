@@ -13,12 +13,21 @@ export class Chatmessage {
 
   private constructor(params: ConstructorParams) {
     this.chatmessage_id = UUIDv7StringId(params.chatmessage_id);
-    this.chatroom_id    = UUIDv7StringId(params.chatroom_id);
-    this.sender_id      = Username(params.sender_id);    // ALSO ALLOW SOCKETS ?
-    this.receiver_id    = Username(params.receiver_id);  // ALSO ALLOW SOCKETS ?
+    this.chatroom_id    = params.chatroom_id ? UUIDv7StringId(params.chatroom_id) : null;
+    this.sender_id      = Username(params.sender_id);
+    this.receiver_id    = params.receiver_id ? Username(params.receiver_id) : null;
     this.content        = Content(params.content);
     //this.image_id       = params.image_id ? UUIDv7StringId(params.image_id) : undefined;
     //this.video_id       = params.video_id ? UUIDv7StringId(params.video_id) : undefined;
+    
+    if (this.chatroom_id === null && this.receiver_id === null) {
+      throw new Error("Chatmessage must define its chatroom_id or receiver_id.");
+    }
+    if (this.chatroom_id !== null && this.receiver_id !== null) {
+      // chatroom_id means the message is public (for that chatroom)
+      // reciever_id means the message is private (for that receiver)
+      throw new Error("Chatmessage must be public or private, not both.");
+    }
   }
 
   static create(params: CreateParams) {
@@ -38,16 +47,6 @@ export class Chatmessage {
     };
   }
 }
-
-/*export const PRIVATE = "private" as const;
-export const PUBLIC  = "public" as const;
-
-export function Kind(kind: typeof PRIVATE | typeof PUBLIC) {
-  if (kind === "private" || kind === "public") {
-    return kind;
-  }
-  throw new Error ("Chatmessage kind must be 'private' or 'public'");
-}*/
 
 export function Username(username: string) {
   assert(username, string());
@@ -69,12 +68,12 @@ export function Content(content: string) {
 }
 
 export type CreateParams = {
-  chatroom_id: string;
-  sender_id:   string;
-  receiver_id: string;
-  content:     string;
-  //image_id?:   string;
-  //video_id?:   string;
+  chatroom_id?: string;
+  sender_id:    string;
+  receiver_id?: string;
+  content:      string;
+  //image_id?:    string;
+  //video_id?:    string;
 };
 
 export type UpdateParams = CreateParams & {

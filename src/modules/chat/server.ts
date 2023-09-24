@@ -47,24 +47,12 @@ export function createSocketIOServer(httpServer: Server, sessionMiddleware: Requ
   
     if (!session_id || !user_id || !username) return;
   
-    const userRepo         = new UserRepo();
-    const friendshipRepo   = new FriendshipRepo();
-    const chatmessageRepo  = new ChatmessageRepo();
-    const chatroomRepo     = new ChatroomRepo();
-    const chatroomUserRepo = new ChatroomUserRepo();
-  
     //chatStore.createUser({sessionId, username});
 
     socket.join(session_id);
-
-    // IMPORTANT:
-    // You don't need EVERY chat related functionality performed over socket.io (or any websocket)
-    // Some of it can be done through regular https req and res express routes
   
     // TO DO: no longer appear online for users blocked and friends deleted during that same session (so emit ShowOffline)
-  
-    // THINK: do you need a controller? Or just make these the controllers
-    // and use models and repo right here?
+    
     socket.on('GetOnlineFriends', async () => {
       await getOnlineFriends({});
     });

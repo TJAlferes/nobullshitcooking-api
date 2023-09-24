@@ -33,9 +33,9 @@ interface IChatMessageRepo {
 
 type InsertParams = {
   chatmessage_id: string;
-  chatroom_id:    string;
+  chatroom_id:    string | null;
   sender_id:      string;
-  receiver_id:    string;
+  receiver_id:    string | null;
   content:        string;
   //image_id:       string;
   //video_id:       string;
