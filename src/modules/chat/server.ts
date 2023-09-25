@@ -123,7 +123,7 @@ export function createSocketIOServer(httpServer: Server, sessionMiddleware: Requ
     socket.on('disconnecting', async (reason: string) => {
       const rooms = new Set(socket.rooms);
   
-      /*for (const room in clonedSocket.rooms) {
+      for (const room in rooms) {
         if (room !== session_id) {
           // TO DO: don't send a message to the room, simply show the user as offline
           socket.broadcast.to(room).emit('UserWentOffline', username);
@@ -137,7 +137,7 @@ export function createSocketIOServer(httpServer: Server, sessionMiddleware: Requ
           if (!onlineFriend) continue;
           socket.broadcast.to(onlineFriend).emit('FriendWentOffline', username);
         }
-      }*/
+      }
 
       const chatuserRepo = new ChatUserRepo();
       await chatuserRepo.delete(username);
