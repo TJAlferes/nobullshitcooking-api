@@ -1,14 +1,19 @@
 import { RedisRepo } from "../../shared/Redis";
 
 export class ChatUserRepo extends RedisRepo implements ChatUserRepoInterface {
-  async getSessionId(username: string) {
-    const session_id = await this.client.hget(`chatuser:${username}`, 'session_id');
-    return session_id;
-  }  // SECURITY: Do not send session_id to users, only use within this API
+  async getByUsername(username: string) {
+    const chatuser = await this.client.get(`chatuser:${username}`);
+    if (!chatuser) throw new Error("Error finding chatuser");
+    return JSON.parse(chatuser);
+  }  // SECURITY: Do not send to users, only use within this API
 
-  async insert({ session_id, username }: InsertParams) {
+  async insert({ username, session_id, last_active }: InsertParams) {
     await this.delete(username);
-    await this.client.hset(`chatuser:${username}`, 'session_id', session_id);
+    await this.client.hset(`chatuser:${username}`, 'session_id', session_id, 'last_active', last_active);
+  }
+
+  async update({ username, session_id, last_active }: UpdateParams) {
+    await this.client.hset(`chatuser:${username}`, 'session_id', session_id, 'last_active', last_active);
   }
 
   async delete(username: string) {
@@ -17,12 +22,21 @@ export class ChatUserRepo extends RedisRepo implements ChatUserRepoInterface {
 }
 
 export interface ChatUserRepoInterface {
-  getSessionId(username: string): Promise<string | null>;
-  insert(params: InsertParams):   void;
-  delete(username: string):       void;
+  getByUsername: (username: string) =>     Promise<ChatUserRow>;
+  insert:        (params: InsertParams) => void;
+  update:        (params: UpdateParams) => void;
+  delete:        (username: string) =>     void;
 }
 
 type InsertParams = {
-  session_id: string;
-  username:   string;
+  username:    string;
+  session_id:  string;
+  last_active: string;
+};
+
+type UpdateParams = InsertParams;
+
+type ChatUserRow = {
+  session_id:  string;
+  last_active: string;
 };

@@ -5,7 +5,7 @@ import { createAdapter }                    from '@socket.io/redis-adapter';
 
 import { redisClients } from '../../connections/redis';
 import { ChatUser }     from './user/model';
-import { ChatuserRepo } from './user/repo';
+import { ChatUserRepo } from './user/repo';
 
 //FriendshipRepo
 //UserRepo
@@ -47,10 +47,15 @@ export function createSocketIOServer(httpServer: Server, sessionMiddleware: Requ
     const user_id    = socket.request.session.user_id;
     const username   = socket.request.session.username;
 
-    if (!session_id || !user_id || !username) return;
+    if (!session_id || !user_id || !username) {
+      socket.disconnect(true);
+      return;
+    }
+
+    const timeout = 60 * 1000;  // 1 minute
   
     const chatuser = ChatUser.create({session_id, username}).getDTO();
-    const chatuserRepo = new ChatuserRepo();
+    const chatuserRepo = new ChatUserRepo();
     await chatuserRepo.insert(chatuser);
 
     socket.join(session_id);
@@ -80,6 +85,36 @@ export function createSocketIOServer(httpServer: Server, sessionMiddleware: Requ
     socket.on('SendPrivateMessage', async (text: string, to: string) => {
       await sendPrivateMessage({});
     });
+
+    async function updateLastActive() {
+      if (!username) return;
+      const chatuser = await chatuserRepo.getByUsername(username);
+      chatuser.last_active = Date.now();
+      await chatuserRepo.update(chatuser);
+    }
+
+    socket.on('ping', async () => {
+      await updateLastActive();
+      socket.emit('pong');
+    });
+
+    async function checkInactiveClients() {  // TO DO: test this
+      if (!username) return;
+
+      const chatuser = await chatuserRepo.getByUsername(username);
+
+      if (Date.now() - Number(chatuser.last_active) > timeout) {
+        //const sockets = await io.in(chatuser.session_id).fetchSockets();
+        //for (const socket of sockets) {
+        //  socket.disconnect(true);
+        //}
+        io.in(chatuser.session_id).disconnectSockets();
+
+        await chatuserRepo.delete(username);
+      }
+    }
+
+    setInterval(checkInactiveClients, timeout);
   
     // Handlers for Socket.IO reserved events
   
@@ -104,7 +139,7 @@ export function createSocketIOServer(httpServer: Server, sessionMiddleware: Requ
         }
       }*/
 
-      const chatuserRepo = new ChatuserRepo();
+      const chatuserRepo = new ChatUserRepo();
       await chatuserRepo.delete(username);
       // do we need to delete them???
       // or just change their connected status to false???
