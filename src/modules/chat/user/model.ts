@@ -1,8 +1,6 @@
 import { assert, string } from 'superstruct';
 
-import { Username } from '../user/model';
-
-// IS THIS NEEDED???
+import { Username } from '../../user/model';
 
 export class ChatUser {
   private session_id;

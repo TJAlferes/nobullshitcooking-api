@@ -4,14 +4,15 @@ import { FriendshipRepo }  from '../../user/friendship/repo';
 import { UserRepo }        from '../../user/repo';
 import { Chatmessage }     from './model';
 import { ChatMessageRepo } from './repo';
+import { ChatuserRepo } from '../repo';
 
 export const chatmessageController = {
-  async sendMessage({ chatroom_id, sender_id, content, sessionId, socket }: SendMessageParams) {
+  async sendMessage({ chatroom_id, sender_id, content, socket }: SendMessageParams) {
     const chatmessage = Chatmessage.create({chatroom_id, sender_id, content}).getDTO();
 
     const { insert } = new ChatMessageRepo();
     await insert(chatmessage);
-  
+
     socket.broadcast.to(chatroom_id).emit('Message', chatmessage);
     socket.emit('Message', chatmessage);
   },
@@ -33,10 +34,11 @@ export const chatmessageController = {
     const { insert } = new ChatMessageRepo();
     await insert(chatmessage);
 
-    //do you need to check if they're online?
-    //const onlineReceiver = await chatStore.getUserSessionId(receiver.username);
-    //if (onlineReceiver) socket.broadcast.to(onlineReceiver).emit('PrivateMessage', chatmessage);
-    socket.broadcast.to(onlineReceiver).emit('PrivateMessage', chatmessage);
+    const chatuserRepo = new ChatuserRepo();
+    const onlineReceiver = await chatuserRepo.getSessionId(receiver.username);
+    if (onlineReceiver) {
+      socket.broadcast.to(onlineReceiver).emit('PrivateMessage', chatmessage);
+    }
     socket.emit('PrivateMessage', chatmessage);
   }
 };

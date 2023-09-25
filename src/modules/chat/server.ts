@@ -4,11 +4,13 @@ import { Server as SocketIOServer, Socket } from 'socket.io';
 import { createAdapter }                    from '@socket.io/redis-adapter';
 
 import { redisClients } from '../../connections/redis';
+import { ChatUser }     from './user/model';
+import { ChatuserRepo } from './user/repo';
 
-//import type { Message Chatmessage
+//FriendshipRepo
+//UserRepo
 
-//FriendshipRepo,
-//UserRepo,
+//ChatuserRepo
 
 //ChatgroupUserController
 //ChatgroupController
@@ -40,14 +42,16 @@ export function createSocketIOServer(httpServer: Server, sessionMiddleware: Requ
   
   io.engine.use(sessionMiddleware);
   
-  io.on('connection', (socket: Socket) => {
+  io.on('connection', async (socket: Socket) => {
     const session_id = socket.request.session.id;
     const user_id    = socket.request.session.user_id;
     const username   = socket.request.session.username;
-  
+
     if (!session_id || !user_id || !username) return;
   
-    //chatStore.createUser({sessionId, username});
+    const chatuser = ChatUser.create({session_id, username}).getDTO();
+    const chatuserRepo = new ChatuserRepo();
+    await chatuserRepo.insert(chatuser);
 
     socket.join(session_id);
   
@@ -82,7 +86,28 @@ export function createSocketIOServer(httpServer: Server, sessionMiddleware: Requ
     socket.on('error', (error: Error) => console.log('error: ', error));
   
     socket.on('disconnecting', async (reason: string) => {
-      await disconnecting({});
+      const rooms = new Set(socket.rooms);
+  
+      /*for (const room in clonedSocket.rooms) {
+        if (room !== session_id) {
+          // TO DO: don't send a message to the room, simply show the user as offline
+          socket.broadcast.to(room).emit('UserWentOffline', username);
+        }
+      }
+
+      const friends = await friendship.viewAccepted(id);
+      if (friends.length) {
+        for (const friend of friends) {
+          const onlineFriend = await chatStore.getUserSessionId(friend.username);
+          if (!onlineFriend) continue;
+          socket.broadcast.to(onlineFriend).emit('FriendWentOffline', username);
+        }
+      }*/
+
+      const chatuserRepo = new ChatuserRepo();
+      await chatuserRepo.delete(username);
+      // do we need to delete them???
+      // or just change their connected status to false???
     });
   
     socket.on('disconnect', async () => {
@@ -126,8 +151,8 @@ interface ServerToClientEvents {
   UsersInRoomRefetched: (users: string[], room: string) => void;
   UserJoinedRoom:       (user: string) =>                  void;
   UserLeftRoom:         (user: string) =>                  void;
-  MessageSent:          (message: Message) =>              void;
-  PrivateMessageSent:   (message: Message) =>              void;
+  MessageSent:          (message: Chatmessage) =>          void;
+  PrivateMessageSent:   (message: Chatmessage) =>          void;
   PrivateMessageFailed: (feedback: string) =>              void;
 }
 
