@@ -1,6 +1,47 @@
+import { ResultSetHeader, RowDataPacket } from "mysql2";
+
 import { MySQLRepo } from "../../shared/MySQL";
 
-export class ChatMessageRepo extends MySQLRepo implements IChatMessageRepo {
+export class ChatmessageRepo extends MySQLRepo implements ChatmessageRepoInterface {
+  async viewByChatroomId(chatroom_id: string) {
+    const sql = `
+      SELECT
+        cm.chatmessage_id,
+        cm.sender_id,
+        u.username,
+        cm.content,
+        cm.created_at
+      FROM chatmessage cm
+      INNER JOIN user u ON u.user_id = cm.sender_id
+      WHERE cm.chatroom_id = ?
+    `;
+    const [ rows ] = await this.pool.execute<ChatmessageView[]>(sql, chatroom_id);
+    return rows;
+  }
+
+  async viewPrivateConversation({ sender_id, receiver_id }: ViewPrivateConversationParams) {
+    const sql = `
+      SELECT
+        cm.chatmessage_id,
+        cm.sender_id,
+        u.username,
+        cm.content,
+        cm.created_at
+      FROM chatmessage cm
+      INNER JOIN user u ON u.user_id = cm.sender_id
+      WHERE
+        (cm.sender_id = ? AND cm.receiver_id = ?) OR
+        (cm.sender_id = ? AND cm.receiver_id = ?)
+    `;
+    const [ rows ] = await this.pool.execute<ChatmessageView[]>(sql, [
+      sender_id,
+      receiver_id,
+      receiver_id,
+      sender_id
+    ]);
+    return rows;
+  }
+
   async insert(params: InsertParams) {
     const sql = `
       INSERT INTO chatmessage (
@@ -18,6 +59,8 @@ export class ChatMessageRepo extends MySQLRepo implements IChatMessageRepo {
       )
     `;
     await this.pool.execute(sql, params);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
+    if (!result) throw new Error('Query not successful.');
   }
 
   async delete(chatmessage_id: string) {
@@ -26,10 +69,25 @@ export class ChatMessageRepo extends MySQLRepo implements IChatMessageRepo {
   }
 }
 
-interface IChatMessageRepo {
-  insert: (params: InsertParams) =>   Promise<void>;
-  delete: (chatmessage_id: string) => Promise<void>;  // and owner_id ???
+interface ChatmessageRepoInterface {
+  viewByChatroomId:        (chatroom_id: string) =>                   Promise<ChatmessageView[]>;
+  viewPrivateConversation: (params: ViewPrivateConversationParams) => Promise<ChatmessageView[]>;
+  insert:                  (params: InsertParams) =>                  Promise<void>;
+  delete:                  (chatmessage_id: string) =>                Promise<void>;  // and owner_id ???
 }
+
+type ChatmessageView = RowDataPacket & {
+  chatmessage_id: string;
+  sender_id:      string;
+  username:       string;
+  content:        string;
+  created_at:     string;
+};
+
+type ViewPrivateConversationParams = {
+  sender_id:   string;
+  receiver_id: string;
+};
 
 type InsertParams = {
   chatmessage_id: string;
