@@ -29,14 +29,11 @@ export class Recipe {
 
   static create(params: CreateParams) {
     const recipe_id = GenerateUUIDv7StringId();
-    const recipe = new Recipe({...params, recipe_id});
-    // persist HERE? using a repo interface?
-    return recipe;  // only return id ???
+    return new Recipe({...params, recipe_id});
   }
 
   static update(params: UpdateParams) {
-    const recipe = new Recipe(params);
-    return recipe;
+    return new Recipe(params);
   }
 
   getDTO() {

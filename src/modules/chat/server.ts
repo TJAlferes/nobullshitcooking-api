@@ -5,16 +5,8 @@ import { createAdapter }                    from '@socket.io/redis-adapter';
 
 import { redisClients }   from '../../connections/redis';
 import { FriendshipRepo } from '../user/friendship/repo';
-//UserRepo
 import { ChatUser }       from './user/model';
 import { ChatUserRepo }   from './user/repo';
-
-//ChatgroupUserController
-//ChatgroupController
-//ChatmessageController   sendMessage, sendPrivateMessage
-//ChatroomUserController  joinRoom, rejoinRoom, getUsersInRoom
-//ChatroomController
-//ChatController          getOnlineFriends, disconnecting
 
 export function createSocketIOServer(httpServer: Server, sessionMiddleware: RequestHandler) {
   const io = new SocketIOServer<ClientToServerEvents, ServerToClientEvents>(
