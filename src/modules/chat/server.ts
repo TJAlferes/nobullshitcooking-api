@@ -3,14 +3,11 @@ import type { Server }                      from 'node:http';
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import { createAdapter }                    from '@socket.io/redis-adapter';
 
-import { redisClients } from '../../connections/redis';
-import { ChatUser }     from './user/model';
-import { ChatUserRepo } from './user/repo';
-
-//FriendshipRepo
+import { redisClients }   from '../../connections/redis';
+import { FriendshipRepo } from '../user/friendship/repo';
 //UserRepo
-
-//ChatuserRepo
+import { ChatUser }       from './user/model';
+import { ChatUserRepo }   from './user/repo';
 
 //ChatgroupUserController
 //ChatgroupController
@@ -122,47 +119,34 @@ export function createSocketIOServer(httpServer: Server, sessionMiddleware: Requ
   
     socket.on('disconnecting', async (reason: string) => {
       const rooms = new Set(socket.rooms);
+      const chatuserRepo = new ChatUserRepo();
   
+      // This works fine for chatrooms and friends, but what about chatgroups and non-friend private conversations???
+
       for (const room in rooms) {
-        if (room !== session_id) {
-          // TO DO: don't send a message to the room, simply show the user as offline
-          socket.broadcast.to(room).emit('UserWentOffline', username);
-        }
+        if (room === session_id) continue;
+        socket.broadcast.to(room).emit('UserWentOffline', username);  // TO DO: don't send a message to the room, simply show the user as offline
       }
 
-      const friends = await friendship.viewAccepted(id);
+      const friendshipRepo = new FriendshipRepo();
+      const friends = await friendshipRepo.viewAllOfStatus({user_id, status: "accepted"});
       if (friends.length) {
         for (const friend of friends) {
-          const onlineFriend = await chatStore.getUserSessionId(friend.username);
+          const onlineFriend = await chatuserRepo.getByUsername(friend.username);
           if (!onlineFriend) continue;
-          socket.broadcast.to(onlineFriend).emit('FriendWentOffline', username);
+          socket.broadcast.to(onlineFriend.session_id).emit('FriendWentOffline', username);  // TO DO: don't send a message to the room, simply show the user as offline
         }
       }
-
-      const chatuserRepo = new ChatUserRepo();
-      await chatuserRepo.delete(username);
-      // do we need to delete them???
-      // or just change their connected status to false???
+      
+      await chatuserRepo.delete(username);  // or chatuserRepo.update({session_id, user_id, username, connected: false});
     });
   
-    socket.on('disconnect', async () => {
+    /*socket.on('disconnect', async (reason: string) => {
       const sockets = await io.in(session_id).fetchSockets();
-      const isDisconnected = sockets.length === 0;
-      if (isDisconnected) {
-        // notify other users
-        socket.broadcast.emit("user disconnected", user_id);
-
-        //chatStore.deleteUser(username);
-        // or
-        /*
-        sessionStore.saveSession(session_id, {
-          user_id:   socket.user_id,
-          username:  socket.username,
-          connected: false
-        });
-        */
-      }
-    });
+      if (sockets.length > 0) return;
+      const chatuserRepo = new ChatUserRepo();
+      await chatuserRepo.delete(username);  // or chatuserRepo.update({session_id, user_id, username, connected: false});
+    });*/
   });
 
   return io;

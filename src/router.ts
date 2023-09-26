@@ -1,5 +1,11 @@
 import { Router } from 'express';
 
+import { chatgroupUserRouter }  from './modules/chat/group/user/router';
+import { chatgroupRouter }      from './modules/chat/group/router';
+import { chatmessageRouter }    from './modules/chat/router';
+import { chatroomUserRouter }   from './modules/chat/room/user/router';
+import { chatroomRouter }       from './modules/chat/room/router';
+import { chatUserRouter }       from './modules/chat/user/router';
 import { chatRouter }           from './modules/chat/router';
 import { equipmentTypeRouter }  from './modules/equipment/type/router';
 import { equipmentRouter }      from './modules/equipment/router';

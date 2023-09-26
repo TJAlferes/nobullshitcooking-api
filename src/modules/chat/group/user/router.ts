@@ -8,7 +8,7 @@ const router = Router();
 
 // for /chatgroups/:chatgroup_name/users
 
-export function chatgroupRouter() {
+export function chatgroupUserRouter() {
   router.get(
     '/',
     catchExceptions(chatgroupUserController.viewAll)
