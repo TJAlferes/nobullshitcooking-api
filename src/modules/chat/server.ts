@@ -7,6 +7,7 @@ import { redisClients }   from '../../connections/redis';
 import { FriendshipRepo } from '../user/friendship/repo';
 import { ChatUser }       from './user/model';
 import { ChatUserRepo }   from './user/repo';
+import { chatmessageController } from './message/controller';
 
 export function createSocketIOServer(httpServer: Server, sessionMiddleware: RequestHandler) {
   const io = new SocketIOServer<ClientToServerEvents, ServerToClientEvents>(
@@ -43,7 +44,7 @@ export function createSocketIOServer(httpServer: Server, sessionMiddleware: Requ
 
     const timeout = 60 * 1000;  // 1 minute
   
-    const chatuser = ChatUser.create({session_id, username}).getDTO();
+    const chatuser = ChatUser.create({session_id, username, connected: true}).getDTO();
     const chatuserRepo = new ChatUserRepo();
     await chatuserRepo.insert(chatuser);
 
@@ -51,28 +52,28 @@ export function createSocketIOServer(httpServer: Server, sessionMiddleware: Requ
   
     // TO DO: no longer appear online for users blocked and friends deleted during that same session (so emit ShowOffline)
     
-    socket.on('GetOnlineFriends', async () => {
-      await getOnlineFriends({});
+    socket.on('GetOnlineFriends', async (params: any) => {
+      await chatController(socket).getOnlineFriends(params);
     });
 
-    socket.on('GetUsersInRoom', async (room) => {
-      await getUsersInRoom({});
+    socket.on('GetUsersInRoom', async (chatroom_id: string) => {
+      await chatroomUserController(socket).getUsersInRoom(chatroom_id);
     });
   
-    socket.on('JoinRoom', async (room: string) => {
-      await joinRoom({});
+    socket.on('JoinRoom', async (chatroom_id: string) => {
+      await chatroomController(socket).joinRoom(chatroom_id);
     });
   
-    socket.on('RejoinRoom', async (room: string) => {
-      await rejoinRoom({});
+    socket.on('RejoinRoom', async (chatroom_id: string) => {
+      await chatroomController(socket).rejoinRoom(chatroom_id);
     });
   
-    socket.on('SendMessage', async (text: string) => {
-      await sendMessage({});
+    socket.on('SendMessage', async (params: any) => {
+      await chatmessageController(socket).sendMessage(params);
     });
   
-    socket.on('SendPrivateMessage', async (text: string, to: string) => {
-      await sendPrivateMessage({});
+    socket.on('SendPrivateMessage', async (params: any) => {
+      await chatmessageController(socket).sendPrivateMessage(params);
     });
 
     async function updateLastActive() {

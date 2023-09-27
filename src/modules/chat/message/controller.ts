@@ -13,7 +13,7 @@ export function chatmessageController(socket: Socket) {
 
       const chatmessages = await repo.viewByChatroomId(chatroom_id);
 
-      return socket.emit('PrivateConversation', chatmessages);
+      socket.emit('PrivateConversation', chatmessages);
     },
 
     async viewPrivateConversation({ sender_id, receiver_id }: ViewPrivateConversationParams) {
@@ -21,7 +21,7 @@ export function chatmessageController(socket: Socket) {
 
       const chatmessages = await repo.viewPrivateConversation({sender_id, receiver_id});
 
-      return socket.emit('PrivateConversation', chatmessages);
+      socket.emit('PrivateConversation', chatmessages);
     },
   
     async sendMessage({ chatroom_id, sender_id, content }: SendMessageParams) {
@@ -45,7 +45,7 @@ export function chatmessageController(socket: Socket) {
       const blockedUsers = await friendshipRepo.viewAllOfStatus({user_id: receiver.user_id, status: "blocked"});
       const blockedByReceiver = blockedUsers.find(u => u.user_id === sender_id);
       if (blockedByReceiver) return socket.emit('FailedPrivateMessage', 'User not found.');
-  
+      
       const chatmessage = Chatmessage.create({receiver_id, sender_id, content}).getDTO();
   
       const chatmessageRepo = new ChatmessageRepo();

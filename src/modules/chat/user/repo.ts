@@ -7,13 +7,23 @@ export class ChatUserRepo extends RedisRepo implements ChatUserRepoInterface {
     return JSON.parse(chatuser);
   }  // SECURITY: Do not send to users, only use within this API
 
-  async insert({ username, session_id, last_active }: InsertParams) {
+  async insert({ session_id, username, connected, last_active }: InsertParams) {
     await this.delete(username);
-    await this.client.hset(`chatuser:${username}`, 'session_id', session_id, 'last_active', last_active);
+    await this.client.hset(`chatuser:${username}`,
+      'session_id',  session_id,
+      'username',    username,
+      'connected',   connected,
+      'last_active', last_active
+    );
   }
 
-  async update({ username, session_id, last_active }: UpdateParams) {
-    await this.client.hset(`chatuser:${username}`, 'session_id', session_id, 'last_active', last_active);
+  async update({ session_id, username, connected, last_active }: UpdateParams) {
+    await this.client.hset(`chatuser:${username}`,
+      'session_id',  session_id,
+      'username',    username,
+      'connected',   connected,
+      'last_active', last_active
+    );
   }
 
   async delete(username: string) {
@@ -29,14 +39,12 @@ export interface ChatUserRepoInterface {
 }
 
 type InsertParams = {
-  username:    string;
   session_id:  string;
+  username:    string;
+  connected:   string;
   last_active: string;
 };
 
 type UpdateParams = InsertParams;
 
-type ChatUserRow = {
-  session_id:  string;
-  last_active: string;
-};
+type ChatUserRow = InsertParams;

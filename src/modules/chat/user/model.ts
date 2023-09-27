@@ -13,19 +13,20 @@ export class ChatUser {
     this.username    = Username(params.username);
     this.connected   = Connected(params.connected);
     this.last_active = Date.now();
-    //this.last_active = LastActive(params.last_active);
   }
 
   static create(params: CreateParams) {
-    const chatUser = new ChatUser(params);
-    return chatUser;
+    return new ChatUser(params);
   }
+
+  //static update
 
   getDTO() {
     return {
       session_id:  this.session_id,
       username:    this.username,
-      last_active: this.last_active
+      connected:   String(this.connected),
+      last_active: this.last_active.toString()
     };
   }
 }
@@ -46,10 +47,9 @@ export function LastActive(last_active: string) {
 }
 
 type CreateParams = {
-  session_id:  string;
-  username:    string;
-  connected:   boolean;
-  //last_active: string;
+  session_id: string;
+  username:   string;
+  connected:  boolean;
 };
 
 type ConstructorParams = CreateParams;
