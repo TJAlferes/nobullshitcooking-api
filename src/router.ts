@@ -2,11 +2,11 @@ import { Router } from 'express';
 
 import { chatgroupUserRouter }  from './modules/chat/group/user/router';
 import { chatgroupRouter }      from './modules/chat/group/router';
-import { chatmessageRouter }    from './modules/chat/router';
-import { chatroomUserRouter }   from './modules/chat/room/user/router';
+//import { chatmessageRouter }    from './modules/chat/router';
+//import { chatroomUserRouter }   from './modules/chat/room/user/router';
 import { chatroomRouter }       from './modules/chat/room/router';
-import { chatUserRouter }       from './modules/chat/user/router';
-import { chatRouter }           from './modules/chat/router';
+//import { chatUserRouter }       from './modules/chat/user/router';
+//import { chatRouter }           from './modules/chat/router';
 import { equipmentTypeRouter }  from './modules/equipment/type/router';
 import { equipmentRouter }      from './modules/equipment/router';
 import { ingredientTypeRouter } from './modules/ingredient/type/router';
@@ -44,10 +44,7 @@ export function apiV1Router() {
   router.use('/recipes',          recipeRouter());
   router.use('/recipe-types',     recipeTypeRouter());
 
-  /*
-  // If it doesn't need to be a socket event, then prefer https req/res
-  router.use('/chatgroups',   chatgroupsRouter());
-  router.use('/chatrooms',    chatroomsRouter());
-  router.use('/chatmessages', chatmessagesRouter());
-  */
+  //router.use('/chatgroups',   chatgroupRouter());
+  //router.use('/chatrooms',    chatroomRouter());
+  //router.use('/chatmessages', chatmessageRouter());
 }

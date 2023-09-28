@@ -1,23 +1,11 @@
 import { createPool } from 'mysql2/promise';
 
-export const pool = createPool(getConfig());  // TO DO: set up proper retry logic
-
-export function getConfig() {
-  if (process.env.NODE_ENV === 'production') {
-    return productionConfig;
-  }
-  if (process.env.NODE_ENV === 'test') {
-    return testConfig;
-  }
-  return developmentConfig;
-}
-
 const commonConfig = {
   waitForConnections: true,
   connectionLimit:    10,
   queueLimit:         0,
   namedPlaceholders:  true,
-  timezone:           'UTC',
+  timezone:           'Z',  // UTC +00:00
   dateStrings:        true
 };
 const productionConfig = {
@@ -43,3 +31,15 @@ const developmentConfig = {
   database:     process.env.DEV_MYSQL_DATABASE,
   insecureAuth: true
 };
+
+export function getConfig() {
+  if (process.env.NODE_ENV === 'production') {
+    return productionConfig;
+  }
+  if (process.env.NODE_ENV === 'test') {
+    return testConfig;
+  }
+  return developmentConfig;
+}
+
+export const pool = createPool(getConfig());  // TO DO: set up proper retry logic

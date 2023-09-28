@@ -1,11 +1,13 @@
-//import { RowDataPacket } from "mysql2";
+import { ResultSetHeader, RowDataPacket } from "mysql2";
 
 import { MySQLRepo } from "../../shared/MySQL";
 
 export class ChatgroupRepo extends MySQLRepo implements ChatgroupRepoInterface {
-  //async search
-  //async viewAll
-  //async viewOne
+  async getOwnerId(chatgroup_id: string) {
+    const sql = `SELECT owner_id FROM chatgroup WHERE chatgroup_id = ?`;
+    const [ [ row ] ] = await this.pool.execute<RowDataPacket[]>(sql, chatgroup_id);
+    return row.owner_id;
+  }
 
   async insert(params: InsertParams) {
     const sql = `
@@ -21,10 +23,11 @@ export class ChatgroupRepo extends MySQLRepo implements ChatgroupRepoInterface {
         :invite_code
       )
     `;
-    await this.pool.execute(sql, params);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
+    if (!result) throw new Error('Query not successful.');
   }
 
-  async update({ chatgroup_name, owner_id, chatgroup_id }: UpdateParams) {
+  async update({ chatgroup_name, owner_id, chatgroup_id }: UpdateParams) {  // changeName
     const sql = `
       UPDATE chatgroup
       SET
@@ -32,11 +35,12 @@ export class ChatgroupRepo extends MySQLRepo implements ChatgroupRepoInterface {
       WHERE owner_id = :owner_id AND chatgroup_id = :chatgroup_id
       LIMIT 1
     `;
-    await this.pool.execute(sql, {
+    const [ result ] = await this.pool.execute(sql, {
       chatgroup_name,
       owner_id,
       chatgroup_id
     });
+    if (!result) throw new Error('Query not successful.');
   }
 
   //async generateNewInviteCode
@@ -53,9 +57,10 @@ export class ChatgroupRepo extends MySQLRepo implements ChatgroupRepoInterface {
 }
 
 export interface ChatgroupRepoInterface {
-  insert:    (params: InsertParams) =>    Promise<void>;
-  update:    (params: UpdateParams) =>    Promise<void>;
-  deleteOne: (params: DeleteOneParams) => Promise<void>;
+  getOwnerId: (chatgroup_id: string) =>    Promise<string>;
+  insert:     (params: InsertParams) =>    Promise<void>;
+  update:     (params: UpdateParams) =>    Promise<void>;
+  deleteOne:  (params: DeleteOneParams) => Promise<void>;
 }
 
 type InsertParams = {

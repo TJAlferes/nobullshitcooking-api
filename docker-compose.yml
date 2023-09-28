@@ -7,7 +7,8 @@ services:
     volumes:
       - ./init:/docker-entrypoint-initdb.d
       - mysql-dev:/var/lib/mysql
-    command: mysqld --default-authentication-plugin=mysql_native_password
+    #command: mysqld --default-authentication-plugin=mysql_native_password
+    command: mysqld --default-authentication-plugin=caching_sha2_password
     #command: --disable-partition-engine-check
     # The healthcheck test immediately below can return a false positive. TO DO: Find a better solution.
     healthcheck:

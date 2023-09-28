@@ -4,10 +4,14 @@ import { Server as SocketIOServer, Socket } from 'socket.io';
 import { createAdapter }                    from '@socket.io/redis-adapter';
 
 import { redisClients }   from '../../connections/redis';
+
 import { FriendshipRepo } from '../user/friendship/repo';
-import { ChatUser }       from './user/model';
-import { ChatUserRepo }   from './user/repo';
+
 import { chatmessageController } from './message/controller';
+import { chatroomController }    from './room/controller';
+import { ChatUser }              from './user/model';
+import { ChatUserRepo }          from './user/repo';
+import { chatController }        from './controller';
 
 export function createSocketIOServer(httpServer: Server, sessionMiddleware: RequestHandler) {
   const io = new SocketIOServer<ClientToServerEvents, ServerToClientEvents>(
@@ -52,8 +56,8 @@ export function createSocketIOServer(httpServer: Server, sessionMiddleware: Requ
   
     // TO DO: no longer appear online for users blocked and friends deleted during that same session (so emit ShowOffline)
     
-    socket.on('GetOnlineFriends', async (params: any) => {
-      await chatController(socket).getOnlineFriends(params);
+    socket.on('GetOnlineFriends', async () => {
+      await chatController(socket).getOnlineFriends({user_id, username});
     });
 
     socket.on('GetUsersInRoom', async (chatroom_id: string) => {
