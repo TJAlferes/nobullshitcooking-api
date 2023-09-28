@@ -6,13 +6,20 @@ import { catchExceptions, userIsAuth } from '../../../utils';
 
 const router = Router();
 
-// for /chatgroups
+// for /users/:username/chatgroups
 
 export function chatgroupRouter() {
   router.get(
     '/:chatgroup_name',
-    [param('chatgroup_name').not().isEmpty().trim().escape()],
+    userIsAuth,
+    param('chatgroup_name').not().isEmpty().trim().escape(),
     catchExceptions(chatgroupController.viewOne)
+  );
+
+  router.get(
+    '/',
+    userIsAuth,
+    catchExceptions(chatgroupController.viewAll)
   );
 
   router.post(

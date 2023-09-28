@@ -44,7 +44,7 @@ export function apiV1Router() {
   router.use('/recipes',          recipeRouter());
   router.use('/recipe-types',     recipeTypeRouter());
 
-  //router.use('/chatgroups',   chatgroupRouter());
+  router.use('/chatgroups',   chatgroupRouter());
   //router.use('/chatrooms',    chatroomRouter());
   //router.use('/chatmessages', chatmessageRouter());
 }

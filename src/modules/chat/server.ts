@@ -65,11 +65,11 @@ export function createSocketIOServer(httpServer: Server, sessionMiddleware: Requ
     });
   
     socket.on('JoinRoom', async (chatroom_id: string) => {
-      await chatroomController(socket).joinRoom(chatroom_id);
+      await chatroomUserController(socket).joinRoom(chatroom_id);
     });
   
     socket.on('RejoinRoom', async (chatroom_id: string) => {
-      await chatroomController(socket).rejoinRoom(chatroom_id);
+      await chatroomUserController(socket).rejoinRoom(chatroom_id);
     });
   
     socket.on('SendMessage', async (params: any) => {
