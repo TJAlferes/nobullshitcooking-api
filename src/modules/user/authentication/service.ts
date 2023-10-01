@@ -100,20 +100,14 @@ export class UserAuthenticationService {
   }
   
   async resendConfirmationCode({ email, password }: ResendConfirmationCodeParams) {
-    const {
-      doesUserExist,
-      isCorrectPassword,
-      isUserConfirmed
-    } = new UserAuthenticationService(this.repo);
+    const user = await this.doesUserExist(email);
 
-    const user = await doesUserExist(email);
-
-    const confirmed = await isUserConfirmed(email);
+    const confirmed = await this.isUserConfirmed(email);
     if (confirmed) {
       throw new Error("Already confirmed.");
     }
 
-    await isCorrectPassword({email, password});
+    await this.isCorrectPassword({email, password});
   
     await this.sendConfirmationCode({
       email:             user.email,

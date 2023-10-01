@@ -8,10 +8,10 @@ export const userAuthenticationController = {
   async confirm(req: Request, res: Response) {
     const { confirmation_code } = req.body;
 
-    const userRepo                = new UserRepo();
-    const userAuthenticationService = new UserAuthenticationService(userRepo);
+    const repo    = new UserRepo();
+    const service = new UserAuthenticationService(repo);
 
-    await userAuthenticationService.confirm(confirmation_code);
+    await service.confirm(confirmation_code);
 
     return res.send({message: 'User account confirmed.'});
   },
@@ -19,10 +19,10 @@ export const userAuthenticationController = {
   async resendConfirmationCode(req: Request, res: Response) {
     const { email, password } = req.body;
 
-    const userRepo                = new UserRepo();
-    const userAuthenticationService = new UserAuthenticationService(userRepo);
+    const repo    = new UserRepo();
+    const service = new UserAuthenticationService(repo);
 
-    await userAuthenticationService.resendConfirmationCode({email, password});
+    await service.resendConfirmationCode({email, password});
 
     return res.send({message: 'Confirmation code re-sent.'});
   },
@@ -30,15 +30,15 @@ export const userAuthenticationController = {
   async login(req: Request, res: Response) {
     const loggedIn = req.session.user_id!;
     if (loggedIn) {
-      return res.json({message: 'Already logged in.'});  // throw in this layer?
+      return res.json({message: 'Already logged in.'});
     }
     
     const { email, password } = req.body;
 
-    const repo = new UserRepo();
-    const { login } = new UserAuthenticationService(repo);
+    const repo    = new UserRepo();
+    const service = new UserAuthenticationService(repo);
 
-    const username = await login({
+    const username = await service.login({
       email,
       password,
       session: req.session

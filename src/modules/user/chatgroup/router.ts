@@ -41,8 +41,9 @@ export function chatgroupRouter() {
   );
   
   router.delete(
-    '/',
+    '/:chatgroup_name',
     userIsAuth,
+    param('chatgroup_name').not().isEmpty().trim().escape(),
     catchExceptions(chatgroupController.delete)
   );
 
