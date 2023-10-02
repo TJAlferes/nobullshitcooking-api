@@ -1,23 +1,43 @@
 .env
-.git
-.gitignore
+
+# Node.js specific
 node_modules/
 npm-debug.log
-generate*
-README.md
-postcss.*.js
+yarn-error.log
 
-docker-compose.test.yml
-docker-compose.yml
-Dockerfile
-Dockerfile.dev
-Dockerfile.test
-
-/**/__tests__/
+# Development files and directories
+.git
+.gitignore
 .vscode
+.editorconfig
+.eslintignore
+.eslintrc
+.prettierrc
+*.md
+*.markdown
+*.log
 
-**/node_modules/
-**/dist
-.coverage
-.coverage.*
+# Test files and directories
+__tests__/
+test/
+tests/
+*.test.*
+jest.config.js
+test-setup.js
+
+# Build and output files
+coverage/
+dist/
+lib/
+build/
+
+# Dependency management
+package-lock.json
+yarn.lock
+
+# Docker
+Dockerfile*
+docker-compose*
+
+# Miscellaneous
 .aws
