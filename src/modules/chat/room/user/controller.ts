@@ -18,32 +18,33 @@ export function chatroomUserController(socket: Socket) {
       const chatroomRepo = new ChatroomRepo();
       const chatroom_id = await chatroomRepo.viewByChatroomName(chatroom_name);
 
+      const chatroomUser = ChatroomUser.create({user_id, chatroom_id}).getDTO();
       const chatroomUserRepo = new ChatroomUserRepo();
-      await chatroomUserRepo.insert({user_id, chatroom_id});
+      await chatroomUserRepo.insert(chatroomUser);
 
       socket.join(chatroom_id);
       socket.broadcast.to(chatroom_id).emit('UserJoinedRoom', username);
     
-      const users = await chatroomUserRepo.viewByChatroomName(chatroom_name);
-      socket.emit('UsersInroom', users, chatroom_id);
+      const users = await chatroomUserRepo.viewByChatroomId(chatroom_id);
+      socket.emit('UsersInroom', users, chatroom_id);  // chatroom_name???
     },
 
-    async rejoin({ room, username }: RejoinParams) {
-      if (room === '') return;
-    
-      const chatroomUserRepo = new ChatroomUserRepo();
-      //const chatroomRepo     = new ChatroomRepo();
+    async rejoin({ chatroom_name, user_id, username }: RejoinParams) {
+      if (!chatroom_name) return;
 
-      socket.join(room);
-      //const chatroom = Chatroom.create(chatroomName);
-      //chatroomRepo.insert(chatroom);
-      //const chatroomUser = chatroomUser.create({user_id, chatroom_id});
-      chatroomUserRepo.insert(chatroomUser);
-      socket.broadcast.to(room).emit('UserJoinedRoom', username);
+      const chatroomRepo = new ChatroomRepo();
+      const chatroom_id = await chatroomRepo.viewByChatroomName(chatroom_name);
+
+      const chatroomUser = ChatroomUser.create({user_id, chatroom_id}).getDTO();
+      const chatroomUserRepo = new ChatroomUserRepo();
+      await chatroomUserRepo.insert(chatroomUser);
+
+      socket.join(chatroom_id);
+      socket.broadcast.to(chatroom_id).emit('UserJoinedRoom', username);
     
-      const users = await chatroomUserRepo.getUsersInRoom(room);
-      socket.emit('UsersInRoomRefetched', users, room);
-    }
+      const users = await chatroomUserRepo.viewByChatroomId(chatroom_id);
+      socket.emit('UsersInRoomRefetched', users, chatroom_id);  // chatroom_name???
+    }  // is this right??? it's just a duplicate of join
   };
 }
 
@@ -56,5 +57,6 @@ type JoinParams = {
 
 type RejoinParams = {
   chatroom_name: string;
+  user_id:       string;
   username:      string;
 };
