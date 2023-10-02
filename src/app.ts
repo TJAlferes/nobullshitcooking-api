@@ -9,7 +9,7 @@ import helmet                                       from 'helmet';
 import hpp                                          from 'hpp';
 import { createServer }                             from 'node:http';
 import type { Redis }                               from 'ioredis';
-const pino = require('pino-http')();  // logger
+import pino                                         from 'pino-http';  // logger
 
 import { redisClients }         from './connections/redis';
 import { createSocketIOServer } from './modules/chat/server';
@@ -46,7 +46,7 @@ export function createAppServer() {
     unset:             "destroy"
   });
 
-  app.use(pino);  // logger
+  app.use(pino());  // logger
   app.use(express.json());
   app.use(express.urlencoded({extended: true}));
   app.use(expressRateLimit({

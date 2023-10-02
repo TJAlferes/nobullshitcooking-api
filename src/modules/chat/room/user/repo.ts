@@ -20,10 +20,6 @@ export class ChatroomUserRepo extends MySQLRepo implements ChatroomUserRepoInter
   }
   
   async insert(params: InsertParams) {
-    // TO DO: transaction
-    // DELETE FROM chatroom_user
-    //WHERE chatroom_id = :chatroom_id AND user_id = :user_id
-    //LIMIT 1
     const sql = `
       INSERT INTO chatroom_user (chatroom_id, user_id)
       VALUES (:chatroom_id, :user_id)

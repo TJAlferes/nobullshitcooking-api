@@ -5,8 +5,8 @@ import { GenerateUUIDv7StringId, UUIDv7StringId } from '../../shared/model';
 export class Chatmessage {
   private chatmessage_id;
   private chatroom_id;
-  private sender_id;
   private receiver_id;
+  private sender_id;
   private content;
   //private image_id;
   //private video_id;
@@ -14,8 +14,8 @@ export class Chatmessage {
   private constructor(params: ConstructorParams) {
     this.chatmessage_id = UUIDv7StringId(params.chatmessage_id);
     this.chatroom_id    = params.chatroom_id ? UUIDv7StringId(params.chatroom_id) : null;
-    this.sender_id      = Username(params.sender_id);
     this.receiver_id    = params.receiver_id ? Username(params.receiver_id) : null;
+    this.sender_id      = Username(params.sender_id);
     this.content        = Content(params.content);
     //this.image_id       = params.image_id ? UUIDv7StringId(params.image_id) : undefined;
     //this.video_id       = params.video_id ? UUIDv7StringId(params.video_id) : undefined;
@@ -24,8 +24,8 @@ export class Chatmessage {
       throw new Error("Chatmessage must define its chatroom_id or receiver_id.");
     }
     if (this.chatroom_id !== null && this.receiver_id !== null) {
-      // chatroom_id means the message is public (for that chatroom)
-      // reciever_id means the message is private (for that receiver)
+      // chatroom_id means the message is public (to that chatroom)
+      // reciever_id means the message is private (to that receiver and sender)
       throw new Error("Chatmessage must be public or private, not both.");
     }
   }
@@ -39,8 +39,8 @@ export class Chatmessage {
     return {
       chatmessage_id: this.chatmessage_id,
       chatroom_id:    this.chatroom_id,
-      sender_id:      this.sender_id,
       receiver_id:    this.receiver_id,
+      sender_id:      this.sender_id,
       content:        this.content,
       //image_id:       this.image_id,
       //video_id:       this.video_id
@@ -69,8 +69,8 @@ export function Content(content: string) {
 
 export type CreateParams = {
   chatroom_id?: string;
-  sender_id:    string;
   receiver_id?: string;
+  sender_id:    string;
   content:      string;
   //image_id?:    string;
   //video_id?:    string;

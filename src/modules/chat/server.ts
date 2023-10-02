@@ -8,6 +8,7 @@ import { redisClients }   from '../../connections/redis';
 import { FriendshipRepo } from '../user/friendship/repo';
 
 import { chatmessageController } from './message/controller';
+import type { ChatmessageView, PrivateChatmessageView } from './message/repo';
 import { chatroomController }    from './room/controller';
 import { chatroomUserController } from './room/user/controller';
 import { ChatUser }              from './user/model';
@@ -161,16 +162,16 @@ interface ClientToServerEvents {
 }
 
 interface ServerToClientEvents {
-  OnlineFriends:        (friends: string[]) =>             void;
-  FriendCameOnline:     (friend: string) =>                void;
-  FriendWentOffline:    (friend: string) =>                void;
-  UsersInRoom:          (users: string[], room: string) => void;
-  UsersInRoomRefetched: (users: string[], room: string) => void;
-  UserJoinedRoom:       (user: string) =>                  void;
-  UserLeftRoom:         (user: string) =>                  void;
-  MessageSent:          (message: Chatmessage) =>          void;
-  PrivateMessageSent:   (message: Chatmessage) =>          void;
-  PrivateMessageFailed: (feedback: string) =>              void;
+  OnlineFriends:        (friends: string[]) =>               void;
+  FriendCameOnline:     (friend: string) =>                  void;
+  FriendWentOffline:    (friend: string) =>                  void;
+  UsersInRoom:          (users: string[], room: string) =>   void;
+  UsersInRoomRefetched: (users: string[], room: string) =>   void;
+  UserJoinedRoom:       (user: string) =>                    void;
+  UserLeftRoom:         (user: string) =>                    void;
+  MessageSent:          (message: ChatmessageView) =>        void;
+  PrivateMessageSent:   (message: PrivateChatmessageView) => void;
+  PrivateMessageFailed: (feedback: string) =>                void;
 }
 
 //import { ExtendedError } from 'socket.io/dist/namespace';

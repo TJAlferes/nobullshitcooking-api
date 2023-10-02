@@ -76,8 +76,18 @@ interface ChatmessageRepoInterface {
   delete:                  (chatmessage_id: string) =>                Promise<void>;  // and owner_id ???
 }
 
-type ChatmessageView = RowDataPacket & {
+export type ChatmessageView = RowDataPacket & {
   chatmessage_id: string;
+  chatroom_id:    string;
+  sender_id:      string;
+  username:       string;
+  content:        string;
+  created_at:     string;
+};
+
+export type PrivateChatmessageView = RowDataPacket & {
+  chatmessage_id: string;
+  receiver_id:    string;
   sender_id:      string;
   username:       string;
   content:        string;
