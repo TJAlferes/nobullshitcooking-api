@@ -72,10 +72,10 @@
   "exclude": [
     "node_modules"
   ],
-  "ts-node": {
+  /*"ts-node": {
     //"esm": true,
     "compilerOptions": {
       "module": "CommonJS"
     }
-  }
+  }*/
 }

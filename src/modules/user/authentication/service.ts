@@ -128,7 +128,10 @@ export class UserAuthenticationService {
     session.user_id  = user_id;
     session.username = username;
   
-    return username;
+    return {
+      user_id,
+      username
+    };
   }
 }
 

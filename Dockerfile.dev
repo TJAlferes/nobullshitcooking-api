@@ -8,8 +8,9 @@ WORKDIR /code
 
 COPY package*.json /
 
-RUN npm install && npm cache clean --force --unsafe-perm=true --allow-root
+RUN npm install && npm cache clean --force
+#--unsafe-perm=true --allow-root
 
 COPY . .
 
-CMD ["npm", "run", "dev-ts"]
+CMD ["npm", "run", "dev"]

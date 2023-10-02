@@ -28,7 +28,7 @@ export const chatgroupUserController = {
     await chatgroupUserRepo.deleteByUserId(user_id);
 
     //return res.
-  }
+  },
 
   ban(req: Request, res: Response) {
     const { chatgroup_id, user_id } = req.body;

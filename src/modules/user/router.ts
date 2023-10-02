@@ -1,9 +1,7 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
-import { userController }              from './controller';
 import { catchExceptions, userIsAuth } from '../../utils';
-import { userInitialDataRouter }       from './initial-data/router';
 import { privateEquipmentRouter }      from './private-equipment/router';
 import { privateIngredientRouter }     from './private-ingredient/router';
 import { privatePlanRouter }           from './private-plan/router';
@@ -14,8 +12,8 @@ import { profileRouter }               from './profile/router';
 import { publicPlanRouter }            from './public-plan/router';
 import { publicRecipeRouter }          from './public-recipe/router';
 import { favoriteRecipeRouter }        from './favorite-recipe/router';
-import { authenticationRouter }        from './authentication/router';
 import { signedUrlRouter }             from './shared/signed-url/router';
+import { userController }              from './controller';
 
 const router = Router();
 
@@ -36,7 +34,6 @@ export function userRouter() {
 
   router.use('/:username/saved-recipes',       savedRecipeRouter());
 
-  router.use('/authentication', authenticationRouter());  // MOVE up into main router???  // just send their initial user data right when they login???
   router.use('/friendship',     friendshipRouter());
   router.use('/profile',        profileRouter());
   router.use('/signed-url',     signedUrlRouter());  // MOVE up into main router??? 

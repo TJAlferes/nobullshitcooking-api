@@ -5,13 +5,12 @@
   "version": "1.0.0",
   "license": "ISC",
   "type": "module",
-  "main": "src/index.ts",
+  "main": "src/index.js",
   "scripts": {
-    "start-ts": "ts-node --project tsconfig.json src/index.ts",
-    "dev-ts": "nodemon --exec npm run start-ts",
+    "dev": "nodemon --watch src -e ts --exec 'npm run build-ts && node dist/index.js'",
     "test": "jest --color --detectOpenHandles",
-    "prod-start": "node build/bundle.js",
-    "build-ts": "tsc -p .",
+    "start": "node build/bundle.js",
+    "build-ts": "tsc",
     "build-webpack": "webpack --config webpack.prod.js"
   },
   "dependencies": {

@@ -1,4 +1,4 @@
-FROM node:16.19.0
+FROM node:18.18.0
 
 EXPOSE 3003
 
@@ -8,4 +8,4 @@ COPY ./package*.json ./
 RUN npm install --production
 COPY . .
 
-CMD npm run start
+CMD ["npm", "run", "start"]
