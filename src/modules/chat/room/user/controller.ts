@@ -16,15 +16,15 @@ export function chatroomUserController(socket: Socket) {
       if (!chatroom_name) return;
 
       const chatroomRepo = new ChatroomRepo();
-      const { chatroom_id } = chatroomRepo.viewByChatroomName(chatroom_name);
+      const chatroom_id = await chatroomRepo.viewByChatroomName(chatroom_name);
 
       const chatroomUserRepo = new ChatroomUserRepo();
-      chatroomUserRepo.addUserToChatroom({user_id, chatroom_id});
+      await chatroomUserRepo.insert({user_id, chatroom_id});
 
       socket.join(chatroom_id);
       socket.broadcast.to(chatroom_id).emit('UserJoinedRoom', username);
     
-      const users = await chatroomUserRepo.viewUsersInChatroom(chatroomName);
+      const users = await chatroomUserRepo.viewByChatroomName(chatroom_name);
       socket.emit('UsersInroom', users, chatroom_id);
     },
 

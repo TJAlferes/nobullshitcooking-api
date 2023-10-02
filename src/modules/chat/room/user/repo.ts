@@ -4,6 +4,21 @@ import { MySQLRepo } from "../../../shared/MySQL";
 
 export class ChatroomUserRepo extends MySQLRepo implements ChatroomUserRepoInterface {
   //async viewByChatroomId(chatroom_id: string) {}
+
+  async viewByChatroomName(chatroom_name: string) {
+    const sql = `
+      SELECT
+        cu.user_id, u.username, i.image_filename as avatar
+      FROM chatroom_user cu
+      INNER JOIN chatroom c ON c.chatroom_id = cu.chatroom_id
+      INNER JOIN user u ON u.user_id = cu.user_id
+      INNER JOIN user_image ui ON ui.user_id = cu.user_id
+      INNER JOIN image i ON i.image_id = ui.image_id
+      WHERE c.chatroom_name = ?
+    `;
+    const [ rows ] = await this.pool.execute<ChatroomUserView[]>(sql, chatroom_name);
+    return rows;
+  }
   
   async insert(params: InsertParams) {
     const sql = `
@@ -41,15 +56,22 @@ export class ChatroomUserRepo extends MySQLRepo implements ChatroomUserRepoInter
 }
 
 export interface ChatroomUserRepoInterface {
-  insert:             (params: InsertParams) => Promise<void>;
-  update:             (params: UpdateParams) => Promise<void>;
-  deleteByChatroomId: (chatroom_id: string) =>  Promise<void>;
-  deleteByUserId:     (user_id: string) =>      Promise<void>;
+  viewByChatroomName: (chatroom_name: string) => Promise<ChatroomUserView[]>;
+  insert:             (params: InsertParams) =>  Promise<void>;
+  update:             (params: UpdateParams) =>  Promise<void>;
+  deleteByChatroomId: (chatroom_id: string) =>   Promise<void>;
+  deleteByUserId:     (user_id: string) =>       Promise<void>;
 }
 
+type ChatroomUserView = RowDataPacket & {
+  user_id:  string;
+  username: string;
+  avatar:   string;
+};
+
 type InsertParams = {
-  chatroom_id: string;
   user_id:     string;
+  chatroom_id: string;
 };
 
 type UpdateParams = InsertParams & {

@@ -9,6 +9,7 @@ import { FriendshipRepo } from '../user/friendship/repo';
 
 import { chatmessageController } from './message/controller';
 import { chatroomController }    from './room/controller';
+import { chatroomUserController } from './room/user/controller';
 import { ChatUser }              from './user/model';
 import { ChatUserRepo }          from './user/repo';
 import { chatController }        from './controller';
@@ -64,12 +65,12 @@ export function createSocketIOServer(httpServer: Server, sessionMiddleware: Requ
       await chatroomUserController(socket).getUsersInRoom(chatroom_id);
     });
   
-    socket.on('JoinRoom', async (chatroom_id: string) => {
-      await chatroomUserController(socket).joinRoom(chatroom_id);
+    socket.on('JoinRoom', async (params: any) => {
+      await chatroomUserController(socket).join(params);
     });
   
-    socket.on('RejoinRoom', async (chatroom_id: string) => {
-      await chatroomUserController(socket).rejoinRoom(chatroom_id);
+    socket.on('RejoinRoom', async (params: any) => {
+      await chatroomUserController(socket).rejoin(params);
     });
   
     socket.on('SendMessage', async (params: any) => {
