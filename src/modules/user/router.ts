@@ -8,7 +8,6 @@ import { privatePlanRouter }           from './private-plan/router';
 import { privateRecipeRouter }         from './private-recipe/router';
 import { savedRecipeRouter }           from './saved-recipe/router';
 import { friendshipRouter }            from './friendship/router';
-import { profileRouter }               from './profile/router';
 import { publicPlanRouter }            from './public-plan/router';
 import { publicRecipeRouter }          from './public-recipe/router';
 import { favoriteRecipeRouter }        from './favorite-recipe/router';
@@ -17,26 +16,19 @@ import { userController }              from './controller';
 
 const router = Router();
 
-// for /users...
+// for /users
 
 export function userRouter() {
-  router.use('/:username/private-equipment',   privateEquipmentRouter());
-
+  router.use('/:username/public-plans', publicPlanRouter());
+  router.use('/:username/public-recipes', publicRecipeRouter());
+  router.use('/:username/favorite-recipes', favoriteRecipeRouter());
+  router.use('/:username/private-equipment', privateEquipmentRouter());
   router.use('/:username/private-ingredients', privateIngredientRouter());
-
-  router.use('/:username/private-recipes',     privateRecipeRouter());
-  router.use('/:username/public-recipes',      publicRecipeRouter());
-
-  router.use('/:username/private-plans',       privatePlanRouter());
-  router.use('/:username/public-plans',        publicPlanRouter());
-
-  router.use('/:username/favorite-recipes',    favoriteRecipeRouter());
-
-  router.use('/:username/saved-recipes',       savedRecipeRouter());
-
-  router.use('/friendship',     friendshipRouter());
-  router.use('/profile',        profileRouter());
-  router.use('/signed-url',     signedUrlRouter());  // MOVE up into main router??? 
+  router.use('/:username/private-plans', privatePlanRouter());
+  router.use('/:username/private-recipes', privateRecipeRouter());
+  router.use('/:username/saved-recipes', savedRecipeRouter());
+  router.use('/friendship', friendshipRouter());
+  router.use('/signed-url', signedUrlRouter());  // MOVE up into main router???
 
   router.post(
     '/',

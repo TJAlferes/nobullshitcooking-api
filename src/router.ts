@@ -21,6 +21,7 @@ import { recipeRouter } from './modules/recipe/router';
 import { searchRouter } from './modules/search/router';
 import { unitRouter } from './modules/shared/unit/router';
 import { userRouter } from './modules/user/router';
+import { profileController } from './modules/user/profile/controller';
 import { catchExceptions, userIsAuth } from './utils';
 
 const router = Router();
@@ -65,6 +66,8 @@ export function apiV1Router() {
   //router.use('/chatrooms', chatroomRouter());
   //router.use('/chatmessages', chatmessageRouter());
   router.use('/users', userRouter());
+
+  router.get('/:username', catchExceptions(profileController.view));
 }
 
 function sanitize(keys: string | string[]) {
