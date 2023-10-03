@@ -1,18 +1,19 @@
 import { Request, Response } from 'express';
 import { Pool } from 'mysql2/promise';
 
-import { CuisineController } from '../../../src/controllers';
+import { cuisineController } from '../../../src/modules/recipe/cuisine/controller';
 
 const pool: Partial<Pool> = {};
-const controller = new CuisineController(<Pool>pool);
+//const controller = new CuisineController(<Pool>pool);
+const controller = cuisineController;
 
 const row = {id: 1, name: "Name"};
 const rows = [{id: 1, name: "Name"}, {id: 2, name: "Name"}];
 jest.mock('../../../src/access/mysql', () => ({
-  Cuisine: jest.fn().mockImplementation(() => ({view: mockview, viewById: mockviewById}))
+  Cuisine: jest.fn().mockImplementation(() => ({viewAll: mockviewAll, viewOne: mockviewOne}))
 }));
-let mockview =     jest.fn().mockResolvedValue(rows);
-let mockviewById = jest.fn().mockResolvedValue([row]);
+let mockviewAll = jest.fn().mockResolvedValue(rows);
+let mockviewOne = jest.fn().mockResolvedValue(row);
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -23,28 +24,28 @@ describe('cuisine controller', () => {
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
 
     it('uses view', async () => {
-      await controller.view(<Request>{}, <Response>res);
-      expect(mockview).toHaveBeenCalledTimes(1);
+      await controller.viewAll(<Request>{}, <Response>res);
+      expect(mockviewAll).toHaveBeenCalledTimes(1);
     });
 
     it('returns sent data', async () => {
-      const actual = await controller.view(<Request>{}, <Response>res);
+      const actual = await controller.viewAll(<Request>{}, <Response>res);
       expect(res.send).toHaveBeenCalledWith(rows);
       expect(actual).toEqual(rows);
     });
   });
   
-  describe('viewById method', () => {
+  describe('viewOne method', () => {
     const req: Partial<Request> = {params: {id: "1"}};
     const res: Partial<Response> = {send: jest.fn().mockResolvedValue(row)};
 
-    it('uses viewById', async () => {
-      await controller.viewById(<Request>req, <Response>res);
-      expect(mockviewById).toHaveBeenCalledWith(1);
+    it('uses viewOne', async () => {
+      await controller.viewOne(<Request>req, <Response>res);
+      expect(mockviewOne).toHaveBeenCalledWith(1);
     });
 
     it('returns sent data', async () => {
-      const actual = await controller.viewById(<Request>req, <Response>res);
+      const actual = await controller.viewOne(<Request>req, <Response>res);
       expect(res.send).toHaveBeenCalledWith(row);
       expect(actual).toEqual(row);
     });
