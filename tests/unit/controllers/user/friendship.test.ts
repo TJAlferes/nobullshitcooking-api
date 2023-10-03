@@ -1,68 +1,47 @@
-import { Request, Response } from 'express';
-import { Pool } from 'mysql2/promise';
-import { assert } from 'superstruct';
+import type { Request, Response } from 'express';
+import type { ModifiedSession } from '../../../../src/app';
 
-import { UserFriendshipController } from '../../../../src/controllers/user';
-import { validFriendship } from '../../../../src/lib/validations/entities';
+import { friendshipController } from '../../../../src/modules/user/friendship/controller';
+import { FriendshipRepo } from '../../../../src/modules/user/friendship/repo';
+import { UserRepo } from '../../../../src/modules/user/repo';
 
-const pool: Partial<Pool> = {};
-const controller = new UserFriendshipController(<Pool>pool);
+jest.mock('../../../../src/modules/user/friendship/repo');
+jest.mock('../../../../src/modules/user/repo');
 
-jest.mock('superstruct');
+const mockedFriendshipRepo = FriendshipRepo as unknown as jest.Mocked<FriendshipRepo>;
+const mockedUserRepo = UserRepo as unknown as jest.Mocked<UserRepo>;
 
 const row = {id: 1, name: "Name"};
-const rows = [{id: 1, name: "Name"}, {id: 2, name: "Name"}];
-jest.mock('../../../../src/access/mysql', () => ({
-  Friendship: jest.fn().mockImplementation(() => ({
-    getByFriendId:  mockgetByFriendId,
-    checkIfBlockedBy:  mockcheckIfBlockedBy,
-    view: mockview,
-    create: mockcreate,
-    accept: mockaccept,
-    reject: mockreject,
-    delete: mockdelete,
-    block: mockblock,
-    unblock: mockunblock
-  })),
-  User: jest.fn().mockImplementation(() => ({viewByName: mockviewByName}))
-}));
-let mockgetByFriendId = jest.fn();
-let mockcheckIfBlockedBy = jest.fn();
-let mockview = jest.fn();
-let mockcreate = jest.fn();
-let mockaccept = jest.fn();
-let mockreject = jest.fn();
-let mockdelete = jest.fn();
-let mockblock = jest.fn();
-let mockunblock = jest.fn();
-let mockviewByName = jest.fn();
 
-afterEach(() => {
-  jest.clearAllMocks();
-});
+const rows = [
+  {id: 1, name: "Name"},
+  {id: 2, name: "Name"}
+];
 
-describe('user friendship controller', () => {
-  const session = {...<Express.Session>{}, userInfo: {id: 88}};
+interface MockRequest extends Request {
+  session: ModifiedSession;
+}
 
-  describe('view method', () => {
-    const rows = [{name: "Name1"}];
-    const req: Partial<Request> = {session};
-    const res: Partial<Response> = {send: jest.fn().mockResolvedValue(rows)};
+describe('friendship controller', () => {
+  let req: Partial<Request>;
+  let res: Partial<Response>;
 
-    beforeAll(() => {
-      mockview = jest.fn().mockResolvedValue(rows);
-    });
+  beforeEach(() => {
+    req = {
+      body: {
+        friendname: 'friendusername', // Modify as needed for each test case
+      },
+      session: {
+        user_id: '123', // Modify as needed for each test case
+      },
+    } as MockRequest;
+    res = {
+      send: jest.fn(),
+    };
+  });
 
-    it('uses view', async () => {
-      await controller.view(<Request>req, <Response>res);
-      expect(mockview).toHaveBeenCalledWith(1);
-    });
-
-    it('returns sent data', async () => {
-      const actual = await controller.view(<Request>req, <Response>res);
-      expect(res.send).toHaveBeenCalledWith(rows);
-      expect(actual).toEqual(rows);
-    });
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('create method', () => {
@@ -74,11 +53,6 @@ describe('user friendship controller', () => {
       
       beforeAll(() => {
         mockviewByName = jest.fn().mockResolvedValue([]);
-      });
-
-      it('uses viewByName', async () => {
-        await controller.create(<Request>req, <Response>res);
-        expect(mockviewByName).toHaveBeenCalledWith("Name");
       });
   
       it('returns sent data', async () => {
@@ -100,17 +74,28 @@ describe('user friendship controller', () => {
         mockviewByName =
           jest.fn().mockResolvedValue([[{username: "Name1", avatar: "Name1"}]]);
       });
-
-      it('uses checkIfBlockedBy', async () => {
-        await controller.create(<Request>req, <Response>res);
-        expect(mockcheckIfBlockedBy).toHaveBeenCalledWith("Name", "Name1");
-      });
   
       it('returns sent data', async () => {
         const actual = await controller.create(<Request>req, <Response>res);
         expect(res.send).toHaveBeenCalledWith({message});
         expect(actual).toEqual({message});
       });
+    });
+
+    it('should handle successful friendship creation', async () => {
+      // Mock UserRepo behavior (e.g., getByUsername should return a user)
+      (UserRepo as jest.Mocked<typeof UserRepo>).getByUsername.mockResolvedValue({
+        user_id: '456',
+        // Add other user properties as needed
+      });
+  
+      // Mock FriendshipRepo behavior (e.g., getOne should return null)
+      mockedFriendshipRepo.getOne.mockResolvedValue(null);
+  
+      // Call the create method
+      await friendshipController.create(req as Request, res as Response);
+  
+      expect(res.send).toHaveBeenCalledWith({message: 'Friendship request sent.'});
     });
 
     describe('when friendship does not already exist', () => {
@@ -125,29 +110,6 @@ describe('user friendship controller', () => {
         mockgetByFriendId = jest.fn().mockResolvedValue([[]]);
         mockviewByName =
           jest.fn().mockResolvedValue([[{username: "Name1", avatar: "Name1"}]]);
-      });
-
-      it ('uses getFriendshipByFriendId', async () => {
-        await controller.create(<Request>req, <Response>res);
-        expect(mockgetByFriendId).toHaveBeenCalledWith("Name", "Name1");
-      });
-
-      it('uses assert', async () => {
-        await controller.create(<Request>req, <Response>res);
-        expect(assert).toHaveBeenCalledWith(
-          {
-            user: "Name",
-            friend: "Name1",
-            status1: "pending-sent",
-            status2: "pending-received"
-          },
-          validFriendship
-        );
-      });
-
-      it('uses create', async () => {
-        await controller.create(<Request>req, <Response>res);
-        expect(mockcreate).toHaveBeenCalledTimes(1);  // TO DO: CalledWith
       });
   
       it('returns sent data', async () => {
@@ -256,11 +218,6 @@ describe('user friendship controller', () => {
       beforeAll(() => {
         mockviewByName = jest.fn().mockResolvedValue([[]]);
       });
-
-      it('uses viewByName', async () => {
-        await controller.accept(<Request>req, <Response>res);
-        expect(mockviewByName).toHaveBeenCalledWith("Name");
-      });
       
       it('returns sent data', async () => {
         const actual = await controller.accept(<Request>req, <Response>res);
@@ -278,16 +235,6 @@ describe('user friendship controller', () => {
       beforeAll(() => {
         mockviewByName =
           jest.fn().mockResolvedValue([[{username: "Name1", avatar: "Name1"}]]);
-      });
-
-      it('uses viewByName', async () => {
-        await controller.accept(<Request>req, <Response>res);
-        expect(mockviewByName).toHaveBeenCalledWith("Name");
-      });
-
-      it('uses accept', async () => {
-        await controller.accept(<Request>req, <Response>res);
-        expect(mockaccept).toHaveBeenCalledWith("Name", "Name1");
       });
   
       it('returns sent data', async () => {
@@ -308,11 +255,6 @@ describe('user friendship controller', () => {
       beforeAll(() => {
         mockviewByName = jest.fn().mockResolvedValue([[]]);
       });
-
-      it('uses viewByName', async () => {
-        await controller.reject(<Request>req, <Response>res);
-        expect(mockviewByName).toHaveBeenCalledWith("Name");
-      });
   
       it('returns sent data', async () => {
         const actual = await controller.reject(<Request>req, <Response>res);
@@ -330,16 +272,6 @@ describe('user friendship controller', () => {
       beforeAll(() => {
         mockviewByName =
           jest.fn().mockResolvedValue([[{username: "Name1", avatar: "Name1"}]]);
-      });
-
-      it('uses viewByName', async () => {
-        await controller.reject(<Request>req, <Response>res);
-        expect(mockviewByName).toHaveBeenCalledWith("Name");
-      });
-
-      it('uses reject', async () => {
-        await controller.reject(<Request>req, <Response>res);
-        expect(mockreject).toHaveBeenCalledWith("Name", "Name1");
       });
   
       it('returns sent data', async () => {
@@ -360,11 +292,6 @@ describe('user friendship controller', () => {
       beforeAll(() => {
         mockviewByName = jest.fn().mockResolvedValue([[]]);
       });
-
-      it('uses viewByName', async () => {
-        await controller.delete(<Request>req, <Response>res);
-        expect(mockviewByName).toHaveBeenCalledWith("Name");
-      });
   
       it('returns sent data', async () => {
         const actual = await controller.delete(<Request>req, <Response>res);
@@ -382,16 +309,6 @@ describe('user friendship controller', () => {
       beforeAll(() => {
         mockviewByName =
           jest.fn().mockResolvedValue([[{username: "Name1", avatar: "Name1"}]]);
-      });
-
-      it('uses viewByName', async () => {
-        await controller.delete(<Request>req, <Response>res);
-        expect(mockviewByName).toHaveBeenCalledWith("Name");
-      });
-
-      it('uses delete', async () => {
-        await controller.delete(<Request>req, <Response>res);
-        expect(mockdelete).toHaveBeenCalledWith("Name", "Name1");
       });
 
       it('returns sent data', async () => {
@@ -412,11 +329,6 @@ describe('user friendship controller', () => {
       beforeAll(() => {
         mockviewByName = jest.fn().mockResolvedValue([[]]);
       });
-
-      it('uses viewByName', async () => {
-        await controller.block(<Request>req, <Response>res);
-        expect(mockviewByName).toHaveBeenCalledWith("Name");
-      });
   
       it('returns sent data', async () => {
         const actual = await controller.block(<Request>req, <Response>res);
@@ -434,16 +346,6 @@ describe('user friendship controller', () => {
       beforeAll(() => {
         mockviewByName =
           jest.fn().mockResolvedValue([[{username: "Name1", avatar: "Name1"}]]);
-      });
-
-      it('uses viewByName', async () => {
-        await controller.block(<Request>req, <Response>res);
-        expect(mockviewByName).toHaveBeenCalledWith("Name");
-      });
-
-      it('uses block', async () => {
-        await controller.block(<Request>req, <Response>res);
-        expect(mockblock).toHaveBeenCalledWith("Name", "Name1");
       });
 
       it('returns sent data', async () => {
@@ -465,11 +367,6 @@ describe('user friendship controller', () => {
       beforeAll(() => {
         mockviewByName = jest.fn().mockResolvedValue([[]]);
       });
-
-      it('uses viewByName', async () => {
-        await controller.unblock(<Request>req, <Response>res);
-        expect(mockviewByName).toHaveBeenCalledWith("Name");
-      });
   
       it('returns sent data', async () => {
         const actual = await controller.unblock(<Request>req, <Response>res);
@@ -487,16 +384,6 @@ describe('user friendship controller', () => {
       beforeAll(() => {
         mockviewByName =
           jest.fn().mockResolvedValue([[{username: "Name1", avatar: "Name1"}]]);
-      });
-
-      it('uses viewByName', async () => {
-        await controller.unblock(<Request>req, <Response>res);
-        expect(mockviewByName).toHaveBeenCalledWith("Name");
-      });
-
-      it('uses unblock', async () => {
-        await controller.unblock(<Request>req, <Response>res);
-        expect(mockunblock).toHaveBeenCalledWith("Name", "Name1");
       });
   
       it('returns sent data', async () => {

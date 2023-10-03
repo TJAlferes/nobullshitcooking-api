@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
-import { catchExceptions, userIsAuth }            from '../../../utils';
-import { userFriendshipController as controller } from './controller';
+import { catchExceptions, userIsAuth }        from '../../../utils';
+import { friendshipController as controller } from './controller';
 
 const router = Router();
 

@@ -4,7 +4,7 @@ import { UserRepo }       from '../repo';
 import { Friendship }     from './model';
 import { FriendshipRepo } from './repo';
 
-export const userFriendshipController = {
+export const friendshipController = {
   async viewAll(req: Request, res: Response) {
     const user_id = req.session.user_id!;
 
