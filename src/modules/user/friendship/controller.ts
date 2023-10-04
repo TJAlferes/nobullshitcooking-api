@@ -11,7 +11,7 @@ export const friendshipController = {
     const friendshipRepo = new FriendshipRepo();
     const rows = await friendshipRepo.viewAll(user_id);
 
-    return res.send(rows);
+    return res.json(rows);
   },
 
   async create(req: Request, res: Response) {
@@ -19,9 +19,7 @@ export const friendshipController = {
 
     const userRepo = new UserRepo();
     const friend = await userRepo.getByUsername(friendname);
-    if (!friend) {
-      return res.send({message: 'User not found.'});
-    }
+    if (!friend) return res.status(404);
 
     const user_id   = req.session.user_id!;
     const friend_id = friend.user_id;
@@ -29,9 +27,7 @@ export const friendshipController = {
     // do others need this too? probably
     const friendshipRepo = new FriendshipRepo();
     const status = await friendshipRepo.getStatus({user_id: friend_id, friend_id: user_id});
-    if (status === "blocked") {
-      return res.send({message: 'User not found.'});
-    }
+    if (status === "blocked") return res.status(404);
 
     // do others need this too? probably
     const currentStatus = await friendshipRepo.getStatus({user_id, friend_id});
@@ -55,98 +51,87 @@ export const friendshipController = {
       await friendshipRepo.insert(friendship1);
       await friendshipRepo.insert(friendship2);
 
-      return res.send({message: 'Friendship request sent.'});
+      return res.status(201);
     }
-
     if ( currentStatus === "pending-sent"
       || currentStatus === "pending-received"
     ) {
-      return res.send({message: 'Already pending.'});
+      return res.status(403).json({message: 'Already pending.'});
     }
-
     if (currentStatus === "accepted") {
-      return res.send({message: 'Already friends.'});
+      return res.status(403).json({message: 'Already friends.'});
     }
-
     if (currentStatus === "blocked") {
-      return res.send({message: 'User blocked. First unblock.'});
+      return res.status(403).json({message: 'User blocked. First unblock.'});
     }
   },
 
   async accept(req: Request, res: Response) {
-    const { friendname } = req.body;
+    const { friendname } = req.params;
 
     const userRepo = new UserRepo();
     const friend = await userRepo.getByUsername(friendname);
-    if (!friend) {
-      return res.send({message: 'User not found.'});
-    }
+    if (!friend) return res.status(404);
 
     const user_id   = req.session.user_id!;
     const friend_id = friend.user_id;
 
     const friendshipRepo = new FriendshipRepo();
     const status = await friendshipRepo.getStatus({user_id, friend_id});
-    if (status !== "pending-received") return;
+    if (status !== "pending-received") return res.status(403);
 
     await friendshipRepo.update({user_id, friend_id, status: "accepted"});
     await friendshipRepo.update({friend_id, user_id, status: "accepted"});
 
-    return res.send({message: 'Friendship request accepted.'});
+    return res.status(204);
   },
 
   async reject(req: Request, res: Response) {
-    const { friendname } = req.body;
+    const { friendname } = req.params;
 
     const userRepo = new UserRepo();
     const friend = await userRepo.getByUsername(friendname);
-    if (!friend) {
-      return res.send({message: 'User not found.'});
-    }
+    if (!friend) return res.status(404);
 
     const user_id   = req.session.user_id!;
     const friend_id = friend.user_id;
 
     const friendshipRepo = new FriendshipRepo();
     const status = await friendshipRepo.getStatus({user_id, friend_id});
-    if (status !== "pending-received") return;
+    if (status !== "pending-received") return res.status(403);
 
     await friendshipRepo.delete({user_id, friend_id});
     await friendshipRepo.delete({friend_id, user_id});
 
-    return res.send({message: 'Friendship request rejected.'});
+    return res.status(204);
   },
 
   async delete(req: Request, res: Response) {
-    const { friendname } = req.body;
+    const { friendname } = req.params;
 
     const userRepo = new UserRepo();
     const friend = await userRepo.getByUsername(friendname);
-    if (!friend) {
-      return res.send({message: 'User not found.'});
-    }
+    if (!friend) return res.status(404);
 
     const user_id   = req.session.user_id!;
     const friend_id = friend.user_id;
 
     const friendshipRepo = new FriendshipRepo();
     const status = await friendshipRepo.getStatus({user_id, friend_id});
-    if (status !== "accepted") return;
+    if (status !== "accepted") return res.status(403);
 
     await friendshipRepo.delete({user_id, friend_id});
     await friendshipRepo.delete({friend_id, user_id});
 
-    return res.send({message: 'No longer friends. Maybe again later.'});
+    return res.status(204);
   },
 
   async block(req: Request, res: Response) {
-    const { friendname } = req.body;
+    const { friendname } = req.params;
 
     const userRepo = new UserRepo();
     const friend = await userRepo.getByUsername(friendname);
-    if (!friend) {
-      return res.send({message: 'User not found.'});
-    }
+    if (!friend) return res.status(404);
 
     const user_id   = req.session.user_id!;
     const friend_id = friend.user_id;
@@ -161,27 +146,25 @@ export const friendshipController = {
     // friend_id  is being blocked by  user_id
     await friendshipRepo.insert({user_id, friend_id, status: "blocked"});
 
-    return res.send({message: 'User blocked.'});
+    return res.status(204);
   },
 
   async unblock(req: Request, res: Response) {
-    const { friendname } = req.body;
+    const { friendname } = req.params;
 
     const userRepo = new UserRepo();
     const friend = await userRepo.getByUsername(friendname);
-    if (!friend) {
-      return res.send({message: 'User not found.'});
-    }
+    if (!friend) return res.status(404);
 
     const user_id   = req.session.user_id!;
     const friend_id = friend.user_id;
 
     const friendshipRepo = new FriendshipRepo();
     const status = await friendshipRepo.getStatus({user_id, friend_id});
-    if (status !== "blocked") return;
+    if (status !== "blocked") return res.status(403);
 
     await friendshipRepo.delete({user_id, friend_id});
 
-    return res.send({message: 'User unblocked.'});
+    return res.status(204);
   }
 };
