@@ -3,13 +3,13 @@ import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 import { MySQLRepo } from '../shared/MySQL';
 
 export class UserRepo extends MySQLRepo implements UserRepoInterface {
-  async getPassword(email: string) {
+  async getPassword(email: string): Promise<string | undefined> {
     const sql = `SELECT password FROM users WHERE email = ?`;
     const [ [ row ] ] = await this.pool.query<PasswordData[]>(sql, [email]);
     return row.password;
   }  // be very careful with this
 
-  async getByUserId(user_id: string) {
+  async getByUserId(user_id: string): Promise<UserData | undefined> {
     const sql = `
       SELECT user_id, email, username, confirmation_code
       FROM users
@@ -19,7 +19,7 @@ export class UserRepo extends MySQLRepo implements UserRepoInterface {
     return row;
   }
 
-  async getByEmail(email: string) {
+  async getByEmail(email: string): Promise<UserData | undefined> {
     const sql = `
       SELECT user_id, email, username, confirmation_code
       FROM users
@@ -29,7 +29,7 @@ export class UserRepo extends MySQLRepo implements UserRepoInterface {
     return row;
   }
 
-  async getByUsername(username: string) {
+  async getByUsername(username: string): Promise<UserData | undefined> {
     const sql = `
       SELECT user_id, email, username, confirmation_code
       FROM users
@@ -39,7 +39,7 @@ export class UserRepo extends MySQLRepo implements UserRepoInterface {
     return row;
   }
 
-  async getByConfirmationCode(confirmation_code: string) {
+  async getByConfirmationCode(confirmation_code: string): Promise<UserData | undefined> {
     const sql = `
       SELECT user_id, email, username, confirmation_code
       FROM users
@@ -82,11 +82,11 @@ export class UserRepo extends MySQLRepo implements UserRepoInterface {
 }
 
 export interface UserRepoInterface {
-  getPassword:           (email: string) =>             Promise<string>;
-  getByUserId:           (user_id: string) =>           Promise<UserData>
-  getByEmail:            (email: string) =>             Promise<UserData>;
-  getByUsername:         (username: string) =>          Promise<UserData>;
-  getByConfirmationCode: (confirmation_code: string) => Promise<UserData>;
+  getPassword:           (email: string) =>             Promise<string | undefined>;
+  getByUserId:           (user_id: string) =>           Promise<UserData | undefined>;
+  getByEmail:            (email: string) =>             Promise<UserData | undefined>;
+  getByUsername:         (username: string) =>          Promise<UserData | undefined>;
+  getByConfirmationCode: (confirmation_code: string) => Promise<UserData | undefined>;
   insert:                (params: InsertParams) =>      Promise<void>;
   update:                (params: UpdateParams) =>      Promise<void>;
   delete:                (user_id: string) =>           Promise<void>;

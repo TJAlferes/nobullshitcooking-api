@@ -26,17 +26,17 @@ import { MySQLRepo } from '../../shared/MySQL';
 
 
 export class FriendshipRepo extends MySQLRepo implements FriendshipRepoInterface {
-  async getOne(params: GetOneParams) {
+  async getStatus(params: GetStatusParams): Promise<string | undefined> {
     const sql = `
       SELECT status
       FROM friendship
       WHERE user_id = ? AND friend_id = ?
     `;
-    const [ [ row ] ] = await this.pool.execute<Friendship[]>(sql, params);
-    return row;
+    const [ [ row ] ] = await this.pool.execute<StatusData[]>(sql, params);
+    return row.status;
   }
 
-  async viewAll(user_id: string) {
+  async viewAll(user_id: string): Promise<FriendView[] | undefined> {
     const sql = `
       SELECT u.username, f.status
       FROM friendship f
@@ -49,7 +49,7 @@ export class FriendshipRepo extends MySQLRepo implements FriendshipRepoInterface
     return rows;
   }
 
-  async viewAllOfStatus({ user_id, status }: ViewAllOfStatusParams) {
+  async viewAllOfStatus({ user_id, status }: ViewAllOfStatusParams): Promise<FriendView[] | undefined> {
     const sql = `
       SELECT u.username, f.status
       FROM friendship f
@@ -89,15 +89,15 @@ export class FriendshipRepo extends MySQLRepo implements FriendshipRepoInterface
 }
 
 export interface FriendshipRepoInterface {
-  getOne:          (params: GetOneParams) =>          Promise<Friendship>;
-  viewAll:         (user_id: string) =>               Promise<FriendView[]>;
-  viewAllOfStatus: (params: ViewAllOfStatusParams) => Promise<FriendView[]>;
+  getStatus:       (params: GetStatusParams) =>       Promise<string | undefined>;
+  viewAll:         (user_id: string) =>               Promise<FriendView[] | undefined>;
+  viewAllOfStatus: (params: ViewAllOfStatusParams) => Promise<FriendView[] | undefined>;
   insert:          (params: InsertParams) =>          Promise<void>;
   update:          (params: UpdateParams) =>          Promise<void>;
   delete:          (params: DeleteParams) =>          Promise<void>;
 }
 
-type GetOneParams = {
+type GetStatusParams = {
   user_id:   string;
   friend_id: string;
 };
@@ -120,10 +120,8 @@ type DeleteParams = {
   friend_id: string;
 };
 
-type Friendship = RowDataPacket & {
-  user_id:   string;
-  friend_id: string;
-  status:    string;
+type StatusData = RowDataPacket & {
+  status: string;
 };
 
 type FriendView = RowDataPacket & {
