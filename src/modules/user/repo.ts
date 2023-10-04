@@ -96,7 +96,7 @@ type PasswordData = RowDataPacket & {
   password: string;
 };
 
-type UserData = RowDataPacket & {
+export type UserData = RowDataPacket & {
   user_id:           string;
   email:             string;
   username:          string;
