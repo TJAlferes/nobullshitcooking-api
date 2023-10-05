@@ -110,7 +110,7 @@ export class UserService {
     if (user_id === UNKNOWN_USER_ID) throw new Error("Forbidden.");
 
     const imageRepo = new ImageRepo();
-    //await imageRepo.unattributeAll(user_id);  // ???
+    await imageRepo.unattributeAll(user_id);
     await imageRepo.deleteAll(user_id);
 
     const planRepo = new PlanRepo();

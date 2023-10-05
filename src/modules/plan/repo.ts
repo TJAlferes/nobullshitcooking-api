@@ -83,8 +83,7 @@ export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
     await this.pool.execute(sql, params);
   }
 
-  // TO DO: change this name. you're not actually disowning, you're unauthoring
-  async disownAll(author_id: string) {
+  async unattributeAll(author_id: string) {
     // TO DO: move to service
     if (author_id === NOBSC_USER_ID || author_id === UNKNOWN_USER_ID) {
       return;
@@ -101,8 +100,7 @@ export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
     await this.pool.execute(sql, {unknown_user_id, author_id, owner_id});
   }
 
-  // TO DO: change this name. you're not actually disowning, you're unauthoring
-  async disownOne({ author_id, plan_id }: DisownOneParams) {
+  async unattributeOne({ author_id, plan_id }: UnattributeOneParams) {
     // TO DO: move to service
     if (author_id === NOBSC_USER_ID || author_id === UNKNOWN_USER_ID) {
       return;
@@ -122,6 +120,11 @@ export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
     await this.pool.execute(sql, {unknown_user_id, author_id, owner_id, plan_id});
   }
 
+  async deleteAll(owner_id: string) {
+    const sql = `DELETE FROM plan WHERE owner_id = ?`;
+    await this.pool.execute(sql, owner_id);
+  }
+
   async deleteOne(params: DeleteOneParams) {
     const sql = `
       DELETE FROM plan
@@ -138,8 +141,9 @@ export interface PlanRepoInterface {
   viewOneByPlanName: (params: ViewOneByPlanNameParams) => Promise<PlanView>; 
   insert:            (params: InsertParams) =>            Promise<void>;
   update:            (params: UpdateParams) =>            Promise<void>;
-  disownAll:         (author_id: string) =>               Promise<void>;
-  disownOne:         (params: DisownOneParams) =>         Promise<void>;
+  unattributeAll:    (author_id: string) =>               Promise<void>;
+  unattributeOne:    (params: UnattributeOneParams) =>    Promise<void>;
+  deleteAll:         (owner_id: string) =>                Promise<void>;
   deleteOne:         (params: DeleteOneParams) =>         Promise<void>;
 }
 
@@ -180,7 +184,7 @@ type UpdateParams = {
   plan_id:   string;
 };
 
-type DisownOneParams = {
+type UnattributeOneParams = {
   author_id: string;
   plan_id:   string;
 };

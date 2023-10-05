@@ -37,21 +37,15 @@ export const userAuthenticationController = {
   },
 
   async login(req: Request, res: Response) {
-    const loggedIn = req.session.user_id!;
-    if (loggedIn) {
-      return res.json({message: 'Already logged in.'});
-    }
+    const loggedIn = req.session.user_id;
+    if (loggedIn) return res.status(409);
     
     const { email, password } = req.body;
 
     const repo    = new UserRepo();
     const service = new UserAuthenticationService(repo);
 
-    const { user_id, username } = await service.login({
-      email,
-      password,
-      session: req.session
-    });
+    const { user_id, username } = await service.login({email, password});
 
     // get initial user data
 
@@ -100,6 +94,9 @@ export const userAuthenticationController = {
       chatgroupRepo.viewAll(user_id)
     ]);
 
+    req.session.user_id  = user_id;
+    req.session.username = username;
+
     return res.status(201).json({
       auth_id: user_id,
       auth_email: email,
@@ -118,7 +115,7 @@ export const userAuthenticationController = {
   },
 
   async logout(req: Request, res: Response) {
-    const session_id = req.session.id;
+    const session_id = req.session.user_id!;
 
     req.session!.destroy(() => {
       // disconnect all Socket.IO connections linked to this session ID

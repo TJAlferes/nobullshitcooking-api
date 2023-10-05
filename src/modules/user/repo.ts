@@ -100,7 +100,7 @@ export type UserData = RowDataPacket & {
   user_id:           string;
   email:             string;
   username:          string;
-  confirmation_code: string;
+  confirmation_code: string | null;
 };
 
 type InsertParams = {

@@ -227,6 +227,11 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
     });
   }
 
+  async deleteAll(owner_id: string) {
+    const sql = `DELETE FROM ingredient WHERE owner_id = ?`;
+    await this.pool.execute(sql, owner_id);
+  }
+
   async deleteOne(params: DeleteOneParams) {
     const sql = `
       DELETE FROM ingredient
@@ -245,6 +250,7 @@ export interface IngredientRepoInterface {
   viewOne:     (params: ViewOneParams) =>        Promise<IngredientView>;
   insert:      (params: InsertParams) =>         Promise<void>;
   update:      (params: InsertParams) =>         Promise<void>;
+  deleteAll:   (owner_id: string) =>             Promise<void>;
   deleteOne:   (params: DeleteOneParams) =>      Promise<void>;
 }
 

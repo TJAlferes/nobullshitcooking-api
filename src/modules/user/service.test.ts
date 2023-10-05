@@ -33,7 +33,6 @@ describe('UserService', () => {
   let userService: UserService;
 
   beforeEach(() => {
-
     userRepoMock = {
       getPassword: jest.fn(),
       getByUserId: jest.fn(),
@@ -164,7 +163,8 @@ describe('UserService', () => {
   });
 
   describe('delete method', () => {
-    imageRepoMock.deleteOne.mockResolvedValue();
+    imageRepoMock.unattributeAll.mockResolvedValue();
+    imageRepoMock.deleteAll.mockResolvedValue();
     planRepoMock.unattributeAll.mockResolvedValue();
     planRepoMock.deleteAll.mockResolvedValue();
     recipeRepoMock.unattributeAll.mockResolvedValue();

@@ -9,7 +9,7 @@ export const userController = {
     const userService = new UserService(userRepo);
     await userService.create(req.body);
 
-    return res.status(201).json({message: 'User account created.'});
+    return res.status(201);
   },
   
   async updateEmail(req: Request, res: Response) {

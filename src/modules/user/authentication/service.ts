@@ -1,6 +1,5 @@
 import bcrypt from 'bcrypt';
 
-import { ModifiedSession }       from '../../../app';
 import { UUIDv7StringId }        from '../../shared/model';
 import { emailUser }             from '../shared/simple-email-service';
 import { Email, Password, User } from '../model';
@@ -17,6 +16,7 @@ export class UserAuthenticationService {
   async isUserConfirmed(email: string) {
     const validEmail = Email(email);
     const user = await this.repo.getByEmail(validEmail);
+    if (!user) throw new Error("User does not exist.");
     return user.confirmation_code === null;
   }
 
@@ -31,45 +31,46 @@ export class UserAuthenticationService {
     const password = Password(params.password);
 
     const currentHash = await this.repo.getPassword(email);
+    if (!currentHash) throw new Error("Incorrect email or password.");
+
     const correctPassword = await bcrypt.compare(password, currentHash);
-    if (!correctPassword) {
-      throw new Error("Incorrect email or password.");
-    }
+    if (!correctPassword) throw new Error("Incorrect email or password.");
   }
 
   async doesUserExist(email: string) {
     const validEmail = Email(email);
     const user = await this.repo.getByEmail(validEmail);
-    if (!user) {
-      throw new Error("Incorrect email or password.");
-    }
+    if (!user) throw new Error("Incorrect email or password.");
     return user;
   }
 
   async confirm(confirmation_code: string) {
     const code = UUIDv7StringId(confirmation_code);
-    if (!code) {
-      throw new Error("An issue occurred, please double check your info and try again.");
-    }
 
     const existingUser = await this.repo.getByConfirmationCode(code);
+    if (!existingUser) {
+      throw new Error("An issue occurred, please double check your info and try again.");
+    }
 
     if (null === existingUser.confirmation_code) {
       throw new Error("Already confirmed.");
     }
-
+    
     if (code !== existingUser.confirmation_code) {
       throw new Error("An issue occurred, please double check your info and try again.");
     }
 
     const password = await this.repo.getPassword(existingUser.email);
+    if (!password) {
+      throw new Error("An issue occurred, please double check your info and try again.");
+    }
 
     const user = User.update({
       user_id:           existingUser.user_id,
       email:             existingUser.email,
       password,
       username:          existingUser.username,
-      confirmation_code: null
+      confirmation_code: null  // setting their code to null confirms them
     }).getDTO();
 
     await this.repo.update(user);
@@ -103,9 +104,7 @@ export class UserAuthenticationService {
     const user = await this.doesUserExist(email);
 
     const confirmed = await this.isUserConfirmed(email);
-    if (confirmed) {
-      throw new Error("Already confirmed.");
-    }
+    if (confirmed) throw new Error("Already confirmed.");
 
     await this.isCorrectPassword({email, password});
   
@@ -115,7 +114,7 @@ export class UserAuthenticationService {
     });
   }
 
-  async login({ email, password, session }: LoginParams) {
+  async login({ email, password }: LoginParams) {
     const { user_id, username } = await this.doesUserExist(email);
 
     const confirmed = await this.isUserConfirmed(email);
@@ -124,9 +123,6 @@ export class UserAuthenticationService {
     }
 
     await this.isCorrectPassword({email, password});
-
-    session.user_id  = user_id;
-    session.username = username;
   
     return {
       user_id,
@@ -153,5 +149,4 @@ type IsCorrectPasswordParams = {
 type LoginParams = {
   email:    string;
   password: string;
-  session:  ModifiedSession;
 };

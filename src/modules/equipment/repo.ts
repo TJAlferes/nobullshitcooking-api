@@ -180,6 +180,11 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
     });
   }
 
+  async deleteAll(owner_id: string) {
+    const sql = `DELETE FROM equipment WHERE owner_id = ?`;
+    await this.pool.execute(sql, owner_id);
+  }
+
   async deleteOne(params: DeleteOneParams) {
     const sql = `
       DELETE FROM equipment
@@ -198,6 +203,7 @@ export interface EquipmentRepoInterface {
   viewOne:     (params: ViewOneParams) =>         Promise<EquipmentView>;
   insert:      (params: InsertParams) =>          Promise<void>;
   update:      (params: UpdateParams) =>          Promise<void>;
+  deleteAll:   (owner_id: string) =>              Promise<void>;
   deleteOne:   (params: DeleteOneParams) =>       Promise<void>;
 }
 
