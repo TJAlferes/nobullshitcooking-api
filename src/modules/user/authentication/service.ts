@@ -17,7 +17,7 @@ export class UserAuthenticationService {
     const validEmail = Email(email);
     const user = await this.repo.getByEmail(validEmail);
     if (!user) throw new Error("User does not exist.");
-    return user.confirmation_code === null;
+    return null === user.confirmation_code;
   }
 
   async hashPassword(password: string) {
@@ -55,7 +55,7 @@ export class UserAuthenticationService {
     if (null === existingUser.confirmation_code) {
       throw new Error("Already confirmed.");
     }
-    
+
     if (code !== existingUser.confirmation_code) {
       throw new Error("An issue occurred, please double check your info and try again.");
     }
@@ -110,7 +110,7 @@ export class UserAuthenticationService {
   
     await this.sendConfirmationCode({
       email:             user.email,
-      confirmation_code: user.confirmation_code
+      confirmation_code: user.confirmation_code!
     });
   }
 

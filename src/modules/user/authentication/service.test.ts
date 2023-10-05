@@ -1,8 +1,9 @@
 import { UserAuthenticationService } from "./service";
+import { emailUser } from "../shared/simple-email-service";
 import type { UserRepoInterface, UserData } from "../repo";
 
 jest.mock('../shared/simple-email-service');
-jest.mock('./repo');
+jest.mock('../repo');
 
 const confirmation_code = "99999999-9999-9999-9999-999999999999";
 const userData = {
@@ -13,10 +14,12 @@ const userData = {
 } as UserData;
 
 describe('UserAuthenticationService', () => {
+  let emailUserMock: jest.Mocked<typeof emailUser>;
   let userRepoMock: jest.Mocked<UserRepoInterface>;
   let service: UserAuthenticationService;
 
   beforeEach(() => {
+    emailUserMock = emailUser as unknown as jest.Mocked<typeof emailUser>;
     userRepoMock = {
       getPassword: jest.fn(),
       getByUserId: jest.fn(),
@@ -32,18 +35,6 @@ describe('UserAuthenticationService', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
-  });
-
-  describe('isUserConfirmed method', () => {
-
-  });
-
-  describe('isCorrectPassword method', () => {
-
-  });
-
-  describe('doesUserExist method', () => {
-
   });
 
   describe('confirm method', () => {
@@ -111,64 +102,120 @@ describe('UserAuthenticationService', () => {
   });
 
   describe('resendConfirmationCode method', () => {
-    it('handles when email does not exist', () => {
-      const userInfo = {email: "person@person.com", pass: "Password99$"};
-      const message = 'Incorrect email or password.';
-        mockgetByEmail = jest.fn().mockResolvedValue([]);
-        const actual =
-          await controller.resendConfirmationCode(<Request>req, <Response>res);
-        expect(res.send).toHaveBeenCalledWith({message});
-        expect(actual).toEqual({message});
+    const params = {
+      email: "username@nobsc.com",
+      password: "password"
+    };
+    
+    it('handles when user does not exist', async () => {
+      userRepoMock.getByEmail.mockResolvedValue(undefined);
+      try {
+        await service.resendConfirmationCode(params);
+      } catch (err: any) {
+        expect(err.message).toBe("User does not exist.");
+      }
+      expect(emailUserMock).not.toHaveBeenCalled();
     });
 
-    it('handles when password is incorrect', () => {
-      const userInfo =
-        {email: "person@person.com", pass: "WrongPassword99$"};
-      const message = 'Incorrect email or password.';
-        mockgetByEmail = jest.fn().mockResolvedValue([{
-          email: "person@person.com",
-          pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
-          confirmation_code: "123XYZ"
-        }]);
-        mockBcrypt.compare.mockResolvedValue(false);
-        const actual =
-          await controller.resendConfirmationCode(<Request>req, <Response>res);
-        expect(res.send).toHaveBeenCalledWith({message});
-        expect(actual).toEqual({message});
+    it('handles when already confirmed', async () => {
+      const userData = {
+        user_id: "99999999-9999-9999-9999-999999999999",
+        email: "username@nobsc.com",
+        username: "username",
+        confirmation_code: null  // null means they're already confirmed
+      } as UserData;
+      userRepoMock.getByEmail.mockResolvedValue(userData);
+
+      try {
+        await service.resendConfirmationCode(params);
+      } catch (err: any) {
+        expect(err.message).toBe("Already confirmed.");
+      }
+      expect(emailUserMock).not.toHaveBeenCalled();
     });
 
-    it('handles when already confirmed', () => {
-      const userInfo = {email: "person@person.com", pass: "Password99$"};
-      const message = 'Already verified.';
-        mockgetByEmail = jest.fn().mockResolvedValue([{
-          email: "person@person.com",
-          pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
-          confirmation_code: null
-        }]);
-        mockBcrypt.compare.mockResolvedValue(true);
-        const actual =
-          await controller.resendConfirmationCode(<Request>req, <Response>res);
-        expect(res.send).toHaveBeenCalledWith({message});
-        expect(actual).toEqual({message});
+    it('handles when password is incorrect', async () => {
+      userRepoMock.getByEmail.mockResolvedValue(userData);
+      userRepoMock.getPassword.mockResolvedValue("differentpassword");
+      try {
+        await service.resendConfirmationCode(params);
+      } catch (err: any) {
+        expect(err.message).toBe("Incorrect email or password.");
+      }
+      expect(emailUserMock).not.toHaveBeenCalled();
     });
 
-    it('handles success', () => {
-      const userInfo = {email: "person@person.com", pass: "Password99$"};
-      const message = 'Confirmation code re-sent.';
-        mockgetByEmail = jest.fn().mockResolvedValue([{
-          email: "person@person.com",
-          pass: "$2b$10$Bczm6Xs42fSsshB.snY1muuYWmnwylbDRN0r.AMAPihGDI4nJHB9u",
-          confirmation_code: "123XYZ"
-        }]);
-        mockBcrypt.compare.mockResolvedValue(true);
-        const actual =
-          await controller.resendConfirmationCode(<Request>req, <Response>res);
-        expect(res.send).toHaveBeenCalledWith({message});
-        expect(actual).toEqual({message});
+    it('handles success', async () => {
+      userRepoMock.getByEmail.mockResolvedValue(userData);
+      userRepoMock.getPassword.mockResolvedValue("password");
+      try {
+        await service.resendConfirmationCode(params);
+      } catch (err: any) {
+        throw err;  // fail the test
+      }
+      expect(emailUserMock).toHaveBeenCalled();
     });
   });
 
   describe('login method', () => {
-  
+    const params = {
+      email: "username@nobsc.com",
+      password: "password"
+    };
+    
+    it('handles when user does not exist', async () => {
+      userRepoMock.getByEmail.mockResolvedValue(undefined);
+      try {
+        await service.login(params);
+      } catch (err: any) {
+        expect(err.message).toBe("User does not exist.");
+      }
+    });
+
+    it('handles when user has not confirmed', async () => {
+      userRepoMock.getByEmail.mockResolvedValue(userData);
+      userRepoMock.getPassword.mockResolvedValue("password");
+      try {
+        await service.login(params);
+      } catch (err: any) {
+        expect(err.message).toBe("Please check your email for your confirmation code.");
+      }
+    });
+
+    it('handles when password is incorrect', async () => {
+      const userData = {
+        user_id: "99999999-9999-9999-9999-999999999999",
+        email: "username@nobsc.com",
+        username: "username",
+        confirmation_code: null
+      } as UserData;
+      userRepoMock.getByEmail.mockResolvedValue(userData);
+      userRepoMock.getPassword.mockResolvedValue("differentpassword");
+
+      try {
+        await service.login(params);
+      } catch (err: any) {
+        expect(err.message).toBe("Incorrect email or password.");
+      }
+    });
+
+    it('handles success', async () => {
+      const userData = {
+        user_id: "99999999-9999-9999-9999-999999999999",
+        email: "username@nobsc.com",
+        username: "username",
+        confirmation_code: null
+      } as UserData;
+      userRepoMock.getByEmail.mockResolvedValue(userData);
+      userRepoMock.getPassword.mockResolvedValue("password");
+      
+      try {
+        const { user_id, username } = await service.login(params);
+        expect(user_id).toEqual(userData.user_id);
+        expect(username).toEqual(userData.username);
+      } catch (err: any) {
+        throw err;  // fail the test
+      }
+    });
   });
 });
