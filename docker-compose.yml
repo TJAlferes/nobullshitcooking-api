@@ -29,7 +29,7 @@ services:
     ports:
       - "6379:6379"
 
-  nobsc-api-dev:
+  nobsc-dev:
     build:
       context: .
       dockerfile: Dockerfile.dev

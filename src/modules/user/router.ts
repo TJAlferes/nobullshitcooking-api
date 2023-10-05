@@ -27,7 +27,7 @@ export function userRouter() {
   router.use('/:username/private-plans', privatePlanRouter());
   router.use('/:username/private-recipes', privateRecipeRouter());
   router.use('/:username/saved-recipes', savedRecipeRouter());
-  router.use('/friendship', friendshipRouter());
+  router.use('/:username/friendships', friendshipRouter());
   router.use('/signed-url', signedUrlRouter());  // MOVE up into main router???
 
   router.post(

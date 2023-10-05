@@ -6,7 +6,7 @@ import { friendshipController as controller } from './controller';
 
 const router = Router();
 
-// for /user/friendship/...
+// for /users/:username/friendships/:friendname
 
 export function friendshipRouter() {
   router.get(

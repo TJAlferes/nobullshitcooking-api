@@ -1,61 +1,61 @@
-name: CI/CD
-
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [14.x]
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-
-    - name: Cache dependencies
-      uses: actions/cache@v2
-      with:
-        path: |
-          **/node_modules
-        key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-
-    - run: npm install
-
-    #- run: npm run test -- --coverage --watchAll=false
-    
-    - run: docker-compose -f docker-compose.test.yml down
-    - run: sleep 10s
-    #- run: docker system prune --all --force --volumes
-    #- run: sleep 10s
-    - run: docker-compose -f docker-compose.test.yml up --build -d mysql-test
-    - run: sleep 50s
-    - run: docker cp ./dbdata/create.sql nobullshitcooking-api_mysql-test_1:create.sql
-    - run: docker cp ./dbdata/insert.sql nobullshitcooking-api_mysql-test_1:insert.sql
-    - run: sleep 3s
-    - run: docker exec nobullshitcooking-api_mysql-test_1 /bin/sh -c 'mysql -u root -ppass </create.sql'
-    - run: sleep 3s
-    - run: docker exec nobullshitcooking-api_mysql-test_1 /bin/sh -c 'mysql -u root -ppass </insert.sql'
-    - run: sleep 10s
-    - run: docker exec nobullshitcooking-api_mysql-test_1 /bin/sh -c 'exit'
-    - run: docker-compose -f docker-compose.test.yml down
-    - run: sleep 10s
-    - run: docker-compose -f docker-compose.test.yml up --build --exit-code-from nobsc-api-test
-
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v1
-      with:
-        directory: ./coverage/
-        name: codecov-umbrella
-        #fail_ci_if_error: true
-
-    timeout-minutes: 10
+#name: CI/CD
+#
+#on:
+#  push:
+#    branches: [ master ]
+#  pull_request:
+#    branches: [ master ]
+#
+#jobs:
+#  build:
+#    runs-on: ubuntu-latest
+#
+#    strategy:
+#      matrix:
+#        node-version: [14.x]
+#
+#    steps:
+#    - uses: actions/checkout@v2
+#
+#    - name: Use Node.js ${{ matrix.node-version }}
+#      uses: actions/setup-node@v1
+#      with:
+#        node-version: ${{ matrix.node-version }}
+#
+#    - name: Cache dependencies
+#      uses: actions/cache@v2
+#      with:
+#        path: |
+#          **/node_modules
+#        key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+#
+#    - run: npm install
+#
+#    #- run: npm run test -- --coverage --watchAll=false
+#    
+#    - run: docker-compose -f docker-compose.test.yml down
+#    - run: sleep 10s
+#    #- run: docker system prune --all --force --volumes
+#    #- run: sleep 10s
+#    - run: docker-compose -f docker-compose.test.yml up --build -d mysql-test
+#    - run: sleep 50s
+#    - run: docker cp ./dbdata/create.sql nobullshitcooking-api_mysql-test_1:create.sql
+#    - run: docker cp ./dbdata/insert.sql nobullshitcooking-api_mysql-test_1:insert.sql
+#    - run: sleep 3s
+#    - run: docker exec nobullshitcooking-api_mysql-test_1 /bin/sh -c 'mysql -u root -ppass </create.sql'
+#    - run: sleep 3s
+#    - run: docker exec nobullshitcooking-api_mysql-test_1 /bin/sh -c 'mysql -u root -ppass </insert.sql'
+#    - run: sleep 10s
+#    - run: docker exec nobullshitcooking-api_mysql-test_1 /bin/sh -c 'exit'
+#    - run: docker-compose -f docker-compose.test.yml down
+#    - run: sleep 10s
+#    - run: docker-compose -f docker-compose.test.yml up --build --exit-code-from nobsc-api-test
+#
+#    - name: Upload coverage to Codecov
+#      uses: codecov/codecov-action@v1
+#      with:
+#        directory: ./coverage/
+#        name: codecov-umbrella
+#        #fail_ci_if_error: true
+#
+#    timeout-minutes: 10

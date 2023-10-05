@@ -5,6 +5,7 @@ services:
   mysql-test:
     image: mysql:latest
     volumes:
+      - ./init:/docker-entrypoint-initdb.d
       - mysql-test:/var/lib/mysql
     command: mysqld --default-authentication-plugin=caching_sha2_password
     #command: --disable-partition-engine-check
@@ -28,10 +29,10 @@ services:
     ports:
       - "6379:6379"
   
-  nobsc-api-test:
+  nobsc-test:
     build:
       context: .
-      dockerfile: ./Dockerfile.test
+      dockerfile: Dockerfile.test
     depends_on:
       mysql-test:
         condition: service_healthy
@@ -40,7 +41,7 @@ services:
     #env_file: .env
     environment:
       NODE_ENV: test
-      NODE_PATH: /api/node_modules
+      NODE_PATH: /app/node_modules
       PORT: 3003
       TEST_MYSQL_URI: mysql://root:password@localhost:3306/nobsc
       TEST_MYSQL_HOST: mysql-test
