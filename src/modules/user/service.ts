@@ -11,7 +11,7 @@ export class UserService {
   }
 
   async create(params: CreateParams) {
-    const { hashPassword } = new UserAuthenticationService(this.repo);
+    const { hashPassword, sendConfirmationCode } = new UserAuthenticationService(this.repo);
     const encryptedPassword = await hashPassword(params.password);
 
     const user = User.create({
@@ -22,7 +22,7 @@ export class UserService {
 
     const emailExists = await this.repo.getByEmail(user.email);
     if (emailExists) {
-      throw new Error("Email already in use.");  // throw in this layer? or return json?
+      throw new Error("Email already in use.");
     }
 
     const usernameExists = await this.repo.getByUsername(user.username);
@@ -37,8 +37,7 @@ export class UserService {
       username:          user.username,
       confirmation_code: user.confirmation_code!
     });
-
-    const { sendConfirmationCode } = new UserAuthenticationService(this.repo);
+    
     await sendConfirmationCode({
       email:             user.email,
       confirmation_code: user.confirmation_code!
