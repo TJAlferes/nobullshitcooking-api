@@ -22,7 +22,7 @@ export const userAuthenticationController = {
 
     await service.confirm(confirmation_code);
 
-    return res.send({message: 'User account confirmed.'});
+    return res.status(204);
   },
 
   async resendConfirmationCode(req: Request, res: Response) {
@@ -33,7 +33,7 @@ export const userAuthenticationController = {
 
     await service.resendConfirmationCode({email, password});
 
-    return res.send({message: 'Confirmation code re-sent.'});
+    return res.status(204);
   },
 
   async login(req: Request, res: Response) {

@@ -1,13 +1,13 @@
 import type { Request, Response } from 'express';
-import type { ModifiedSession } from '../../../../src/app';
 
-import { friendshipController as controller } from '../../../../src/modules/user/friendship/controller';
-import { FriendshipRepo } from '../../../../src/modules/user/friendship/repo';
-import { UserRepo } from '../../../../src/modules/user/repo';
-import type { UserData } from '../../../../src/modules/user/repo';
+import { friendshipController as controller } from './controller';
+import { FriendshipRepo } from './repo';
+import { UserRepo } from '../repo';
+import type { UserData } from '../repo';
+import type { ModifiedSession } from '../../../app';
 
-jest.mock('../../../../src/modules/user/friendship/repo');
-jest.mock('../../../../src/modules/user/repo');
+jest.mock('./repo');
+jest.mock('../repo');
 
 const friendshipRepoMock = FriendshipRepo as unknown as jest.Mocked<FriendshipRepo>;
 const userRepoMock = UserRepo as unknown as jest.Mocked<UserRepo>;
