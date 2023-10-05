@@ -235,8 +235,7 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
     if (!result) throw new Error('Query not successful.');
   }
 
-  // TO DO: change this name. you're not actually disowning, you're unauthoring
-  async disownAll(author_id: string) {
+  async unattributeAll(author_id: string) {
     // TO DO: move to service
     if (author_id === NOBSC_USER_ID || author_id === UNKNOWN_USER_ID) {
       return;
@@ -260,8 +259,7 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
     if (!result) throw new Error('Query not successful.');
   }
 
-  // TO DO: change this name. you're not actually disowning, you're unauthoring
-  async disownOne({ author_id, recipe_id }: DisownOneParams) {
+  async unattributeOne({ author_id, recipe_id }: UnattributeOneParams) {
     // TO DO: move to service
     if (author_id === NOBSC_USER_ID || author_id === UNKNOWN_USER_ID) {
       return;
@@ -286,6 +284,10 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
     });
     if (!result) throw new Error('Query not successful.');
   }
+
+  async deleteAll(owner_id: string) {
+
+  }
   
   async deleteOne({ owner_id, recipe_id }: DeleteOneParams) {
     const sql = `
@@ -308,8 +310,9 @@ export interface RecipeRepoInterface {
   viewOneByTitle:        (params: ViewOneByTitleParams) =>    Promise<RecipeView>;
   insert:                (params: InsertParams) =>            Promise<void>;
   update:                (params: UpdateParams) =>            Promise<void>;
-  disownAll:             (author_id: string) =>               Promise<void>;
-  disownOne:             (params: DisownOneParams) =>         Promise<void>;
+  unattributeAll:        (author_id: string) =>               Promise<void>;
+  unattributeOne:        (params: UnattributeOneParams) =>    Promise<void>;
+  deleteAll:             (owner_id: string) =>                Promise<void>;
   deleteOne:             (params: DeleteOneParams) =>         Promise<void>;
 }
 
@@ -420,7 +423,7 @@ export type InsertParams = {
 
 type UpdateParams = InsertParams;
 
-type DisownOneParams = {
+type UnattributeOneParams = {
   recipe_id: string;
   author_id: string;
 };

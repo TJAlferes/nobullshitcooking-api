@@ -1,6 +1,11 @@
+import { ImageRepo } from '../image/repo';
+import { PlanRepo } from '../plan/repo';
+import { RecipeRepo } from '../recipe/repo';
+import { EquipmentRepo } from '../equipment/repo';
+import { IngredientRepo } from '../ingredient/repo';
 import { NOBSC_USER_ID, UNKNOWN_USER_ID } from '../shared/model';
-import { User }                      from './model';
-import { UserRepoInterface }         from './repo';
+import { User } from './model';
+import { UserRepoInterface } from './repo';
 import { UserAuthenticationService } from './authentication/service';
 
 export class UserService {
@@ -46,14 +51,14 @@ export class UserService {
 
   async updateEmail({ user_id, new_email }: UpdateEmailParams) {
     const existingUser = await this.repo.getByUserId(user_id);
-    if (!existingUser) return;
+    if (!existingUser) throw new Error("User does not exist.");
 
     const password = await this.repo.getPassword(existingUser.email);
     
     const user = User.update({
       user_id,
       email:             new_email,  // the update
-      password,
+      password:          password!,
       username:          existingUser.username,
       confirmation_code: existingUser.confirmation_code
     }).getDTO();
@@ -63,7 +68,7 @@ export class UserService {
 
   async updatePassword({ user_id, new_password }: UpdatePasswordParams) {
     const existingUser = await this.repo.getByUserId(user_id);
-    if (!existingUser) return;
+    if (!existingUser) throw new Error("User does not exist.");
 
     const { hashPassword } = new UserAuthenticationService(this.repo);
     const encryptedPassword = await hashPassword(new_password);
@@ -81,14 +86,14 @@ export class UserService {
 
   async updateUsername({ user_id, new_username }: UpdateUsernameParams) {
     const existingUser = await this.repo.getByUserId(user_id);
-    if (!existingUser) return;
+    if (!existingUser) throw new Error("User does not exist.");
 
     const password = await this.repo.getPassword(existingUser.email);
     
     const user = User.update({
       user_id,
       email:             existingUser.email,
-      password,
+      password:          password!,
       username:          new_username,  // the update
       confirmation_code: existingUser.confirmation_code
     }).getDTO();
@@ -99,22 +104,28 @@ export class UserService {
   //async recoverAccount() {}
 
   async delete(user_id: string) {
-    if (user_id === NOBSC_USER_ID) return;    // IMPORTANT: Never allow this user to be deleted.
-    if (user_id === UNKNOWN_USER_ID) return;  // IMPORTANT: Never allow this user to be deleted.
+    // IMPORTANT: Never allow this user to be deleted.
+    if (user_id === NOBSC_USER_ID) throw new Error("Forbidden.");
+    // IMPORTANT: Never allow this user to be deleted.
+    if (user_id === UNKNOWN_USER_ID) throw new Error("Forbidden.");
 
-    const owner_id = user_id;
-
+    const imageRepo = new ImageRepo();
+    //await imageRepo.unattributeAll(user_id);  // ???
     await imageRepo.deleteAll(user_id);
-    await planRepo.deleteAll(user_id);  // before or after recipes???
-    await planRepo.deleteAll(user_id);  // before or after recipes???
 
-    await recipeRepo.disownAllByAuthorId(user_id);  // ???
-    await recipeRepo.deleteAllByOwnerId(user_id);  // CAREFUL! Double check this.
+    const planRepo = new PlanRepo();
+    await planRepo.unattributeAll(user_id);
+    await planRepo.deleteAll(user_id);
 
-    await Promise.all([
-      equipmentRepo.deleteAll(user_id),
-      ingredientRepo.deleteAll(user_id)
-    ]);
+    const recipeRepo = new RecipeRepo();
+    await recipeRepo.unattributeAll(user_id);
+    await recipeRepo.deleteAll(user_id);
+
+    const equipmentRepo = new EquipmentRepo();
+    await equipmentRepo.deleteAll(user_id);
+
+    const ingredientRepo = new IngredientRepo();
+    await ingredientRepo.deleteAll(user_id);
 
     await this.repo.delete(user_id);
   }

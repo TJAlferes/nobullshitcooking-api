@@ -100,8 +100,7 @@ export const userAuthenticationController = {
       chatgroupRepo.viewAll(user_id)
     ]);
 
-    return res.json({
-      message: 'Logged in.',
+    return res.status(201).json({
       auth_id: user_id,
       auth_email: email,
       authname: username,
