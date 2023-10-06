@@ -7,13 +7,12 @@ export class RecipeEquipment {
 
   private constructor(params: ConstructorParams) {
     this.recipe_id    = UUIDv7StringId(params.recipe_id);
-    this.amount       = params.amount ? Amount(params.amount) : undefined;  // ???
+    this.amount       = params.amount ? Amount(params.amount) : null;
     this.equipment_id = UUIDv7StringId(params.equipment_id);
   }
 
   static create(params: CreateParams) {
-    const recipeEquipment = new RecipeEquipment(params);
-    return recipeEquipment;
+    return new RecipeEquipment(params);
   }
 
   getDTO() {
@@ -27,7 +26,7 @@ export class RecipeEquipment {
 
 type CreateParams = {
   recipe_id:    string;
-  amount?:      number;  // ???
+  amount:       number | null;
   equipment_id: string;
 };
 

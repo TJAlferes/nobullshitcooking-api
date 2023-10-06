@@ -127,6 +127,8 @@ export class UserService {
     const ingredientRepo = new IngredientRepo();
     await ingredientRepo.deleteAll(user_id);
 
+    //delete their chatgroups???
+
     await this.repo.delete(user_id);
   }
 }

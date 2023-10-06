@@ -68,7 +68,7 @@ export const userAuthenticationController = {
       my_private_plans,
       my_private_recipes,
       my_saved_recipes,
-      my_chatgroups
+      //my_chatgroups
     ] = await Promise.all([
       friendshipRepo.viewAll(user_id),
       planRepo.overviewAll({
@@ -91,7 +91,7 @@ export const userAuthenticationController = {
         owner_id:  user_id
       }),
       savedRecipeRepo.viewByUserId(user_id),
-      chatgroupRepo.viewAll(user_id)
+      //chatgroupRepo.viewAll(user_id)
     ]);
 
     req.session.user_id  = user_id;
@@ -110,7 +110,7 @@ export const userAuthenticationController = {
       my_private_plans,
       my_private_recipes,
       my_saved_recipes,
-      my_chatgroups
+      my_chatgroups: []
     });
   },
 

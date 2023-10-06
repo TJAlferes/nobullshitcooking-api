@@ -9,7 +9,7 @@ export function chatController(socket: Socket) {
       const friendshipRepo = new FriendshipRepo();
 
       const acceptedFriends = await friendshipRepo.viewAllOfStatus({user_id, status: "accepted"});
-      if (!acceptedFriends) return;
+      if (acceptedFriends.length < 1) return;
     
       const chatuserRepo = new ChatUserRepo();
       const friends = [];

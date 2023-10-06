@@ -16,13 +16,7 @@ interface MockRequest extends Request {
   session: ModifiedSession;
 }
 
-describe('friendship controller', () => {
-  /*const user1Data = {
-    user_id: '1',
-    email: 'user1@nobsc.com',
-    username: "user1",
-    confirmation_code: "1"
-  };*/
+describe('friendshipController', () => {
   const user2Data = {
     user_id: '2',
     email: 'user2@nobsc.com',

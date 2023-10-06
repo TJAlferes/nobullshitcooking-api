@@ -9,13 +9,13 @@ const router = Router();
 // for /methods
 
 export function methodRouter() {
-  router.get('/', catchExceptions(controller.viewAll));
-  
   router.get(
     '/:method_id',
     [param('method_id').not().isEmpty().trim().escape()],
     catchExceptions(controller.viewOne)
   );
+
+  router.get('/', catchExceptions(controller.viewAll));
 
   return router;
 }

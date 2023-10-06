@@ -1,15 +1,15 @@
-import { RecipeEquipment }      from "./model";
-import { IRecipeEquipmentRepo } from "./repo";
+import { RecipeEquipment } from "./model";
+import { RecipeEquipmentRepoInterface } from "./repo";
 
 export class RecipeEquipmentService {
-  repo: IRecipeEquipmentRepo;
+  repo: RecipeEquipmentRepoInterface;
 
-  constructor(repo: IRecipeEquipmentRepo) {
+  constructor(repo: RecipeEquipmentRepoInterface) {
     this.repo = repo;
   }
 
-  async create({ recipe_id, required_equipment }: CreateParams) {
-    if (!required_equipment.length) return;
+  async bulkCreate({ recipe_id, required_equipment }: BulkCreateParams) {
+    if (required_equipment.length < 1) return;
 
     const placeholders = '(?, ?, ?),'.repeat(required_equipment.length).slice(0, -1);
 
@@ -17,12 +17,12 @@ export class RecipeEquipmentService {
       RecipeEquipment.create({recipe_id, ...re}).getDTO()
     );
 
-    await this.repo.insert({placeholders, recipe_equipment});
+    await this.repo.bulkInsert({placeholders, recipe_equipment});
   }
 
-  async update({ recipe_id, required_equipment }: UpdateParams) {
-    if (!required_equipment.length) {
-      await this.repo.deleteByRecipeId(recipe_id);
+  async bulkUpdate({ recipe_id, required_equipment }: BulkUpdateParams) {
+    if (required_equipment.length < 1) {
+      await this.repo.deleteByRecipeId(recipe_id);  // ???
       return;
     }
 
@@ -32,18 +32,18 @@ export class RecipeEquipmentService {
       RecipeEquipment.create({recipe_id, ...re}).getDTO()
     );
 
-    await this.repo.update({recipe_id, placeholders, recipe_equipment});
+    await this.repo.bulkUpdate({recipe_id, placeholders, recipe_equipment});
   }
 }
 
-type CreateParams = {
+type BulkCreateParams = {
   recipe_id:          string;
   required_equipment: RequiredEquipment[];
 };
 
-type UpdateParams = CreateParams;
+type BulkUpdateParams = BulkCreateParams;
 
 type RequiredEquipment = {
-  amount?:      number;
+  amount:       number | null;
   equipment_id: string;
 };

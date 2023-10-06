@@ -7,7 +7,7 @@
   "type": "module",
   "main": "src/index.js",
   "scripts": {
-    "dev": "nodemon --watch src -e ts --exec 'npm run build-ts && node dist/index.js'",
+    "dev": "nodemon --watch src -e ts --exec 'npm run build && node dist/index.js'",
     "test": "jest --color --detectOpenHandles",
     "start": "node build/bundle.js",
     "build": "tsc"

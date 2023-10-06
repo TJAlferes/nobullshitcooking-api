@@ -5,15 +5,15 @@ import { NOBSC_USER_ID, UNKNOWN_USER_ID } from '../shared/model';
 import { MySQLRepo }                      from '../shared/MySQL';
 
 export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
-  async viewAll(owner_id: string) {
+  async overviewAll({ author_id, owner_id }: OverviewAllParams) {
     const sql = `
-      SELECT plan_id, plan_name
+      SELECT plan_id, owner_id, plan_name
       FROM plan
-      WHERE owner_id = ?
+      WHERE author_id = ? AND owner_id = ?
     `;
-    const [ rows ] = await this.pool.execute<PlanView[]>(sql, [owner_id]);
+    const [ rows ] = await this.pool.execute<PlanView[]>(sql, [author_id, owner_id]);
     return rows;
-  }
+  }  // for logged in user
 
   async viewOneByPlanId(params: ViewOneByPlanIdParams) {
     const sql = `
@@ -136,7 +136,7 @@ export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
 }
 
 export interface PlanRepoInterface {
-  viewAll:           (owner_id: string) =>                Promise<PlanView[]>;
+  overviewAll:       (params: OverviewAllParams) =>       Promise<PlanOverview[]>;
   viewOneByPlanId:   (params: ViewOneByPlanIdParams) =>   Promise<PlanView>;
   viewOneByPlanName: (params: ViewOneByPlanNameParams) => Promise<PlanView>; 
   insert:            (params: InsertParams) =>            Promise<void>;
@@ -153,10 +153,24 @@ type PlanDayRecipe = {
   img_url:   string;
 };
 
+type PlanOverview = RowDataPacket & {
+  plan_id:   string;
+  owner_id:  string;
+  plan_name: string;
+};
+
 type PlanView = RowDataPacket & {
   plan_id:   string;
+  author_id: string;
+  author:    string;
+  owner_id:  string;
   plan_name: string;
   plan_data: PlanDayRecipe[][];
+};
+
+type OverviewAllParams = {
+  author_id: string;
+  owner_id:  string;
 };
 
 type ViewOneByPlanIdParams = {

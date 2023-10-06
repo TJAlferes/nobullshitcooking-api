@@ -36,7 +36,7 @@ export class FriendshipRepo extends MySQLRepo implements FriendshipRepoInterface
     return row.status;
   }
 
-  async viewAll(user_id: string): Promise<FriendView[] | undefined> {
+  async viewAll(user_id: string) {
     const sql = `
       SELECT u.username, f.status
       FROM friendship f
@@ -49,7 +49,7 @@ export class FriendshipRepo extends MySQLRepo implements FriendshipRepoInterface
     return rows;
   }
 
-  async viewAllOfStatus({ user_id, status }: ViewAllOfStatusParams): Promise<FriendView[] | undefined> {
+  async viewAllOfStatus({ user_id, status }: ViewAllOfStatusParams) {
     const sql = `
       SELECT u.username, f.status
       FROM friendship f
@@ -90,8 +90,8 @@ export class FriendshipRepo extends MySQLRepo implements FriendshipRepoInterface
 
 export interface FriendshipRepoInterface {
   getStatus:       (params: GetStatusParams) =>       Promise<string | undefined>;
-  viewAll:         (user_id: string) =>               Promise<FriendView[] | undefined>;
-  viewAllOfStatus: (params: ViewAllOfStatusParams) => Promise<FriendView[] | undefined>;
+  viewAll:         (user_id: string) =>               Promise<FriendView[]>;
+  viewAllOfStatus: (params: ViewAllOfStatusParams) => Promise<FriendView[]>;
   insert:          (params: InsertParams) =>          Promise<void>;
   update:          (params: UpdateParams) =>          Promise<void>;
   delete:          (params: DeleteParams) =>          Promise<void>;

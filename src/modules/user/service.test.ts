@@ -171,6 +171,7 @@ describe('UserService', () => {
     recipeRepoMock.deleteAll.mockResolvedValue();
     equipmentRepoMock.deleteAll.mockResolvedValue();
     ingredientRepoMock.deleteAll.mockResolvedValue();
+    // delete their chatgroups???
     
     it('handles when user_id is NOBSC_USER_ID', async () => {
       try {

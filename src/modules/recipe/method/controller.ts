@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 import { MethodRepo } from './repo';
 
@@ -7,7 +7,7 @@ export const methodController = {
     const repo = new MethodRepo();
     const rows = await repo.viewAll();
 
-    return res.send(rows);
+    return res.json(rows);
   },
 
   async viewOne(req: Request, res: Response) {
@@ -16,6 +16,6 @@ export const methodController = {
     const repo = new MethodRepo();
     const row = await repo.viewOne(method_id);
 
-    return res.send(row);
+    return res.json(row);
   }
 };

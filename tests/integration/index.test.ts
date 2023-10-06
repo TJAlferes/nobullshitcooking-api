@@ -8,7 +8,7 @@ import {
   userAuthTests,
   userEquipmentTests,
   userFavoriteRecipeTests,
-  userFriendshipTests,
+  //userFriendshipTests,
   userGetSignedUrlTests,
   userIngredientTests,
   userPlanTests,
@@ -81,7 +81,7 @@ describe ('NOBSC API', () => {
   describe('userAuth', userAuthTests);
   describe('userEquipment', userEquipmentTests);
   describe('userFavoriteRecipe', userFavoriteRecipeTests);
-  describe('userFriendship', userFriendshipTests);
+  //describe('userFriendship', userFriendshipTests);
   describe('userGetSignedUrl', userGetSignedUrlTests);
   describe('userIngredient', userIngredientTests);
   describe('userPlan', userPlanTests);

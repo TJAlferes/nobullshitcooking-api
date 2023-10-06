@@ -72,12 +72,8 @@ function Time(time: string) {
   assert(time, string());
 
   const [ hours, minutes ] = time.split(':');
-  if (hours.length !== 2) {
-    throw new Error("Invalid time.");
-  }
-  if (minutes.length !== 2) {
-    throw new Error("Invalid time.");
-  }
+  if (hours.length !== 2) throw new Error("Invalid time.");
+  if (minutes.length !== 2) throw new Error("Invalid time.");
   
   const hrs = parseInt(hours);
   const mins = parseInt(minutes);
@@ -90,7 +86,7 @@ function Time(time: string) {
 
 export function Directions(directions: string) {
   assert(directions, string());
-  if (directions.length > 1000) {
+  if (directions.length > 2000) {
     throw new Error("Recipe directions must be no more than 2,000 characters.");
   }
   return directions;
@@ -113,3 +109,58 @@ type UpdateParams = CreateParams & {
 }
 
 type ConstructorParams = UpdateParams;
+
+//---
+
+export type RecipeUpload = {
+  recipe_type_id:       number;
+  cuisine_id:           number;
+  title:                string;
+  description:          string;
+  active_time:          string;
+  total_time:           string;
+  directions:           string;
+  required_methods:     RequiredMethod[];
+  required_equipment:   RequiredEquipment[];
+  required_ingredients: RequiredIngredient[];
+  required_subrecipes:  RequiredSubrecipe[];
+  recipe_image:         ImageUpload & {
+    thumb: File | null;
+    tiny:  File | null;
+  },
+  equipment_image:      ImageUpload,
+  ingredients_image:    ImageUpload,
+  cooking_image:        ImageUpload
+};
+
+export type RecipeUpdateUpload = RecipeUpload & {
+  recipe_id: string;
+};
+
+export type RequiredMethod = {
+  method_id: number;
+};
+
+export type RequiredEquipment = {
+  amount:       number;
+  equipment_id: string;
+};
+
+export type RequiredIngredient = {
+  amount:        number;
+  unit_id:       number;
+  ingredient_id: string;
+};
+
+export type RequiredSubrecipe = {
+  amount:       number;
+  unit_id:      number;
+  subrecipe_id: string;
+};
+
+// move???
+export type ImageUpload = {
+  image_filename: string;
+  caption:        string;
+  medium:         File | null;
+};

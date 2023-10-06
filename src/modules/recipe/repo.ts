@@ -338,6 +338,8 @@ export type RecipeView = RowDataPacket & {
   recipe_type_name:     string;
   cuisine_id:           number;
   cuisine_name:         string;
+  author_id:            string;
+  author:               string;
   owner_id:             string;
   title:                string;
   description:          string;
