@@ -10,9 +10,9 @@ const USER_BUCKET =            process.env.AWS_S3_USER_BUCKET!;
 const USER_ACCESS_KEY_ID =     process.env.AWS_S3_USER_ACCESS_KEY_ID!;
 const USER_SECRET_ACCESS_KEY = process.env.AWS_S3_USER_SECRET_ACCESS_KEY!;
 
-export const userSignedUrlController = {
-  s3RequestPresign: async function(req: Request, res: Response) {
-    const subfolder: Subfolder = req.body.subfolder;  // TO DO: validate subfolder
+export const AWSS3Controller = {
+  createPresignedUrl: async function(req: Request, res: Response) {
+    const subfolder: Subfolder = req.body.subfolder;
 
     if (!req.session.user_id) return;
 
@@ -30,19 +30,19 @@ export const userSignedUrlController = {
     });
 
     if ( (subfolder === PUBLIC_RECIPE) || (subfolder === PRIVATE_RECIPE) ) {
-      const fullSignature  = await sign(s3, objectKey, "full");
+      const mediumSignature  = await sign(s3, objectKey, "medium");
       const thumbSignature = await sign(s3, objectKey, "thumb");
       const tinySignature  = await sign(s3, objectKey, "tiny");
-      return res.json({filename, fullSignature, thumbSignature, tinySignature});
+      return res.json({filename, mediumSignature, thumbSignature, tinySignature});
     }
 
     if ( (subfolder === AVATAR)
       || (subfolder === PRIVATE_EQUIPMENT)
       || (subfolder === PRIVATE_INGREDIENT)
     ) {
-      const fullSignature = await sign(s3, objectKey, "full");
+      const smallSignature = await sign(s3, objectKey, "small");
       const tinySignature = await sign(s3, objectKey, "tiny");
-      return res.json({filename, fullSignature, tinySignature});
+      return res.json({filename, smallSignature, tinySignature});
     }
 
     if ( (subfolder === PUBLIC_RECIPE_COOKING)
@@ -52,11 +52,9 @@ export const userSignedUrlController = {
       || (subfolder === PRIVATE_RECIPE_EQUIPMENT)
       || (subfolder === PRIVATE_RECIPE_INGREDIENTS)
     ) {
-      const fullSignature  = await sign(s3, objectKey, "full");
-      return res.json({filename, fullSignature});
+      const mediumSignature  = await sign(s3, objectKey, "medium");
+      return res.json({filename, mediumSignature});
     }
-
-    //throw new Error("Invalid request.");
   }
 };
 

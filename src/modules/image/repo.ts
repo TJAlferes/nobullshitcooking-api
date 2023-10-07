@@ -6,10 +6,11 @@ import { MySQLRepo }                      from '../shared/MySQL';
 export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
   async bulkInsert({ placeholders, images }: BulkInsertParams) {
     const sql = `
-      INSERT INTO recipe_ingredient (image_id, image_filename, caption, author_id, owner_id)
+      INSERT INTO image (image_id, image_filename, caption, author_id, owner_id)
       VALUES ${placeholders}
     `;
-    await this.pool.execute(sql, images);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, images);
+    if (!result) throw new Error('Query not successful.');
   }
 
   async insert(params: InsertParams) {
@@ -21,9 +22,7 @@ export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
     if (!result) throw new Error('Query not successful.');
   }
 
-  //async bulkUpdate() {}
-
-  async update(params: InsertParams) {
+  async update(params: UpdateParams) {
     const sql = `
       UPDATE image
       SET

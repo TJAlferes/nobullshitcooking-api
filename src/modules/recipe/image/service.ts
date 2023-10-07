@@ -16,75 +16,66 @@ export class RecipeImageService {
     if (uploaded_images.length !== 4) throw new Error("Recipe must have 4 images.");
     
     const images: ImageDTO[] = [];
-    const associated_images: AssociatedImage[] = [];
-    
+    const recipe_images: RecipeImageDTO[] = [];
     uploaded_images.map(uploaded_image => {
+      // validate and create images
       const image = Image.create({
         author_id,
         owner_id,
         image_filename: uploaded_image.image_filename,
         caption:        uploaded_image.caption
       }).getDTO();
-
       images.push(image);
-
-      associated_images.push({
+      // validate and create recipe_images
+      const recipe_image = RecipeImage.create({
+        recipe_id,
         image_id: image.image_id,
         type:     uploaded_image.type
-      });
+      }).getDTO();
+      recipe_images.push(recipe_image);
     });
 
-    // insert into image table
-
+    // bulk insert images into image table
     await this.imageRepo.bulkInsert({
       placeholders: '(?, ?, ?, ?, ?),(?, ?, ?, ?, ?),(?, ?, ?, ?, ?),(?, ?, ?, ?, ?)',
       images
     });
 
-    // insert into recipe_image table
-
-    this.validateAssociatedImages(associated_images);
-
-    const recipe_images = associated_images.map(ai =>
-      RecipeImage.create({recipe_id, ...ai}).getDTO()
-    );
-
+    // bulk insert recipe_images into recipe_image table
+    this.checkRecipeImagesTypes(recipe_images);
     await this.recipeImageRepo.bulkInsert({
       placeholders: '(?, ?, ?),(?, ?, ?),(?, ?, ?),(?, ?, ?)',
       recipe_images
     });
   }
 
-  async bulkUpdate({ recipe_id, author_id, owner_id, uploaded_images }: BulkUpdateParams) {
+  async bulkUpdate({ author_id, owner_id, uploaded_images }: BulkUpdateParams) {
     if (uploaded_images.length !== 4) throw new Error("Recipe must have 4 images.");
 
-    // TO DO: FINISH
-
     // imageRepo updates:
-    // remove images (reset image_filename to 'default' and caption to '')
-    // update images (image_filename (AWS S3), caption)
+    // set image_filename to new AWS S3 name or reset to 'default'
+    // set caption        to new caption     or reset to ''
 
-    // recipeImageRepo updates:
-    // remove???
-    // update recipe_images (type) ???
+    const images: ImageDTO[] = [];
+    uploaded_images.map(uploaded_image => {
+      // validate updated images
+      const image = Image.update({
+        image_id: uploaded_image.image_id,
+        author_id,
+        owner_id,
+        image_filename: uploaded_image.image_filename,  // can be updated
+        caption:        uploaded_image.caption          // can be updated
+      }).getDTO();
+      images.push(image);
+    });
 
-    // validate here
-
-    if (associated_images.length < 1) return;
-    if (associated_images.length > 6) return;
-
-    const placeholders = '(?, ?, ?, ?),'
-      .repeat(associated_images.length)
-      .slice(0, -1);
-
-    const recipe_images = associated_images.map(ai =>
-      RecipeImage.create({recipe_id, ...ai}).getDTO()
-    );
-
-    await this.recipeImageRepo.bulkUpdate({recipe_id, placeholders, recipe_images});
+    // update images in image table
+    for (const image of images) {
+      await this.imageRepo.update(image);
+    }
   }
 
-  validateAssociatedImages(associated_images: AssociatedImage[]) {
+  checkRecipeImagesTypes(recipe_images: RecipeImageDTO[]) {
     // the recipe must already be in the recipe table and
     // the 4 images must already be in the image table
 
@@ -94,19 +85,21 @@ export class RecipeImageService {
     // 1 image of all required ingredients
     // 1 image of a prepping/cooking detail/process/action
 
-    if (associated_images.length !== 4) throw new Error("Recipe must have 4 images.");
-
-    const type1 = associated_images.filter(ai => ai.type === 1);  // THIS MAKES A NEW ARRAY (SHALLOW COPY)!!! BUG???
-    if (type1.length !== 1) throw new Error("Missing recipe image.");
-
-    const type2 = associated_images.filter(ai => ai.type === 2);
-    if (type2.length !== 1) throw new Error("Missing equipment image.");
-
-    const type3 = associated_images.filter(ai => ai.type === 3);
-    if (type3.length !== 1) throw new Error("Missing ingredients image.");
-
-    const type4 = associated_images.filter(ai => ai.type === 4);
-    if (type4.length !== 1) throw new Error("Missing cooking image.");
+    if (recipe_images.length !== 4) {
+      throw new Error("Recipe must have 4 images.");
+    }
+    if (!recipe_images.some(ai => ai.type === 1)) {
+      throw new Error("Missing recipe image.");
+    }
+    if (!recipe_images.some(ai => ai.type === 2)) {
+      throw new Error("Missing equipment image.");
+    }
+    if (!recipe_images.some(ai => ai.type === 3)) {
+      throw new Error("Missing ingredients image.");
+    }
+    if (!recipe_images.some(ai => ai.type === 4)) {
+      throw new Error("Missing cooking image.");
+    }
   }
 }
 
@@ -120,17 +113,25 @@ type BulkCreateParams = {
   author_id:       string;
   owner_id:        string;
   uploaded_images: ImageUpload[];
-}
+};
 
-type BulkUpdateParams = BulkCreateParams;
+type BulkUpdateParams = {
+  author_id:       string;
+  owner_id:        string;
+  uploaded_images: ImageUpdateUpload[];
+};
 
 type ImageUpload = {
   image_filename: string;
   caption:        string;
   type:           number;
-  medium:         null;
-  thumb?:         null;
-  tiny?:          null;
+  medium:         null;  // TO DO: fix
+  thumb?:         null;  // TO DO: fix
+  tiny?:          null;  // TO DO: fix
+};
+
+type ImageUpdateUpload = ImageUpload & {
+  image_id: string;
 };
 
 type ImageDTO = {
@@ -141,7 +142,8 @@ type ImageDTO = {
   owner_id:       string;
 };
 
-type AssociatedImage = {
-  image_id: string;
-  type:     number;
+type RecipeImageDTO = {
+  recipe_id: string;
+  image_id:  string;
+  type:      number;
 };

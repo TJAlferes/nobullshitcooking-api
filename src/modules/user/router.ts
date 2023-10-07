@@ -11,7 +11,6 @@ import { friendshipRouter }            from './friendship/router';
 import { publicPlanRouter }            from './public-plan/router';
 import { publicRecipeRouter }          from './public-recipe/router';
 import { favoriteRecipeRouter }        from './favorite-recipe/router';
-import { signedUrlRouter }             from './shared/signed-url/router';
 import { userController }              from './controller';
 
 const router = Router();
@@ -28,7 +27,6 @@ export function userRouter() {
   router.use('/:username/private-recipes', privateRecipeRouter());
   router.use('/:username/saved-recipes', savedRecipeRouter());
   router.use('/:username/friendships', friendshipRouter());
-  router.use('/signed-url', signedUrlRouter());  // MOVE up into main router???
 
   router.post(
     '/',

@@ -23,35 +23,11 @@ import { unitRouter } from './modules/shared/unit/router';
 import { userRouter } from './modules/user/router';
 import { profileController } from './modules/user/profile/controller';
 import { catchExceptions, userIsAuth } from './utils';
+import { AWSS3Controller } from './modules/aws-s3/controller';
 
 const router = Router();
 
 export function apiV1Router() {
-  router.get('/', (req, res) => res.send(`
-    No Bullshit Cooking API
-    Documentation at https://github.com/tjalferes/nobullshitcooking-api
-  `));
-  router.get('/initial-data', initialDataController.view);
-  router.post(
-    '/confirm',
-    sanitize(['confirmation_code']),
-    catchExceptions(userAuthenticationController.confirm)
-  );
-  router.post(
-    '/resend-confirmation-code',
-    sanitize(['email', 'password']),
-    catchExceptions(userAuthenticationController.resendConfirmationCode)
-  );
-  router.post(
-    '/login',
-    sanitize(['email', 'password']),
-    catchExceptions(userAuthenticationController.login)
-  );
-  router.post(
-    '/logout',
-    userIsAuth,
-    catchExceptions(userAuthenticationController.logout)
-  );
   router.use('/search', searchRouter());
   router.use('/cuisines', cuisineRouter());
   router.use('/equipments', equipmentRouter());
@@ -67,7 +43,54 @@ export function apiV1Router() {
   //router.use('/chatmessages', chatmessageRouter());
   router.use('/users', userRouter());
 
-  router.get('/:username', catchExceptions(profileController.view));
+  router.get(
+    '/initial-data',
+    catchExceptions(initialDataController.view)
+  );
+
+  router.get(
+    '/:username',
+    catchExceptions(profileController.view)
+  );
+
+  router.get(
+    '/',
+    (req, res) => res.send(`
+      No Bullshit Cooking API
+      Documentation at https://github.com/tjalferes/nobullshitcooking-api
+    `)
+  );
+
+  router.post(
+    '/confirm',
+    sanitize(['confirmation_code']),
+    catchExceptions(userAuthenticationController.confirm)
+  );
+
+  router.post(
+    '/resend-confirmation-code',
+    sanitize(['email', 'password']),
+    catchExceptions(userAuthenticationController.resendConfirmationCode)
+  );
+
+  router.post(
+    '/login',
+    sanitize(['email', 'password']),
+    catchExceptions(userAuthenticationController.login)
+  );
+
+  router.post(
+    '/logout',
+    userIsAuth,
+    catchExceptions(userAuthenticationController.logout)
+  );
+
+  router.post(
+    '/signed-url',
+    userIsAuth,
+    sanitize('subfolder'),
+    catchExceptions(AWSS3Controller.createPresignedUrl)
+  );
 }
 
 function sanitize(keys: string | string[]) {

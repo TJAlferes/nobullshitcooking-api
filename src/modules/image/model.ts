@@ -22,7 +22,9 @@ export class Image {
     return new Image({image_id, ...params});
   }
 
-  //static update(params: UpdateParams) {} needed for images ???
+  static update(params: UpdateParams) {
+    return new Image(params);
+  }
 
   getDTO() {
     return {

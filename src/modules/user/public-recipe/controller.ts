@@ -206,7 +206,6 @@ export const publicRecipeController = {
       recipeImageRepo: new RecipeImageRepo()
     });
     await recipeImageService.bulkUpdate({
-      recipe_id: recipe.recipe_id,
       author_id,
       owner_id,
       uploaded_images: [
