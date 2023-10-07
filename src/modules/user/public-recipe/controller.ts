@@ -169,7 +169,6 @@ export const publicRecipeController = {
       ingredientRepo,
       recipeRepo
     });
-    // TO DO: ALSO CHECK FOR PRIVATE IMAGES
     await checkForPrivateContent({
       required_equipment,
       required_ingredients,

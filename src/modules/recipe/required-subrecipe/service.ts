@@ -1,15 +1,15 @@
 import { RecipeSubrecipe } from "./model";
-import { IRecipeSubrecipeRepo } from "./repo";
+import { RecipeSubrecipeRepoInterface } from "./repo";
 
 export class RecipeSubrecipeService {
-  repo: IRecipeSubrecipeRepo;
+  repo: RecipeSubrecipeRepoInterface;
 
-  constructor(repo: IRecipeSubrecipeRepo) {
+  constructor(repo: RecipeSubrecipeRepoInterface) {
     this.repo = repo;
   }
 
-  async create({ recipe_id, required_subrecipes }: CreateParams) {
-    if (!required_subrecipes.length) return;
+  async bulkCreate({ recipe_id, required_subrecipes }: BulkCreateParams) {
+    if (required_subrecipes.length < 1) return;
 
     const placeholders = '(?, ?, ?, ?),'
       .repeat(required_subrecipes.length)
@@ -19,11 +19,11 @@ export class RecipeSubrecipeService {
       RecipeSubrecipe.create({recipe_id, ...rs}).getDTO()
     );
 
-    await this.repo.insert({placeholders, recipe_subrecipes});
+    await this.repo.bulkInsert({placeholders, recipe_subrecipes});
   }
 
-  async update({ recipe_id, required_subrecipes }: UpdateParams) {
-    if (!required_subrecipes.length) {
+  async bulkUpdate({ recipe_id, required_subrecipes }: BulkUpdateParams) {
+    if (required_subrecipes.length < 1) {
       await this.repo.deleteByRecipeId(recipe_id);
       return;
     }
@@ -36,19 +36,19 @@ export class RecipeSubrecipeService {
       RecipeSubrecipe.create({recipe_id, ...rs}).getDTO()
     );
 
-    await this.repo.update({recipe_id, placeholders, recipe_subrecipes});
+    await this.repo.bulkUpdate({recipe_id, placeholders, recipe_subrecipes});
   }
 }
 
-type CreateParams = {
+type BulkCreateParams = {
   recipe_id:           string;
   required_subrecipes: RequiredSubrecipe[];
 };
 
-type UpdateParams = CreateParams;
+type BulkUpdateParams = BulkCreateParams;
 
 type RequiredSubrecipe = {
-  amount?:      number;
-  unit_id?:     number;
+  amount:       number | null;
+  unit_id:      number | null;
   subrecipe_id: string;  // use title instead??? and lookup id here?
 };

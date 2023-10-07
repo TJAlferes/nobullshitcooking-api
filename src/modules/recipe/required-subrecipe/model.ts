@@ -8,14 +8,13 @@ export class RecipeSubrecipe {
 
   private constructor(params: ConstructorParams) {
     this.recipe_id    = UUIDv7StringId(params.recipe_id);
-    this.amount       = params.amount ? Amount(params.amount) : undefined;
-    this.unit_id      = params.unit_id ? NumberId(params.unit_id) : undefined;
+    this.amount       = params.amount ? Amount(params.amount) : null;
+    this.unit_id      = params.unit_id ? NumberId(params.unit_id) : null;
     this.subrecipe_id = UUIDv7StringId(params.subrecipe_id);
   }
 
   static create(params: CreateParams) {
-    const recipeSubrecipe = new RecipeSubrecipe(params);
-    return recipeSubrecipe;
+    return new RecipeSubrecipe(params);
   }
 
   getDTO() {
@@ -30,8 +29,8 @@ export class RecipeSubrecipe {
 
 type CreateParams = {
   recipe_id:    string;
-  amount?:      number;
-  unit_id?:     number;
+  amount:       number | null;
+  unit_id:      number | null;
   subrecipe_id: string;
 };
 

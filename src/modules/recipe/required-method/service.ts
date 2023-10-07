@@ -1,15 +1,15 @@
 import { RecipeMethod } from "./model";
-import { IRecipeMethodRepo } from "./repo";
+import { RecipeMethodRepoInterface } from "./repo";
 
 export class RecipeMethodService {
-  repo: IRecipeMethodRepo;
+  repo: RecipeMethodRepoInterface;
 
-  constructor(repo: IRecipeMethodRepo) {
+  constructor(repo: RecipeMethodRepoInterface) {
     this.repo = repo;
   }
 
-  async create({ recipe_id, required_methods }: CreateParams) {
-    if (!required_methods.length) return;
+  async bulkCreate({ recipe_id, required_methods }: BulkCreateParams) {
+    if (required_methods.length < 1) return;
 
     const placeholders = '(?, ?),'.repeat(required_methods.length).slice(0, -1);  // if 3 methods, then: (?, ?),(?, ?),(?, ?)
     
@@ -17,11 +17,11 @@ export class RecipeMethodService {
       RecipeMethod.create({recipe_id, ...rm}).getDTO()
     );
 
-    await this.repo.insert({placeholders, recipe_methods});
+    await this.repo.bulkInsert({placeholders, recipe_methods});
   }
 
-  async update({ recipe_id, required_methods }: UpdateParams) {
-    if (!required_methods.length) {
+  async bulkUpdate({ recipe_id, required_methods }: BulkUpdateParams) {
+    if (required_methods.length < 1) {
       await this.repo.deleteByRecipeId(recipe_id);
       return;
     }
@@ -32,16 +32,16 @@ export class RecipeMethodService {
       RecipeMethod.create({recipe_id, ...rm}).getDTO()
     );
     
-    await this.repo.update({recipe_id, placeholders, recipe_methods});
+    await this.repo.bulkUpdate({recipe_id, placeholders, recipe_methods});
   }
 }
 
-type CreateParams = {
+type BulkCreateParams = {
   recipe_id:        string;
   required_methods: RequiredMethod[];
 };
 
-type UpdateParams = CreateParams;
+type BulkUpdateParams = BulkCreateParams;
 
 type RequiredMethod = {
   method_id: number;

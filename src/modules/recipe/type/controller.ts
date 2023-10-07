@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 import { RecipeTypeRepo } from './repo';
 
@@ -7,7 +7,7 @@ export const recipeTypeController = {
     const repo = new RecipeTypeRepo();
     const rows = await repo.viewAll();
 
-    return res.send(rows);
+    return res.json(rows);
   },
 
   async viewOne(req: Request, res: Response) {
@@ -16,6 +16,6 @@ export const recipeTypeController = {
     const repo = new RecipeTypeRepo();
     const row = await repo.viewOne(recipe_type_id);
 
-    return res.send(row);
+    return res.json(row);
   }
 };

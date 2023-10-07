@@ -38,7 +38,7 @@ export class Image {
 function Caption(caption: string) {
   assert(caption, string());
   if (caption.length > 150) {
-    throw new Error("Caption must be no more than 100 characters.");
+    throw new Error("Caption must be no more than 150 characters.");
   }
   return caption;
 }

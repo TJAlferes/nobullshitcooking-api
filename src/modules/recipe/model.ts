@@ -142,19 +142,19 @@ export type RequiredMethod = {
 };
 
 export type RequiredEquipment = {
-  amount:       number;
+  amount:       number | null;
   equipment_id: string;
 };
 
 export type RequiredIngredient = {
-  amount:        number;
-  unit_id:       number;
+  amount:        number | null;
+  unit_id:       number | null;
   ingredient_id: string;
 };
 
 export type RequiredSubrecipe = {
-  amount:       number;
-  unit_id:      number;
+  amount:       number | null;
+  unit_id:      number | null;
   subrecipe_id: string;
 };
 

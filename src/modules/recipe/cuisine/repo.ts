@@ -2,7 +2,7 @@ import { RowDataPacket } from 'mysql2/promise';
 
 import { MySQLRepo } from '../../shared/MySQL';
 
-export class CuisineRepo extends MySQLRepo implements ICuisineRepo {
+export class CuisineRepo extends MySQLRepo implements CuisineRepoInterface {
   async viewAll() {
     const sql = `
       SELECT
@@ -33,7 +33,7 @@ export class CuisineRepo extends MySQLRepo implements ICuisineRepo {
   }
 }
 
-export interface ICuisineRepo {
+export interface CuisineRepoInterface {
   viewAll: () =>                   Promise<CuisineView[]>;
   viewOne: (cuisine_id: number) => Promise<CuisineView>;
 }

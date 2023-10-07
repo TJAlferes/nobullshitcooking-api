@@ -10,8 +10,7 @@ export class RecipeMethod {
   }
 
   static create(params: CreateParams) {
-    const recipeMethod = new RecipeMethod(params);
-    return recipeMethod;
+    return new RecipeMethod(params);
   }
 
   getDTO() {

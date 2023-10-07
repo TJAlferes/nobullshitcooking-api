@@ -13,11 +13,7 @@ export class RecipeImageService {
   }
 
   async bulkCreate({ recipe_id, author_id, owner_id, uploaded_images }: BulkCreateParams) {
-    if (!uploaded_images) return;
-
-    let placeholders = '(?, ?, ?, ?, ?),'
-      .repeat(uploaded_images.length)
-      .slice(0, -1);
+    if (uploaded_images.length !== 4) throw new Error("Recipe must have 4 images.");
     
     const images: ImageDTO[] = [];
     const associated_images: AssociatedImage[] = [];
@@ -34,35 +30,47 @@ export class RecipeImageService {
 
       associated_images.push({
         image_id: image.image_id,
-        type:     uploaded_image.type,
-        order:    uploaded_image.order
+        type:     uploaded_image.type
       });
     });
 
-    await this.imageRepo.bulkInsert({placeholders, images});
+    // insert into image table
 
-    if (!associated_images.length) return;
-    if (associated_images.length > 6) return;
+    await this.imageRepo.bulkInsert({
+      placeholders: '(?, ?, ?, ?, ?),(?, ?, ?, ?, ?),(?, ?, ?, ?, ?),(?, ?, ?, ?, ?)',
+      images
+    });
+
+    // insert into recipe_image table
 
     this.validateAssociatedImages(associated_images);
-
-    placeholders = '(?, ?, ?, ?),'
-      .repeat(associated_images.length)
-      .slice(0, -1);
 
     const recipe_images = associated_images.map(ai =>
       RecipeImage.create({recipe_id, ...ai}).getDTO()
     );
 
-    await this.recipeImageRepo.insert({placeholders, recipe_images});
+    await this.recipeImageRepo.bulkInsert({
+      placeholders: '(?, ?, ?),(?, ?, ?),(?, ?, ?),(?, ?, ?)',
+      recipe_images
+    });
   }
 
   async bulkUpdate({ recipe_id, author_id, owner_id, uploaded_images }: BulkUpdateParams) {
+    if (uploaded_images.length !== 4) throw new Error("Recipe must have 4 images.");
 
+    // TO DO: FINISH
+
+    // imageRepo updates:
+    // remove images (reset image_filename to 'default' and caption to '')
+    // update images (image_filename (AWS S3), caption)
+
+    // recipeImageRepo updates:
+    // remove???
+    // update recipe_images (type) ???
 
     // validate here
 
-    if (!associated_images.length) return;
+    if (associated_images.length < 1) return;
     if (associated_images.length > 6) return;
 
     const placeholders = '(?, ?, ?, ?),'
@@ -73,42 +81,32 @@ export class RecipeImageService {
       RecipeImage.create({recipe_id, ...ai}).getDTO()
     );
 
-    await this.recipeImageRepo.update({recipe_id, placeholders, recipe_images});
+    await this.recipeImageRepo.bulkUpdate({recipe_id, placeholders, recipe_images});
   }
 
   validateAssociatedImages(associated_images: AssociatedImage[]) {
     // the recipe must already be in the recipe table and
     // the 4 images must already be in the image table
 
-    // we only allow the following 4 images per recipe:
+    // we allow 4 images per recipe:
     // 1 image of completed/plated recipe (this is the primary image)
     // 1 image of all required equipment
     // 1 image of all required ingredients
     // 1 image of a prepping/cooking detail/process/action
-    //
-    // with the following constraints:
-    // if type === 1|2|3 then order = 1
-    // if type === 4     then order = given user input (but still 1|2|3)
 
-    // validate and coerce types 1-3
+    if (associated_images.length !== 4) throw new Error("Recipe must have 4 images.");
 
-    const type1 = associated_images.filter(ai => ai.type === 1);  // THIS MAKES A NEW ARRAY!!!
-    if (!type1.length) return;
-    if (type1.length > 1) return;
+    const type1 = associated_images.filter(ai => ai.type === 1);  // THIS MAKES A NEW ARRAY (SHALLOW COPY)!!! BUG???
+    if (type1.length !== 1) throw new Error("Missing recipe image.");
 
     const type2 = associated_images.filter(ai => ai.type === 2);
-    if (!type2.length) return;
-    if (type2.length > 1) return;
+    if (type2.length !== 1) throw new Error("Missing equipment image.");
 
     const type3 = associated_images.filter(ai => ai.type === 3);
-    if (!type3.length) return;
-    if (type3.length > 1) return;
-
-    // validate type 4 and its orders 1-3
+    if (type3.length !== 1) throw new Error("Missing ingredients image.");
 
     const type4 = associated_images.filter(ai => ai.type === 4);
-    if (!type4.length) return;
-    if (type4.length > 3) return;
+    if (type4.length !== 1) throw new Error("Missing cooking image.");
   }
 }
 
@@ -130,7 +128,6 @@ type ImageUpload = {
   image_filename: string;
   caption:        string;
   type:           number;
-  order:          number;
   medium:         null;
   thumb?:         null;
   tiny?:          null;
@@ -147,5 +144,4 @@ type ImageDTO = {
 type AssociatedImage = {
   image_id: string;
   type:     number;
-  order:    number;
 };

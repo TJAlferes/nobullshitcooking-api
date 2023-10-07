@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { param }  from 'express-validator';  // query ?
+import { param }  from 'express-validator';
 
 import { recipeController as controller } from './controller';
 import { catchExceptions } from '../../utils';

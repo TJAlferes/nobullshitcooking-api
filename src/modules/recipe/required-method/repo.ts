@@ -2,7 +2,7 @@ import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
 import { MySQLRepo } from '../../shared/MySQL';
 
-export class RecipeMethodRepo extends MySQLRepo implements IRecipeMethodRepo {
+export class RecipeMethodRepo extends MySQLRepo implements RecipeMethodRepoInterface {
   async viewByRecipeId(recipe_id: string) {
     const sql = `
       SELECT m.method_name
@@ -15,44 +15,34 @@ export class RecipeMethodRepo extends MySQLRepo implements IRecipeMethodRepo {
     return rows;
   }
 
-  async insert({ placeholders, recipe_methods }: InsertParams) {  // TO DO: change to namedPlaceholders using example below
+  async bulkInsert({ placeholders, recipe_methods }: BulkInsertParams) {  // TO DO: change to namedPlaceholders using example below
     const sql = `INSERT INTO recipe_method (recipe_id, method_id) VALUES ${placeholders}`;
     await this.pool.execute(sql, recipe_methods);
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, recipe_methods);
     if (!result) throw new Error('Query not successful.');
   }
   
-  async update({ recipe_id, placeholders, recipe_methods }: UpdateParams) {  // TO DO: change to namedPlaceholders using example below
+  async bulkUpdate({ recipe_id, placeholders, recipe_methods }: BulkUpdateParams) {  // TO DO: change to namedPlaceholders using example below
     // Rather than updating current values in the database, we delete them,
     // and if there are new values, we insert them.
     const conn = await this.pool.getConnection();
     await conn.beginTransaction();
-    
     try {
       let sql = `DELETE FROM recipe_method WHERE recipe_id = ?`;
-
       await conn.query(sql, [recipe_id]);
-
       if (recipe_methods.length) {
         let sql = `
           INSERT INTO recipe_method (recipe_id, method_id)
           VALUES ${placeholders}
         `;
-
         await conn.query(sql, recipe_methods);
       }
-
       await conn.commit();
-
     } catch (err) {
-
       await conn.rollback();
       throw err;
-
     } finally {
-
       conn.release();
-
     }
   }
 
@@ -60,20 +50,13 @@ export class RecipeMethodRepo extends MySQLRepo implements IRecipeMethodRepo {
     const sql = `DELETE FROM recipe_method WHERE recipe_id = ?`;
     await this.pool.execute(sql, [recipe_id]);
   }
-
-  /* not needed because of ON CASCADE DELETE ???
-  async deleteByRecipeIds(ids: number[]) {
-    const sql = `DELETE FROM recipe_method WHERE recipe_id = ANY(?)`;
-    await this.pool.execute(sql, ids);
-  }*/
 }
 
-export interface IRecipeMethodRepo {
-  viewByRecipeId:    (recipe_id: string) =>    Promise<RecipeMethodView[]>;
-  insert:            (params: InsertParams) => Promise<void>;
-  update:            (params: UpdateParams) => Promise<void>;
-  deleteByRecipeId:  (recipe_id: string) =>    Promise<void>;
-  //deleteByRecipeIds: (ids: string[]) =>        Promise<void>;
+export interface RecipeMethodRepoInterface {
+  viewByRecipeId:    (recipe_id: string) =>        Promise<RecipeMethodView[]>;
+  bulkInsert:        (params: BulkInsertParams) => Promise<void>;
+  bulkUpdate:        (params: BulkUpdateParams) => Promise<void>;
+  deleteByRecipeId:  (recipe_id: string) =>        Promise<void>;
 }
 
 type RecipeMethodRow = {
@@ -81,12 +64,12 @@ type RecipeMethodRow = {
   method_id: number;
 };
 
-type InsertParams = {
+type BulkInsertParams = {
   placeholders:   string;
   recipe_methods: RecipeMethodRow[];
 };
 
-type UpdateParams = {
+type BulkUpdateParams = {
   recipe_id:      string;
   placeholders:   string;
   recipe_methods: RecipeMethodRow[];

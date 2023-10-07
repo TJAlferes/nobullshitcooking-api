@@ -355,7 +355,6 @@ export type RecipeView = RowDataPacket & {
 
 type AssociatedImageView = {
   type:           number;
-  order:          number;
   image_id:       string;
   image_filename: string;
   caption:        string;
@@ -367,25 +366,25 @@ type RequiredMethodView = {
 };
 
 type RequiredEquipmentView = {
-  amount:            number;
+  amount:            number | null;
   equipment_id:      string;
   equipment_type_id: number;
   equipment_name:    string;
 };
 
 type RequiredIngredientView = {
-  amount:             number;
-  unit_id:            number;
-  unit_name:          string;
+  amount:             number | null;
+  unit_id:            number | null;
+  unit_name:          string | null;  // LEFT or RIGHT JOIN to get the null ???
   ingredient_id:      string;
   ingredient_type_id: number;
   ingredient_name:    string;
 };
 
 type RequiredSubrecipeView = {
-  amount:          number;
-  unit_id:         number;
-  unit_name:       string;
+  amount:          number | null;
+  unit_id:         number | null;
+  unit_name:       string | null;  // LEFT or RIGHT JOIN to get the null ???
   subrecipe_id:    string;
   recipe_type_id:  number;
   cuisine_id:      number;

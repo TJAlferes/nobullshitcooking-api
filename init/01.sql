@@ -206,7 +206,6 @@ CREATE TABLE recipe_image (
   `recipe_id` CHAR(36) NOT NULL,
   `image_id`  CHAR(36) NOT NULL,
   `type`      TINYINT UNSIGNED NOT NULL,
-  `order`     TINYINT UNSIGNED NOT NULL,
   FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`recipe_id`) ON DELETE CASCADE,
   FOREIGN KEY (`image_id`)  REFERENCES `image` (`image_id`) ON DELETE CASCADE
 );

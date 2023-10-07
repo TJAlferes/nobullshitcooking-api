@@ -9,13 +9,13 @@ const router = Router();
 // for /recipe-types
 
 export function recipeTypeRouter() {
-  router.get('/', catchExceptions(controller.viewAll));
-
   router.get(
     '/:recipe_type_id',
     [param('recipe_type_id').not().isEmpty().trim().escape()],
     catchExceptions(controller.viewOne)
   );
+
+  router.get('/', catchExceptions(controller.viewAll));
 
   return router;
 }

@@ -28,8 +28,10 @@ export function publicRecipeRouter() {
   ];
 
   router.get(
-    '/',
-    catchExceptions(controller.overviewAll)
+    '/:recipe_id/edit',
+    userIsAuth,
+    sanitizeParams('recipe_id'),
+    catchExceptions(controller.edit)
   );
 
   router.get(
@@ -39,10 +41,8 @@ export function publicRecipeRouter() {
   );  // is Next.js using this correctly??? OR is this method and endpoint correct???
 
   router.get(
-    '/:recipe_id/edit',
-    userIsAuth,
-    sanitizeParams('recipe_id'),
-    catchExceptions(controller.edit)
+    '/',
+    catchExceptions(controller.overviewAll)
   );
 
   router.post(

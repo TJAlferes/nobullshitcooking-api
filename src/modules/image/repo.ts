@@ -21,6 +21,8 @@ export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
     if (!result) throw new Error('Query not successful.');
   }
 
+  //async bulkUpdate() {}
+
   async update(params: InsertParams) {
     const sql = `
       UPDATE image

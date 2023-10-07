@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 import { NOBSC_USER_ID } from '../shared/model';
 import { RecipeRepo }    from './repo';
