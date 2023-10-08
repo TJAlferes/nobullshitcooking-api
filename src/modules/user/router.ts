@@ -12,12 +12,14 @@ import { publicPlanRouter }            from './public-plan/router';
 import { publicRecipeRouter }          from './public-recipe/router';
 import { favoriteRecipeRouter }        from './favorite-recipe/router';
 import { userController }              from './controller';
+import { userImageRouter } from './image/router';
 
 const router = Router();
 
 // for /users
 
 export function userRouter() {
+  router.use(':/username/avatars', userImageRouter());
   router.use('/:username/public-plans', publicPlanRouter());
   router.use('/:username/public-recipes', publicRecipeRouter());
   router.use('/:username/favorite-recipes', favoriteRecipeRouter());
@@ -35,28 +37,28 @@ export function userRouter() {
   );
 
   router.patch(
-    '/email',
+    '/:username/email',
     userIsAuth,
     sanitize('new_email'),
     catchExceptions(userController.updateEmail)
   );
 
   router.patch(
-    '/password',
+    '/:username/password',
     userIsAuth,
     sanitize('new_password'),
     catchExceptions(userController.updatePassword)
   );
 
   router.patch(
-    '/username',
+    '/:username/username',
     userIsAuth,
     sanitize('new_username'),
     catchExceptions(userController.updateUsername)
   );
 
   router.delete(
-    '/',
+    '/:username',
     userIsAuth,
     catchExceptions(userController.delete)
   );

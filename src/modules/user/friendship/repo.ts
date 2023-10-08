@@ -33,7 +33,7 @@ export class FriendshipRepo extends MySQLRepo implements FriendshipRepoInterface
       WHERE user_id = ? AND friend_id = ?
     `;
     const [ [ row ] ] = await this.pool.execute<StatusData[]>(sql, params);
-    return row.status;
+    return row ? row.status : undefined;
   }
 
   async viewAll(user_id: string) {
