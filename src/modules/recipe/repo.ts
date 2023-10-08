@@ -212,7 +212,7 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
       )
     `;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
-    if (!result) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async update(params: InsertParams) {
@@ -232,7 +232,7 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
       LIMIT 1
     `;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
-    if (!result) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async unattributeAll(author_id: string) {
@@ -256,7 +256,7 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
       author_id,
       owner_id
     });
-    if (!result) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async unattributeOne({ author_id, recipe_id }: UnattributeOneParams) {
@@ -282,7 +282,7 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
       owner_id,
       recipe_id
     });
-    if (!result) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async deleteAll(owner_id: string) {
@@ -296,7 +296,7 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
       LIMIT 1
     `;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [owner_id, recipe_id]);
-    if (!result) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }
 

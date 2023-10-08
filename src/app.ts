@@ -4,7 +4,7 @@ import cors                                         from 'cors';
 import express, { Request, Response, NextFunction } from 'express';
 // Use https://github.com/animir/node-rate-limiter-flexible instead?
 import expressRateLimit                             from 'express-rate-limit';
-import expressSession, { Session }                  from 'express-session';
+import expressSession, { Session, SessionData }     from 'express-session';
 import helmet                                       from 'helmet';
 import hpp                                          from 'hpp';
 import { createServer }                             from 'node:http';
@@ -116,9 +116,7 @@ export function createAppServer() {
   };
 }
 
-export type ModifiedSession = Session & {
-  //staff_id?:  string;
-  //staffname?: string;
+/*export type ModifiedSession = Session & {
   user_id?:   string;
   username?:  string;
 };
@@ -126,6 +124,12 @@ export type ModifiedSession = Session & {
 declare module "node:http" {
   interface IncomingMessage {
     session: ModifiedSession;
+  }
+}*/
+declare module 'express-session' {
+  interface SessionData {
+    user_id?:  string;
+    username?: string;
   }
 }
 

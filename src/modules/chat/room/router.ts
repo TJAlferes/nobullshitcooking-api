@@ -1,4 +1,4 @@
-import { Router }      from 'express';
+/*import { Router }      from 'express';
 import { body, param } from 'express-validator';
 
 import { chatroomController }          from './controller';
@@ -40,3 +40,4 @@ export function chatroomRouter() {
 function sanitize(keys: string | string[]) {
   return body(keys).not().isEmpty().trim().escape();
 }
+*/

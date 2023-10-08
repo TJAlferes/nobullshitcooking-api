@@ -1,4 +1,4 @@
-import { RowDataPacket } from 'mysql2/promise';
+import { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
 
 import type { SearchRequest, SearchResponse } from '../search/model';
 import { NOBSC_USER_ID }                      from '../shared/model';
@@ -30,7 +30,7 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
         t.equipment_type_name,
         e.equipment_name,
         e.notes,
-        i.image_url
+        i.image_filename
       FROM equipment e
       INNER JOIN equipment_type t ON e.equipment_type_id = t.equipment_type_id
       INNER JOIN image i          ON e.image_id          = i.image_id
@@ -88,9 +88,9 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
       FROM equipment
       WHERE equipment_id IN ? AND (author_id = owner_id)
     `;
-    const rows = await this.pool.execute(sql, equipment_ids);
-    return rows.length ? true : false;
-  }
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, equipment_ids);
+    return rows.length > 0 ? true : false;
+  }  // TO DO: thoroughly integration test this
 
   async viewAll(owner_id: string) {
     const sql = `
@@ -101,7 +101,7 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
         e.owner_id,
         e.equipment_name,
         e.notes,
-        i.image_url
+        i.image_filename
       FROM equipment e
       INNER JOIN equipment_type t ON e.equipment_type_id = t.equipment_type_id
       INNER JOIN image i          ON e.image_id          = i.image_id
@@ -121,7 +121,7 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
         e.owner_id,
         e.equipment_name,
         e.notes,
-        i.image_url
+        i.image_filename
       FROM equipment e
       INNER JOIN equipment_type t ON e.equipment_type_id = t.equipment_type_id
       INNER JOIN image i          ON e.image_id          = i.image_id
@@ -149,7 +149,8 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
         :image_id
       )
     `;
-    await this.pool.execute(sql, params);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async update({
@@ -170,7 +171,7 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
       WHERE owner_id = :owner_id AND equipment_id = :equipment_id
       LIMIT 1
     `;
-    await this.pool.execute(sql, {
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, {
       equipment_type_id,
       equipment_name,
       notes,
@@ -178,11 +179,13 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
       owner_id,
       equipment_id
     });
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async deleteAll(owner_id: string) {
     const sql = `DELETE FROM equipment WHERE owner_id = ?`;
-    await this.pool.execute(sql, owner_id);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, owner_id);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async deleteOne(params: DeleteOneParams) {
@@ -191,7 +194,8 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
       WHERE owner_id = :owner_id AND equipment_id = :equipment_id
       LIMIT 1
     `;
-    await this.pool.execute(sql, params);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }
 
@@ -219,7 +223,7 @@ type EquipmentView = RowDataPacket & {
   equipment_type_name: string;
   equipment_name:      string;
   notes:               string;
-  image_url:           string;
+  image_filename:      string;
 };
 
 type InsertParams = {

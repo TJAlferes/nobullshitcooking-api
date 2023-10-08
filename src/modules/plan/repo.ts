@@ -1,5 +1,4 @@
-import { RowDataPacket } from 'mysql2/promise';
-//import { Plan } from '../domain/plan';
+import { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
 
 import { NOBSC_USER_ID, UNKNOWN_USER_ID } from '../shared/model';
 import { MySQLRepo }                      from '../shared/MySQL';
@@ -24,8 +23,9 @@ export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
         JSON_ARRAYAGG(
           JSON_ARRAYAGG(
             JSON_OBJECT(
+              'recipe_id', r.recipe_id
               'title',     r.title,
-              'image_url', r.img_url
+              'image_filename', r.img_url
             )
           ) ORDER BY pr.recipe_number
         ) AS plan_data
@@ -70,7 +70,8 @@ export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
       INSERT INTO plan (plan_id, author_id, owner_id, plan_name)
       VALUES (:plan_id, :author_id, :owner_id, :plan_name)
     `;
-    await this.pool.execute(sql, params);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async update(params: UpdateParams) {
@@ -80,7 +81,8 @@ export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
       WHERE owner_id = :owner_id AND plan_id = :plan_id
       LIMIT 1
     `;
-    await this.pool.execute(sql, params);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async unattributeAll(author_id: string) {
@@ -97,7 +99,12 @@ export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
       SET author_id = :unknown_user_id
       WHERE author_id = :author_id AND owner_id = :owner_id
     `;
-    await this.pool.execute(sql, {unknown_user_id, author_id, owner_id});
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, {
+      unknown_user_id,
+      author_id,
+      owner_id
+    });
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async unattributeOne({ author_id, plan_id }: UnattributeOneParams) {
@@ -117,12 +124,19 @@ export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
         AND owner_id  = :owner_id
         AND plan_id = :plan_id
     `;
-    await this.pool.execute(sql, {unknown_user_id, author_id, owner_id, plan_id});
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, {
+      unknown_user_id,
+      author_id,
+      owner_id,
+      plan_id
+    });
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async deleteAll(owner_id: string) {
     const sql = `DELETE FROM plan WHERE owner_id = ?`;
-    await this.pool.execute(sql, owner_id);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, owner_id);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async deleteOne(params: DeleteOneParams) {
@@ -131,7 +145,8 @@ export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
       WHERE owner_id = :owner_id AND plan_id = :plan_id
       LIMIT 1
     `;
-    await this.pool.execute(sql, params);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }
 
@@ -148,9 +163,9 @@ export interface PlanRepoInterface {
 }
 
 type PlanDayRecipe = {
-  recipe_id: string;
-  title:     string;
-  img_url:   string;
+  recipe_id:      string;
+  title:          string;
+  image_filename: string;
 };
 
 type PlanOverview = RowDataPacket & {

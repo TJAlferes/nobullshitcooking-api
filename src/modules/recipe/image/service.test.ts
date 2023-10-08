@@ -13,10 +13,19 @@ describe("RecipeImageService", () => {
   beforeEach(() => {
     imageRepoMock = {
       bulkInsert: jest.fn(),
-      bulkUpdate: jest.fn()
+      insert: jest.fn(),
+      update: jest.fn(),
+      unattributeAll: jest.fn(),
+      unattributeOne: jest.fn(),
+      deleteAll: jest.fn(),
+      deleteOne: jest.fn()
     };
     recipeImageRepoMock = {
-
+      viewByRecipeId: jest.fn(),
+      bulkInsert: jest.fn(),
+      bulkUpdate: jest.fn(),
+      deleteByImageId: jest.fn(),
+      deleteByRecipeId: jest.fn()
     };
     service = new RecipeImageService({
       imageRepo: imageRepoMock,

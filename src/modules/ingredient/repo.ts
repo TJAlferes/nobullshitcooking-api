@@ -1,4 +1,4 @@
-import { RowDataPacket } from 'mysql2/promise';
+import { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
 
 import type { SearchRequest, SearchResponse } from '../search/model';
 import { NOBSC_USER_ID }                      from '../shared/model';
@@ -46,7 +46,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
           IFNULL(GROUP_CONCAT(n.alt_name SEPARATOR ' '), '')
         ) AS fullname,
         i.notes,
-        m.image_url
+        m.image_filename
       FROM ingredient i
       INNER JOIN ingredient_type t     ON t.ingredient_type_id = i.ingredient_type_id
       INNER JOIN ingredient_alt_name n ON i.ingredient_id      = n.ingredient_id
@@ -105,9 +105,9 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
       FROM ingredient
       WHERE ingredient_id IN ? AND (author_id = owner_id)
     `;
-    const rows = await this.pool.execute(sql, ingredient_ids);
-    return rows.length ? true : false;
-  }
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, ingredient_ids);
+    return rows.length > 0 ? true : false;
+  }  // TO DO: thoroughly integration test this
 
   async viewAll(owner_id: string) {
     const sql = `
@@ -127,7 +127,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
           IFNULL(GROUP_CONCAT(n.alt_name SEPARATOR ' '), '')
         ) AS fullname,
         i.notes,
-        m.image_url
+        m.image_filename
       FROM ingredient i
       INNER JOIN ingredient_type t     ON i.ingredient_type_id = t.ingredient_type_id
       INNER JOIN ingredient_alt_name n ON i.ingredient_id      = n.ingredient_id
@@ -157,7 +157,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
           IFNULL(GROUP_CONCAT(n.alt_name SEPARATOR ' '), '')
         ) AS fullname,
         i.notes,
-        m.image_url
+        m.image_filename
       FROM ingredient i
       INNER JOIN ingredient_type t     ON i.ingredient_type_id = t.ingredient_type_id
       INNER JOIN ingredient_alt_name n ON i.ingredient_id      = n.ingredient_id
@@ -190,7 +190,8 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
         :image_id
       )
     `;
-    await this.pool.execute(sql, params);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async update({
@@ -215,7 +216,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
       WHERE owner_id = :owner_id AND ingredient_id = :ingredient_id
       LIMIT 1
     `;
-    await this.pool.execute(sql, {
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, {
       ingredient_type_id,
       ingredient_brand,
       ingredient_variety,
@@ -225,11 +226,13 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
       owner_id,
       ingredient_id
     });
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async deleteAll(owner_id: string) {
     const sql = `DELETE FROM ingredient WHERE owner_id = ?`;
-    await this.pool.execute(sql, owner_id);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, owner_id);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async deleteOne(params: DeleteOneParams) {
@@ -238,7 +241,8 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
       WHERE owner_id = :owner_id AND ingredient_id = :ingredient_id
       LIMIT 1
     `;
-    await this.pool.execute(sql, params);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }
 
@@ -264,7 +268,7 @@ type IngredientView = RowDataPacket & {
   ingredient_name:      string;
   fullname:             string;
   notes:                string;
-  image_url:            string;
+  image_filename:       string;
 };
 
 type IngredientSuggestionView = RowDataPacket & {

@@ -1,15 +1,16 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
+import { AWSS3Controller } from './modules/aws-s3/controller';
 import { initialDataController } from './modules/initial-data/controller';
 import { userAuthenticationController } from './modules/user/authentication/controller';
-import { chatgroupUserRouter } from './modules/chat/group/user/router';
+/*import { chatgroupUserRouter } from './modules/chat/group/user/router';
 import { chatgroupRouter } from './modules/chat/group/router';
 //import { chatmessageRouter } from './modules/chat/router';
 //import { chatroomUserRouter } from './modules/chat/room/user/router';
 import { chatroomRouter } from './modules/chat/room/router';
 //import { chatUserRouter } from './modules/chat/user/router';
-//import { chatRouter } from './modules/chat/router';
+//import { chatRouter } from './modules/chat/router';*/
 import { equipmentTypeRouter } from './modules/equipment/type/router';
 import { equipmentRouter } from './modules/equipment/router';
 import { ingredientTypeRouter } from './modules/ingredient/type/router';
@@ -23,7 +24,6 @@ import { unitRouter } from './modules/shared/unit/router';
 import { userRouter } from './modules/user/router';
 import { profileController } from './modules/user/profile/controller';
 import { catchExceptions, userIsAuth } from './utils';
-import { AWSS3Controller } from './modules/aws-s3/controller';
 
 const router = Router();
 
@@ -38,7 +38,7 @@ export function apiV1Router() {
   router.use('/methods', methodRouter());
   router.use('/recipes', recipeRouter());
   router.use('/recipe-types', recipeTypeRouter());
-  router.use('/chatgroups', chatgroupRouter());
+  //router.use('/chatgroups', chatgroupRouter());
   //router.use('/chatrooms', chatroomRouter());
   //router.use('/chatmessages', chatmessageRouter());
   router.use('/users', userRouter());

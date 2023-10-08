@@ -11,7 +11,7 @@ export const privatePlanController = {
     const planRepo = new PlanRepo();
     const rows = await planRepo.viewAll(owner_id);
     
-    return res.send(rows);
+    return res.json(rows);
   },
 
   async viewOne(req: Request, res: Response) {
@@ -21,7 +21,7 @@ export const privatePlanController = {
     const planRepo = new PlanRepo();
     const row = await planRepo.viewOne({plan_id, owner_id});
 
-    return res.send(row);
+    return res.json(row);
   },
 
   async create(req: Request, res: Response) {
@@ -35,7 +35,7 @@ export const privatePlanController = {
     const planRepo = new PlanRepo();
     await planRepo.insert(args);
 
-    return res.send({message: 'Plan created.'});
+    return res.status(201);
   },
 
   async update(req: Request, res: Response) {
@@ -49,7 +49,7 @@ export const privatePlanController = {
     const planRepo = new PlanRepo();
     await planRepo.update(args);
 
-    return res.send({message: 'Plan updated.'});
+    return res.status(204);
   },
 
   async deleteOne(req: Request, res: Response) {
@@ -59,6 +59,6 @@ export const privatePlanController = {
     const planRepo = new PlanRepo();
     await planRepo.deleteOne({plan_id, owner_id});
 
-    return res.send({message: 'Plan deleted.'});
+    return res.status(204);
   }
 };
