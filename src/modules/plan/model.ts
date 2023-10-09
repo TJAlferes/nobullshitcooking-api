@@ -17,9 +17,11 @@ export class Plan {
 
   static create(params: CreateParams) {
     const plan_id = GenerateUUIDv7StringId();
-    const plan = new Plan({...params, plan_id});
-    // persist HERE? using a repo interface?
-    return plan;
+    return new Plan({...params, plan_id});
+  }
+
+  static update(params: UpdateParams) {
+    return new Plan(params);
   }
 
   getDTO() {
@@ -44,7 +46,6 @@ type CreateParams = {
   author_id: string;
   owner_id:  string;
   plan_name: string;
-  plan_data: string;
 };
 
 type UpdateParams = CreateParams & {

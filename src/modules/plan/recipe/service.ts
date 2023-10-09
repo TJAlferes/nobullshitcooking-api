@@ -17,6 +17,13 @@ export class PlanRecipeService {
       PlanRecipe.create(plan_recipe).getDTO()
     );
 
+    // TO DO: also test for existence and uniqueness of recipe_number and day_number
+    // list
+    // for each number, check if that number is in the list
+    // if it is NOT in the list, throw
+    // else pull that number from the list
+    // finally, if list has any numbers remaining (not pulled), throw
+
     await this.repo.insert({placeholders, values});
   }
 }

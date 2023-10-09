@@ -127,9 +127,9 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
       FROM recipe
       WHERE recipe_id IN ? AND (author_id = owner_id)
     `;
-    const rows = await this.pool.execute(sql, recipe_ids);
-    return rows.length ? true : false;
-  }
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, recipe_ids);
+    return rows.length > 0 ? true : false;
+  }  // TO DO: thoroughly integration test this
 
   async viewAllOfficialTitles() {
     const author_id = NOBSC_USER_ID;
