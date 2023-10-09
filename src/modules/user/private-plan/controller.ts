@@ -1,9 +1,9 @@
 import type { Request, Response } from 'express';
 
-import { PlanRecipe }     from '../../plan/recipe/model';
-import { PlanRecipeRepo } from '../../plan/recipe/repo';
-import { Plan }           from '../../plan/model';
-import { PlanRepo }       from '../../plan/repo';
+import { PlanRecipeRepo }    from '../../plan/recipe/repo';
+import { PlanRecipeService } from '../../plan/recipe/service';
+import { Plan }              from '../../plan/model';
+import { PlanRepo }          from '../../plan/repo';
 
 export const privatePlanController = {
   async viewAll(req: Request, res: Response) {
@@ -28,45 +28,33 @@ export const privatePlanController = {
   },
 
   async create(req: Request, res: Response) {
-    const { plan_name, plan_data } = req.body;
+    const { plan_name, included_recipes } = req.body;
     const author_id = req.session.user_id!;
     const owner_id  = req.session.user_id!;
 
-    //
     const plan = Plan.create({author_id, owner_id, plan_name}).getDTO();
-
-    const plan_recipes = plan_data.map(recipe => 
-      PlanRecipe.create({plan_id: plan.plan_id, ...recipe}).getDTO()
-    );
 
     const planRepo = new PlanRepo();
     await planRepo.insert(plan);
 
-    const planRecipeRepo = new PlanRecipeRepo();
-    await planRecipeRepo.bulkInsert(plan_recipes);
-    //
+    const planRecipeService = new PlanRecipeService(new PlanRecipeRepo());
+    await planRecipeService.bulkCreate({plan_id: plan.plan_id, included_recipes});
 
     return res.status(201);
   },
 
   async update(req: Request, res: Response) {
-    const { plan_id, plan_name, plan_data } = req.body;
+    const { plan_id, plan_name, included_recipes } = req.body;
     const author_id = req.session.user_id!;
     const owner_id  = req.session.user_id!;
 
-    //
     const plan = Plan.update({plan_id, author_id, owner_id, plan_name}).getDTO();
-
-    const plan_recipes = plan_data.map(recipe => 
-      PlanRecipe.create({plan_id: plan.plan_id, ...recipe}).getDTO()
-    );
 
     const planRepo = new PlanRepo();
     await planRepo.update(plan);
 
-    const planRecipeRepo = new PlanRecipeRepo();
-    await planRecipeRepo.bulkUpdate(plan_recipes);
-    //
+    const planRecipeService = new PlanRecipeService(new PlanRecipeRepo());
+    await planRecipeService.bulkUpdate({plan_id: plan.plan_id, included_recipes});
 
     return res.status(204);
   },

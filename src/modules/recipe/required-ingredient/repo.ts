@@ -36,7 +36,7 @@ export class RecipeIngredientRepo extends MySQLRepo implements RecipeIngredientR
     try {
       let sql = `DELETE FROM recipe_ingredient WHERE recipe_id = ?`;
       await conn.query(sql, [recipe_id]);
-      if (recipe_ingredients.length) {
+      if (recipe_ingredients.length > 0) {
         let sql = `
           INSERT INTO recipe_ingredients (recipe_id, amount, unit_id, ingredient_id)
           VALUES ${placeholders}

@@ -30,7 +30,7 @@ export class RecipeMethodRepo extends MySQLRepo implements RecipeMethodRepoInter
     try {
       let sql = `DELETE FROM recipe_method WHERE recipe_id = ?`;
       await conn.query(sql, [recipe_id]);
-      if (recipe_methods.length) {
+      if (recipe_methods.length > 0) {
         let sql = `
           INSERT INTO recipe_method (recipe_id, method_id)
           VALUES ${placeholders}

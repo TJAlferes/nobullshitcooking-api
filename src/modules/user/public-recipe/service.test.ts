@@ -71,6 +71,15 @@ describe('PublicRecipeService', () => {
       }
     });
 
-    it('handles success', async () => {});
+    it('handles success', async () => {
+      equipmentRepoMock.hasPrivate.mockResolvedValue(false);
+      ingredientRepoMock.hasPrivate.mockResolvedValue(false);
+      recipeRepoMock.hasPrivate.mockResolvedValue(false);
+      try {
+        await service.checkForPrivateContent(params);
+      } catch (err: any) {
+        throw err;
+      }
+    });
   });
 });

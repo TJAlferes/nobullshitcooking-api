@@ -33,7 +33,7 @@ export class RecipeSubrecipeRepo extends MySQLRepo implements RecipeSubrecipeRep
     try {
       let sql = `DELETE FROM recipe_subrecipe WHERE recipe_id = ?`;
       await conn.query(sql, [recipe_id]);
-      if (recipe_subrecipes.length) {
+      if (recipe_subrecipes.length > 0) {
         let sql = `
           INSERT INTO recipe_subrecipe (recipe_id, amount, unit_id, subrecipe_id)
           VALUES ${placeholders}

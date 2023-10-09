@@ -32,7 +32,7 @@ export class RecipeEquipmentRepo extends MySQLRepo implements RecipeEquipmentRep
     try {
       let sql = `DELETE FROM recipe_equipment WHERE recipe_id = ?`;
       await conn.query(sql, [recipe_id]);
-      if (recipe_equipment.length) {
+      if (recipe_equipment.length > 0) {
         let sql = `
           INSERT INTO recipe_equipment (recipe_id, amount, equipment_id)
           VALUES ${placeholders}

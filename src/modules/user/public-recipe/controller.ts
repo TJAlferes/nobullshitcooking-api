@@ -190,7 +190,7 @@ export const publicRecipeController = {
     await recipeRepo.update(recipe);
 
     const recipeMethodService = new RecipeMethodService(new RecipeMethodRepo());
-    await recipeMethodService.bulkUpdate(required_methods);
+    await recipeMethodService.bulkUpdate(required_methods);  // TO DO: fix all these
 
     const recipeEquipmentService = new RecipeEquipmentService(new RecipeEquipmentRepo());
     await recipeEquipmentService.bulkUpdate(required_equipment);

@@ -15,17 +15,17 @@ export class PlanRecipeRepo extends MySQLRepo implements PlanRecipeRepoInterface
     return rows;
   }
 
-  async bulkInsert({ placeholders, values }: BulkInsertParams) {  // TO DO: change to namedPlaceholders using example below
+  async bulkInsert({ placeholders, plan_recipes }: BulkInsertParams) {  // TO DO: change to namedPlaceholders using example below
     const sql = `
       INSERT INTO plan_recipe (plan_id, recipe_id, day_number, recipe_number)
       VALUES ${placeholders}
     `;
-    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, values);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, plan_recipes);
     if (result.affectedRows < 1) throw new Error('Query not successful.');
     // just change bulkInserts to transactions?
   }
 
-  async bulkUpdate({ plan_id, placeholders, values }: BulkUpdateParams) {  // TO DO: change to namedPlaceholders using example below
+  async bulkUpdate({ plan_id, placeholders, plan_recipes }: BulkUpdateParams) {  // TO DO: change to namedPlaceholders using example below
     // Rather than updating current values in the database, we delete them,
     // and if there are new values, we insert them.
     const conn = await this.pool.getConnection();
@@ -33,12 +33,12 @@ export class PlanRecipeRepo extends MySQLRepo implements PlanRecipeRepoInterface
     try {
       let sql = `DELETE FROM plan_recipe WHERE plan_id = ?`;
       await conn.query(sql, [plan_id]);
-      if (values.length) {
+      if (plan_recipes.length > 0) {
         let sql = `
           INSERT INTO plan_recipe (plan_id, recipe_id, day_number, recipe_number)
           VALUES ${placeholders}
         `;
-        await conn.query(sql, values);
+        await conn.query(sql, plan_recipes);
       }
       await conn.commit();
     } catch (err) {
@@ -51,7 +51,8 @@ export class PlanRecipeRepo extends MySQLRepo implements PlanRecipeRepoInterface
 
   async deleteByPlanId(plan_id: string) {
     const sql = `DELETE FROM plan_recipe WHERE plan_id = ?`;
-    await this.pool.execute(sql, [plan_id]);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, plan_id);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }
 
@@ -71,13 +72,11 @@ type PlanRecipeRow = {
 
 type BulkInsertParams = {
   placeholders: string;
-  values:       PlanRecipeRow[];
+  plan_recipes: PlanRecipeRow[];
 };
 
-type BulkUpdateParams = {
-  plan_id:      string;
-  placeholders: string;
-  values:       PlanRecipeRow[];
+type BulkUpdateParams = BulkInsertParams & {
+  plan_id: string;
 };
 
 // just guessing for now, find out on frontend
