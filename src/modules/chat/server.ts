@@ -3,17 +3,15 @@ import type { Server }                      from 'node:http';
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import { createAdapter }                    from '@socket.io/redis-adapter';
 
-import { redisClients }   from '../../connections/redis';
-
+import { redisClients } from '../../connections/redis';
 import { FriendshipRepo } from '../user/friendship/repo';
-
 import { chatmessageController } from './message/controller';
 import type { ChatmessageView, PrivateChatmessageView } from './message/repo';
-import { chatroomController }    from './room/controller';
+//import { chatroomController } from './room/controller';
 import { chatroomUserController } from './room/user/controller';
-import { ChatUser }              from './user/model';
-import { ChatUserRepo }          from './user/repo';
-import { chatController }        from './controller';
+import { ChatUser } from './user/model';
+import { ChatUserRepo } from './user/repo';
+import { chatController } from './controller';
 
 export function createSocketIOServer(httpServer: Server, sessionMiddleware: RequestHandler) {
   const io = new SocketIOServer<ClientToServerEvents, ServerToClientEvents>(
@@ -39,7 +37,7 @@ export function createSocketIOServer(httpServer: Server, sessionMiddleware: Requ
   io.engine.use(sessionMiddleware);
   
   io.on('connection', async (socket: Socket) => {
-    const session_id = socket.request.session.id;
+    const session_id = (socket.request.session as any).id;
     const user_id    = socket.request.session.user_id;
     const username   = socket.request.session.username;
 

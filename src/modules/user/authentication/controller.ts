@@ -2,12 +2,13 @@ import { Request, Response } from 'express';
 
 import { socketIOServer }            from '../../..';
 import { NOBSC_USER_ID }             from '../../shared/model';
-import { ChatgroupRepo }             from '../../chat/group/repo';
+//import { ChatgroupRepo }             from '../../chat/group/repo';
 import { EquipmentRepo }             from '../../equipment/repo';
 import { IngredientRepo }            from '../../ingredient/repo';
 import { PlanRepo }                  from '../../plan/repo';
 import { RecipeRepo }                from '../../recipe/repo';
 import { FriendshipRepo }            from '../friendship/repo';
+import { UserImageRepo }             from '../image/repo';
 import { FavoriteRecipeRepo }        from '../favorite-recipe/repo';
 import { SavedRecipeRepo }           from '../saved-recipe/repo';
 import { UserRepo }                  from '../repo';
@@ -49,6 +50,7 @@ export const userAuthenticationController = {
 
     // get initial user data
 
+    const userImageRepo      = new UserImageRepo();
     const friendshipRepo     = new FriendshipRepo();
     const equipmentRepo      = new EquipmentRepo();
     const ingredientRepo     = new IngredientRepo();
@@ -56,9 +58,10 @@ export const userAuthenticationController = {
     const recipeRepo         = new RecipeRepo();
     const savedRecipeRepo    = new SavedRecipeRepo();
     const favoriteRecipeRepo = new FavoriteRecipeRepo();
-    const chatgroupRepo      = new ChatgroupRepo();
+    //const chatgroupRepo      = new ChatgroupRepo();
 
     const [
+      my_avatar,
       my_friendships,
       my_public_plans,
       my_public_recipes,
@@ -70,8 +73,9 @@ export const userAuthenticationController = {
       my_saved_recipes,
       //my_chatgroups
     ] = await Promise.all([
+      userImageRepo.viewCurrent(user_id),
       friendshipRepo.viewAll(user_id),
-      planRepo.overviewAll({
+      planRepo.viewAll({
         author_id: user_id,
         owner_id:  NOBSC_USER_ID
       }),
@@ -82,7 +86,7 @@ export const userAuthenticationController = {
       favoriteRecipeRepo.viewByUserId(user_id),
       equipmentRepo.viewAll(user_id),
       ingredientRepo.viewAll(user_id),
-      planRepo.overviewAll({
+      planRepo.viewAll({
         author_id: user_id,
         owner_id:  user_id
       }),
@@ -101,6 +105,7 @@ export const userAuthenticationController = {
       auth_id: user_id,
       auth_email: email,
       authname: username,
+      auth_avatar: my_avatar?.image_filename,
       my_friendships,
       my_public_plans,
       my_public_recipes,
@@ -110,7 +115,7 @@ export const userAuthenticationController = {
       my_private_plans,
       my_private_recipes,
       my_saved_recipes,
-      my_chatgroups: []
+      //my_chatgroups: []
     });
   },
 

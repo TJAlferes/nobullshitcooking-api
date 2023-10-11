@@ -15,6 +15,19 @@ import { redisClients }         from './connections/redis';
 import { createSocketIOServer } from './modules/chat/server';
 import { apiV1Router }          from './router';
 
+declare module "node:http" {
+  interface IncomingMessage {
+    session: Session & Partial<SessionData>;
+  }
+}
+
+declare module "express-session" {
+  interface SessionData {
+    user_id?:  string;
+    username?: string;
+  }
+}
+
 export function createAppServer() {
   const app = express();
 
@@ -116,26 +129,9 @@ export function createAppServer() {
   };
 }
 
-/*export type ModifiedSession = Session & {
-  user_id?:   string;
-  username?:  string;
-};
-
-declare module "node:http" {
-  interface IncomingMessage {
-    session: ModifiedSession;
-  }
-}*/
-declare module 'express-session' {
-  interface SessionData {
-    user_id?:  string;
-    username?: string;
-  }
-}
-
 export type RedisClients = {
   pubClient:     Redis;  //| Cluster;
   subClient:     Redis;  //| Cluster;
   sessionClient: RedisStore;  //Client;
   //workerClient:  Redis;
-}
+};
