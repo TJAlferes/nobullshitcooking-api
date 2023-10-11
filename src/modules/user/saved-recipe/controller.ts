@@ -32,6 +32,7 @@ export const userSavedRecipeController = {
         Use this "Save" to bookmark official recipes and public recipes created by other users.
       `});
     }
+    // TO DO: already saved
 
     const savedRecipe = SavedRecipe.create({user_id, recipe_id}).getDTO();
 

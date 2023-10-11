@@ -25,7 +25,7 @@ export const privatePlanController = {
     const row = await planRepo.viewOneByPlanId({plan_id, author_id, owner_id});
 
     return res.json(row);
-  },
+  },  // is this needed???
 
   async create(req: Request, res: Response) {
     const { plan_name, included_recipes } = req.body;

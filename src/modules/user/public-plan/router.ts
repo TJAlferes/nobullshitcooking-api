@@ -23,22 +23,22 @@ export function publicPlanRouter() {
   router.post(
     '/',
     userIsAuth,
-    sanitizeBody(['plan_name', 'plan_data']),
+    sanitizeBody(['plan_name', 'included_recipes.*.*']),
     catchExceptions(controller.create)
   );
 
   router.patch(
-    '/',
-    userIsAuth,
-    sanitizeBody(['plan_id', 'plan_name', 'plan_data']),
-    catchExceptions(controller.update)
-  );
-
-  router.delete(
-    '/:plan_id',
+    '/:plan_id/unattribute',
     userIsAuth,
     sanitizeParams('plan_id'),
-    catchExceptions(controller.deleteOne)
+    catchExceptions(controller.unattributeOne)
+  );
+
+  router.patch(
+    '/update',
+    userIsAuth,
+    sanitizeBody(['plan_id', 'plan_name', 'included_recipes.*.*']),
+    catchExceptions(controller.update)
   );
 
   return router;

@@ -28,6 +28,7 @@ export const userFavoriteRecipeController = {
     if (recipe.author_id === user_id) {
       return res.send({message: 'May not favorite own recipe.'});
     }
+    // TO DO: already favorited
 
     const favoriteRecipe = FavoriteRecipe.create({user_id, recipe_id}).getDTO();
 

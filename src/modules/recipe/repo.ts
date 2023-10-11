@@ -150,7 +150,11 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
     let sql = `
       SELECT
         r.recipe_id,
+        r.author_id,
         r.owner_id,
+        r.recipe_type_id,
+        r.cuisine_id,
+        u.username AS author,
         r.title,
         (
           SELECT
@@ -161,9 +165,13 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
           WHERE ri.type = 1
         ) image_filename
       FROM recipe r
+      INNER JOIN user u ON recipe.author_id = user.user_id
       WHERE r.author_id = ? AND r.owner_id = ?
     `;
-    const [ rows ] = await this.pool.execute<RecipeOverview[]>(sql, [author_id, owner_id]);
+    const [ rows ] = await this.pool.execute<(RecipeOverview & RowDataPacket)[]>(sql, [
+      author_id,
+      owner_id
+    ]);
     return rows;
   }  // for logged in user
 
@@ -305,7 +313,7 @@ export interface RecipeRepoInterface {
   search:                (searchRequest: SearchRequest) =>    Promise<SearchResponse>;
   hasPrivate:            (recipe_ids: string[]) =>            Promise<boolean>;
   viewAllOfficialTitles: () =>                                Promise<TitleView[]>;
-  overviewAll:           (params: OverviewAllParams) =>       Promise<RecipeOverview[]>;
+  overviewAll:           (params: OverviewAllParams) =>       Promise<(RecipeOverview & RowDataPacket)[]>;
   viewOneByRecipeId:     (params: ViewOneByRecipeIdParams) => Promise<RecipeView>;
   viewOneByTitle:        (params: ViewOneByTitleParams) =>    Promise<RecipeView>;
   insert:                (params: InsertParams) =>            Promise<void>;
@@ -325,9 +333,13 @@ type TitleView = RowDataPacket & {
   title: string;
 };
 
-export type RecipeOverview = RowDataPacket & {
+export type RecipeOverview = {
   recipe_id:      string;
+  author_id:      string;
   owner_id:       string;
+  recipe_type_id: number;
+  cuisine_id:     number;
+  author:         string;
   title:          string;
   image_filename: string;
 };

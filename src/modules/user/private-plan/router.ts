@@ -14,7 +14,7 @@ export function privatePlanRouter() {
     userIsAuth,
     sanitizeParams('plan_id'),
     catchExceptions(controller.viewOne)
-  );
+  );  // is this needed???
 
   router.get(
     '/',
@@ -25,14 +25,14 @@ export function privatePlanRouter() {
   router.post(
     '/',
     userIsAuth,
-    sanitizeBody(['plan_name', 'plan_data']),
+    sanitizeBody(['plan_name', 'included_recipes.*.*']),
     catchExceptions(controller.create)
   );
 
   router.patch(
     '/',
     userIsAuth,
-    sanitizeBody(['plan_id', 'plan_name', 'plan_data']),
+    sanitizeBody(['plan_id', 'plan_name', 'included_recipes.*.*']),
     catchExceptions(controller.update)
   );
 
