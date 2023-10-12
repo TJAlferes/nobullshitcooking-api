@@ -4,7 +4,7 @@ services:
 
   mysql-test:
     container_name: mysql-test
-    image: mysql:latest
+    image: mysql:8.1.0
     volumes:
       - ./init:/docker-entrypoint-initdb.d
       - mysql-test:/var/lib/mysql
@@ -26,7 +26,7 @@ services:
   
   redis-test:
     container_name: redis-test
-    image: redis:latest
+    image: redis:7.2.1
     healthcheck:
       test: redis-cli ping
     volumes:

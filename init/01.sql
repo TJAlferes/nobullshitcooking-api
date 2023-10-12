@@ -1040,7 +1040,7 @@ VALUES
 (18, 1, "Light",              "Soy Sauce",                                "light-soy-sauce");
 
 INSERT INTO ingredient
-(ingredient_type_id, author_id, owner_id, ingredient_brand, ingredient_name, notes, image_id)
+(ingredient_type_id, owner_id, ingredient_brand, ingredient_name, notes, image_id)
 VALUES
 (18, 1, "Tobasco",            "Hot Sauce",                                "tobasco-hot-sauce");
 
