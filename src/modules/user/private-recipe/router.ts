@@ -28,9 +28,10 @@ export function privateRecipeRouter() {
   ];
 
   router.get(
-    '/',
+    '/:recipe_id/edit',
     userIsAuth,
-    catchExceptions(controller.overviewAll)
+    sanitizeParams('recipe_id'),
+    catchExceptions(controller.edit)
   );
 
   router.get(
@@ -41,10 +42,9 @@ export function privateRecipeRouter() {
   );
 
   router.get(
-    '/:recipe_id/edit',
+    '/',
     userIsAuth,
-    sanitizeParams('recipe_id'),
-    catchExceptions(controller.edit)
+    catchExceptions(controller.overviewAll)
   );
 
   router.post(
@@ -55,7 +55,7 @@ export function privateRecipeRouter() {
   );
 
   router.patch(
-    '/',
+    '/update',
     userIsAuth,
     sanitizeBody(['recipe_id', ...recipe_upload]),
     catchExceptions(controller.update)

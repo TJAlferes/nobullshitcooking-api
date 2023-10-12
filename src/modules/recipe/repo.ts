@@ -139,13 +139,6 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
     return rows;
   }  // for Next.js getStaticPaths
 
-  /*async viewAllPublicTitles() {
-    const owner_id  = NOBSC_USER_ID;
-    const sql = `SELECT title FROM recipe WHERE owner_id = ?`;
-    const [ rows ] = await this.pool.execute<TitleView[]>(sql, owner_id);
-    return rows;
-  }  // for Next.js getStaticPaths (use this???)*/
-
   async overviewAll({ author_id, owner_id }: OverviewAllParams) {
     let sql = `
       SELECT

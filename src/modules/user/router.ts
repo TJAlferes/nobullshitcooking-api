@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { body }   from 'express-validator';
 
 import { catchExceptions, userIsAuth } from '../../utils';
+//import { chatgroupRouter }             from './chatgroup/router';
 import { privateEquipmentRouter }      from './private-equipment/router';
 import { privateIngredientRouter }     from './private-ingredient/router';
 import { privatePlanRouter }           from './private-plan/router';

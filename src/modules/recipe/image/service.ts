@@ -49,6 +49,7 @@ export class RecipeImageService {
     });
   }
 
+  // TO DO: this is all fucked up. you gotta thoroughly test this shit.
   async bulkUpdate({ author_id, owner_id, uploaded_images }: BulkUpdateParams) {
     if (uploaded_images.length !== 4) throw new Error("Recipe must have 4 images.");
 

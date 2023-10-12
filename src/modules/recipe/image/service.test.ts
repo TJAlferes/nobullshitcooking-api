@@ -23,7 +23,7 @@ describe("RecipeImageService", () => {
     recipeImageRepoMock = {
       viewByRecipeId: jest.fn(),
       bulkInsert: jest.fn(),
-      bulkUpdate: jest.fn(),
+      //bulkUpdate: jest.fn(),
       deleteByImageId: jest.fn(),
       deleteByRecipeId: jest.fn()
     };

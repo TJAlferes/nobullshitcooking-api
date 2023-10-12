@@ -16,6 +16,7 @@ import { RecipeSubrecipeService }  from '../../recipe/required-subrecipe/service
 import { Recipe }                  from '../../recipe/model';
 import { RecipeRepo }              from '../../recipe/repo';
 import { NOBSC_USER_ID }           from '../../shared/model';
+import { UserRepo }                from '../repo';
 import { PublicRecipeService }     from './service';
 
 export const publicRecipeController = {
@@ -30,19 +31,24 @@ export const publicRecipeController = {
   },
 
   async viewOne(req: Request, res: Response) {
-    const title     = unslugify(req.params.title);
-    const author    = unslugify(req.params.usename);  // hmm...
-    const author_id = req.session.user_id!;
+    const author = unslugify(req.params.usename);
+
+    const userRepo = new UserRepo();
+    const user = await userRepo.getByUsername(author);
+    if (!user) return res.status(404);
+
+    const title = unslugify(req.params.title);
+    const author_id = user.user_id;
     const owner_id  = NOBSC_USER_ID;
 
-    const repo = new RecipeRepo()
-    const row = await repo.viewOneByTitle({title, author_id, owner_id});
+    const recipeRepo = new RecipeRepo()
+    const row = await recipeRepo.viewOneByTitle({title, author_id, owner_id});
     
     return res.json(row);
   },
 
   async edit(req: Request, res: Response) {
-    const recipe_id = req.body.recipe_id;
+    const { recipe_id } = req.params;
     const author_id = req.session.user_id!;
     const owner_id  = NOBSC_USER_ID;
 
@@ -51,13 +57,6 @@ export const publicRecipeController = {
 
     return res.json(row);
   },
-
-  async viewAllTitles(req: Request, res: Response) {
-    const repo = new RecipeRepo();
-    const rows = await repo.viewPublicAllTitles();
-
-    return res.json(rows);
-  },  // for Next.js getStaticPaths
 
   async create(req: Request, res: Response) {
     const {
@@ -88,7 +87,6 @@ export const publicRecipeController = {
       ingredientRepo,
       recipeRepo
     });
-    // TO DO: ALSO CHECK FOR PRIVATE IMAGES
     await checkForPrivateContent({
       required_equipment,
       required_ingredients,
@@ -220,13 +218,13 @@ export const publicRecipeController = {
   },
 
   async unattributeOne(req: Request, res: Response) {
-    const recipe_id = req.body.recipe_id;
+    const { recipe_id } = req.params;
     const author_id = req.session.user_id!;
 
     const repo = new RecipeRepo();
     await repo.unattributeOne({author_id, recipe_id});
 
-    return res.status(204); //send({message: 'Recipe unattributed.'});
+    return res.status(204);
   }
 };
 

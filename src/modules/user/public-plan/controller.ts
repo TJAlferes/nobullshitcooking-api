@@ -14,7 +14,7 @@ export const publicPlanController = {
     const owner_id  = NOBSC_USER_ID;
 
     const planRepo = new PlanRepo();
-    const rows = await planRepo.overviewAll({author_id, owner_id});
+    const rows = await planRepo.viewAll({author_id, owner_id});
 
     return res.json(rows);
   },

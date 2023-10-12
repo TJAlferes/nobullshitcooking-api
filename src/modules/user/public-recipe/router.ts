@@ -1,5 +1,5 @@
-import { Router } from 'express';
-import { body, param }   from 'express-validator';
+import { Router }      from 'express';
+import { body, param } from 'express-validator';
 
 import { catchExceptions, userIsAuth }          from '../../../utils';
 import { publicRecipeController as controller } from './controller';
@@ -38,7 +38,7 @@ export function publicRecipeRouter() {
     '/:recipe_id',
     sanitizeParams('recipe_id'),
     catchExceptions(controller.viewOne)
-  );  // is Next.js using this correctly??? OR is this method and endpoint correct???
+  );
 
   router.get(
     '/',

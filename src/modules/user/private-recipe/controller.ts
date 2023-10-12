@@ -26,7 +26,7 @@ export const privateRecipeController = {
   },
 
   async viewOne(req: Request, res: Response) {
-    const recipe_id = req.body.recipe_id;
+    const { recipe_id } = req.params;
     const author_id = req.session.user_id!;
     const owner_id  = req.session.user_id!;
 
@@ -37,7 +37,7 @@ export const privateRecipeController = {
   },
 
   async edit(req: Request, res: Response) {
-    const recipe_id = req.body.recipe_id;
+    const { recipe_id } = req.params;
     const author_id = req.session.user_id!;
     const owner_id  = req.session.user_id!;
 
@@ -167,7 +167,7 @@ export const privateRecipeController = {
       recipeImageRepo: new RecipeImageRepo()
     });
     await recipeImageService.bulkUpdate({
-      recipe_id: recipe.recipe_id,
+      //recipe_id: recipe.recipe_id,
       author_id,
       owner_id,
       uploaded_images: [
@@ -182,12 +182,12 @@ export const privateRecipeController = {
   },
 
   async deleteOne(req: Request, res: Response) {
-    const recipe_id = req.body.recipe_id;
-    const owner_id  = req.session.user_id!;
+    const { recipe_id } = req.params;
+    const owner_id = req.session.user_id!;
 
     const recipeRepo = new RecipeRepo();
     await recipeRepo.deleteOne({owner_id, recipe_id});
 
-    return res.status(204); //send({message: 'Recipe deleted.'});
+    return res.status(204);
   }
 };

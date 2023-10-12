@@ -1,10 +1,11 @@
 import type { Request, Response } from 'express';
+import type { Session, SessionData } from 'express-session';
 
 import { friendshipController as controller } from './controller';
 import { FriendshipRepo } from './repo';
 import { UserRepo } from '../repo';
 import type { UserData } from '../repo';
-import type { ModifiedSession } from '../../../app';
+//import type { ModifiedSession } from '../../../app';
 
 jest.mock('./repo');
 jest.mock('../repo');
@@ -13,7 +14,8 @@ const friendshipRepoMock = FriendshipRepo as unknown as jest.Mocked<FriendshipRe
 const userRepoMock = UserRepo as unknown as jest.Mocked<UserRepo>;
 
 interface MockRequest extends Request {
-  session: ModifiedSession;
+  //session: ModifiedSession;
+  session: Session & Partial<SessionData>;
 }
 
 describe('friendshipController', () => {

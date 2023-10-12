@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express';
+import type { Session, SessionData } from 'express-session';
 
 import { publicRecipeController as controller } from "./controller";
 import { EquipmentRepo } from '../../equipment/repo';
@@ -10,7 +11,7 @@ import { RecipeIngredientRepo } from '../../recipe/required-ingredient/repo';
 import { RecipeMethodRepo } from '../../recipe/required-method/repo';
 import { RecipeSubrecipeRepo } from '../../recipe/required-subrecipe/repo';
 import { RecipeRepo } from '../../recipe/repo';
-import type { ModifiedSession } from '../../../app';
+//import type { ModifiedSession } from '../../../app';
 
 jest.mock('../../equipment/repo');
 jest.mock('../../ingredient/repo');
@@ -33,7 +34,8 @@ const recipeSubrecipeRepoMock = RecipeSubrecipeRepo as unknown as jest.Mocked<Re
 const recipeRepoMock = RecipeRepo as unknown as jest.Mocked<RecipeRepo>;
 
 interface MockRequest extends Request {
-  session: ModifiedSession;
+  //session: ModifiedSession;
+  session: Session & Partial<SessionData>;
 }
 
 // TO DO: FINISH

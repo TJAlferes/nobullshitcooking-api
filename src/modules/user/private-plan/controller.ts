@@ -11,7 +11,7 @@ export const privatePlanController = {
     const owner_id  = req.session.user_id!;
 
     const planRepo = new PlanRepo();
-    const rows = await planRepo.overviewAll({author_id, owner_id});
+    const rows = await planRepo.viewAll({author_id, owner_id});
     
     return res.json(rows);
   },

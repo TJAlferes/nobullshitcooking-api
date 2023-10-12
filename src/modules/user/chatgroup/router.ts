@@ -1,4 +1,4 @@
-import { Router }      from 'express';
+/*import { Router }      from 'express';
 import { body, param } from 'express-validator';
 
 import { chatgroupController }         from './controller';
@@ -53,3 +53,4 @@ export function chatgroupRouter() {
 function sanitize(keys: string | string[]) {
   return body(keys).not().isEmpty().trim().escape();
 }
+*/

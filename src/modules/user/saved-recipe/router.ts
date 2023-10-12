@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { body }   from 'express-validator';
+import { param }  from 'express-validator';
 
 import { userSavedRecipeController as controller } from './controller';
 import { catchExceptions, userIsAuth } from '../../../utils';
@@ -16,18 +16,22 @@ export function savedRecipeRouter() {
   );
 
   router.post(
-    '/',
+    '/:recipe_id',
     userIsAuth,
-    body('recipe_id').not().isEmpty().trim().escape(),
+    sanitizeParams('recipe_id'),
     catchExceptions(controller.create)
   );
 
   router.delete(
-    '/',
+    '/:recipe_id',
     userIsAuth,
-    body('recipe_id').not().isEmpty().trim().escape(),
+    sanitizeParams('recipe_id'),
     catchExceptions(controller.delete)
   );
 
   return router;
+}
+
+function sanitizeParams(keys: string | string[]) {
+  return param(keys).not().isEmpty().trim().escape();
 }
