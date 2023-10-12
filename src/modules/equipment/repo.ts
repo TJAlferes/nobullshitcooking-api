@@ -86,9 +86,9 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
     const sql = `
       SELECT *
       FROM equipment
-      WHERE equipment_id IN ? AND (author_id = owner_id)
+      WHERE equipment_id IN ? AND (owner_id = ?)
     `;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, equipment_ids);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [equipment_ids, NOBSC_USER_ID]);
     return rows.length > 0 ? true : false;
   }  // TO DO: thoroughly integration test this
 

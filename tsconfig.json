@@ -68,11 +68,5 @@
     "./src/",
     "./tests/",
     "./types/"
-  ],
-  "ts-node": {
-    //"esm": true,
-    "compilerOptions": {
-      "module": "CommonJS"
-    }
-  }
+  ]
 }

@@ -103,10 +103,10 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
     const sql = `
       SELECT *
       FROM ingredient
-      WHERE ingredient_id IN ? AND (author_id = owner_id)
-    `;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, ingredient_ids);
-    return rows.length > 0 ? true : false;
+      WHERE ingredient_id IN ? AND (owner_id = ?)
+      `;
+      const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ingredient_ids, NOBSC_USER_ID]);
+      return rows.length > 0 ? true : false;
   }  // TO DO: thoroughly integration test this
 
   async viewAll(owner_id: string) {

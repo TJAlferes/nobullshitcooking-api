@@ -35,8 +35,8 @@ export function publicRecipeRouter() {
   );
 
   router.get(
-    '/:recipe_id',
-    sanitizeParams('recipe_id'),
+    '/:title',
+    sanitizeParams('title'),
     catchExceptions(controller.viewOne)
   );
 
