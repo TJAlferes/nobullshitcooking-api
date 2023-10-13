@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { param }  from 'express-validator';
 
 import { recipeController as controller } from './controller.js';
-import { catchExceptions } from '../../index.js';
+import { catchExceptions } from '../../utils/index.js';
 
 const router = Router();
 

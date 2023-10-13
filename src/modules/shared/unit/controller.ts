@@ -7,7 +7,7 @@ export const unitController = {
     const repo = new UnitRepo();
     const rows = await repo.viewAll();
 
-    return res.send(rows);
+    return res.json(rows);
   },
 
   async viewOne(req: Request, res: Response) {
@@ -16,6 +16,6 @@ export const unitController = {
     const repo = new UnitRepo();
     const row = await repo.viewOne(unit_id);
 
-    return res.send(row);
+    return res.json(row);
   }
 };

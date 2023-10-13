@@ -91,6 +91,8 @@ export function apiV1Router() {
     sanitize('subfolder'),
     catchExceptions(AWSS3Controller.createPresignedUrl)
   );
+
+  return router;
 }
 
 function sanitize(keys: string | string[]) {

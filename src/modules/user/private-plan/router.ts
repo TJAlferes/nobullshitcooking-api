@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { body, param } from 'express-validator';
 
-import { catchExceptions, userIsAuth } from '../../../index.js';
+import { catchExceptions, userIsAuth } from '../../../utils/index.js';
 import { privatePlanController as controller } from './controller.js';
 
 const router = Router();

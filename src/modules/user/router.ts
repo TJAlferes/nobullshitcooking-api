@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
-import { catchExceptions, userIsAuth } from '../../index.js';
+import { catchExceptions, userIsAuth } from '../../utils/index.js';
 //import { chatgroupRouter }             from './chatgroup/router.js';
 import { privateEquipmentRouter }      from './private-equipment/router.js';
 import { privateIngredientRouter }     from './private-ingredient/router.js';

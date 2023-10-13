@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { socketIOServer }            from '../../..';
+import { socketIOServer } from '../../../index.js';
 import { NOBSC_USER_ID }             from '../../shared/model.js';
 //import { ChatgroupRepo }             from '../../chat/group/repo.js';
 import { EquipmentRepo }             from '../../equipment/repo.js';

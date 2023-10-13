@@ -1,5 +1,5 @@
 import { UserAuthenticationService } from "./service.js";
-import { emailUser } from "../shared/simple-email-service";
+import { emailUser } from "../shared/simple-email-service.js";
 import type { UserRepoInterface, UserData } from "../repo.js";
 
 jest.mock('../shared/simple-email-service');

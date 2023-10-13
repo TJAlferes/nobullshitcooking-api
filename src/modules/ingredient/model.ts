@@ -46,7 +46,7 @@ export class Ingredient {
   }
 }
 
-export function IngredientBrand(brand: string | undefined) {
+export function IngredientBrand(brand: string) {
   assert(brand, defaulted(string(), ''));
   if (brand.length > 50) {
     throw new Error("Ingredient brand must be no more than 50 characters.");
@@ -54,7 +54,7 @@ export function IngredientBrand(brand: string | undefined) {
   return brand;
 }
 
-export function IngredientVariety(variety: string | undefined) {
+export function IngredientVariety(variety: string) {
   assert(variety, defaulted(string(), ''));
   if (variety.length > 50) {
     throw new Error("Ingredient variety must be no more than 50 characters.");

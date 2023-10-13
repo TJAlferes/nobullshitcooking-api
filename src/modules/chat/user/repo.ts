@@ -1,4 +1,4 @@
-import { RedisRepo } from "../../shared/Redis";
+import { RedisRepo } from "../../shared/Redis.js";
 
 export class ChatUserRepo extends RedisRepo implements ChatUserRepoInterface {
   async getByUsername(username: string) {

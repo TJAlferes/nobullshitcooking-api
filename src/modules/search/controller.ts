@@ -12,7 +12,7 @@ export const searchController = {
 
     assert(term, validSearchTerm);
     const repo = new EquipmentRepo();
-    const found = await repo.autosuggest(term);
+    const found = await repo.autosuggest(term as string);
 
     return res.json({found});
   },
@@ -22,7 +22,7 @@ export const searchController = {
 
     assert(term, validSearchTerm);
     const repo = new IngredientRepo();
-    const found = await repo.autosuggest(term);
+    const found = await repo.autosuggest(term as string);
 
     return res.json({found});
   },
@@ -32,7 +32,7 @@ export const searchController = {
 
     assert(term, validSearchTerm);
     const repo = new RecipeRepo();
-    const found = await repo.autosuggest(term);
+    const found = await repo.autosuggest(term as string);
 
     return res.json({found});
   },

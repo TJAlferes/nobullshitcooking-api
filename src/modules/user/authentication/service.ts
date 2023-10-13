@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 
 import { UUIDv7StringId }        from '../../shared/model.js';
-import { emailUser }             from '../shared/simple-email-service';
+import { emailUser }             from '../shared/simple-email-service.js';
 import { Email, Password, User } from '../model.js';
 import { UserRepoInterface }     from '../repo.js';
 //crypto.timingSafeEqual() ???

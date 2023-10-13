@@ -1,5 +1,4 @@
-//import Redis from 'ioredis';
-const Redis = require('ioredis');  // temporary "fix" for TypeScript
+import { Redis } from 'ioredis';
 //import { Cluster } from 'ioredis';
 
 let config = {};

@@ -3,7 +3,7 @@ import type { Server }                      from 'node:http';
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import { createAdapter }                    from '@socket.io/redis-adapter';
 
-import { redisClients } from '../../connections/redis';
+import { redisClients } from '../../connections/redis.js';
 import { FriendshipRepo } from '../user/friendship/repo.js';
 import { chatmessageController } from './message/controller.js';
 import type { ChatmessageView, PrivateChatmessageView } from './message/repo.js';
