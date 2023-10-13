@@ -1,6 +1,6 @@
 DROP DATABASE IF EXISTS nobsc;
 
-CREATE DATABASE nobsc CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE DATABASE nobsc CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 
 USE nobsc;
 
@@ -150,7 +150,7 @@ CREATE TABLE ingredient (
 CREATE TABLE ingredient_alt_name (
   `ingredient_id` CHAR(36)     NOT NULL,
   `alt_name`      VARCHAR(50),
-  FOREIGN KEY (`ingredient_id`) REFERENCES `ingredient` (`ingredient_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`ingredient_id`) REFERENCES `ingredient` (`ingredient_id`) ON DELETE CASCADE
 );
 
 -- CREATE TABLE page ();
@@ -264,7 +264,7 @@ CREATE TABLE plan (
   `author_id` CHAR(36)    NOT NULL,
   `owner_id`  CHAR(36)    NOT NULL,
   `plan_name` VARCHAR(50) NOT NULL DEFAULT '',
-  FOREIGN KEY (`author_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
+  FOREIGN KEY (`author_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE,
   FOREIGN KEY (`owner_id`)  REFERENCES `user` (`user_id`) ON DELETE CASCADE
 );
 
@@ -273,20 +273,19 @@ CREATE TABLE plan_recipe (
   `recipe_id`     CHAR(36) NOT NULL,
   `day_number`    TINYINT  NOT NULL,
   `recipe_number` TINYINT  NOT NULL,
-  --PRIMARY KEY (day_id, recipe_id),
+  -- PRIMARY KEY (day_id, recipe_id),
   FOREIGN KEY (`plan_id`)   REFERENCES `plan` (`plan_id`) ON DELETE CASCADE,
   FOREIGN KEY (`recipe_id`) REFERENCES `recipe` (`recipe_id`) ON DELETE CASCADE
 );
 
---==============================================================================
+-- ==============================================================================
 
-INSERT INTO staff (email, `password`, staffname) VALUES
-("tjalferes@tjalferes.com", "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "T. J. Alferes");
+INSERT INTO staff (staff_id, email, `password`, staffname) VALUES
+("11111111-1111-1111-1111-111111111111", "tjalferes@tjalferes.com", "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "T. J. Alferes");
 
-INSERT INTO user (email, `password`, username) VALUES
-("tjalferes@tjalferes.com", "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "NOBSC"),
-("tjalferes@gmail.com",     "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "Unknown"),
-("testman@testman.com",     "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "Testman");
+INSERT INTO user (user_id, email, `password`, username) VALUES
+("00000000-0000-0000-0000-000000000000", "tjalferes@gmail.com",     "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "Unknown"),
+("11111111-1111-1111-1111-111111111111", "tjalferes@tjalferes.com", "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "NOBSC");
 
 INSERT INTO equipment_type (equipment_type_name) VALUES
 ("Cleaning"),
@@ -1040,7 +1039,7 @@ VALUES
 (18, 1, "Light",              "Soy Sauce",                                "light-soy-sauce");
 
 INSERT INTO ingredient
-(ingredient_type_id, owner_id, ingredient_brand, ingredient_name, notes, image_id)
+(ingredient_type_id, owner_id, ingredient_brand, ingredient_name, image_id)
 VALUES
 (18, 1, "Tobasco",            "Hot Sauce",                                "tobasco-hot-sauce");
 
