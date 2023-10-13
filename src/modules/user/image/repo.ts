@@ -1,6 +1,6 @@
 import { RowDataPacket } from 'mysql2/promise';
 
-import { MySQLRepo } from "../../shared/MySQL";
+import { MySQLRepo } from "../../shared/MySQL.js";
 
 export class UserImageRepo extends MySQLRepo implements UserImageRepoInterface {
   async viewAll(user_id: string) {

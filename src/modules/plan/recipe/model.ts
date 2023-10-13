@@ -1,6 +1,6 @@
 import { assert, number } from "superstruct";
 
-import { UUIDv7StringId } from '../../shared/model';
+import { UUIDv7StringId } from '../../shared/model.js';
 
 export class PlanRecipe {
   private plan_id;

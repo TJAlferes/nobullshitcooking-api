@@ -1,6 +1,6 @@
 import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
-import { MySQLRepo } from '../../shared/MySQL';
+import { MySQLRepo } from '../../shared/MySQL.js';
 
 // TO DO: store fullname instead of name???
 export class RecipeIngredientRepo extends MySQLRepo implements RecipeIngredientRepoInterface {

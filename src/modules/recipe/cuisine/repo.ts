@@ -1,6 +1,6 @@
 import { RowDataPacket } from 'mysql2/promise';
 
-import { MySQLRepo } from '../../shared/MySQL';
+import { MySQLRepo } from '../../shared/MySQL.js';
 
 export class CuisineRepo extends MySQLRepo implements CuisineRepoInterface {
   async viewAll() {

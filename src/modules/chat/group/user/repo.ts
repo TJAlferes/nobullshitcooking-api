@@ -1,6 +1,6 @@
 import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
-import { MySQLRepo } from "../../../shared/MySQL";
+import { MySQLRepo } from "../../../shared/MySQL.js";
 
 export class ChatgroupUserRepo extends MySQLRepo implements ChatgroupUserRepoInterface {
   async insert(params: InsertParams) {

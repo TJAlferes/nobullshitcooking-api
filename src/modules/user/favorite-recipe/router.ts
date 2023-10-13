@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { param }   from 'express-validator';
 
-import { userFavoriteRecipeController as controller } from './controller';
-import { catchExceptions, userIsAuth } from '../../../utils';
+import { userFavoriteRecipeController as controller } from './controller.js';
+import { catchExceptions, userIsAuth } from '../../../index.js';
 
 const router = Router();
 

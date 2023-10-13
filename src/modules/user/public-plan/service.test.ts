@@ -1,4 +1,4 @@
-import { PublicPlanService, RecipeRepoInterface } from "./service";
+import { PublicPlanService, RecipeRepoInterface } from "./service.js";
 
 describe('PublicRecipeService', () => {
   const included_recipes = [

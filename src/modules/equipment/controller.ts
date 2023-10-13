@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
-import { NOBSC_USER_ID } from '../shared/model';
-import { EquipmentRepo } from './repo';
+import { NOBSC_USER_ID } from '../shared/model.js';
+import { EquipmentRepo } from './repo.js';
 
 export const equipmentController = {
   async viewAll(req: Request, res: Response) {

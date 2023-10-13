@@ -1,6 +1,6 @@
 import { RowDataPacket } from 'mysql2/promise';
 
-import { MySQLRepo } from '../../shared/MySQL';
+import { MySQLRepo } from '../../shared/MySQL.js';
 
 // Each friendship is represented by TWO records in the table:
 //

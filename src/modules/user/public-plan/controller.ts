@@ -1,12 +1,12 @@
 import type { Request, Response } from 'express';
 
-import { RecipeRepo }        from '../../recipe/repo';
-import { NOBSC_USER_ID }     from '../../shared/model';
-import { PlanRecipeRepo }    from '../../plan/recipe/repo';
-import { PlanRecipeService } from '../../plan/recipe/service';
-import { Plan }              from '../../plan/model';
-import { PlanRepo }          from '../../plan/repo';
-import { PublicPlanService } from './service';
+import { RecipeRepo }        from '../../recipe/repo.js';
+import { NOBSC_USER_ID }     from '../../shared/model.js';
+import { PlanRecipeRepo }    from '../../plan/recipe/repo.js';
+import { PlanRecipeService } from '../../plan/recipe/service.js';
+import { Plan }              from '../../plan/model.js';
+import { PlanRepo }          from '../../plan/repo.js';
+import { PublicPlanService } from './service.js';
 
 export const publicPlanController = {
   async viewAll(req: Request, res: Response) {

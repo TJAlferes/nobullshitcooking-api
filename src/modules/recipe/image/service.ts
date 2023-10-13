@@ -1,7 +1,7 @@
-import { Image }                    from "../../image/model";
-import { ImageRepoInterface }       from "../../image/repo";
-import { RecipeImage }              from "./model";
-import { RecipeImageRepoInterface } from "./repo";
+import { Image }                    from "../../image/model.js";
+import { ImageRepoInterface }       from "../../image/repo.js";
+import { RecipeImage }              from "./model.js";
+import { RecipeImageRepoInterface } from "./repo.js";
 
 export class RecipeImageService {
   imageRepo:       ImageRepoInterface;

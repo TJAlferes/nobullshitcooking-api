@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 
-import { RecipeRepo }         from '../../recipe/repo';
-import { NOBSC_USER_ID }      from '../../shared/model';
-import { FavoriteRecipeRepo } from '../favorite-recipe/repo';
-import { UserRepo }           from '../repo';
+import { RecipeRepo }         from '../../recipe/repo.js';
+import { NOBSC_USER_ID }      from '../../shared/model.js';
+import { FavoriteRecipeRepo } from '../favorite-recipe/repo.js';
+import { UserRepo }           from '../repo.js';
 
 export const profileController = {
   async view(req: Request, res: Response) {

@@ -2,7 +2,7 @@ import type {
   RequiredEquipment,
   RequiredIngredient,
   RequiredSubrecipe
-} from "../../recipe/model";
+} from "../../recipe/model.js";
 
 export interface EquipmentRepoInterface {
   hasPrivate: (equipment_ids: string[]) => Promise<boolean>;

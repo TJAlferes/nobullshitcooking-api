@@ -1,6 +1,6 @@
 import { assert, string } from "superstruct";
 
-import { GenerateUUIDv7StringId, UUIDv7StringId, ImageFilename } from "../shared/model";
+import { GenerateUUIDv7StringId, UUIDv7StringId, ImageFilename } from "../shared/model.js";
 
 export class Image {
   private image_id;

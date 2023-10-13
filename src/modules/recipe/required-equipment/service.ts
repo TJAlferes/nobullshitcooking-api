@@ -1,5 +1,5 @@
-import { RecipeEquipment } from "./model";
-import { RecipeEquipmentRepoInterface } from "./repo";
+import { RecipeEquipment } from "./model.js";
+import { RecipeEquipmentRepoInterface } from "./repo.js";
 
 export class RecipeEquipmentService {
   repo: RecipeEquipmentRepoInterface;

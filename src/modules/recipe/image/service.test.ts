@@ -1,6 +1,6 @@
-import { ImageRepoInterface } from "../../image/repo";
-import { RecipeImageRepoInterface } from "./repo";
-import { RecipeImageService } from "./service";
+import { ImageRepoInterface } from "../../image/repo.js";
+import { RecipeImageRepoInterface } from "./repo.js";
+import { RecipeImageService } from "./service.js";
 
 jest.mock('../../image/repo');
 jest.mock('./repo');

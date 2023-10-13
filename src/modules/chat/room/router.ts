@@ -1,8 +1,8 @@
 /*import { Router }      from 'express';
 import { body, param } from 'express-validator';
 
-import { chatroomController }          from './controller';
-import { catchExceptions, userIsAuth } from '../../../utils';
+import { chatroomController }          from './controller.js';
+import { catchExceptions, userIsAuth } from '../../../index.js';
 
 const router = Router();
 

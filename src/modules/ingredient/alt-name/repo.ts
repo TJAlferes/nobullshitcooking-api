@@ -1,4 +1,4 @@
-import { MySQLRepo } from '../../shared/MySQL';
+import { MySQLRepo } from '../../shared/MySQL.js';
 
 export class IngredientAltNameRepo extends MySQLRepo implements IngredientAltNameRepoInterface {
   async insert({ placeholders, alt_names }: InsertParams) {

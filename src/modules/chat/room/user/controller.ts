@@ -1,8 +1,8 @@
 import { Socket } from 'socket.io';
 
-import { ChatroomRepo }     from '../repo';
-import { ChatroomUser }     from './model';
-import { ChatroomUserRepo } from './repo';
+import { ChatroomRepo }     from '../repo.js';
+import { ChatroomUser }     from './model.js';
+import { ChatroomUserRepo } from './repo.js';
 
 export function chatroomUserController(socket: Socket) {
   return {

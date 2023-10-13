@@ -1,5 +1,5 @@
-import { IngredientAltName } from "./model";
-import { IngredientAltNameRepoInterface } from "./repo";
+import { IngredientAltName } from "./model.js";
+import { IngredientAltNameRepoInterface } from "./repo.js";
 
 export class IngredientAltNameService {
   repo: IngredientAltNameRepoInterface;

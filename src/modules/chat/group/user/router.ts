@@ -1,8 +1,8 @@
 /*import { Router } from 'express';
 import { body }   from 'express-validator';
 
-import { chatgroupUserController }     from './controller';
-import { catchExceptions, userIsAuth } from '../../../../utils';
+import { chatgroupUserController }     from './controller.js';
+import { catchExceptions, userIsAuth } from '../../../../index.js';
 
 const router = Router();
 

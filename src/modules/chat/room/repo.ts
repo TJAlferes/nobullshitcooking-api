@@ -1,6 +1,6 @@
 import { RowDataPacket } from "mysql2";
 
-import { MySQLRepo } from "../../shared/MySQL";
+import { MySQLRepo } from "../../shared/MySQL.js";
 
 export class ChatroomRepo extends MySQLRepo implements ChatroomRepoInterface {
   async overviewAllByChatgroupId(chatgroup_id: string) {

@@ -1,6 +1,6 @@
 import { RowDataPacket } from 'mysql2/promise';
 
-import { MySQLRepo } from '../../shared/MySQL';
+import { MySQLRepo } from '../../shared/MySQL.js';
 
 export class FavoriteRecipeRepo extends MySQLRepo implements IFavoriteRecipeRepo {
   async viewByUserId(user_id: string) {

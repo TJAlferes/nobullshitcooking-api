@@ -1,5 +1,5 @@
-import { UUIDv7StringId } from '../../shared/model';
-import { IngredientName } from '../model';
+import { UUIDv7StringId } from '../../shared/model.js';
+import { IngredientName } from '../model.js';
 
 export class IngredientAltName {
   private ingredient_id;

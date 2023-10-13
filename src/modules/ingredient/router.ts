@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { param }  from 'express-validator';
 
-import { catchExceptions }      from '../../utils';
-import { ingredientController } from './controller';
+import { catchExceptions }      from '../../index.js';
+import { ingredientController } from './controller.js';
 
 const router = Router();
 

@@ -1,9 +1,9 @@
-import { PublicRecipeService } from "./service";
+import { PublicRecipeService } from "./service.js";
 import type {
   EquipmentRepoInterface,
   IngredientRepoInterface,
   RecipeRepoInterface
-} from "./service";
+} from "./service.js";
 
 // TO DO: handle optional amount and unit
 describe('PublicRecipeService', () => {

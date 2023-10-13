@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
-import { Equipment }     from '../../equipment/model';
-import { EquipmentRepo } from '../../equipment/repo';
+import { Equipment }     from '../../equipment/model.js';
+import { EquipmentRepo } from '../../equipment/repo.js';
 
 export const privateEquipmentController = {
   async viewAll(req: Request, res: Response) {

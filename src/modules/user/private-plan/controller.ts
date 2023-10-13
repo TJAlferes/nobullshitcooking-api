@@ -1,9 +1,9 @@
 import type { Request, Response } from 'express';
 
-import { PlanRecipeRepo }    from '../../plan/recipe/repo';
-import { PlanRecipeService } from '../../plan/recipe/service';
-import { Plan }              from '../../plan/model';
-import { PlanRepo }          from '../../plan/repo';
+import { PlanRecipeRepo }    from '../../plan/recipe/repo.js';
+import { PlanRecipeService } from '../../plan/recipe/service.js';
+import { Plan }              from '../../plan/model.js';
+import { PlanRepo }          from '../../plan/repo.js';
 
 export const privatePlanController = {
   async viewAll(req: Request, res: Response) {

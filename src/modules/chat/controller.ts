@@ -1,7 +1,7 @@
 import type { Socket } from "socket.io";
 
-import { FriendshipRepo } from "../user/friendship/repo";
-import { ChatUserRepo }   from "./user/repo";
+import { FriendshipRepo } from "../user/friendship/repo.js";
+import { ChatUserRepo }   from "./user/repo.js";
 
 export function chatController(socket: Socket) {
   return {

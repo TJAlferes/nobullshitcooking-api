@@ -1,4 +1,4 @@
-import { UUIDv7StringId } from '../../shared/model';
+import { UUIDv7StringId } from '../../shared/model.js';
 
 export class FavoriteRecipe {
   private user_id;

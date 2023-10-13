@@ -1,7 +1,7 @@
 /*import type { Request, Response } from "express";
 
-import { Chatgroup }     from "../../chat/group/model";
-import { ChatgroupRepo } from "../../chat/group/repo";
+import { Chatgroup }     from "../../chat/group/model.js";
+import { ChatgroupRepo } from "../../chat/group/repo.js";
 
 export const chatgroupController = {
   async viewOne() {

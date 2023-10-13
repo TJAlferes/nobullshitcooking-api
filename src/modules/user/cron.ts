@@ -1,4 +1,4 @@
-import { pool } from '../../connections/mysql';
+import { pool } from '../../connections/mysql.js';
 
 export const userCron = {
   async deleteStaleUnconfirmed() {

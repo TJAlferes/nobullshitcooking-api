@@ -1,4 +1,4 @@
-import type { IncludedRecipe } from "../../plan/recipe/model";
+import type { IncludedRecipe } from "../../plan/recipe/model.js";
 
 export interface RecipeRepoInterface {
   hasPrivate: (recipe_ids: string[]) => Promise<boolean>;

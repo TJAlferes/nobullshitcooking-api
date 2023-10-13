@@ -1,6 +1,6 @@
-import { PlanRecipe } from "./model";
-import type { IncludedRecipe } from "./model";
-import { PlanRecipeRepoInterface } from "./repo";
+import { PlanRecipe } from "./model.js";
+import type { IncludedRecipe } from "./model.js";
+import { PlanRecipeRepoInterface } from "./repo.js";
 
 export class PlanRecipeService {
   repo: PlanRecipeRepoInterface;

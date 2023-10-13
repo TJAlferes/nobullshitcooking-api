@@ -1,7 +1,7 @@
 import { ResultSetHeader } from 'mysql2';
 
-import { NOBSC_USER_ID, UNKNOWN_USER_ID } from '../shared/model';
-import { MySQLRepo }                      from '../shared/MySQL';
+import { NOBSC_USER_ID, UNKNOWN_USER_ID } from '../shared/model.js';
+import { MySQLRepo }                      from '../shared/MySQL.js';
 
 export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
   async bulkInsert({ placeholders, images }: BulkInsertParams) {

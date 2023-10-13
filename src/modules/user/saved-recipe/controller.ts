@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 
-import { NOBSC_USER_ID }   from '../../shared/model';
-import { RecipeRepo }      from '../../recipe/repo';
-import { SavedRecipe }     from './model';
-import { SavedRecipeRepo } from './repo';
+import { NOBSC_USER_ID }   from '../../shared/model.js';
+import { RecipeRepo }      from '../../recipe/repo.js';
+import { SavedRecipe }     from './model.js';
+import { SavedRecipeRepo } from './repo.js';
 
 export const userSavedRecipeController = {
   async viewByUserId(req: Request, res: Response) {

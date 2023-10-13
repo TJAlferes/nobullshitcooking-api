@@ -1,6 +1,6 @@
 import { assert, string } from 'superstruct';
 
-import { GenerateUUIDv7StringId, UUIDv7StringId } from "../../shared/model";
+import { GenerateUUIDv7StringId, UUIDv7StringId } from "../../shared/model.js";
 
 export class Chatroom {
   private chatroom_id;

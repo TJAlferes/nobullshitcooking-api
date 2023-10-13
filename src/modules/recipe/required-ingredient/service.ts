@@ -1,5 +1,5 @@
-import { RecipeIngredient }      from "./model";
-import { RecipeIngredientRepoInterface } from "./repo";
+import { RecipeIngredient }      from "./model.js";
+import { RecipeIngredientRepoInterface } from "./repo.js";
 
 export class RecipeIngredientService {
   repo: RecipeIngredientRepoInterface;

@@ -9,11 +9,11 @@ import helmet                                       from 'helmet';
 import hpp                                          from 'hpp';
 import { createServer }                             from 'node:http';
 import type { Redis }                               from 'ioredis';
-import pino                                         from 'pino-http';  // logger
+const pino = require('pino-http')  // logger
 
-import { redisClients }         from './connections/redis';
-import { createSocketIOServer } from './modules/chat/server';
-import { apiV1Router }          from './router';
+import { redisClients }         from './connections/redis.js';
+import { createSocketIOServer } from './modules/chat/server.js';
+import { apiV1Router }          from './router.js';
 
 declare module "node:http" {
   interface IncomingMessage {

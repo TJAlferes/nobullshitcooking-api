@@ -1,11 +1,11 @@
-import { ImageRepo } from '../image/repo';
-import { PlanRepo } from '../plan/repo';
-import { RecipeRepo } from '../recipe/repo';
-import { EquipmentRepo } from '../equipment/repo';
-import { IngredientRepo } from '../ingredient/repo';
-import { NOBSC_USER_ID, UNKNOWN_USER_ID } from "../shared/model";
-import { UserService } from "./service";
-import type { UserRepoInterface, UserData } from "./repo";
+import { ImageRepo } from '../image/repo.js';
+import { PlanRepo } from '../plan/repo.js';
+import { RecipeRepo } from '../recipe/repo.js';
+import { EquipmentRepo } from '../equipment/repo.js';
+import { IngredientRepo } from '../ingredient/repo.js';
+import { NOBSC_USER_ID, UNKNOWN_USER_ID } from "../shared/model.js";
+import { UserService } from "./service.js";
+import type { UserRepoInterface, UserData } from "./repo.js";
 
 jest.mock('../image/repo');
 jest.mock('../plan/repo');

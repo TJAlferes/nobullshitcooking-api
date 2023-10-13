@@ -1,6 +1,6 @@
 import { assert, string } from 'superstruct';
 
-import { UUIDv7StringId } from '../../shared/model';
+import { UUIDv7StringId } from '../../shared/model.js';
 
 // problem: you're not expliciting defining valid state transitions in here,
 // you're doing most of it in the controller and some of it in the repo

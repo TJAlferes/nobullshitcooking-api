@@ -1,19 +1,19 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
-import { catchExceptions, userIsAuth } from '../../utils';
-//import { chatgroupRouter }             from './chatgroup/router';
-import { privateEquipmentRouter }      from './private-equipment/router';
-import { privateIngredientRouter }     from './private-ingredient/router';
-import { privatePlanRouter }           from './private-plan/router';
-import { privateRecipeRouter }         from './private-recipe/router';
-import { savedRecipeRouter }           from './saved-recipe/router';
-import { friendshipRouter }            from './friendship/router';
-import { publicPlanRouter }            from './public-plan/router';
-import { publicRecipeRouter }          from './public-recipe/router';
-import { favoriteRecipeRouter }        from './favorite-recipe/router';
-import { userController }              from './controller';
-import { userImageRouter } from './image/router';
+import { catchExceptions, userIsAuth } from '../../index.js';
+//import { chatgroupRouter }             from './chatgroup/router.js';
+import { privateEquipmentRouter }      from './private-equipment/router.js';
+import { privateIngredientRouter }     from './private-ingredient/router.js';
+import { privatePlanRouter }           from './private-plan/router.js';
+import { privateRecipeRouter }         from './private-recipe/router.js';
+import { savedRecipeRouter }           from './saved-recipe/router.js';
+import { friendshipRouter }            from './friendship/router.js';
+import { publicPlanRouter }            from './public-plan/router.js';
+import { publicRecipeRouter }          from './public-recipe/router.js';
+import { favoriteRecipeRouter }        from './favorite-recipe/router.js';
+import { userController }              from './controller.js';
+import { userImageRouter } from './image/router.js';
 
 const router = Router();
 

@@ -1,6 +1,6 @@
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 
-import { MySQLRepo } from "../../shared/MySQL";
+import { MySQLRepo } from "../../shared/MySQL.js";
 
 export class ChatgroupRepo extends MySQLRepo implements ChatgroupRepoInterface {
   async getOwnerId(chatgroup_id: string) {

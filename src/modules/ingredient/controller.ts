@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 
-import { NOBSC_USER_ID } from '../shared/model';
-import { IngredientRepo } from './repo';
+import { NOBSC_USER_ID } from '../shared/model.js';
+import { IngredientRepo } from './repo.js';
 
 export const ingredientController = {
   async viewAll(req: Request, res: Response) {

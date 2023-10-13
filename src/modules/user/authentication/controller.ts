@@ -1,18 +1,18 @@
 import { Request, Response } from 'express';
 
 import { socketIOServer }            from '../../..';
-import { NOBSC_USER_ID }             from '../../shared/model';
-//import { ChatgroupRepo }             from '../../chat/group/repo';
-import { EquipmentRepo }             from '../../equipment/repo';
-import { IngredientRepo }            from '../../ingredient/repo';
-import { PlanRepo }                  from '../../plan/repo';
-import { RecipeRepo }                from '../../recipe/repo';
-import { FriendshipRepo }            from '../friendship/repo';
-import { UserImageRepo }             from '../image/repo';
-import { FavoriteRecipeRepo }        from '../favorite-recipe/repo';
-import { SavedRecipeRepo }           from '../saved-recipe/repo';
-import { UserRepo }                  from '../repo';
-import { UserAuthenticationService } from './service';
+import { NOBSC_USER_ID }             from '../../shared/model.js';
+//import { ChatgroupRepo }             from '../../chat/group/repo.js';
+import { EquipmentRepo }             from '../../equipment/repo.js';
+import { IngredientRepo }            from '../../ingredient/repo.js';
+import { PlanRepo }                  from '../../plan/repo.js';
+import { RecipeRepo }                from '../../recipe/repo.js';
+import { FriendshipRepo }            from '../friendship/repo.js';
+import { UserImageRepo }             from '../image/repo.js';
+import { FavoriteRecipeRepo }        from '../favorite-recipe/repo.js';
+import { SavedRecipeRepo }           from '../saved-recipe/repo.js';
+import { UserRepo }                  from '../repo.js';
+import { UserAuthenticationService } from './service.js';
 
 export const userAuthenticationController = {
   async confirm(req: Request, res: Response) {

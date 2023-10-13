@@ -3,8 +3,8 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-import { userCron }        from './modules/user/cron';
-import { createAppServer } from './app';
+import { userCron }        from './modules/user/cron.js';
+import { createAppServer } from './app.js';
 
 export const { httpServer, socketIOServer } = createAppServer();
 

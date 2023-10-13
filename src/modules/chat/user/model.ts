@@ -1,6 +1,6 @@
 import { assert, boolean, string } from 'superstruct';
 
-import { Username } from '../../user/model';
+import { Username } from '../../user/model.js';
 
 export class ChatUser {
   private session_id;

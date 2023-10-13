@@ -1,6 +1,6 @@
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 
-import { MySQLRepo } from "../../../shared/MySQL";
+import { MySQLRepo } from "../../../shared/MySQL.js";
 
 export class ChatroomUserRepo extends MySQLRepo implements ChatroomUserRepoInterface {
   //async viewByChatroomId(chatroom_id: string) {}
