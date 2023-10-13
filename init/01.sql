@@ -572,7 +572,7 @@ INSERT INTO cuisine (continent_code, country_code, cuisine_name, country_name) V
 ("OC", "TON", "Tongan",            "Tonga"),
 ("OC", "TUV", "Tuvaluan",          "Tuvalu"),
 ("OC", "VUT", "Vanuatuan",         "Vanuatu");
-
+/*
 INSERT INTO equipment
 (equipment_type_id, owner_id, equipment_name, image_id)
 VALUES
@@ -634,7 +634,7 @@ VALUES
 (3, 1, "Sturdy Spatula",                   "sturdy-spatula"),
 (3, 1, "Fish Spatula",                     "fish-spatula"),
 (3, 1, "Ladle",                            "ladle");
-
+*/
 INSERT INTO ingredient
 (ingredient_type_id, owner_id, ingredient_variety, ingredient_name, image_id)
 VALUES
