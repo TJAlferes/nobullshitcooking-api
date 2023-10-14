@@ -1,5 +1,7 @@
 import { pool } from "../src/connections/mysql.js";
 import { seedEquipment } from './equipment.js';
+import { seedIngredient } from "./ingredient.js";
+import { seedRecipe } from "./recipe.js";
 
 async function seedDatabase() {
   const conn = await pool.getConnection();
@@ -8,8 +10,8 @@ async function seedDatabase() {
     console.log(`seedDatabase begin`);
 
     await seedEquipment(conn);
-    //await seedIngredient(conn);
-    //await seedRecipe(conn);
+    await seedIngredient(conn);
+    await seedRecipe(conn);
     //await seedRecipeEquipment(conn);
     //await seedRecipeIngredient(conn);
     //await seedRecipeMethod(conn);
