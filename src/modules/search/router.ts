@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import { query }  from 'express-validator';
 
-import { searchController } from './controller';
-import { catchExceptions }  from '../../utils';
+import { searchController } from './controller.js';
+import { catchExceptions }  from '../../utils/index.js';
 
 const router = Router();
 
-// for /search/...
+// for /search
 
 export function searchRouter() {
   router.get(

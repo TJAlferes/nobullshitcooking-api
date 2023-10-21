@@ -1,13 +1,16 @@
-FROM node:16.19.0
+FROM node:18.18.0
+
+RUN npm config set cache /custom-npm-cache-dir
 
 EXPOSE 3003
 
-WORKDIR /code
+WORKDIR /app
 
 COPY package*.json /
 
 RUN npm install && npm cache clean --force
+#--unsafe-perm=true --allow-root
 
 COPY . .
 
-CMD npm run dev-ts
+CMD ["npm", "run", "dev"]

@@ -1,8 +1,8 @@
 import { RowDataPacket } from 'mysql2/promise';
 
-import { MySQLRepo } from '../../shared/MySQL';
+import { MySQLRepo } from '../../shared/MySQL.js';
 
-export class MethodRepo extends MySQLRepo implements IMethodRepo {
+export class MethodRepo extends MySQLRepo implements MethodRepoInterface {
   async viewAll() {
     const sql = `SELECT method_id, method_name FROM method`;
     const [ rows ] = await this.pool.execute<MethodView[]>(sql);
@@ -16,7 +16,7 @@ export class MethodRepo extends MySQLRepo implements IMethodRepo {
   }
 }
 
-export interface IMethodRepo {
+export interface MethodRepoInterface {
   viewAll: () =>                  Promise<MethodView[]>;
   viewOne: (method_id: number) => Promise<MethodView>;
 }

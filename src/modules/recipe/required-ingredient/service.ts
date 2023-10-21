@@ -1,15 +1,15 @@
-import { RecipeIngredient }      from "./model";
-import { IRecipeIngredientRepo } from "./repo";
+import { RecipeIngredient }      from "./model.js";
+import { RecipeIngredientRepoInterface } from "./repo.js";
 
 export class RecipeIngredientService {
-  repo: IRecipeIngredientRepo;
+  repo: RecipeIngredientRepoInterface;
 
-  constructor(repo: IRecipeIngredientRepo) {
+  constructor(repo: RecipeIngredientRepoInterface) {
     this.repo = repo;
   }
 
-  async create({ recipe_id, required_ingredients }: CreateParams) {
-    if (!required_ingredients.length) return;
+  async bulkCreate({ recipe_id, required_ingredients }: BulkCreateParams) {
+    if (required_ingredients.length < 1) return;
 
     const placeholders = '(?, ?, ?, ?),'
       .repeat(required_ingredients.length)
@@ -19,11 +19,11 @@ export class RecipeIngredientService {
       RecipeIngredient.create({recipe_id, ...ri}).getDTO()
     );
 
-    await this.repo.insert({placeholders, recipe_ingredients});
+    await this.repo.bulkInsert({placeholders, recipe_ingredients});
   }
 
-  async update({ recipe_id, required_ingredients }: UpdateParams) {
-    if (!required_ingredients.length) {
+  async bulkUpdate({ recipe_id, required_ingredients }: BulkUpdateParams) {
+    if (required_ingredients.length < 1) {
       await this.repo.deleteByRecipeId(recipe_id);
       return;
     }
@@ -36,19 +36,19 @@ export class RecipeIngredientService {
       RecipeIngredient.create({recipe_id, ...ri}).getDTO()
     );
 
-    await this.repo.update({recipe_id, placeholders, recipe_ingredients});
+    await this.repo.bulkUpdate({recipe_id, placeholders, recipe_ingredients});
   }
 }
 
-type CreateParams = {
+type BulkCreateParams = {
   recipe_id:            string;
   required_ingredients: RequiredIngredient[];
 };
 
-type UpdateParams = CreateParams;
+type BulkUpdateParams = BulkCreateParams;
 
 type RequiredIngredient = {
-  amount?:       number;
-  unit_id?:      number;
+  amount:        number | null;
+  unit_id:       number | null;
   ingredient_id: string;
 };

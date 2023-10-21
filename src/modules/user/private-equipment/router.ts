@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { body }   from 'express-validator';
+import { body, param } from 'express-validator';
 
-import { catchExceptions, userIsAuth }              from '../../../../utils';
-import { privateEquipmentController as controller } from './controller';
+import { catchExceptions, userIsAuth }              from '../../../utils/index.js';
+import { privateEquipmentController as controller } from './controller.js';
 
 const router = Router();
 
@@ -17,49 +17,46 @@ export function privateEquipmentRouter() {
   ];
 
   router.get(
+    '/:equipment_id',
+    userIsAuth,
+    sanitizeParams('equipment_id'),
+    catchExceptions(controller.viewOne)
+  );
+
+  router.get(
     '/',
     userIsAuth,
     catchExceptions(controller.viewAll)
   );
 
-  router.get(
-    '/:equipment_id',
-    userIsAuth,
-    bodySanitizer('equipment_id'),
-    catchExceptions(controller.viewOne)
-  );
-
   router.post(
     '/',
     userIsAuth,
-    bodySanitizer(equipment_upload),
+    sanitizeBody(equipment_upload),
     catchExceptions(controller.create)
   );
 
-  router.get(
-    '/edit',
-    userIsAuth,
-    bodySanitizer('equipment_id'),
-    catchExceptions(controller.edit)
-  );
-
-  router.put(
+  router.patch(
     '/',
     userIsAuth,
-    bodySanitizer(['equipment_id', ...equipment_upload]),
+    sanitizeBody(['equipment_id', ...equipment_upload]),
     catchExceptions(controller.update)
   );
 
   router.delete(
-    '/',
+    '/:equipment_id',
     userIsAuth,
-    bodySanitizer('equipment_id'),
+    sanitizeParams('equipment_id'),
     catchExceptions(controller.deleteOne)
   );
 
   return router;
 }
 
-function bodySanitizer(keys: string | string[]) {
+function sanitizeBody(keys: string | string[]) {
   return body(keys).not().isEmpty().trim().escape();
+}
+
+function sanitizeParams(keys: string | string[]) {
+  return param(keys).not().isEmpty().trim().escape();
 }

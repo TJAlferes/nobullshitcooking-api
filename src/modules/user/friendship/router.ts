@@ -1,25 +1,65 @@
 import { Router } from 'express';
-import { body }   from 'express-validator';
+import { param }   from 'express-validator';
 
-import { catchExceptions, userIsAuth }            from '../../../utils';
-import { userFriendshipController as controller } from './controller';
+import { catchExceptions, userIsAuth }        from '../../../utils/index.js';
+import { friendshipController as controller } from './controller.js';
 
 const router = Router();
 
-// for /user/friendship/...
+// for /users/:username/friendships/:friendname
 
-export function userFriendshipRouter() {
-  router.post(  '/',        userIsAuth,                         catchExceptions(controller.viewAll));
-  router.post(  '/create',  userIsAuth, sanitize('friendname'), catchExceptions(controller.create));
-  router.put(   '/accept',  userIsAuth, sanitize('friendname'), catchExceptions(controller.accept));
-  router.put(   '/reject',  userIsAuth, sanitize('friendname'), catchExceptions(controller.reject));
-  router.delete('/delete',  userIsAuth, sanitize('friendname'), catchExceptions(controller.delete));
-  router.post(  '/block',   userIsAuth, sanitize('friendname'), catchExceptions(controller.block));
-  router.delete('/unblock', userIsAuth, sanitize('friendname'), catchExceptions(controller.unblock));
+export function friendshipRouter() {
+  router.get(
+    '/',
+    userIsAuth,
+    catchExceptions(controller.viewAll)
+  );
+  
+  router.post(
+    '/create',
+    userIsAuth,
+    sanitizeParams('friendname'),
+    catchExceptions(controller.create)
+  );
+  
+  router.put(
+    '/accept',
+    userIsAuth,
+    sanitizeParams('friendname'),
+    catchExceptions(controller.accept)
+  );
+  
+  router.put(
+    '/reject',
+    userIsAuth,
+    sanitizeParams('friendname'),
+    catchExceptions(controller.reject)
+  );
+  
+  router.delete(
+    '/delete',
+    userIsAuth,
+    sanitizeParams('friendname'),
+    catchExceptions(controller.delete)
+  );
+  
+  router.post(
+    '/block',
+    userIsAuth,
+    sanitizeParams('friendname'),
+    catchExceptions(controller.block)
+  );
+  
+  router.delete(
+    '/unblock',
+    userIsAuth,
+    sanitizeParams('friendname'),
+    catchExceptions(controller.unblock)
+  );
 
   return router;
 }
 
-function sanitize(keys: string | string[]) {
-  return body(keys).not().isEmpty().trim().escape();
+function sanitizeParams(keys: string | string[]) {
+  return param(keys).not().isEmpty().trim().escape();
 }

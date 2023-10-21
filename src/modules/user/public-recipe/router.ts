@@ -1,12 +1,12 @@
-import { Router } from 'express';
-import { body }   from 'express-validator';
+import { Router }      from 'express';
+import { body, param } from 'express-validator';
 
-import { catchExceptions, userIsAuth }          from '../../../../utils';
-import { publicRecipeController as controller } from './controller';
+import { catchExceptions, userIsAuth }          from '../../../utils/index.js';
+import { publicRecipeController as controller } from './controller.js';
 
 const router = Router();
 
-// for /user/public/recipe/...
+// for /users/:username/public-recipes
 
 export function publicRecipeRouter() {
   const recipe_upload = [
@@ -27,48 +27,52 @@ export function publicRecipeRouter() {
     'cooking_image*'
   ];
 
-  router.post(
-    '/all',
+  router.get(
+    '/:recipe_id/edit',
+    userIsAuth,
+    sanitizeParams('recipe_id'),
+    catchExceptions(controller.edit)
+  );
+
+  router.get(
+    '/:title',
+    sanitizeParams('title'),
+    catchExceptions(controller.viewOne)
+  );
+
+  router.get(
+    '/',
     catchExceptions(controller.overviewAll)
   );
 
   router.post(
-    '/one',
-    sanitize('recipe_id'),
-    catchExceptions(controller.viewOne)
-  );  // is Next.js using this correctly??? OR is this method and endpoint correct???
-
-  router.post(
-    '/create',
+    '/',
     userIsAuth,
-    sanitize(recipe_upload),
+    sanitizeBody(recipe_upload),
     catchExceptions(controller.create)
   );
 
-  router.post(
-    '/edit',
+  router.patch(
+    '/:recipe_id/unattribute',
     userIsAuth,
-    sanitize('recipe_id'),
-    catchExceptions(controller.edit)
+    sanitizeParams('recipe_id'),
+    catchExceptions(controller.unattributeOne)
   );
 
-  router.put(
+  router.patch(
     '/update',
     userIsAuth,
-    sanitize(['recipe_id', ...recipe_upload]),
+    sanitizeBody(['recipe_id', ...recipe_upload]),
     catchExceptions(controller.update)
-  );
-
-  router.delete(
-    '/disown',
-    userIsAuth,
-    sanitize('recipe_id'),
-    catchExceptions(controller.disownOne)
   );
 
   return router;
 }
 
-function sanitize(keys: string | string[]) {
+function sanitizeBody(keys: string | string[]) {
   return body(keys).not().isEmpty().trim().escape();
+}
+
+function sanitizeParams(keys: string | string[]) {
+  return param(keys).not().isEmpty().trim().escape();
 }

@@ -1,50 +1,35 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
-import { userController }              from './controller';
-import { catchExceptions, userIsAuth } from '../../utils';
-
-import { userInitialDataRouter }   from './initial-data/router';
-import { privateEquipmentRouter }  from './private-equipment/router';
-import { privateIngredientRouter } from './private-ingredient/router';
-import { privatePlanRouter }       from './private-plan/router';
-import { privateRecipeRouter }     from './private-recipe/router';
-import { savedRecipeRouter }       from './saved-recipe/router';
-
-import { friendshipRouter }     from './friendship/router';
-
-import { profileRouter }           from './profile/router';
-import { publicPlanRouter }        from './public-plan/router';
-import { publicRecipeRouter }      from './public-recipe/router';
-import { favoriteRecipeRouter }    from './favorite-recipe/router';
-
-import { authenticationRouter } from './authentication/router';
-
-import { signedUrlRouter }      from './shared/signed-url/router';
+import { catchExceptions, userIsAuth } from '../../utils/index.js';
+//import { chatgroupRouter }             from './chatgroup/router.js';
+import { privateEquipmentRouter }      from './private-equipment/router.js';
+import { privateIngredientRouter }     from './private-ingredient/router.js';
+import { privatePlanRouter }           from './private-plan/router.js';
+import { privateRecipeRouter }         from './private-recipe/router.js';
+import { savedRecipeRouter }           from './saved-recipe/router.js';
+import { friendshipRouter }            from './friendship/router.js';
+import { publicPlanRouter }            from './public-plan/router.js';
+import { publicRecipeRouter }          from './public-recipe/router.js';
+import { favoriteRecipeRouter }        from './favorite-recipe/router.js';
+import { userController }              from './controller.js';
+import { userImageRouter } from './image/router.js';
 
 const router = Router();
 
-// for /users...
+// for /users
 
 export function userRouter() {
-  router.use('/:username/private-equipment',   privateEquipmentRouter());
-
+  router.use(':/username/avatars', userImageRouter());
+  router.use('/:username/public-plans', publicPlanRouter());
+  router.use('/:username/public-recipes', publicRecipeRouter());
+  router.use('/:username/favorite-recipes', favoriteRecipeRouter());
+  router.use('/:username/private-equipment', privateEquipmentRouter());
   router.use('/:username/private-ingredients', privateIngredientRouter());
-
-  router.use('/:username/private-recipes',     privateRecipeRouter());
-  router.use('/:username/public-recipes',      publicRecipeRouter());
-
-  router.use('/:username/private-plans',       privatePlanRouter());
-  router.use('/:username/public-plans',        publicPlanRouter());
-
-  router.use('/:username/favorite-recipes',    favoriteRecipeRouter());
-
-  router.use('/:username/saved-recipes',       savedRecipeRouter());
-
-  router.use('/authentication', userAuthenticationRouter());  // just send their initial user data right when they login???
-  router.use('/friendship',     userFriendshipRouter());
-  router.use('/profile',        profileRouter());
-  router.use('/signed-url',     userSignedUrlRouter());
+  router.use('/:username/private-plans', privatePlanRouter());
+  router.use('/:username/private-recipes', privateRecipeRouter());
+  router.use('/:username/saved-recipes', savedRecipeRouter());
+  router.use('/:username/friendships', friendshipRouter());
 
   router.post(
     '/',
@@ -53,28 +38,28 @@ export function userRouter() {
   );
 
   router.patch(
-    '/email',
+    '/:username/email',
     userIsAuth,
     sanitize('new_email'),
     catchExceptions(userController.updateEmail)
   );
 
   router.patch(
-    '/password',
+    '/:username/password',
     userIsAuth,
     sanitize('new_password'),
     catchExceptions(userController.updatePassword)
   );
 
   router.patch(
-    '/username',
+    '/:username/username',
     userIsAuth,
     sanitize('new_username'),
     catchExceptions(userController.updateUsername)
   );
 
   router.delete(
-    '/',
+    '/:username',
     userIsAuth,
     catchExceptions(userController.delete)
   );

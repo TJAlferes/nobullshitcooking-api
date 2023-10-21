@@ -1,7 +1,7 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
-import { UserService } from './service';
-import { UserRepo }    from './repo';
+import { UserService } from './service.js';
+import { UserRepo }    from './repo.js';
 
 export const userController = {
   async create(req: Request, res: Response) {
@@ -9,12 +9,12 @@ export const userController = {
     const userService = new UserService(userRepo);
     await userService.create(req.body);
 
-    return res.status(201).json({message: 'User account created.'});
+    return res.status(201);
   },
   
   async updateEmail(req: Request, res: Response) {
     const new_email = req.body.new_email;
-    const user_id   = req.session.userInfo!.user_id;  // res.locals?
+    const user_id   = req.session.user_id!;
 
     const userRepo    = new UserRepo();
     const userService = new UserService(userRepo);
@@ -25,7 +25,7 @@ export const userController = {
 
   async updatePassword(req: Request, res: Response) {
     const new_password = req.body.new_password;
-    const user_id      = req.session.userInfo!.user_id;  // res.locals?
+    const user_id      = req.session.user_id!;
 
     const userRepo    = new UserRepo();
     const userService = new UserService(userRepo);
@@ -36,7 +36,7 @@ export const userController = {
 
   async updateUsername(req: Request, res: Response) {
     const new_username = req.body.new_username;
-    const user_id      = req.session.userInfo!.user_id;  // res.locals?
+    const user_id      = req.session.user_id!;
 
     const userRepo    = new UserRepo();
     const userService = new UserService(userRepo);
@@ -46,7 +46,7 @@ export const userController = {
   },
 
   async delete(req: Request, res: Response) {
-    const user_id = req.session.userInfo!.user_id;
+    const user_id = req.session.user_id!;
 
     const userRepo    = new UserRepo();
     const userService = new UserService(userRepo);

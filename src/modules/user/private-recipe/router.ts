@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { body }   from 'express-validator';
+import { body, param } from 'express-validator';
 
-import { catchExceptions, userIsAuth }           from '../../../../utils';
-import { privateRecipeController as controller } from './controller';
+import { catchExceptions, userIsAuth }           from '../../../utils/index.js';
+import { privateRecipeController as controller } from './controller.js';
 
 const router = Router();
 
-// for /user/private/recipe/...
+// for /users/:username/private-recipes
 
 export function privateRecipeRouter() {
   const recipe_upload = [
@@ -27,50 +27,54 @@ export function privateRecipeRouter() {
     'cooking_image'
   ];
 
-  router.post(
-    '/all',
+  router.get(
+    '/:recipe_id/edit',
+    userIsAuth,
+    sanitizeParams('recipe_id'),
+    catchExceptions(controller.edit)
+  );
+
+  router.get(
+    '/:recipe_id',
+    userIsAuth,
+    sanitizeParams('recipe_id'),
+    catchExceptions(controller.viewOne)
+  );
+
+  router.get(
+    '/',
     userIsAuth,
     catchExceptions(controller.overviewAll)
   );
 
   router.post(
-    '/one',
+    '/',
     userIsAuth,
-    sanitize('recipe_id'),
-    catchExceptions(controller.viewOne)
-  );
-
-  router.post(
-    '/create',
-    userIsAuth,
-    sanitize(recipe_upload),
+    sanitizeBody(recipe_upload),
     catchExceptions(controller.create)
   );
 
-  router.post(
-    '/edit',
-    userIsAuth,
-    sanitize('recipe_id'),
-    catchExceptions(controller.edit)
-  );
-
-  router.put(
+  router.patch(
     '/update',
     userIsAuth,
-    sanitize(['recipe_id', ...recipe_upload]),
+    sanitizeBody(['recipe_id', ...recipe_upload]),
     catchExceptions(controller.update)
   );
 
   router.delete(
-    '/delete',
+    '/:recipe_id',
     userIsAuth,
-    sanitize('recipe_id'),
+    sanitizeParams('recipe_id'),
     catchExceptions(controller.deleteOne)
   );
 
   return router;
 }
 
-function sanitize(keys: string | string[]) {
+function sanitizeBody(keys: string | string[]) {
   return body(keys).not().isEmpty().trim().escape();
+}
+
+function sanitizeParams(keys: string | string[]) {
+  return param(keys).not().isEmpty().trim().escape();
 }

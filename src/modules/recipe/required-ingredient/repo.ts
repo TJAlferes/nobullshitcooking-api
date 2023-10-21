@@ -1,9 +1,9 @@
 import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
-import { MySQLRepo } from '../../shared/MySQL';
+import { MySQLRepo } from '../../shared/MySQL.js';
 
 // TO DO: store fullname instead of name???
-export class RecipeIngredientRepo extends MySQLRepo implements IRecipeIngredientRepo{
+export class RecipeIngredientRepo extends MySQLRepo implements RecipeIngredientRepoInterface {
   async viewByRecipeId(recipe_id: string) {
     // TO DO: ingredient_fullname
     const sql = `
@@ -18,7 +18,7 @@ export class RecipeIngredientRepo extends MySQLRepo implements IRecipeIngredient
     return rows;
   }
 
-  async insert({ placeholders, recipe_ingredients }: InsertParams) {  // TO DO: change to namedPlaceholders using example below
+  async bulkInsert({ placeholders, recipe_ingredients }: BulkInsertParams) {  // TO DO: change to namedPlaceholders using example below
     const sql = `
       INSERT INTO recipe_ingredient (recipe_id, amount, unit_id, ingredient_id)
       VALUES ${placeholders}
@@ -28,38 +28,27 @@ export class RecipeIngredientRepo extends MySQLRepo implements IRecipeIngredient
     if (!result) throw new Error('Query not successful.');
   }
   
-  async update({ recipe_id, placeholders, recipe_ingredients }: UpdateParams) {  // TO DO: change to namedPlaceholders using example below
+  async bulkUpdate({ recipe_id, placeholders, recipe_ingredients }: BulkUpdateParams) {  // TO DO: change to namedPlaceholders using example below
     // Rather than updating current values in the database, we delete them,
     // and if there are new values, we insert them.
     const conn = await this.pool.getConnection();
     await conn.beginTransaction();
-
     try {
-
       let sql = `DELETE FROM recipe_ingredient WHERE recipe_id = ?`;
-
       await conn.query(sql, [recipe_id]);
-
-      if (recipe_ingredients.length) {
+      if (recipe_ingredients.length > 0) {
         let sql = `
           INSERT INTO recipe_ingredients (recipe_id, amount, unit_id, ingredient_id)
           VALUES ${placeholders}
         `;
-
         await conn.query(sql, recipe_ingredients);
       }
-
       await conn.commit();
-
     } catch (err) {
-
       await conn.rollback();
       throw err;
-
     } finally {
-
       conn.release();
-
     }
   }
 
@@ -72,42 +61,35 @@ export class RecipeIngredientRepo extends MySQLRepo implements IRecipeIngredient
     const sql = `DELETE FROM recipe_ingredient WHERE recipe_id = ?`;
     await this.pool.execute(sql, [recipe_id]);
   }
-
-  /* not needed because of ON CASCADE DELETE ???
-  async deleteByRecipeIds(ids: number[]) {
-    const sql = `DELETE FROM recipe_ingredient WHERE recipe_id = ANY(?)`;
-    await this.pool.execute(sql, ids);
-  }*/
 }
 
-export interface IRecipeIngredientRepo {
-  viewByRecipeId:       (recipe_id: string) =>     Promise<RecipeIngredientView[]>;
-  insert:               (params: InsertParams) =>  Promise<void>;
-  update:               (params: UpdateParams) =>  Promise<void>;
-  deleteByIngredientId: (ingredient_id: string) => Promise<void>;
-  deleteByRecipeId:     (recipe_id: string) =>     Promise<void>;
-  //deleteByRecipeIds:    (ids: string[]) =>         Promise<void>;
+export interface RecipeIngredientRepoInterface {
+  viewByRecipeId:       (recipe_id: string) =>        Promise<RecipeIngredientView[]>;
+  bulkInsert:           (params: BulkInsertParams) => Promise<void>;
+  bulkUpdate:           (params: BulkUpdateParams) => Promise<void>;
+  deleteByIngredientId: (ingredient_id: string) =>    Promise<void>;
+  deleteByRecipeId:     (recipe_id: string) =>        Promise<void>;
 }
 
 type RecipeIngredientRow = {
   recipe_id:     string;
-  amount?:       number;
-  unit_id?:      number;
+  amount:        number | null;
+  unit_id:       number | null;
   ingredient_id: string;
 };
 
-type InsertParams = {
+type BulkInsertParams = {
   placeholders:       string;
   recipe_ingredients: RecipeIngredientRow[];
 };
 
-type UpdateParams = InsertParams & {
+type BulkUpdateParams = BulkInsertParams & {
   recipe_id: string;
 };
 
 type RecipeIngredientView = RowDataPacket & {
-  amount:          number;
-  unit_name:       string;
+  amount:          number | null;
+  unit_name:       string | null;  // ???
   ingredient_name: string;
 };
 

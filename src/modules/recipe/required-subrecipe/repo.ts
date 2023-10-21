@@ -1,8 +1,8 @@
 import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
-import { MySQLRepo } from '../../shared/MySQL';
+import { MySQLRepo } from '../../shared/MySQL.js';
 
-export class RecipeSubrecipeRepo extends MySQLRepo implements IRecipeSubrecipeRepo {
+export class RecipeSubrecipeRepo extends MySQLRepo implements RecipeSubrecipeRepoInterface {
   async viewByRecipeId(recipe_id: string) {
     const sql = `
       SELECT rs.amount, u.unit_name, r.title
@@ -16,7 +16,7 @@ export class RecipeSubrecipeRepo extends MySQLRepo implements IRecipeSubrecipeRe
     return rows;
   }
 
-  async insert({ placeholders, recipe_subrecipes }: InsertParams) {  // TO DO: change to namedPlaceholders using example below
+  async bulkInsert({ placeholders, recipe_subrecipes }: BulkInsertParams) {  // TO DO: change to namedPlaceholders using example below
     const sql = `
       INSERT INTO recipe_subrecipe (recipe_id, amount, unit_id, subrecipe_id)
       VALUES ${placeholders}
@@ -25,36 +25,27 @@ export class RecipeSubrecipeRepo extends MySQLRepo implements IRecipeSubrecipeRe
     if (!result) throw new Error('Query not successful.');
   }
   
-  async update({ recipe_id, placeholders, recipe_subrecipes }: UpdateParams) {  // TO DO: change to namedPlaceholders using example below
+  async bulkUpdate({ recipe_id, placeholders, recipe_subrecipes }: BulkUpdateParams) {  // TO DO: change to namedPlaceholders using example below
     // Rather than updating current values in the database, we delete them,
     // and if there are new values, we insert them.
     const conn = await this.pool.getConnection();
     await conn.beginTransaction();
-
     try {
       let sql = `DELETE FROM recipe_subrecipe WHERE recipe_id = ?`;
       await conn.query(sql, [recipe_id]);
-
-      if (recipe_subrecipes.length) {
+      if (recipe_subrecipes.length > 0) {
         let sql = `
           INSERT INTO recipe_subrecipe (recipe_id, amount, unit_id, subrecipe_id)
           VALUES ${placeholders}
         `;
-
         await conn.query(sql, recipe_subrecipes);
       }
-
       await conn.commit();
-
     } catch (err) {
-
       await conn.rollback();
       throw err;
-
     } finally {
-
       conn.release();
-
     }
   }
 
@@ -63,55 +54,41 @@ export class RecipeSubrecipeRepo extends MySQLRepo implements IRecipeSubrecipeRe
     await this.pool.execute(sql, [recipe_id]);
   }
 
-  /* not needed because of ON CASCADE DELETE ???
-  async deleteByRecipeIds(ids: number[]) {
-    const sql = `DELETE FROM recipe_subrecipe WHERE recipe_id = ANY(?)`;
-    await this.pool.execute(sql, ids);
-  }*/
-
   async deleteBySubrecipeId(subrecipe_id: string) {
     const sql = `DELETE FROM recipe_subrecipe WHERE subrecipe_id = ?`;
     await this.pool.execute(sql, [subrecipe_id]);
   }
-
-  /* not needed because of ON CASCADE DELETE ???
-  async deleteBySubrecipeIds(ids: number[]) {
-    const sql = `DELETE FROM recipe_subrecipe WHERE subrecipe_id = ANY(?)`;
-    await this.pool.execute(sql, ids);
-  }*/
 }
 
-export interface IRecipeSubrecipeRepo {
-  viewByRecipeId:       (recipe_id: string) =>    Promise<RecipeSubrecipeView[]>;
-  insert:               (params: InsertParams) => Promise<void>;
-  update:               (params: UpdateParams) => Promise<void>;
-  deleteBySubrecipeId:  (subrecipe_id: string) => Promise<void>;
-  //deleteBySubrecipeIds: (ids: string;[]) =>       Promise<void>;
-  deleteByRecipeId:     (recipe_id: string) =>    Promise<void>;
-  //deleteByRecipeIds:    (ids: string;[]) =>       Promise<void>;
+export interface RecipeSubrecipeRepoInterface {
+  viewByRecipeId:       (recipe_id: string) =>        Promise<RecipeSubrecipeView[]>;
+  bulkInsert:           (params: BulkInsertParams) => Promise<void>;
+  bulkUpdate:           (params: BulkUpdateParams) => Promise<void>;
+  deleteBySubrecipeId:  (subrecipe_id: string) =>     Promise<void>;
+  deleteByRecipeId:     (recipe_id: string) =>        Promise<void>;
 }
 
 type RecipeSubrecipeRow = {
   recipe_id:    string;
-  amount?:       number;
-  unit_id?:      number;
+  amount:       number | null;
+  unit_id:      number | null;
   subrecipe_id: string;
 };
 
-type InsertParams = {
+type BulkInsertParams = {
   placeholders:      string;
   recipe_subrecipes: RecipeSubrecipeRow[];
 };
 
-type UpdateParams = {
+type BulkUpdateParams = {
   recipe_id:         string;
   placeholders:      string;
   recipe_subrecipes: RecipeSubrecipeRow[];
 };
 
 type RecipeSubrecipeView = RowDataPacket & {
-  amount:          number;
-  unit_name:       string;
+  amount:          number | null;
+  unit_name:       string | null;  // ???
   subrecipe_title: string;
 };
 

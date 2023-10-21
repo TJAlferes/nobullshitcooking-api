@@ -1,5 +1,6 @@
-import { PlanRecipe }              from "./model";
-import { PlanRecipeRepoInterface } from "./repo";
+import { PlanRecipe } from "./model.js";
+import type { IncludedRecipe } from "./model.js";
+import { PlanRecipeRepoInterface } from "./repo.js";
 
 export class PlanRecipeService {
   repo: PlanRecipeRepoInterface;
@@ -8,27 +9,64 @@ export class PlanRecipeService {
     this.repo = repo;
   }
 
-  async create({ plan_id, plan_recipes }: CreateParams) {
-    if (!plan_recipes.length) return;
+  async bulkCreate({ plan_id, included_recipes }: BulkCreateParams) {
+    if (included_recipes.length < 1) return;
 
-    const placeholders = '(?, ?, ?),'.repeat(plan_recipes.length).slice(0, -1);
+    const placeholders = '(?, ?, ?, ?),'
+      .repeat(included_recipes.length)
+      .slice(0, -1);
 
-    const values= plan_recipes.map(plan_recipe =>
-      PlanRecipe.create(plan_recipe).getDTO()
+    const plan_recipes = included_recipes.map(included_recipe =>
+      PlanRecipe.create({plan_id, ...included_recipe}).getDTO()
     );
 
-    await this.repo.insert({placeholders, values});
+    this.ensureUniqueNumbers(included_recipes);
+
+    await this.repo.bulkInsert({placeholders, plan_recipes});
+  }
+
+  async bulkUpdate({ plan_id, included_recipes }: BulkUpdateParams) {
+    if (included_recipes.length < 1) {
+      await this.repo.deleteByPlanId(plan_id);
+      return;
+    }
+
+    const placeholders = '(?, ?, ?, ?),'
+      .repeat(included_recipes.length)
+      .slice(0, -1);
+    
+    const plan_recipes = included_recipes.map(included_recipe =>
+      PlanRecipe.create({plan_id, ...included_recipe}).getDTO()
+    );
+    
+    this.ensureUniqueNumbers(included_recipes);
+
+    await this.repo.bulkUpdate({plan_id, placeholders, plan_recipes});
+  }
+
+  ensureUniqueNumbers(included_recipes: IncludedRecipe[]) {
+    const dayNumbers = new Set<number>();
+    const recipeNumbers = new Set<number>();
+
+    included_recipes.map(({ day_number, recipe_number }) => {
+      if (dayNumbers.has(day_number)) {
+        throw new Error("Duplicate day_number in plan.");
+      } else {
+        dayNumbers.add(day_number);
+      }
+
+      if (recipeNumbers.has(recipe_number)) {
+        throw new Error("Duplicate recipe_number in plan.");
+      } else {
+        recipeNumbers.add(recipe_number);
+      }
+    });
   }
 }
 
-type CreateParams = {
-  plan_id:      string;
-  plan_recipes: PlanRecipeRow[];
+type BulkCreateParams = {
+  plan_id:          string;
+  included_recipes: IncludedRecipe[];
 };
 
-type PlanRecipeRow = {
-  plan_id:       string;
-  recipe_id:     string;
-  day_number:    number;
-  recipe_number: number;
-};
+type BulkUpdateParams = BulkCreateParams;

@@ -1,8 +1,8 @@
 import { RowDataPacket } from 'mysql2/promise';
 
-import { MySQLRepo } from '../../shared/MySQL';
+import { MySQLRepo } from '../../shared/MySQL.js';
 
-export class RecipeTypeRepo extends MySQLRepo implements IRecipeTypeRepo {
+export class RecipeTypeRepo extends MySQLRepo implements RecipeTypeRepoInterface {
   async viewAll() {
     const sql = `SELECT recipe_type_id, recipe_type_name FROM recipe_type`;
     const [ rows ] = await this.pool.execute<RecipeTypeView[]>(sql);
@@ -16,7 +16,7 @@ export class RecipeTypeRepo extends MySQLRepo implements IRecipeTypeRepo {
   }
 }
 
-export interface IRecipeTypeRepo {
+export interface RecipeTypeRepoInterface {
   viewAll: () =>                       Promise<RecipeTypeView[]>;
   viewOne: (recipe_type_id: number) => Promise<RecipeTypeView>;
 }

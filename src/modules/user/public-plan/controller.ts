@@ -1,61 +1,82 @@
-import { Request, Response } from 'express';
-import { assert }            from 'superstruct';
+import type { Request, Response } from 'express';
 
-import { PlanRepo }  from '../../../plan/repo';
-//import { validPlan } from '../../lib/validations';  // TO DO: make sure NO private recipes go into public plan
+import { RecipeRepo }        from '../../recipe/repo.js';
+import { NOBSC_USER_ID }     from '../../shared/model.js';
+import { PlanRecipeRepo }    from '../../plan/recipe/repo.js';
+import { PlanRecipeService } from '../../plan/recipe/service.js';
+import { Plan }              from '../../plan/model.js';
+import { PlanRepo }          from '../../plan/repo.js';
+import { PublicPlanService } from './service.js';
 
-export const userPublicPlanController = {
+export const publicPlanController = {
   async viewAll(req: Request, res: Response) {
-    const owner_id = req.session.userInfo!.id;
+    const author_id = req.session.user_id!;
+    const owner_id  = NOBSC_USER_ID;
 
     const planRepo = new PlanRepo();
-    const rows = await planRepo.viewAll(owner_id);
+    const rows = await planRepo.viewAll({author_id, owner_id});
 
-    return res.send(rows);
+    return res.json(rows);
   },
 
   async viewOne(req: Request, res: Response) {
-    const plan_id  = req.body.plan_id;
-    const owner_id = req.session.userInfo!.id;
+    const { plan_id } = req.params;
+    const author_id = req.session.user_id!;
+    const owner_id  = NOBSC_USER_ID;
     
     const planRepo = new PlanRepo();
-    const row = await planRepo.viewOne({plan_id, owner_id});
+    const row = await planRepo.viewOneByPlanId({plan_id, author_id, owner_id});
 
-    return res.send(row);
+    return res.json(row);
   },
 
   async create(req: Request, res: Response) {
-    const { plan_name, plan_data } = req.body.planInfo;
-    const owner_id = req.session.userInfo!.id;
+    const { plan_name, included_recipes } = req.body;
+    const author_id = req.session.user_id!;
+    const owner_id  = NOBSC_USER_ID;
 
-    const args = {owner_id, plan_name, plan_data};
-    assert(args, validPlan);
+    const recipeRepo = new RecipeRepo();
+    const { checkForPrivateContent } = new PublicPlanService(recipeRepo);
+    await checkForPrivateContent(included_recipes);  // important
+
+    const plan = Plan.create({author_id, owner_id, plan_name}).getDTO();
+
     const planRepo = new PlanRepo();
-    await planRepo.create(args);
+    await planRepo.insert(plan);
 
-    return res.send({message: 'Plan created.'});
+    const planRecipeService = new PlanRecipeService(new PlanRecipeRepo());
+    await planRecipeService.bulkCreate({plan_id: plan.plan_id, included_recipes});
+
+    return res.status(201);
   },
 
   async update(req: Request, res: Response) {
-    const { plan_id, plan_name, plan_data } = req.body.planInfo;
-    const owner_id = req.session.userInfo!.id;
+    const { plan_id, plan_name, included_recipes } = req.body;
+    const author_id = req.session.user_id!;
+    const owner_id  = NOBSC_USER_ID;
 
-    const args = {owner_id, plan_name, plan_data};
-    assert(args, validPlan);
+    const recipeRepo = new RecipeRepo();
+    const { checkForPrivateContent } = new PublicPlanService(recipeRepo);
+    await checkForPrivateContent(included_recipes);  // important
+
+    const plan = Plan.update({plan_id, author_id, owner_id, plan_name}).getDTO();
 
     const planRepo = new PlanRepo();
-    await planRepo.update({plan_id, ...args});
+    await planRepo.update(plan);
 
-    return res.send({message: 'Plan updated.'});
+    const planRecipeService = new PlanRecipeService(new PlanRecipeRepo());
+    await planRecipeService.bulkUpdate({plan_id: plan.plan_id, included_recipes});
+
+    return res.status(204);
   },
 
-  async deleteOne(req: Request, res: Response) {
-    const plan_id  = req.body.plan_id;
-    const owner_id = req.session.userInfo!.id;
+  async unattributeOne(req: Request, res: Response) {
+    const { plan_id } = req.params;
+    const author_id = req.session.user_id!;
 
     const planRepo = new PlanRepo();
-    await planRepo.deleteOne({plan_id, owner_id});
+    await planRepo.unattributeOne({author_id, plan_id});
 
-    return res.send({message: 'Plan deleted.'});
+    return res.status(204);
   }
 };

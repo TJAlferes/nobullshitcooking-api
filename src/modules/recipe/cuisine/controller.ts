@@ -1,13 +1,13 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
-import { CuisineRepo } from './repo';
+import { CuisineRepo } from './repo.js';
 
 export const cuisineController = {
   async viewAll(req: Request, res: Response) {
     const repo = new CuisineRepo();
     const rows = await repo.viewAll();
 
-    return res.send(rows);
+    return res.json(rows);
   },
 
   async viewOne(req: Request, res: Response) {
@@ -16,6 +16,6 @@ export const cuisineController = {
     const repo = new CuisineRepo();
     const row = await repo.viewOne(cuisine_id);
     
-    return res.send(row);
+    return res.json(row);
   }
 };

@@ -9,13 +9,12 @@ const config: Config = {
     }
   },
   globalSetup:            "./global-setup.js",
-  preset:                 "ts-jest/presets/js-with-babel",
+  preset:                 "ts-jest",
   testEnvironment:        "node",
   testPathIgnorePatterns: ["/node_modules/"],
   testRegex:              "/*.test.ts$",
   transform: {
-    "^.+\\.[t]sx?$": "ts-jest",
-    "^.+\\.[j]sx?$": "babel-jest"
+    "^.+\\.[t]sx?$": "ts-jest",  //'^.+\\.tsx?$': 'ts-jest',
   },
   verbose: true,
 };

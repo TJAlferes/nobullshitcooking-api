@@ -1,6 +1,6 @@
 import { assert, string } from 'superstruct';
 
-import { UUIDv7StringId, GenerateUUIDv7StringId } from '../shared/model';
+import { UUIDv7StringId, GenerateUUIDv7StringId } from '../shared/model.js';
 
 export class User {
   private readonly user_id;
@@ -8,10 +8,6 @@ export class User {
   private password;  // encrypted/hashed, not raw request body payload
   private username;
   private confirmation_code;
-  // Timestamps -- handled by MySQL
-  //private created_at: Date | null = null;  // not needed?
-  //private updated_at: Date | null = null;  // not needed?
-  //private events: DomainEvent = [];
 
   private constructor(params: ConstructorParams) {
     this.user_id           = UUIDv7StringId(params.user_id);
@@ -27,17 +23,11 @@ export class User {
   static create(params: CreateParams): User {
     const user_id           = GenerateUUIDv7StringId();
     const confirmation_code = GenerateUUIDv7StringId();
-    const user = new User({...params, user_id, confirmation_code});
-    //const event = new UserCreatedEvent(user.getId());  // email?
-    //this.events.push(event);
-    return user;
+    return new User({...params, user_id, confirmation_code});
   }
 
   static update(params: UpdateParams): User {
-    const user = new User(params);
-    //const event = new UserUpdatedEvent(user.getId());  // email?
-    //this.events.push(event);
-    return user;
+    return new User(params);
   }
 
   getDTO() {
@@ -49,14 +39,6 @@ export class User {
       confirmation_code: this.confirmation_code
     };
   }
-
-  /*commandMethod(input, context) {
-    // validate args, validate state transitions, record domain events
-  }
-  queryMethod(): ReturnType {}
-  releaseEvents(): DomainEvent[] {
-    // return recorded domain events
-  }*/
 }
 
 export function Email(email: string) {
@@ -73,8 +55,8 @@ export function Password(password: string) {
   if (password.length < 6) {
     throw new Error("Password must be at least 6 characters.");
   }
-  if (password.length > 54) {
-    throw new Error("Password must be no more than 54 characters.");
+  if (password.length > 60) {
+    throw new Error("Password must be no more than 60 characters.");
   }
   return password;
 }

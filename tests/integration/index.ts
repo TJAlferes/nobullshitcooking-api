@@ -1,5 +1,3 @@
-export { contentTests } from './content';
-export { contentTypeTests } from './contentType';
 export { cuisineTests } from './cuisine';
 export { dataInitTests } from './dataInit';
 export { equipmentTests } from './equipment';
@@ -13,4 +11,3 @@ export { profileTests } from './profile';
 export { recipeTests } from './recipe';
 export { recipeTypeTests } from './recipeType';
 export { searchTests } from './search';
-export { supplierTests } from './supplier';

@@ -1,10 +1,9 @@
 import bcrypt from 'bcrypt';
 
-import { ModifiedSession }       from '../../../app';
-import { UUIDv7StringId }        from '../../shared/model';
-import { emailUser }             from '../shared/simple-email-service';
-import { Email, Password, User } from '../model';
-import { UserRepoInterface }     from '../repo';
+import { UUIDv7StringId }        from '../../shared/model.js';
+import { emailUser }             from '../shared/simple-email-service.js';
+import { Email, Password, User } from '../model.js';
+import { UserRepoInterface }     from '../repo.js';
 //crypto.timingSafeEqual() ???
 
 export class UserAuthenticationService {
@@ -17,7 +16,8 @@ export class UserAuthenticationService {
   async isUserConfirmed(email: string) {
     const validEmail = Email(email);
     const user = await this.repo.getByEmail(validEmail);
-    return user.confirmation_code === null;
+    if (!user) throw new Error("User does not exist.");
+    return null === user.confirmation_code;
   }
 
   async hashPassword(password: string) {
@@ -31,28 +31,26 @@ export class UserAuthenticationService {
     const password = Password(params.password);
 
     const currentHash = await this.repo.getPassword(email);
+    if (!currentHash) throw new Error("Incorrect email or password.");
+
     const correctPassword = await bcrypt.compare(password, currentHash);
-    if (!correctPassword) {
-      throw new Error("Incorrect email or password.");
-    }
+    if (!correctPassword) throw new Error("Incorrect email or password.");
   }
 
   async doesUserExist(email: string) {
     const validEmail = Email(email);
     const user = await this.repo.getByEmail(validEmail);
-    if (!user) {
-      throw new Error("Incorrect email or password.");
-    }
+    if (!user) throw new Error("Incorrect email or password.");
     return user;
   }
 
   async confirm(confirmation_code: string) {
     const code = UUIDv7StringId(confirmation_code);
-    if (!code) {
-      throw new Error("An issue occurred, please double check your info and try again.");
-    }
 
     const existingUser = await this.repo.getByConfirmationCode(code);
+    if (!existingUser) {
+      throw new Error("An issue occurred, please double check your info and try again.");
+    }
 
     if (null === existingUser.confirmation_code) {
       throw new Error("Already confirmed.");
@@ -63,13 +61,16 @@ export class UserAuthenticationService {
     }
 
     const password = await this.repo.getPassword(existingUser.email);
+    if (!password) {
+      throw new Error("An issue occurred, please double check your info and try again.");
+    }
 
     const user = User.update({
       user_id:           existingUser.user_id,
       email:             existingUser.email,
       password,
       username:          existingUser.username,
-      confirmation_code: null
+      confirmation_code: null  // setting their code to null confirms them
     }).getDTO();
 
     await this.repo.update(user);
@@ -100,28 +101,20 @@ export class UserAuthenticationService {
   }
   
   async resendConfirmationCode({ email, password }: ResendConfirmationCodeParams) {
-    const {
-      doesUserExist,
-      isCorrectPassword,
-      isUserConfirmed
-    } = new UserAuthenticationService(this.repo);
+    const user = await this.doesUserExist(email);
 
-    const user = await doesUserExist(email);
+    const confirmed = await this.isUserConfirmed(email);
+    if (confirmed) throw new Error("Already confirmed.");
 
-    const confirmed = await isUserConfirmed(email);
-    if (confirmed) {
-      throw new Error("Already confirmed.");
-    }
-
-    await isCorrectPassword({email, password});
+    await this.isCorrectPassword({email, password});
   
     await this.sendConfirmationCode({
       email:             user.email,
-      confirmation_code: user.confirmation_code
+      confirmation_code: user.confirmation_code!
     });
   }
 
-  async login({ email, password, session }: LoginParams) {
+  async login({ email, password }: LoginParams) {
     const { user_id, username } = await this.doesUserExist(email);
 
     const confirmed = await this.isUserConfirmed(email);
@@ -130,13 +123,11 @@ export class UserAuthenticationService {
     }
 
     await this.isCorrectPassword({email, password});
-
-    session.userInfo = {
+  
+    return {
       user_id,
       username
     };
-  
-    return username;
   }
 }
 
@@ -158,5 +149,4 @@ type IsCorrectPasswordParams = {
 type LoginParams = {
   email:    string;
   password: string;
-  session:  ModifiedSession;
 };

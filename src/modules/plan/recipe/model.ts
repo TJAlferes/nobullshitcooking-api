@@ -1,6 +1,6 @@
-import { assert, number } from 'superstruct';
+import { assert, number } from "superstruct";
 
-import { UUIDv7StringId } from '../../shared/model';
+import { UUIDv7StringId } from '../../shared/model.js';
 
 export class PlanRecipe {
   private plan_id;
@@ -53,11 +53,14 @@ function RecipeNumber(recipe_number: number) {
   return recipe_number;
 }
 
-type CreateParams = {
-  plan_id:       string;
+type CreateParams = IncludedRecipe & {
+  plan_id: string;
+};
+
+type ConstructorParams = CreateParams;
+
+export type IncludedRecipe = {
   recipe_id:     string;
   day_number:    number;
   recipe_number: number;
 };
-
-type ConstructorParams = CreateParams;

@@ -1,8 +1,8 @@
 import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
-import type { SearchRequest, SearchResponse } from '../search/model';
-import { NOBSC_USER_ID, UNKNOWN_USER_ID }     from '../shared/model';
-import { MySQLRepo }                          from '../shared/MySQL';
+import type { SearchRequest, SearchResponse } from '../search/model.js';
+import { NOBSC_USER_ID, UNKNOWN_USER_ID }     from '../shared/model.js';
+import { MySQLRepo }                          from '../shared/MySQL.js';
 
 export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
   async autosuggest(term: string) {
@@ -127,9 +127,9 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
       FROM recipe
       WHERE recipe_id IN ? AND (author_id = owner_id)
     `;
-    const rows = await this.pool.execute(sql, recipe_ids);
-    return rows.length ? true : false;
-  }
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, recipe_ids);
+    return rows.length > 0 ? true : false;
+  }  // TO DO: thoroughly integration test this
 
   async viewAllOfficialTitles() {
     const author_id = NOBSC_USER_ID;
@@ -139,18 +139,15 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
     return rows;
   }  // for Next.js getStaticPaths
 
-  /*async viewAllPublicTitles() {
-    const owner_id  = NOBSC_USER_ID;
-    const sql = `SELECT title FROM recipe WHERE owner_id = ?`;
-    const [ rows ] = await this.pool.execute<TitleView[]>(sql, owner_id);
-    return rows;
-  }  // for Next.js getStaticPaths (use this???)*/
-
   async overviewAll({ author_id, owner_id }: OverviewAllParams) {
     let sql = `
       SELECT
         r.recipe_id,
+        r.author_id,
         r.owner_id,
+        r.recipe_type_id,
+        r.cuisine_id,
+        u.username AS author,
         r.title,
         (
           SELECT
@@ -161,9 +158,13 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
           WHERE ri.type = 1
         ) image_filename
       FROM recipe r
+      INNER JOIN user u ON recipe.author_id = user.user_id
       WHERE r.author_id = ? AND r.owner_id = ?
     `;
-    const [ rows ] = await this.pool.execute<RecipeOverview[]>(sql, [author_id, owner_id]);
+    const [ rows ] = await this.pool.execute<(RecipeOverview & RowDataPacket)[]>(sql, [
+      author_id,
+      owner_id
+    ]);
     return rows;
   }  // for logged in user
 
@@ -212,7 +213,7 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
       )
     `;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
-    if (!result) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async update(params: InsertParams) {
@@ -232,11 +233,10 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
       LIMIT 1
     `;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
-    if (!result) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
-  // TO DO: change this name. you're not actually disowning, you're unauthoring
-  async disownAll(author_id: string) {
+  async unattributeAll(author_id: string) {
     // TO DO: move to service
     if (author_id === NOBSC_USER_ID || author_id === UNKNOWN_USER_ID) {
       return;
@@ -257,11 +257,10 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
       author_id,
       owner_id
     });
-    if (!result) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
-  // TO DO: change this name. you're not actually disowning, you're unauthoring
-  async disownOne({ author_id, recipe_id }: DisownOneParams) {
+  async unattributeOne({ author_id, recipe_id }: UnattributeOneParams) {
     // TO DO: move to service
     if (author_id === NOBSC_USER_ID || author_id === UNKNOWN_USER_ID) {
       return;
@@ -284,7 +283,11 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
       owner_id,
       recipe_id
     });
-    if (!result) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
+  }
+
+  async deleteAll(owner_id: string) {
+
   }
   
   async deleteOne({ owner_id, recipe_id }: DeleteOneParams) {
@@ -294,7 +297,7 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
       LIMIT 1
     `;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [owner_id, recipe_id]);
-    if (!result) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }
 
@@ -303,13 +306,14 @@ export interface RecipeRepoInterface {
   search:                (searchRequest: SearchRequest) =>    Promise<SearchResponse>;
   hasPrivate:            (recipe_ids: string[]) =>            Promise<boolean>;
   viewAllOfficialTitles: () =>                                Promise<TitleView[]>;
-  overviewAll:           (params: OverviewAllParams) =>       Promise<RecipeOverview[]>;
+  overviewAll:           (params: OverviewAllParams) =>       Promise<(RecipeOverview & RowDataPacket)[]>;
   viewOneByRecipeId:     (params: ViewOneByRecipeIdParams) => Promise<RecipeView>;
   viewOneByTitle:        (params: ViewOneByTitleParams) =>    Promise<RecipeView>;
   insert:                (params: InsertParams) =>            Promise<void>;
   update:                (params: UpdateParams) =>            Promise<void>;
-  disownAll:             (author_id: string) =>               Promise<void>;
-  disownOne:             (params: DisownOneParams) =>         Promise<void>;
+  unattributeAll:        (author_id: string) =>               Promise<void>;
+  unattributeOne:        (params: UnattributeOneParams) =>    Promise<void>;
+  deleteAll:             (owner_id: string) =>                Promise<void>;
   deleteOne:             (params: DeleteOneParams) =>         Promise<void>;
 }
 
@@ -322,9 +326,13 @@ type TitleView = RowDataPacket & {
   title: string;
 };
 
-export type RecipeOverview = RowDataPacket & {
+export type RecipeOverview = {
   recipe_id:      string;
+  author_id:      string;
   owner_id:       string;
+  recipe_type_id: number;
+  cuisine_id:     number;
+  author:         string;
   title:          string;
   image_filename: string;
 };
@@ -335,6 +343,8 @@ export type RecipeView = RowDataPacket & {
   recipe_type_name:     string;
   cuisine_id:           number;
   cuisine_name:         string;
+  author_id:            string;
+  author:               string;
   owner_id:             string;
   title:                string;
   description:          string;
@@ -350,7 +360,6 @@ export type RecipeView = RowDataPacket & {
 
 type AssociatedImageView = {
   type:           number;
-  order:          number;
   image_id:       string;
   image_filename: string;
   caption:        string;
@@ -362,25 +371,25 @@ type RequiredMethodView = {
 };
 
 type RequiredEquipmentView = {
-  amount:            number;
+  amount:            number | null;
   equipment_id:      string;
   equipment_type_id: number;
   equipment_name:    string;
 };
 
 type RequiredIngredientView = {
-  amount:             number;
-  unit_id:            number;
-  unit_name:          string;
+  amount:             number | null;
+  unit_id:            number | null;
+  unit_name:          string | null;  // LEFT or RIGHT JOIN to get the null ???
   ingredient_id:      string;
   ingredient_type_id: number;
   ingredient_name:    string;
 };
 
 type RequiredSubrecipeView = {
-  amount:          number;
-  unit_id:         number;
-  unit_name:       string;
+  amount:          number | null;
+  unit_id:         number | null;
+  unit_name:       string | null;  // LEFT or RIGHT JOIN to get the null ???
   subrecipe_id:    string;
   recipe_type_id:  number;
   cuisine_id:      number;
@@ -420,7 +429,7 @@ export type InsertParams = {
 
 type UpdateParams = InsertParams;
 
-type DisownOneParams = {
+type UnattributeOneParams = {
   recipe_id: string;
   author_id: string;
 };

@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { body }   from 'express-validator';
+import { body, param } from 'express-validator';
 
-import { catchExceptions, userIsAuth }               from '../../../../utils';
-import { privateIngredientController as controller } from './controller';
+import { catchExceptions, userIsAuth }               from '../../../utils/index.js';
+import { privateIngredientController as controller } from './controller.js';
 
 const router = Router();
 
-// for /user/private/ingredient/...
+// for /users/:username/private-ingredients
 
 export function privateIngredientRouter() {
   const ingredientInfo = [
@@ -19,49 +19,47 @@ export function privateIngredientRouter() {
     'image_id'
   ];
 
-  router.post(
-    '/all',
+  router.get(
+    '/:ingredient_id',
+    userIsAuth,
+    sanitizeParams('ingredient_id'),
+    catchExceptions(controller.viewOne)
+  );
+
+  router.get(
+    '/',
     userIsAuth,
     catchExceptions(controller.viewAll)
   );
 
   router.post(
-    '/one',
+    '/',
     userIsAuth,
-    sanitize('ingredient_id'),
-    catchExceptions(controller.viewOne)
-  );
-
-  router.post(
-    '/create',
-    userIsAuth,
-    sanitize(ingredientInfo),
+    sanitizeBody(ingredientInfo),
     catchExceptions(controller.create)
   );
 
-  /*router.post(
-    '/edit',
+  router.patch(
+    '/',
     userIsAuth,
-    catchExceptions(controller.edit)
-  );*/
-
-  router.put(
-    '/update',
-    userIsAuth,
-    sanitize(['ingredient_id', ...ingredientInfo]),
+    sanitizeBody(['ingredient_id', ...ingredientInfo]),
     catchExceptions(controller.update)
   );
 
   router.delete(
-    '/delete',
+    '/:ingredient_id',
     userIsAuth,
-    sanitize('ingredient_id'),
+    sanitizeParams('ingredient_id'),
     catchExceptions(controller.deleteOne)
   );
 
   return router;
 }
 
-function sanitize(keys: string | string[]) {
+function sanitizeBody(keys: string | string[]) {
   return body(keys).not().isEmpty().trim().escape();
+}
+
+function sanitizeParams(keys: string | string[]) {
+  return param(keys).not().isEmpty().trim().escape();
 }

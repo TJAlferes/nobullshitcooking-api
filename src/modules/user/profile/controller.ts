@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 
-import { RecipeRepo }         from '../../recipe/repo';
-import { NOBSC_USER_ID }      from '../../shared/model';
-import { FavoriteRecipeRepo } from '../public/favorite-recipe/repo';
-import { UserRepo }           from '../repo';
+import { RecipeRepo }         from '../../recipe/repo.js';
+import { NOBSC_USER_ID }      from '../../shared/model.js';
+import { FavoriteRecipeRepo } from '../favorite-recipe/repo.js';
+import { UserRepo }           from '../repo.js';
 
 export const profileController = {
   async view(req: Request, res: Response) {
@@ -11,9 +11,7 @@ export const profileController = {
 
     const { getByUsername } = new UserRepo();
     const userExists = await getByUsername(username);
-    if (!userExists) {
-      return res.send({message: 'User not found.'});
-    }
+    if (!userExists) return res.status(404);
 
     const { user_id } = userExists;
 
@@ -26,10 +24,6 @@ export const profileController = {
     const { viewByUserId } = new FavoriteRecipeRepo();
     const favoriteRecipes = await viewByUserId(user_id);
     
-    return res.send({
-      message: 'Success.',
-      publicRecipes,
-      favoriteRecipes
-    });
+    return res.status(200).json({publicRecipes, favoriteRecipes});
   }
 };

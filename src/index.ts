@@ -3,10 +3,10 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-import { userCron }     from './modules/user/cron';
-import { createAppServer }    from './app';
+import { userCron }        from './modules/user/cron.js';
+import { createAppServer } from './app.js';
 
-export const { httpServer } = createAppServer();
+export const { httpServer, socketIOServer } = createAppServer();
 
 const PORT = process.env.NODE_ENV === 'production'
   ? Number(process.env.PORT) || 8081

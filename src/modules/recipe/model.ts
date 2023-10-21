@@ -1,6 +1,6 @@
 import { assert, string } from 'superstruct';
 
-import { GenerateUUIDv7StringId, UUIDv7StringId, NumberId } from '../shared/model';
+import { GenerateUUIDv7StringId, UUIDv7StringId, NumberId } from '../shared/model.js';
 
 export class Recipe {
   private recipe_id;
@@ -29,14 +29,11 @@ export class Recipe {
 
   static create(params: CreateParams) {
     const recipe_id = GenerateUUIDv7StringId();
-    const recipe = new Recipe({...params, recipe_id});
-    // persist HERE? using a repo interface?
-    return recipe;  // only return id ???
+    return new Recipe({...params, recipe_id});
   }
 
   static update(params: UpdateParams) {
-    const recipe = new Recipe(params);
-    return recipe;
+    return new Recipe(params);
   }
 
   getDTO() {
@@ -75,12 +72,8 @@ function Time(time: string) {
   assert(time, string());
 
   const [ hours, minutes ] = time.split(':');
-  if (hours.length !== 2) {
-    throw new Error("Invalid time.");
-  }
-  if (minutes.length !== 2) {
-    throw new Error("Invalid time.");
-  }
+  if (hours.length !== 2) throw new Error("Invalid time.");
+  if (minutes.length !== 2) throw new Error("Invalid time.");
   
   const hrs = parseInt(hours);
   const mins = parseInt(minutes);
@@ -93,7 +86,7 @@ function Time(time: string) {
 
 export function Directions(directions: string) {
   assert(directions, string());
-  if (directions.length > 1000) {
+  if (directions.length > 2000) {
     throw new Error("Recipe directions must be no more than 2,000 characters.");
   }
   return directions;
@@ -116,3 +109,58 @@ type UpdateParams = CreateParams & {
 }
 
 type ConstructorParams = UpdateParams;
+
+//---
+
+export type RecipeUpload = {
+  recipe_type_id:       number;
+  cuisine_id:           number;
+  title:                string;
+  description:          string;
+  active_time:          string;
+  total_time:           string;
+  directions:           string;
+  required_methods:     RequiredMethod[];
+  required_equipment:   RequiredEquipment[];
+  required_ingredients: RequiredIngredient[];
+  required_subrecipes:  RequiredSubrecipe[];
+  recipe_image:         ImageUpload & {
+    thumb: File | null;
+    tiny:  File | null;
+  },
+  equipment_image:      ImageUpload,
+  ingredients_image:    ImageUpload,
+  cooking_image:        ImageUpload
+};
+
+export type RecipeUpdateUpload = RecipeUpload & {
+  recipe_id: string;
+};
+
+export type RequiredMethod = {
+  method_id: number;
+};
+
+export type RequiredEquipment = {
+  amount:       number | null;
+  equipment_id: string;
+};
+
+export type RequiredIngredient = {
+  amount:        number | null;
+  unit_id:       number | null;
+  ingredient_id: string;
+};
+
+export type RequiredSubrecipe = {
+  amount:       number | null;
+  unit_id:      number | null;
+  subrecipe_id: string;
+};
+
+// move???
+export type ImageUpload = {
+  image_filename: string;
+  caption:        string;
+  medium:         File | null;
+};

@@ -1,54 +1,79 @@
 import { Socket } from 'socket.io';
 
-import { FriendshipRepo }  from '../../user/friendship/repo';
-import { UserRepo }        from '../../user/repo';
-import { Chatmessage }     from './model';
-import { ChatMessageRepo } from './repo';
+import { FriendshipRepo }  from '../../user/friendship/repo.js';
+import { UserRepo }        from '../../user/repo.js';
+import { ChatUserRepo }    from '../user/repo.js';
+import { Chatmessage }     from './model.js';
+import { ChatmessageRepo } from './repo.js';
 
-export const chatmessageController = {
-  async sendMessage({ from, text, sessionId, socket }: SendMessageParams) {
-    const room = Object.keys(socket.rooms).find(r => r !== sessionId);
-    if (!room) return;
-  
-    const chatmessage = Chatmessage.create({chatroom_id, content});
-    const { insert } = new ChatMessageRepo();
-    await insert(chatmessage)
-  
-    socket.broadcast.to(room).emit('Message', message);
-    socket.emit('Message', message);
-  }
+export function chatmessageController(socket: Socket) {
+  return {
+    async viewByChatroomId(chatroom_id: string) {
+      const repo = new ChatmessageRepo();
 
-  async sendPrivateMessage({
-    to,
-    from,
-    text,
-    socket
-  }: SendPrivateMessageParams) {
-    const notFound = socket.emit('FailedPrivateMessage', 'User not found.');
-  
-    const userRepo = new UserRepo();
-    const userExists = await user.getByName(to);
-    if (!userExists.length) return notFound;
-    
-    const { id, username } = userExists;
+      const chatmessages = await repo.viewByChatroomId(chatroom_id);
 
-    const friendshipRepo = new FriendshipRepo();
-    const blockedUsers = await friendship.viewBlocked(id);
-    const blockedByUser = blockedUsers.find((u: any) => u.username === from);
-    if (blockedByUser) return notFound;
+      socket.emit('PrivateConversation', chatmessages);
+    },
+
+    async viewPrivateConversation({ sender_id, receiver_id }: ViewPrivateConversationParams) {
+      const repo = new ChatmessageRepo();
+
+      const chatmessages = await repo.viewPrivateConversation({sender_id, receiver_id});
+
+      socket.emit('PrivateConversation', chatmessages);
+    },
   
-    const onlineUser = await chatStore.getUserSessionId(username);  // ???
-    if (!onlineUser) return notFound;
+    async sendMessage({ chatroom_id, sender_id, content }: SendMessageParams) {
+      const chatmessage = Chatmessage.create({chatroom_id, sender_id, content}).getDTO();
   
-    const message = PrivateMessage(to, from, text);
-    socket.broadcast.to(onlineUser).emit('PrivateMessage', message);
-    socket.emit('PrivateMessage', message);
-  }
+      const repo = new ChatmessageRepo();
+      await repo.insert(chatmessage);
+  
+      socket.broadcast.to(chatroom_id).emit('Message', chatmessage);
+      socket.emit('Message', chatmessage);
+    },
+  
+    async sendPrivateMessage({ receiver_id, sender_id, content }: SendPrivateMessageParams) {
+      // check if receiver even exists
+      const userRepo = new UserRepo();
+      const receiver = await userRepo.getByUserId(receiver_id);
+      if (!receiver) return socket.emit('FailedPrivateMessage', 'User not found.');
+  
+      // check if sender is blocked by receiver
+      const friendshipRepo = new FriendshipRepo();
+      const blockedUsers = await friendshipRepo.viewAllOfStatus({user_id: receiver.user_id, status: "blocked"});
+      const blockedByReceiver = blockedUsers.find(u => u.user_id === sender_id);
+      if (blockedByReceiver) return socket.emit('FailedPrivateMessage', 'User not found.');
+      
+      const chatmessage = Chatmessage.create({receiver_id, sender_id, content}).getDTO();
+  
+      const chatmessageRepo = new ChatmessageRepo();
+      await chatmessageRepo.insert(chatmessage);
+  
+      const chatuserRepo = new ChatUserRepo();
+      const onlineReceiver = await chatuserRepo.getByUsername(receiver.username);
+      if (onlineReceiver) {
+        socket.broadcast.to(onlineReceiver.session_id).emit('PrivateMessage', chatmessage);
+      }
+      socket.emit('PrivateMessage', chatmessage);
+    }
+  };
+}
+
+type ViewPrivateConversationParams = {
+  sender_id:   string;
+  receiver_id: string;
 };
 
 type SendMessageParams = {
-  from:      string;
-  text:      string;
-  sessionId: string;
-  socket:    Socket;
+  chatroom_id: string;
+  sender_id:   string;
+  content:     string;
+};
+
+type SendPrivateMessageParams = {
+  receiver_id: string;
+  sender_id:   string;
+  content:     string;
 };

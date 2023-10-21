@@ -1,33 +1,37 @@
 import { Router } from 'express';
-import { body }   from 'express-validator';
+import { param }  from 'express-validator';
 
-import { userSavedRecipeController as controller } from './controller';
-import { catchExceptions, userIsAuth } from '../../../../utils';
+import { userSavedRecipeController as controller } from './controller.js';
+import { catchExceptions, userIsAuth } from '../../../utils/index.js';
 
 const router = Router();
 
-// for /user/private/saved-recipe/...
+// for /users/:user_id/saved-recipes
 
-export function userSavedRecipeRouter() {
-  router.post(
-    '/all',
+export function savedRecipeRouter() {
+  router.get(
+    '/',
     userIsAuth,
     catchExceptions(controller.viewByUserId)
   );
 
   router.post(
-    '/create',
+    '/:recipe_id',
     userIsAuth,
-    body('recipe_id').not().isEmpty().trim().escape(),
+    sanitizeParams('recipe_id'),
     catchExceptions(controller.create)
   );
 
   router.delete(
-    '/delete',
+    '/:recipe_id',
     userIsAuth,
-    body('recipe_id').not().isEmpty().trim().escape(),
+    sanitizeParams('recipe_id'),
     catchExceptions(controller.delete)
   );
 
   return router;
+}
+
+function sanitizeParams(keys: string | string[]) {
+  return param(keys).not().isEmpty().trim().escape();
 }

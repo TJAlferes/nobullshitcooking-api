@@ -1,13 +1,13 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
-import { MethodRepo } from './repo';
+import { MethodRepo } from './repo.js';
 
 export const methodController = {
   async viewAll(req: Request, res: Response) {
     const repo = new MethodRepo();
     const rows = await repo.viewAll();
 
-    return res.send(rows);
+    return res.json(rows);
   },
 
   async viewOne(req: Request, res: Response) {
@@ -16,6 +16,6 @@ export const methodController = {
     const repo = new MethodRepo();
     const row = await repo.viewOne(method_id);
 
-    return res.send(row);
+    return res.json(row);
   }
 };

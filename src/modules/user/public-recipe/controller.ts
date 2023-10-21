@@ -1,63 +1,62 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
-import { EquipmentRepo }           from '../../../equipment/repo';
-import { IngredientRepo }          from '../../../ingredient/repo';
-import { ImageRepo }               from '../../../image/repo';
-import { RecipeImageRepo }         from '../../../recipe/image/repo';
-import { RecipeImageService }      from '../../../recipe/image/service';
-import { RecipeEquipmentRepo }     from '../../../recipe/required-equipment/repo';
-import { RecipeEquipmentService }  from '../../../recipe/required-equipment/service';
-import { RecipeIngredientRepo }    from '../../../recipe/required-ingredient/repo';
-import { RecipeIngredientService } from '../../../recipe/required-ingredient/service';
-import { RecipeMethodRepo }        from '../../../recipe/required-method/repo';
-import { RecipeMethodService }     from '../../../recipe/required-method/service';
-import { RecipeSubrecipeRepo }     from '../../../recipe/required-subrecipe/repo';
-import { RecipeSubrecipeService }  from '../../../recipe/required-subrecipe/service';
-import { Recipe }                  from '../../../recipe/model';
-import { RecipeRepo }              from '../../../recipe/repo';
-import { NOBSC_USER_ID }           from '../../../shared/model';
-import { PublicRecipeService }     from './service';
+import { EquipmentRepo }           from '../../equipment/repo.js';
+import { IngredientRepo }          from '../../ingredient/repo.js';
+import { ImageRepo }               from '../../image/repo.js';
+import { RecipeImageRepo }         from '../../recipe/image/repo.js';
+import { RecipeImageService }      from '../../recipe/image/service.js';
+import { RecipeEquipmentRepo }     from '../../recipe/required-equipment/repo.js';
+import { RecipeEquipmentService }  from '../../recipe/required-equipment/service.js';
+import { RecipeIngredientRepo }    from '../../recipe/required-ingredient/repo.js';
+import { RecipeIngredientService } from '../../recipe/required-ingredient/service.js';
+import { RecipeMethodRepo }        from '../../recipe/required-method/repo.js';
+import { RecipeMethodService }     from '../../recipe/required-method/service.js';
+import { RecipeSubrecipeRepo }     from '../../recipe/required-subrecipe/repo.js';
+import { RecipeSubrecipeService }  from '../../recipe/required-subrecipe/service.js';
+import { Recipe }                  from '../../recipe/model.js';
+import { RecipeRepo }              from '../../recipe/repo.js';
+import { NOBSC_USER_ID }           from '../../shared/model.js';
+import { UserRepo }                from '../repo.js';
+import { PublicRecipeService }     from './service.js';
 
 export const publicRecipeController = {
   async overviewAll(req: Request, res: Response) {
-    const author_id = req.session.userInfo!.user_id;
+    const author_id = req.session.user_id!;
     const owner_id  = NOBSC_USER_ID
 
     const repo = new RecipeRepo();
     const rows = await repo.overviewAll({author_id, owner_id});
 
-    return res.send(rows);
+    return res.json(rows);
   },
 
   async viewOne(req: Request, res: Response) {
-    const title     = unslugify(req.params.title);
-    const author    = unslugify(req.params.usename);  // hmm...
-    const author_id = req.session.userInfo!.user_id;
+    const author = unslugify(req.params.usename);
+
+    const userRepo = new UserRepo();
+    const user = await userRepo.getByUsername(author);
+    if (!user) return res.status(404);
+
+    const title = unslugify(req.params.title);
+    const author_id = user.user_id;
     const owner_id  = NOBSC_USER_ID;
 
-    const repo = new RecipeRepo()
-    const row = await repo.viewOneByTitle({title, author_id, owner_id});
+    const recipeRepo = new RecipeRepo()
+    const row = await recipeRepo.viewOneByTitle({title, author_id, owner_id});
     
-    return res.send(row);
+    return res.json(row);
   },
 
   async edit(req: Request, res: Response) {
-    const recipe_id = req.body.recipe_id;
-    const author_id = req.session.userInfo!.user_id;
+    const { recipe_id } = req.params;
+    const author_id = req.session.user_id!;
     const owner_id  = NOBSC_USER_ID;
 
     const repo = new RecipeRepo();
-    const rows = await repo.viewExistingRecipeToEdit({recipe_id, author_id, owner_id});
+    const row = await repo.viewExistingRecipeToEdit({recipe_id, author_id, owner_id});
 
-    return res.send(rows);
+    return res.json(row);
   },
-
-  async viewAllTitles(req: Request, res: Response) {
-    const repo = new RecipeRepo();
-    const rows = await repo.viewPublicAllTitles();
-
-    return res.send(rows);
-  },  // for Next.js getStaticPaths
 
   async create(req: Request, res: Response) {
     const {
@@ -75,9 +74,9 @@ export const publicRecipeController = {
       ingredients_image,
       cooking_image
     } = req.body;
-    const recipe_type_id = Number(req.body.recipeInfo.recipe_type_id);
-    const cuisine_id     = Number(req.body.recipeInfo.cuisine_id);
-    const author_id      = req.session.userInfo!.user_id;
+    const recipe_type_id = Number(req.body.recipe_type_id);
+    const cuisine_id     = Number(req.body.cuisine_id);
+    const author_id      = req.session.user_id!;
     const owner_id       = NOBSC_USER_ID;
 
     const equipmentRepo  = new EquipmentRepo();
@@ -88,7 +87,6 @@ export const publicRecipeController = {
       ingredientRepo,
       recipeRepo
     });
-    // ALSO CHECK FOR PRIVATE IMAGES???
     await checkForPrivateContent({
       required_equipment,
       required_ingredients,
@@ -108,25 +106,22 @@ export const publicRecipeController = {
     }).getDTO();
     await recipeRepo.insert(recipe);
 
-    const recipeMethodRepo    = new RecipeMethodRepo();
-    const recipeMethodService = new RecipeMethodService(recipeMethodRepo);
-    await recipeMethodService.create(required_methods);
+    const recipeMethodService = new RecipeMethodService(new RecipeMethodRepo());
+    await recipeMethodService.bulkCreate(required_methods);
 
-    const recipeEquipmentRepo    = new RecipeEquipmentRepo();
-    const recipeEquipmentService = new RecipeEquipmentService(recipeEquipmentRepo);
-    await recipeEquipmentService.create(required_equipment);
+    const recipeEquipmentService = new RecipeEquipmentService(new RecipeEquipmentRepo());
+    await recipeEquipmentService.bulkCreate(required_equipment);
 
-    const recipeIngredientRepo    = new RecipeIngredientRepo();
-    const recipeIngredientService = new RecipeIngredientService(recipeIngredientRepo);
-    await recipeIngredientService.create(required_ingredients);
+    const recipeIngredientService = new RecipeIngredientService(new RecipeIngredientRepo());
+    await recipeIngredientService.bulkCreate(required_ingredients);
 
-    const recipeSubrecipeRepo    = new RecipeSubrecipeRepo();
-    const recipeSubrecipeService = new RecipeSubrecipeService(recipeSubrecipeRepo);
-    await recipeSubrecipeService.create(required_subrecipes);
+    const recipeSubrecipeService = new RecipeSubrecipeService(new RecipeSubrecipeRepo());
+    await recipeSubrecipeService.bulkCreate(required_subrecipes);
 
-    const imageRepo          = new ImageRepo();
-    const recipeImageRepo    = new RecipeImageRepo();
-    const recipeImageService = new RecipeImageService({imageRepo, recipeImageRepo});
+    const recipeImageService = new RecipeImageService({
+      imageRepo: new ImageRepo(),
+      recipeImageRepo: new RecipeImageRepo()
+    });
     await recipeImageService.bulkCreate({
       recipe_id: recipe.recipe_id,
       author_id,
@@ -139,7 +134,7 @@ export const publicRecipeController = {
       ]
     });
 
-    return res.send({message: 'Recipe created.'});
+    return res.status(201);
   },
 
   async update(req: Request, res: Response) {
@@ -159,9 +154,9 @@ export const publicRecipeController = {
       ingredients_image,
       cooking_image
     }= req.body;
-    const recipe_type_id = Number(req.body.recipeInfo.recipe_type_id);
-    const cuisine_id     = Number(req.body.recipeInfo.cuisine_id);
-    const author_id      = req.session.userInfo!.user_id;
+    const recipe_type_id = Number(req.body.recipe_type_id);
+    const cuisine_id     = Number(req.body.cuisine_id);
+    const author_id      = req.session.user_id!;
     const owner_id       = NOBSC_USER_ID;
 
     const equipmentRepo  = new EquipmentRepo();
@@ -172,7 +167,6 @@ export const publicRecipeController = {
       ingredientRepo,
       recipeRepo
     });
-    // ALSO CHECK FOR PRIVATE IMAGES???
     await checkForPrivateContent({
       required_equipment,
       required_ingredients,
@@ -193,27 +187,23 @@ export const publicRecipeController = {
     }).getDTO();
     await recipeRepo.update(recipe);
 
-    const recipeMethodRepo    = new RecipeMethodRepo();
-    const recipeMethodService = new RecipeMethodService(recipeMethodRepo);
-    await recipeMethodService.update(required_methods);
+    const recipeMethodService = new RecipeMethodService(new RecipeMethodRepo());
+    await recipeMethodService.bulkUpdate(required_methods);  // TO DO: fix all these
 
-    const recipeEquipmentRepo    = new RecipeEquipmentRepo();
-    const recipeEquipmentService = new RecipeEquipmentService(recipeEquipmentRepo);
-    await recipeEquipmentService.update(required_equipment);
+    const recipeEquipmentService = new RecipeEquipmentService(new RecipeEquipmentRepo());
+    await recipeEquipmentService.bulkUpdate(required_equipment);
 
-    const recipeIngredientRepo    = new RecipeIngredientRepo();
-    const recipeIngredientService = new RecipeIngredientService(recipeIngredientRepo);
-    await recipeIngredientService.update(required_ingredients);
+    const recipeIngredientService = new RecipeIngredientService(new RecipeIngredientRepo());
+    await recipeIngredientService.bulkUpdate(required_ingredients);
 
-    const recipeSubrecipeRepo    = new RecipeSubrecipeRepo();
-    const recipeSubrecipeService = new RecipeSubrecipeService(recipeSubrecipeRepo);
-    await recipeSubrecipeService.update(required_subrecipes);
+    const recipeSubrecipeService = new RecipeSubrecipeService(new RecipeSubrecipeRepo());
+    await recipeSubrecipeService.bulkUpdate(required_subrecipes);
 
-    const imageRepo          = new ImageRepo();
-    const recipeImageRepo    = new RecipeImageRepo();
-    const recipeImageService = new RecipeImageService({imageRepo, recipeImageRepo});
+    const recipeImageService = new RecipeImageService({
+      imageRepo: new ImageRepo(),
+      recipeImageRepo: new RecipeImageRepo()
+    });
     await recipeImageService.bulkUpdate({
-      recipe_id: recipe.recipe_id,
       author_id,
       owner_id,
       uploaded_images: [
@@ -224,17 +214,17 @@ export const publicRecipeController = {
       ]
     });
 
-    return res.send({message: 'Recipe updated.'});
+    return res.status(204);
   },
 
-  async disownOne(req: Request, res: Response) {
-    const recipe_id = req.body.recipe_id;
-    const author_id = req.session.userInfo!.user_id;
+  async unattributeOne(req: Request, res: Response) {
+    const { recipe_id } = req.params;
+    const author_id = req.session.user_id!;
 
     const repo = new RecipeRepo();
-    await repo.disownOne({author_id, recipe_id});
+    await repo.unattributeOne({author_id, recipe_id});
 
-    return res.send({message: 'Recipe disowned.'});
+    return res.status(204);
   }
 };
 

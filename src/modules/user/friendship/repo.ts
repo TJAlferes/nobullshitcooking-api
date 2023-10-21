@@ -1,6 +1,6 @@
 import { RowDataPacket } from 'mysql2/promise';
 
-import { MySQLRepo } from '../../shared/MySQL';
+import { MySQLRepo } from '../../shared/MySQL.js';
 
 // Each friendship is represented by TWO records in the table:
 //
@@ -16,7 +16,7 @@ import { MySQLRepo } from '../../shared/MySQL';
 
 
 
-// Blocking is represented by ONE AND ONLY ONE record in the table:
+// Blocking is represented by ONLY ONE record in the table:
 //
 //   user_id: 1, friend_id: 2, status: "blocked"
 //   Here, user 1 blocked user 2 (user 2 is blocked by user 1)
@@ -26,14 +26,14 @@ import { MySQLRepo } from '../../shared/MySQL';
 
 
 export class FriendshipRepo extends MySQLRepo implements FriendshipRepoInterface {
-  async getOne(params: GetOneParams) {
+  async getStatus(params: GetStatusParams): Promise<string | undefined> {
     const sql = `
       SELECT status
       FROM friendship
       WHERE user_id = ? AND friend_id = ?
     `;
-    const [ [ row ] ] = await this.pool.execute<Friendship[]>(sql, params);
-    return row;
+    const [ [ row ] ] = await this.pool.execute<StatusData[]>(sql, params);
+    return row ? row.status : undefined;
   }
 
   async viewAll(user_id: string) {
@@ -89,7 +89,7 @@ export class FriendshipRepo extends MySQLRepo implements FriendshipRepoInterface
 }
 
 export interface FriendshipRepoInterface {
-  getOne:          (params: GetOneParams) =>          Promise<Friendship>;
+  getStatus:       (params: GetStatusParams) =>       Promise<string | undefined>;
   viewAll:         (user_id: string) =>               Promise<FriendView[]>;
   viewAllOfStatus: (params: ViewAllOfStatusParams) => Promise<FriendView[]>;
   insert:          (params: InsertParams) =>          Promise<void>;
@@ -97,7 +97,7 @@ export interface FriendshipRepoInterface {
   delete:          (params: DeleteParams) =>          Promise<void>;
 }
 
-type GetOneParams = {
+type GetStatusParams = {
   user_id:   string;
   friend_id: string;
 };
@@ -120,10 +120,8 @@ type DeleteParams = {
   friend_id: string;
 };
 
-type Friendship = RowDataPacket & {
-  user_id:   string;
-  friend_id: string;
-  status:    string;
+type StatusData = RowDataPacket & {
+  status: string;
 };
 
 type FriendView = RowDataPacket & {

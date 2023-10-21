@@ -1,6 +1,6 @@
 import { assert, string } from "superstruct";
 
-import { GenerateUUIDv7StringId, UUIDv7StringId } from "../../shared/model";
+import { GenerateUUIDv7StringId, UUIDv7StringId } from "../../shared/model.js";
 
 export class Chatgroup {
   private chatgroup_id;
@@ -17,7 +17,8 @@ export class Chatgroup {
 
   static create(params: CreateParams) {
     const chatgroup_id = GenerateUUIDv7StringId();
-    return new Chatgroup({...params, chatgroup_id});
+    const invite_code  = GenerateUUIDv7StringId();
+    return new Chatgroup({...params, chatgroup_id, invite_code});
   }
 
   getDTO() {
@@ -44,7 +45,6 @@ function ChatgroupName(name: string) {
 type CreateParams = {
   owner_id:       string;
   chatgroup_name: string;
-  invite_code:    string;
 };
 
 type UpdateParams = CreateParams & {
@@ -53,4 +53,5 @@ type UpdateParams = CreateParams & {
 
 type ConstructorParams = CreateParams & {
   chatgroup_id: string;
+  invite_code:  string;
 };

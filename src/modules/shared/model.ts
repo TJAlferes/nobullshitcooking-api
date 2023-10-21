@@ -29,6 +29,7 @@ export function Amount(amount: number) {
 
 export function Notes(notes: string | undefined) {
   assert(notes, defaulted(string(), ''));
+  if (!notes) notes = "";
   if (notes.length > 1000) {
     throw new Error("Notes must be no more than 1,000 characters.");
   }

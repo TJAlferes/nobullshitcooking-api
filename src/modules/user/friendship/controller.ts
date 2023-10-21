@@ -1,17 +1,17 @@
 import { Request, Response } from 'express';
 
-import { UserRepo }       from '../repo';
-import { Friendship }     from './model';
-import { FriendshipRepo } from './repo';
+import { UserRepo }       from '../repo.js';
+import { Friendship }     from './model.js';
+import { FriendshipRepo } from './repo.js';
 
-export const userFriendshipController = {
+export const friendshipController = {
   async viewAll(req: Request, res: Response) {
-    const user_id = req.session.userInfo!.user_id;
+    const user_id = req.session.user_id!;
 
     const friendshipRepo = new FriendshipRepo();
     const rows = await friendshipRepo.viewAll(user_id);
 
-    return res.send(rows);
+    return res.json(rows);
   },
 
   async create(req: Request, res: Response) {
@@ -19,26 +19,19 @@ export const userFriendshipController = {
 
     const userRepo = new UserRepo();
     const friend = await userRepo.getByUsername(friendname);
-    if (!friend) {
-      return res.send({message: 'User not found.'});
-    }
+    if (!friend) return res.status(404);
 
-    const user_id   = req.session.userInfo!.user_id;
+    const user_id   = req.session.user_id!;
     const friend_id = friend.user_id;
 
     // do others need this too? probably
     const friendshipRepo = new FriendshipRepo();
-    const { status } = await friendshipRepo.getOne({
-      user_id:   friend_id,
-      friend_id: user_id
-    });
-    if (status === "blocked") {
-      return res.send({message: 'User not found.'});
-    }
+    const status = await friendshipRepo.getStatus({user_id: friend_id, friend_id: user_id});
+    if (status === "blocked") return res.status(404);
 
     // do others need this too? probably
-    const friendshipExists = await friendshipRepo.getOne({user_id, friend_id});
-    if (!friendshipExists) {
+    const currentStatus = await friendshipRepo.getStatus({user_id, friend_id});
+    if (!currentStatus) {
       const friendship1 = Friendship
         .create({
           user_id,
@@ -58,100 +51,89 @@ export const userFriendshipController = {
       await friendshipRepo.insert(friendship1);
       await friendshipRepo.insert(friendship2);
 
-      return res.send({message: 'Friendship request sent.'});
+      return res.status(201);
     }
-
-    if ( friendshipExists.status === "pending-sent"
-      || friendshipExists.status === "pending-received"
+    if ( currentStatus === "pending-sent"
+      || currentStatus === "pending-received"
     ) {
-      return res.send({message: 'Already pending.'});
+      return res.status(403).json({message: 'Already pending.'});
     }
-
-    if (friendshipExists.status === "accepted") {
-      return res.send({message: 'Already friends.'});
+    if (currentStatus === "accepted") {
+      return res.status(403).json({message: 'Already friends.'});
     }
-
-    if (friendshipExists.status === "blocked") {
-      return res.send({message: 'User blocked. First unblock.'});
+    if (currentStatus === "blocked") {
+      return res.status(403).json({message: 'User blocked. First unblock.'});
     }
   },
 
   async accept(req: Request, res: Response) {
-    const { friendname } = req.body;
+    const { friendname } = req.params;
 
     const userRepo = new UserRepo();
     const friend = await userRepo.getByUsername(friendname);
-    if (!friend) {
-      return res.send({message: 'User not found.'});
-    }
+    if (!friend) return res.status(404);
 
-    const user_id   = req.session.userInfo!.user_id;
+    const user_id   = req.session.user_id!;
     const friend_id = friend.user_id;
 
     const friendshipRepo = new FriendshipRepo();
-    const { status } = await friendshipRepo.getOne({user_id, friend_id});
-    if (status !== "pending-received") return;
+    const status = await friendshipRepo.getStatus({user_id, friend_id});
+    if (status !== "pending-received") return res.status(403);
 
     await friendshipRepo.update({user_id, friend_id, status: "accepted"});
     await friendshipRepo.update({friend_id, user_id, status: "accepted"});
 
-    return res.send({message: 'Friendship request accepted.'});
+    return res.status(204);
   },
 
   async reject(req: Request, res: Response) {
-    const { friendname } = req.body;
+    const { friendname } = req.params;
 
     const userRepo = new UserRepo();
     const friend = await userRepo.getByUsername(friendname);
-    if (!friend) {
-      return res.send({message: 'User not found.'});
-    }
+    if (!friend) return res.status(404);
 
-    const user_id   = req.session.userInfo!.user_id;
+    const user_id   = req.session.user_id!;
     const friend_id = friend.user_id;
 
     const friendshipRepo = new FriendshipRepo();
-    const { status } = await friendshipRepo.getOne({user_id, friend_id});
-    if (status !== "pending-received") return;
+    const status = await friendshipRepo.getStatus({user_id, friend_id});
+    if (status !== "pending-received") return res.status(403);
 
     await friendshipRepo.delete({user_id, friend_id});
     await friendshipRepo.delete({friend_id, user_id});
 
-    return res.send({message: 'Friendship request rejected.'});
+    return res.status(204);
   },
 
   async delete(req: Request, res: Response) {
-    const { friendname } = req.body;
+    const { friendname } = req.params;
 
     const userRepo = new UserRepo();
     const friend = await userRepo.getByUsername(friendname);
-    if (!friend) {
-      return res.send({message: 'User not found.'});
-    }
+    if (!friend) return res.status(404);
 
-    const user_id   = req.session.userInfo!.user_id;
+    const user_id   = req.session.user_id!;
     const friend_id = friend.user_id;
 
     const friendshipRepo = new FriendshipRepo();
-    const { status } = await friendshipRepo.getOne({user_id, friend_id});
-    if (status !== "accepted") return;
+    const status = await friendshipRepo.getStatus({user_id, friend_id});
+    if (status !== "accepted") return res.status(403);
 
     await friendshipRepo.delete({user_id, friend_id});
     await friendshipRepo.delete({friend_id, user_id});
 
-    return res.send({message: 'No longer friends. Maybe again later.'});
+    return res.status(204);
   },
 
   async block(req: Request, res: Response) {
-    const { friendname } = req.body;
+    const { friendname } = req.params;
 
     const userRepo = new UserRepo();
     const friend = await userRepo.getByUsername(friendname);
-    if (!friend) {
-      return res.send({message: 'User not found.'});
-    }
+    if (!friend) return res.status(404);
 
-    const user_id   = req.session.userInfo!.user_id;
+    const user_id   = req.session.user_id!;
     const friend_id = friend.user_id;
 
     const friendshipRepo = new FriendshipRepo();
@@ -164,27 +146,25 @@ export const userFriendshipController = {
     // friend_id  is being blocked by  user_id
     await friendshipRepo.insert({user_id, friend_id, status: "blocked"});
 
-    return res.send({message: 'User blocked.'});
+    return res.status(204);
   },
 
   async unblock(req: Request, res: Response) {
-    const { friendname } = req.body;
+    const { friendname } = req.params;
 
     const userRepo = new UserRepo();
     const friend = await userRepo.getByUsername(friendname);
-    if (!friend) {
-      return res.send({message: 'User not found.'});
-    }
+    if (!friend) return res.status(404);
 
-    const user_id   = req.session.userInfo!.user_id;
+    const user_id   = req.session.user_id!;
     const friend_id = friend.user_id;
 
     const friendshipRepo = new FriendshipRepo();
-    const { status } = await friendshipRepo.getOne({user_id, friend_id});
-    if (status !== "blocked") return;
+    const status = await friendshipRepo.getStatus({user_id, friend_id});
+    if (status !== "blocked") return res.status(403);
 
     await friendshipRepo.delete({user_id, friend_id});
 
-    return res.send({message: 'User unblocked.'});
+    return res.status(204);
   }
 };

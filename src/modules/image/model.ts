@@ -1,6 +1,6 @@
 import { assert, string } from "superstruct";
 
-import { GenerateUUIDv7StringId, UUIDv7StringId, ImageFilename } from "../shared/model";
+import { GenerateUUIDv7StringId, UUIDv7StringId, ImageFilename } from "../shared/model.js";
 
 export class Image {
   private image_id;
@@ -22,7 +22,9 @@ export class Image {
     return new Image({image_id, ...params});
   }
 
-  //static update(params: UpdateParams) {} needed for images ???
+  static update(params: UpdateParams) {
+    return new Image(params);
+  }
 
   getDTO() {
     return {
@@ -38,7 +40,7 @@ export class Image {
 function Caption(caption: string) {
   assert(caption, string());
   if (caption.length > 150) {
-    throw new Error("Caption must be no more than 100 characters.");
+    throw new Error("Caption must be no more than 150 characters.");
   }
   return caption;
 }

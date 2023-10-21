@@ -1,6 +1,6 @@
 import { RowDataPacket } from "mysql2";
 
-import { MySQLRepo } from "../../shared/MySQL";
+import { MySQLRepo } from "../../shared/MySQL.js";
 
 export class ChatroomRepo extends MySQLRepo implements ChatroomRepoInterface {
   async overviewAllByChatgroupId(chatgroup_id: string) {
@@ -13,6 +13,12 @@ export class ChatroomRepo extends MySQLRepo implements ChatroomRepoInterface {
     `;
     const [ rows ] = await this.pool.execute<ChatroomOverview[]>(sql, chatgroup_id);
     return rows;
+  }
+
+  async viewByChatroomName(chatroom_name: string) {
+    const sql = `SELECT chatroom_id FROM chatroom WHERE chatroom_name = ?`;
+    const [ [ row ] ] = await this.pool.execute<ChatroomId[]>(sql, chatroom_name);
+    return row.chatroom_id;
   }
 
   async insert(params: InsertParams) {
@@ -56,6 +62,7 @@ export class ChatroomRepo extends MySQLRepo implements ChatroomRepoInterface {
 
 export interface ChatroomRepoInterface {
   overviewAllByChatgroupId: (chatgroup_id: string) => Promise<ChatroomOverview[]>;
+  viewByChatroomName:       (chatroom_name: string) => Promise<string>
   insert:                   (params: InsertParams) => Promise<void>;
   update:                   (params: UpdateParams) => Promise<void>;
   deleteOne:                (chatroom_id: string) =>  Promise<void>;
@@ -64,6 +71,10 @@ export interface ChatroomRepoInterface {
 type ChatroomOverview = RowDataPacket & {
   chatroom_id:   string;
   chatroom_name: string;
+};
+
+type ChatroomId = RowDataPacket & {
+  chatroom_id: string;
 };
 
 type InsertParams = {

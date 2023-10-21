@@ -1,5 +1,6 @@
-import { Chatgroup }     from "./model";
-import { ChatgroupRepo } from "./repo";
+/*import type { Request, Response } from "express";
+
+import { ChatgroupRepo } from "./repo.js";
 
 export const chatgroupController = {
   async viewOne() {
@@ -7,3 +8,4 @@ export const chatgroupController = {
     const row = await repo.viewOne(chatgroup_id);
   }
 };
+*/

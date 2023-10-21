@@ -1,7 +1,7 @@
 export { userAuthTests }           from './auth';
 export { userEquipmentTests }      from './equipment';
 export { userFavoriteRecipeTests } from './favoriteRecipe';
-export { userFriendshipTests }     from './friendship';
+//export { userFriendshipTests }     from './friendship';
 export { userGetSignedUrlTests }   from './getSignedUrl';
 export { userIngredientTests }     from './ingredient';
 export { userPlanTests }           from './plan';

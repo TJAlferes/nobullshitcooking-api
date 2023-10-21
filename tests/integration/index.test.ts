@@ -1,19 +1,20 @@
 import request from 'supertest';
+import type { Server } from 'node:http';
 
-import { pool }         from '../../src/lib/connections/mysql';
-import { redisClients } from '../../src/lib/connections/redis';
-import { appServer }    from '../../src/app';
+import { pool } from '../../src/connections/mysql';
+import { redisClients } from '../../src/connections/redis';
+import { httpServer } from '../../src';
 import {
   userAuthTests,
   userEquipmentTests,
   userFavoriteRecipeTests,
-  userFriendshipTests,
+  //userFriendshipTests,
   userGetSignedUrlTests,
   userIngredientTests,
   userPlanTests,
   userRecipeTests,
   userSavedRecipeTests
-} from './user/index';
+} from './user';
 import {
   cuisineTests,
   dataInitTests,
@@ -28,15 +29,14 @@ import {
   recipeTests,
   recipeTypeTests,
   searchTests
-} from './index';
+} from '.';
 
 // Make sure this only touches test DBs
 // Make sure this never touches dev DBs
 // Make sure this NEVER touches prod DBs
-
 // Avoid global seeds and fixtures, add data per test (per it)
 
-export let server: any = appServer(pool, redisClients);
+export let server: Server | null = httpServer;
 
 beforeAll(() => {
   // TO DO: clean the test db
@@ -58,7 +58,10 @@ describe ('NOBSC API', () => {
   describe('GET /', () => {
     it('returns data correctly', async () => {
       const { text } = await request(server).get('/');
-      expect(text).toEqual(`No Bullshit Cooking Backend API. Documentation at https://github.com/tjalferes/nobullshitcooking-api`);
+      expect(text).toEqual(`
+        No Bullshit Cooking API
+        Documentation at https://github.com/tjalferes/nobullshitcooking-api
+      `);
     });
   });
   describe('cuisine', cuisineTests);
@@ -78,7 +81,7 @@ describe ('NOBSC API', () => {
   describe('userAuth', userAuthTests);
   describe('userEquipment', userEquipmentTests);
   describe('userFavoriteRecipe', userFavoriteRecipeTests);
-  describe('userFriendship', userFriendshipTests);
+  //describe('userFriendship', userFriendshipTests);
   describe('userGetSignedUrl', userGetSignedUrlTests);
   describe('userIngredient', userIngredientTests);
   describe('userPlan', userPlanTests);

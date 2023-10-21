@@ -1,4 +1,4 @@
-import { Amount, NumberId, UUIDv7StringId } from '../../shared/model';
+import { Amount, NumberId, UUIDv7StringId } from '../../shared/model.js';
 
 export class RecipeIngredient {
   private recipe_id;
@@ -8,14 +8,13 @@ export class RecipeIngredient {
 
   private constructor(params: ConstructorParams) {
     this.recipe_id     = UUIDv7StringId(params.recipe_id);
-    this.amount        = params.amount ? Amount(params.amount) : undefined;
-    this.unit_id       = params.unit_id ? NumberId(params.unit_id) : undefined;
+    this.amount        = params.amount ? Amount(params.amount) : null;
+    this.unit_id       = params.unit_id ? NumberId(params.unit_id) : null;
     this.ingredient_id = UUIDv7StringId(params.ingredient_id);
   }
 
   static create(params: CreateParams) {
-    const recipeIngredient = new RecipeIngredient(params);
-    return recipeIngredient;
+    return new RecipeIngredient(params);
   }
 
   getDTO() {
@@ -30,8 +29,8 @@ export class RecipeIngredient {
 
 type CreateParams = {
   recipe_id:     string;
-  amount?:       number;
-  unit_id?:      number;
+  amount:        number | null;
+  unit_id:       number | null;
   ingredient_id: string;
 };
 

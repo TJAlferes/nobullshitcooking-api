@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import { param }  from 'express-validator';
 
-import { ingredientTypeController } from './controller';
-import { catchExceptions }          from '../../../utils';
+import { ingredientTypeController } from './controller.js';
+import { catchExceptions }          from '../../../utils/index.js';
 
 const router = Router();
 
-// for /ingredient-type/...
+// for /ingredient-types
 
 export function ingredientTypeRouter() {
   router.get('/', catchExceptions(ingredientTypeController.viewAll));

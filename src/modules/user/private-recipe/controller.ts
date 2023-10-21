@@ -1,50 +1,50 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
-import { ImageRepo }               from '../../../image/repo';
-import { RecipeImageRepo }         from '../../../recipe/image/repo';
-import { RecipeImageService }      from '../../../recipe/image/service';
-import { RecipeEquipmentRepo }     from '../../../recipe/required-equipment/repo';
-import { RecipeEquipmentService }  from '../../../recipe/required-equipment/service';
-import { RecipeIngredientRepo }    from '../../../recipe/required-ingredient/repo';
-import { RecipeIngredientService } from '../../../recipe/required-ingredient/service';
-import { RecipeMethodRepo }        from '../../../recipe/required-method/repo';
-import { RecipeMethodService }     from '../../../recipe/required-method/service';
-import { RecipeSubrecipeRepo }     from '../../../recipe/required-subrecipe/repo';
-import { RecipeSubrecipeService }  from '../../../recipe/required-subrecipe/service';
-import { Recipe }                  from '../../../recipe/model';
-import { RecipeRepo }              from '../../../recipe/repo';
+import { ImageRepo }               from '../../image/repo.js';
+import { RecipeImageRepo }         from '../../recipe/image/repo.js';
+import { RecipeImageService }      from '../../recipe/image/service.js';
+import { RecipeEquipmentRepo }     from '../../recipe/required-equipment/repo.js';
+import { RecipeEquipmentService }  from '../../recipe/required-equipment/service.js';
+import { RecipeIngredientRepo }    from '../../recipe/required-ingredient/repo.js';
+import { RecipeIngredientService } from '../../recipe/required-ingredient/service.js';
+import { RecipeMethodRepo }        from '../../recipe/required-method/repo.js';
+import { RecipeMethodService }     from '../../recipe/required-method/service.js';
+import { RecipeSubrecipeRepo }     from '../../recipe/required-subrecipe/repo.js';
+import { RecipeSubrecipeService }  from '../../recipe/required-subrecipe/service.js';
+import { Recipe }                  from '../../recipe/model.js';
+import { RecipeRepo }              from '../../recipe/repo.js';
 
 export const privateRecipeController = {
   async overviewAll(req: Request, res: Response) {
-    const author_id = req.session.userInfo!.user_id;
-    const owner_id  = req.session.userInfo!.user_id;
+    const author_id = req.session.user_id!;
+    const owner_id  = req.session.user_id!;
 
     const repo = new RecipeRepo();
     const rows = await repo.overviewAll({author_id, owner_id});
 
-    return res.send(rows);
+    return res.json(rows);
   },
 
   async viewOne(req: Request, res: Response) {
-    const recipe_id = req.body.recipe_id;
-    const author_id = req.session.userInfo!.user_id;
-    const owner_id  = req.session.userInfo!.user_id;
+    const { recipe_id } = req.params;
+    const author_id = req.session.user_id!;
+    const owner_id  = req.session.user_id!;
 
     const repo = new RecipeRepo();
     const row = await repo.viewOneByRecipeId({recipe_id, author_id, owner_id});
     
-    return res.send(row);
+    return res.json(row);
   },
 
   async edit(req: Request, res: Response) {
-    const recipe_id = req.body.recipe_id;
-    const author_id = req.session.userInfo!.user_id;
-    const owner_id  = req.session.userInfo!.user_id;
+    const { recipe_id } = req.params;
+    const author_id = req.session.user_id!;
+    const owner_id  = req.session.user_id!;
 
     const repo = new RecipeRepo();
-    const rows = await repo.viewExistingRecipeToEdit({recipe_id, author_id, owner_id});
+    const row = await repo.viewExistingRecipeToEdit({recipe_id, author_id, owner_id});
 
-    return res.send(rows);
+    return res.json(row);
   },
 
   async create(req: Request, res: Response) {
@@ -63,10 +63,10 @@ export const privateRecipeController = {
       ingredients_image,
       cooking_image
     } = req.body;
-    const recipe_type_id = Number(req.body.recipeInfo.recipe_type_id);
-    const cuisine_id     = Number(req.body.recipeInfo.cuisine_id);
-    const author_id      = req.session.userInfo!.user_id;
-    const owner_id       = req.session.userInfo!.user_id;
+    const recipe_type_id = Number(req.body.recipe_type_id);
+    const cuisine_id     = Number(req.body.cuisine_id);
+    const author_id      = req.session.user_id!;
+    const owner_id       = req.session.user_id!;
 
     const recipeRepo = new RecipeRepo();
     const recipe = Recipe.create({
@@ -82,25 +82,22 @@ export const privateRecipeController = {
     }).getDTO();
     await recipeRepo.insert(recipe);
 
-    const recipeMethodRepo    = new RecipeMethodRepo();
-    const recipeMethodService = new RecipeMethodService(recipeMethodRepo);
-    await recipeMethodService.create(required_methods);
+    const recipeMethodService = new RecipeMethodService(new RecipeMethodRepo());
+    await recipeMethodService.bulkCreate(required_methods);
 
-    const recipeEquipmentRepo    = new RecipeEquipmentRepo();
-    const recipeEquipmentService = new RecipeEquipmentService(recipeEquipmentRepo);
-    await recipeEquipmentService.create(required_equipment);
+    const recipeEquipmentService = new RecipeEquipmentService(new RecipeEquipmentRepo());
+    await recipeEquipmentService.bulkCreate(required_equipment);
 
-    const recipeIngredientRepo    = new RecipeIngredientRepo();
-    const recipeIngredientService = new RecipeIngredientService(recipeIngredientRepo);
-    await recipeIngredientService.create(required_ingredients);
+    const recipeIngredientService = new RecipeIngredientService(new RecipeIngredientRepo());
+    await recipeIngredientService.bulkCreate(required_ingredients);
 
-    const recipeSubrecipeRepo    = new RecipeSubrecipeRepo();
-    const recipeSubrecipeService = new RecipeSubrecipeService(recipeSubrecipeRepo);
-    await recipeSubrecipeService.create(required_subrecipes);
+    const recipeSubrecipeService = new RecipeSubrecipeService(new RecipeSubrecipeRepo());
+    await recipeSubrecipeService.bulkCreate(required_subrecipes);
 
-    const imageRepo          = new ImageRepo();
-    const recipeImageRepo    = new RecipeImageRepo();
-    const recipeImageService = new RecipeImageService({imageRepo, recipeImageRepo});
+    const recipeImageService = new RecipeImageService({
+      imageRepo: new ImageRepo(),
+      recipeImageRepo: new RecipeImageRepo()
+    });
     await recipeImageService.bulkCreate({
       recipe_id: recipe.recipe_id,
       author_id,
@@ -113,7 +110,7 @@ export const privateRecipeController = {
       ]
     });
 
-    return res.send({message: 'Recipe created.'});
+    return res.status(201);
   },
 
   async update(req: Request, res: Response) {
@@ -133,12 +130,12 @@ export const privateRecipeController = {
       ingredients_image,
       cooking_image
     }= req.body;
-    const recipe_type_id = Number(req.body.recipeInfo.recipe_type_id);
-    const cuisine_id     = Number(req.body.recipeInfo.cuisine_id);
-    const author_id      = req.session.userInfo!.user_id;
-    const owner_id       = req.session.userInfo!.user_id;
+    const recipe_type_id = Number(req.body.recipe_type_id);
+    const cuisine_id     = Number(req.body.cuisine_id);
+    const author_id      = req.session.user_id!;
+    const owner_id       = req.session.user_id!;
 
-    const recipeRepo     = new RecipeRepo();
+    const recipeRepo = new RecipeRepo();
     const recipe = Recipe.update({
       recipe_id,
       recipe_type_id,
@@ -153,27 +150,24 @@ export const privateRecipeController = {
     }).getDTO();
     await recipeRepo.update(recipe);
 
-    const recipeMethodRepo    = new RecipeMethodRepo();
-    const recipeMethodService = new RecipeMethodService(recipeMethodRepo);
-    await recipeMethodService.update(required_methods);
+    const recipeMethodService = new RecipeMethodService(new RecipeMethodRepo());
+    await recipeMethodService.bulkUpdate(required_methods);
 
-    const recipeEquipmentRepo    = new RecipeEquipmentRepo();
-    const recipeEquipmentService = new RecipeEquipmentService(recipeEquipmentRepo);
-    await recipeEquipmentService.update(required_equipment);
+    const recipeEquipmentService = new RecipeEquipmentService(new RecipeEquipmentRepo());
+    await recipeEquipmentService.bulkUpdate(required_equipment);
 
-    const recipeIngredientRepo    = new RecipeIngredientRepo();
-    const recipeIngredientService = new RecipeIngredientService(recipeIngredientRepo);
-    await recipeIngredientService.update(required_ingredients);
+    const recipeIngredientService = new RecipeIngredientService(new RecipeIngredientRepo());
+    await recipeIngredientService.bulkUpdate(required_ingredients);
 
-    const recipeSubrecipeRepo    = new RecipeSubrecipeRepo();
-    const recipeSubrecipeService = new RecipeSubrecipeService(recipeSubrecipeRepo);
-    await recipeSubrecipeService.update(required_subrecipes);
+    const recipeSubrecipeService = new RecipeSubrecipeService(new RecipeSubrecipeRepo());
+    await recipeSubrecipeService.bulkUpdate(required_subrecipes);
 
-    const imageRepo          = new ImageRepo();
-    const recipeImageRepo    = new RecipeImageRepo();
-    const recipeImageService = new RecipeImageService({imageRepo, recipeImageRepo});
+    const recipeImageService = new RecipeImageService({
+      imageRepo: new ImageRepo(),
+      recipeImageRepo: new RecipeImageRepo()
+    });
     await recipeImageService.bulkUpdate({
-      recipe_id: recipe.recipe_id,
+      //recipe_id: recipe.recipe_id,
       author_id,
       owner_id,
       uploaded_images: [
@@ -184,24 +178,16 @@ export const privateRecipeController = {
       ]
     });
 
-    return res.send({message: 'Recipe updated.'});
+    return res.status(204);
   },
 
   async deleteOne(req: Request, res: Response) {
-    const recipe_id = req.body.recipe_id;
-    const owner_id  = req.session.userInfo!.user_id;
+    const { recipe_id } = req.params;
+    const owner_id = req.session.user_id!;
 
     const recipeRepo = new RecipeRepo();
     await recipeRepo.deleteOne({owner_id, recipe_id});
 
-    return res.send({message: 'Recipe deleted.'});
+    return res.status(204);
   }
 };
-
-// TO DO: move to shared
-function unslugify(title: string) {
-  return title
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-}

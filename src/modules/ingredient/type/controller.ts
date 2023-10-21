@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { IngredientTypeRepo } from './repo';
+import { IngredientTypeRepo } from './repo.js';
 
 export const ingredientTypeController = {
   async viewAll(req: Request, res: Response) {

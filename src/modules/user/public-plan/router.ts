@@ -1,51 +1,53 @@
 import { Router } from 'express';
-import { body }   from 'express-validator';
+import { body, param } from 'express-validator';
 
-import { userPublicPlanController as controller } from './controller';
-import { catchExceptions, userIsAuth } from '../../../../utils';
+import { catchExceptions, userIsAuth } from '../../../utils/index.js';
+import { publicPlanController as controller } from './controller.js';
 
 const router = Router();
 
-// for /user/plan/...
+// for /users/:username/public-plans
 
-export function userPublicPlanRouter() {
-  router.post(
-    '/all',
-    userIsAuth,
+export function publicPlanRouter() {
+  router.get(
+    '/:plan_id',
+    sanitizeParams('plan_id'),
+    catchExceptions(controller.viewOne)
+  );
+
+  router.get(
+    '/',
     catchExceptions(controller.viewAll)
   );
 
   router.post(
-    '/one',
+    '/',
     userIsAuth,
-    [sanitize('plan_id')],
-    catchExceptions(controller.viewOne)
-  );
-
-  router.post(
-    '/create',
-    userIsAuth,
-    [sanitize(['plan_name', 'plan_data'])],
+    sanitizeBody(['plan_name', 'included_recipes.*.*']),
     catchExceptions(controller.create)
   );
 
-  router.put(
-    '/update',
+  router.patch(
+    '/:plan_id/unattribute',
     userIsAuth,
-    [sanitize(['plan_id', 'plan_name', 'plan_data'])],
-    catchExceptions(controller.update)
+    sanitizeParams('plan_id'),
+    catchExceptions(controller.unattributeOne)
   );
 
-  router.delete(
-    '/delete',
+  router.patch(
+    '/update',
     userIsAuth,
-    [sanitize('plan_id')],
-    catchExceptions(controller.deleteOne)
+    sanitizeBody(['plan_id', 'plan_name', 'included_recipes.*.*']),
+    catchExceptions(controller.update)
   );
 
   return router;
 }
 
-function sanitize(keys: string | string[]) {
+function sanitizeBody(keys: string | string[]) {
   return body(keys).not().isEmpty().trim().escape();
+}
+
+function sanitizeParams(keys: string | string[]) {
+  return param(keys).not().isEmpty().trim().escape();
 }

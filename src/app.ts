@@ -1,21 +1,32 @@
-'use strict';
-
 import compression                                  from 'compression';
 import RedisStore                                   from "connect-redis"
 import cors                                         from 'cors';
 import express, { Request, Response, NextFunction } from 'express';
 // Use https://github.com/animir/node-rate-limiter-flexible instead?
 import expressRateLimit                             from 'express-rate-limit';
-import expressSession, { Session }                  from 'express-session';
+import expressSession, { Session, SessionData }     from 'express-session';
 import helmet                                       from 'helmet';
 import hpp                                          from 'hpp';
 import { createServer }                             from 'node:http';
 import type { Redis }                               from 'ioredis';
-const pino = require('pino-http')();  // logger
+import { pinoHttp }                                 from 'pino-http';  // logger
 
-import { redisClients }         from './connections/redis';
-import { createSocketIOServer } from './modules/chat/socketio';
-import { apiV1Router }          from './router';
+import { redisClients }         from './connections/redis.js';
+import { createSocketIOServer } from './modules/chat/server.js';
+import { apiV1Router }          from './router.js';
+
+declare module "node:http" {
+  interface IncomingMessage {
+    session: Session & Partial<SessionData>;
+  }
+}
+
+declare module "express-session" {
+  interface SessionData {
+    user_id?:  string;
+    username?: string;
+  }
+}
 
 export function createAppServer() {
   const app = express();
@@ -48,7 +59,7 @@ export function createAppServer() {
     unset:             "destroy"
   });
 
-  app.use(pino);  // logger
+  app.use(pinoHttp());  // logger
   app.use(express.json());
   app.use(express.urlencoded({extended: true}));
   app.use(expressRateLimit({
@@ -60,18 +71,23 @@ export function createAppServer() {
     credentials: true,
     origin: (app.get('env') === 'production')
       ? ['https://nobullshitcooking.com']
-      : ['http://localhost:3000', 'http://localhost:8080']
+      : [
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'http://localhost:3003',
+        'http://localhost:8080'
+      ]
   }));
   //app.options('*', cors());  // //
-  app.use((req: Request, res: Response, next: NextFunction) => {
-    const max_age = 60 * 5;  // 5 minutes
-    if (req.method === "GET") {
-      res.set("Cache-control", `public, max-age=${max_age}`);
-    } else {
-      res.set("Cache-control", "no-store");
-    }
-    next();
-  });
+  //app.use((req: Request, res: Response, next: NextFunction) => {
+  //  const max_age = 60 * 5;  // 5 minutes
+  //  if (req.method === "GET") {
+  //    res.set("Cache-control", `public, max-age=${max_age}`);
+  //  } else {
+  //    res.set("Cache-control", "no-store");
+  //  }
+  //  next();
+  //});
   app.use(helmet());
   app.use(hpp());
   // why???
@@ -93,7 +109,7 @@ export function createAppServer() {
   //app.use(csurf());
   app.use(compression());
 
-  app.use('/api/v1', apiV1Router);
+  app.use('/v1', apiV1Router());
 
   const socketIOServer = createSocketIOServer(httpServer, sessionMiddleware);
 
@@ -118,22 +134,9 @@ export function createAppServer() {
   };
 }
 
-export type ModifiedSession = Session & {
-  //staff_id?:  string;
-  //staffname?: string;
-  user_id?:   string;
-  username?:  string;
-};
-
-declare module "node:http" {
-  interface IncomingMessage {
-    session: ModifiedSession;
-  }
-}
-
 export type RedisClients = {
   pubClient:     Redis;  //| Cluster;
   subClient:     Redis;  //| Cluster;
   sessionClient: RedisStore;  //Client;
   //workerClient:  Redis;
-}
+};

@@ -1,51 +1,55 @@
 import { Router } from 'express';
-import { body }   from 'express-validator';
+import { body, param } from 'express-validator';
 
-import { privatePlanController as controller } from './controller';
-import { catchExceptions, userIsAuth } from '../../../../utils';
+import { catchExceptions, userIsAuth } from '../../../utils/index.js';
+import { privatePlanController as controller } from './controller.js';
 
 const router = Router();
 
-// for /user/private/plan/...
+// for /users/:username/private-plans
 
 export function privatePlanRouter() {
-  router.post(
-    '/all',
+  router.get(
+    '/:plan_id',
+    userIsAuth,
+    sanitizeParams('plan_id'),
+    catchExceptions(controller.viewOne)
+  );  // is this needed???
+
+  router.get(
+    '/',
     userIsAuth,
     catchExceptions(controller.viewAll)
   );
 
   router.post(
-    '/one',
+    '/',
     userIsAuth,
-    sanitize('plan_id'),
-    catchExceptions(controller.viewOne)
-  );
-
-  router.post(
-    '/create',
-    userIsAuth,
-    sanitize(['plan_name', 'plan_data']),
+    sanitizeBody(['plan_name', 'included_recipes.*.*']),
     catchExceptions(controller.create)
   );
 
-  router.put(
-    '/update',
+  router.patch(
+    '/',
     userIsAuth,
-    sanitize(['plan_id', 'plan_name', 'plan_data']),
+    sanitizeBody(['plan_id', 'plan_name', 'included_recipes.*.*']),
     catchExceptions(controller.update)
   );
 
   router.delete(
-    '/delete',
+    '/:plan_id',
     userIsAuth,
-    sanitize('plan_id'),
+    sanitizeParams('plan_id'),
     catchExceptions(controller.deleteOne)
   );
 
   return router;
 }
 
-function sanitize(keys: string | string[]) {
+function sanitizeBody(keys: string | string[]) {
   return body(keys).not().isEmpty().trim().escape();
+}
+
+function sanitizeParams(keys: string | string[]) {
+  return param(keys).not().isEmpty().trim().escape();
 }

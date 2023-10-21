@@ -1,8 +1,8 @@
 import { RowDataPacket } from 'mysql2/promise';
 
-import { MySQLRepo } from '../../shared/MySQL';
+import { MySQLRepo } from '../../shared/MySQL.js';
 
-export class CuisineRepo extends MySQLRepo implements ICuisineRepo {
+export class CuisineRepo extends MySQLRepo implements CuisineRepoInterface {
   async viewAll() {
     const sql = `
       SELECT
@@ -28,12 +28,12 @@ export class CuisineRepo extends MySQLRepo implements ICuisineRepo {
       FROM cuisine
       WHERE cuisine_id = ?
     `;
-    const [ [ row ] ] = await this.pool.execute<CuisineView[]>(sql, [cuisine_id]);
+    const [ [ row ] ] = await this.pool.execute<CuisineView[]>(sql, cuisine_id);
     return row;
   }
 }
 
-export interface ICuisineRepo {
+export interface CuisineRepoInterface {
   viewAll: () =>                   Promise<CuisineView[]>;
   viewOne: (cuisine_id: number) => Promise<CuisineView>;
 }
