@@ -1,6 +1,8 @@
 import { uuidv7 } from 'uuidv7';
 import * as fs from 'fs';
 
+// TO DO: reduce this down to the bare essentials, add more brands, varieties, and ingredients later on if needed
+
 const data = [
   [1, "",                    "Tuna",                                     "tuna"],
   [1, "",                    "Salmon",                                   "salmon"],
@@ -420,7 +422,7 @@ data.map(([
 });
 
 fs.writeFileSync(
-  'generated-ingredient-images.json',
+  'generated-images.json',
   JSON.stringify(image_records, null, 2),
   'utf-8'
 );

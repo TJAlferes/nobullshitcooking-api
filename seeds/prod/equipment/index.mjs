@@ -1,6 +1,8 @@
 import { uuidv7 } from 'uuidv7';
 import * as fs from 'fs';
 
+// TO DO: reduce this down to the bare essentials, add more equipment later on if needed
+
 const data = [
   [2, "Ceramic Stone",                    "ceramic-stone"],
   [2, "Chef\'s Knife",                    "chefs-knife"],
@@ -92,7 +94,7 @@ data.map(([
 });
 
 fs.writeFileSync(
-  'generated-equipment-images.json',
+  'generated-images.json',
   JSON.stringify(image_records, null, 2),
   'utf-8'
 );

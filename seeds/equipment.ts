@@ -1,8 +1,11 @@
 import type { PoolConnection } from 'mysql2/promise';
 
-import { equipment } from './equipment-data.js';
+//import { images } from '../prod/equipment/generated-images.js';
+import { equipment } from '../prod/equipment/generated-equipment.js';
 
 export async function seedEquipment(conn: PoolConnection) {
+  // TO DO: seed image table here first
+  
   const placeholders = '(?, ?, ?, ?, ?, ?),'.repeat(equipment.length).slice(0, -1);
 
   const sql = `
