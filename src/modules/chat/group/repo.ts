@@ -4,8 +4,23 @@ import { MySQLRepo } from "../../shared/MySQL";
 
 export class ChatgroupRepo extends MySQLRepo implements ChatgroupRepoInterface {
   //async search
-  //async viewAll
-  //async viewOne
+
+  async overviewAll(user_id: string) {
+    // For a logged in and connected user,
+    // a list of chatgroups they are members of
+    const sql = `
+      SELECT
+        cg.chatgroup_id,
+        cg.chatgroup_name
+      FROM chatgroup cg
+      INNER JOIN chatgroup_user cgu ON cgu.chatgroup_id = cg.chatgroup_id
+      WHERE cgu.user_id = :user_id
+    `;
+    const [ row ] = await this.pool.execute<ChatgroupView[]>(sql, user_id);
+    return row;
+  }
+
+  //async viewOne({ user_id, chatgroup_id }: ViewOneParams) {}
 
   async insert(params: InsertParams) {
     const sql = `
@@ -67,7 +82,9 @@ type InsertParams = {
 
 type UpdateParams = InsertParams;
 
-type DeleteOneParams = {
+type ViewOneParams = {
   owner_id:     string;
   chatgroup_id: string;
 };
+
+type DeleteOneParams = ViewOneParams;
