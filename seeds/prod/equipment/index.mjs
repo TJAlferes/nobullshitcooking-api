@@ -32,6 +32,7 @@ const data = [
   [2, "Plastic Wrap",                     "plastic-wrap"],
   [2, "Aluminum Foil",                    "aluminum-foil"],
   [2, "Cheesecloth",                      "cheesecloth"],
+  
   [3, "Coffee Maker",                     "coffee-maker"],
   [3, "Tea Pot",                          "tea-pot"],
   [3, "Microwave",                        "ladle"],

@@ -1,7 +1,7 @@
-import { pool } from "../src/connections/mysql.js";
-import { seedEquipment } from './equipment.js';
+import { pool }           from "../src/connections/mysql.js";
+import { seedEquipment }  from './equipment.js';
 import { seedIngredient } from "./ingredient.js";
-import { seedRecipe } from "./recipe.js";
+import { seedRecipe }     from "./recipe.js";
 
 async function seedDatabase() {
   const conn = await pool.getConnection();
