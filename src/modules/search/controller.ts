@@ -14,7 +14,7 @@ export const searchController = {
     const repo = new EquipmentRepo();
     const found = await repo.autosuggest(term as string);
 
-    return res.json({found});
+    return res.json(found);
   },
 
   async autosuggestIngredients(req: Request, res: Response) {
@@ -24,7 +24,7 @@ export const searchController = {
     const repo = new IngredientRepo();
     const found = await repo.autosuggest(term as string);
 
-    return res.json({found});
+    return res.json(found);
   },
 
   async autosuggestRecipes(req: Request, res: Response) {
@@ -34,36 +34,30 @@ export const searchController = {
     const repo = new RecipeRepo();
     const found = await repo.autosuggest(term as string);
 
-    return res.json({found});
+    return res.json(found);
   },
 
   async searchEquipment(req: Request, res: Response) {
-    const { term, filters, sorts, currentPage, resultsPerPage } = req.query;
-
-    const searchRequest = create({term, filters, sorts, currentPage, resultsPerPage}, validSearchRequest);
+    const searchRequest = create(req.query, validSearchRequest);
     const repo = new EquipmentRepo();
     const found = await repo.search(searchRequest);
 
-    return res.json({found});
+    return res.json(found);
   },
 
   async searchIngredients(req: Request, res: Response) {
-    const { term, filters, sorts, currentPage, resultsPerPage } = req.query;
-
-    const searchRequest = create({term, filters, sorts, currentPage, resultsPerPage}, validSearchRequest);
+    const searchRequest = create(req.query, validSearchRequest);
     const repo = new IngredientRepo();
     const found = await repo.search(searchRequest);
 
-    return res.json({found});
+    return res.json(found);
   },
 
   async searchRecipes(req: Request, res: Response) {
-    const { term, filters, sorts, currentPage, resultsPerPage } = req.query;
-
-    const searchRequest = create({term, filters, sorts, currentPage, resultsPerPage}, validSearchRequest);
+    const searchRequest = create(req.query, validSearchRequest);
     const repo = new RecipeRepo();
     const found = await repo.search(searchRequest);
 
-    return res.json({found});
+    return res.json(found);
   }
 };

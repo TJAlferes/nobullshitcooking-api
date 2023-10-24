@@ -48,24 +48,15 @@ export function searchRouter() {
   return router;
 }
 
-function querySanitizer(params: string | string[]) {  // sanitizeParams ?
-  return query(params)
-    .trim()
-    .escape()
-    .optional({
-      nullable:   true,
-      checkFalsy: true
-    });
-}
+const sanitizeTerm = query('term').trim().escape().notEmpty();
 
-const sanitizeTerm              = query('term').trim().escape().notEmpty();
-const sanitizeSorts             = querySanitizer('sorts.*');
-const sanitizeResultsPerPage    = querySanitizer('resultsPerPage');
-const sanitizeCurrentPage       = querySanitizer('currentPage');
-const sanitizeEquipmentFilters  = querySanitizer('filters.equipmentTypes.*');
-const sanitizeIngredientFilters = querySanitizer('filters.ingredientTypes.*');
-const sanitizeRecipeFilters     = querySanitizer([
-  'filters.recipeTypes.*',
+const sanitizeSorts             = sanitizeQuery('sorts.*');
+const sanitizeResultsPerPage    = sanitizeQuery('results_per_page');
+const sanitizeCurrentPage       = sanitizeQuery('current_page');
+const sanitizeEquipmentFilters  = sanitizeQuery('filters.equipment_types.*');
+const sanitizeIngredientFilters = sanitizeQuery('filters.ingredient_types.*');
+const sanitizeRecipeFilters     = sanitizeQuery([
+  'filters.recipe_types.*',
   'filters.methods.*',
   'filters.cuisines.*'
 ]);
@@ -76,3 +67,13 @@ const defaults = [
   sanitizeResultsPerPage,
   sanitizeCurrentPage
 ];
+
+function sanitizeQuery(params: string | string[]) {  // sanitizeParams ?
+  return query(params)
+    .trim()
+    .escape()
+    .optional({
+      nullable: true,
+      checkFalsy: true
+    });
+}

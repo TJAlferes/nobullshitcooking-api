@@ -35,6 +35,16 @@ export function createAppServer() {
 
   if (app.get('env') === 'production') {
     app.set('trust proxy', 1);  // trust first proxy  // insufficient?
+
+    app.use((req: Request, res: Response, next: NextFunction) => {
+      const max_age = 60 * 5;  // 5 minutes
+      if (req.method === "GET") {
+        res.set("Cache-control", `public, max-age=${max_age}`);
+      } else {
+        res.set("Cache-control", "no-store");
+      }
+      next();
+    });
   }
 
   // Express Middleware
@@ -79,18 +89,8 @@ export function createAppServer() {
       ]
   }));
   //app.options('*', cors());  // //
-  //app.use((req: Request, res: Response, next: NextFunction) => {
-  //  const max_age = 60 * 5;  // 5 minutes
-  //  if (req.method === "GET") {
-  //    res.set("Cache-control", `public, max-age=${max_age}`);
-  //  } else {
-  //    res.set("Cache-control", "no-store");
-  //  }
-  //  next();
-  //});
   app.use(helmet());
   app.use(hpp());
-  // why???
   app.use('/search/*', hpp({
     whitelist: [
       'filter',
@@ -103,10 +103,8 @@ export function createAppServer() {
       'filters.productCategories',
       'sorts',
     ]
-  }));
-  // no longer maintained!
-  // is csrf protection still necessary? if so, find a different solution
-  //app.use(csurf());
+  }));  // why???
+  //app.use(csurf());  // no longer maintained! is csrf protection still necessary? if so, find a different solution
   app.use(compression());
 
   app.use('/v1', apiV1Router());
