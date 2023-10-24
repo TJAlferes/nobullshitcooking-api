@@ -9,8 +9,8 @@ export function searchTests() {
         .get('/v1/search/auto/equipment')
         .query({term: "Knif"});
       expect(res.body).toEqual({
-        equipment_id:   "018b5ade-5438-7d0c-b42b-f2641487f7cc",
-        equipment_name: "Chef's Knife"
+        equipment_id: "018b5ade-5438-7d0c-b42b-f2641487f7cc",
+        text:         "Chef's Knife"
       });
     });
   });

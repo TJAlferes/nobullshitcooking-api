@@ -1,38 +1,32 @@
 import { Request, Response } from 'express';
-import { assert, create }    from 'superstruct';
+import { create }    from 'superstruct';
 
 import { EquipmentRepo }  from '../equipment/repo.js';
 import { IngredientRepo } from '../ingredient/repo.js';
 import { RecipeRepo }     from '../recipe/repo.js';
-import { validSearchTerm, validSearchRequest } from './model.js';
+import { SearchTerm, validSearchRequest } from './model.js';
 
 export const searchController = {
   async autosuggestEquipment(req: Request, res: Response) {
-    const { term } = req.query;
-
-    assert(term, validSearchTerm);
+    const term = SearchTerm(req.query.term as string);
     const repo = new EquipmentRepo();
-    const found = await repo.autosuggest(term as string);
+    const found = await repo.autosuggest(term);
 
     return res.json(found);
   },
 
   async autosuggestIngredients(req: Request, res: Response) {
-    const { term } = req.query;
-
-    assert(term, validSearchTerm);
+    const term = SearchTerm(req.query.term as string);
     const repo = new IngredientRepo();
-    const found = await repo.autosuggest(term as string);
+    const found = await repo.autosuggest(term);
 
     return res.json(found);
   },
 
   async autosuggestRecipes(req: Request, res: Response) {
-    const { term } = req.query;
-
-    assert(term, validSearchTerm);
+    const term = SearchTerm(req.query.term as string);
     const repo = new RecipeRepo();
-    const found = await repo.autosuggest(term as string);
+    const found = await repo.autosuggest(term);
 
     return res.json(found);
   },

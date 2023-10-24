@@ -15,7 +15,7 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
       WHERE owner_id = ? AND title LIKE ?
       LIMIT 5
     `;
-    const [ rows ] = await this.pool.execute<SuggestionView[]>(sql, [
+    const [ rows ] = await this.pool.execute<RecipeSuggestionView[]>(sql, [
       owner_id,
       `%${term}%`
     ]);
@@ -302,7 +302,7 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
 }
 
 export interface RecipeRepoInterface {
-  autosuggest:           (term: string) =>                    Promise<SuggestionView[]>;
+  autosuggest:           (term: string) =>                    Promise<RecipeSuggestionView[]>;
   search:                (searchRequest: SearchRequest) =>    Promise<SearchResponse>;
   hasPrivate:            (recipe_ids: string[]) =>            Promise<boolean>;
   viewAllOfficialTitles: () =>                                Promise<TitleView[]>;
@@ -317,7 +317,7 @@ export interface RecipeRepoInterface {
   deleteOne:             (params: DeleteOneParams) =>         Promise<void>;
 }
 
-type SuggestionView = RowDataPacket & {
+type RecipeSuggestionView = RowDataPacket & {
   recipe_id: string;
   text:      string;
 };

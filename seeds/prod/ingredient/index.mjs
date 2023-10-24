@@ -1,8 +1,6 @@
 import { uuidv7 } from 'uuidv7';
 import * as fs from 'fs';
 
-// TO DO: reduce this down to the bare essentials, add more brands, varieties, and ingredients later on if needed
-
 const data = [
   [1, "",                    "Catfish",                                  "catfish"],
   [1, "",                    "Cod",                                      "cod"],

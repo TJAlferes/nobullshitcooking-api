@@ -212,8 +212,8 @@ export interface EquipmentRepoInterface {
 }
 
 type EquipmentSuggestionView = RowDataPacket & {
-  equipment_id:   string;
-  equipment_name: string;
+  equipment_id: string;
+  text:         string;
 };
 
 type EquipmentView = RowDataPacket & {
