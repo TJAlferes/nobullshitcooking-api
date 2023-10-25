@@ -14,7 +14,7 @@ const recipe_data = [
   {
     recipe_type_id: 6,
     cuisine_id: 6,
-    title: "Fish and Potato Soup",
+    title: "Fish Soup",
     description: "Warms you up",
     active_time: "00:15:00",
     total_time: "01:00:00",
@@ -23,7 +23,7 @@ const recipe_data = [
   {
     recipe_type_id: 8,
     cuisine_id: 8,
-    title: "Guinness Beef Stew",
+    title: "Beef Stew",
     description: "Satisfying",
     active_time: "00:30:00",
     total_time: "04:00:00",
@@ -32,42 +32,43 @@ const recipe_data = [
 ];
 
 const image_data = [
-  [],
-  [],
-  [],
-  [],
-  [],
-  [],
-  [],
-  [],
-  [],
-  [],
-  [],
-  []
+  "grilled-chicken-recipe",
+  "grilled-chicken-equipment",
+  "grilled-chicken-ingredients",
+  "grilled-chicken-cooking",
+  "fish-soup-recipe",
+  "fish-soup-equipment",
+  "fish-soup-ingredients",
+  "fish-soup-cooking",
+  "beef-stew-recipe",
+  "beef-stew-equipment",
+  "beef-stew-ingredients",
+  "beef-stew-cooking"
 ];
 
 const recipe_image_data = [1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4];
-
-const recipe_ingredient_data = [
-  [1, 3],
-  [1, 6],
-  [3, 7],
-  [1, 8],
-  [10, 1]
-];
-
-const recipe_method_data = [13, 7, 4, 3, 12];
 
 const NOBSC_USER_ID = "11111111-1111-1111-1111-111111111111";
 
 const image_records = [];
 const recipe_records = [];
 const recipe_image_records = [];
-const recipe_equipment_records = [];   // (recipe_id, amount, equipment_id)
-const recipe_ingredient_records = [];  // (recipe_id, amount, unit_id, ingredient_id)
-const recipe_method_records = [];      // (recipe_id, method_id)
-const recipe_subrecipe_records = [];   // (recipe_id, amount, unit_id, subrecipe_id)
+const recipe_equipment_records = [];
+const recipe_ingredient_records = [];
+const recipe_method_records = [];
 
+// make the 12 images
+for (let i = 0; i < image_data.length; i++) {
+  image_records.push({
+    image_id: uuidv7(),
+    image_filename: image_data[i],
+    caption: ``,
+    author_id: NOBSC_USER_ID,
+    owner_id: NOBSC_USER_ID
+  });
+}
+
+// make the 3 recipes
 for (let i = 0; i < recipe_data.length; i++) {
   const recipe_id = uuidv7();
 
@@ -78,20 +79,17 @@ for (let i = 0; i < recipe_data.length; i++) {
     ...recipe_data[i]
   });
 
-  // 4 times
-  const image_id = uuidv7();
-  image_records.push({
-    image_id,
-    image_filename,
-    caption: ``,
-    author_id: NOBSC_USER_ID,
-    owner_id: NOBSC_USER_ID
-  });
-  recipe_image_records.push({
-    recipe_id,
-    image_id,
-    type: 1  // TO DO: finish
-  });
+  // make the 4 images associated with this recipe
+  let j = 8;
+  if (i < 4) j = 0;
+  if (i < 8) j = 4;
+  for (; j < j + 4; j++) {
+    recipe_image_records.push({
+      recipe_id,
+      image_id: image_records[j].image_id,
+      type: recipe_image_data[j]
+    });
+  }
 
   recipe_equipment_records.push({
     recipe_id,
@@ -101,30 +99,16 @@ for (let i = 0; i < recipe_data.length; i++) {
 
   recipe_ingredient_records.push({
     recipe_id,
-    amount:        recipe_ingredient_data[i][0],
-    unit_id:       recipe_ingredient_data[i][1],
-    ingredient_id: recipe_ingredient_data[i][2]
+    amount: 1,
+    unit_id: 1,
+    ingredient_id: "018b5ade-dc57-70d7-8dda-8edfdfe273da"
   });
 
   recipe_method_records.push({
     recipe_id,
-    method_id: recipe_method_data[i]
-  });
-
-  recipe_subrecipe_records.push({
-    recipe_id,
-    amount:       recipe_subrecipe_data[i][0],
-    unit_id:      recipe_subrecipe_data[i][1],
-    subrecipe_id: recipe_subrecipe_data[i][2]
+    method_id: 1
   });
 }
-
-fs.writeFileSync(
-  'generated-recipes.json',
-  JSON.stringify(recipe_records, null, 2),
-  'utf-8'
-);
-console.log('recipes generated');
 
 fs.writeFileSync(
   'generated-images.json',
@@ -132,6 +116,13 @@ fs.writeFileSync(
   'utf-8'
 );
 console.log('images generated');
+
+fs.writeFileSync(
+  'generated-recipes.json',
+  JSON.stringify(recipe_records, null, 2),
+  'utf-8'
+);
+console.log('recipes generated');
 
 fs.writeFileSync(
   'generated-recipe-images.json',
@@ -160,10 +151,3 @@ fs.writeFileSync(
   'utf-8'
 );
 console.log('recipe methods generated');
-
-fs.writeFileSync(
-  'generated-recipe-subrecipes.json',
-  JSON.stringify(recipe_subrecipe_records, null, 2),
-  'utf-8'
-);
-console.log('recipe subrecipes generated');
