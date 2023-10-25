@@ -46,8 +46,6 @@ const image_data = [
   "beef-stew-cooking"
 ];
 
-const recipe_image_data = [1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4];
-
 const NOBSC_USER_ID = "11111111-1111-1111-1111-111111111111";
 
 const image_records = [];
@@ -79,15 +77,13 @@ for (let i = 0; i < recipe_data.length; i++) {
     ...recipe_data[i]
   });
 
-  // make the 4 images associated with this recipe
-  let j = 8;
-  if (i < 4) j = 0;
-  if (i < 8) j = 4;
-  for (; j < j + 4; j++) {
+  // make the 4 images associated with this recipe, either 1 - 4, 5 - 8, 9 - 12
+  let k = i
+  for (let j = 1; j < 5; j++, k++) {
     recipe_image_records.push({
       recipe_id,
-      image_id: image_records[j].image_id,
-      type: recipe_image_data[j]
+      image_id: image_records[k].image_id,
+      type: j
     });
   }
 
