@@ -12,10 +12,6 @@ async function seedDatabase() {
     await seedEquipment(conn);
     await seedIngredient(conn);
     await seedRecipe(conn);
-    //await seedRecipeEquipment(conn);
-    //await seedRecipeIngredient(conn);
-    //await seedRecipeMethod(conn);
-    //await seedRecipeSubrecipe(conn);
 
     console.log(`seedDatabase success`);
     await conn.commit();

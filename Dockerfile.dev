@@ -13,4 +13,5 @@ RUN npm install && npm cache clean --force
 
 COPY . .
 
+CMD ["npm", "run", "seed"]
 CMD ["npm", "run", "dev"]
