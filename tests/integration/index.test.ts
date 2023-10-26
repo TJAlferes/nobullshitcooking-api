@@ -1,9 +1,9 @@
 import request from 'supertest';
 import type { Server } from 'node:http';
 
-import { pool } from '../../src/connections/mysql';
-import { redisClients } from '../../src/connections/redis';
-import { httpServer } from '../../src';
+import { pool } from '../../src/connections/mysql.js';
+import { redisClients } from '../../src/connections/redis.js';
+import { httpServer } from '../../src/index.js';
 import {
   userAuthTests,
   userEquipmentTests,
@@ -14,22 +14,19 @@ import {
   userPlanTests,
   userRecipeTests,
   userSavedRecipeTests
-} from './user';
+} from './user/index.js';
 import {
   cuisineTests,
-  dataInitTests,
   equipmentTests,
   equipmentTypeTests,
-  favoriteRecipeTests,
   ingredientTests,
   ingredientTypeTests,
-  measurementTests,
   methodTests,
-  profileTests,
   recipeTests,
   recipeTypeTests,
-  searchTests
-} from '.';
+  searchTests,
+  unitTests
+} from './index.js';
 
 // Make sure this only touches test DBs
 // Make sure this never touches dev DBs
@@ -65,18 +62,15 @@ describe ('NOBSC API', () => {
     });
   });
   describe('cuisine', cuisineTests);
-  describe('dataInit', dataInitTests);
   describe('equipment', equipmentTests);
   describe('equipmentType', equipmentTypeTests);
-  describe('favoriteRecipe', favoriteRecipeTests);
   describe('ingredient', ingredientTests);
   describe('ingredientType', ingredientTypeTests);
-  describe('measurement', measurementTests);
   describe('method', methodTests);
-  describe('profile', profileTests);
   describe('recipe', recipeTests);
   describe('recipeType', recipeTypeTests);
   describe('search', searchTests);
+  describe('unit', unitTests);
 
   describe('userAuth', userAuthTests);
   describe('userEquipment', userEquipmentTests);

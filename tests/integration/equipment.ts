@@ -1,20 +1,20 @@
 import request from 'supertest';
 
-import { server } from './index.test';
+import { server } from './index.test.js';
 
 export function equipmentTests() {
-  describe('GET /equipment/:id', () => {
+  describe('GET /v1/equipments/:equipment_id', () => {
     it('returns data correctly', async () => {
-      const { body } = await request(server).get('/equipment/1');
-
-      expect(body).toEqual({
-        id: 1,
-        owner_id: 1,
-        equipment_type_id: 2,
-        equipment_type_name: "Preparing",
-        name: "Ceramic Stone",
-        description: "It works.",
-        image: "ceramic-stone"
+      const res = await request(server)
+        .get('/v1/equipments/"018b5ade-5438-7d0c-b42b-f2641487f7cc"');
+      expect(res.body).toEqual({
+        "equipment_id":        "018b5ade-5438-7d0c-b42b-f2641487f7cc",
+        "equipment_type_id":   2,
+        "equipment_type_name": "Preparing",
+        "owner_id":            "11111111-1111-1111-1111-111111111111",
+        "equipment_name":      "Chef's Knife",
+        "notes":               "",
+        "image_id":            "chefs-knife"
       });
     });
   });

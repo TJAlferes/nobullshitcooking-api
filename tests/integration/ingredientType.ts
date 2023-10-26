@@ -1,12 +1,15 @@
 import request from 'supertest';
 
-import { server } from './index.test';
+import { server } from './index.test.js';
 
 export function ingredientTypeTests() {
-  describe('GET /ingredient-type/:id', () => {
+  describe('GET /v1/ingredient-types/:ingredient_type_id', () => {
     it('returns data correctly', async () => {
-      const { body } = await request(server).get('/ingredient-type/1');
-      expect(body).toEqual({id: 1, name: "Fish"});
+      const res = await request(server).get('/v1/ingredient-types/1');
+      expect(res.body).toEqual({
+        ingredient_type_id:   1,
+        ingredient_type_name: "Fish"
+      });
     });
   });
 }

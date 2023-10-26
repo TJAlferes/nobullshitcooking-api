@@ -1,12 +1,15 @@
 import request from 'supertest';
 
-import { server } from './index.test';
+import { server } from './index.test.js';
 
 export function methodTests() {
-  describe('GET /method/:id', () => {
+  describe('GET /v1/methods/:method_id', () => {
     it('returns data correctly', async () => {
-      const { body } = await request(server).get('/method/1');
-      expect(body).toEqual({id: 1, name: "No-Cook"});
+      const res = await request(server).get('/v1/methods/1');
+      expect(res.body).toEqual({
+        method_id:   1,
+        method_name: "No-Cook"
+      });
     });
   });
 }

@@ -1,16 +1,17 @@
 import request from 'supertest';
 
-import { server } from './index.test';
+import { server } from './index.test.js';
 
 export function cuisineTests() {
-  describe('GET /cuisine/:id', () => {
+  describe('GET /v1/cuisines/:cuisine_id', () => {
     it('returns data correctly', async () => {
-      const { body } = await request(server).get('/cuisine/1');
-
-      expect(body).toEqual({
-        id: 1,
-        name: "Afghan",
-        nation: "Afghanistan"
+      const res = await request(server).get('/v1/cuisines/1');
+      expect(res.body).toEqual({
+        cuisine_id:     1,
+        cuisine_name:   "Algerian",
+        continent_code: "AF",
+        country_code:   "DZA",
+        country_name:   "Algeria"
       });
     });
   });

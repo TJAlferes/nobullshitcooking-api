@@ -28,7 +28,7 @@ export const initialDataController = {
 
     const [
       cuisines,
-      equipments,
+      equipment,
       equipment_types,
       ingredients,
       ingredient_types,
@@ -50,7 +50,7 @@ export const initialDataController = {
 
     return res.send({
       cuisines,
-      equipment: equipments,
+      equipment,
       equipment_types,
       ingredients,
       ingredient_types,

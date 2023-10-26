@@ -1,14 +1,23 @@
 import request from 'supertest';
 
-import { server } from './index.test';
-
-// TO DO: fix the extra spaces from null/empty brands/varieties
+import { server } from './index.test.js';
 
 export function ingredientTests() {
-  describe('GET /ingredient/:id', () => {
+  describe('GET /v1/ingredients/:ingredient_id', () => {
     it('returns data correctly', async () => {
-      const { body } = await request(server).get('/ingredient/1');
-      expect(body).toEqual({id: 1, ingredient_type_name: "Fish", brand: null, variety: null, name: "Tuna", description: "Tasty.", image: "tuna"
+      const res = await request(server)
+        .get('/v1/ingredients/018b5ade-dc58-70c4-bf36-2edcf351ef12');
+      expect(res.body).toEqual({
+        "ingredient_id":        "018b5ade-dc58-70c4-bf36-2edcf351ef12",
+        "ingredient_type_id":   16,
+        "ingredient_type_name": "Herb",
+        "owner_id":             "11111111-1111-1111-1111-111111111111",
+        "ingredient_brand":     "",
+        "ingredient_variety":   "",
+        "ingredient_name":      "Sage",
+        "fullname":             "Sage",
+        "notes":                "",
+        "image_filename":       "sage"
       });
     });
   });
