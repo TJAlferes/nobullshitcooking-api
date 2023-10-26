@@ -1,6 +1,6 @@
 import request from 'supertest';
 
-import { server } from '../index.test';
+import { server } from '../index.test.js';
 
 export function userSavedRecipeTests() {
   describe('POST /user/saved-recipe/create', () => {

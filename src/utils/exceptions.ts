@@ -1,21 +1,20 @@
 'use strict';
 
 export class ExceptionError extends Error {
-  code: number | null;
-  payload: object;
+  code:    number;
+  name:    string;
+  message: string;
 
   constructor(
-    code:    number | null,
+    code:    number,
     name:    string,
-    message: string,
-    payload: object
+    message: string
   ) {
     super();
     this.code = code;
     this.name = name;
     this.message = message;
-    this.payload = payload;
-    Error.captureStackTrace(this, ExceptionError);  // !
+    Error.captureStackTrace(this, this.constructor);
   }
 
   toString() {
@@ -23,18 +22,22 @@ export class ExceptionError extends Error {
   }
 }
 
-export function Exception(message: string, payload: object) {
-  return new ExceptionError(null, "", message, payload);
+export function ValidationException(message: string) {
+  return new ExceptionError(400, 'ValidationException', message);
 }
 
-export function ValidationException(message: string, payload: object) {
-  return new ExceptionError(400, 'ValidationException', message, payload);
+export function UnauthorizedException(message: string) {
+  return new ExceptionError(401, 'UnauthorizedException', message)
 }
 
-export function ForbiddenException(message: string, payload: object) {
-  return new ExceptionError(403, 'ForbiddenException', message, payload);
+export function ForbiddenException(message: string) {
+  return new ExceptionError(403, 'ForbiddenException', message);
 }
 
-export function NotFoundException(message: string, payload: object) {
-  return new ExceptionError(404, 'NotFoundException', message, payload);
+export function NotFoundException(message: string) {
+  return new ExceptionError(404, 'NotFoundException', message);
+}
+
+export function ConflictException(message: string) {
+  return new ExceptionError(409, 'ConflictException', message);
 }

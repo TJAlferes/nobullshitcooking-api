@@ -1,6 +1,6 @@
 import request from 'supertest';
 
-import { server } from '../index.test';
+import { server } from '../index.test.js';
 
 export function userPlanTests() {
   describe('POST /user/plan/create', () => {

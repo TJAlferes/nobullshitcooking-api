@@ -1,82 +1,116 @@
 import request from 'supertest';
 
-import { server } from '../index.test';
+import { server } from '../index.test.js';
 
 export function userAuthTests() {
-  describe('POST /user/auth/register', () => {
-    const args = {email: "newuser@site.com", pass: "secret", username: "newuser"};
-    
-    it('registers new user', async () => {
-      const { body } = await request(server).post('/user/auth/register').send(args);
-      expect(body).toEqual({message: 'User account created.'});
+  describe('POST /v1/users', () => {
+    const args = {
+      email:    "newuser@site.com",
+      password: "secret",
+      username: "newuser"
+    };
+
+    it('handles email already in use', async () => {
+      const res = await request(server).post('/v1/users').send(args);
+      expect(res.status).toBe(500);
+      expect(res.body).toEqual({message: 'Username already in use.'});
     });
 
-    it('does not register already registered user', async () => {
-      const { body } = await request(server).post('/user/auth/register').send(args);
-      expect(body).toEqual({message: 'Username already taken.'});
+    it('handles username already in use', async () => {
+      const res = await request(server).post('/v1/users').send(args);
+      expect(res.status).toBe(500);
+      expect(res.body).toEqual({message: 'Username already in use.'});
+    });
+    
+    it('handles success', async () => {
+      const res = await request(server).post('/v1/users').send(args);
+      expect(res.status).toBe(201);
     });
   });
 
-  describe('POST /user/auth/resend-confirmation-code', () => {
-    const args = {email: "newuser@site.com", pass: "secret"};
+  describe('POST /resend-confirmation-code', () => {
+    const args = {
+      email: "newuser@site.com",
+      password: "secret"
+    };
 
     it('resends confirmation code', async () => {
-      const { body } = await request(server).post('/user/auth/resend-confirmation-code').send(args);
-      expect(body).toEqual({message: 'Confirmation code re-sent.'});
+      const res = await request(server).post('/v1/resend-confirmation-code').send(args);
+      expect(res.body).toEqual({message: 'Confirmation code re-sent.'});
     });
 
-    it('does not resend to an already verified user', async () => {
-      const { body } = await request(server).post('/user/auth/resend-confirmation-code').send(args);
-      expect(body).toEqual({message: "Already verified."});
+    it('does not resend to an already confirmed user', async () => {
+      const res = await request(server).post('/v1/resend-confirmation-code').send(args);
+      expect(res.body).toEqual({message: "Already confirmed."});
     });
 
     it('does not resend to non-existing user', async () => {
-      const { body } = await request(server).post('/user/auth/resend-confirmation-code').send({email: "nonuser@site.com", pass: "secret"});
-      expect(body).toEqual({message: "Incorrect email or password."});
+      const res = await request(server).post('/v1/resend-confirmation-code').send({
+        email: "nonuser@site.com",
+        password: "secret"
+      });
+      expect(res.body).toEqual({message: "Incorrect email or password."});
     });
   });
 
-  describe('POST /user/auth/verify', () => {
-    const args =    {email: "newuser@site.com", pass: "secret", confirmationCode: "confirmationCode"};
+  describe('POST /confirm', () => {
+    const args = {
+      email: "newuser@site.com",
+      password: "secret",
+      confirmationCode: "confirmationCode"
+    };
     const message = "An issue occurred, please double check your info and try again.";
 
-    it('verifies new user', async () => {
-      const { body } = await request(server).post('/user/auth/verify').send(args);
-      expect(body).toEqual({message: 'User account verified.'});
+    it('confirms new user', async () => {
+      const res = await request(server).post('/v1/confirm').send(args);
+      expect(res.body).toEqual({message: 'User account confirmed.'});
     });
 
-    it('does not verify already verified user', async () => {
-      const { body } = await request(server).post('/user/auth/verify').send(args);
-      expect(body).toEqual({message});
+    it('does not confirm already confirmed user', async () => {
+      const res = await request(server).post('/v1/confirm').send(args);
+      expect(res.body).toEqual({message});
     });
 
-    it('does not verify non-existing user', async () => {
-      const { body } = await request(server).post('/user/auth/resend-confirmation-code').send({email: "nonuser@site.com", pass: "secret", confirmationCode: "confirmationCode"});
-      expect(body).toEqual({message});
+    it('does not confirm non-existing user', async () => {
+      const res = await request(server).post('/v1/confirm').send({
+        email: "nonuser@site.com",
+        password: "secret",
+        confirmationCode: "confirmationCode"
+      });
+      expect(res.body).toEqual({message});
     });
   });
 
-  describe('POST /user/auth/login', () => {  // TO DO: needs setups
+  describe('POST /login', () => {  // TO DO: needs setups
     it('logs in existing user', async () => {
-      const { body } = await request(server).post('/user/auth/login').send({email: "user@site.com", pass: "secret"});
-      expect(body).toEqual({message: "Signed in.", username: "Person"});
+      const res = await request(server).post('/v1/login').send({
+        email: "user@site.com",
+        password: "secret"
+      });
+      expect(res.body).toEqual({
+        message: "Signed in.",
+        username: "Person"
+      });
     });
 
     it('does not log in already logged in user', async () => {
-      const { body } = await request(server).post('/user/auth/login').send({email: "loggedinuser@site.com", pass: "secret"});
-      expect(body).toEqual({message: 'Already logged in.'});
+      const res = await request(server).post('/v1/login').send({
+        email: "loggedinuser@site.com",
+        password: "secret"
+      });
+      expect(res.body).toEqual({
+        message: 'Already logged in.'
+      });
     });
 
     it('does not log in non-existing user', async () => {
-      const { body } = await request(server).post('/user/auth/login').send({email: "nonuser@site.com", pass: "secret"})
-      expect(body).toEqual({message: "Incorrect email or password."});
+      const res = await request(server).post('/v1/login').send({
+        email: "nonuser@site.com",
+        password: "secret"
+      });
+      expect(res.body).toEqual({
+        message: "Incorrect email or password."
+      });
     });
   });
-
-  /*describe('POST /user/auth/logout', () => {  // TO DO: needs setups
-    it('logs out existing user', async () => {
-      const { body } = await request(server).post('/user/auth/logout');
-      expect(body).toEqual(1);
-    });
-  });*/
 }

@@ -13,6 +13,7 @@ import { pinoHttp }                                 from 'pino-http';  // logger
 
 import { redisClients }         from './connections/redis.js';
 import { createSocketIOServer } from './modules/chat/server.js';
+import { ExceptionError }       from './utils/exceptions.js';
 import { apiV1Router }          from './router.js';
 
 declare module "node:http" {
@@ -117,12 +118,21 @@ export function createAppServer() {
 
   if (process.env.NODE_ENV === 'production') {
     app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
-      res.status(500).json({error: error.message || 'An error occurred.'});
+      if (error instanceof ExceptionError) {
+        res.status(error.code).json({error: error.message});
+      } else {
+        console.log(error.message);
+        res.status(500).json({error: error.message || 'Internal Server Error'});
+      }
     });
   } else {
     app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
-      console.log(error);
-      res.status(500).json({error});
+      if (error instanceof ExceptionError) {
+        res.status(error.code).json({error});
+      } else {
+        console.log(error);
+        res.status(500).json({error});
+      }
     });
   }
 

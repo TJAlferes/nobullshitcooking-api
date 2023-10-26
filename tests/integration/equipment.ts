@@ -3,10 +3,10 @@ import request from 'supertest';
 import { server } from './index.test.js';
 
 export function equipmentTests() {
-  describe('GET /v1/equipments/:equipment_id', () => {
+  describe('GET /v1/equipment/:equipment_id', () => {
     it('returns data correctly', async () => {
       const res = await request(server)
-        .get('/v1/equipments/"018b5ade-5438-7d0c-b42b-f2641487f7cc"');
+        .get('/v1/equipment/"018b5ade-5438-7d0c-b42b-f2641487f7cc"');
       expect(res.body).toEqual({
         "equipment_id":        "018b5ade-5438-7d0c-b42b-f2641487f7cc",
         "equipment_type_id":   2,
