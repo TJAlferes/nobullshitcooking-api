@@ -4,7 +4,7 @@ import * as fs from 'fs';
 const recipe_data = [
   {
     recipe_type_id: 3,
-    cuisine_id: 3,
+    cuisine_id: 1,
     title: "Grilled Chicken",
     description: "A classic",
     active_time: "01:00:00",
@@ -13,7 +13,7 @@ const recipe_data = [
   },
   {
     recipe_type_id: 6,
-    cuisine_id: 6,
+    cuisine_id: 1,
     title: "Fish Soup",
     description: "Warms you up",
     active_time: "00:15:00",
@@ -22,7 +22,7 @@ const recipe_data = [
   },
   {
     recipe_type_id: 8,
-    cuisine_id: 8,
+    cuisine_id: 1,
     title: "Beef Stew",
     description: "Satisfying",
     active_time: "00:30:00",
@@ -77,8 +77,10 @@ for (let i = 0; i < recipe_data.length; i++) {
     ...recipe_data[i]
   });
 
-  // make the 4 images associated with this recipe, either 1 - 4, 5 - 8, 9 - 12
-  let k = i
+  // make the 4 images associated with this recipe
+  let k = 0
+  if (i === 1) k = 4;
+  if (i === 2) k = 8;
   for (let j = 1; j < 5; j++, k++) {
     recipe_image_records.push({
       recipe_id,

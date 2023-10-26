@@ -67,7 +67,7 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
 
     sql += ` LIMIT ? OFFSET ?`;
 
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [
+    const [ results ] = await this.pool.execute<RowDataPacket[]>(sql, [
       ...params,
       `${limit}`,
       `${offset}`
@@ -76,7 +76,7 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
     const total_pages = (total_results <= limit) ? 1 : Math.ceil(total_results / limit);
 
     return {
-      results: rows,
+      results,
       total_results,
       total_pages
     };
