@@ -1,3 +1,4 @@
+import { ConflictException, NotFoundException, ForbiddenException } from '../../utils/exceptions.js';
 import { ImageRepo } from '../image/repo.js';
 import { PlanRepo } from '../plan/repo.js';
 import { RecipeRepo } from '../recipe/repo.js';
@@ -26,14 +27,10 @@ export class UserService {
     }).getDTO();
 
     const emailExists = await this.repo.getByEmail(user.email);
-    if (emailExists) {
-      throw new Error("Email already in use.");
-    }
+    if (emailExists) throw ConflictException("Email already in use.");
 
     const usernameExists = await this.repo.getByUsername(user.username);
-    if (usernameExists) {
-      throw new Error("Username already in use.");
-    }
+    if (usernameExists) throw ConflictException("Username already in use.");
   
     await this.repo.insert({
       user_id:           user.user_id,
@@ -51,7 +48,10 @@ export class UserService {
 
   async updateEmail({ user_id, new_email }: UpdateEmailParams) {
     const existingUser = await this.repo.getByUserId(user_id);
-    if (!existingUser) throw new Error("User does not exist.");
+    if (!existingUser) throw NotFoundException("User does not exist.");
+
+    const emailExists = await this.repo.getByEmail(new_email);
+    if (emailExists) throw ConflictException("Email already in use.");
 
     const password = await this.repo.getPassword(existingUser.email);
     
@@ -68,7 +68,7 @@ export class UserService {
 
   async updatePassword({ user_id, new_password }: UpdatePasswordParams) {
     const existingUser = await this.repo.getByUserId(user_id);
-    if (!existingUser) throw new Error("User does not exist.");
+    if (!existingUser) throw NotFoundException("User does not exist.");
 
     const { hashPassword } = new UserAuthenticationService(this.repo);
     const encryptedPassword = await hashPassword(new_password);
@@ -86,7 +86,10 @@ export class UserService {
 
   async updateUsername({ user_id, new_username }: UpdateUsernameParams) {
     const existingUser = await this.repo.getByUserId(user_id);
-    if (!existingUser) throw new Error("User does not exist.");
+    if (!existingUser) throw NotFoundException("User does not exist.");
+
+    const usernameExists = await this.repo.getByUsername(new_username);
+    if (usernameExists) throw ConflictException("Username already in use.");
 
     const password = await this.repo.getPassword(existingUser.email);
     
@@ -105,9 +108,9 @@ export class UserService {
 
   async delete(user_id: string) {
     // IMPORTANT: Never allow this user to be deleted.
-    if (user_id === NOBSC_USER_ID) throw new Error("Forbidden.");
+    if (user_id === NOBSC_USER_ID) throw ForbiddenException("Forbidden.");
     // IMPORTANT: Never allow this user to be deleted.
-    if (user_id === UNKNOWN_USER_ID) throw new Error("Forbidden.");
+    if (user_id === UNKNOWN_USER_ID) throw ForbiddenException("Forbidden.");
 
     const imageRepo = new ImageRepo();
     await imageRepo.unattributeAll(user_id);

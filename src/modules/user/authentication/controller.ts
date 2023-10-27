@@ -15,17 +15,6 @@ import { UserRepo }                  from '../repo.js';
 import { UserAuthenticationService } from './service.js';
 
 export const userAuthenticationController = {
-  async confirm(req: Request, res: Response) {
-    const { confirmation_code } = req.body;
-
-    const repo    = new UserRepo();
-    const service = new UserAuthenticationService(repo);
-
-    await service.confirm(confirmation_code);
-
-    return res.status(204);
-  },
-
   async resendConfirmationCode(req: Request, res: Response) {
     const { email, password } = req.body;
 
@@ -33,6 +22,17 @@ export const userAuthenticationController = {
     const service = new UserAuthenticationService(repo);
 
     await service.resendConfirmationCode({email, password});
+
+    return res.status(204);
+  },
+
+  async confirm(req: Request, res: Response) {
+    const { confirmation_code } = req.body;
+
+    const repo    = new UserRepo();
+    const service = new UserAuthenticationService(repo);
+
+    await service.confirm(confirmation_code);
 
     return res.status(204);
   },

@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 
+import { ConflictException, NotFoundException, UnauthorizedException } from '../../../utils/exceptions.js';
 import { UUIDv7StringId }        from '../../shared/model.js';
 import { emailUser }             from '../shared/simple-email-service.js';
 import { Email, Password, User } from '../model.js';
@@ -13,10 +14,72 @@ export class UserAuthenticationService {
     this.repo = repo;
   }
 
+  async resendConfirmationCode({ email, password }: ResendConfirmationCodeParams) {
+    const user = await this.doesUserExist(email);
+
+    const confirmed = await this.isUserConfirmed(email);
+    if (confirmed) throw ConflictException("Already confirmed.");
+
+    await this.isCorrectPassword({email, password});
+  
+    await this.sendConfirmationCode({
+      email:             user.email,
+      confirmation_code: user.confirmation_code!
+    });
+  }
+
+  async confirm(confirmation_code: string) {
+    const code = UUIDv7StringId(confirmation_code);
+
+    const existingUser = await this.repo.getByConfirmationCode(code);
+    if (!existingUser) {
+      throw NotFoundException("An issue occurred, please double check your info and try again.");
+    }
+
+    if (null === existingUser.confirmation_code) {
+      throw ConflictException("Already confirmed.");
+    }
+
+    if (code !== existingUser.confirmation_code) {
+      throw NotFoundException("An issue occurred, please double check your info and try again.");
+    }
+
+    const password = await this.repo.getPassword(existingUser.email);
+    if (!password) {
+      throw NotFoundException("An issue occurred, please double check your info and try again.");
+    }
+
+    const user = User.update({
+      user_id:           existingUser.user_id,
+      email:             existingUser.email,
+      password,
+      username:          existingUser.username,
+      confirmation_code: null  // setting their code to null confirms them
+    }).getDTO();
+
+    await this.repo.update(user);
+  }
+
+  async login({ email, password }: LoginParams) {
+    const { user_id, username } = await this.doesUserExist(email);
+
+    const confirmed = await this.isUserConfirmed(email);
+    if (!confirmed) {
+      throw UnauthorizedException("Please check your email for your confirmation code.");
+    }
+
+    await this.isCorrectPassword({email, password});
+  
+    return {
+      user_id,
+      username
+    };
+  }
+
   async isUserConfirmed(email: string) {
     const validEmail = Email(email);
     const user = await this.repo.getByEmail(validEmail);
-    if (!user) throw new Error("User does not exist.");
+    if (!user) throw NotFoundException("User does not exist.");
     return null === user.confirmation_code;
   }
 
@@ -31,49 +94,17 @@ export class UserAuthenticationService {
     const password = Password(params.password);
 
     const currentHash = await this.repo.getPassword(email);
-    if (!currentHash) throw new Error("Incorrect email or password.");
+    if (!currentHash) throw NotFoundException("Incorrect email or password.");
 
     const correctPassword = await bcrypt.compare(password, currentHash);
-    if (!correctPassword) throw new Error("Incorrect email or password.");
+    if (!correctPassword) throw NotFoundException("Incorrect email or password.");
   }
 
   async doesUserExist(email: string) {
     const validEmail = Email(email);
     const user = await this.repo.getByEmail(validEmail);
-    if (!user) throw new Error("Incorrect email or password.");
+    if (!user) throw NotFoundException("Incorrect email or password.");
     return user;
-  }
-
-  async confirm(confirmation_code: string) {
-    const code = UUIDv7StringId(confirmation_code);
-
-    const existingUser = await this.repo.getByConfirmationCode(code);
-    if (!existingUser) {
-      throw new Error("An issue occurred, please double check your info and try again.");
-    }
-
-    if (null === existingUser.confirmation_code) {
-      throw new Error("Already confirmed.");
-    }
-
-    if (code !== existingUser.confirmation_code) {
-      throw new Error("An issue occurred, please double check your info and try again.");
-    }
-
-    const password = await this.repo.getPassword(existingUser.email);
-    if (!password) {
-      throw new Error("An issue occurred, please double check your info and try again.");
-    }
-
-    const user = User.update({
-      user_id:           existingUser.user_id,
-      email:             existingUser.email,
-      password,
-      username:          existingUser.username,
-      confirmation_code: null  // setting their code to null confirms them
-    }).getDTO();
-
-    await this.repo.update(user);
   }
 
   async sendConfirmationCode({ email, confirmation_code }: SendConfirmationCodeParams) {
@@ -99,44 +130,14 @@ export class UserAuthenticationService {
 
     await emailUser({from, to, subject, bodyText, bodyHtml, charset});
   }
-  
-  async resendConfirmationCode({ email, password }: ResendConfirmationCodeParams) {
-    const user = await this.doesUserExist(email);
-
-    const confirmed = await this.isUserConfirmed(email);
-    if (confirmed) throw new Error("Already confirmed.");
-
-    await this.isCorrectPassword({email, password});
-  
-    await this.sendConfirmationCode({
-      email:             user.email,
-      confirmation_code: user.confirmation_code!
-    });
-  }
-
-  async login({ email, password }: LoginParams) {
-    const { user_id, username } = await this.doesUserExist(email);
-
-    const confirmed = await this.isUserConfirmed(email);
-    if (!confirmed) {
-      throw new Error("Please check your email for your confirmation code.");
-    }
-
-    await this.isCorrectPassword({email, password});
-  
-    return {
-      user_id,
-      username
-    };
-  }
 }
 
-type SendConfirmationCodeParams = {
-  email:             string;
-  confirmation_code: string;
+type ResendConfirmationCodeParams = {
+  email:    string;
+  password: string;
 };
 
-type ResendConfirmationCodeParams = {
+type LoginParams = {
   email:    string;
   password: string;
 };
@@ -146,7 +147,7 @@ type IsCorrectPasswordParams = {
   password: string;
 };
 
-type LoginParams = {
-  email:    string;
-  password: string;
+type SendConfirmationCodeParams = {
+  email:             string;
+  confirmation_code: string;
 };

@@ -119,7 +119,7 @@ export function createAppServer() {
   if (process.env.NODE_ENV === 'production') {
     app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
       if (error instanceof ExceptionError) {
-        res.status(error.code).json({error: error.message});
+        res.status(error.code).json({message: error.message});
       } else {
         console.log(error.message);
         res.status(500).json({error: error.message || 'Internal Server Error'});
@@ -128,7 +128,7 @@ export function createAppServer() {
   } else {
     app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
       if (error instanceof ExceptionError) {
-        res.status(error.code).json({error});
+        res.status(error.code).json({message: error.message});
       } else {
         console.log(error);
         res.status(500).json({error});
