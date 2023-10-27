@@ -19,6 +19,7 @@ export function userTests() {
         password: "secret",
         username: "newuser"
       });
+
       expect(res.status).toBe(409);
       expect(res.body).toEqual({message: 'Email already in use.'});
     });
@@ -29,6 +30,7 @@ export function userTests() {
         password: "secret",
         username: "newuser"
       });
+
       expect(res.status).toBe(409);
       expect(res.body).toEqual({message: 'Username already in use.'});
     });
@@ -39,75 +41,171 @@ export function userTests() {
         password: "secret",
         username: "newuser"
       });
+
       expect(res.status).toBe(201);
     });
   });
 
   describe('PATCH /v1/users/RainbowDash/email', () => {
     it('handles non-existing user', async () => {
-      const res = await request(server)
+      const agent = request.agent(server);
+
+      await agent
+        .post('/v1/login')
+        .send({
+          email: 'rainbowdash@nobullshitcooking.com',
+          password: 'FasterThanYou'
+        });
+
+      const res = await agent
         .patch('/v1/users/RainbowCrash/email')
         .send({new_email: 'superrainbowcrash@nobullshitcooking.com'});
+
       expect(res.status).toBe(404);
+      expect(res.body).toEqual({message: 'User does not exist.'});
     });
 
     it('handles new_email already in use', async () => {
-      const res = await request(server)
+      const agent = request.agent(server);
+
+      await agent
+        .post('/v1/login')
+        .send({
+          email: 'rainbowdash@nobullshitcooking.com',
+          password: 'FasterThanYou'
+        });
+
+      const res = await agent
         .patch('/v1/users/RainbowDash/email')
         .send({new_email: 'rainbowdash@nobullshitcooking.com'});
+
       expect(res.status).toBe(409);
+      expect(res.body).toEqual({message: 'Email already in use.'});
     });
 
     it('handles success', async () => {
-      const res = await request(server)
+      const agent = request.agent(server);
+
+      await agent
+        .post('/v1/login')
+        .send({
+          email: 'rainbowdash@nobullshitcooking.com',
+          password: 'FasterThanYou'
+        });
+
+      const res = await agent
         .patch('/v1/users/RainbowDash/email')
         .send({new_email: 'superrainbowdash@nobullshitcooking.com'});
+
       expect(res.status).toBe(204);
     });
   });
 
   describe('PATCH /v1/users/RainbowDash/password', () => {
     it('handles non-existing user', async () => {
-      const res = await request(server)
+      const agent = request.agent(server);
+
+      await agent
+        .post('/v1/login')
+        .send({
+          email: 'rainbowdash@nobullshitcooking.com',
+          password: 'FasterThanYou'
+        });
+
+      const res = await agent
         .patch('/v1/users/RainbowCrash/password')
-        .send({new_password: 'FasterThanYou'});
+        .send({new_password: 'FasterThanFast'});
+
       expect(res.status).toBe(404);
+      expect(res.body).toEqual({message: 'User does not exist.'});
     });
 
     it('handles success', async () => {
-      const res = await request(server)
+      const agent = request.agent(server);
+
+      await agent
+        .post('/v1/login')
+        .send({
+          email: 'rainbowdash@nobullshitcooking.com',
+          password: 'FasterThanYou'
+        });
+
+      const res = await agent
         .patch('/v1/users/RainbowDash/password')
-        .send({new_password: 'FasterThanYou'});
+        .send({new_password: 'FasterThanFast'});
+
       expect(res.status).toBe(204);
     });
   });
 
   describe('PATCH /v1/users/RainbowDash/username', () => {
     it('handles non-existing user', async () => {
-      const res = await request(server)
+      const agent = request.agent(server);
+
+      await agent
+        .post('/v1/login')
+        .send({
+          email: 'rainbowdash@nobullshitcooking.com',
+          password: 'FasterThanYou'
+        });
+
+      const res = await agent
         .patch('/v1/users/RainbowCrash/username')
         .send({new_username: 'SuperRainbowCrash'});
+
       expect(res.status).toBe(404);
+      expect(res.body).toEqual({message: 'User does not exist.'});
     });
 
     it('handles new_username already in use', async () => {
-      const res = await request(server)
+      const agent = request.agent(server);
+
+      await agent
+        .post('/v1/login')
+        .send({
+          email: 'rainbowdash@nobullshitcooking.com',
+          password: 'FasterThanYou'
+        });
+
+      const res = await agent
         .patch('/v1/users/RainbowDash/username')
         .send({new_username: 'RainbowDash'});
+
       expect(res.status).toBe(409);
+      expect(res.body).toEqual({message: 'Username already in use.'});
     });
 
     it('handles success', async () => {
-      const res = await request(server)
+      const agent = request.agent(server);
+
+      await agent
+        .post('/v1/login')
+        .send({
+          email: 'rainbowdash@nobullshitcooking.com',
+          password: 'FasterThanYou'
+        });
+        
+      const res = await agent
         .patch('/v1/users/RainbowDash/username')
         .send({new_username: 'SuperRainbowDash'});
+
       expect(res.status).toBe(204);
     });
   });
 
   describe('DELETE /v1/users/RainbowDash', () => {
     it('handles success', async () => {
-      const res = await request(server).delete('/v1/users/RainbowDash');
+      const agent = request.agent(server);
+
+      await agent
+        .post('/v1/login')
+        .send({
+          email: 'rainbowdash@nobullshitcooking.com',
+          password: 'FasterThanYou'
+        });
+
+      const res = await agent.delete('/v1/users/RainbowDash');
+
       expect(res.status).toBe(204);
     });
   });

@@ -94,16 +94,16 @@ export class UserAuthenticationService {
     const password = Password(params.password);
 
     const currentHash = await this.repo.getPassword(email);
-    if (!currentHash) throw NotFoundException("Incorrect email or password.");
+    if (!currentHash) throw UnauthorizedException("Incorrect email or password.");
 
     const correctPassword = await bcrypt.compare(password, currentHash);
-    if (!correctPassword) throw NotFoundException("Incorrect email or password.");
+    if (!correctPassword) throw UnauthorizedException("Incorrect email or password.");
   }
 
   async doesUserExist(email: string) {
     const validEmail = Email(email);
     const user = await this.repo.getByEmail(validEmail);
-    if (!user) throw NotFoundException("Incorrect email or password.");
+    if (!user) throw UnauthorizedException("Incorrect email or password.");
     return user;
   }
 
