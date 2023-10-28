@@ -1,5 +1,6 @@
 import { assert, string } from 'superstruct';
 
+import { ValidationException } from '../../utils/exceptions.js';
 import { UUIDv7StringId, GenerateUUIDv7StringId } from '../shared/model.js';
 
 export class User {
@@ -45,7 +46,7 @@ export function Email(email: string) {
   assert(email, string());
   // Potential issue: This invalidates some older/alternative email types.
   if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
-    throw new Error("Invalid email.");
+    throw ValidationException("Invalid email.");
   }
   return email;
 }
@@ -53,10 +54,10 @@ export function Email(email: string) {
 export function Password(password: string) {
   assert(password, string());
   if (password.length < 6) {
-    throw new Error("Password must be at least 6 characters.");
+    throw ValidationException("Password must be at least 6 characters.");
   }
   if (password.length > 60) {
-    throw new Error("Password must be no more than 60 characters.");
+    throw ValidationException("Password must be no more than 60 characters.");
   }
   return password;
 }
@@ -64,10 +65,10 @@ export function Password(password: string) {
 export function Username(username: string) {
   assert(username, string());
   if (username.length < 6) {
-    throw new Error("Username must be at least 6 characters.");
+    throw ValidationException("Username must be at least 6 characters.");
   }
   if (username.length > 20) {
-    throw new Error("Username must be no more than 20 characters.");
+    throw ValidationException("Username must be no more than 20 characters.");
   }
   return username;
 }

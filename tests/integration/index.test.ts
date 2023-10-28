@@ -3,6 +3,7 @@ import type { Server } from 'node:http';
 import type { Server as SocketIOServer } from 'socket.io';
 import request from 'supertest';
 
+import { seedDatabase } from '../../seeds/index.js';  // TO DO: use a test specific seeder
 import { pool, testConfig } from '../../src/connections/mysql.js';
 import { redisClients } from '../../src/connections/redis.js';
 import { httpServer, socketIOServer, userCronJob } from '../../src/index.js';
@@ -139,13 +140,17 @@ async function truncateTables() {
       'plan_recipe',
     ];
 
+    console.log('Reset test MySQL DB tables begin.');
+
     for (const tableName of tableNames) {
       await pool.execute(`TRUNCATE TABLE ${tableName}`);
     }
 
-    console.log('Truncate test MySQL DB tables success.');
+    await seedDatabase();  // TO DO: use a test specific seeder
+
+    console.log('Reset test MySQL DB tables success.');
   } catch (error) {
-    console.error('Truncate test MySQL DB tables error:', error);
+    console.error('Reset test MySQL DB tables error:', error);
   } finally {
     await pool.end();
   }

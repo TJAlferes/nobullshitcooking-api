@@ -3,7 +3,8 @@ import { seedEquipment }  from './equipment.js';
 import { seedIngredient } from "./ingredient.js";
 import { seedRecipe }     from "./recipe.js";
 
-async function seedDatabase() {
+// TO DO: make 3 separate ones for prod, test, and dev
+export async function seedDatabase() {
   const conn = await pool.getConnection();
   await conn.beginTransaction();
   try {
