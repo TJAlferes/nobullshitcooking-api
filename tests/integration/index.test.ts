@@ -1,21 +1,22 @@
-import request from 'supertest';
+import { createPool } from 'mysql2/promise';
 import type { Server } from 'node:http';
+import request from 'supertest';
 
-import { pool } from '../../src/connections/mysql.js';
+import { pool, testConfig } from '../../src/connections/mysql.js';
 import { redisClients } from '../../src/connections/redis.js';
-import { httpServer } from '../../src/index.js';
+import { httpServer, userCronJob } from '../../src/index.js';
 import {
   userAuthTests,
   userEquipmentTests,
   userFavoriteRecipeTests,
   //userFriendshipTests,
-  userGetSignedUrlTests,
   userIngredientTests,
   userPlanTests,
   userRecipeTests,
   userSavedRecipeTests
 } from './user/index.js';
 import {
+  //AwsS3Tests,
   cuisineTests,
   equipmentTests,
   equipmentTypeTests,
@@ -28,27 +29,33 @@ import {
   unitTests
 } from './index.js';
 
-// Make sure this only touches test DBs
-// Make sure this never touches dev DBs
-// Make sure this NEVER touches prod DBs
+// No Bullshit Cooking API Integration Tests
+
+// Register and run all integration tests from this file
 // Avoid global seeds and fixtures, add data per test (per it)
 
 export let server: Server | null = httpServer;
 
 beforeAll(() => {
-  // TO DO: clean the test db
   console.log('Integration tests started.');
 });
 
-afterAll(() => {
-  const { pubClient, subClient, sessionClient } = redisClients;
+afterAll(async () => {
   server = null;
-  pool.end();
-  pubClient.disconnect();
-  subClient.disconnect();
-  sessionClient.disconnect();
-  //workerClient.disconnect();
+  userCronJob.stop();
+
+  await pool.end();
+
+  redisClients.pubClient.disconnect();
+  redisClients.subClient.disconnect();
+  redisClients.sessionClient.disconnect();
+  //redisClients.workerClient.disconnect();
+
   console.log('Integration tests finished.');
+});
+
+afterEach(async () => {
+  await truncateTables();
 });
 
 describe ('NOBSC API', () => {
@@ -61,6 +68,7 @@ describe ('NOBSC API', () => {
       `);
     });
   });
+  //describe('AwsS3', AwsS3Tests);
   describe('cuisine', cuisineTests);
   describe('equipment', equipmentTests);
   describe('equipmentType', equipmentTypeTests);
@@ -76,9 +84,53 @@ describe ('NOBSC API', () => {
   describe('userEquipment', userEquipmentTests);
   describe('userFavoriteRecipe', userFavoriteRecipeTests);
   //describe('userFriendship', userFriendshipTests);
-  describe('userGetSignedUrl', userGetSignedUrlTests);
   describe('userIngredient', userIngredientTests);
   describe('userPlan', userPlanTests);
   describe('userRecipe', userRecipeTests);
   describe('userSavedRecipe', userSavedRecipeTests);
 });
+
+// Make sure this only touches test DBs
+// Make sure this never touches dev DBs
+// Make sure this NEVER touches prod DBs
+async function truncateTables() {
+  const pool = createPool(testConfig);
+
+  try {
+    const tableNames = [
+      'staff',
+      'user',
+      'image',
+      'user_image',
+      'friendship',
+      'chatgroup',
+      'chatroom',
+      'chatmessage',
+      'chatgroup_user',
+      'chatroom_user',
+      'equipment',
+      'ingredient',
+      'ingredient_alt_name',
+      'recipe',
+      'recipe_image',
+      'recipe_equipment',
+      'recipe_ingredient',
+      'recipe_method',
+      'recipe_subrecipe',
+      'favorite_recipe',
+      'saved_recipe',
+      'plan',
+      'plan_recipe',
+    ];
+
+    for (const tableName of tableNames) {
+      await pool.execute(`TRUNCATE TABLE ${tableName}`);
+    }
+
+    console.log('Truncate test MySQL DB tables success.');
+  } catch (error) {
+    console.error('Truncate test MySQL DB tables error:', error);
+  } finally {
+    await pool.end();
+  }
+}

@@ -1,6 +1,6 @@
 import { createPool } from 'mysql2/promise';
 
-const commonConfig = {
+export const commonConfig = {
   waitForConnections: true,
   connectionLimit:    10,
   queueLimit:         0,
@@ -8,14 +8,14 @@ const commonConfig = {
   timezone:           'Z',  // UTC +00:00
   dateStrings:        true
 };
-const productionConfig = {
+export const productionConfig = {
   ...commonConfig,
   host:     process.env.RDS_HOSTNAME,
   user:     process.env.RDS_USERNAME,
   password: process.env.RDS_PASSWORD,
   database: process.env.RDS_DB_NAME,
 };
-const testConfig = {
+export const testConfig = {
   ...commonConfig,
   host:         process.env.TEST_MYSQL_HOST,
   user:         process.env.TEST_MYSQL_USER,
@@ -23,7 +23,7 @@ const testConfig = {
   database:     process.env.TEST_MYSQL_DATABASE,
   insecureAuth: true
 };
-const developmentConfig = {
+export const developmentConfig = {
   ...commonConfig,
   host:         process.env.DEV_MYSQL_HOST,
   user:         process.env.DEV_MYSQL_USER,

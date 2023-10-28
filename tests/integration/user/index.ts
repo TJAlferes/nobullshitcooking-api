@@ -1,4 +1,5 @@
 import request from 'supertest';
+import type { SuperAgentTest } from 'supertest';
 
 import { server } from '../index.test.js';
 
@@ -14,7 +15,9 @@ export { userSavedRecipeTests }    from './savedRecipe.js';
 export function userTests() {
   describe('POST /v1/users', () => {
     it('handles email already in use', async () => {
-      const res = await request(server).post('/v1/users').send({
+      const res = await request(server)
+      .post('/v1/users')
+      .send({
         email:    "newuser@site.com",
         password: "secret",
         username: "newuser"
@@ -25,7 +28,9 @@ export function userTests() {
     });
 
     it('handles username already in use', async () => {
-      const res = await request(server).post('/v1/users').send({
+      const res = await request(server)
+      .post('/v1/users')
+      .send({
         email:    "newuser@site.com",
         password: "secret",
         username: "newuser"
@@ -36,7 +41,9 @@ export function userTests() {
     });
     
     it('handles success', async () => {
-      const res = await request(server).post('/v1/users').send({
+      const res = await request(server)
+      .post('/v1/users')
+      .send({
         email:    "newuser@site.com",
         password: "secret",
         username: "newuser"
@@ -47,8 +54,10 @@ export function userTests() {
   });
 
   describe('PATCH /v1/users/RainbowDash/email', () => {
-    it('handles non-existing user', async () => {
-      const agent = request.agent(server);
+    let agent: SuperAgentTest;
+
+    beforeEach(async () => {
+      agent = request.agent(server);
 
       await agent
         .post('/v1/login')
@@ -56,7 +65,14 @@ export function userTests() {
           email: 'rainbowdash@nobullshitcooking.com',
           password: 'FasterThanYou'
         });
+    });
 
+    afterEach(async () => {
+      await agent.get('/v1/logout');
+      // TO DO: reset all test DBS (MySQL, Redis)
+    });
+
+    it('handles non-existing user', async () => {
       const res = await agent
         .patch('/v1/users/RainbowCrash/email')
         .send({new_email: 'superrainbowcrash@nobullshitcooking.com'});
@@ -66,15 +82,6 @@ export function userTests() {
     });
 
     it('handles new_email already in use', async () => {
-      const agent = request.agent(server);
-
-      await agent
-        .post('/v1/login')
-        .send({
-          email: 'rainbowdash@nobullshitcooking.com',
-          password: 'FasterThanYou'
-        });
-
       const res = await agent
         .patch('/v1/users/RainbowDash/email')
         .send({new_email: 'rainbowdash@nobullshitcooking.com'});
@@ -84,15 +91,6 @@ export function userTests() {
     });
 
     it('handles success', async () => {
-      const agent = request.agent(server);
-
-      await agent
-        .post('/v1/login')
-        .send({
-          email: 'rainbowdash@nobullshitcooking.com',
-          password: 'FasterThanYou'
-        });
-
       const res = await agent
         .patch('/v1/users/RainbowDash/email')
         .send({new_email: 'superrainbowdash@nobullshitcooking.com'});
