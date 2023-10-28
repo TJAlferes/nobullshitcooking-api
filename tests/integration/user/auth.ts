@@ -52,6 +52,8 @@ export function userAuthTests() {
     });
   });
 
+
+
   describe('POST /v1/confirm', () => {
     it('handles non-existing user', async () => {
       const res = await request(server)
@@ -90,6 +92,8 @@ export function userAuthTests() {
       expect(res.status).toBe(204);
     });
   });
+
+  
 
   describe('POST /login', () => {
     it('handles already logged in user', async () => {
