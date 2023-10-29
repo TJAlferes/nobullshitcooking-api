@@ -1,4 +1,4 @@
-import { uuidv7 } from 'uuidv7';
+/*import { uuidv7 } from 'uuidv7';
 import * as fs from 'fs';
 
 const recipe_data = [
@@ -149,3 +149,4 @@ fs.writeFileSync(
   'utf-8'
 );
 console.log('recipe methods generated');
+*/

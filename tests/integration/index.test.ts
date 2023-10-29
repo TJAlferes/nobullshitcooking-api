@@ -3,7 +3,7 @@ import type { Server } from 'node:http';
 import type { Server as SocketIOServer } from 'socket.io';
 import request from 'supertest';
 
-import { seedDatabase } from '../../seeds/index.js';  // TO DO: use a test specific seeder
+import { seedTestDatabase } from '../../seeds/test/index.js';
 import { pool, testConfig } from '../../src/connections/mysql.js';
 import { redisClients } from '../../src/connections/redis.js';
 import { httpServer, socketIOServer, userCronJob } from '../../src/index.js';
@@ -66,7 +66,7 @@ afterEach(async () => {
   socketio?.disconnectSockets(true);
   socketio?.close();
 
-  await truncateTables();
+  await truncateTestDatabase();
 
   redisClients.pubClient.flushdb();
   redisClients.subClient.flushdb();
@@ -108,7 +108,7 @@ describe ('NOBSC API', () => {
   describe('user', userTests);
 });
 
-async function truncateTables() {
+async function truncateTestDatabase() {
   // Ensure this touches ONLY test DBs, NEVER prod DBs!!!
   // To that end, we use a separate pool here (instead of src/connections/mysql.ts).
   const pool = createPool(testConfig);
@@ -146,7 +146,7 @@ async function truncateTables() {
       await pool.execute(`TRUNCATE TABLE ${tableName}`);
     }
 
-    await seedDatabase();  // TO DO: use a test specific seeder
+    await seedTestDatabase();
 
     console.log('Reset test MySQL DB tables success.');
   } catch (error) {

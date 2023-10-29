@@ -1,4 +1,4 @@
-import { uuidv7 } from 'uuidv7';
+/*import { uuidv7 } from 'uuidv7';
 import * as fs from 'fs';
 
 const data = [
@@ -397,3 +397,4 @@ fs.writeFileSync(
 );
 
 console.log('ingredients generated');
+*/

@@ -280,13 +280,6 @@ CREATE TABLE plan_recipe (
 
 -- ==============================================================================
 
-INSERT INTO staff (staff_id, email, `password`, staffname) VALUES
-("11111111-1111-1111-1111-111111111111", "tjalferes@tjalferes.com", "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "T. J. Alferes");
-
-INSERT INTO user (user_id, email, `password`, username) VALUES
-("00000000-0000-0000-0000-000000000000", "tjalferes@gmail.com",     "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "Unknown"),
-("11111111-1111-1111-1111-111111111111", "tjalferes@tjalferes.com", "$2b$10$t9rf/EFZEq9Pno49TaYwnOmILd8Fl64L2GTZM1K8JvHqquILnkg5u", "NOBSC");
-
 INSERT INTO equipment_type (equipment_type_name) VALUES
 ("Cleaning"),
 ("Preparing"),

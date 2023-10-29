@@ -1,7 +1,7 @@
 import type { PoolConnection } from 'mysql2/promise';
 
-import { images }    from './prod/equipment/generated-images.js';
-import { equipment } from './prod/equipment/generated-equipment.js';
+import { images }    from '../production/equipment/generated-images.js';
+import { equipment } from '../production/equipment/generated-equipment.js';
 
 export async function seedEquipment(conn: PoolConnection) {
   const placeholders1 = '(?, ?, ?, ?, ?),'.repeat(images.length).slice(0, -1);
@@ -16,9 +16,8 @@ export async function seedEquipment(conn: PoolConnection) {
   `;
   await conn.query(sql1, images);
   
-  const placeholders = '(?, ?, ?, ?, ?, ?),'.repeat(equipment.length).slice(0, -1);
-
-  const sql = `
+  const placeholders2 = '(?, ?, ?, ?, ?, ?),'.repeat(equipment.length).slice(0, -1);
+  const sql2 = `
     INSERT INTO equipment (
       equipment_id,
       equipment_type_id,
@@ -26,8 +25,7 @@ export async function seedEquipment(conn: PoolConnection) {
       equipment_name,
       notes,
       image_id
-    ) VALUES ${placeholders}
+    ) VALUES ${placeholders2}
   `;
-
-  await conn.query(sql, equipment);
+  await conn.query(sql2, equipment);
 }

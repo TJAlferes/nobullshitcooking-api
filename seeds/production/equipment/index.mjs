@@ -1,7 +1,5 @@
-import { uuidv7 } from 'uuidv7';
+/*import { uuidv7 } from 'uuidv7';
 import * as fs from 'fs';
-
-// TO DO: reduce this down to the bare essentials, add more equipment later on if needed
 
 const data = [
   [2, "Ceramic Stone",                    "ceramic-stone"],
@@ -109,3 +107,4 @@ fs.writeFileSync(
 );
 
 console.log('equipment generated');
+*/
