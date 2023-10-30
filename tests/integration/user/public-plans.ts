@@ -2,7 +2,7 @@ import request from 'supertest';
 
 import { server } from '../index.test.js';
 
-export function userPlanTests() {
+export function publicPlansTests() {
   describe('POST /user/plan/create', () => {
     it('creates plan', async () => {
       const { body } = await request(server).post('/user/plan/create').send({name: "Name", data: {}});

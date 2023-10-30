@@ -2,7 +2,7 @@ import request from 'supertest';
 
 import { server } from '../index.test.js';
 
-export function userSavedRecipeTests() {
+export function savedRecipesTests() {
   describe('POST /user/saved-recipe/create', () => {
     it('creates plan', async () => {
       const { body } = await request(server).post('/user/saved-recipe/create').send({id: 1});

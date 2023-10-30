@@ -8,28 +8,31 @@ import { pool, testConfig } from '../../src/connections/mysql.js';
 import { redisClients } from '../../src/connections/redis.js';
 import { httpServer, socketIOServer, userCronJob } from '../../src/index.js';
 import {
-  userAuthTests,
-  userEquipmentTests,
-  userFavoriteRecipeTests,
-  //userFriendshipTests,
-  userIngredientTests,
-  userPlanTests,
-  userRecipeTests,
-  userSavedRecipeTests,
-  userTests
+  authenticationTests,
+  usersTests,
+  profileTests,
+  friendshipsTests,
+  publicPlansTests,
+  publicRecipesTests,
+  favoriteRecipesTests,
+  privateEquipmentTests,
+  privateIngredientsTests,
+  privatePlansTests,
+  privateRecipesTests,
+  savedRecipesTests
 } from './user/index.js';
 import {
-  //AwsS3Tests,
-  cuisineTests,
+  AwsS3Tests,
+  unitsTests,
+  equipmentTypesTests,
+  ingredientTypesTests,
+  recipeTypesTests,
+  methodsTests,
+  cuisinesTests,
   equipmentTests,
-  equipmentTypeTests,
-  ingredientTests,
-  ingredientTypeTests,
-  methodTests,
-  recipeTests,
-  recipeTypeTests,
-  searchTests,
-  unitTests
+  ingredientsTests,
+  recipesTests,
+  searchTests
 } from './index.js';
 
 // No Bullshit Cooking API Integration Tests
@@ -76,7 +79,7 @@ afterEach(async () => {
 
 describe ('NOBSC API', () => {
   describe('GET /v1', () => {
-    it('returns data correctly', async () => {
+    it('works', async () => {
       const res = await request(server).get('/v1');
       expect(res.body).toEqual(`
         No Bullshit Cooking API
@@ -84,28 +87,29 @@ describe ('NOBSC API', () => {
       `);  // res.text ???
     });
   });
-
-  //describe('AwsS3', AwsS3Tests);
-  describe('cuisine', cuisineTests);
+  describe('AwsS3', AwsS3Tests);
+  describe('units', unitsTests);
+  describe('equipmentTypes', equipmentTypesTests);
+  describe('ingredientTypes', ingredientTypesTests);
+  describe('recipeTypes', recipeTypesTests);
+  describe('methods', methodsTests);
+  describe('cuisines', cuisinesTests);
   describe('equipment', equipmentTests);
-  describe('equipmentType', equipmentTypeTests);
-  describe('ingredient', ingredientTests);
-  describe('ingredientType', ingredientTypeTests);
-  describe('method', methodTests);
-  describe('recipe', recipeTests);
-  describe('recipeType', recipeTypeTests);
+  describe('ingredients', ingredientsTests);
+  describe('recipes', recipesTests);
   describe('search', searchTests);
-  describe('unit', unitTests);
-
-  describe('userAuth', userAuthTests);
-  describe('userEquipment', userEquipmentTests);
-  describe('userFavoriteRecipe', userFavoriteRecipeTests);
-  //describe('userFriendship', userFriendshipTests);
-  describe('userIngredient', userIngredientTests);
-  describe('userPlan', userPlanTests);
-  describe('userRecipe', userRecipeTests);
-  describe('userSavedRecipe', userSavedRecipeTests);
-  describe('user', userTests);
+  describe('authentication', authenticationTests);
+  describe('users', usersTests);
+  describe('profile', profileTests);
+  describe('friendships', friendshipsTests);
+  describe('publicPlans', publicPlansTests);
+  describe('publicRecipes', publicRecipesTests);
+  describe('favoriteRecipes', favoriteRecipesTests);
+  describe('privateEquipment', privateEquipmentTests);
+  describe('privateIngredients', privateIngredientsTests);
+  describe('privatePlans', privatePlansTests);
+  describe('privateRecipes', privateRecipesTests);
+  describe('savedRecipe', savedRecipesTests);
 });
 
 async function truncateTestDatabase() {
@@ -115,16 +119,15 @@ async function truncateTestDatabase() {
 
   try {
     const tableNames = [
-      'staff',
       'user',
       'image',
       'user_image',
       'friendship',
-      'chatgroup',
-      'chatroom',
-      'chatmessage',
-      'chatgroup_user',
-      'chatroom_user',
+      //'chatgroup',
+      //'chatroom',
+      //'chatmessage',
+      //'chatgroup_user',
+      //'chatroom_user',
       'equipment',
       'ingredient',
       'ingredient_alt_name',

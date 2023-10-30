@@ -1,6 +1,8 @@
 import { SESClient, CloneReceiptRuleSetCommand } from '@aws-sdk/client-ses';
 
 export async function emailUser({ from, to, subject, bodyText, bodyHtml, charset}: EmailUserParams) {
+  if (process.env.NODE_ENV === 'test') return;
+
   const client = new SESClient({});
 
   const params = { 

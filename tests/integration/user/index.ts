@@ -3,50 +3,53 @@ import type { SuperAgentTest } from 'supertest';
 
 import { server } from '../index.test.js';
 
-export { userAuthTests }           from './auth.js';
-export { userEquipmentTests }      from './equipment.js';
-export { userFavoriteRecipeTests } from './favoriteRecipe.js';
-//export { userFriendshipTests }     from './friendship.js';
-export { userIngredientTests }     from './ingredient.js';
-export { userPlanTests }           from './plan.js';
-export { userRecipeTests }         from './recipe.js';
-export { userSavedRecipeTests }    from './savedRecipe.js';
+export { authenticationTests } from './authentication.js';
+export { favoriteRecipesTests } from './favorite-recipes.js';
+export { friendshipsTests } from './friendships.js';
+export { privateEquipmentTests } from './private-equipment.js';
+export { privateIngredientsTests } from './private-ingredients.js';
+export { privatePlansTests } from './private-plans.js';
+export { privateRecipesTests } from './private-recipes.js';
+export { profileTests } from './profile.js';
+export { publicPlansTests } from './public-plans.js';
+export { publicRecipesTests } from './public-recipes.js';
+export { savedRecipesTests } from './saved-recipes.js';
 
-export function userTests() {
+export function usersTests() {
   describe('POST /v1/users', () => {
     it('handles email already in use', async () => {
       const res = await request(server)
         .post('/v1/users')
         .send({
-          email:    "takenemail@site.com",
-          password: "secret",
-          username: "newuser"
+          email: 'fakeuser1@gmail.com',
+          password: 'fakepassword',
+          username: 'FakeUser1'
         });
 
       expect(res.status).toBe(409);
-      expect(res.body).toEqual({message: 'Email already in use.'});
+      expect(res.body.message).toBe('Email already in use.');
     });
 
     it('handles username already in use', async () => {
       const res = await request(server)
         .post('/v1/users')
         .send({
-          email:    "newuser@site.com",
-          password: "secret",
-          username: "takenusername"
+          email: 'fakeuser@gmail.com',
+          password: 'fakepassword',
+          username: 'FakeUser1'
         });
 
       expect(res.status).toBe(409);
-      expect(res.body).toEqual({message: 'Username already in use.'});
+      expect(res.body.message).toBe('Username already in use.');
     });
     
     it('handles success', async () => {
       const res = await request(server)
         .post('/v1/users')
         .send({
-          email:    "newuser@site.com",
-          password: "secret",
-          username: "newuser"
+          email: 'fakeuser@gmail.com',
+          password: 'fakepassword',
+          username: 'FakeUser'
         });
 
       expect(res.status).toBe(201);
@@ -55,7 +58,7 @@ export function userTests() {
 
 
 
-  describe('PATCH /v1/users/RainbowDash/email', () => {
+  describe('PATCH /v1/users/FakeUser1/email', () => {
     let agent: SuperAgentTest;
 
     beforeEach(async () => {
@@ -64,8 +67,8 @@ export function userTests() {
       await agent
         .post('/v1/login')
         .send({
-          email: 'rainbowdash@nobullshitcooking.com',
-          password: 'FasterThanYou'
+          email: 'fakeuser1@gmail.com',
+          password: 'fakepassword'
         });
     });
 
@@ -75,26 +78,26 @@ export function userTests() {
 
     it('handles non-existing user', async () => {
       const res = await agent
-        .patch('/v1/users/RainbowCrash/email')
-        .send({new_email: 'superrainbowcrash@nobullshitcooking.com'});
+        .patch('/v1/users/NonExistingUser/email')
+        .send({new_email: 'newemail@gmail.com'});
 
       expect(res.status).toBe(404);
-      expect(res.body).toEqual({message: 'User does not exist.'});
+      expect(res.body.message).toBe('User does not exist.');
     });
 
     it('handles new_email already in use', async () => {
       const res = await agent
-        .patch('/v1/users/RainbowDash/email')
-        .send({new_email: 'rainbowdash@nobullshitcooking.com'});
+        .patch('/v1/users/FakeUser1/email')
+        .send({new_email: 'fakeuser2@gmail.com'});
 
       expect(res.status).toBe(409);
-      expect(res.body).toEqual({message: 'Email already in use.'});
+      expect(res.body.message).toBe('Email already in use.');
     });
 
     it('handles success', async () => {
       const res = await agent
-        .patch('/v1/users/RainbowDash/email')
-        .send({new_email: 'superrainbowdash@nobullshitcooking.com'});
+        .patch('/v1/users/FakeUser1/email')
+        .send({new_email: 'newemail@gmail.com'});
 
       expect(res.status).toBe(204);
     });
@@ -102,7 +105,7 @@ export function userTests() {
 
 
 
-  describe('PATCH /v1/users/RainbowDash/password', () => {
+  describe('PATCH /v1/users/FakeUser1/password', () => {
     let agent: SuperAgentTest;
 
     beforeEach(async () => {
@@ -111,8 +114,8 @@ export function userTests() {
       await agent
         .post('/v1/login')
         .send({
-          email: 'rainbowdash@nobullshitcooking.com',
-          password: 'FasterThanYou'
+          email: 'fakeuser1@gmail.com',
+          password: 'fakepassword'
         });
     });
 
@@ -122,17 +125,17 @@ export function userTests() {
 
     it('handles non-existing user', async () => {
       const res = await agent
-        .patch('/v1/users/RainbowCrash/password')
-        .send({new_password: 'FasterThanFast'});
+        .patch('/v1/users/NonExistingUser/password')
+        .send({new_password: 'newpassword'});
 
       expect(res.status).toBe(404);
-      expect(res.body).toEqual({message: 'User does not exist.'});
+      expect(res.body.message).toBe('User does not exist.');
     });
 
     it('handles success', async () => {
       const res = await agent
-        .patch('/v1/users/RainbowDash/password')
-        .send({new_password: 'FasterThanFast'});
+        .patch('/v1/users/FakeUser1/password')
+        .send({new_password: 'newpassword'});
 
       expect(res.status).toBe(204);
     });
@@ -140,7 +143,7 @@ export function userTests() {
 
 
 
-  describe('PATCH /v1/users/RainbowDash/username', () => {
+  describe('PATCH /v1/users/FakeUser1/username', () => {
     let agent: SuperAgentTest;
 
     beforeEach(async () => {
@@ -149,8 +152,8 @@ export function userTests() {
       await agent
         .post('/v1/login')
         .send({
-          email: 'rainbowdash@nobullshitcooking.com',
-          password: 'FasterThanYou'
+          email: 'fakeuser1@gmail.com',
+          password: 'fakepassword'
         });
     });
 
@@ -160,26 +163,26 @@ export function userTests() {
 
     it('handles non-existing user', async () => {
       const res = await agent
-        .patch('/v1/users/RainbowCrash/username')
-        .send({new_username: 'SuperRainbowCrash'});
+        .patch('/v1/users/NonExistingUser/username')
+        .send({new_username: 'NewUsername'});
 
       expect(res.status).toBe(404);
-      expect(res.body).toEqual({message: 'User does not exist.'});
+      expect(res.body.message).toBe('User does not exist.');
     });
 
     it('handles new_username already in use', async () => {
       const res = await agent
-        .patch('/v1/users/RainbowDash/username')
-        .send({new_username: 'RainbowDash'});
+        .patch('/v1/users/FakeUser1/username')
+        .send({new_username: 'FakeUser2'});
 
       expect(res.status).toBe(409);
-      expect(res.body).toEqual({message: 'Username already in use.'});
+      expect(res.body.message).toBe('Username already in use.');
     });
 
     it('handles success', async () => {
       const res = await agent
-        .patch('/v1/users/RainbowDash/username')
-        .send({new_username: 'SuperRainbowDash'});
+        .patch('/v1/users/FakeUser1/username')
+        .send({new_username: 'NewUsername'});
 
       expect(res.status).toBe(204);
     });
@@ -187,18 +190,18 @@ export function userTests() {
 
   
 
-  describe('DELETE /v1/users/RainbowDash', () => {
+  describe('DELETE /v1/users/FakeUser1', () => {
     it('handles success', async () => {
       const agent = request.agent(server);
 
       await agent
         .post('/v1/login')
         .send({
-          email: 'rainbowdash@nobullshitcooking.com',
-          password: 'FasterThanYou'
+          email: 'fakeuser1@gmail.com',
+          password: 'fakepassword'
         });
 
-      const res = await agent.delete('/v1/users/RainbowDash');
+      const res = await agent.delete('/v1/users/FakeUser1');
 
       expect(res.status).toBe(204);
     });

@@ -2,7 +2,7 @@ import request from 'supertest';
 
 import { server } from './index.test.js';
 
-export function methodTests() {
+export function methodsTests() {
   describe('GET /v1/methods/:method_id', () => {
     it('returns data correctly', async () => {
       const res = await request(server).get('/v1/methods/1');

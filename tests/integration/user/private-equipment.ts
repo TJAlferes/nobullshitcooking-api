@@ -2,7 +2,7 @@ import request from 'supertest';
 
 import { server } from '../index.test.js';
 
-export function userEquipmentTests() {
+export function privateEquipmentTests() {
   describe('POST /user/equipment/create', () => {
     it('creates equipment', async () => {
       const { body } = await request(server).post('/user/equipment/create').send({ equipmentTypeId: 4, name: "Name", description: "Description.", image: "image"});

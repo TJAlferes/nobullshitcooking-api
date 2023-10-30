@@ -17,7 +17,7 @@ const recipeInfo = {
   video:            "video"
 };
 
-export function userRecipeTests() {
+export function publicRecipesTests() {
   describe('POST /user/recipe/create', () => {
     it('creates recipe', async () => {
       const { body } = await request(server).post('/user/recipe/create').send({ownership: "public", ...recipeInfo});

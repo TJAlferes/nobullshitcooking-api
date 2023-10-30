@@ -2,7 +2,7 @@ import request from 'supertest';
 
 import { server } from './index.test.js';
 
-export function ingredientTypeTests() {
+export function ingredientTypesTests() {
   describe('GET /v1/ingredient-types/:ingredient_type_id', () => {
     it('returns data correctly', async () => {
       const res = await request(server).get('/v1/ingredient-types/1');
