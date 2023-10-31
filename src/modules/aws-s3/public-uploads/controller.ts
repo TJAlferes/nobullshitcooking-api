@@ -16,7 +16,7 @@ const s3 = new S3Client({
 
 export const AwsS3PublicUploadsController = {
   // Allows users to upload their public images to AWS S3 directly from their browser,
-  // so their images never have to pass through our server here.
+  // so their images never have to pass through our server
   async createPresignedUrlToUploadImage(req: Request, res: Response) {
     if (!req.session.user_id) throw UnauthorizedException();
 
@@ -28,7 +28,7 @@ export const AwsS3PublicUploadsController = {
     const filename = uuidv7();  // ???
     const objectKey = `nobsc-public-uploads/${subfolder}${req.session.user_id}/${filename}`;
     
-    if (subfolder === PUBLIC_RECIPE) {
+    if (subfolder === "recipe") {
       const mediumSignature = await sign(s3, objectKey, "medium");
       const thumbSignature  = await sign(s3, objectKey, "thumb");
       const tinySignature   = await sign(s3, objectKey, "tiny");
@@ -36,16 +36,16 @@ export const AwsS3PublicUploadsController = {
       return res.status(201).json({filename, mediumSignature, thumbSignature, tinySignature});
     }
 
-    if (subfolder === PUBLIC_AVATAR) {
+    if (subfolder === "avatar") {
       const smallSignature = await sign(s3, objectKey, "small");
       const tinySignature  = await sign(s3, objectKey, "tiny");
 
       return res.status(201).json({filename, smallSignature, tinySignature});
     }
 
-    if ( (subfolder === PUBLIC_RECIPE_COOKING)
-      || (subfolder === PUBLIC_RECIPE_EQUIPMENT)
-      || (subfolder === PUBLIC_RECIPE_INGREDIENTS)
+    if ( subfolder === "recipe-cooking"
+      || subfolder === "recipe-equipment"
+      || subfolder === "recipe-ingredients"
     ) {
       const mediumSignature = await sign(s3, objectKey, "medium");
 
@@ -64,26 +64,20 @@ async function sign(s3: S3Client, objectKey: string, imageSize: string) {
   return signature;
 }
 
-type Subfolder =
-  | typeof PUBLIC_AVATAR
-  | typeof PUBLIC_RECIPE
-  | typeof PUBLIC_RECIPE_COOKING
-  | typeof PUBLIC_RECIPE_EQUIPMENT
-  | typeof PUBLIC_RECIPE_INGREDIENTS;
-
-const PUBLIC_AVATAR             = "avatar/" as const;
-const PUBLIC_RECIPE             = "recipe/" as const;
-const PUBLIC_RECIPE_COOKING     = "recipe-cooking/" as const;
-const PUBLIC_RECIPE_EQUIPMENT   = "recipe-equipment/" as const;
-const PUBLIC_RECIPE_INGREDIENTS = "recipe-ingredients/" as const;
-
 const validSubfolders = [
-  PUBLIC_AVATAR,
-  PUBLIC_RECIPE,
-  PUBLIC_RECIPE_COOKING,
-  PUBLIC_RECIPE_EQUIPMENT,
-  PUBLIC_RECIPE_INGREDIENTS
+  "avatar",
+  "recipe",
+  "recipe-cooking",
+  "recipe-equipment",
+  "recipe-ingredients"
 ];
+
+type Subfolder =
+  | "avatar"
+  | "recipe"
+  | "recipe-cooking"
+  | "recipe-equipment"
+  | "recipe-ingredients";
 
 /*
 objectKey =
@@ -100,13 +94,3 @@ small  280px by 280px  172
 thumb  100px by 100px   62
 tiny    28px by  28px   18
 */
-
-// Convert to lowercase,
-// replace spaces with dashes,
-// remove non-alphanumeric characters except dashes
-/*function slugify(str: string): string {
-  return str
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[^\w-]+/g, '');
-}*/
