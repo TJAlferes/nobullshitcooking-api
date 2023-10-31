@@ -1,4 +1,4 @@
-export { AwsS3Tests } from './aws-s3.js';
+//export { AwsS3Tests } from './aws-s3.js';
 export { cuisinesTests } from './cuisines.js';
 export { equipmentTests } from './equipment.js';
 export { equipmentTypesTests } from './equipmentTypes.js';

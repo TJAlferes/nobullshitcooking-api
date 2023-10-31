@@ -1,19 +1,18 @@
 import { createPool } from 'mysql2/promise';
 
 import { productionConfig } from '../../src/connections/mysql.js';
-import { seedEquipment }    from '../shared/equipment.js';
-import { seedIngredient }   from '../shared/ingredient.js';
-import { seedRecipe }       from '../shared/recipe.js';
+import { seedEquipment }    from '../common/equipment.js';
+import { seedIngredient }   from '../common/ingredient.js';
+import { seedRecipe }       from '../common/recipe.js';
+import { seedUser }         from '../common/user.js';
 
-// Must run only ONCE
-export async function seedProductionDatabase() {
+export async function seedProductionDatabase() {  // Must run only ONCE, delete this file after
   const pool = createPool(productionConfig);
   const conn = await pool.getConnection();
   await conn.beginTransaction();
   try {
     console.log(`seedProductionDatabase begin`);
-    //await seedStaff(conn);
-    //await seedUser(conn);
+    await seedUser(conn);
     await seedEquipment(conn);
     await seedIngredient(conn);
     await seedRecipe(conn);
@@ -25,5 +24,6 @@ export async function seedProductionDatabase() {
     throw err;
   } finally {
     conn.release();
+    await pool.end();
   }
 }

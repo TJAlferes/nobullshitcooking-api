@@ -4,7 +4,7 @@ import { testConfig }     from '../../src/connections/mysql.js';
 import { seedEquipment }  from '../common/equipment.js';
 import { seedIngredient } from '../common/ingredient.js';
 import { seedRecipe }     from '../common/recipe.js';
-import { seedUser }       from '../test/user.js';
+import { seedUser }       from '../common/user.js';
 
 // Runs between each integration test
 export async function seedTestDatabase() {
@@ -25,5 +25,6 @@ export async function seedTestDatabase() {
     throw err;
   } finally {
     conn.release();
+    await pool.end();
   }
 }

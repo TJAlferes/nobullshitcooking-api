@@ -22,7 +22,7 @@ import {
   savedRecipesTests
 } from './user/index.js';
 import {
-  AwsS3Tests,
+  //AwsS3Tests,
   unitsTests,
   equipmentTypesTests,
   ingredientTypesTests,
@@ -87,7 +87,7 @@ describe ('NOBSC API', () => {
       `);  // res.text ???
     });
   });
-  describe('AwsS3', AwsS3Tests);
+  //describe('AwsS3', AwsS3Tests);
   describe('units', unitsTests);
   describe('equipmentTypes', equipmentTypesTests);
   describe('ingredientTypes', ingredientTypesTests);

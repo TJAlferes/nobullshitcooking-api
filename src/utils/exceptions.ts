@@ -26,7 +26,7 @@ export function ValidationException(message: string) {
   return new ExceptionError(400, 'ValidationException', message);
 }
 
-export function UnauthorizedException(message: string) {
+export function UnauthorizedException(message: string = "Unauthorized") {
   return new ExceptionError(401, 'UnauthorizedException', message)
 }
 
