@@ -29,7 +29,8 @@ export function privateEquipmentTests() {
           equipment_type_id: 4,
           equipment_name: "Equipment Name",
           notes: "Notes...",
-          image_id: ""
+          image_filename: "default",
+          caption: ""
         });
 
       expect(res.status).toBe(201);
@@ -45,7 +46,9 @@ export function privateEquipmentTests() {
           equipment_type_id: 3,
           equipment_name: "Nonexisting Ladle",
           notes: "Good soups...",
-          image_id: "018b5ade-5437-7ea1-a351-299b6a84f784"
+          image_id: "018b5ade-5437-7ea1-a351-299b6a84f784",
+          image_filename: "default",
+          caption: ""
         });
 
       expect(res.status).toBe(404);
@@ -59,7 +62,9 @@ export function privateEquipmentTests() {
           equipment_type_id: 3,
           equipment_name: "Stolen Spatula",
           notes: "Good times...",
-          image_id: "018b5ade-5438-7ea2-a352-299b6a84f785"
+          image_id: "018b5ade-5438-7ea2-a352-299b6a84f785",
+          image_filename: "default",
+          caption: ""
         });
 
       expect(res.status).toBe(403);
@@ -73,7 +78,9 @@ export function privateEquipmentTests() {
           equipment_type_id: 3,
           equipment_name: "Mom's Ladle",
           notes: "Good soups...",
-          image_id: "018b5ade-5437-7ea1-a351-299b6a84f784"
+          image_id: "018b5ade-5437-7ea1-a351-299b6a84f784",
+          image_filename: "default",
+          caption: ""
         });
 
       expect(res.status).toBe(204);

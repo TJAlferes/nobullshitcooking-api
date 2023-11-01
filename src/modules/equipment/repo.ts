@@ -93,25 +93,6 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
     return rows.length > 0 ? true : false;
   }  // TO DO: thoroughly integration test this
 
-  async getOneByEquipmentId(equipment_id: string) {
-    const sql = `
-      SELECT
-        e.equipment_id,
-        e.equipment_type_id,
-        t.equipment_type_name,
-        e.owner_id,
-        e.equipment_name,
-        e.notes,
-        i.image_filename
-      FROM equipment e
-      INNER JOIN equipment_type t ON e.equipment_type_id = t.equipment_type_id
-      INNER JOIN image i          ON e.image_id          = i.image_id
-      WHERE e.equipment_id = :equipment_id
-    `;
-    const [ [ row ] ] = await this.pool.execute<EquipmentView[]>(sql, equipment_id);
-    return row;
-  }
-
   async viewAll(owner_id: string) {
     const sql = `
       SELECT
@@ -121,7 +102,9 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
         e.owner_id,
         e.equipment_name,
         e.notes,
+        i.image_id,
         i.image_filename
+        i.caption
       FROM equipment e
       INNER JOIN equipment_type t ON e.equipment_type_id = t.equipment_type_id
       INNER JOIN image i          ON e.image_id          = i.image_id
@@ -141,7 +124,9 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
         e.owner_id,
         e.equipment_name,
         e.notes,
+        i.image_id,
         i.image_filename
+        i.caption
       FROM equipment e
       INNER JOIN equipment_type t ON e.equipment_type_id = t.equipment_type_id
       INNER JOIN image i          ON e.image_id          = i.image_id

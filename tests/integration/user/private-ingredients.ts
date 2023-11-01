@@ -1,8 +1,26 @@
 import request from 'supertest';
+import type { SuperAgentTest } from 'supertest';
 
 import { server } from '../index.test.js';
 
 export function privateIngredientsTests() {
+  let agent: SuperAgentTest;
+
+  beforeEach(async () => {
+    agent = request.agent(server);
+
+    await agent
+      .post('/v1/login')
+      .send({
+        email: 'fakeuser1@gmail.com',
+        password: 'fakepassword'
+      });
+  });
+
+  afterEach(async () => {
+    await agent.post('/v1/logout');
+  });
+
   describe('POST /user/ingredient/create', () => {
     it('creates ingredient', async () => {
       const { body } = await request(server).post('/user/ingredient/create')

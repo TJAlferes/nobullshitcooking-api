@@ -1,9 +1,24 @@
-import { ResultSetHeader } from 'mysql2';
+import { ResultSetHeader, RowDataPacket } from 'mysql2';
 
 import { NOBSC_USER_ID, UNKNOWN_USER_ID } from '../shared/model.js';
 import { MySQLRepo }                      from '../shared/MySQL.js';
 
 export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
+  async viewOne(params: ViewOneParams) {
+    const sql = `
+      SELECT
+        image_id,
+        image_filename,
+        caption,
+        author_id,
+        owner_id
+      FROM image
+      WHERE owner_id = :owner_id AND image_id = :image_id
+    `;
+    const [ [ row ] ] = await this.pool.execute<ImageView[]>(sql, params);
+    return row;
+  }
+
   async bulkInsert({ placeholders, images }: BulkInsertParams) {
     const sql = `
       INSERT INTO image (image_id, image_filename, caption, author_id, owner_id)
@@ -90,6 +105,7 @@ export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
 }
 
 export interface ImageRepoInterface {
+  viewOne:        (params: ViewOneParams) =>        Promise<ImageView>;
   bulkInsert:     (params: BulkInsertParams) =>     Promise<void>;
   insert:         (params: InsertParams) =>         Promise<void>;
   update:         (params: UpdateParams) =>         Promise<void>;
@@ -98,6 +114,14 @@ export interface ImageRepoInterface {
   deleteAll:      (owner_id: string) =>             Promise<void>;
   deleteOne:      (params: DeleteOneParams) =>      Promise<void>;
 }
+
+type ImageView = RowDataPacket & {
+  image_id:       string;
+  image_filename: string;
+  caption:        string;
+  author_id:      string;
+  owner_id:       string;
+};
 
 type BulkInsertParams = {
   placeholders: string;
@@ -119,7 +143,9 @@ type UnattributeOneParams = {
   author_id: string;
 };
 
-type DeleteOneParams = {
+type ViewOneParams = {
   image_id: string;
   owner_id: string;
 };
+
+type DeleteOneParams = ViewOneParams;

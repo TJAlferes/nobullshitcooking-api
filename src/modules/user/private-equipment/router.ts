@@ -13,7 +13,8 @@ export function privateEquipmentRouter() {
     'equipment_type_id',
     'equipment_name',
     'notes',
-    'image_id'
+    'image_filename',
+    'caption'
   ];
 
   router.get(
@@ -39,7 +40,7 @@ export function privateEquipmentRouter() {
   router.patch(
     '/',
     userIsAuth,
-    sanitizeBody(['equipment_id', ...equipment_upload]),
+    sanitizeBody(['equipment_id', 'image_id', ...equipment_upload]),
     catchExceptions(controller.update)
   );
 
