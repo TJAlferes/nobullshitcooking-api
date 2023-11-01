@@ -1,4 +1,4 @@
-export const images = [
+export const production_images = [
   {
     "image_id": "018b5ade-5436-7ea0-a350-299b6a84f783",
     "image_filename": "ceramic-stone",

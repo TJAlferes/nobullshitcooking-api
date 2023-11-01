@@ -1,4 +1,4 @@
-export const equipment = [
+export const test_equipment = [
   {
     "equipment_id": "018b5ade-5439-7d0d-b42c-f262d9f0b6fc",
     "equipment_type_id": 3,

@@ -1,4 +1,4 @@
-export const ingredients = [
+export const test_ingredients = [
   {
     "ingredient_id": "018b5ade-dc55-7dc0-92dd-3ff30123668b",
     "ingredient_type_id": 11,

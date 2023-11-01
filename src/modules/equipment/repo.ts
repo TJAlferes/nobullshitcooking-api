@@ -1,5 +1,6 @@
 import { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
 
+import { NotFoundException }                  from '../../utils/exceptions.js';
 import type { SearchRequest, SearchResponse } from '../search/model.js';
 import { NOBSC_USER_ID }                      from '../shared/model.js';
 import { MySQLRepo }                          from '../shared/MySQL.js';
@@ -92,6 +93,25 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
     return rows.length > 0 ? true : false;
   }  // TO DO: thoroughly integration test this
 
+  async getOneByEquipmentId(equipment_id: string) {
+    const sql = `
+      SELECT
+        e.equipment_id,
+        e.equipment_type_id,
+        t.equipment_type_name,
+        e.owner_id,
+        e.equipment_name,
+        e.notes,
+        i.image_filename
+      FROM equipment e
+      INNER JOIN equipment_type t ON e.equipment_type_id = t.equipment_type_id
+      INNER JOIN image i          ON e.image_id          = i.image_id
+      WHERE e.equipment_id = :equipment_id
+    `;
+    const [ [ row ] ] = await this.pool.execute<EquipmentView[]>(sql, equipment_id);
+    return row;
+  }
+
   async viewAll(owner_id: string) {
     const sql = `
       SELECT
@@ -150,7 +170,7 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
       )
     `;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
-    if (result.affectedRows < 1) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw NotFoundException('Query not successful.');
   }
 
   async update({
@@ -179,13 +199,13 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
       owner_id,
       equipment_id
     });
-    if (result.affectedRows < 1) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw NotFoundException('Query not successful.');
   }
 
   async deleteAll(owner_id: string) {
     const sql = `DELETE FROM equipment WHERE owner_id = ?`;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, owner_id);
-    if (result.affectedRows < 1) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw NotFoundException('Query not successful.');
   }
 
   async deleteOne(params: DeleteOneParams) {
@@ -195,7 +215,7 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
       LIMIT 1
     `;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
-    if (result.affectedRows < 1) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw NotFoundException('Query not successful.');
   }
 }
 

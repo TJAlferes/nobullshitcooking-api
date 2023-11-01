@@ -13,7 +13,7 @@ export function privateEquipmentRouter() {
     'equipment_type_id',
     'equipment_name',
     'notes',
-    'image*'
+    'image_id'
   ];
 
   router.get(

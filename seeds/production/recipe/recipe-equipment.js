@@ -1,4 +1,4 @@
-export const recipe_equipment = [
+export const production_recipe_equipment = [
   {
     "recipe_id": "018b6942-6b2e-7942-8ab5-3509084cf00d",
     "amount": 1,

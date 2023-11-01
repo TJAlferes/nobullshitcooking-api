@@ -1,4 +1,4 @@
-export const ingredients = [
+export const production_ingredients = [
   {
     "ingredient_id": "018b5ade-dc54-7db9-92dc-3ff30123668a",
     "ingredient_type_id": 1,

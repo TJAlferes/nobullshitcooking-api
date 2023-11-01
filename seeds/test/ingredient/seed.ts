@@ -1,9 +1,9 @@
 import type { PoolConnection } from 'mysql2/promise';
 
-import { images as production_images } from '../../production/ingredient/images.js';
-import { ingredients as production_ingredients } from '../../production/ingredient/ingredients.js';
-import { images as test_images } from './images.js';
-import { ingredients as test_ingredients } from './ingredients.js';
+import { production_images } from '../../production/ingredient/images.js';
+import { production_ingredients } from '../../production/ingredient/ingredients.js';
+import { test_images } from './images.js';
+import { test_ingredients } from './ingredients.js';
 
 const images = [...production_images, ...test_images];
 const ingredients = [...production_ingredients, ...test_ingredients];

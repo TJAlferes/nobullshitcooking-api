@@ -1,4 +1,4 @@
-export const images = [
+export const test_images = [
   {
     "image_id": "018b5ade-5437-7ea1-a351-299b6a84f784",
     "image_filename": "moms-spatula",

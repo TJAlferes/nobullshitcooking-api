@@ -1,4 +1,4 @@
-export const recipe_images = [
+export const production_recipe_images = [
   {
     "recipe_id": "018b6942-6b2e-7942-8ab5-3509084cf00d",
     "image_id": "018b6942-6b2c-7b8c-90af-ff43c22c0ed8",

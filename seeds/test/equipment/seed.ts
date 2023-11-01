@@ -1,12 +1,12 @@
 import type { PoolConnection } from 'mysql2/promise';
 
-import { equipment as production_equipment } from '../../production/equipment/equipment.js';
-import { images as production_images } from '../../production/equipment/images.js';
-import { equipment as test_equipment } from './equipment.js';
-import { images as test_images } from './images.js';
+import { production_equipment } from '../../production/equipment/equipment.js';
+import { production_images } from '../../production/equipment/images.js';
+import { test_equipment } from './equipment.js';
+import { test_images } from './images.js';
 
-const equipment = [...production_equipment, ...test_equipment];
 const images = [...production_images, ...test_images];
+const equipment = [...production_equipment, ...test_equipment];
 
 export async function seedEquipment(conn: PoolConnection) {
   const placeholders1 = '(?, ?, ?, ?, ?),'.repeat(images.length).slice(0, -1);

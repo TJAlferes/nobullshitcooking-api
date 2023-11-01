@@ -1,4 +1,4 @@
-export const images = [
+export const production_images = [
   {
     "image_id": "018b6942-6b2c-7b8c-90af-ff43c22c0ed8",
     "image_filename": "grilled-chicken-recipe",

@@ -1,4 +1,4 @@
-export const images = [
+export const production_images = [
   {
     "image_id": "018b5ade-dc53-7db0-870f-00733ee1bede",
     "image_filename": "catfish",

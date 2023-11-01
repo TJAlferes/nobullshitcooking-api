@@ -22,7 +22,7 @@ export function privateEquipmentTests() {
   });
 
   describe('POST /users/FakeUser1/private-equipment', () => {
-    it('creates equipment', async () => {
+    it('handles success', async () => {
       const res = await agent
         .post('/users/FakeUser1/private-equipment')
         .send({
@@ -37,15 +37,43 @@ export function privateEquipmentTests() {
   });
 
   describe('PATCH /users/FakeUser1/private-equipment', () => {
-    it('updates equipment', async () => {
+    it('handles not found', async () => {
       const res = await agent
         .patch('/users/FakeUser1/private-equipment')
         .send({
-          id: 88,
-          equipment_type_id: 4,
-          equipment_name: "Equipment Name",
-          notes: "Notes...",
-          image_id: ""
+          equipment_id: "018b5ade-5449-7d0z-b42z-f262d9f0b6fz",
+          equipment_type_id: 3,
+          equipment_name: "Nonexisting Ladle",
+          notes: "Good soups...",
+          image_id: "018b5ade-5437-7ea1-a351-299b6a84f784"
+        });
+
+      expect(res.status).toBe(404);
+    });
+
+    it('handles unauthorized', async () => {
+      const res = await agent
+        .patch('/users/FakeUser1/private-equipment')
+        .send({
+          equipment_id: "018b5ade-5440-7d0e-b42d-f262d9f0b6fd",
+          equipment_type_id: 3,
+          equipment_name: "Stolen Spatula",
+          notes: "Good times...",
+          image_id: "018b5ade-5438-7ea2-a352-299b6a84f785"
+        });
+
+      expect(res.status).toBe(403);
+    });
+
+    it('handles success', async () => {
+      const res = await agent
+        .patch('/users/FakeUser1/private-equipment')
+        .send({
+          equipment_id: "018b5ade-5439-7d0d-b42c-f262d9f0b6fc",
+          equipment_type_id: 3,
+          equipment_name: "Mom's Ladle",
+          notes: "Good soups...",
+          image_id: "018b5ade-5437-7ea1-a351-299b6a84f784"
         });
 
       expect(res.status).toBe(204);
@@ -53,9 +81,23 @@ export function privateEquipmentTests() {
   });
 
   describe('DELETE /users/FakeUser1/private-equipment/:equipment_id', () => {
-    it('deletes equipment', async () => {
+    it('handles not found', async () => {
       const res = await agent
-        .delete('/users/FakeUser1/private-equipment/');
+        .delete('/users/FakeUser1/private-equipment/018b5ade-5449-7d0z-b42z-f262d9f0b6fz');
+
+      expect(res.status).toBe(404); 
+    });
+
+    it('handles unauthorized ', async () => {
+      const res = await agent
+        .delete('/users/FakeUser1/private-equipment/018b5ade-5440-7d0e-b42d-f262d9f0b6fd');
+
+      expect(res.status).toBe(403); 
+    });
+
+    it('handles success', async () => {
+      const res = await agent
+        .delete('/users/FakeUser1/private-equipment/018b5ade-5439-7d0d-b42c-f262d9f0b6fc');
 
       expect(res.status).toBe(204); 
     });

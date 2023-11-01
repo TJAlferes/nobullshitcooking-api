@@ -22,7 +22,7 @@ export class ExceptionError extends Error {
   }
 }
 
-export function ValidationException(message: string) {
+export function ValidationException(message: string = "Invalid") {
   return new ExceptionError(400, 'ValidationException', message);
 }
 
@@ -30,14 +30,14 @@ export function UnauthorizedException(message: string = "Unauthorized") {
   return new ExceptionError(401, 'UnauthorizedException', message)
 }
 
-export function ForbiddenException(message: string) {
+export function ForbiddenException(message: string = "Forbidden") {
   return new ExceptionError(403, 'ForbiddenException', message);
 }
 
-export function NotFoundException(message: string) {
+export function NotFoundException(message: string = "Not Found") {
   return new ExceptionError(404, 'NotFoundException', message);
 }
 
-export function ConflictException(message: string) {
+export function ConflictException(message: string = "Conflict") {
   return new ExceptionError(409, 'ConflictException', message);
 }
