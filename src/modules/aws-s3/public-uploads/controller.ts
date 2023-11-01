@@ -17,7 +17,7 @@ const s3 = new S3Client({
 export const AwsS3PublicUploadsController = {
   // Allows users to upload their public images to AWS S3 directly from their browser,
   // so their images never have to pass through our server
-  async createPresignedUrlToUploadImage(req: Request, res: Response) {
+  async signUrlToUploadImage(req: Request, res: Response) {
     if (!req.session.user_id) throw UnauthorizedException();
 
     if (!validSubfolders.includes(req.body.subfolder)) {

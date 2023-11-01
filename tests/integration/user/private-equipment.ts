@@ -1,26 +1,63 @@
 import request from 'supertest';
+import type { SuperAgentTest } from 'supertest';
 
 import { server } from '../index.test.js';
 
 export function privateEquipmentTests() {
-  describe('POST /user/equipment/create', () => {
+  let agent: SuperAgentTest;
+
+  beforeEach(async () => {
+    agent = request.agent(server);
+
+    await agent
+      .post('/v1/login')
+      .send({
+        email: 'fakeuser1@gmail.com',
+        password: 'fakepassword'
+      });
+  });
+
+  afterEach(async () => {
+    await agent.post('/v1/logout');
+  });
+
+  describe('POST /users/FakeUser1/private-equipment', () => {
     it('creates equipment', async () => {
-      const { body } = await request(server).post('/user/equipment/create').send({ equipmentTypeId: 4, name: "Name", description: "Description.", image: "image"});
-      expect(body).toEqual({message: 'Equipment created.'});
+      const res = await agent
+        .post('/users/FakeUser1/private-equipment')
+        .send({
+          equipment_type_id: 4,
+          equipment_name: "Equipment Name",
+          notes: "Notes...",
+          image_id: ""
+        });
+
+      expect(res.status).toBe(201);
     });
   });
 
-  describe('PUT /user/equipment/update', () => {
+  describe('PATCH /users/FakeUser1/private-equipment', () => {
     it('updates equipment', async () => {
-      const { body } = await request(server).put('/user/equipment/update').send({id: 88, equipmentTypeId: 4, name: "Name", description: "Description.", image: "image"});
-      expect(body).toEqual({message: 'Equipment updated.'});
+      const res = await agent
+        .patch('/users/FakeUser1/private-equipment')
+        .send({
+          id: 88,
+          equipment_type_id: 4,
+          equipment_name: "Equipment Name",
+          notes: "Notes...",
+          image_id: ""
+        });
+
+      expect(res.status).toBe(204);
     });
   });
 
-  describe('DELETE /user/equipment/delete', () => {
+  describe('DELETE /users/FakeUser1/private-equipment/:equipment_id', () => {
     it('deletes equipment', async () => {
-      const { body } = await request(server).delete('/user/equipment/delete').send({id: 88});
-      expect(body).toEqual({message: 'Equipment deleted.'}); 
+      const res = await agent
+        .delete('/users/FakeUser1/private-equipment/');
+
+      expect(res.status).toBe(204); 
     });
   });
 }

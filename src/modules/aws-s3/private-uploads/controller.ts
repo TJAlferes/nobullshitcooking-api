@@ -17,7 +17,7 @@ const s3 = new S3Client({
 export const AwsS3PrivateUploadsController = {
   // Allows users to upload their private images to AWS S3 directly from their browser,
   // so their images never have to pass through our server
-  async createPresignedUrlToUploadImage(req: Request, res: Response) {
+  async signUrlToUploadImage(req: Request, res: Response) {
     if (!req.session.user_id) throw UnauthorizedException();
 
     if (!validSubfolders.includes(req.body.subfolder)) {
@@ -54,12 +54,12 @@ export const AwsS3PrivateUploadsController = {
   },
 
   // Allows users to view their private images
-  async bulkCreatePresignedUrlToViewImages(req: Request, res: Response) {
+  async signUrlToViewImages(req: Request, res: Response) {
     if (!req.session.user_id) throw UnauthorizedException();
 
     const signatures = [];
 
-    for (const { subfolder, image_filename, size } of req.body) {
+    for (const { subfolder, image_filename, size } of req.body.access_requests) {
       if (!validSubfolders.includes(subfolder)) {
         throw ValidationException("Invalid subfolder.");
       }
@@ -81,7 +81,7 @@ export const AwsS3PrivateUploadsController = {
   },
 
   // Allows users to view their private image
-  async createPresignedUrlToViewImage(req: Request, res: Response) {
+  async signUrlToViewImage(req: Request, res: Response) {
     if (!req.session.user_id) throw UnauthorizedException();
 
     const { subfolder, image_filename, size } = req.body;

@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { body }   from 'express-validator';
 
-import { AWSS3Controller } from './modules/aws-s3/controller.js';
+import { AwsS3PrivateUploadsController } from './modules/aws-s3/private-uploads/controller.js';
+import { AwsS3PublicUploadsController } from './modules/aws-s3/public-uploads/controller.js';
 import { initialDataController } from './modules/initial-data/controller.js';
 import { userAuthenticationController } from './modules/user/authentication/controller.js';
 /*import { chatgroupUserRouter } from './modules/chat/group/user/router.js';
@@ -85,11 +86,34 @@ export function apiV1Router() {
     catchExceptions(userAuthenticationController.logout)
   );
 
+  // TO DO: move ???
+  
   router.post(
-    '/signed-url',
+    '/aws-s3-private-uploads',
     userIsAuth,
     sanitize('subfolder'),
-    catchExceptions(AWSS3Controller.createPresignedUrl)
+    catchExceptions(AwsS3PrivateUploadsController.signUrlToUploadImage)
+  );
+
+  router.get(
+    '/aws-s3-private-uploads/many',
+    userIsAuth,
+    sanitize('access_requests.*.*'),
+    catchExceptions(AwsS3PrivateUploadsController.signUrlToViewImages)
+  );
+
+  router.get(
+    '/aws-s3-private-uploads/one',
+    userIsAuth,
+    sanitize(['subfolder', 'image_filename', 'size']),
+    catchExceptions(AwsS3PrivateUploadsController.signUrlToViewImage)
+  );
+
+  router.post(
+    '/aws-s3-public-uploads',
+    userIsAuth,
+    sanitize(['subfolder', 'image_filename', 'size']),
+    catchExceptions(AwsS3PublicUploadsController.signUrlToUploadImage)
   );
 
   return router;

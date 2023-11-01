@@ -38,7 +38,7 @@ export const privateEquipmentController = {
     }).getDTO();
     await repo.insert(equipment);
     
-    return res.send({message: 'Equipment created.'});
+    return res.status(201);
   },
 
   async update(req: Request, res: Response) {
@@ -57,7 +57,7 @@ export const privateEquipmentController = {
     }).getDTO();
     await repo.update(equipment);
 
-    return res.send({message: 'Equipment updated.'});
+    return res.status(204);
   },
 
   async deleteOne(req: Request, res: Response) {
@@ -67,6 +67,6 @@ export const privateEquipmentController = {
     const repo = new EquipmentRepo();
     await repo.deleteOne({equipment_id, owner_id});
 
-    return res.send({message: 'Equipment deleted.'});
+    return res.status(204);
   }
 };

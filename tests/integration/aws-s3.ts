@@ -9,7 +9,7 @@ import request from 'supertest';
 import { server } from './index.test.js';
 
 export function AwsS3Tests() {
-  describe('POST /v1/signed-url', () => {
+  describe('POST /v1/private-uploads', () => {
     const mock = mockClient(S3Client);
 
     it('handles success', async () => {

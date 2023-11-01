@@ -1,7 +1,7 @@
 import { createPool } from 'mysql2/promise';
 
 import { testConfig }     from '../../src/connections/mysql.js';
-import { seedEquipment }  from '../common/equipment.js';
+import { seedEquipment }  from './equipment/seed.js';
 import { seedIngredient } from '../common/ingredient.js';
 import { seedRecipe }     from '../common/recipe.js';
 import { seedUser }       from '../common/user.js';
