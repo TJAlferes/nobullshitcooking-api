@@ -4,7 +4,7 @@ import { NOBSC_USER_ID, UNKNOWN_USER_ID } from '../shared/model.js';
 import { MySQLRepo }                      from '../shared/MySQL.js';
 
 export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
-  async viewOne(params: ViewOneParams) {
+  async viewOne(image_id: string) {
     const sql = `
       SELECT
         image_id,
@@ -13,9 +13,9 @@ export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
         author_id,
         owner_id
       FROM image
-      WHERE owner_id = :owner_id AND image_id = :image_id
+      WHERE image_id = :image_id
     `;
-    const [ [ row ] ] = await this.pool.execute<ImageView[]>(sql, params);
+    const [ [ row ] ] = await this.pool.execute<ImageView[]>(sql, image_id);
     return row;
   }
 
@@ -105,7 +105,7 @@ export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
 }
 
 export interface ImageRepoInterface {
-  viewOne:        (params: ViewOneParams) =>        Promise<ImageView>;
+  viewOne:        (image_id: string) =>             Promise<ImageView>;
   bulkInsert:     (params: BulkInsertParams) =>     Promise<void>;
   insert:         (params: InsertParams) =>         Promise<void>;
   update:         (params: UpdateParams) =>         Promise<void>;
@@ -143,9 +143,7 @@ type UnattributeOneParams = {
   author_id: string;
 };
 
-type ViewOneParams = {
+type DeleteOneParams = {
   image_id: string;
   owner_id: string;
 };
-
-type DeleteOneParams = ViewOneParams;

@@ -20,9 +20,9 @@ export const privateEquipmentController = {
     const owner_id  = req.session.user_id!;
 
     const repo = new EquipmentRepo();
-    const rows = await repo.viewAll(owner_id);
+    const equipment = await repo.viewAll(owner_id);
 
-    return res.send(rows);
+    return res.json(equipment);
   },
 
   async viewOne(req: Request, res: Response) {
@@ -30,9 +30,11 @@ export const privateEquipmentController = {
     const owner_id     = req.session.user_id!;
 
     const repo = new EquipmentRepo();
-    const row = await repo.viewOne({equipment_id, owner_id});
+    const equipment = await repo.viewOne(equipment_id);
+    if (!equipment) throw NotFoundException();
+    if (owner_id !== equipment.owner_id) throw UnauthorizedException();
 
-    return res.send(row);
+    return res.json(equipment);
   },
 
   async create(req: Request, res: Response) {
@@ -82,12 +84,12 @@ export const privateEquipmentController = {
     const owner_id          = req.session.user_id!;
 
     const equipmentRepo = new EquipmentRepo();
-    const equipment = await equipmentRepo.viewOne({owner_id, equipment_id});
+    const equipment = await equipmentRepo.viewOne(equipment_id);
     if (!equipment) throw NotFoundException();
     if (owner_id !== equipment.owner_id) throw UnauthorizedException();
 
     const imageRepo = new ImageRepo();
-    const image = await imageRepo.viewOne({owner_id, image_id: equipment.image_id});
+    const image = await imageRepo.viewOne(equipment.image_id);
     if (!image) throw NotFoundException();
     if (owner_id !== image.owner_id) throw UnauthorizedException();
 
@@ -118,12 +120,12 @@ export const privateEquipmentController = {
     const owner_id     = req.session.user_id!;
 
     const equipmentRepo = new EquipmentRepo();
-    const equipment = await equipmentRepo.viewOne({owner_id, equipment_id});
+    const equipment = await equipmentRepo.viewOne(equipment_id);
     if (!equipment) throw NotFoundException();
     if (equipment.owner_id !== owner_id) throw UnauthorizedException();
 
     const imageRepo = new ImageRepo();
-    const image = await imageRepo.viewOne({owner_id, image_id: equipment.image_id});
+    const image = await imageRepo.viewOne(equipment.image_id);
     if (!image) throw NotFoundException();
     if (image.owner_id !== owner_id) throw UnauthorizedException();
 
@@ -136,7 +138,7 @@ export const privateEquipmentController = {
       `
     }));
 
-    await equipmentRepo.deleteOne({equipment_id, owner_id});
+    await equipmentRepo.deleteOne(equipment_id);
 
     return res.status(204);
   }

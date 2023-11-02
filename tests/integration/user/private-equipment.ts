@@ -99,7 +99,7 @@ export function privateEquipmentTests() {
       const res = await agent
         .delete('/users/FakeUser1/private-equipment/018b5ade-5440-7d0e-b42d-f262d9f0b6fd');
 
-      expect(res.status).toBe(403); 
+      expect(res.status).toBe(403);
     });
 
     it('handles success', async () => {
