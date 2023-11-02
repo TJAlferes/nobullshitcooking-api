@@ -139,7 +139,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
     return rows;
   }
 
-  async viewOne(params: ViewOneParams) {
+  async viewOne(ingredient_id: string) {
     const sql = `
       SELECT
         i.ingredient_id,
@@ -162,9 +162,9 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
       INNER JOIN ingredient_type t     ON i.ingredient_type_id = t.ingredient_type_id
       INNER JOIN ingredient_alt_name n ON i.ingredient_id      = n.ingredient_id
       INNER JOIN image m               ON i.image_id           = m.image_id
-      WHERE i.owner_id = :owner_id AND i.ingredient_id = :ingredient_id
+      WHERE i.ingredient_id = :ingredient_id
     `;
-    const [ [ row ] ] = await this.pool.execute<IngredientView[]>(sql, params);
+    const [ [ row ] ] = await this.pool.execute<IngredientView[]>(sql, ingredient_id);
     return row;
   }
 
@@ -251,12 +251,17 @@ export interface IngredientRepoInterface {
   search:      (searchRequest: SearchRequest) => Promise<SearchResponse>;
   hasPrivate:  (ingredient_ids: string[]) =>     Promise<boolean>;
   viewAll:     (owner_id: string) =>             Promise<IngredientView[]>;
-  viewOne:     (params: ViewOneParams) =>        Promise<IngredientView>;
+  viewOne:     (ingredient_id: string) =>        Promise<IngredientView>;
   insert:      (params: InsertParams) =>         Promise<void>;
   update:      (params: InsertParams) =>         Promise<void>;
   deleteAll:   (owner_id: string) =>             Promise<void>;
   deleteOne:   (params: DeleteOneParams) =>      Promise<void>;
 }
+
+type IngredientSuggestionView = RowDataPacket & {
+  ingredient_id: string;
+  text:          string;
+};
 
 type IngredientView = RowDataPacket & {
   ingredient_id:        string;
@@ -269,11 +274,6 @@ type IngredientView = RowDataPacket & {
   fullname:             string;
   notes:                string;
   image_filename:       string;
-};
-
-type IngredientSuggestionView = RowDataPacket & {
-  ingredient_id: string;
-  text:          string;
 };
 
 type InsertParams = {
@@ -289,9 +289,7 @@ type InsertParams = {
 
 type UpdateParams = InsertParams;
 
-type ViewOneParams = {
+type DeleteOneParams = {
   owner_id:      string;
   ingredient_id: string;
 };
-
-type DeleteOneParams = ViewOneParams;

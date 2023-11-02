@@ -1,14 +1,14 @@
 import { Router } from 'express';
 import { body, param } from 'express-validator';
 
-import { catchExceptions, userIsAuth }               from '../../../utils/index.js';
-import { privateIngredientController as controller } from './controller.js';
+import { catchExceptions, userIsAuth } from '../../../utils/index.js';
+import { privateIngredientsController as controller } from './controller.js';
 
 const router = Router();
 
 // for /users/:username/private-ingredients
 
-export function privateIngredientRouter() {
+export function privateIngredientsRouter() {
   const ingredientInfo = [
     'ingredient_type_id',
     'ingredient_brand',
@@ -16,7 +16,8 @@ export function privateIngredientRouter() {
     'ingredient_name',
     'alt_names.*',
     'notes',
-    'image_id'
+    'image_filename',
+    'caption'
   ];
 
   router.get(
@@ -42,7 +43,7 @@ export function privateIngredientRouter() {
   router.patch(
     '/',
     userIsAuth,
-    sanitizeBody(['ingredient_id', ...ingredientInfo]),
+    sanitizeBody(['ingredient_id', 'image_id', ...ingredientInfo]),
     catchExceptions(controller.update)
   );
 

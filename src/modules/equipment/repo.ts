@@ -242,6 +242,6 @@ type InsertParams = {
 type UpdateParams = InsertParams;
 
 type DeleteOneParams = {
-  equipment_id: string;
   owner_id: string;
+  equipment_id: string;
 };

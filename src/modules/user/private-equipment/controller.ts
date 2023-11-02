@@ -1,11 +1,11 @@
 import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import type { Request, Response } from 'express';
 
+import { ForbiddenException, NotFoundException } from '../../../utils/exceptions.js';
 import { Equipment } from '../../equipment/model.js';
 import { EquipmentRepo } from '../../equipment/repo.js';
-import { ImageRepo } from '../../image/repo.js';
-import { NotFoundException, UnauthorizedException } from '../../../utils/exceptions.js';
 import { Image } from '../../image/model.js';
+import { ImageRepo } from '../../image/repo.js';
 
 const s3 = new S3Client({
   credentials: {
@@ -32,7 +32,7 @@ export const privateEquipmentController = {
     const repo = new EquipmentRepo();
     const equipment = await repo.viewOne(equipment_id);
     if (!equipment) throw NotFoundException();
-    if (owner_id !== equipment.owner_id) throw UnauthorizedException();
+    if (owner_id !== equipment.owner_id) throw ForbiddenException();
 
     return res.json(equipment);
   },
@@ -48,16 +48,15 @@ export const privateEquipmentController = {
     const author_id         = req.session.user_id!;
     const owner_id          = req.session.user_id!;
 
-    const imageRepo = new ImageRepo();
     const image = Image.create({
       image_filename,
       caption,
       author_id,
       owner_id
     }).getDTO();
+    const imageRepo = new ImageRepo();
     await imageRepo.insert(image);
 
-    const equipmentRepo = new EquipmentRepo();
     const equipment = Equipment.create({
       equipment_type_id,
       owner_id,
@@ -65,6 +64,7 @@ export const privateEquipmentController = {
       notes,
       image_id: image.image_id
     }).getDTO();
+    const equipmentRepo = new EquipmentRepo();
     await equipmentRepo.insert(equipment);
     
     return res.status(201);
@@ -86,12 +86,12 @@ export const privateEquipmentController = {
     const equipmentRepo = new EquipmentRepo();
     const equipment = await equipmentRepo.viewOne(equipment_id);
     if (!equipment) throw NotFoundException();
-    if (owner_id !== equipment.owner_id) throw UnauthorizedException();
+    if (owner_id !== equipment.owner_id) throw ForbiddenException();
 
     const imageRepo = new ImageRepo();
     const image = await imageRepo.viewOne(equipment.image_id);
     if (!image) throw NotFoundException();
-    if (owner_id !== image.owner_id) throw UnauthorizedException();
+    if (owner_id !== image.owner_id) throw ForbiddenException();
 
     const updated_image = Image.update({
       image_id,
@@ -122,12 +122,12 @@ export const privateEquipmentController = {
     const equipmentRepo = new EquipmentRepo();
     const equipment = await equipmentRepo.viewOne(equipment_id);
     if (!equipment) throw NotFoundException();
-    if (equipment.owner_id !== owner_id) throw UnauthorizedException();
+    if (equipment.owner_id !== owner_id) throw ForbiddenException();
 
     const imageRepo = new ImageRepo();
     const image = await imageRepo.viewOne(equipment.image_id);
     if (!image) throw NotFoundException();
-    if (image.owner_id !== owner_id) throw UnauthorizedException();
+    if (image.owner_id !== owner_id) throw ForbiddenException();
 
     await s3.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',
@@ -138,7 +138,7 @@ export const privateEquipmentController = {
       `
     }));
 
-    await equipmentRepo.deleteOne(equipment_id);
+    await equipmentRepo.deleteOne({equipment_id, owner_id});
 
     return res.status(204);
   }

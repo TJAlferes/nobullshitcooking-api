@@ -27,7 +27,7 @@ export function privateEquipmentTests() {
         .post('/users/FakeUser1/private-equipment')
         .send({
           equipment_type_id: 4,
-          equipment_name: "Equipment Name",
+          equipment_name: "Name",
           notes: "Notes...",
           image_filename: "default",
           caption: ""
@@ -54,7 +54,7 @@ export function privateEquipmentTests() {
       expect(res.status).toBe(404);
     });
 
-    it('handles unauthorized', async () => {
+    it('handles forbidden', async () => {
       const res = await agent
         .patch('/users/FakeUser1/private-equipment')
         .send({
@@ -95,7 +95,7 @@ export function privateEquipmentTests() {
       expect(res.status).toBe(404); 
     });
 
-    it('handles unauthorized ', async () => {
+    it('handles forbidden', async () => {
       const res = await agent
         .delete('/users/FakeUser1/private-equipment/018b5ade-5440-7d0e-b42d-f262d9f0b6fd');
 
