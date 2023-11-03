@@ -2,13 +2,13 @@ import { Router } from 'express';
 import { body, param } from 'express-validator';
 
 import { catchExceptions, userIsAuth } from '../../../utils/index.js';
-import { privateIngredientsController as controller } from './controller.js';
+import { privateIngredientController as controller } from './controller.js';
 
 const router = Router();
 
 // for /users/:username/private-ingredients
 
-export function privateIngredientsRouter() {
+export function privateIngredientRouter() {
   const ingredientInfo = [
     'ingredient_type_id',
     'ingredient_brand',

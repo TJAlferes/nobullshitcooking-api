@@ -1,5 +1,8 @@
+import { DeleteObjectCommand } from '@aws-sdk/client-s3';
 import type { Request, Response } from 'express';
 
+import { ForbiddenException, NotFoundException} from '../../../utils/exceptions.js';
+import { AwsS3PrivateUploadsClient } from '../../aws-s3/private-uploads/client.js';
 import { ImageRepo }               from '../../image/repo.js';
 import { RecipeImageRepo }         from '../../recipe/image/repo.js';
 import { RecipeImageService }      from '../../recipe/image/service.js';
@@ -20,9 +23,9 @@ export const privateRecipeController = {
     const owner_id  = req.session.user_id!;
 
     const repo = new RecipeRepo();
-    const rows = await repo.overviewAll({author_id, owner_id});
+    const recipes = await repo.overviewAll({author_id, owner_id});
 
-    return res.json(rows);
+    return res.json(recipes);
   },
 
   async viewOne(req: Request, res: Response) {
@@ -31,9 +34,12 @@ export const privateRecipeController = {
     const owner_id  = req.session.user_id!;
 
     const repo = new RecipeRepo();
-    const row = await repo.viewOneByRecipeId({recipe_id, author_id, owner_id});
+    const recipe = await repo.viewOneByRecipeId(recipe_id);
+    if (!recipe) throw NotFoundException();
+    if (author_id !== recipe.author_id) throw ForbiddenException();
+    if (owner_id !== recipe.owner_id) throw ForbiddenException();
     
-    return res.json(row);
+    return res.json(recipe);
   },
 
   async edit(req: Request, res: Response) {
@@ -136,7 +142,12 @@ export const privateRecipeController = {
     const owner_id       = req.session.user_id!;
 
     const recipeRepo = new RecipeRepo();
-    const recipe = Recipe.update({
+    const recipe = await recipeRepo.viewOneByRecipeId(recipe_id);
+    if (!recipe) throw NotFoundException();
+    if (author_id !== recipe.author_id) throw ForbiddenException();
+    if (owner_id !== recipe.owner_id) throw ForbiddenException();
+
+    const updated_recipe = Recipe.update({
       recipe_id,
       recipe_type_id,
       cuisine_id,
@@ -148,7 +159,7 @@ export const privateRecipeController = {
       total_time,
       directions
     }).getDTO();
-    await recipeRepo.update(recipe);
+    await recipeRepo.update(updated_recipe);
 
     const recipeMethodService = new RecipeMethodService(new RecipeMethodRepo());
     await recipeMethodService.bulkUpdate(required_methods);
@@ -186,6 +197,35 @@ export const privateRecipeController = {
     const owner_id = req.session.user_id!;
 
     const recipeRepo = new RecipeRepo();
+    const recipe = await recipeRepo.viewOneByRecipeId(recipe_id);
+    if (!recipe) throw NotFoundException();
+    if (owner_id !== recipe.owner_id) throw ForbiddenException();
+
+    const imageRepo = new ImageRepo();
+
+    /*
+    TO DO: delete from s3, image table, and recipe table
+    (ON DELETE CASCADE will handle recipe_image, recipe_ingredient, etc.)
+    TO DO: all 4 images AND all sizes
+    "recipe",
+    "recipe-cooking",
+    "recipe-equipment",
+    "recipe-ingredients"
+    */
+    const image = await imageRepo.viewOne(recipe.image_id);
+    if (!image) throw NotFoundException();
+    if (owner_id !== image.owner_id) throw ForbiddenException();
+
+    await AwsS3PrivateUploadsClient.send(new DeleteObjectCommand({
+      Bucket: 'nobsc-private-uploads',
+      Key: `
+        nobsc-private-uploads/recipe
+        /${owner_id}
+        /${recipe.images. image_filename}
+      `
+    }));
+    //
+
     await recipeRepo.deleteOne({owner_id, recipe_id});
 
     return res.status(204);

@@ -1,23 +1,16 @@
-import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand } from '@aws-sdk/client-s3';
 import type { Request, Response } from 'express';
 
 import { ForbiddenException, NotFoundException} from '../../../utils/exceptions.js';
+import { AwsS3PrivateUploadsClient } from '../../aws-s3/private-uploads/client.js';
 import { Image } from '../../image/model.js';
 import { ImageRepo } from '../../image/repo.js';
-import { IngredientAltNameRepo }    from '../../ingredient/alt-name/repo.js';
+import { IngredientAltNameRepo } from '../../ingredient/alt-name/repo.js';
 import { IngredientAltNameService } from '../../ingredient/alt-name/service.js';
-import { Ingredient }               from '../../ingredient/model.js';
-import { IngredientRepo }           from '../../ingredient/repo.js';
+import { Ingredient } from '../../ingredient/model.js';
+import { IngredientRepo } from '../../ingredient/repo.js';
 
-const s3 = new S3Client({
-  credentials: {
-    accessKeyId:     process.env.AWS_S3_PRIVATE_UPLOADS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_S3_PRIVATE_UPLOADS_SECRET_ACCESS_KEY!
-  }, 
-  region: "us-east-1"
-});
-
-export const privateIngredientsController = {
+export const privateIngredientController = {
   async viewAll(req: Request, res: Response) {
     const owner_id  = req.session.user_id!;
 
@@ -28,8 +21,8 @@ export const privateIngredientsController = {
   },
 
   async viewOne(req: Request, res: Response) {
-    const ingredient_id = req.body.id;
-    const owner_id      = req.session.user_id!;
+    const { ingredient_id } = req.params;
+    const owner_id = req.session.user_id!;
 
     const repo = new IngredientRepo();
     const ingredient = await repo.viewOne(ingredient_id);
@@ -138,8 +131,8 @@ export const privateIngredientsController = {
   },
 
   async deleteOne(req: Request, res: Response) {
-    const ingredient_id = req.body.ingredient_id;
-    const owner_id      = req.session.user_id!;
+    const { ingredient_id } = req.params;
+    const owner_id = req.session.user_id!;
 
     const ingredientRepo = new IngredientRepo();
     const ingredient = await ingredientRepo.viewOne(ingredient_id);
@@ -151,7 +144,8 @@ export const privateIngredientsController = {
     if (!image) throw NotFoundException();
     if (owner_id !== image.owner_id) throw ForbiddenException();
 
-    await s3.send(new DeleteObjectCommand({
+    // TO DO: all sizes
+    await AwsS3PrivateUploadsClient.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',
       Key: `
         nobsc-private-uploads/ingredient
@@ -159,6 +153,8 @@ export const privateIngredientsController = {
         /${image.image_filename}
       `
     }));
+
+    // TO DO: await imageRepo.deleteOne
 
     await ingredientRepo.deleteOne({ingredient_id, owner_id});
     

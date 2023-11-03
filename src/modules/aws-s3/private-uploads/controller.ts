@@ -1,18 +1,11 @@
 import 'dotenv/config';
-import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Request, Response } from 'express';
 import { uuidv7 } from 'uuidv7';
 
 import { UnauthorizedException, ValidationException } from '../../../utils/exceptions.js';
-
-const s3 = new S3Client({
-  credentials: {
-    accessKeyId:     process.env.AWS_S3_PRIVATE_UPLOADS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_S3_PRIVATE_UPLOADS_SECRET_ACCESS_KEY!
-  }, 
-  region: "us-east-1"
-});
+import { AwsS3PrivateUploadsClient } from './client.js';
 
 export const AwsS3PrivateUploadsController = {
   // Allows users to upload their private images to AWS S3 directly from their browser,
@@ -64,7 +57,7 @@ export const AwsS3PrivateUploadsController = {
         throw ValidationException("Invalid subfolder.");
       }
   
-      const signature = await getSignedUrl(s3, new GetObjectCommand({
+      const signature = await getSignedUrl(AwsS3PrivateUploadsClient, new GetObjectCommand({
         Bucket: process.env.AWS_S3_PRIVATE_UPLOADS_BUCKET!,
         Key: `
           nobsc-private-uploads
@@ -90,7 +83,7 @@ export const AwsS3PrivateUploadsController = {
       throw ValidationException("Invalid subfolder.");
     }
   
-    const signature = await getSignedUrl(s3, new GetObjectCommand({
+    const signature = await getSignedUrl(AwsS3PrivateUploadsClient, new GetObjectCommand({
       Bucket: process.env.AWS_S3_PRIVATE_UPLOADS_BUCKET!,
       Key: `
         nobsc-private-uploads
@@ -105,7 +98,7 @@ export const AwsS3PrivateUploadsController = {
 };
 
 async function sign(objectKey: string, imageSize: string) {
-  const signature = await getSignedUrl(s3, new PutObjectCommand({
+  const signature = await getSignedUrl(AwsS3PrivateUploadsClient, new PutObjectCommand({
     Bucket: process.env.AWS_S3_PRIVATE_UPLOADS_BUCKET!,
     Key: `${objectKey}-${imageSize}`,
     ContentType: "image/jpeg"

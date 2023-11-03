@@ -1,19 +1,12 @@
-import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand } from '@aws-sdk/client-s3';
 import type { Request, Response } from 'express';
 
 import { ForbiddenException, NotFoundException } from '../../../utils/exceptions.js';
+import { AwsS3PrivateUploadsClient } from '../../aws-s3/private-uploads/client.js';
 import { Equipment } from '../../equipment/model.js';
 import { EquipmentRepo } from '../../equipment/repo.js';
 import { Image } from '../../image/model.js';
 import { ImageRepo } from '../../image/repo.js';
-
-const s3 = new S3Client({
-  credentials: {
-    accessKeyId:     process.env.AWS_S3_PRIVATE_UPLOADS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_S3_PRIVATE_UPLOADS_SECRET_ACCESS_KEY!
-  }, 
-  region: "us-east-1"
-});
 
 export const privateEquipmentController = {
   async viewAll(req: Request, res: Response) {
@@ -26,8 +19,8 @@ export const privateEquipmentController = {
   },
 
   async viewOne(req: Request, res: Response) {
-    const equipment_id = req.body.equipment_id;
-    const owner_id     = req.session.user_id!;
+    const { equipment_id } = req.params;
+    const owner_id = req.session.user_id!;
 
     const repo = new EquipmentRepo();
     const equipment = await repo.viewOne(equipment_id);
@@ -116,8 +109,8 @@ export const privateEquipmentController = {
   },
 
   async deleteOne(req: Request, res: Response) {
-    const equipment_id = req.body.equipment_id;
-    const owner_id     = req.session.user_id!;
+    const { equipment_id } = req.params;
+    const owner_id = req.session.user_id!;
 
     const equipmentRepo = new EquipmentRepo();
     const equipment = await equipmentRepo.viewOne(equipment_id);
@@ -129,7 +122,8 @@ export const privateEquipmentController = {
     if (!image) throw NotFoundException();
     if (image.owner_id !== owner_id) throw ForbiddenException();
 
-    await s3.send(new DeleteObjectCommand({
+    // TO DO: all sizes
+    await AwsS3PrivateUploadsClient.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',
       Key: `
         nobsc-private-uploads/equipment
@@ -137,6 +131,8 @@ export const privateEquipmentController = {
         /${image.image_filename}
       `
     }));
+
+    // TO DO: await imageRepo.deleteOne
 
     await equipmentRepo.deleteOne({equipment_id, owner_id});
 

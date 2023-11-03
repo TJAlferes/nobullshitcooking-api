@@ -21,10 +21,10 @@ export function privateIngredientsTests() {
     await agent.post('/v1/logout');
   });
 
-  describe('POST /users/FakeUser1/private-ingredients', () => {
+  describe('POST /v1/users/FakeUser1/private-ingredients', () => {
     it('handles success', async () => {
       const res = await agent
-        .post('/users/FakeUser1/private-ingredients')
+        .post('/v1/users/FakeUser1/private-ingredients')
         .send({
           ingredient_type_id: 4,
           ingredient_brand: "Brand",
@@ -40,10 +40,10 @@ export function privateIngredientsTests() {
     });
   });
 
-  describe('PATCH /users/FakeUser1/private-ingredients', () => {
+  describe('PATCH /v1/users/FakeUser1/private-ingredients', () => {
     it('handles not found', async () => {
       const res = await agent
-        .patch('/users/FakeUser1/private-ingredients')
+        .patch('/v1/users/FakeUser1/private-ingredients')
         .send({
           ingredient_id: "018b5ade-dc59-7dc9-92dz-3ff30123668z",
           ingredient_type_id: 4,
@@ -62,7 +62,7 @@ export function privateIngredientsTests() {
 
     it('handles forbidden', async () => {
       const res = await agent
-        .patch('/users/FakeUser1/private-ingredients')
+        .patch('/v1/users/FakeUser1/private-ingredients')
         .send({
           ingredient_id: "018b5ade-dc56-7dc1-92de-3ff30123668c",
           ingredient_type_id: 4,
@@ -81,7 +81,7 @@ export function privateIngredientsTests() {
 
     it('handles success', async () => {
       const res = await agent
-        .patch('/users/FakeUser1/private-ingredients')
+        .patch('/v1/users/FakeUser1/private-ingredients')
         .send({
           ingredient_id: "018b5ade-dc55-7dc0-92dd-3ff30123668b",
           ingredient_type_id: 4,
@@ -99,24 +99,24 @@ export function privateIngredientsTests() {
     });
   });
 
-  describe('DELETE /users/FakeUser1/private-ingredients', () => {
+  describe('DELETE /v1/users/FakeUser1/private-ingredients', () => {
     it('handles not found', async () => {
       const res = await agent
-        .delete('/users/FakeUser1/private-ingredients/018b5ade-dc59-7dc9-92dz-3ff30123668z');
+        .delete('/v1/users/FakeUser1/private-ingredients/018b5ade-dc59-7dc9-92dz-3ff30123668z');
 
       expect(res.status).toBe(404);
     });
 
     it('handles forbidden', async () => {
       const res = await agent
-        .delete('/users/FakeUser1/private-ingredients/018b5ade-dc56-7dc1-92de-3ff30123668c');
+        .delete('/v1/users/FakeUser1/private-ingredients/018b5ade-dc56-7dc1-92de-3ff30123668c');
 
       expect(res.status).toBe(403);
     });
 
     it('handles success', async () => {
       const res = await agent
-        .delete('/users/FakeUser1/private-ingredients/018b5ade-dc55-7dc0-92dd-3ff30123668b');
+        .delete('/v1/users/FakeUser1/private-ingredients/018b5ade-dc55-7dc0-92dd-3ff30123668b');
 
       expect(res.status).toBe(204);
     });

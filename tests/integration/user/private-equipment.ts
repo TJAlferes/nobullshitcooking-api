@@ -21,10 +21,10 @@ export function privateEquipmentTests() {
     await agent.post('/v1/logout');
   });
 
-  describe('POST /users/FakeUser1/private-equipment', () => {
+  describe('POST /v1/users/FakeUser1/private-equipment', () => {
     it('handles success', async () => {
       const res = await agent
-        .post('/users/FakeUser1/private-equipment')
+        .post('/v1/users/FakeUser1/private-equipment')
         .send({
           equipment_type_id: 4,
           equipment_name: "Name",
@@ -37,10 +37,10 @@ export function privateEquipmentTests() {
     });
   });
 
-  describe('PATCH /users/FakeUser1/private-equipment', () => {
+  describe('PATCH /v1/users/FakeUser1/private-equipment', () => {
     it('handles not found', async () => {
       const res = await agent
-        .patch('/users/FakeUser1/private-equipment')
+        .patch('/v1/users/FakeUser1/private-equipment')
         .send({
           equipment_id: "018b5ade-5449-7d0z-b42z-f262d9f0b6fz",
           equipment_type_id: 3,
@@ -56,7 +56,7 @@ export function privateEquipmentTests() {
 
     it('handles forbidden', async () => {
       const res = await agent
-        .patch('/users/FakeUser1/private-equipment')
+        .patch('/v1/users/FakeUser1/private-equipment')
         .send({
           equipment_id: "018b5ade-5440-7d0e-b42d-f262d9f0b6fd",
           equipment_type_id: 3,
@@ -72,7 +72,7 @@ export function privateEquipmentTests() {
 
     it('handles success', async () => {
       const res = await agent
-        .patch('/users/FakeUser1/private-equipment')
+        .patch('/v1/users/FakeUser1/private-equipment')
         .send({
           equipment_id: "018b5ade-5439-7d0d-b42c-f262d9f0b6fc",
           equipment_type_id: 3,
@@ -87,24 +87,24 @@ export function privateEquipmentTests() {
     });
   });
 
-  describe('DELETE /users/FakeUser1/private-equipment/:equipment_id', () => {
+  describe('DELETE /v1/users/FakeUser1/private-equipment/:equipment_id', () => {
     it('handles not found', async () => {
       const res = await agent
-        .delete('/users/FakeUser1/private-equipment/018b5ade-5449-7d0z-b42z-f262d9f0b6fz');
+        .delete('/v1/users/FakeUser1/private-equipment/018b5ade-5449-7d0z-b42z-f262d9f0b6fz');
 
       expect(res.status).toBe(404); 
     });
 
     it('handles forbidden', async () => {
       const res = await agent
-        .delete('/users/FakeUser1/private-equipment/018b5ade-5440-7d0e-b42d-f262d9f0b6fd');
+        .delete('/v1/users/FakeUser1/private-equipment/018b5ade-5440-7d0e-b42d-f262d9f0b6fd');
 
       expect(res.status).toBe(403);
     });
 
     it('handles success', async () => {
       const res = await agent
-        .delete('/users/FakeUser1/private-equipment/018b5ade-5439-7d0d-b42c-f262d9f0b6fc');
+        .delete('/v1/users/FakeUser1/private-equipment/018b5ade-5439-7d0d-b42c-f262d9f0b6fc');
 
       expect(res.status).toBe(204); 
     });

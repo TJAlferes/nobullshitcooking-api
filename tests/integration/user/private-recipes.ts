@@ -1,4 +1,5 @@
 import request from 'supertest';
+import type { SuperAgentTest } from 'supertest';
 
 import { server } from '../index.test.js';
 
@@ -18,24 +19,51 @@ const recipeInfo = {
 };
 
 export function privateRecipesTests() {
-  describe('POST /user/recipe/create', () => {
-    it('creates recipe', async () => {
-      const { body } = await request(server).post('/user/recipe/create').send({ownership: "public", ...recipeInfo});
-      expect(body).toEqual({message: 'Recipe created.'});
+  let agent: SuperAgentTest;
+
+  beforeEach(async () => {
+    agent = request.agent(server);
+
+    await agent
+      .post('/v1/login')
+      .send({
+        email: 'fakeuser1@gmail.com',
+        password: 'fakepassword'
+      });
+  });
+
+  afterEach(async () => {
+    await agent.post('/v1/logout');
+  });
+
+  describe('POST /v1/users/FakeUser1/private-recipes', () => {
+    it('handles success', async () => {
+      const res = await agent
+        .post('/v1/users/FakeUser1/private-recipes')
+        .send(recipeInfo);
+
+      expect(res.status).toBe(201);
     });
   });
 
-  describe('PUT /user/recipe/update', () => {
-    it('updates recipe', async () => {
-      const { body } = await request(server).put('/user/recipe/update').send({id: 88, ...recipeInfo});
-      expect(body).toEqual({message: 'Recipe updated.'});
+  describe('PUT /v1/users/FakeUser1/private-recipes', () => {
+    it('handles success', async () => {
+      const res = await agent
+        .put('/v1/users/FakeUser1/private-recipes')
+        .send({
+          recipe_id: 
+          ...recipeInfo
+        });
+
+      expect(res.status).toBe(204);
     });
   });
 
-  describe('DELETE /user/recipe/delete', () => {
-    it('deletes recipe', async () => {
-      const { body } = await request(server).delete('/user/recipe/delete').send({id: 88});
-      expect(body).toEqual({message: 'Recipe deleted.'});
+  describe('DELETE /v1/users/FakeUser1/private-recipes/:recipe_id', () => {
+    it('handles success', async () => {
+      const res = await agent
+        .delete('/v1/users/FakeUser1/private-recipes');
+      expect(res.status).toBe(204);
     });
   });
 }
