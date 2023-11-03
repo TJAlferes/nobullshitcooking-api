@@ -25,7 +25,7 @@ export const privateRecipeController = {
     const repo = new RecipeRepo();
     const recipes = await repo.overviewAll({author_id, owner_id});
 
-    return res.json(recipes);
+    return res.status(200).json(recipes);
   },
 
   async viewOne(req: Request, res: Response) {
@@ -39,7 +39,7 @@ export const privateRecipeController = {
     if (author_id !== recipe.author_id) throw ForbiddenException();
     if (owner_id !== recipe.owner_id) throw ForbiddenException();
     
-    return res.json(recipe);
+    return res.status(200).json(recipe);
   },
 
   async edit(req: Request, res: Response) {
@@ -48,9 +48,12 @@ export const privateRecipeController = {
     const owner_id  = req.session.user_id!;
 
     const repo = new RecipeRepo();
-    const row = await repo.viewExistingRecipeToEdit({recipe_id, author_id, owner_id});
+    const recipe = await repo.viewOneToEdit(recipe_id);
+    if (!recipe) throw NotFoundException();
+    if (author_id !== recipe.author_id) throw ForbiddenException();
+    if (owner_id !== recipe.owner_id) throw ForbiddenException();
 
-    return res.json(row);
+    return res.status(200).json(recipe);
   },
 
   async create(req: Request, res: Response) {
@@ -203,28 +206,73 @@ export const privateRecipeController = {
 
     const imageRepo = new ImageRepo();
 
-    /*
-    TO DO: delete from s3, image table, and recipe table
-    (ON DELETE CASCADE will handle recipe_image, recipe_ingredient, etc.)
-    TO DO: all 4 images AND all sizes
-    "recipe",
-    "recipe-cooking",
-    "recipe-equipment",
-    "recipe-ingredients"
-    */
-    const image = await imageRepo.viewOne(recipe.image_id);
-    if (!image) throw NotFoundException();
-    if (owner_id !== image.owner_id) throw ForbiddenException();
-
+    const recipe_image = await imageRepo.viewOne(recipe.recipe_image.image_id);
+    if (!recipe_image) throw NotFoundException();
+    if (owner_id !== recipe_image.owner_id) throw ForbiddenException();
     await AwsS3PrivateUploadsClient.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',
       Key: `
         nobsc-private-uploads/recipe
         /${owner_id}
-        /${recipe.images. image_filename}
+        /${recipe_image.image_filename}-medium
       `
     }));
-    //
+    await AwsS3PrivateUploadsClient.send(new DeleteObjectCommand({
+      Bucket: 'nobsc-private-uploads',
+      Key: `
+        nobsc-private-uploads/recipe
+        /${owner_id}
+        /${recipe_image.image_filename}-thumb
+      `
+    }));
+    await AwsS3PrivateUploadsClient.send(new DeleteObjectCommand({
+      Bucket: 'nobsc-private-uploads',
+      Key: `
+        nobsc-private-uploads/recipe
+        /${owner_id}
+        /${recipe_image.image_filename}-tiny
+      `
+    }));
+    await imageRepo.deleteOne({owner_id, image_id: recipe_image.image_id});
+
+    const cooking_image = await imageRepo.viewOne(recipe.cooking_image.image_id);
+    if (!cooking_image) throw NotFoundException();
+    if (owner_id !== cooking_image.owner_id) throw ForbiddenException();
+    await AwsS3PrivateUploadsClient.send(new DeleteObjectCommand({
+      Bucket: 'nobsc-private-uploads',
+      Key: `
+        nobsc-private-uploads/recipe-cooking
+        /${owner_id}
+        /${cooking_image.image_filename}-medium
+      `
+    }));
+    await imageRepo.deleteOne({owner_id, image_id: cooking_image.image_id});
+
+    const equipment_image = await imageRepo.viewOne(recipe.equipment_image.image_id);
+    if (!equipment_image) throw NotFoundException();
+    if (owner_id !== equipment_image.owner_id) throw ForbiddenException();
+    await AwsS3PrivateUploadsClient.send(new DeleteObjectCommand({
+      Bucket: 'nobsc-private-uploads',
+      Key: `
+        nobsc-private-uploads/recipe-equipment
+        /${owner_id}
+        /${equipment_image.image_filename}-medium
+      `
+    }));
+    await imageRepo.deleteOne({owner_id, image_id: equipment_image.image_id});
+
+    const ingredients_image = await imageRepo.viewOne(recipe.ingredients_image.image_id);
+    if (!ingredients_image) throw NotFoundException();
+    if (owner_id !== ingredients_image.owner_id) throw ForbiddenException();
+    await AwsS3PrivateUploadsClient.send(new DeleteObjectCommand({
+      Bucket: 'nobsc-private-uploads',
+      Key: `
+        nobsc-private-uploads/recipe-ingredients
+        /${owner_id}
+        /${ingredients_image.image_filename}-medium
+      `
+    }));
+    await imageRepo.deleteOne({owner_id, image_id: ingredients_image.image_id});
 
     await recipeRepo.deleteOne({owner_id, recipe_id});
 

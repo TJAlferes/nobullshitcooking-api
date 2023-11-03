@@ -168,21 +168,21 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
     return rows;
   }  // for logged in user
 
-  async viewOneByRecipeId(params: ViewOneByRecipeIdParams) {
-    const sql = `${recipeDetailViewSQL} AND r.recipe_id = ?`;
-    const [ [ row ] ] = await this.pool.execute<RecipeView[]>(sql, params);
+  async viewOneByRecipeId(recipe_id: string) {
+    const sql = `${recipeDetailViewSQL} r.recipe_id = ?`;
+    const [ [ row ] ] = await this.pool.execute<RecipeView[]>(sql, recipe_id);
     return row;
   }
 
-  async viewOneByTitle(params: ViewOneByTitleParams) {
-    const sql = `${recipeDetailViewSQL} AND r.title = ?`;
-    const [ [ row ] ] = await this.pool.execute<RecipeView[]>(sql, params);
+  async viewOneByTitle(title: string) {
+    const sql = `${recipeDetailViewSQL} r.title = ?`;
+    const [ [ row ] ] = await this.pool.execute<RecipeView[]>(sql, title);
     return row;
   }
 
-  async viewExistingRecipeToEdit(params: ViewExistingRecipeToEditParams) {
-    const sql = `${existingRecipeToEditViewSQL} AND r.recipe_id = ?`;
-    const [ [ row ] ] = await this.pool.execute<RecipeView[]>(sql, params);
+  async viewOneToEdit(recipe_id: string) {
+    const sql = `${existingRecipeToEditViewSQL} r.recipe_id = ?`;
+    const [ [ row ] ] = await this.pool.execute<RecipeView[]>(sql, recipe_id);
     return row;
   }
 
@@ -307,8 +307,9 @@ export interface RecipeRepoInterface {
   hasPrivate:            (recipe_ids: string[]) =>            Promise<boolean>;
   viewAllOfficialTitles: () =>                                Promise<TitleView[]>;
   overviewAll:           (params: OverviewAllParams) =>       Promise<(RecipeOverview & RowDataPacket)[]>;
-  viewOneByRecipeId:     (params: ViewOneByRecipeIdParams) => Promise<RecipeView>;
-  viewOneByTitle:        (params: ViewOneByTitleParams) =>    Promise<RecipeView>;
+  viewOneByRecipeId:     (recipe_id: string) =>               Promise<RecipeView>;
+  viewOneByTitle:        (title: string) =>                   Promise<RecipeView>;
+  viewOneToEdit:         (recipe_id: string) =>               Promise<EditRecipeView>;
   insert:                (params: InsertParams) =>            Promise<void>;
   update:                (params: UpdateParams) =>            Promise<void>;
   unattributeAll:        (author_id: string) =>               Promise<void>;
@@ -324,6 +325,11 @@ type RecipeSuggestionView = RowDataPacket & {
 
 type TitleView = RowDataPacket & {
   title: string;
+};
+
+type OverviewAllParams = {
+  author_id: string;
+  owner_id:  string;
 };
 
 export type RecipeOverview = {
@@ -351,7 +357,11 @@ export type RecipeView = RowDataPacket & {
   active_time:          string;
   total_time:           string;
   directions:           string;
-  images:               AssociatedImageView[];
+  //images:               AssociatedImageView[];
+  recipe_image:         AssociatedImageView;
+  cooking_image:        AssociatedImageView;
+  equipment_image:      AssociatedImageView;
+  ingredients_image:    AssociatedImageView;
   required_methods:     RequiredMethodView[];
   required_equipment:   RequiredEquipmentView[];
   required_ingredients: RequiredIngredientView[];
@@ -359,7 +369,7 @@ export type RecipeView = RowDataPacket & {
 };
 
 type AssociatedImageView = {
-  type:           number;
+  //type:           number;
   image_id:       string;
   image_filename: string;
   caption:        string;
@@ -396,24 +406,49 @@ type RequiredSubrecipeView = {
   subrecipe_title: string;
 };
 
-type OverviewAllParams = {
-  author_id: string;
-  owner_id:  string;
+type EditRecipeView = {
+  recipe_id:            string;
+  recipe_type_id:       number;
+  cuisine_id:           number;
+  title:                string;
+  description:          string;
+  active_time:          string;
+  total_time:           string;
+  directions:           string;
+  recipe_image:         AssociatedImageView;
+  cooking_image:        AssociatedImageView;
+  equipment_image:      AssociatedImageView;
+  ingredients_image:    AssociatedImageView;
+  required_methods:     EditRequiredMethodView[];
+  required_equipment:   EditRequiredEquipmentView[];
+  required_ingredients: EditRequiredIngredientView[];
+  required_subrecipes:  EditRequiredSubrecipeView[];
 };
 
-type ViewOneByRecipeIdParams = {
-  recipe_id: string;
-  author_id: string;
-  owner_id:  string;
+type EditRequiredMethodView = {
+  method_id:   number;
 };
 
-type ViewOneByTitleParams = {
-  title:     string;
-  author_id: string;
-  owner_id:  string;
+type EditRequiredEquipmentView = {
+  amount:            number | null;
+  equipment_id:      string;
+  equipment_type_id: number;
 };
 
-type ViewExistingRecipeToEditParams = ViewOneByRecipeIdParams;
+type EditRequiredIngredientView = {
+  amount:             number | null;
+  unit_id:            number | null;
+  ingredient_id:      string;
+  ingredient_type_id: number;
+};
+
+type EditRequiredSubrecipeView = {
+  amount:          number | null;
+  unit_id:         number | null;
+  subrecipe_id:    string;
+  recipe_type_id:  number;
+  cuisine_id:      number;
+};
 
 export type InsertParams = {
   recipe_id:      string;
@@ -458,25 +493,25 @@ const recipeDetailViewSQL = `
     r.total_time,
     r.directions,
     (
-      SELECT i.image_filename, i.caption
+      SELECT i.image_id, i.image_filename, i.caption
       FROM image i
       INNER JOIN recipe_image ri ON i.image_id = ri.image_id
       WHERE ri.recipe_id = r.recipe_id AND ri.type = 1
     ) AS recipe_image,
     (
-      SELECT i.image_filename, i.caption
+      SELECT i.image_id, i.image_filename, i.caption
       FROM image i
       INNER JOIN recipe_image ri ON i.image_id = ri.image_id
       WHERE ri.recipe_id = r.recipe_id AND ri.type = 2
     ) AS equipment_image,
     (
-      SELECT i.image_filename, i.caption
+      SELECT i.image_id, i.image_filename, i.caption
       FROM image i
       INNER JOIN recipe_image ri ON i.image_id = ri.image_id
       WHERE ri.recipe_id = r.recipe_id AND ri.type = 3
     ) AS ingredients_image,
     (
-      SELECT i.image_filename, i.caption
+      SELECT i.image_id, i.image_filename, i.caption
       FROM image i
       INNER JOIN recipe_image ri ON i.image_id = ri.image_id
       WHERE ri.recipe_id = r.recipe_id AND ri.type = 4
@@ -531,7 +566,7 @@ const recipeDetailViewSQL = `
   INNER JOIN user u         ON u.user_id = r.author_id
   INNER JOIN recipe_type rt ON rt.recipe_type_id = r.recipe_type_id
   INNER JOIN cuisine c      ON c.cuisine_id = r.cuisine_id
-  WHERE r.author_id = ? AND r.owner_id = ?
+  WHERE
 `;
 
 const existingRecipeToEditViewSQL = `
@@ -545,25 +580,25 @@ const existingRecipeToEditViewSQL = `
     r.total_time,
     r.directions,
     (
-      SELECT i.image_filename, i.caption
+      SELECT i.image_id, i.image_filename, i.caption
       FROM image i
       INNER JOIN recipe_image ri ON i.image_id = ri.image_id
       WHERE ri.recipe_id = r.recipe_id AND ri.type = 1
     ) AS recipe_image,
     (
-      SELECT i.image_filename, i.caption
+      SELECT i.image_id, i.image_filename, i.caption
       FROM image i
       INNER JOIN recipe_image ri ON i.image_id = ri.image_id
       WHERE ri.recipe_id = r.recipe_id AND ri.type = 2
     ) AS equipment_image,
     (
-      SELECT i.image_filename, i.caption
+      SELECT i.image_id, i.image_filename, i.caption
       FROM image i
       INNER JOIN recipe_image ri ON i.image_id = ri.image_id
       WHERE ri.recipe_id = r.recipe_id AND ri.type = 3
     ) AS ingredients_image,
     (
-      SELECT i.image_filename, i.caption
+      SELECT i.image_id, i.image_filename, i.caption
       FROM image i
       INNER JOIN recipe_image ri ON i.image_id = ri.image_id
       WHERE ri.recipe_id = r.recipe_id AND ri.type = 4
@@ -607,5 +642,5 @@ const existingRecipeToEditViewSQL = `
   INNER JOIN user u         ON u.user_id = r.author_id
   INNER JOIN recipe_type rt ON rt.recipe_type_id = r.recipe_type_id
   INNER JOIN cuisine c      ON c.cuisine_id = r.cuisine_id
-  WHERE r.author_id = ? AND r.owner_id = ?
+  WHERE
 `;

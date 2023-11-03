@@ -122,17 +122,24 @@ export const privateEquipmentController = {
     if (!image) throw NotFoundException();
     if (image.owner_id !== owner_id) throw ForbiddenException();
 
-    // TO DO: all sizes
     await AwsS3PrivateUploadsClient.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',
       Key: `
         nobsc-private-uploads/equipment
         /${owner_id}
-        /${image.image_filename}
+        /${image.image_filename}-small
+      `
+    }));
+    await AwsS3PrivateUploadsClient.send(new DeleteObjectCommand({
+      Bucket: 'nobsc-private-uploads',
+      Key: `
+        nobsc-private-uploads/equipment
+        /${owner_id}
+        /${image.image_filename}-tiny
       `
     }));
 
-    // TO DO: await imageRepo.deleteOne
+    await imageRepo.deleteOne({owner_id, image_id: image.image_id});
 
     await equipmentRepo.deleteOne({equipment_id, owner_id});
 

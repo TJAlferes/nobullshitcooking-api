@@ -9,9 +9,9 @@ import { production_recipe_methods } from '../../production/recipe/recipe-method
 import { test_images } from './images.js';
 import { test_recipes } from './recipes.js';
 import { test_recipe_images } from './recipe-images.js';
-import { test_recipe_equipment } from './recipe_equipment.js';
-import { test_recipe_ingredients } from './recipe_ingredients.js';
-import { test_recipe_methods } from './recipe_methods.js';
+import { test_recipe_equipment } from './recipe-equipment.js'
+import { test_recipe_ingredients } from './recipe-ingredients.js'
+import { test_recipe_methods } from './recipe-methods.js'
 
 const images = [...production_images, ...test_images ];
 const recipes = [...production_recipes, ...test_recipes ];

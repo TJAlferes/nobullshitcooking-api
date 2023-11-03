@@ -2,9 +2,9 @@ import { createPool } from 'mysql2/promise';
 
 import { testConfig }     from '../../src/connections/mysql.js';
 import { seedEquipment }  from './equipment/seed.js';
-import { seedIngredient } from '../common/ingredient.js';
-import { seedRecipe }     from '../common/recipe.js';
-import { seedUser }       from '../common/user.js';
+import { seedIngredient } from './ingredient/seed.js';
+import { seedRecipe }     from './recipe/seed.js';
+import { seedUser }       from './user/seed.js';
 
 // Runs between each integration test
 export async function seedTestDatabase() {
