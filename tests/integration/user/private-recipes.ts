@@ -66,10 +66,10 @@ export function privateRecipesTests() {
     });
   });
 
-  describe('PUT /v1/users/FakeUser1/private-recipes', () => {
+  describe('PATCH /v1/users/FakeUser1/private-recipes', () => {
     it('handles not found', async () => {
       const res = await agent
-        .put('/v1/users/FakeUser1/private-recipes')
+        .patch('/v1/users/FakeUser1/private-recipes')
         .send({
           recipe_id: "018b6942-6b2z-7949-8ab9-3509084cf00z",
           ...recipeInfo
@@ -80,7 +80,7 @@ export function privateRecipesTests() {
 
     it('handles forbidden', async () => {
       const res = await agent
-        .put('/v1/users/FakeUser1/private-recipes')
+        .patch('/v1/users/FakeUser1/private-recipes')
         .send({
           recipe_id: "018b6942-6b2g-7944-8ab7-3509084cf00f",
           ...recipeInfo
@@ -91,7 +91,7 @@ export function privateRecipesTests() {
 
     it('handles success', async () => {
       const res = await agent
-        .put('/v1/users/FakeUser1/private-recipes')
+        .patch('/v1/users/FakeUser1/private-recipes')
         .send({
           recipe_id: "018b6942-6b2f-7943-8ab6-3509084cf00e",
           ...recipeInfo

@@ -1,3 +1,4 @@
+import { ValidationException }      from "../../../utils/exceptions.js";
 import { Image }                    from "../../image/model.js";
 import { ImageRepoInterface }       from "../../image/repo.js";
 import { RecipeImage }              from "./model.js";
@@ -13,53 +14,54 @@ export class RecipeImageService {
   }
 
   async bulkCreate({ recipe_id, author_id, owner_id, uploaded_images }: BulkCreateParams) {
-    if (uploaded_images.length !== 4) throw new Error("Recipe must have 4 images.");
+    if (uploaded_images.length !== 4) throw ValidationException("Recipe must have 4 images.");
     
     const images: ImageDTO[] = [];
     const recipe_images: RecipeImageDTO[] = [];
-    uploaded_images.map(uploaded_image => {
-      // validate and create images
+
+    for (const uploaded_image of uploaded_images) {
       const image = Image.create({
         author_id,
         owner_id,
         image_filename: uploaded_image.image_filename,
         caption:        uploaded_image.caption
       }).getDTO();
+
       images.push(image);
-      // validate and create recipe_images
+
       const recipe_image = RecipeImage.create({
         recipe_id,
         image_id: image.image_id,
         type:     uploaded_image.type
       }).getDTO();
-      recipe_images.push(recipe_image);
-    });
 
-    // bulk insert images into image table
+      recipe_images.push(recipe_image);
+    }
+
     await this.imageRepo.bulkInsert({
       placeholders: '(?, ?, ?, ?, ?),(?, ?, ?, ?, ?),(?, ?, ?, ?, ?),(?, ?, ?, ?, ?)',
       images
     });
 
-    // bulk insert recipe_images into recipe_image table
     this.checkRecipeImagesTypes(recipe_images);
+
     await this.recipeImageRepo.bulkInsert({
       placeholders: '(?, ?, ?),(?, ?, ?),(?, ?, ?),(?, ?, ?)',
       recipe_images
     });
   }
 
-  // TO DO: this is all fucked up. you gotta thoroughly test this shit.
+  // TO DO: thoroughly test
   async bulkUpdate({ author_id, owner_id, uploaded_images }: BulkUpdateParams) {
-    if (uploaded_images.length !== 4) throw new Error("Recipe must have 4 images.");
+    if (uploaded_images.length !== 4) throw ValidationException("Recipe must have 4 images.");
 
     // imageRepo updates:
     // set image_filename to new AWS S3 name or reset to 'default'
     // set caption        to new caption     or reset to ''
 
     const images: ImageDTO[] = [];
-    uploaded_images.map(uploaded_image => {
-      // validate updated images
+
+    for (const uploaded_image of uploaded_images) {
       const image = Image.update({
         image_id: uploaded_image.image_id,
         author_id,
@@ -67,10 +69,10 @@ export class RecipeImageService {
         image_filename: uploaded_image.image_filename,  // can be updated
         caption:        uploaded_image.caption          // can be updated
       }).getDTO();
-      images.push(image);
-    });
 
-    // update images in image table
+      images.push(image);
+    }
+
     for (const image of images) {
       await this.imageRepo.update(image);
     }
@@ -87,19 +89,20 @@ export class RecipeImageService {
     // 1 image of a prepping/cooking detail/process/action
 
     if (recipe_images.length !== 4) {
-      throw new Error("Recipe must have 4 images.");
+      throw ValidationException("Recipe must have 4 images.");
     }
+
     if (!recipe_images.some(ai => ai.type === 1)) {
-      throw new Error("Missing recipe image.");
+      throw ValidationException("Missing recipe image.");
     }
     if (!recipe_images.some(ai => ai.type === 2)) {
-      throw new Error("Missing equipment image.");
+      throw ValidationException("Missing equipment image.");
     }
     if (!recipe_images.some(ai => ai.type === 3)) {
-      throw new Error("Missing ingredients image.");
+      throw ValidationException("Missing ingredients image.");
     }
     if (!recipe_images.some(ai => ai.type === 4)) {
-      throw new Error("Missing cooking image.");
+      throw ValidationException("Missing cooking image.");
     }
   }
 }
@@ -113,25 +116,22 @@ type BulkCreateParams = {
   recipe_id:       string;
   author_id:       string;
   owner_id:        string;
-  uploaded_images: ImageUpload[];
+  uploaded_images: ImageInfo[];
 };
 
 type BulkUpdateParams = {
   author_id:       string;
   owner_id:        string;
-  uploaded_images: ImageUpdateUpload[];
+  uploaded_images: ImageUpdateInfo[];
 };
 
-type ImageUpload = {
+type ImageInfo = {
   image_filename: string;
   caption:        string;
   type:           number;
-  medium:         null;  // TO DO: fix
-  thumb?:         null;  // TO DO: fix
-  tiny?:          null;  // TO DO: fix
 };
 
-type ImageUpdateUpload = ImageUpload & {
+type ImageUpdateInfo = ImageInfo & {
   image_id: string;
 };
 

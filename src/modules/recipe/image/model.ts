@@ -1,5 +1,6 @@
 import { assert, number } from 'superstruct';
 
+import { ValidationException } from '../../../utils/exceptions.js';
 import { UUIDv7StringId } from '../../shared/model.js';
 
 export class RecipeImage {
@@ -32,7 +33,7 @@ function RecipeImageType(type: number) {
   if (type === 2) return type;  // 1 image of required equipment image
   if (type === 3) return type;  // 1 image of required ingredients image
   if (type === 4) return type;  // 1 image of prepping/cooking detail/process/action
-  throw new Error("Invalid recipe image type.");
+  throw ValidationException("Invalid recipe image type.");
 }
 
 type CreateParams = {

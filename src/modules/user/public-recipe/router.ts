@@ -53,17 +53,17 @@ export function publicRecipeRouter() {
   );
 
   router.patch(
-    '/:recipe_id/unattribute',
-    userIsAuth,
-    sanitizeParams('recipe_id'),
-    catchExceptions(controller.unattributeOne)
-  );
-
-  router.patch(
-    '/update',
+    '/',
     userIsAuth,
     sanitizeBody(['recipe_id', ...recipe_upload]),
     catchExceptions(controller.update)
+  );
+
+  router.delete(
+    '/:recipe_id',
+    userIsAuth,
+    sanitizeParams('recipe_id'),
+    catchExceptions(controller.unattributeOne)
   );
 
   return router;

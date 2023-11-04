@@ -55,7 +55,7 @@ export function privateRecipeRouter() {
   );
 
   router.patch(
-    '/update',
+    '/',
     userIsAuth,
     sanitizeBody(['recipe_id', ...recipe_upload]),
     catchExceptions(controller.update)
