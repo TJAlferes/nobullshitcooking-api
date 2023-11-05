@@ -2,7 +2,7 @@ import { DeleteObjectCommand } from '@aws-sdk/client-s3';
 import type { Request, Response } from 'express';
 
 import { ForbiddenException, NotFoundException} from '../../../utils/exceptions.js';
-import { AwsS3PrivateUploadsClient } from '../../aws-s3/private-uploads/client.js';
+import { AwsS3PrivateUploadsClient as s3Client } from '../../aws-s3/private-uploads/client.js';
 import { ImageRepo }               from '../../image/repo.js';
 import { RecipeImageRepo }         from '../../recipe/image/repo.js';
 import { RecipeImageService }      from '../../recipe/image/service.js';
@@ -209,7 +209,7 @@ export const privateRecipeController = {
     const recipe_image = await imageRepo.viewOne(recipe.recipe_image.image_id);
     if (!recipe_image) throw NotFoundException();
     if (owner_id !== recipe_image.owner_id) throw ForbiddenException();
-    await AwsS3PrivateUploadsClient.send(new DeleteObjectCommand({
+    await s3Client.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',
       Key: `
         nobsc-private-uploads/recipe
@@ -217,7 +217,7 @@ export const privateRecipeController = {
         /${recipe_image.image_filename}-medium
       `
     }));
-    await AwsS3PrivateUploadsClient.send(new DeleteObjectCommand({
+    await s3Client.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',
       Key: `
         nobsc-private-uploads/recipe
@@ -225,7 +225,7 @@ export const privateRecipeController = {
         /${recipe_image.image_filename}-thumb
       `
     }));
-    await AwsS3PrivateUploadsClient.send(new DeleteObjectCommand({
+    await s3Client.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',
       Key: `
         nobsc-private-uploads/recipe
@@ -238,7 +238,7 @@ export const privateRecipeController = {
     const equipment_image = await imageRepo.viewOne(recipe.equipment_image.image_id);
     if (!equipment_image) throw NotFoundException();
     if (owner_id !== equipment_image.owner_id) throw ForbiddenException();
-    await AwsS3PrivateUploadsClient.send(new DeleteObjectCommand({
+    await s3Client.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',
       Key: `
         nobsc-private-uploads/recipe-equipment
@@ -251,7 +251,7 @@ export const privateRecipeController = {
     const ingredients_image = await imageRepo.viewOne(recipe.ingredients_image.image_id);
     if (!ingredients_image) throw NotFoundException();
     if (owner_id !== ingredients_image.owner_id) throw ForbiddenException();
-    await AwsS3PrivateUploadsClient.send(new DeleteObjectCommand({
+    await s3Client.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',
       Key: `
         nobsc-private-uploads/recipe-ingredients
@@ -264,7 +264,7 @@ export const privateRecipeController = {
     const cooking_image = await imageRepo.viewOne(recipe.cooking_image.image_id);
     if (!cooking_image) throw NotFoundException();
     if (owner_id !== cooking_image.owner_id) throw ForbiddenException();
-    await AwsS3PrivateUploadsClient.send(new DeleteObjectCommand({
+    await s3Client.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',
       Key: `
         nobsc-private-uploads/recipe-cooking

@@ -99,7 +99,7 @@ export function publicRecipesTests() {
   describe('GET /v1/users/FakeUser1/public-recipes/:recipe_id/edit', () => {
     it('handles success', async () => {
       const res = await agent
-        .get('/v1/users/FakeUser1/public-recipes/018b6942-6b2f-7943-8ab6-3509084cf00e/edit');
+        .get('/v1/users/FakeUser1/public-recipes/pubb6942-6b2f-7943-8ab6-3509084cf00e/edit');
 
       expect(res.status).toBe(200);
     });
@@ -108,7 +108,7 @@ export function publicRecipesTests() {
   describe('GET /v1/users/FakeUser1/public-recipes/:title', () => {
     it('handles success', async () => {
       const res = await agent
-        .get('/v1/users/FakeUser1/public-recipes/Some%20Title');
+        .get('/v1/users/FakeUser1/public-recipes/Public%20Grilled%20Chicken');
 
       expect(res.status).toBe(200);
     });
@@ -151,7 +151,7 @@ export function publicRecipesTests() {
       const res = await agent
         .patch('/v1/users/FakeUser1/public-recipes')
         .send({
-          recipe_id: "018b6942-6b2f-7943-8ab6-3509084cf00e",
+          recipe_id: "pubb6942-6b2f-7943-8ab6-3509084cf00e",
           ...recipe_update_upload
         });
 
@@ -176,7 +176,7 @@ export function publicRecipesTests() {
 
     it('handles success', async () => {
       const res = await agent
-        .delete('/v1/users/FakeUser1/public-recipes/018b6942-6b2f-7943-8ab6-3509084cf00e');
+        .delete('/v1/users/FakeUser1/public-recipes/pubb6942-6b2f-7943-8ab6-3509084cf00e');
 
       expect(res.status).toBe(204);
     });

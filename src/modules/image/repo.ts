@@ -25,7 +25,7 @@ export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
       VALUES ${placeholders}
     `;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, images);
-    if (!result) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async insert(params: InsertParams) {
@@ -34,7 +34,7 @@ export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
       VALUES (:image_id, :image_filename, :caption, :author_id, :owner_id)
     `;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
-    if (!result) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async update(params: UpdateParams) {
@@ -47,7 +47,7 @@ export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
       LIMIT 1
     `;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
-    if (!result) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async unattributeAll(author_id: string) {
@@ -66,7 +66,12 @@ export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
             author_id = :author_id
         AND owner_id  = :owner_id
     `;
-    await this.pool.execute(sql, {unknown_user_id, author_id, owner_id});
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, {
+      unknown_user_id,
+      author_id,
+      owner_id
+    });
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async unattributeOne({ author_id, image_id }: UnattributeOneParams) {
@@ -86,12 +91,19 @@ export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
         AND owner_id  = :owner_id
         AND image_id = :image_id
     `;
-    await this.pool.execute(sql, {unknown_user_id, author_id, owner_id, image_id});
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, {
+      unknown_user_id,
+      author_id,
+      owner_id,
+      image_id
+    });
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async deleteAll(owner_id: string) {
     const sql = `DELETE FROM image WHERE owner_id = ?`;
-    await this.pool.execute(sql, owner_id);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, owner_id);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async deleteOne({ owner_id, image_id }: DeleteOneParams) {
@@ -100,7 +112,8 @@ export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
       WHERE owner_id = ? AND image_id = ?
       LIMIT 1
     `;
-    await this.pool.execute(sql, [owner_id, image_id]);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [owner_id, image_id]);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }
 

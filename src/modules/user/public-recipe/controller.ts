@@ -1,8 +1,8 @@
-import { DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { CopyObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import type { Request, Response } from 'express';
 
 import { ForbiddenException, NotFoundException} from '../../../utils/exceptions.js';
-import { AwsS3PublicUploadsClient } from '../../aws-s3/public-uploads/client.js';
+import { AwsS3PublicUploadsClient as s3Client } from '../../aws-s3/public-uploads/client.js';
 import { EquipmentRepo }           from '../../equipment/repo.js';
 import { IngredientRepo }          from '../../ingredient/repo.js';
 import { ImageRepo }               from '../../image/repo.js';
@@ -246,86 +246,134 @@ export const publicRecipeController = {
     const recipe_image = await imageRepo.viewOne(recipe.recipe_image.image_id);
     if (!recipe_image) throw NotFoundException();
     if (author_id !== recipe_image.author_id) throw ForbiddenException();
-    // TO DO:
-    // before deleting an image,
-    // copy image,
-    // change owner_id to UNKNOWN_USER_ID,  (should it be author_id ???)
-    // upload to S3
-    await AwsS3PublicUploadsClient.send(new DeleteObjectCommand({
+
+    // TO DO: append jpg ???
+
+    // recipe_images
+    await s3Client.send(new CopyObjectCommand({
+      Bucket: 'nobsc-public-uploads',
+      CopySource: `
+        nobsc-public-uploads/recipe
+        /${author_id}
+        /${recipe_image.image_filename}-medium
+      `,
+      Key: `recipe/${UNKNOWN_USER_ID}/${recipe_image.image_filename}-medium`
+    }));
+    await s3Client.send(new DeleteObjectCommand({
       Bucket: 'nobsc-public-uploads',
       Key: `
         nobsc-public-uploads/recipe
-        /${owner_id}
+        /${author_id}
         /${recipe_image.image_filename}-medium
       `
     }));
-    await AwsS3PublicUploadsClient.send(new DeleteObjectCommand({
+    await s3Client.send(new CopyObjectCommand({
+      Bucket: 'nobsc-public-uploads',
+      CopySource: `
+        nobsc-public-uploads/recipe
+        /${author_id}
+        /${recipe_image.image_filename}-thumb
+      `,
+      Key: `recipe/${UNKNOWN_USER_ID}/${recipe_image.image_filename}-thumb`
+    }));
+    await s3Client.send(new DeleteObjectCommand({
       Bucket: 'nobsc-public-uploads',
       Key: `
         nobsc-public-uploads/recipe
-        /${owner_id}
+        /${author_id}
         /${recipe_image.image_filename}-thumb
       `
     }));
-    await AwsS3PublicUploadsClient.send(new DeleteObjectCommand({
+    await s3Client.send(new CopyObjectCommand({
+      Bucket: 'nobsc-public-uploads',
+      CopySource: `
+        nobsc-public-uploads/recipe
+        /${author_id}
+        /${recipe_image.image_filename}-tiny
+      `,
+      Key: `recipe/${UNKNOWN_USER_ID}/${recipe_image.image_filename}-tiny`
+    }));
+    await s3Client.send(new DeleteObjectCommand({
       Bucket: 'nobsc-public-uploads',
       Key: `
         nobsc-public-uploads/recipe
-        /${owner_id}
+        /${author_id}
         /${recipe_image.image_filename}-tiny
       `
     }));
-    await imageRepo.deleteOne({owner_id, image_id: recipe_image.image_id});
+    await imageRepo.unattributeOne({author_id, image_id: recipe_image.image_id});
 
+    // equipment images
     const equipment_image = await imageRepo.viewOne(recipe.equipment_image.image_id);
     if (!equipment_image) throw NotFoundException();
     if (author_id !== equipment_image.author_id) throw ForbiddenException();
-    await AwsS3PublicUploadsClient.send(new DeleteObjectCommand({
+    await s3Client.send(new CopyObjectCommand({
+      Bucket: 'nobsc-public-uploads',
+      CopySource: `
+        nobsc-public-uploads/recipe-
+        /${author_id}
+        /${equipment_image.image_filename}-medium
+      `,
+      Key: `recipe/${UNKNOWN_USER_ID}/${equipment_image.image_filename}-medium`
+    }));
+    await s3Client.send(new DeleteObjectCommand({
       Bucket: 'nobsc-public-uploads',
       Key: `
         nobsc-public-uploads/recipe-equipment
-        /${owner_id}
+        /${author_id}
         /${equipment_image.image_filename}-medium
       `
     }));
-    await imageRepo.deleteOne({owner_id, image_id: equipment_image.image_id});
+    await imageRepo.unattributeOne({author_id, image_id: equipment_image.image_id});
 
+    // ingredients images
     const ingredients_image = await imageRepo.viewOne(recipe.ingredients_image.image_id);
     if (!ingredients_image) throw NotFoundException();
     if (author_id !== ingredients_image.author_id) throw ForbiddenException();
-    await AwsS3PublicUploadsClient.send(new DeleteObjectCommand({
+    await s3Client.send(new CopyObjectCommand({
+      Bucket: 'nobsc-public-uploads',
+      CopySource: `
+        nobsc-public-uploads/recipe-ingredients
+        /${author_id}
+        /${ingredients_image.image_filename}-medium
+      `,
+      Key: `recipe/${UNKNOWN_USER_ID}/${ingredients_image.image_filename}-medium`
+    }));
+    await s3Client.send(new DeleteObjectCommand({
       Bucket: 'nobsc-public-uploads',
       Key: `
         nobsc-public-uploads/recipe-ingredients
-        /${owner_id}
+        /${author_id}
         /${ingredients_image.image_filename}-medium
       `
     }));
-    await imageRepo.deleteOne({owner_id, image_id: ingredients_image.image_id});
+    await imageRepo.unattributeOne({author_id, image_id: ingredients_image.image_id});
 
+    // cooking images
     const cooking_image = await imageRepo.viewOne(recipe.cooking_image.image_id);
     if (!cooking_image) throw NotFoundException();
     if (author_id !== cooking_image.author_id) throw ForbiddenException();
-    await AwsS3PublicUploadsClient.send(new DeleteObjectCommand({
+    await s3Client.send(new CopyObjectCommand({
+      Bucket: 'nobsc-public-uploads',
+      CopySource: `
+        nobsc-public-uploads/recipe-cooking
+        /${author_id}
+        /${cooking_image.image_filename}-medium
+      `,
+      Key: `recipe/${UNKNOWN_USER_ID}/${cooking_image.image_filename}-medium`
+    }));
+    await s3Client.send(new DeleteObjectCommand({
       Bucket: 'nobsc-public-uploads',
       Key: `
         nobsc-public-uploads/recipe-cooking
-        /${owner_id}
+        /${author_id}
         /${cooking_image.image_filename}-medium
       `
     }));
-    await imageRepo.deleteOne({owner_id, image_id: cooking_image.image_id});
+    await imageRepo.unattributeOne({author_id, image_id: cooking_image.image_id});
 
     await recipeRepo.unattributeOne({author_id, recipe_id});
 
     return res.status(204);
   }
 };
-
-// TO DO: move to shared
-//function unslugify(title: string) {
-//  return title
-//    .split('-')
-//    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-//    .join(' ');
-//}

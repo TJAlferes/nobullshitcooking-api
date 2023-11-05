@@ -1,3 +1,4 @@
+import { ValidationException } from "../../../utils/exceptions.js";
 import type {
   RequiredEquipment,
   RequiredIngredient,
@@ -35,21 +36,21 @@ export class PublicRecipeService {
       const equipment_ids = params.required_equipment.map(re => re.equipment_id);
       const hasPrivate = await this.equipmentRepo.hasPrivate(equipment_ids);
       if (hasPrivate) {
-        throw new Error('Public content may not contain private content.');
+        throw ValidationException('Public content may not contain private content.');
       }
     }
     if (params.required_ingredients.length > 0) {
       const ingredient_ids = params.required_ingredients.map(ri => ri.ingredient_id);
       const hasPrivate = await this.ingredientRepo.hasPrivate(ingredient_ids);
       if (hasPrivate) {
-        throw new Error('Public content may not contain private content.');
+        throw ValidationException('Public content may not contain private content.');
       }
     }
     if (params.required_subrecipes.length > 0) {
       const subrecipe_ids = params.required_subrecipes.map(rs => rs.subrecipe_id);
       const hasPrivate = await this.recipeRepo.hasPrivate(subrecipe_ids);
       if (hasPrivate) {
-        throw new Error('Public content may not contain private content.');
+        throw ValidationException('Public content may not contain private content.');
       }
     }
   }
