@@ -181,7 +181,7 @@ export const privateRecipeController = {
       recipeImageRepo: new RecipeImageRepo()
     });
     await recipeImageService.bulkUpdate({
-      //recipe_id: recipe.recipe_id,
+      //recipe_id,
       author_id,
       owner_id,
       uploaded_images: [
@@ -235,19 +235,6 @@ export const privateRecipeController = {
     }));
     await imageRepo.deleteOne({owner_id, image_id: recipe_image.image_id});
 
-    const cooking_image = await imageRepo.viewOne(recipe.cooking_image.image_id);
-    if (!cooking_image) throw NotFoundException();
-    if (owner_id !== cooking_image.owner_id) throw ForbiddenException();
-    await AwsS3PrivateUploadsClient.send(new DeleteObjectCommand({
-      Bucket: 'nobsc-private-uploads',
-      Key: `
-        nobsc-private-uploads/recipe-cooking
-        /${owner_id}
-        /${cooking_image.image_filename}-medium
-      `
-    }));
-    await imageRepo.deleteOne({owner_id, image_id: cooking_image.image_id});
-
     const equipment_image = await imageRepo.viewOne(recipe.equipment_image.image_id);
     if (!equipment_image) throw NotFoundException();
     if (owner_id !== equipment_image.owner_id) throw ForbiddenException();
@@ -273,6 +260,19 @@ export const privateRecipeController = {
       `
     }));
     await imageRepo.deleteOne({owner_id, image_id: ingredients_image.image_id});
+
+    const cooking_image = await imageRepo.viewOne(recipe.cooking_image.image_id);
+    if (!cooking_image) throw NotFoundException();
+    if (owner_id !== cooking_image.owner_id) throw ForbiddenException();
+    await AwsS3PrivateUploadsClient.send(new DeleteObjectCommand({
+      Bucket: 'nobsc-private-uploads',
+      Key: `
+        nobsc-private-uploads/recipe-cooking
+        /${owner_id}
+        /${cooking_image.image_filename}-medium
+      `
+    }));
+    await imageRepo.deleteOne({owner_id, image_id: cooking_image.image_id});
 
     await recipeRepo.deleteOne({owner_id, recipe_id});
 

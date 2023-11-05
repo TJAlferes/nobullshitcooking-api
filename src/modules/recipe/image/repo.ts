@@ -23,6 +23,7 @@ export class RecipeImageRepo extends MySQLRepo implements RecipeImageRepoInterfa
     if (!result) throw new Error('Query not successful.');
   }
 
+  // TO DO: if not needed, delete this code...
   //async bulkUpdate({ recipe_id, placeholders, recipe_images }: BulkUpdateParams) {
   //  // Rather than updating current values in the database, we delete them,
   //  // and if there are new values, we insert them.

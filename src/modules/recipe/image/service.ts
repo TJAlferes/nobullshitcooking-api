@@ -64,6 +64,8 @@ export class RecipeImageService {
     for (const uploaded_image of uploaded_images) {
       const curr_image = await this.imageRepo.viewOne(uploaded_image.image_id);
 
+      // If the current image is not the same as the uploaded image,
+      // delete the current image from AWS S3
       if (curr_image.image_filename !== uploaded_image.image_filename) {
         const s3Client = author_id === owner_id
           ? AwsS3PrivateUploadsClient
@@ -191,17 +193,14 @@ type BulkCreateParams = {
 type BulkUpdateParams = {
   author_id:       string;
   owner_id:        string;
-  uploaded_images: ImageUpdateInfo[];
+  uploaded_images: ImageInfo[];
 };
 
 type ImageInfo = {
+  image_id:       string;
   image_filename: string;
   caption:        string;
   type:           number;
-};
-
-type ImageUpdateInfo = ImageInfo & {
-  image_id: string;
 };
 
 type ImageDTO = {
