@@ -18,7 +18,7 @@ export const AwsS3PrivateUploadsController = {
     }
 
     const subfolder: Subfolder = req.body.subfolder;
-    const filename = uuidv7();  // ???
+    const filename = uuidv7();
     const objectKey = `nobsc-private-uploads/${subfolder}/${req.session.user_id}/${filename}`;
     
     if (subfolder === "recipe") {

@@ -1,7 +1,11 @@
-import { ValidationException }      from "../../../utils/exceptions.js";
-import { Image }                    from "../../image/model.js";
-import { ImageRepoInterface }       from "../../image/repo.js";
-import { RecipeImage }              from "./model.js";
+import { DeleteObjectCommand } from '@aws-sdk/client-s3';
+
+import { ValidationException } from "../../../utils/exceptions.js";
+import { AwsS3PrivateUploadsClient } from "../../aws-s3/private-uploads/client.js";
+import { AwsS3PublicUploadsClient } from "../../aws-s3/public-uploads/client.js";
+import { Image } from "../../image/model.js";
+import { ImageRepoInterface } from "../../image/repo.js";
+import { RecipeImage } from "./model.js";
 import { RecipeImageRepoInterface } from "./repo.js";
 
 export class RecipeImageService {
@@ -55,13 +59,78 @@ export class RecipeImageService {
   async bulkUpdate({ author_id, owner_id, uploaded_images }: BulkUpdateParams) {
     if (uploaded_images.length !== 4) throw ValidationException("Recipe must have 4 images.");
 
-    // imageRepo updates:
-    // set image_filename to new AWS S3 name or reset to 'default'
-    // set caption        to new caption     or reset to ''
-
     const images: ImageDTO[] = [];
 
     for (const uploaded_image of uploaded_images) {
+      const curr_image = await this.imageRepo.viewOne(uploaded_image.image_id);
+
+      if (curr_image.image_filename !== uploaded_image.image_filename) {
+        const s3Client = author_id === owner_id
+          ? AwsS3PrivateUploadsClient
+          : AwsS3PublicUploadsClient;
+        const ownership = author_id === owner_id ? "private" : "public";
+
+        if (uploaded_image.type === 1) {
+          await s3Client.send(new DeleteObjectCommand({
+            Bucket: `nobsc-${ownership}-uploads`,
+            Key: `
+              nobsc-${ownership}-uploads/recipe
+              /${author_id}
+              /${curr_image.image_filename}-medium
+            `
+          }));
+          await s3Client.send(new DeleteObjectCommand({
+            Bucket: `nobsc-${ownership}-uploads`,
+            Key: `
+              nobsc-${ownership}-uploads/recipe
+              /${author_id}
+              /${curr_image.image_filename}-thumb
+            `
+          }));
+          await s3Client.send(new DeleteObjectCommand({
+            Bucket: `nobsc-${ownership}-uploads`,
+            Key: `
+              nobsc-${ownership}-uploads/recipe
+              /${author_id}
+              /${curr_image.image_filename}-tiny
+            `
+          }));
+        }
+
+        if (uploaded_image.type === 2) {
+          await s3Client.send(new DeleteObjectCommand({
+            Bucket: `nobsc-${ownership}-uploads`,
+            Key: `
+              nobsc-${ownership}-uploads/recipe-equipment
+              /${author_id}
+              /${curr_image.image_filename}-medium
+            `
+          }));
+        }
+
+        if (uploaded_image.type === 3) {
+          await s3Client.send(new DeleteObjectCommand({
+            Bucket: `nobsc-${ownership}-uploads`,
+            Key: `
+              nobsc-${ownership}-uploads/recipe-ingredients
+              /${author_id}
+              /${curr_image.image_filename}-medium
+            `
+          }));
+        }
+
+        if (uploaded_image.type === 4) {
+          await s3Client.send(new DeleteObjectCommand({
+            Bucket: `nobsc-${ownership}-uploads`,
+            Key: `
+              nobsc-${ownership}-uploads/recipe-cooking
+              /${author_id}
+              /${curr_image.image_filename}-medium
+            `
+          }));
+        }
+      }
+
       const image = Image.update({
         image_id: uploaded_image.image_id,
         author_id,
