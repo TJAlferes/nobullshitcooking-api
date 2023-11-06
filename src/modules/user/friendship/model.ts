@@ -1,5 +1,6 @@
 import { assert, string } from 'superstruct';
 
+import { ValidationException } from '../../../utils/exceptions.js';
 import { UUIDv7StringId } from '../../shared/model.js';
 
 // problem: you're not expliciting defining valid state transitions in here,
@@ -37,7 +38,7 @@ export function FriendshipStatus(status: string) {
   ) {
     return status;
   }
-  throw new Error("Invalid friendship status.")
+  throw ValidationException("Invalid friendship status.")
 }
 
 type CreateParams = {

@@ -27,7 +27,6 @@ export const privatePlanController = {
     if (!plan) throw NotFoundException();
     if (plan.author_id !== author_id) throw ForbiddenException();
     if (plan.owner_id !== owner_id) throw ForbiddenException();
-    //
 
     return res.status(200).json(plan);
   },  // is this needed???

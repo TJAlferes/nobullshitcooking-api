@@ -1,4 +1,4 @@
-import { RowDataPacket } from 'mysql2/promise';
+import { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
 
 import { MySQLRepo } from '../../shared/MySQL.js';
 
@@ -15,14 +15,12 @@ import { MySQLRepo } from '../../shared/MySQL.js';
 // Now either user can unfriend (delete these records)
 
 
-
 // Blocking is represented by ONLY ONE record in the table:
 //
 //   user_id: 1, friend_id: 2, status: "blocked"
 //   Here, user 1 blocked user 2 (user 2 is blocked by user 1)
 
 // Only user 1 can unblock (delete this record)
-
 
 
 export class FriendshipRepo extends MySQLRepo implements FriendshipRepoInterface {
@@ -65,7 +63,12 @@ export class FriendshipRepo extends MySQLRepo implements FriendshipRepoInterface
       INSERT INTO friendship (user_id, friend_id, status)
       VALUES (?, ?, ?)
     `;
-    await this.pool.execute(sql, [user_id, friend_id, status]);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [
+      user_id,
+      friend_id,
+      status
+    ]);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async update({ user_id, friend_id, status }: UpdateParams) {
@@ -75,7 +78,12 @@ export class FriendshipRepo extends MySQLRepo implements FriendshipRepoInterface
       WHERE user_id = ? AND friend_id = ?
       LIMIT 1
     `;
-    await this.pool.execute(sql, [status, user_id, friend_id]);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [
+      status,
+      user_id,
+      friend_id
+    ]);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async delete({ user_id, friend_id }: DeleteParams) {
@@ -84,7 +92,8 @@ export class FriendshipRepo extends MySQLRepo implements FriendshipRepoInterface
       WHERE user_id = ? AND friend_id = ?
       LIMIT 1
     `;
-    await this.pool.execute(sql, [user_id, friend_id]);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [user_id, friend_id]);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }
 

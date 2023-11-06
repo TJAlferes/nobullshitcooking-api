@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express';
 
+import { ForbiddenException, NotFoundException } from '../../../utils/exceptions.js';
 import { RecipeRepo }        from '../../recipe/repo.js';
 import { NOBSC_USER_ID }     from '../../shared/model.js';
 import { PlanRecipeRepo }    from '../../plan/recipe/repo.js';
@@ -25,9 +26,12 @@ export const publicPlanController = {
     const owner_id  = NOBSC_USER_ID;
     
     const planRepo = new PlanRepo();
-    const row = await planRepo.viewOneByPlanId({plan_id, author_id, owner_id});
+    const plan = await planRepo.viewOneByPlanId(plan_id);
+    if (!plan) throw NotFoundException();
+    if (plan.author_id !== author_id) throw ForbiddenException();
+    if (plan.owner_id !== owner_id) throw ForbiddenException();
 
-    return res.json(row);
+    return res.status(200).json(plan);
   },
 
   async create(req: Request, res: Response) {
@@ -55,17 +59,21 @@ export const publicPlanController = {
     const author_id = req.session.user_id!;
     const owner_id  = NOBSC_USER_ID;
 
+    const planRepo = new PlanRepo();
+    const plan = await planRepo.viewOneByPlanId(plan_id);
+    if (!plan) throw NotFoundException();
+    if (plan.author_id !== author_id) throw ForbiddenException();
+    if (plan.owner_id !== owner_id) throw ForbiddenException();
+
     const recipeRepo = new RecipeRepo();
     const { checkForPrivateContent } = new PublicPlanService(recipeRepo);
     await checkForPrivateContent(included_recipes);  // important
 
-    const plan = Plan.update({plan_id, author_id, owner_id, plan_name}).getDTO();
-
-    const planRepo = new PlanRepo();
-    await planRepo.update(plan);
+    const updated_plan = Plan.update({plan_id, author_id, owner_id, plan_name}).getDTO();
+    await planRepo.update(updated_plan);
 
     const planRecipeService = new PlanRecipeService(new PlanRecipeRepo());
-    await planRecipeService.bulkUpdate({plan_id: plan.plan_id, included_recipes});
+    await planRecipeService.bulkUpdate({plan_id: updated_plan.plan_id, included_recipes});
 
     return res.status(204);
   },

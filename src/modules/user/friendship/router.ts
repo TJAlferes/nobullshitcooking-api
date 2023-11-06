@@ -6,7 +6,7 @@ import { friendshipController as controller } from './controller.js';
 
 const router = Router();
 
-// for /users/:username/friendships/:friendname
+// for /users/:username/friendships
 
 export function friendshipRouter() {
   router.get(
@@ -16,42 +16,42 @@ export function friendshipRouter() {
   );
   
   router.post(
-    '/create',
+    '/:friendname/create',
     userIsAuth,
     sanitizeParams('friendname'),
     catchExceptions(controller.create)
   );
   
-  router.put(
-    '/accept',
+  router.patch(
+    '/:friendname/accept',
     userIsAuth,
     sanitizeParams('friendname'),
     catchExceptions(controller.accept)
   );
   
-  router.put(
-    '/reject',
+  router.delete(
+    '/:friendname/reject',
     userIsAuth,
     sanitizeParams('friendname'),
     catchExceptions(controller.reject)
   );
   
   router.delete(
-    '/delete',
+    '/:friendname/delete',
     userIsAuth,
     sanitizeParams('friendname'),
     catchExceptions(controller.delete)
   );
   
   router.post(
-    '/block',
+    '/:friendname/block',
     userIsAuth,
     sanitizeParams('friendname'),
     catchExceptions(controller.block)
   );
   
   router.delete(
-    '/unblock',
+    '/:friendname/unblock',
     userIsAuth,
     sanitizeParams('friendname'),
     catchExceptions(controller.unblock)
