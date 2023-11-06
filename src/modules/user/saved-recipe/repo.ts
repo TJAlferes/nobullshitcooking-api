@@ -1,4 +1,4 @@
-import { RowDataPacket } from 'mysql2/promise';
+import { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
 
 import { MySQLRepo } from '../../shared/MySQL.js';
 
@@ -12,7 +12,7 @@ export class SavedRecipeRepo extends MySQLRepo implements ISavedRecipeRepo {
         r.owner_id,
         u.username AS author,
         r.title,
-        i.image_url
+        i.image_filename
       FROM saved_recipe s
       INNER JOIN recipe r ON r.recipe_id = s.recipe_id
       INNER JOIN user u   ON u.user_id = r.author_id
@@ -26,23 +26,34 @@ export class SavedRecipeRepo extends MySQLRepo implements ISavedRecipeRepo {
 
   async insert(params: InsertParams) {
     await this.delete(params);
-    const sql = `INSERT INTO saved_recipe (user_id, recipe_id) VALUES (:user_id, :recipe_id)`;
-    await this.pool.execute(sql, params);
+    const sql = `
+      INSERT INTO saved_recipe (user_id, recipe_id)
+      VALUES (:user_id, :recipe_id)
+    `;
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async delete(params: DeleteParams) {
-    const sql = `DELETE FROM saved_recipe WHERE user_id = :user_id AND recipe_id = :recipe_id LIMIT 1`;
-    await this.pool.execute(sql, params);
+    const sql = `
+      DELETE FROM saved_recipe
+      WHERE user_id = :user_id AND recipe_id = :recipe_id
+      LIMIT 1
+    `;
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async deleteAllByRecipeId(recipe_id: string) {
     const sql = `DELETE FROM saved_recipe WHERE recipe_id = ?`;
-    await this.pool.execute(sql, [recipe_id]);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [recipe_id]);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async deleteAllByUserId(user_id: string) {
     const sql = `DELETE FROM saved_recipe WHERE user_id = ?`;
-    await this.pool.execute(sql, [user_id]);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [user_id]);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }
 
@@ -61,7 +72,7 @@ type SavedRecipeView = RowDataPacket & {
   owner_id:       string;
   author:         string;
   title:          string;
-  image_url:      string;
+  image_filename: string;
 };
 
 type InsertParams = {

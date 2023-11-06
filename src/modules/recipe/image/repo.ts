@@ -20,7 +20,7 @@ export class RecipeImageRepo extends MySQLRepo implements RecipeImageRepoInterfa
       VALUES ${placeholders}
     `;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, recipe_images);
-    if (!result) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   // TO DO: if not needed, delete this code...

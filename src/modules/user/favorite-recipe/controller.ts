@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 
+import { ForbiddenException, NotFoundException} from '../../../utils/exceptions.js';
 import { NOBSC_USER_ID }      from '../../shared/model.js';
 import { RecipeRepo }         from '../../recipe/repo.js';
 import { FavoriteRecipe }     from './model.js';
@@ -11,31 +12,30 @@ export const userFavoriteRecipeController = {
     
     const favoriteRecipeRepo = new FavoriteRecipeRepo();
     const rows = await favoriteRecipeRepo.viewByUserId(user_id);
+
     return res.send(rows);
   },
 
   async create(req: Request, res: Response) {
     const { recipe_id } = req.params;
     const user_id   = req.session.user_id!;
-    const author_id = req.session.user_id!;
-    const owner_id  = NOBSC_USER_ID;
 
     const recipeRepo = new RecipeRepo();
-    const recipe = await recipeRepo.viewOneByRecipeId({recipe_id, author_id, owner_id});
-    if (!recipe) {
-      return res.send({message: 'Not Found'});
-    }
+    const recipe = await recipeRepo.viewOneByRecipeId(recipe_id);
+    if (!recipe) throw NotFoundException();
     if (recipe.author_id === user_id) {
-      return res.send({message: 'May not favorite own recipe.'});
+      throw ForbiddenException('May not favorite own recipe.');
     }
-    // TO DO: already favorited
+    if (recipe.owner_id !== NOBSC_USER_ID) {
+      throw ForbiddenException("May only favorite public recipes.");
+    }
 
     const favoriteRecipe = FavoriteRecipe.create({user_id, recipe_id}).getDTO();
 
-    const { insert } = new FavoriteRecipeRepo();
-    await insert(favoriteRecipe);
+    const favoriteRecipeRepo = new FavoriteRecipeRepo();
+    await favoriteRecipeRepo.insert(favoriteRecipe);
 
-    return res.send({message: 'Favorited.'});
+    return res.status(201);
   },
 
   async delete(req: Request, res: Response) {
@@ -47,6 +47,6 @@ export const userFavoriteRecipeController = {
     const repo = new FavoriteRecipeRepo();
     await repo.delete(favoriteRecipe);
 
-    return res.send({message: 'Unfavorited.'});
+    return res.status(204);
   }
 };

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 
+import { ForbiddenException, NotFoundException} from '../../../utils/exceptions.js';
 import { NOBSC_USER_ID }   from '../../shared/model.js';
 import { RecipeRepo }      from '../../recipe/repo.js';
 import { SavedRecipe }     from './model.js';
@@ -18,28 +19,26 @@ export const userSavedRecipeController = {
   async create(req: Request, res: Response) {
     const { recipe_id } = req.params;
     const user_id   = req.session.user_id!;
-    const author_id = req.session.user_id!;
-    const owner_id  = NOBSC_USER_ID;
 
     const recipeRepo = new RecipeRepo();
-    const recipe = await recipeRepo.viewOneByRecipeId({recipe_id, author_id, owner_id});
-    if (!recipe) {
-      return res.send({message: 'Not Found'});
-    }
+    const recipe = await recipeRepo.viewOneByRecipeId(recipe_id);
+    if (!recipe) throw NotFoundException();
     if (recipe.author_id === user_id) {
-      return res.send({message: `
+      throw ForbiddenException(`
         Your own recipes are saved when you create or update them.
-        Use this "Save" to bookmark official recipes and public recipes created by other users.
-      `});
+        Use this "Save" to bookmark official recipes and public user recipes.
+      `);
     }
-    // TO DO: already saved
+    if (recipe.owner_id !== NOBSC_USER_ID) {
+      throw ForbiddenException("May only save public recipes.");
+    }
 
     const savedRecipe = SavedRecipe.create({user_id, recipe_id}).getDTO();
 
-    const { insert } = new SavedRecipeRepo();
-    await insert(savedRecipe);
+    const savedRecipeRepo = new SavedRecipeRepo();
+    await savedRecipeRepo.insert(savedRecipe);
 
-    return res.send({message: 'Saved.'});
+    return res.status(201);
   },
 
   async delete(req: Request, res: Response) {
@@ -51,6 +50,6 @@ export const userSavedRecipeController = {
     const repo = new SavedRecipeRepo();
     await repo.delete(savedRecipe);
 
-    return res.send({message: 'Unsaved.'});
+    return res.status(204);
   }
 };
