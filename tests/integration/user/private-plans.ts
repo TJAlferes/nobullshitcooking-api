@@ -1,26 +1,105 @@
 import request from 'supertest';
+import type { SuperAgentTest } from 'supertest';
 
 import { server } from '../index.test.js';
 
 export function privatePlansTests() {
-  describe('POST /user/plan/create', () => {
-    it('creates plan', async () => {
-      const { body } = await request(server).post('/user/plan/create').send({name: "Name", data: {}});
-      expect(body).toEqual({message: 'Plan created.'});
+  let agent: SuperAgentTest;
+
+  beforeEach(async () => {
+    agent = request.agent(server);
+
+    await agent
+      .post('/v1/login')
+      .send({
+        email: 'fakeuser1@gmail.com',
+        password: 'fakepassword'
+      });
+  });
+
+  afterEach(async () => {
+    await agent.post('/v1/logout');
+  });
+
+  describe('POST /v1/users/FakeUser1/private-plans', () => {
+    it('handles success', async () => {
+      const res = await agent
+        .post('/v1/users/FakeUser1/private-plans')
+        .send({
+          plan_name: "Name",
+          included_recipes: [
+
+          ]
+        });
+      
+      expect(res.status).toBe(201);
     });
   });
 
-  describe('PUT /user/plan/update', () => {
-    it('updates plan', async () => {
-      const { body } = await request(server).put('/user/plan/update').send({id: 1, name: "Name", data: {}});
-      expect(body).toEqual({message: 'Plan updated.'});
+  describe('PATCH /v1/users/FakeUser1/private-plans', () => {
+    it('handles not found', async () => {
+      const res = await agent
+        .patch('/v1/users/FakeUser1/private-plans')
+        .send({
+          plan_id: "018b6942-973z-8y4z-0e4s-3509084crk2z",
+          plan_name: "Updated Name",
+          included_recipes: [
+            
+          ]
+        });
+      
+      expect(res.status).toBe(404);
+    });
+
+    it('handles forbidden', async () => {
+      const res = await agent
+        .patch('/v1/users/FakeUser1/private-plans')
+        .send({
+          plan_id: "018b6942-973w-8y4i-0e4s-3509084crk2b",
+          plan_name: "Updated Name",
+          included_recipes: [
+            
+          ]
+        });
+      
+      expect(res.status).toBe(403);
+    });
+
+    it('handles success', async () => {
+      const res = await agent
+        .patch('/v1/users/FakeUser1/private-plans')
+        .send({
+          plan_id: "018b6942-973v-8y4h-0e4r-3509084crk2a",
+          plan_name: "Updated Name",
+          included_recipes: [
+            
+          ]
+        });
+      
+      expect(res.status).toBe(204);
     });
   });
 
-  describe('DELETE /user/plan/delete', () => {
-    it('deletes plan', async () => {
-      const { body } = await request(server).delete('/user/plan/delete').send({id: 1});
-      expect(body).toEqual({message: 'Plan deleted.'});
+  describe('DELETE /v1/users/FakeUser1/private-plans', () => {
+    it('handles not found', async () => {
+      const res = await agent
+        .delete('/v1/users/FakeUser1/private-plans/018b6942-973z-8y4z-0e4s-3509084crk2z');
+      
+      expect(res.status).toBe(404);
+    });
+
+    it('handles forbidden', async () => {
+      const res = await agent
+        .delete('/v1/users/FakeUser1/private-plans/018b6942-973w-8y4i-0e4s-3509084crk2b');
+      
+      expect(res.status).toBe(403);
+    });
+
+    it('handles success', async () => {
+      const res = await agent
+        .delete('/v1/users/FakeUser1/private-plans/018b6942-973v-8y4h-0e4r-3509084crk2a');
+      
+      expect(res.status).toBe(204);
     });
   });
 }

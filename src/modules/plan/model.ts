@@ -1,5 +1,6 @@
 import { assert, string } from 'superstruct';
 
+import { ValidationException } from '../../utils/exceptions.js';
 import { GenerateUUIDv7StringId, UUIDv7StringId } from '../shared/model.js';
 
 export class Plan {
@@ -37,7 +38,7 @@ export class Plan {
 export function PlanName(name: string) {
   assert(name, string());
   if (name.length > 50) {
-    throw new Error("Plan name must be no more than 50 characters");
+    throw ValidationException("Plan name must be no more than 50 characters");
   }
   return name;
 }

@@ -4,16 +4,18 @@ import { MySQLRepo } from "../../shared/MySQL.js";
 
 export class PlanRecipeRepo extends MySQLRepo implements PlanRecipeRepoInterface {
   async viewByPlanId(plan_id: string) {
+    // TO DO: finish
     const sql = `
-      SELECT r.image_url, r.title
+      SELECT r.image_filename, r.title
       FROM plan_recipe pr
-      INNER JOIN recipe r ON r.recipe_id = dr.recipe_id
+      INNER JOIN recipe r ON r.recipe_id = pr.recipe_id
+      INNER JOIN recipe_image ri ON ri.recipe_id = pr.recipe_id
+      INNER JOIN image i 
       WHERE pr.plan_id = ?
-      ORDER BY pr.
     `;
     const [ rows ] = await this.pool.execute<PlanRecipeView[]>(sql, [plan_id]);
     return rows;
-  }
+  }  // Where is this used?
 
   async bulkInsert({ placeholders, plan_recipes }: BulkInsertParams) {  // TO DO: change to namedPlaceholders using example below
     const sql = `
@@ -81,6 +83,6 @@ type BulkUpdateParams = BulkInsertParams & {
 
 // just guessing for now, find out on frontend
 type PlanRecipeView = RowDataPacket & {
-  image_url: string;
-  title:     string;
+  image_filename: string;
+  title:          string;
 };

@@ -17,7 +17,7 @@ export const privateIngredientController = {
     const repo = new IngredientRepo();
     const ingredients = await repo.viewAll(owner_id);
 
-    return res.json(ingredients);
+    return res.status(200).json(ingredients);
   },
 
   async viewOne(req: Request, res: Response) {
@@ -29,7 +29,7 @@ export const privateIngredientController = {
     if (!ingredient) throw NotFoundException();
     if (owner_id !== ingredient.owner_id) throw ForbiddenException();
 
-    return res.json(ingredient);
+    return res.status(200).json(ingredient);
   },
 
   async create(req: Request, res: Response) {

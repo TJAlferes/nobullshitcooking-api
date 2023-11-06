@@ -11,15 +11,22 @@ export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
     return rows;
   }  // for logged in user
 
-  async viewOneByPlanId(params: ViewOneByPlanIdParams) {
-    const sql = `${viewSql} AND p.plan_id = :plan_id`;
-    const [ [ row ] ] = await this.pool.execute<PlanView[]>(sql, params);
+  async viewOneByPlanId(plan_id: string) {
+    const sql = `${viewSql} p.plan_id = ? ORDER BY pr.day_number`;
+    const [ [ row ] ] = await this.pool.execute<PlanView[]>(sql, plan_id);
     return row;
   }
 
-  async viewOneByPlanName(params: ViewOneByPlanNameParams) {
-    const sql = `${viewSql} AND p.plan_name = :plan_name`;
-    const [ [ row ] ] = await this.pool.execute<PlanView[]>(sql, params);
+  async viewOneByPlanName({ plan_name, author_id, owner_id }: ViewOneByPlanNameParams) {
+    const sql = `
+      ${viewSql} p.plan_name = ? AND p.author_id = ? AND p.owner_id = ?
+      ORDER BY pr.day_number
+    `;
+    const [ [ row ] ] = await this.pool.execute<PlanView[]>(sql, [
+      plan_name,
+      author_id,
+      owner_id
+    ]);
     return row;
   }
 
@@ -110,7 +117,7 @@ export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
 
 export interface PlanRepoInterface {
   viewAll:           (params: OverviewAllParams) =>       Promise<PlanView[]>;
-  viewOneByPlanId:   (params: ViewOneByPlanIdParams) =>   Promise<PlanView>;
+  viewOneByPlanId:   (plan_id: string) =>                 Promise<PlanView>;
   viewOneByPlanName: (params: ViewOneByPlanNameParams) => Promise<PlanView>; 
   insert:            (params: InsertParams) =>            Promise<void>;
   update:            (params: UpdateParams) =>            Promise<void>;
@@ -132,12 +139,6 @@ type PlanView = RowDataPacket & {
 type OverviewAllParams = {
   author_id: string;
   owner_id:  string;
-};
-
-type ViewOneByPlanIdParams = {
-  author_id: string;
-  owner_id:  string;
-  plan_id:   string;
 };
 
 type ViewOneByPlanNameParams = {
@@ -200,7 +201,5 @@ const viewSql = `
   FROM plan p
   LEFT JOIN plan_recipe pr ON p.plan_id     = pr.plan_id
   LEFT JOIN recipe r       ON pr.recipe_id = r.recipe_id
-  WHERE p.plan_id = ?
-  ORDER BY pr.day_number
-  WHERE p.author_id = :author_id AND p.owner_id = :owner_id
+  WHERE
 `;

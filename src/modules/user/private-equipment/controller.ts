@@ -15,7 +15,7 @@ export const privateEquipmentController = {
     const repo = new EquipmentRepo();
     const equipment = await repo.viewAll(owner_id);
 
-    return res.json(equipment);
+    return res.status(200).json(equipment);
   },
 
   async viewOne(req: Request, res: Response) {
@@ -27,7 +27,7 @@ export const privateEquipmentController = {
     if (!equipment) throw NotFoundException();
     if (owner_id !== equipment.owner_id) throw ForbiddenException();
 
-    return res.json(equipment);
+    return res.status(200).json(equipment);
   },
 
   async create(req: Request, res: Response) {

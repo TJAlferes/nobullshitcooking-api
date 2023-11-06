@@ -28,17 +28,17 @@ export function publicPlanRouter() {
   );
 
   router.patch(
-    '/:plan_id/unattribute',
-    userIsAuth,
-    sanitizeParams('plan_id'),
-    catchExceptions(controller.unattributeOne)
-  );
-
-  router.patch(
-    '/update',
+    '/',
     userIsAuth,
     sanitizeBody(['plan_id', 'plan_name', 'included_recipes.*.*']),
     catchExceptions(controller.update)
+  );
+
+  router.delete(
+    '/:plan_id',
+    userIsAuth,
+    sanitizeParams('plan_id'),
+    catchExceptions(controller.unattributeOne)
   );
 
   return router;

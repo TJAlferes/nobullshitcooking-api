@@ -1,5 +1,6 @@
 import { assert, number } from "superstruct";
 
+import { ValidationException } from '../../../utils/exceptions.js';
 import { UUIDv7StringId } from '../../shared/model.js';
 
 export class PlanRecipe {
@@ -35,7 +36,7 @@ function DayNumber(day_number: number) {
   const possibleDayNumbers = [1, 2, 3, 4, 5, 6, 7];
 
   if (!possibleDayNumbers.includes(day_number)) {
-    throw new Error("Invalid day number.");
+    throw ValidationException("Invalid day number.");
   }
 
   return day_number;
@@ -47,7 +48,7 @@ function RecipeNumber(recipe_number: number) {
   const possibleRecipeNumbers = [1, 2, 3, 4, 5, 6, 7];
 
   if (!possibleRecipeNumbers.includes(recipe_number)) {
-    throw new Error("Invalid recipe number.");
+    throw ValidationException("Invalid recipe number.");
   }
 
   return recipe_number;

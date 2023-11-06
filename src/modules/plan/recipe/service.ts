@@ -1,3 +1,4 @@
+import { ValidationException } from '../../../utils/exceptions.js';
 import { PlanRecipe } from "./model.js";
 import type { IncludedRecipe } from "./model.js";
 import { PlanRecipeRepoInterface } from "./repo.js";
@@ -50,13 +51,13 @@ export class PlanRecipeService {
 
     included_recipes.map(({ day_number, recipe_number }) => {
       if (dayNumbers.has(day_number)) {
-        throw new Error("Duplicate day_number in plan.");
+        throw ValidationException("Duplicate day_number in plan.");
       } else {
         dayNumbers.add(day_number);
       }
 
       if (recipeNumbers.has(recipe_number)) {
-        throw new Error("Duplicate recipe_number in plan.");
+        throw ValidationException("Duplicate recipe_number in plan.");
       } else {
         recipeNumbers.add(recipe_number);
       }

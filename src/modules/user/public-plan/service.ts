@@ -1,3 +1,4 @@
+import { ForbiddenException } from "../../../utils/exceptions.js";
 import type { IncludedRecipe } from "../../plan/recipe/model.js";
 
 export interface RecipeRepoInterface {
@@ -20,7 +21,7 @@ export class PublicPlanService {
       const recipe_ids = included_recipes.map(recipe => recipe.recipe_id);
       const hasPrivate = await this.recipeRepo.hasPrivate(recipe_ids);
       if (hasPrivate) {
-        throw new Error('Public content may not contain private content.');
+        throw ForbiddenException('Public content may not contain private content.');
       }
     }
   }
