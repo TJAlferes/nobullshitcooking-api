@@ -3,6 +3,7 @@ import { createPool } from 'mysql2/promise';
 import { testConfig }     from '../../src/connections/mysql.js';
 import { seedEquipment }  from './equipment/seed.js';
 import { seedIngredient } from './ingredient/seed.js';
+import { seedPlan }       from './plan/seed.js';
 import { seedRecipe }     from './recipe/seed.js';
 import { seedUser }       from './user/seed.js';
 
@@ -17,6 +18,7 @@ export async function seedTestDatabase() {
     await seedEquipment(conn);
     await seedIngredient(conn);
     await seedRecipe(conn);
+    await seedPlan(conn);
     console.log(`seedTestDatabase success`);
     await conn.commit();
   } catch (err) {

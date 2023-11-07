@@ -12,6 +12,8 @@ import { test_recipe_images } from './recipe-images.js';
 import { test_recipe_equipment } from './recipe-equipment.js'
 import { test_recipe_ingredients } from './recipe-ingredients.js'
 import { test_recipe_methods } from './recipe-methods.js'
+import { test_favorite_recipes } from './favorite-recipes.js';
+import { test_saved_recipes } from './saved-recipes.js';
 
 const images = [...production_images, ...test_images ];
 const recipes = [...production_recipes, ...test_recipes ];
@@ -91,4 +93,22 @@ export async function seedRecipe(conn: PoolConnection) {
     ) VALUES ${placeholders6}
   `;
   await conn.query(sql6, recipe_methods);
+
+  const placeholders7 = '(?, ?),'.repeat(test_favorite_recipes.length).slice(0, -1);
+  const sql7 = `
+    INSERT INTO favorite_recipes (
+      user_id,
+      recipe_id
+    ) VALUES ${placeholders7}
+  `;
+  await conn.query(sql7, test_favorite_recipes);
+
+  const placeholders8 = '(?, ?),'.repeat(test_saved_recipes.length).slice(0, -1);
+  const sql8 = `
+    INSERT INTO saved_recipes (
+      user_id,
+      recipe_id
+    ) VALUES ${placeholders8}
+  `;
+  await conn.query(sql8, test_saved_recipes);
 }

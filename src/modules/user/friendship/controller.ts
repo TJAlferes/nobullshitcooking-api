@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 
 import { ForbiddenException, NotFoundException } from '../../../utils/exceptions.js';
-import { UserRepo }       from '../repo.js';
-import { Friendship }     from './model.js';
+import { UserRepo } from '../repo.js';
+import { Friendship } from './model.js';
 import { FriendshipRepo } from './repo.js';
 
 export const friendshipController = {
@@ -16,7 +16,7 @@ export const friendshipController = {
   },
 
   async create(req: Request, res: Response) {
-    const { friendname } = req.body;
+    const { friendname } = req.params;
 
     const userRepo = new UserRepo();
     const friend = await userRepo.getByUsername(friendname);
@@ -25,12 +25,10 @@ export const friendshipController = {
     const user_id   = req.session.user_id!;
     const friend_id = friend.user_id;
 
-    // do others need this too? probably
     const friendshipRepo = new FriendshipRepo();
     const status = await friendshipRepo.getStatus({user_id: friend_id, friend_id: user_id});
     if (status === "blocked") throw NotFoundException();
 
-    // do others need this too? probably
     const currentStatus = await friendshipRepo.getStatus({user_id, friend_id});
     if (!currentStatus) {
       const friendship1 = Friendship
@@ -140,7 +138,14 @@ export const friendshipController = {
     const friendshipRepo = new FriendshipRepo();
 
     await friendshipRepo.delete({user_id, friend_id});
-    await friendshipRepo.delete({friend_id, user_id});
+
+    // This check prevents user_id from illegally getting unblocked by friend_id.
+    // If friend_id has already blocked user_id, leave it be, don't delete that
+    // otherwise delete the friendship.
+    const status = await friendshipRepo.getStatus({user_id: friend_id, friend_id: user_id});
+    if (status !== "blocked") {
+      await friendshipRepo.delete({friend_id, user_id});
+    }
 
     // to clarify what's going on here:
     // user_id    is blocking          friend_id
