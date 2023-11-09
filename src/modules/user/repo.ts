@@ -4,7 +4,7 @@ import { MySQLRepo } from '../shared/MySQL.js';
 
 export class UserRepo extends MySQLRepo implements UserRepoInterface {
   async getPassword(email: string): Promise<string | undefined> {
-    const sql = `SELECT password FROM users WHERE email = ?`;
+    const sql = `SELECT password FROM user WHERE email = ?`;
     const [ [ row ] ] = await this.pool.query<PasswordData[]>(sql, [email]);
     return row.password;
   }  // be very careful with this
@@ -12,7 +12,7 @@ export class UserRepo extends MySQLRepo implements UserRepoInterface {
   async getByUserId(user_id: string): Promise<UserData | undefined> {
     const sql = `
       SELECT user_id, email, username, confirmation_code
-      FROM users
+      FROM user
       WHERE user_id = ?
     `;
     const [ [ row ] ] = await this.pool.query<UserData[]>(sql, [user_id]);
@@ -22,7 +22,7 @@ export class UserRepo extends MySQLRepo implements UserRepoInterface {
   async getByEmail(email: string): Promise<UserData | undefined> {
     const sql = `
       SELECT user_id, email, username, confirmation_code
-      FROM users
+      FROM user
       WHERE email = ?
     `;
     const [ [ row ] ] = await this.pool.query<UserData[]>(sql, [email]);
@@ -32,7 +32,7 @@ export class UserRepo extends MySQLRepo implements UserRepoInterface {
   async getByUsername(username: string): Promise<UserData | undefined> {
     const sql = `
       SELECT user_id, email, username, confirmation_code
-      FROM users
+      FROM user
       WHERE username = ?
     `;
     const [ [ row ] ] = await this.pool.execute<UserData[]>(sql, [username]);
@@ -42,7 +42,7 @@ export class UserRepo extends MySQLRepo implements UserRepoInterface {
   async getByConfirmationCode(confirmation_code: string): Promise<UserData | undefined> {
     const sql = `
       SELECT user_id, email, username, confirmation_code
-      FROM users
+      FROM user
       WHERE confirmation_code = ?
     `;
     const [ [ row ] ] = await this.pool.execute<UserData[]>(sql, [confirmation_code]);
@@ -51,16 +51,16 @@ export class UserRepo extends MySQLRepo implements UserRepoInterface {
 
   async insert(params: InsertParams) {
     const sql = `
-      INSERT INTO users (user_id, email, password, username, confirmation_code)
+      INSERT INTO user (user_id, email, password, username, confirmation_code)
       VALUES (:user_id, :email, :password, :username, :confirmation_code)
     `;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
-    if (!result) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async update(params: UpdateParams) {
     const sql = `
-      UPDATE users
+      UPDATE user
       SET
         email             = :email,
         password          = :password,
@@ -71,13 +71,13 @@ export class UserRepo extends MySQLRepo implements UserRepoInterface {
       LIMIT 1
     `;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
-    if (!result) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async delete(user_id: string) {
-    const sql = `DELETE FROM users WHERE user_id = ? LIMIT 1`;
+    const sql = `DELETE FROM user WHERE user_id = ? LIMIT 1`;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, user_id);
-    if (!result) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }
 

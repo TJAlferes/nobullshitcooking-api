@@ -129,5 +129,11 @@ export const userAuthenticationController = {
     });
 
     return res.end();
+  },
+
+  async temporaryPassword(req: Request, res: Response) {
+    const { email } = req.params;
+
+    
   }
 };

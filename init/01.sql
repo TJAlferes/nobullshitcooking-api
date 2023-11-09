@@ -29,6 +29,14 @@ CREATE TABLE user (
   `updated_at`        TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+CREATE TABLE password_reset (
+  `reset_id`           CHAR(36)  PRIMARY KEY,
+  `user_id`            CHAR(36)  NOT NULL,
+  `temporary_password` CHAR(60)  NOT NULL,
+  `created_at`         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
+);
+
 CREATE TABLE image (
   `image_id`       CHAR(36)     PRIMARY KEY,
   `image_filename` VARCHAR(100) NOT NULL DEFAULT 'default',
