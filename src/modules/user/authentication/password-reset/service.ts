@@ -1,0 +1,39 @@
+import { emailUser } from "../../../aws-ses/service.js";
+import { PasswordResetRepoInterface } from "./repo.js";
+
+export class PasswordResetService {
+  private readonly repo: PasswordResetRepoInterface;
+
+  constructor(repo: PasswordResetRepoInterface) {
+    this.repo = repo;
+  }
+
+  async sendTemporaryPassword({ email, temporary_password }: SendTemporaryPasswordParams) {
+    const charset  = "UTF-8";
+    const from     = "No Bullshit Cooking <staff@nobullshitcooking.com>";
+    const to       = email;
+    const subject  = "Temporary Password For No Bullshit Cooking";
+    const bodyText = "Temporary Password For No Bullshit Cooking\r\n"
+      + "Please enter the following temporary password at:\r\n"
+      + "https://nobullshitcooking.com/login\r\n"
+      + temporary_password;
+    const bodyHtml = `
+      <html>
+      <head></head>
+      <body>
+        <h1>Temporary Password For No Bullshit Cooking</h1>
+        <p>Please enter the following temporary password at:</p>
+        <p>https://nobullshitcooking.com/login</p>
+        ${temporary_password}
+      </body>
+      </html>
+    `;
+
+    await emailUser({from, to, subject, bodyText, bodyHtml, charset});
+  }
+}
+
+type SendTemporaryPasswordParams = {
+  email:              string;
+  temporary_password: string;
+};

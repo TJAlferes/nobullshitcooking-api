@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express';
-import { uuidv7 } from 'uuidv7';
+import { uuidv7 }                 from 'uuidv7';
 
+import { NotFoundException }         from '../../../utils/exceptions.js';
 import { socketIOServer }            from '../../../index.js';
 import { NOBSC_USER_ID }             from '../../shared/model.js';
 //import { ChatgroupRepo }             from '../../chat/group/repo.js';
@@ -13,10 +14,11 @@ import { UserImageRepo }             from '../image/repo.js';
 import { FavoriteRecipeRepo }        from '../favorite-recipe/repo.js';
 import { SavedRecipeRepo }           from '../saved-recipe/repo.js';
 import { UserRepo }                  from '../repo.js';
+import { UserService }               from '../service.js';
 import { UserAuthenticationService } from './service.js';
 import { PasswordReset }             from './password-reset/model.js';
 import { PasswordResetRepo }         from './password-reset/repo.js';
-import { NotFoundException } from '../../../utils/exceptions.js';
+import { PasswordResetService }      from './password-reset/service.js';
 
 export const userAuthenticationController = {
   async resendConfirmationCode(req: Request, res: Response) {
@@ -135,15 +137,14 @@ export const userAuthenticationController = {
     return res.end();
   },
 
-  async temporaryPassword(req: Request, res: Response) {
-    const { email } = req.params;
+  async forgotPassword(req: Request, res: Response) {
+    const { email } = req.body;
 
     const userRepo = new UserRepo();
     const user = await userRepo.getByEmail(email);
     if (!user) throw NotFoundException();
 
-    const { hashPassword, sendTemporaryPassword } = new UserAuthenticationService(userRepo);
-
+    const { hashPassword } = new UserAuthenticationService(userRepo);
     const temporary_password = uuidv7();
     const encryptedPassword = await hashPassword(temporary_password);
     const passwordReset = PasswordReset.create({
@@ -152,10 +153,34 @@ export const userAuthenticationController = {
     }).getDTO();
 
     const passwordResetRepo = new PasswordResetRepo();
+    const { sendTemporaryPassword } = new PasswordResetService(userRepo);
     await passwordResetRepo.insert(passwordReset);
 
     await sendTemporaryPassword({email, temporary_password});
 
     return res.status(201);
+  },
+
+  async resetPassword(req: Request, res: Response) {
+    const { email, temporary_password, new_password } = req.body;
+
+    // TO DO
+    const userRepo = new UserRepo();
+    const user = await userRepo.getByEmail(email);
+    if (!user) throw NotFoundException();
+
+    const userAuthenticationService = new UserAuthenticationService(userRepo);
+    await userAuthenticationService.isCorrectPassword({
+      email,
+      password: temporary_password
+    });
+
+    const userService = new UserService(userRepo);
+    await userService.updatePassword({
+      user_id: user.user_id,
+      new_password
+    });
+
+    return res.status(204);
   }
 };

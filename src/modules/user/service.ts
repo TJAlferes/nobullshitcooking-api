@@ -104,8 +104,6 @@ export class UserService {
     await this.repo.update(user);
   }
 
-  //async recoverAccount() {}
-
   async delete(user_id: string) {
     // IMPORTANT: Never allow this user to be deleted.
     if (user_id === NOBSC_USER_ID) throw ForbiddenException("Forbidden.");

@@ -13,7 +13,7 @@ export class PasswordResetRepo extends MySQLRepo implements PasswordResetRepoInt
   }
 }
 
-interface PasswordResetRepoInterface {
+export interface PasswordResetRepoInterface {
   insert: (params: InsertParams) => Promise<void>;
 }
 
