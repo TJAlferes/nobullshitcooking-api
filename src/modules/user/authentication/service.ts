@@ -1,6 +1,11 @@
 import bcrypt from 'bcrypt';
 
-import { ConflictException, NotFoundException, UnauthorizedException } from '../../../utils/exceptions.js';
+import {
+  ConflictException,
+  ForbiddenException,
+  NotFoundException,
+  UnauthorizedException
+} from '../../../utils/exceptions.js';
 import { UUIDv7StringId }        from '../../shared/model.js';
 import { emailUser }             from '../../aws-ses/service.js';
 import { Email, Password, User } from '../model.js';

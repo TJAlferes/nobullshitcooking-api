@@ -86,6 +86,12 @@ export function apiV1Router() {
     catchExceptions(userAuthenticationController.logout)
   );
 
+  router.post(
+    '/temporary-password',
+    sanitize(['email']),
+    catchExceptions(userAuthenticationController.temporaryPassword)
+  );
+
   // TO DO: move ???
   
   router.post(

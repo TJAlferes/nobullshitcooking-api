@@ -1,6 +1,7 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
+import { uuidv7 } from 'uuidv7';
 
-import { socketIOServer } from '../../../index.js';
+import { socketIOServer }            from '../../../index.js';
 import { NOBSC_USER_ID }             from '../../shared/model.js';
 //import { ChatgroupRepo }             from '../../chat/group/repo.js';
 import { EquipmentRepo }             from '../../equipment/repo.js';
@@ -13,6 +14,9 @@ import { FavoriteRecipeRepo }        from '../favorite-recipe/repo.js';
 import { SavedRecipeRepo }           from '../saved-recipe/repo.js';
 import { UserRepo }                  from '../repo.js';
 import { UserAuthenticationService } from './service.js';
+import { PasswordReset }             from './password-reset/model.js';
+import { PasswordResetRepo }         from './password-reset/repo.js';
+import { NotFoundException } from '../../../utils/exceptions.js';
 
 export const userAuthenticationController = {
   async resendConfirmationCode(req: Request, res: Response) {
@@ -134,6 +138,24 @@ export const userAuthenticationController = {
   async temporaryPassword(req: Request, res: Response) {
     const { email } = req.params;
 
-    
+    const userRepo = new UserRepo();
+    const user = await userRepo.getByEmail(email);
+    if (!user) throw NotFoundException();
+
+    const { hashPassword, sendTemporaryPassword } = new UserAuthenticationService(userRepo);
+
+    const temporary_password = uuidv7();
+    const encryptedPassword = await hashPassword(temporary_password);
+    const passwordReset = PasswordReset.create({
+      user_id: user.user_id,
+      temporary_password: encryptedPassword
+    }).getDTO();
+
+    const passwordResetRepo = new PasswordResetRepo();
+    await passwordResetRepo.insert(passwordReset);
+
+    await sendTemporaryPassword({email, temporary_password});
+
+    return res.status(201);
   }
 };

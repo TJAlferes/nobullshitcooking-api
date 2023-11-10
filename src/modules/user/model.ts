@@ -15,7 +15,6 @@ export class User {
     this.email             = Email(params.email);
     this.password          = Password(params.password);
     this.username          = Username(params.username);
-
     this.confirmation_code = params.confirmation_code === null
       ? null
       : UUIDv7StringId(params.confirmation_code);

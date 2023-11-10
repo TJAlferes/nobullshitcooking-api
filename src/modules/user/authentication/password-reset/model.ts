@@ -4,7 +4,7 @@ import { Password } from '../../model.js';
 export class PasswordReset {
   private reset_id;
   private user_id;
-  private temporary_password;  // encrypted/hashed, not raw request body payload
+  private temporary_password;  // encrypted/hashed
 
   private constructor(params: ConstructorParams) {
     this.reset_id           = UUIDv7StringId(params.reset_id);
@@ -12,10 +12,9 @@ export class PasswordReset {
     this.temporary_password = Password(params.temporary_password);
   }
 
-  static create(user_id: string): PasswordReset {
-    const reset_id           = GenerateUUIDv7StringId();
-    const temporary_password = GenerateUUIDv7StringId();
-    return new PasswordReset({reset_id, user_id, temporary_password});
+  static create(params: CreateParams): PasswordReset {
+    const reset_id = GenerateUUIDv7StringId();
+    return new PasswordReset({reset_id, ...params});
   }
 
   getDTO() {
@@ -27,8 +26,11 @@ export class PasswordReset {
   }
 }
 
-export type ConstructorParams = {
-  reset_id: string;
-  user_id:  string;
+export type CreateParams = {
+  user_id:            string;
   temporary_password: string;
+};
+
+export type ConstructorParams = CreateParams & {
+  reset_id: string;
 };

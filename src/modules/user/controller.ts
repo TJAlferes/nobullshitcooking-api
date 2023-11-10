@@ -13,8 +13,8 @@ export const userController = {
   },
   
   async updateEmail(req: Request, res: Response) {
-    const new_email = req.body.new_email;
-    const user_id   = req.session.user_id!;
+    const { new_email } = req.body;
+    const user_id       = req.session.user_id!;
 
     const userRepo    = new UserRepo();
     const userService = new UserService(userRepo);
@@ -24,8 +24,8 @@ export const userController = {
   },
 
   async updatePassword(req: Request, res: Response) {
-    const new_password = req.body.new_password;
-    const user_id      = req.session.user_id!;
+    const { new_password } = req.body;
+    const user_id          = req.session.user_id!;
 
     const userRepo    = new UserRepo();
     const userService = new UserService(userRepo);
@@ -35,8 +35,8 @@ export const userController = {
   },
 
   async updateUsername(req: Request, res: Response) {
-    const new_username = req.body.new_username;
-    const user_id      = req.session.user_id!;
+    const { new_username } = req.body;
+    const user_id          = req.session.user_id!;
 
     const userRepo    = new UserRepo();
     const userService = new UserService(userRepo);

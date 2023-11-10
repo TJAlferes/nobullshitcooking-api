@@ -62,8 +62,6 @@ export function authenticationTests() {
     });
   });
 
-
-
   describe('POST /v1/confirm', () => {
     it('handles incorrect confirmation_code', async () => {
       const res = await request(server)
@@ -84,20 +82,18 @@ export function authenticationTests() {
     });
   });
 
-  
-
-  describe('POST /login', () => {
+  describe('POST /v1/login', () => {
     it('handles already logged in user', async () => {
       const agent = request.agent(server);
 
-      await request(server)
+      await agent
         .post('/v1/login')
         .send({
           email: 'fakeuser1@gmail.com',
           password: 'fakepassword'
         });
       
-      const res = await request(server)
+      const res = await agent
         .post('/v1/login')
         .send({
           email: 'fakeuser1@gmail.com',
@@ -154,6 +150,24 @@ export function authenticationTests() {
 
       expect(res.status).toBe(201);
       expect(res.body.message).toContain({auth_email: 'fakeuser1@gmail.com'});
+    });
+  });
+
+  describe('POST /v1/temporary-password', () => {
+    it('handles success', async () => {
+      const res = await request(server)
+        .post('/v1/temporary-password')
+        .send({email: 'fakeuser1@gmail.com'});
+
+      expect(res.status).toBe(201);
+    });
+
+    it('handles not found', async () => {
+      const res = await request(server)
+        .post('/v1/temporary-password')
+        .send({email: 'nonexistinguser@gmail.com'});
+
+      expect(res.status).toBe(404);
     });
   });
 }
