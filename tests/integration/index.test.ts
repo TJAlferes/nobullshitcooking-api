@@ -6,7 +6,7 @@ import request from 'supertest';
 import { seedTestDatabase } from '../../seeds/test/index.js';
 import { pool, testConfig } from '../../src/connections/mysql.js';
 import { redisClients } from '../../src/connections/redis.js';
-import { httpServer, socketIOServer, userCronJob } from '../../src/index.js';
+import { httpServer, socketIOServer, userCronJob, passwordResetCronJob } from '../../src/index.js';
 import {
   authenticationTests,
   usersTests,
@@ -49,6 +49,7 @@ beforeAll(() => {
 
 afterAll(async () => {
   userCronJob.stop();
+  passwordResetCronJob.stop();
 
   socketio?.removeAllListeners();
   socketio = null;

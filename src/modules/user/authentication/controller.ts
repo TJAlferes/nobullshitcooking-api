@@ -153,7 +153,7 @@ export const userAuthenticationController = {
     }).getDTO();
 
     const passwordResetRepo = new PasswordResetRepo();
-    const { sendTemporaryPassword } = new PasswordResetService(userRepo);
+    const { sendTemporaryPassword } = new PasswordResetService(passwordResetRepo);
     await passwordResetRepo.insert(passwordReset);
 
     await sendTemporaryPassword({email, temporary_password});
@@ -164,15 +164,15 @@ export const userAuthenticationController = {
   async resetPassword(req: Request, res: Response) {
     const { email, temporary_password, new_password } = req.body;
 
-    // TO DO
     const userRepo = new UserRepo();
     const user = await userRepo.getByEmail(email);
     if (!user) throw NotFoundException();
 
-    const userAuthenticationService = new UserAuthenticationService(userRepo);
-    await userAuthenticationService.isCorrectPassword({
-      email,
-      password: temporary_password
+    const passwordResetRepo = new PasswordResetRepo();
+    const passwordResetService = new PasswordResetService(passwordResetRepo);
+    await passwordResetService.isCorrectTemporaryPassword({
+      user_id: user.user_id,
+      temporary_password
     });
 
     const userService = new UserService(userRepo);
@@ -180,6 +180,8 @@ export const userAuthenticationController = {
       user_id: user.user_id,
       new_password
     });
+
+    await passwordResetRepo.deleteByUserId(user.user_id);
 
     return res.status(204);
   }

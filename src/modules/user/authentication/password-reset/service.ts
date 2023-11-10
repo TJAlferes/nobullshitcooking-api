@@ -1,4 +1,8 @@
+import bcrypt from 'bcrypt';
+
+import { UnauthorizedException } from '../../../../utils/exceptions.js';
 import { emailUser } from "../../../aws-ses/service.js";
+import { Email } from '../../model.js';
 import { PasswordResetRepoInterface } from "./repo.js";
 
 export class PasswordResetService {
@@ -6,6 +10,19 @@ export class PasswordResetService {
 
   constructor(repo: PasswordResetRepoInterface) {
     this.repo = repo;
+  }
+
+  async isCorrectTemporaryPassword({
+    user_id,
+    temporary_password
+  }: IsCorrectTemporaryPasswordParams) {
+    const currentHash = await this.repo.getPassword(user_id);
+    if (!currentHash) throw UnauthorizedException("Incorrect email or temporary password.");
+
+    const correctTemporaryPassword = await bcrypt.compare(temporary_password, currentHash);
+    if (!correctTemporaryPassword) {
+      throw UnauthorizedException("Incorrect email or temporary password.");
+    }
   }
 
   async sendTemporaryPassword({ email, temporary_password }: SendTemporaryPasswordParams) {
@@ -32,6 +49,11 @@ export class PasswordResetService {
     await emailUser({from, to, subject, bodyText, bodyHtml, charset});
   }
 }
+
+type IsCorrectTemporaryPasswordParams = {
+  user_id:            string;
+  temporary_password: string;
+};
 
 type SendTemporaryPasswordParams = {
   email:              string;
