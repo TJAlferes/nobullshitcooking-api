@@ -7,7 +7,9 @@
   "type": "module",
   "main": "src/index.js",
   "scripts": {
-    "seed": "ts-node seeds/index.ts",
+    "seed-dev": "ts-node seeds/development/index.ts",
+    "seed-test": "ts-node seeds/test/index.ts",
+    "seed-prod": "ts-node seeds/production/index.ts",
     "dev": "nodemon --watch src -e ts --exec 'ts-node' src/index.ts",
     "test": "jest --color --detectOpenHandles",
     "start": "node build/bundle.js",

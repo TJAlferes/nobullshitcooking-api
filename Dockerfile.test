@@ -13,4 +13,5 @@ RUN npm install && npm cache clean --force
 
 COPY . .
 
-CMD npm run test -- --coverage --logHeapUsage --runInBand --watchAll=false
+CMD ["npm", "run", "seed-test"]
+#CMD npm run test -- --coverage --logHeapUsage --runInBand --watchAll=false

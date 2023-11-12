@@ -1,20 +1,15 @@
 import type { Config } from 'jest';
 
 const config: Config = {
-  collectCoverage:   true,
-  coverageDirectory: "coverage",
-  globals: {
-    "ts-jest": {
-      babelConfig: true
-    }
-  },
-  globalSetup:            "./global-setup.js",
-  preset:                 "ts-jest",
-  testEnvironment:        "node",
-  testPathIgnorePatterns: ["/node_modules/"],
-  testRegex:              "/*.test.ts$",
+  collectCoverage: true,
+  coverageDirectory: 'coverage',
+  globalSetup: './global-setup.cjs',
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  testPathIgnorePatterns: ['<rootDir>/node_modules/'],
+  testRegex: '(/tests/.*|(\\.|/)(test|spec))\\.[jt]sx?$',
   transform: {
-    "^.+\\.[t]sx?$": "ts-jest",  //'^.+\\.tsx?$': 'ts-jest',
+    '^.+\\.[t]sx?$': ['ts-jest', {babelConfig: true}],
   },
   verbose: true,
 };
