@@ -121,6 +121,7 @@ async function truncateTestDatabase() {
   try {
     const tableNames = [
       'user',
+      'password_reset',
       'image',
       'user_image',
       'friendship',

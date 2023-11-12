@@ -153,20 +153,46 @@ export function authenticationTests() {
     });
   });
 
-  describe('POST /v1/temporary-password', () => {
+  describe('POST /v1/forgot-password', () => {
     it('handles success', async () => {
       const res = await request(server)
-        .post('/v1/temporary-password')
-        .send({email: 'fakeuser1@gmail.com'});
+        .post('/v1/forgot-password')
+        .send({email: 'fakeuser2@gmail.com'});
 
       expect(res.status).toBe(201);
     });
 
     it('handles not found', async () => {
       const res = await request(server)
-        .post('/v1/temporary-password')
+        .post('/v1/forgot-password')
         .send({email: 'nonexistinguser@gmail.com'});
 
+      expect(res.status).toBe(404);
+    });
+  });
+
+  describe('PATCH /v1/reset-password', () => {
+    it('handles success', async () => {
+      const res = await request(server)
+        .patch('/v1/reset-password')
+        .send({
+          email: 'fakeuser1@gmail.com',
+          temporary_password: '01010101-0101-0101-0101-010101010101',  // in DB: "$2b$10$mHF4dvye9VGKPn16fDNnN..z/Ay4xH5Z5iUFcwgL.I/6c0qPRlqsO"
+          new_password: "newpassword"
+        });
+      
+      expect(res.status).toBe(204);
+    });
+
+    it('handles success', async () => {
+      const res = await request(server)
+        .patch('/v1/reset-password')
+        .send({
+          email: 'nonexistinguser@gmail.com',
+          temporary_password: '01010101-0101-0101-0101-010101010101',  // in DB: "$2b$10$mHF4dvye9VGKPn16fDNnN..z/Ay4xH5Z5iUFcwgL.I/6c0qPRlqsO"
+          new_password: "newpassword"
+        });
+      
       expect(res.status).toBe(404);
     });
   });

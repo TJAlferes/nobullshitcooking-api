@@ -5,6 +5,7 @@ import { production_user_images } from '../../production/user/user-images.js';
 import { production_users } from '../../production/user/users.js';
 import { test_user_images } from './user-images.js';
 import { test_users } from './users.js';
+import { test_password_resets } from './password-resets.js';
 
 const users = [...production_users, ...test_users];
 const user_images = [...production_user_images, ...test_user_images];
@@ -43,4 +44,14 @@ export async function seedUser(conn: PoolConnection) {
     ) VALUES ${placeholders3}
   `;
   await conn.query(sql3, user_images);
+
+  const placeholders4 = '(?, ?, ?),'.repeat(user_images.length).slice(0, -1);
+  const sql4 = `
+    INSERT INTO password_reset (
+      reset_id,
+      user_id,
+      temporary_password
+    ) VALUES ${placeholders4}
+  `;
+  await conn.query(sql4, test_password_resets);
 }
