@@ -43,7 +43,7 @@
     "pino-http": "^8.3.3",
     "socket.io": "^4.7.1",
     "superstruct": "^1.0.3",
-    "uuidv7": "^0.5.4",
+    "uuidv7": "^0.6.3",
     "uws": "10.148.1"
   },
   "devDependencies": {
@@ -58,7 +58,7 @@
     "@types/express": "^4.17.17",
     "@types/express-session": "^1.17.7",
     "@types/hpp": "^0.2.2",
-    "@types/jest": "^29.5.5",
+    "@types/jest": "^29.5.8",
     "@types/mysql2": "github:types/mysql2",
     "@types/node": "^20.8.2",
     "@types/pino-http": "^5.8.1",

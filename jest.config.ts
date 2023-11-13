@@ -4,13 +4,11 @@ const config: Config = {
   collectCoverage: true,
   coverageDirectory: 'coverage',
   globalSetup: './global-setup.cjs',
-  preset: 'ts-jest',
+  preset: 'ts-jest/presets/js-with-ts-esm', //'ts-jest',
   testEnvironment: 'node',
   testPathIgnorePatterns: ['<rootDir>/node_modules/'],
   testRegex: '/*.test.ts$',
-  transform: {
-    '^.+\\.[t]sx?$': 'ts-jest',
-  },
+  extensionsToTreatAsEsm: ['.ts'],
   verbose: true,
 };
 
