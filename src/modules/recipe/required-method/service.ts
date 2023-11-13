@@ -1,5 +1,5 @@
-import { RecipeMethod } from "./model.js";
-import { RecipeMethodRepoInterface } from "./repo.js";
+import { RecipeMethod } from './model';
+import { RecipeMethodRepoInterface } from './repo';
 
 export class RecipeMethodService {
   repo: RecipeMethodRepoInterface;

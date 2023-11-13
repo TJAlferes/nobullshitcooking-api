@@ -1,5 +1,6 @@
 import { assert, defaulted, string } from 'superstruct';
 
+import { ValidationException } from '../../utils/exceptions';
 import { GenerateUUIDv7StringId, UUIDv7StringId, NumberId, Notes } from '../shared/model';
 
 export class Ingredient {
@@ -49,7 +50,7 @@ export class Ingredient {
 export function IngredientBrand(brand: string) {
   assert(brand, defaulted(string(), ''));
   if (brand.length > 50) {
-    throw new Error("Ingredient brand must be no more than 50 characters.");
+    throw ValidationException('Ingredient brand must be no more than 50 characters.');
   }
   return brand;
 }
@@ -57,7 +58,7 @@ export function IngredientBrand(brand: string) {
 export function IngredientVariety(variety: string) {
   assert(variety, defaulted(string(), ''));
   if (variety.length > 50) {
-    throw new Error("Ingredient variety must be no more than 50 characters.");
+    throw ValidationException('Ingredient variety must be no more than 50 characters.');
   }
   return variety;
 }
@@ -65,7 +66,7 @@ export function IngredientVariety(variety: string) {
 export function IngredientName(name: string) {
   assert(name, string());
   if (name.length > 50) {
-    throw new Error("Ingredient name must be no more than 50 characters.");
+    throw ValidationException('Ingredient name must be no more than 50 characters.');
   }
   return name;
 }

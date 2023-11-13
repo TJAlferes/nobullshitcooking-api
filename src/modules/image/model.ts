@@ -1,6 +1,7 @@
-import { assert, string } from "superstruct";
+import { assert, string } from 'superstruct';
 
-import { GenerateUUIDv7StringId, UUIDv7StringId, ImageFilename } from "../shared/model.js";
+import { ValidationException } from '../../utils/exceptions.js';
+import { GenerateUUIDv7StringId, UUIDv7StringId, ImageFilename } from '../shared/model.js';
 
 export class Image {
   private image_id;
@@ -40,7 +41,7 @@ export class Image {
 function Caption(caption: string) {
   assert(caption, string());
   if (caption.length > 150) {
-    throw new Error("Caption must be no more than 150 characters.");
+    throw ValidationException('Caption must be no more than 150 characters.');
   }
   return caption;
 }

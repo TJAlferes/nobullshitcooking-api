@@ -1,6 +1,6 @@
-import { RowDataPacket } from "mysql2";
+import { RowDataPacket, ResultSetHeader } from 'mysql2';
 
-import { MySQLRepo } from "../../shared/MySQL.js";
+import { MySQLRepo } from '../../shared/MySQL';
 
 export class ChatroomRepo extends MySQLRepo implements ChatroomRepoInterface {
   async overviewAllByChatgroupId(chatgroup_id: string) {
@@ -33,7 +33,8 @@ export class ChatroomRepo extends MySQLRepo implements ChatroomRepoInterface {
         :chatroom_name
       )
     `;
-    await this.pool.execute(sql, params);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async update({ chatroom_name, chatroom_id }: UpdateParams) {
@@ -44,10 +45,11 @@ export class ChatroomRepo extends MySQLRepo implements ChatroomRepoInterface {
       WHERE chatroom_id = :chatroom_id
       LIMIT 1
     `;
-    await this.pool.execute(sql, {
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, {
       chatroom_name,
       chatroom_id
     });
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async deleteOne(chatroom_id: string) {
@@ -56,7 +58,8 @@ export class ChatroomRepo extends MySQLRepo implements ChatroomRepoInterface {
       WHERE chatroom_id = :chatroom_id
       LIMIT 1
     `;
-    await this.pool.execute(sql, chatroom_id);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, chatroom_id);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }
 

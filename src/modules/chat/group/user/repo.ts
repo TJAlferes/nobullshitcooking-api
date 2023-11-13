@@ -1,6 +1,6 @@
 import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
-import { MySQLRepo } from "../../../shared/MySQL.js";
+import { MySQLRepo } from '../../../shared/MySQL';
 
 export class ChatgroupUserRepo extends MySQLRepo implements ChatgroupUserRepoInterface {
   async insert(params: InsertParams) {
@@ -9,7 +9,7 @@ export class ChatgroupUserRepo extends MySQLRepo implements ChatgroupUserRepoInt
       VALUES (:chatgroup_id, :user_id)
     `;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
-    if (!result) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async update(params: UpdateParams) {
@@ -22,19 +22,19 @@ export class ChatgroupUserRepo extends MySQLRepo implements ChatgroupUserRepoInt
       LIMIT 1
     `;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
-    if (!result) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async deleteByChatgroupId(chatgroup_id: string) {
     const sql = `DELETE FROM chatgroup_user WHERE chatgroup_id = ? LIMIT 1`;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, chatgroup_id);
-    if (!result) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async deleteByUserId(user_id: string) {
     const sql = `DELETE FROM chatgroup_user WHERE user_id = ? LIMIT 1`;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, user_id);
-    if (!result) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }
 

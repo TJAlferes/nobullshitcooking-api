@@ -1,6 +1,7 @@
 import { assert, string } from 'superstruct';
 
-import { GenerateUUIDv7StringId, UUIDv7StringId } from "../../shared/model.js";
+import { ValidationException } from '../../../utils/exceptions';
+import { GenerateUUIDv7StringId, UUIDv7StringId } from '../../shared/model';
 
 export class Chatroom {
   private chatroom_id;
@@ -32,10 +33,10 @@ export class Chatroom {
 export function ChatroomName(name: string) {
   assert(name, string());
   if (name.length < 2) {
-    throw new Error("Chatroom name must be at least 2 characters.");
+    throw ValidationException('Chatroom name must be at least 2 characters.');
   }
   if (name.length > 32) {
-    throw new Error("Chatroom name must be no more than 32 characters.");
+    throw ValidationException('Chatroom name must be no more than 32 characters.');
   }
   return name;
 }

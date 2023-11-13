@@ -1,12 +1,12 @@
 import { DeleteObjectCommand } from '@aws-sdk/client-s3';
 
-import { ValidationException } from "../../../utils/exceptions.js";
-import { AwsS3PrivateUploadsClient } from "../../aws-s3/private-uploads/client.js";
-import { AwsS3PublicUploadsClient } from "../../aws-s3/public-uploads/client.js";
-import { Image } from "../../image/model.js";
-import { ImageRepoInterface } from "../../image/repo.js";
-import { RecipeImage } from "./model.js";
-import { RecipeImageRepoInterface } from "./repo.js";
+import { ValidationException } from '../../../utils/exceptions';
+import { AwsS3PrivateUploadsClient } from '../../aws-s3/private-uploads/client';
+import { AwsS3PublicUploadsClient } from '../../aws-s3/public-uploads/client';
+import { Image } from '../../image/model';
+import { ImageRepoInterface } from '../../image/repo';
+import { RecipeImage } from './model';
+import { RecipeImageRepoInterface } from './repo';
 
 export class RecipeImageService {
   imageRepo:       ImageRepoInterface;
@@ -18,7 +18,7 @@ export class RecipeImageService {
   }
 
   async bulkCreate({ recipe_id, author_id, owner_id, uploaded_images }: BulkCreateParams) {
-    if (uploaded_images.length !== 4) throw ValidationException("Recipe must have 4 images.");
+    if (uploaded_images.length !== 4) throw ValidationException('Recipe must have 4 images.');
     
     const images: ImageDTO[] = [];
     const recipe_images: RecipeImageDTO[] = [];
@@ -57,7 +57,7 @@ export class RecipeImageService {
 
   // TO DO: thoroughly test
   async bulkUpdate({ author_id, owner_id, uploaded_images }: BulkUpdateParams) {
-    if (uploaded_images.length !== 4) throw ValidationException("Recipe must have 4 images.");
+    if (uploaded_images.length !== 4) throw ValidationException('Recipe must have 4 images.');
 
     const images: ImageDTO[] = [];
 
@@ -70,7 +70,7 @@ export class RecipeImageService {
         const s3Client = author_id === owner_id
           ? AwsS3PrivateUploadsClient
           : AwsS3PublicUploadsClient;
-        const ownership = author_id === owner_id ? "private" : "public";
+        const ownership = author_id === owner_id ? 'private' : 'public';
 
         if (uploaded_image.type === 1) {
           await s3Client.send(new DeleteObjectCommand({
@@ -160,20 +160,20 @@ export class RecipeImageService {
     // 1 image of a prepping/cooking detail/process/action
 
     if (recipe_images.length !== 4) {
-      throw ValidationException("Recipe must have 4 images.");
+      throw ValidationException('Recipe must have 4 images.');
     }
 
     if (!recipe_images.some(ai => ai.type === 1)) {
-      throw ValidationException("Missing recipe image.");
+      throw ValidationException('Missing recipe image.');
     }
     if (!recipe_images.some(ai => ai.type === 2)) {
-      throw ValidationException("Missing equipment image.");
+      throw ValidationException('Missing equipment image.');
     }
     if (!recipe_images.some(ai => ai.type === 3)) {
-      throw ValidationException("Missing ingredients image.");
+      throw ValidationException('Missing ingredients image.');
     }
     if (!recipe_images.some(ai => ai.type === 4)) {
-      throw ValidationException("Missing cooking image.");
+      throw ValidationException('Missing cooking image.');
     }
   }
 }

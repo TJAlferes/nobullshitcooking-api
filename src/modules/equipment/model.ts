@@ -1,5 +1,6 @@
 import { assert, string } from 'superstruct';
 
+import { ValidationException } from '../../utils/exceptions';
 import { GenerateUUIDv7StringId, UUIDv7StringId, NumberId, Notes } from '../shared/model';
 
 export class Equipment {
@@ -43,7 +44,7 @@ export class Equipment {
 export function EquipmentName(name: string) {
   assert(name, string());
   if (name.length > 100) {
-    throw new Error("Equipment name must be no more than 100 characters.");
+    throw ValidationException('Equipment name must be no more than 100 characters.');
   }
   return name;
 }

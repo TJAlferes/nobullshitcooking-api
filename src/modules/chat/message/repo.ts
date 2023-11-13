@@ -1,6 +1,6 @@
-import { ResultSetHeader, RowDataPacket } from "mysql2";
+import { ResultSetHeader, RowDataPacket } from 'mysql2';
 
-import { MySQLRepo } from "../../shared/MySQL.js";
+import { MySQLRepo } from '../../shared/MySQL';
 
 export class ChatmessageRepo extends MySQLRepo implements ChatmessageRepoInterface {
   async viewByChatroomId(chatroom_id: string) {
@@ -60,12 +60,13 @@ export class ChatmessageRepo extends MySQLRepo implements ChatmessageRepoInterfa
     `;
     await this.pool.execute(sql, params);
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
-    if (!result) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async delete(chatmessage_id: string) {
     const sql = `DELETE FROM chatmessage WHERE chatmessage_id = ? LIMIT 1`;
-    await this.pool.execute(sql, [chatmessage_id]);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [chatmessage_id]);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }
 

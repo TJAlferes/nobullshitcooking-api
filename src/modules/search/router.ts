@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { query }  from 'express-validator';
+import { query } from 'express-validator';
 
+import { catchExceptions } from '../../utils';
 import { searchController } from './controller';
-import { catchExceptions }  from '../../utils/index';
 
 const router = Router();
 

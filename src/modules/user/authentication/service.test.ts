@@ -1,16 +1,16 @@
-import { UserAuthenticationService } from "./service.js";
-import { emailUser } from "../../aws-ses/service.js"
-import type { UserRepoInterface, UserData } from "../repo.js";
+import { UserAuthenticationService } from './service';
+import { emailUser } from '../../aws-ses/service'
+import type { UserRepoInterface, UserData } from '../repo';
 
 jest.mock('../shared/simple-email-service');
 jest.mock('../repo');
 
-const confirmation_code = "99999999-9999-9999-9999-999999999999";
+const confirmation_code = '99999999-9999-9999-9999-999999999999';
 const userData = {
-  user_id: "99999999-9999-9999-9999-999999999999",
-  email: "username@nobsc.com",
-  username: "username",
-  confirmation_code: "99999999-9999-9999-9999-999999999999"
+  user_id: '99999999-9999-9999-9999-999999999999',
+  email: 'username@nobsc.com',
+  username: 'username',
+  confirmation_code: '99999999-9999-9999-9999-999999999999'
 } as UserData;
 
 describe('UserAuthenticationService', () => {
@@ -51,23 +51,23 @@ describe('UserAuthenticationService', () => {
 
     it('handles when already confirmed', async () => {
       const userData = {
-        user_id: "99999999-9999-9999-9999-999999999999",
-        email: "username@nobsc.com",
-        username: "username",
+        user_id: '99999999-9999-9999-9999-999999999999',
+        email: 'username@nobsc.com',
+        username: 'username',
         confirmation_code: null  // null means they're already confirmed
       } as UserData;
       userRepoMock.getByConfirmationCode.mockResolvedValue(userData);
       try {
         await service.confirm(confirmation_code);
       } catch (err: any) {
-        expect(err.message).toBe("Already confirmed.");
+        expect(err.message).toBe('Already confirmed.');
       }
       expect(userRepoMock.update).not.toHaveBeenCalled();
     });
 
     it('handles when confirmation code is incorrect', async () => {
       userRepoMock.getByConfirmationCode.mockResolvedValue(userData);
-      const confirmation_code = "77777777-7777-7777-7777-777777777777";
+      const confirmation_code = '77777777-7777-7777-7777-777777777777';
       try {
         await service.confirm(confirmation_code);
       } catch (err: any) {
@@ -91,7 +91,7 @@ describe('UserAuthenticationService', () => {
 
     it('handles success', async () => {
       userRepoMock.getByConfirmationCode.mockResolvedValue(userData);
-      userRepoMock.getPassword.mockResolvedValue("password");
+      userRepoMock.getPassword.mockResolvedValue('password');
       try {
         await service.confirm(confirmation_code);
       } catch (err: any) {
@@ -103,8 +103,8 @@ describe('UserAuthenticationService', () => {
 
   describe('resendConfirmationCode method', () => {
     const params = {
-      email: "username@nobsc.com",
-      password: "password"
+      email: 'username@nobsc.com',
+      password: 'password'
     };
     
     it('handles when user does not exist', async () => {
@@ -112,16 +112,16 @@ describe('UserAuthenticationService', () => {
       try {
         await service.resendConfirmationCode(params);
       } catch (err: any) {
-        expect(err.message).toBe("User does not exist.");
+        expect(err.message).toBe('User does not exist.');
       }
       expect(emailUserMock).not.toHaveBeenCalled();
     });
 
     it('handles when already confirmed', async () => {
       const userData = {
-        user_id: "99999999-9999-9999-9999-999999999999",
-        email: "username@nobsc.com",
-        username: "username",
+        user_id: '99999999-9999-9999-9999-999999999999',
+        email: 'username@nobsc.com',
+        username: 'username',
         confirmation_code: null  // null means they're already confirmed
       } as UserData;
       userRepoMock.getByEmail.mockResolvedValue(userData);
@@ -129,25 +129,25 @@ describe('UserAuthenticationService', () => {
       try {
         await service.resendConfirmationCode(params);
       } catch (err: any) {
-        expect(err.message).toBe("Already confirmed.");
+        expect(err.message).toBe('Already confirmed.');
       }
       expect(emailUserMock).not.toHaveBeenCalled();
     });
 
     it('handles when password is incorrect', async () => {
       userRepoMock.getByEmail.mockResolvedValue(userData);
-      userRepoMock.getPassword.mockResolvedValue("differentpassword");
+      userRepoMock.getPassword.mockResolvedValue('differentpassword');
       try {
         await service.resendConfirmationCode(params);
       } catch (err: any) {
-        expect(err.message).toBe("Incorrect email or password.");
+        expect(err.message).toBe('Incorrect email or password.');
       }
       expect(emailUserMock).not.toHaveBeenCalled();
     });
 
     it('handles success', async () => {
       userRepoMock.getByEmail.mockResolvedValue(userData);
-      userRepoMock.getPassword.mockResolvedValue("password");
+      userRepoMock.getPassword.mockResolvedValue('password');
       try {
         await service.resendConfirmationCode(params);
       } catch (err: any) {
@@ -159,8 +159,8 @@ describe('UserAuthenticationService', () => {
 
   describe('login method', () => {
     const params = {
-      email: "username@nobsc.com",
-      password: "password"
+      email: 'username@nobsc.com',
+      password: 'password'
     };
     
     it('handles when user does not exist', async () => {
@@ -168,46 +168,46 @@ describe('UserAuthenticationService', () => {
       try {
         await service.login(params);
       } catch (err: any) {
-        expect(err.message).toBe("User does not exist.");
+        expect(err.message).toBe('User does not exist.');
       }
     });
 
     it('handles when user has not confirmed', async () => {
       userRepoMock.getByEmail.mockResolvedValue(userData);
-      userRepoMock.getPassword.mockResolvedValue("password");
+      userRepoMock.getPassword.mockResolvedValue('password');
       try {
         await service.login(params);
       } catch (err: any) {
-        expect(err.message).toBe("Please check your email for your confirmation code.");
+        expect(err.message).toBe('Please check your email for your confirmation code.');
       }
     });
 
     it('handles when password is incorrect', async () => {
       const userData = {
-        user_id: "99999999-9999-9999-9999-999999999999",
-        email: "username@nobsc.com",
-        username: "username",
+        user_id: '99999999-9999-9999-9999-999999999999',
+        email: 'username@nobsc.com',
+        username: 'username',
         confirmation_code: null
       } as UserData;
       userRepoMock.getByEmail.mockResolvedValue(userData);
-      userRepoMock.getPassword.mockResolvedValue("differentpassword");
+      userRepoMock.getPassword.mockResolvedValue('differentpassword');
 
       try {
         await service.login(params);
       } catch (err: any) {
-        expect(err.message).toBe("Incorrect email or password.");
+        expect(err.message).toBe('Incorrect email or password.');
       }
     });
 
     it('handles success', async () => {
       const userData = {
-        user_id: "99999999-9999-9999-9999-999999999999",
-        email: "username@nobsc.com",
-        username: "username",
+        user_id: '99999999-9999-9999-9999-999999999999',
+        email: 'username@nobsc.com',
+        username: 'username',
         confirmation_code: null
       } as UserData;
       userRepoMock.getByEmail.mockResolvedValue(userData);
-      userRepoMock.getPassword.mockResolvedValue("password");
+      userRepoMock.getPassword.mockResolvedValue('password');
       
       try {
         const { user_id, username } = await service.login(params);

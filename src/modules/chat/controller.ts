@@ -1,14 +1,14 @@
-import type { Socket } from "socket.io";
+import type { Socket } from 'socket.io';
 
-import { FriendshipRepo } from "../user/friendship/repo.js";
-import { ChatUserRepo }   from "./user/repo.js";
+import { FriendshipRepo } from '../user/friendship/repo';
+import { ChatUserRepo }   from './user/repo';
 
 export function chatController(socket: Socket) {
   return {
     async getOnlineFriends({ user_id, username }: GetOnlineFriendsParams) {
       const friendshipRepo = new FriendshipRepo();
 
-      const acceptedFriends = await friendshipRepo.viewAllOfStatus({user_id, status: "accepted"});
+      const acceptedFriends = await friendshipRepo.viewAllOfStatus({user_id, status: 'accepted'});
       if (acceptedFriends.length < 1) return;
     
       const chatuserRepo = new ChatUserRepo();

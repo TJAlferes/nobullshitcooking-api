@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import type { Session, SessionData } from 'express-session';
 
-import { publicRecipeController as controller } from "./controller.js";
+import { publicRecipeController as controller } from './controller';
 import { EquipmentRepo } from '../../equipment/repo';
 import { IngredientRepo } from '../../ingredient/repo';
 import { ImageRepo } from '../../image/repo';
@@ -40,7 +40,7 @@ interface MockRequest extends Request {
 
 // TO DO: FINISH
 
-describe("publicRecipeController", () => {
+describe('publicRecipeController', () => {
   let req: Partial<Request>;
   let res: Partial<Response>;
 
@@ -68,8 +68,8 @@ describe("publicRecipeController", () => {
     jest.clearAllMocks();
   });
 
-  describe("create method", () => {
-    it("handles when upload has private equipment", async () => {
+  describe('create method', () => {
+    it('handles when upload has private equipment', async () => {
       equipmentRepoMock.hasPrivate.mockResolvedValue(true);
       try {
         await controller.create(<Request>req, <Response>res);
@@ -79,7 +79,7 @@ describe("publicRecipeController", () => {
       expect(recipeRepoMock.insert).not.toHaveBeenCalled();
     });
 
-    it("handles when upload has private ingredient", async () => {
+    it('handles when upload has private ingredient', async () => {
       ingredientRepoMock.hasPrivate.mockResolvedValue(true);
       try {
         await controller.create(<Request>req, <Response>res);
@@ -89,7 +89,7 @@ describe("publicRecipeController", () => {
       expect(recipeRepoMock.insert).not.toHaveBeenCalled();
     });
 
-    it("handles when upload has private subrecipe", async () => {
+    it('handles when upload has private subrecipe', async () => {
       recipeRepoMock.hasPrivate.mockResolvedValue(true);
       try {
         await controller.create(<Request>req, <Response>res);
@@ -99,9 +99,9 @@ describe("publicRecipeController", () => {
       expect(recipeRepoMock.insert).not.toHaveBeenCalled();
     });
 
-    it("handles", async () => {});
+    it('handles', async () => {});
 
-    it("handles success", async () => {
+    it('handles success', async () => {
 
 
       await controller.create(<Request>req, <Response>res);
@@ -110,10 +110,10 @@ describe("publicRecipeController", () => {
     });
   });
 
-  describe("update method", () => {
-    it("handles", async () => {});
-    it("handles", async () => {});
-    it("handles success", async () => {
+  describe('update method', () => {
+    it('handles', async () => {});
+    it('handles', async () => {});
+    it('handles success', async () => {
 
     });
   });

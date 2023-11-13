@@ -1,5 +1,5 @@
-import { ForbiddenException } from "../../../utils/exceptions.js";
-import type { IncludedRecipe } from "../../plan/recipe/model.js";
+import { ForbiddenException } from '../../../utils/exceptions';
+import type { IncludedRecipe } from '../../plan/recipe/model';
 
 export interface RecipeRepoInterface {
   hasPrivate: (recipe_ids: string[]) => Promise<boolean>;

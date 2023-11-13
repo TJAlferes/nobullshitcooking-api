@@ -1,7 +1,7 @@
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 
 import { NOBSC_USER_ID, UNKNOWN_USER_ID } from '../shared/model';
-import { MySQLRepo }                      from '../shared/MySQL';
+import { MySQLRepo } from '../shared/MySQL';
 
 export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
   async viewOne(image_id: string) {

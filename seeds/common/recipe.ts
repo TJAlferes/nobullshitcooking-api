@@ -1,11 +1,11 @@
 import type { PoolConnection } from 'mysql2/promise';
 
-import { images }             from '../production/recipe/generated-images.js';
-import { recipes }            from '../production/recipe/generated-recipes.js';
-import { recipe_images }      from '../production/recipe/generated-recipe-images.js';
-import { recipe_equipment }   from '../production/recipe/generated-recipe-equipments.js';
-import { recipe_ingredients } from '../production/recipe/generated-recipe-ingredients.js';
-import { recipe_methods }     from '../production/recipe/generated-recipe-methods.js';
+import { production_images as images } from '../production/recipe/images.js';
+import { production_recipes as recipes } from '../production/recipe/recipes.js';
+import { production_recipe_images as recipe_images } from '../production/recipe/recipe-images.js';
+import { production_recipe_equipment as recipe_equipment } from '../production/recipe/recipe-equipment.js';
+import { production_recipe_ingredients as recipe_ingredients } from '../production/recipe/recipe-ingredients.js';
+import { production_recipe_methods as recipe_methods } from '../production/recipe/recipe-methods.js';
 
 export async function seedRecipe(conn: PoolConnection) {
   const placeholders1 = '(?, ?, ?, ?, ?),'.repeat(images.length).slice(0, -1);

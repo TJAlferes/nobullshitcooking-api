@@ -1,5 +1,6 @@
 import { assert, string } from 'superstruct';
 
+import { ValidationException } from '../../../utils/exceptions';
 import { GenerateUUIDv7StringId, UUIDv7StringId } from '../../shared/model';
 
 export class Chatmessage {
@@ -21,12 +22,12 @@ export class Chatmessage {
     //this.video_id       = params.video_id ? UUIDv7StringId(params.video_id) : undefined;
     
     if (this.chatroom_id === null && this.receiver_id === null) {
-      throw new Error("Chatmessage must define its chatroom_id or receiver_id.");
+      throw ValidationException('Chatmessage must define its chatroom_id or receiver_id.');
     }
     if (this.chatroom_id !== null && this.receiver_id !== null) {
       // chatroom_id means the message is public (to that chatroom)
       // reciever_id means the message is private (to that receiver and sender)
-      throw new Error("Chatmessage must be public or private, not both.");
+      throw ValidationException('Chatmessage must be public or private, not both.');
     }
   }
 
@@ -51,10 +52,10 @@ export class Chatmessage {
 export function Username(username: string) {
   assert(username, string());
   if (username.length < 6) {
-    throw new Error("Username must be at least 6 characters.");
+    throw ValidationException('Username must be at least 6 characters.');
   }
   if (username.length > 20) {
-    throw new Error("Username must be no more than 20 characters.");
+    throw ValidationException('Username must be no more than 20 characters.');
   }
   return username;
 }
@@ -62,7 +63,7 @@ export function Username(username: string) {
 export function Content(content: string) {
   assert(content, string());
   if (content.length > 1000) {
-    throw new Error("Chatmessage content must be no more than 1,000 characters.");
+    throw ValidationException('Chatmessage content must be no more than 1,000 characters.');
   }
   return content;
 }

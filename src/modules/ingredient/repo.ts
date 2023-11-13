@@ -1,8 +1,8 @@
 import { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
 
 import type { SearchRequest, SearchResponse } from '../search/model';
-import { NOBSC_USER_ID }                      from '../shared/model';
-import { MySQLRepo }                          from '../shared/MySQL';
+import { NOBSC_USER_ID } from '../shared/model';
+import { MySQLRepo } from '../shared/MySQL';
 
 export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface {
   async autosuggest(term: string) {

@@ -42,4 +42,4 @@ export function startServer() {
   return {httpServer, socketIOServer};
 }
 
-startServer();
+export const { httpServer, socketIOServer } = startServer();

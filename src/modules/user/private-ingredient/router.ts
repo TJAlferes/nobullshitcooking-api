@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { body, param } from 'express-validator';
 
-import { catchExceptions, userIsAuth } from '../../../utils/index';
+import { catchExceptions, userIsAuth } from '../../../utils';
 import { privateIngredientController as controller } from './controller';
 
 const router = Router();

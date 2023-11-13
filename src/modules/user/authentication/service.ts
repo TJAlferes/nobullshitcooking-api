@@ -6,10 +6,10 @@ import {
   NotFoundException,
   UnauthorizedException
 } from '../../../utils/exceptions';
-import { UUIDv7StringId }        from '../../shared/model';
-import { emailUser }             from '../../aws-ses/service';
+import { UUIDv7StringId } from '../../shared/model';
+import { emailUser } from '../../aws-ses/service';
 import { Email, Password, User } from '../model';
-import { UserRepoInterface }     from '../repo';
+import { UserRepoInterface } from '../repo';
 //crypto.timingSafeEqual() ???
 
 export class UserAuthenticationService {

@@ -1,6 +1,6 @@
-import { ResultSetHeader, RowDataPacket } from "mysql2";
+import { ResultSetHeader, RowDataPacket } from 'mysql2';
 
-import { MySQLRepo } from "../../shared/MySQL.js";
+import { MySQLRepo } from '../../shared/MySQL';
 
 export class ChatgroupRepo extends MySQLRepo implements ChatgroupRepoInterface {
   //async search
@@ -42,7 +42,7 @@ export class ChatgroupRepo extends MySQLRepo implements ChatgroupRepoInterface {
       )
     `;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
-    if (!result) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async update({ chatgroup_name, owner_id, chatgroup_id }: UpdateParams) {  // changeName
@@ -53,12 +53,12 @@ export class ChatgroupRepo extends MySQLRepo implements ChatgroupRepoInterface {
       WHERE owner_id = :owner_id AND chatgroup_id = :chatgroup_id
       LIMIT 1
     `;
-    const [ result ] = await this.pool.execute(sql, {
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, {
       chatgroup_name,
       owner_id,
       chatgroup_id
     });
-    if (!result) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   //async generateNewInviteCode
@@ -70,7 +70,8 @@ export class ChatgroupRepo extends MySQLRepo implements ChatgroupRepoInterface {
       WHERE owner_id = :owner_id AND chatgroup_id = :chatgroup_id
       LIMIT 1
     `;
-    await this.pool.execute(sql, {owner_id, chatgroup_id});
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, {owner_id, chatgroup_id});
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }
 

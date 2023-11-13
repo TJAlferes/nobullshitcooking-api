@@ -1,15 +1,15 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
-import { NOBSC_USER_ID }      from '../shared/model';
-import { EquipmentRepo }      from '../equipment/repo';
-import { EquipmentTypeRepo }  from '../equipment/type/repo';
-import { IngredientRepo }     from '../ingredient/repo';
+import { NOBSC_USER_ID } from '../shared/model';
+import { EquipmentRepo } from '../equipment/repo';
+import { EquipmentTypeRepo } from '../equipment/type/repo';
+import { IngredientRepo } from '../ingredient/repo';
 import { IngredientTypeRepo } from '../ingredient/type/repo';
-import { RecipeRepo }         from '../recipe/repo';
-import { CuisineRepo }        from '../recipe/cuisine/repo';
-import { MethodRepo }         from '../recipe/method/repo';
-import { RecipeTypeRepo }     from '../recipe/type/repo';
-import { UnitRepo }           from '../shared/unit/repo';
+import { RecipeRepo } from '../recipe/repo';
+import { CuisineRepo } from '../recipe/cuisine/repo';
+import { MethodRepo } from '../recipe/method/repo';
+import { RecipeTypeRepo } from '../recipe/type/repo';
+import { UnitRepo } from '../shared/unit/repo';
 
 export const initialDataController = {
   async view(req: Request, res: Response) {

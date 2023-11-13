@@ -1,7 +1,7 @@
 import { Socket } from 'socket.io';
 
-import { ChatroomRepo }     from '../repo';
-import { ChatroomUser }     from './model';
+import { ChatroomRepo } from '../repo';
+import { ChatroomUser } from './model';
 import { ChatroomUserRepo } from './repo';
 
 export function chatroomUserController(socket: Socket) {

@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 
-import { ForbiddenException, NotFoundException} from '../../../utils/exceptions';
-import { NOBSC_USER_ID }      from '../../shared/model';
-import { RecipeRepo }         from '../../recipe/repo';
-import { FavoriteRecipe }     from './model';
+import { ForbiddenException, NotFoundException } from '../../../utils/exceptions';
+import { NOBSC_USER_ID } from '../../shared/model';
+import { RecipeRepo } from '../../recipe/repo';
+import { FavoriteRecipe } from './model';
 import { FavoriteRecipeRepo } from './repo';
 
 export const userFavoriteRecipeController = {

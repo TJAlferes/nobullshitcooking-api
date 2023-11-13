@@ -1,15 +1,16 @@
-import { RowDataPacket }                          from 'mysql2/promise';
+import { RowDataPacket } from 'mysql2/promise';
 import { assert, array, Infer, object, optional, string } from 'superstruct';
 
+import { ValidationException } from '../../utils/exceptions';
 // TO DO: FINISH
 
 export function SearchTerm(term: string) {
   assert(term, string());
   if (term.length < 3) {
-    throw new Error("Search term must be at least 3 characters in length.");
+    throw ValidationException('Search term must be at least 3 characters in length.');
   }
   if (term.length > 100) {
-    throw new Error("Search term must be at most 100 characters in length.");
+    throw ValidationException('Search term must be at most 100 characters in length.');
   }
   return term;
 }

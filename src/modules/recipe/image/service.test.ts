@@ -1,17 +1,18 @@
-import { ImageRepoInterface } from "../../image/repo.js";
-import { RecipeImageRepoInterface } from "./repo.js";
-import { RecipeImageService } from "./service.js";
+import { ImageRepoInterface } from '../../image/repo';
+import { RecipeImageRepoInterface } from './repo';
+import { RecipeImageService } from './service';
 
 jest.mock('../../image/repo');
 jest.mock('./repo');
 
-describe("RecipeImageService", () => {
+describe('RecipeImageService', () => {
   let imageRepoMock: jest.Mocked<ImageRepoInterface>;
   let recipeImageRepoMock: jest.Mocked<RecipeImageRepoInterface>;
   let service: RecipeImageService;
 
   beforeEach(() => {
     imageRepoMock = {
+      viewOne: jest.fn(),
       bulkInsert: jest.fn(),
       insert: jest.fn(),
       update: jest.fn(),
@@ -37,22 +38,22 @@ describe("RecipeImageService", () => {
     jest.clearAllMocks();
   });
 
-  describe("bulkCreate method", () => {
-    it("handles ", async () => {
+  describe('bulkCreate method', () => {
+    it('handles ', async () => {
 
     });
 
-    it("handles success", async () => {
+    it('handles success', async () => {
       
     });
   });
 
-  describe("bulkUpdate method", () => {
-    it("handles ", async () => {
+  describe('bulkUpdate method', () => {
+    it('handles ', async () => {
       
     });
 
-    it("handles success", async () => {
+    it('handles success', async () => {
       
     });
   });

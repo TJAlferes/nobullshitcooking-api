@@ -3,9 +3,9 @@ import { PlanRepo } from '../plan/repo';
 import { RecipeRepo } from '../recipe/repo';
 import { EquipmentRepo } from '../equipment/repo';
 import { IngredientRepo } from '../ingredient/repo';
-import { NOBSC_USER_ID, UNKNOWN_USER_ID } from "../shared/model.js";
-import { UserService } from "./service.js";
-import type { UserRepoInterface, UserData } from "./repo.js";
+import { NOBSC_USER_ID, UNKNOWN_USER_ID } from '../shared/model';
+import { UserService } from './service';
+import type { UserRepoInterface, UserData } from './repo';
 
 jest.mock('../image/repo');
 jest.mock('../plan/repo');
@@ -22,10 +22,10 @@ const ingredientRepoMock = IngredientRepo as unknown as jest.Mocked<IngredientRe
 jest.mock('./repo');
 
 const userData = {
-  user_id: "99999999-9999-9999-9999-999999999999",
-  email: "username@nobsc.com",
-  username: "username",
-  confirmation_code: "99999999-9999-9999-9999-999999999999"
+  user_id: '99999999-9999-9999-9999-999999999999',
+  email: 'username@nobsc.com',
+  username: 'username',
+  confirmation_code: '99999999-9999-9999-9999-999999999999'
 } as UserData;
 
 describe('UserService', () => {
@@ -52,9 +52,9 @@ describe('UserService', () => {
 
   describe('create method', () => {
     const params = {
-      email: "username@nobsc.com",
-      password: "password",
-      username: "username"
+      email: 'username@nobsc.com',
+      password: 'password',
+      username: 'username'
     };
 
     it('handles when email already exists', async () => {
@@ -62,7 +62,7 @@ describe('UserService', () => {
       try {
         await userService.create(params);
       } catch (err: any) {
-        expect(err.message).toBe("Email already in use.");
+        expect(err.message).toBe('Email already in use.');
       }
     });
 
@@ -72,7 +72,7 @@ describe('UserService', () => {
       try {
         await userService.create(params);
       } catch (err: any) {
-        expect(err.message).toBe("Username already in use.");
+        expect(err.message).toBe('Username already in use.');
       }
     });
 
@@ -89,8 +89,8 @@ describe('UserService', () => {
 
   describe('updateEmail method', () => {
     const params = {
-      user_id: "99999999-9999-9999-9999-999999999999",
-      new_email: "newemail@newemail.com"
+      user_id: '99999999-9999-9999-9999-999999999999',
+      new_email: 'newemail@newemail.com'
     };
 
     it('handles when user does not exist', async () => {
@@ -98,7 +98,7 @@ describe('UserService', () => {
       try {
         await userService.updateEmail(params);
       } catch (err: any) {
-        expect(err.message).toBe("User does not exist.");
+        expect(err.message).toBe('User does not exist.');
       }
     });
 
@@ -114,8 +114,8 @@ describe('UserService', () => {
 
   describe('updatePassword method', () => {
     const params = {
-      user_id: "99999999-9999-9999-9999-999999999999",
-      new_password: "newpassword"
+      user_id: '99999999-9999-9999-9999-999999999999',
+      new_password: 'newpassword'
     };
 
     it('handles when user does not exist', async () => {
@@ -123,7 +123,7 @@ describe('UserService', () => {
       try {
         await userService.updatePassword(params);
       } catch (err: any) {
-        expect(err.message).toBe("User does not exist.");
+        expect(err.message).toBe('User does not exist.');
       }
     });
 
@@ -139,8 +139,8 @@ describe('UserService', () => {
 
   describe('updateUsername method', () => {
     const params = {
-      user_id: "99999999-9999-9999-9999-999999999999",
-      new_username: "newusername"
+      user_id: '99999999-9999-9999-9999-999999999999',
+      new_username: 'newusername'
     };
 
     it('handles when user does not exist', async () => {
@@ -148,7 +148,7 @@ describe('UserService', () => {
       try {
         await userService.updateUsername(params);
       } catch (err: any) {
-        expect(err.message).toBe("User does not exist.");
+        expect(err.message).toBe('User does not exist.');
       }
     });
 
@@ -177,7 +177,7 @@ describe('UserService', () => {
       try {
         await userService.delete(NOBSC_USER_ID);
       } catch (err: any) {
-        expect(err.message).toBe("Forbidden.");
+        expect(err.message).toBe('Forbidden.');
       }
       expect(userRepoMock.delete).not.toHaveBeenCalled();
     });
@@ -186,13 +186,13 @@ describe('UserService', () => {
       try {
         await userService.delete(UNKNOWN_USER_ID);
       } catch (err: any) {
-        expect(err.message).toBe("Forbidden.");
+        expect(err.message).toBe('Forbidden.');
       }
       expect(userRepoMock.delete).not.toHaveBeenCalled();
     });
 
     it('handles success', async () => {
-      const user_id = "99999999-9999-9999-9999-999999999999";
+      const user_id = '99999999-9999-9999-9999-999999999999';
       try {
         await userService.delete(user_id);
       } catch (err: any) {

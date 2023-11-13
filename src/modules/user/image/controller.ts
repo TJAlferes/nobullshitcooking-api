@@ -1,8 +1,8 @@
 import type { Request, Response } from 'express';
 
-import { ImageRepo }     from '../../image/repo';
-import { Image }         from '../../image/model';
-import { UserImage }     from './model';
+import { ImageRepo } from '../../image/repo';
+import { Image } from '../../image/model';
+import { UserImage } from './model';
 import { UserImageRepo } from './repo';
 
 export const userImageController = {

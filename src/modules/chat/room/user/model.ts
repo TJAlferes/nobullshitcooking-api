@@ -1,4 +1,4 @@
-import { UUIDv7StringId } from "../../../shared/model.js";
+import { UUIDv7StringId } from '../../../shared/model';
 
 export class ChatroomUser {
   private chatroom_id;

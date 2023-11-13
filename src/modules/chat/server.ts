@@ -1,7 +1,7 @@
-import type { RequestHandler }              from 'express';
-import type { Server }                      from 'node:http';
+import type { RequestHandler } from 'express';
+import type { Server } from 'node:http';
 import { Server as SocketIOServer, Socket } from 'socket.io';
-import { createAdapter }                    from '@socket.io/redis-adapter';
+import { createAdapter } from '@socket.io/redis-adapter';
 
 import { redisClients } from '../../connections/redis';
 import { FriendshipRepo } from '../user/friendship/repo';

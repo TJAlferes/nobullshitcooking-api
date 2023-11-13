@@ -1,5 +1,6 @@
 import { assert, string } from 'superstruct';
 
+import { ValidationException } from '../../utils/exceptions';
 import { GenerateUUIDv7StringId, UUIDv7StringId, NumberId } from '../shared/model';
 
 export class Recipe {
@@ -55,7 +56,7 @@ export class Recipe {
 export function Title(title: string) {
   assert(title, string());
   if (title.length > 100) {
-    throw new Error ("Recipe title must be no more than 100 characters.")
+    throw ValidationException('Recipe title must be no more than 100 characters.')
   }
   return title;
 }
@@ -63,7 +64,7 @@ export function Title(title: string) {
 export function Description(description: string) {
   assert(description, string());
   if (description.length > 150) {
-    throw new Error("Recipe description must be no more than 150 characters.");
+    throw ValidationException('Recipe description must be no more than 150 characters.');
   }
   return description;
 }
@@ -72,13 +73,13 @@ function Time(time: string) {
   assert(time, string());
 
   const [ hours, minutes ] = time.split(':');
-  if (hours.length !== 2) throw new Error("Invalid time.");
-  if (minutes.length !== 2) throw new Error("Invalid time.");
+  if (hours.length !== 2) throw ValidationException('Invalid time.');
+  if (minutes.length !== 2) throw ValidationException('Invalid time.');
   
   const hrs = parseInt(hours);
   const mins = parseInt(minutes);
   if (isNaN(hrs) || isNaN(mins) || hrs < 0 || hrs > 23 || mins < 0 || mins > 59) {
-    throw new Error("Invalid time.");
+    throw ValidationException('Invalid time.');
   }
   
   return time;
@@ -87,7 +88,7 @@ function Time(time: string) {
 export function Directions(directions: string) {
   assert(directions, string());
   if (directions.length > 2000) {
-    throw new Error("Recipe directions must be no more than 2,000 characters.");
+    throw ValidationException('Recipe directions must be no more than 2,000 characters.');
   }
   return directions;
 }

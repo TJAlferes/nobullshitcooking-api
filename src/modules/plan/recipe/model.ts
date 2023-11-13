@@ -1,4 +1,4 @@
-import { assert, number } from "superstruct";
+import { assert, number } from 'superstruct';
 
 import { ValidationException } from '../../../utils/exceptions';
 import { UUIDv7StringId } from '../../shared/model';

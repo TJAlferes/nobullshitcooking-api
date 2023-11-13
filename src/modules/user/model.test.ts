@@ -1,4 +1,4 @@
-import { User, Email, Password, Username } from "./model.js";
+import { User, Email, Password, Username } from './model';
 
 describe('User model', () => {
   describe('update method', () => {

@@ -1,7 +1,7 @@
 import type { PoolConnection } from 'mysql2/promise';
 
-import { images }      from '../production/ingredient/generated-images.js';
-import { ingredients } from '../production/ingredient/generated-ingredients.js';
+import { production_images as images } from '../production/ingredient/images.js';
+import { production_ingredients as ingredients } from '../production/ingredient/ingredients.js';
 
 export async function seedIngredient(conn: PoolConnection) {
   const placeholders1 = '(?, ?, ?, ?, ?),'.repeat(images.length).slice(0, -1);

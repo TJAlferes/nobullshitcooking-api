@@ -1,9 +1,9 @@
-import { Request, Response } from 'express';
-import { create }    from 'superstruct';
+import type { Request, Response } from 'express';
+import { create } from 'superstruct';
 
-import { EquipmentRepo }  from '../equipment/repo';
+import { EquipmentRepo } from '../equipment/repo';
 import { IngredientRepo } from '../ingredient/repo';
-import { RecipeRepo }     from '../recipe/repo';
+import { RecipeRepo } from '../recipe/repo';
 import { SearchTerm, validSearchRequest } from './model';
 
 export const searchController = {

@@ -1,11 +1,11 @@
 import type { PoolConnection } from 'mysql2/promise';
 
-import { images }      from '../production/user/generated-images.js';
-import { users }       from '../production/user/generated-users.js';
-import { user_images } from '../production/user/generated-user-images.js';
+import { production_images } from '../production/user/images.js';
+import { production_users } from '../production/user/users.js';
+import { production_user_images } from '../production/user/user-images.js';
 
 export async function seedUser(conn: PoolConnection) {
-  const placeholders1 = '(?, ?, ?, ?, ?),'.repeat(images.length).slice(0, -1);
+  const placeholders1 = '(?, ?, ?, ?, ?),'.repeat(production_images.length).slice(0, -1);
   const sql1 = `
     INSERT INTO image (
       image_id,
@@ -15,9 +15,9 @@ export async function seedUser(conn: PoolConnection) {
       owner_id
     ) VALUES ${placeholders1}
   `;
-  await conn.query(sql1, images);
+  await conn.query(sql1, production_images);
 
-  const placeholders2 = '(?, ?, ?, ?, ?),'.repeat(users.length).slice(0, -1);
+  const placeholders2 = '(?, ?, ?, ?, ?),'.repeat(production_users.length).slice(0, -1);
   const sql2 = `
     INSERT INTO user (
       user_id,
@@ -27,9 +27,9 @@ export async function seedUser(conn: PoolConnection) {
       confirmation_code
     ) VALUES ${placeholders2}
   `;
-  await conn.query(sql2, users);
+  await conn.query(sql2, production_users);
 
-  const placeholders3 = '(?, ?, ?),'.repeat(users.length).slice(0, -1);
+  const placeholders3 = '(?, ?, ?),'.repeat(production_users.length).slice(0, -1);
   const sql3 = `
     INSERT INTO user_image (
       user_id,
@@ -37,5 +37,5 @@ export async function seedUser(conn: PoolConnection) {
       current
     ) VALUES ${placeholders3}
   `;
-  await conn.query(sql3, user_images);
+  await conn.query(sql3, production_user_images);
 }

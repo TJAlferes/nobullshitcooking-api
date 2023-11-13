@@ -1,8 +1,8 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 import { ChatgroupRepo } from '../group/repo';
-import { Chatroom }      from './model';
-import { ChatroomRepo }  from './repo';
+import { Chatroom } from './model';
+import { ChatroomRepo } from './repo';
 
 export const chatroomController = {
   async create(req: Request, res: Response) {
