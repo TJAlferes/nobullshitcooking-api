@@ -1,7 +1,7 @@
 import { assert, string } from 'superstruct';
 
-import { ValidationException } from '../../utils/exceptions.js';
-import { GenerateUUIDv7StringId, UUIDv7StringId, ImageFilename } from '../shared/model.js';
+import { ValidationException } from '../../utils/exceptions';
+import { GenerateUUIDv7StringId, UUIDv7StringId, ImageFilename } from '../shared/model';
 
 export class Image {
   private image_id;

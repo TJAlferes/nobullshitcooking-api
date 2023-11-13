@@ -1,9 +1,9 @@
-import { ValidationException } from "../../../utils/exceptions.js";
+import { ValidationException } from '../../../utils/exceptions';
 import type {
   RequiredEquipment,
   RequiredIngredient,
   RequiredSubrecipe
-} from "../../recipe/model.js";
+} from '../../recipe/model';
 
 export interface EquipmentRepoInterface {
   hasPrivate: (equipment_ids: string[]) => Promise<boolean>;

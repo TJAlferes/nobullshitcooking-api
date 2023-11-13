@@ -1,7 +1,7 @@
-/*import { Router }      from 'express';
+/*import { Router } from 'express';
 import { body, param } from 'express-validator';
 
-import { chatgroupController }         from './controller';
+import { chatgroupController } from './controller';
 import { catchExceptions, userIsAuth } from '../../../index';
 
 const router = Router();

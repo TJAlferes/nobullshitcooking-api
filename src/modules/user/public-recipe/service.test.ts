@@ -1,23 +1,23 @@
-import { PublicRecipeService } from "./service.js";
+import { PublicRecipeService } from './service';
 import type {
   EquipmentRepoInterface,
   IngredientRepoInterface,
   RecipeRepoInterface
-} from "./service.js";
+} from './service';
 
 // TO DO: handle optional amount and unit
 describe('PublicRecipeService', () => {
   const params = {
     required_equipment: [
-      {amount: 1, equipment_id: "1"},
-      {amount: 1, equipment_id: "2"}
+      {amount: 1, equipment_id: '1'},
+      {amount: 1, equipment_id: '2'}
     ],
     required_ingredients: [
-      {amount: 1, unit_id: 1, ingredient_id: "1"},
-      {amount: 2, unit_id: 2, ingredient_id: "2"}
+      {amount: 1, unit_id: 1, ingredient_id: '1'},
+      {amount: 2, unit_id: 2, ingredient_id: '2'}
     ],
     required_subrecipes: [
-      {amount: 1, unit_id: 1, subrecipe_id: "1"}
+      {amount: 1, unit_id: 1, subrecipe_id: '1'}
     ]
   };
   let equipmentRepoMock: jest.Mocked<EquipmentRepoInterface>;

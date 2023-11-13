@@ -1,6 +1,6 @@
-import { assert, boolean } from "superstruct";
+import { assert, boolean } from 'superstruct';
 
-import { UUIDv7StringId } from "../../shared/model.js";
+import { UUIDv7StringId } from '../../shared/model';
 
 export class UserImage {
   private user_id;
