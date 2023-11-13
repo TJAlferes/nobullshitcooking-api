@@ -122,7 +122,7 @@ export function createAppServer() {
         res.status(error.code).json({message: error.message});
       } else {
         console.log(error.message);
-        res.status(500).json({error: error.message || 'Internal Server Error'});
+        res.status(500).json({error: error.message || 'Internal Server Error'});  // message: error.message
       }
     });
   } else {
@@ -131,7 +131,7 @@ export function createAppServer() {
         res.status(error.code).json({message: error.message});
       } else {
         console.log(error);
-        res.status(500).json({error});
+        res.status(500).json({error});  // shows full stack trace, but...
       }
     });
   }

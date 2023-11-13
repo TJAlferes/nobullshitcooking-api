@@ -6,7 +6,7 @@ import request from 'supertest';
 import { seedTestDatabase } from '../../seeds/test/index.js';
 import { pool, testConfig } from '../../src/connections/mysql.js';
 import { redisClients } from '../../src/connections/redis.js';
-import { httpServer, socketIOServer, userCronJob, passwordResetCronJob } from '../../src/index.js';
+import { userCronJob, passwordResetCronJob, startServer } from '../../src/index.js';
 import {
   authenticationTests,
   usersTests,
@@ -40,6 +40,7 @@ import {
 // Register and run all integration tests from this file.
 // Avoid global seeds and fixtures, add data per test (per it).
 
+const { httpServer, socketIOServer } = startServer();
 export let server: Server | null = httpServer;
 export let socketio: SocketIOServer | null = socketIOServer;
 

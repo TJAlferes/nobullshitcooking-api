@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express';
 
+import { NotFoundException } from '../../utils/exceptions.js';
 import { NOBSC_USER_ID } from '../shared/model.js';
 import { RecipeRepo }    from './repo.js';
 
@@ -9,27 +10,30 @@ import { RecipeRepo }    from './repo.js';
 export const recipeController = {
   async viewAllOfficialTitles(req: Request, res: Response) {
     const repo = new RecipeRepo();
-    const rows = await repo.viewAllOfficialTitles();
+    const titles = await repo.viewAllOfficialTitles();
 
-    return res.send(rows);
+    return res.json(titles);
   },  // for Next.js getStaticPaths
 
   async viewOneByTitle(req: Request, res: Response) {
-    const title     = unslugify(req.params.title);
+    const { title } = req.params;
     const author_id = NOBSC_USER_ID;
-    const owner_id  = NOBSC_USER_ID;
+    const owner_id = NOBSC_USER_ID;
 
     const repo = new RecipeRepo();
-    const row = await repo.viewOneByTitle({title, author_id, owner_id});
+    const recipe = await repo.viewOneByTitle(title);
+    if (!recipe) throw NotFoundException();
+    if (recipe.author_id !== author_id) throw NotFoundException();  //ForbiddenException(); 
+    if (recipe.owner_id !== owner_id) throw NotFoundException();  //ForbiddenException(); 
 
-    return res.send(row);
+    return res.json(recipe);
   }
 };
 
 // TO DO: move to shared
-function unslugify(title: string) {
-  return title
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-}
+//function unslugify(title: string) {
+//  return title
+//    .split('-')
+//    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+//    .join(' ');
+//}

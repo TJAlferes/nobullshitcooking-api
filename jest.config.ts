@@ -7,9 +7,9 @@ const config: Config = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   testPathIgnorePatterns: ['<rootDir>/node_modules/'],
-  testRegex: '(/tests/.*|(\\.|/)(test|spec))\\.[jt]sx?$',
+  testRegex: '/*.test.ts$',
   transform: {
-    '^.+\\.[t]sx?$': ['ts-jest', {babelConfig: true}],
+    '^.+\\.[t]sx?$': 'ts-jest',
   },
   verbose: true,
 };

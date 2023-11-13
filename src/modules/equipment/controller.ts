@@ -1,5 +1,6 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
+import { NotFoundException } from '../../utils/exceptions.js';
 import { NOBSC_USER_ID } from '../shared/model.js';
 import { EquipmentRepo } from './repo.js';
 
@@ -8,18 +9,20 @@ export const equipmentController = {
     const owner_id = NOBSC_USER_ID;
 
     const repo = new EquipmentRepo();
-    const rows = await repo.viewAll(owner_id);
+    const equipment = await repo.viewAll(owner_id);
     
-    return res.send(rows);
+    return res.json(equipment);
   },
 
   async viewOne(req: Request, res: Response) {
-    const equipment_id = req.params.equipment_id;
-    const owner_id     = NOBSC_USER_ID;
+    const { equipment_id } = req.params;
+    const owner_id = NOBSC_USER_ID;
 
     const repo = new EquipmentRepo();
-    const row = await repo.viewOne({owner_id, equipment_id});
+    const equipment = await repo.viewOne(equipment_id);
+    if (!equipment) throw NotFoundException();
+    if (equipment.owner_id !== owner_id) throw NotFoundException();  //ForbiddenException(); 
 
-    return res.send(row);
+    return res.json(equipment);
   }
 };

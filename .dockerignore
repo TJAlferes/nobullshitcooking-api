@@ -18,12 +18,13 @@ yarn-error.log
 *.log
 
 # Test files and directories
-__tests__/
-test/
-tests/
-*.test.*
-jest.config.js
-test-setup.js
+#__tests__/
+#test/
+#tests/
+#*.test.*
+#jest.config.js
+#test-setup.js
+#global-setup.cjs
 
 # Build and output files
 coverage/
