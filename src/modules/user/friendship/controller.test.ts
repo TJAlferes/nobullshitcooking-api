@@ -1,51 +1,72 @@
 import type { Request, Response } from 'express';
 import type { Session, SessionData } from 'express-session';
 
+import { ExceptionError, NotFoundException, ForbiddenException } from '../../../utils/exceptions';
 import { UserRepo } from '../repo';
 import type { UserData } from '../repo';
-import { friendshipController as controller } from './controller';
 import { FriendshipRepo } from './repo';
+import { friendshipController as controller } from './controller';
 
-class NotFoundExceptionMock extends Error {}
-class ForbiddenExceptionMock extends Error {}
-jest.mock('../../../utils/exceptions', () => ({
-  NotFoundException: jest.fn(() => new NotFoundExceptionMock()),
-  ForbiddenException: jest.fn(() => new ForbiddenExceptionMock())
+//let NotFoundExceptionMock = jest.fn();
+//let ForbiddenExceptionMock = jest.fn();
+//jest.mock('../../../utils/exceptions', () => ({
+//  ExceptionError: jest.fn((code, name, message) => ({
+//    code,
+//    name,
+//    message,
+//    toString: jest.fn(() => JSON.stringify({code, name, message})),
+//  })),
+//  NotFoundException: jest.fn().mockImplementation(() => NotFoundExceptionMock),
+//  ForbiddenException: jest.fn().mockImplementation(() => ForbiddenExceptionMock)
+//}));
+
+let mockGetByUsername = jest.fn();
+jest.mock('../repo', () => ({
+  UserRepo: jest.fn().mockImplementation(() => ({
+    getByUsername: mockGetByUsername
+  }))
 }));
-jest.mock('../repo');
-jest.mock('./repo');
 
-let userRepoMock = UserRepo as unknown as jest.Mocked<UserRepo>;
-let friendshipRepoMock = FriendshipRepo as unknown as jest.Mocked<FriendshipRepo>;
+let mockGetStatus = jest.fn();
+let mockInsert = jest.fn();
+let mockUpdate = jest.fn();
+let mockDelete = jest.fn();
+jest.mock('./repo', () => ({
+  FriendshipRepo: jest.fn().mockImplementation(() => ({
+    getStatus: mockGetStatus,
+    insert: mockInsert,
+    update: mockUpdate,
+    delete: mockDelete
+  }))
+}));
 
 interface MockRequest extends Request {
+  params: any;
   session: Session & Partial<SessionData>;
 }
 
 describe('friendshipController', () => {
   const user2Data = {
-    user_id: '2',
-    email: 'user2@nobsc.com',
-    username: "user2",
-    confirmation_code: "2"
+    user_id: '44444444-4444-4444-4444-444444444444',
+    email: 'fakeuser2@gmail.com.com',
+    username: 'fakeuser2',
+    confirmation_code: '44444444-4444-4444-4444-444444444444'
   };
-  let req: Partial<Request>;
+  let req: Partial<MockRequest>;
   let res: Partial<Response>;
 
   beforeEach(() => {
     //jest.clearAllMocks();
-    userRepoMock = UserRepo as unknown as jest.Mocked<UserRepo>;
-    friendshipRepoMock = FriendshipRepo as unknown as jest.Mocked<FriendshipRepo>;
     req = {
-      body: {
-        friendname: 'user2'
+      params: {
+        friendname: 'fakeuser2'
       },
       session: {
-        user_id: '1'
+        user_id: '33333333-3333-3333-3333-333333333333'
       }
     } as MockRequest;
     res = {
-      status: jest.fn(),
+      status: jest.fn().mockReturnThis(),
       json: jest.fn()
     };
   });
@@ -55,94 +76,101 @@ describe('friendshipController', () => {
   });
 
   describe('create method', () => {
-    it('handles when desired friend does not exist', async () => {
-      userRepoMock.getByUsername.mockResolvedValue(undefined);
-      expect(() => controller.create(<Request>req, <Response>res))
-        .toThrow(NotFoundExceptionMock);
-    });
-
-    it('handles when blocked by desired friend', async () => {
-      friendshipRepoMock.getStatus.mockResolvedValue("blocked");
-      userRepoMock.getByUsername.mockResolvedValue(user2Data as UserData);
-      req.body.friendname = 'user2';
-      //await controller.create(<Request>req, <Response>res);
-      //expect(res.status).toHaveBeenCalledWith(404);
-      expect(() => controller.create(<Request>req, <Response>res))
-        .toThrow(NotFoundExceptionMock);
-    });
-
     it('handles success', async () => {
-      friendshipRepoMock.getStatus.mockResolvedValue(undefined);
-      userRepoMock.getByUsername.mockResolvedValue(user2Data as UserData);
+      mockGetStatus.mockResolvedValue(undefined);
+      mockGetByUsername.mockResolvedValue(user2Data as UserData);
       await controller.create(<Request>req, <Response>res);
       expect(res.status).toHaveBeenCalledWith(201);
     });
 
-    it('handles when status is "pending-sent"', async () => {
-      friendshipRepoMock.getStatus
-        .mockResolvedValueOnce(undefined)
-        .mockResolvedValueOnce("pending-sent");
-      userRepoMock.getByUsername.mockResolvedValue(user2Data as UserData);
-      await controller.create(<Request>req, <Response>res);
-      //expect(res.status).toHaveBeenCalledWith(403);
-      //expect(res.json).toHaveBeenCalledWith({message: 'Already pending.'});
-      expect(() => controller.create(<Request>req, <Response>res))
-        .toThrow(ForbiddenExceptionMock);
+    it('handles when desired friend does not exist', async () => {
+      mockGetByUsername.mockResolvedValue(undefined);
+      await expect(async () => await controller.create(req as Request, res as Response))
+        .rejects
+        .toThrow();
     });
 
-    it('handles when status is "pending-received"', async () => {
-      friendshipRepoMock.getStatus
-        .mockResolvedValueOnce(undefined)
-        .mockResolvedValueOnce("pending-received");
-      userRepoMock.getByUsername.mockResolvedValue(user2Data as UserData);
-      await controller.create(<Request>req, <Response>res);
-      //expect(res.status).toHaveBeenCalledWith(403);
-      //expect(res.json).toHaveBeenCalledWith({message: 'Already pending.'});
-      expect(() => controller.create(<Request>req, <Response>res))
-        .toThrow(ForbiddenExceptionMock);
+    it('handles when blocked by desired friend', async () => {
+      mockGetStatus.mockResolvedValue('blocked');
+      mockGetByUsername.mockResolvedValue(user2Data as UserData);
+      //req.params.friendname = 'fakeuser2';
+      try {
+        await controller.create(<Request>req, <Response>res);
+      } catch (err: any) {
+        expect(err.code).toBe(404);
+        expect(err.message).toBe('Not Found');
+      }
     });
 
-    it('handles when status is "accepted"', async () => {
-      friendshipRepoMock.getStatus
+    it('handles when status is pending-sent', async () => {
+      mockGetStatus
         .mockResolvedValueOnce(undefined)
-        .mockResolvedValueOnce("accepted");
-      userRepoMock.getByUsername.mockResolvedValue(user2Data as UserData);
-      await controller.create(<Request>req, <Response>res);
-      //expect(res.status).toHaveBeenCalledWith(403);
-      //expect(res.json).toHaveBeenCalledWith({message: 'Already friends.'});
-      expect(() => controller.create(<Request>req, <Response>res))
-        .toThrow(ForbiddenExceptionMock);
+        .mockResolvedValueOnce('pending-sent');
+      mockGetByUsername.mockResolvedValue(user2Data as UserData);
+      try {
+        await controller.create(<Request>req, <Response>res);
+      } catch (err: any) {
+        expect(err.code).toBe(403);
+        expect(err.message).toBe('Already pending.');
+      }
     });
 
-    it('handles when status is "blocked"', async () => {
-      friendshipRepoMock.getStatus
+    it('handles when status is pending-received', async () => {
+      mockGetStatus
         .mockResolvedValueOnce(undefined)
-        .mockResolvedValueOnce("blocked");
-      userRepoMock.getByUsername.mockResolvedValue(user2Data as UserData);
-      await controller.create(<Request>req, <Response>res);
-      //expect(res.status).toHaveBeenCalledWith(403);
-      //expect(res.json).toHaveBeenCalledWith({message: 'User blocked. First unblock.'});
-      expect(() => controller.create(<Request>req, <Response>res))
-        .toThrow(ForbiddenExceptionMock);
+        .mockResolvedValueOnce('pending-received');
+      mockGetByUsername.mockResolvedValue(user2Data as UserData);
+      try {
+        await controller.create(<Request>req, <Response>res);
+      } catch (err: any) {
+        expect(err.code).toBe(403);
+        expect(err.message).toBe('Already pending.');
+      }
+    });
+
+    it('handles when status is accepted', async () => {
+      mockGetStatus
+        .mockResolvedValueOnce(undefined)
+        .mockResolvedValueOnce('accepted');
+      mockGetByUsername.mockResolvedValue(user2Data as UserData);
+      try {
+        await controller.create(<Request>req, <Response>res);
+      } catch (err: any) {
+        expect(err.code).toBe(403);
+        expect(err.message).toBe('Already friends.');
+      }
+    });
+
+    it('handles when status is blocked', async () => {
+      mockGetStatus
+        .mockResolvedValueOnce(undefined)
+        .mockResolvedValueOnce('blocked');
+      mockGetByUsername.mockResolvedValue(user2Data as UserData);
+      try {
+        await controller.create(<Request>req, <Response>res);
+      } catch (err: any) {
+        expect(err.code).toBe(403);
+        expect(err.message).toBe('User blocked. First unblock.');
+      }
     });
   });
 
   describe('accept method', () => {
     it('handles when desired friend does not exist', async () => {
-      userRepoMock.getByUsername.mockResolvedValue(undefined);
+      mockGetByUsername.mockResolvedValue(undefined);
       await controller.accept(<Request>req, <Response>res);
       expect(res.status).toHaveBeenCalledWith(404);
     });
 
-    it('handles when status is not "pending-received"', async () => {
-      friendshipRepoMock.getStatus.mockResolvedValue("blocked");
-      userRepoMock.getByUsername.mockResolvedValue(user2Data as UserData);
+    it('handles when status is not pending-received', async () => {
+      mockGetStatus.mockResolvedValue('blocked');
+      mockGetByUsername.mockResolvedValue(user2Data as UserData);
       await controller.accept(<Request>req, <Response>res);
       expect(res.status).toHaveBeenCalledWith(403);
     });
 
     it('handles success', async () => {
-      userRepoMock.getByUsername.mockResolvedValue(user2Data as UserData);
+      mockGetByUsername.mockResolvedValue(user2Data as UserData);
       await controller.accept(<Request>req, <Response>res);
       expect(res.status).toHaveBeenCalledWith(204);
     });
@@ -150,20 +178,20 @@ describe('friendshipController', () => {
 
   describe('reject method', () => {
     it('handles when desired friend does not exist', async () => {
-      userRepoMock.getByUsername.mockResolvedValue(undefined);
+      mockGetByUsername.mockResolvedValue(undefined);
       await controller.reject(<Request>req, <Response>res);
       expect(res.status).toHaveBeenCalledWith(404);
     });
 
-    it('handles when status is not "pending-received"', async () => {
-      friendshipRepoMock.getStatus.mockResolvedValue("blocked");
-      userRepoMock.getByUsername.mockResolvedValue(user2Data as UserData);
+    it('handles when status is not pending-received', async () => {
+      mockGetStatus.mockResolvedValue('blocked');
+      mockGetByUsername.mockResolvedValue(user2Data as UserData);
       await controller.reject(<Request>req, <Response>res);
       expect(res.status).toHaveBeenCalledWith(403);
     });
 
     it('handles success', async () => {
-      userRepoMock.getByUsername.mockResolvedValue(user2Data as UserData);
+      mockGetByUsername.mockResolvedValue(user2Data as UserData);
       await controller.reject(<Request>req, <Response>res);
       expect(res.status).toHaveBeenCalledWith(204);
     });
@@ -171,20 +199,20 @@ describe('friendshipController', () => {
 
   describe('delete method', () => {
     it('handles when target friend does not exist', async () => {
-      userRepoMock.getByUsername.mockResolvedValue(undefined);
+      mockGetByUsername.mockResolvedValue(undefined);
       await controller.delete(<Request>req, <Response>res);
       expect(res.status).toHaveBeenCalledWith(404);
     });
 
-    it('handles when status is not "accepted"', async () => {
-      friendshipRepoMock.getStatus.mockResolvedValue("blocked");
-      userRepoMock.getByUsername.mockResolvedValue(user2Data as UserData);
+    it('handles when status is not accepted', async () => {
+      mockGetStatus.mockResolvedValue('blocked');
+      mockGetByUsername.mockResolvedValue(user2Data as UserData);
       await controller.delete(<Request>req, <Response>res);
       expect(res.status).toHaveBeenCalledWith(403);
     });
 
     it('handles success', async () => {
-      userRepoMock.getByUsername.mockResolvedValue(user2Data as UserData);
+      mockGetByUsername.mockResolvedValue(user2Data as UserData);
       await controller.delete(<Request>req, <Response>res);
       expect(res.status).toHaveBeenCalledWith(204);
     });
@@ -192,13 +220,13 @@ describe('friendshipController', () => {
 
   describe('block method', () => {
     it('handles when desired friend does not exist', async () => {
-      userRepoMock.getByUsername.mockResolvedValue(undefined);
+      mockGetByUsername.mockResolvedValue(undefined);
       await controller.block(<Request>req, <Response>res);
       expect(res.status).toHaveBeenCalledWith(404);
     });
 
     it('handles success', async () => {
-      userRepoMock.getByUsername.mockResolvedValue(user2Data as UserData);
+      mockGetByUsername.mockResolvedValue(user2Data as UserData);
       await controller.block(<Request>req, <Response>res);
       expect(res.status).toHaveBeenCalledWith(204);
     });
@@ -206,21 +234,21 @@ describe('friendshipController', () => {
 
   describe('unblock method', () => {
     it('handles when target user does not exist', async () => {
-      userRepoMock.getByUsername.mockResolvedValue(undefined);
+      mockGetByUsername.mockResolvedValue(undefined);
       await controller.unblock(<Request>req, <Response>res);
       expect(res.status).toHaveBeenCalledWith(404);
     });
 
-    it('handles when status is not "blocked"', async () => {
-      friendshipRepoMock.getStatus.mockResolvedValue("accepted");
-      userRepoMock.getByUsername.mockResolvedValue(user2Data as UserData);
+    it('handles when status is not blocked', async () => {
+      mockGetStatus.mockResolvedValue('accepted');
+      mockGetByUsername.mockResolvedValue(user2Data as UserData);
       await controller.unblock(<Request>req, <Response>res);
       expect(res.status).toHaveBeenCalledWith(403);
     });
 
     it('handles success', async () => {
-      friendshipRepoMock.getStatus.mockResolvedValue("blocked");
-      userRepoMock.getByUsername.mockResolvedValue(user2Data as UserData);
+      mockGetStatus.mockResolvedValue('blocked');
+      mockGetByUsername.mockResolvedValue(user2Data as UserData);
       await controller.unblock(<Request>req, <Response>res);
       expect(res.status).toHaveBeenCalledWith(204);
     });

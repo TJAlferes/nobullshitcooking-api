@@ -20,14 +20,15 @@ export const friendshipController = {
 
     const userRepo = new UserRepo();
     const friend = await userRepo.getByUsername(friendname);
-    if (!friend) throw NotFoundException();
+    //if (!friend) throw new Error('This line works, but the next line does not.');
+    if (!friend) throw new NotFoundException();
 
     const user_id   = req.session.user_id!;
     const friend_id = friend.user_id;
 
     const friendshipRepo = new FriendshipRepo();
     const status = await friendshipRepo.getStatus({user_id: friend_id, friend_id: user_id});
-    if (status === "blocked") throw NotFoundException();
+    if (status === 'blocked') throw new NotFoundException();
 
     const currentStatus = await friendshipRepo.getStatus({user_id, friend_id});
     if (!currentStatus) {
@@ -35,7 +36,7 @@ export const friendshipController = {
         .create({
           user_id,
           friend_id,
-          status: "pending-sent"
+          status: 'pending-sent'
         })
         .getDTO();
 
@@ -43,7 +44,7 @@ export const friendshipController = {
         .create({
           user_id:   friend_id,
           friend_id: user_id,
-          status:    "pending-received"
+          status:    'pending-received'
         })
         .getDTO();
 
@@ -52,15 +53,15 @@ export const friendshipController = {
 
       return res.status(201);
     }
-    if ( currentStatus === "pending-sent"
-      || currentStatus === "pending-received"
+    if ( currentStatus === 'pending-sent'
+      || currentStatus === 'pending-received'
     ) {
       throw ForbiddenException('Already pending.');
     }
-    if (currentStatus === "accepted") {
+    if (currentStatus === 'accepted') {
       throw ForbiddenException('Already friends.');
     }
-    if (currentStatus === "blocked") {
+    if (currentStatus === 'blocked') {
       throw ForbiddenException('User blocked. First unblock.');
     }
   },
@@ -70,17 +71,17 @@ export const friendshipController = {
 
     const userRepo = new UserRepo();
     const friend = await userRepo.getByUsername(friendname);
-    if (!friend) throw NotFoundException();
+    if (!friend) throw new NotFoundException();
 
     const user_id   = req.session.user_id!;
     const friend_id = friend.user_id;
 
     const friendshipRepo = new FriendshipRepo();
     const status = await friendshipRepo.getStatus({user_id, friend_id});
-    if (status !== "pending-received") throw ForbiddenException();
+    if (status !== 'pending-received') throw ForbiddenException();
 
-    await friendshipRepo.update({user_id, friend_id, status: "accepted"});
-    await friendshipRepo.update({friend_id, user_id, status: "accepted"});
+    await friendshipRepo.update({user_id, friend_id, status: 'accepted'});
+    await friendshipRepo.update({friend_id, user_id, status: 'accepted'});
 
     return res.status(204);
   },
@@ -90,14 +91,14 @@ export const friendshipController = {
 
     const userRepo = new UserRepo();
     const friend = await userRepo.getByUsername(friendname);
-    if (!friend) throw NotFoundException();
+    if (!friend) throw new NotFoundException();
 
     const user_id   = req.session.user_id!;
     const friend_id = friend.user_id;
 
     const friendshipRepo = new FriendshipRepo();
     const status = await friendshipRepo.getStatus({user_id, friend_id});
-    if (status !== "pending-received") throw ForbiddenException();
+    if (status !== 'pending-received') throw ForbiddenException();
 
     await friendshipRepo.delete({user_id, friend_id});
     await friendshipRepo.delete({friend_id, user_id});
@@ -110,14 +111,14 @@ export const friendshipController = {
 
     const userRepo = new UserRepo();
     const friend = await userRepo.getByUsername(friendname);
-    if (!friend) throw NotFoundException();
+    if (!friend) throw new NotFoundException();
 
     const user_id   = req.session.user_id!;
     const friend_id = friend.user_id;
 
     const friendshipRepo = new FriendshipRepo();
     const status = await friendshipRepo.getStatus({user_id, friend_id});
-    if (status !== "accepted") throw ForbiddenException();
+    if (status !== 'accepted') throw ForbiddenException();
 
     await friendshipRepo.delete({user_id, friend_id});
     await friendshipRepo.delete({friend_id, user_id});
@@ -130,7 +131,7 @@ export const friendshipController = {
 
     const userRepo = new UserRepo();
     const friend = await userRepo.getByUsername(friendname);
-    if (!friend) throw NotFoundException();
+    if (!friend) throw new NotFoundException();
 
     const user_id   = req.session.user_id!;
     const friend_id = friend.user_id;
@@ -143,14 +144,14 @@ export const friendshipController = {
     // If friend_id has already blocked user_id, leave it be, don't delete that
     // otherwise delete the friendship.
     const status = await friendshipRepo.getStatus({user_id: friend_id, friend_id: user_id});
-    if (status !== "blocked") {
+    if (status !== 'blocked') {
       await friendshipRepo.delete({friend_id, user_id});
     }
 
     // to clarify what's going on here:
     // user_id    is blocking          friend_id
     // friend_id  is being blocked by  user_id
-    await friendshipRepo.insert({user_id, friend_id, status: "blocked"});
+    await friendshipRepo.insert({user_id, friend_id, status: 'blocked'});
 
     return res.status(204);
   },
@@ -160,14 +161,14 @@ export const friendshipController = {
 
     const userRepo = new UserRepo();
     const friend = await userRepo.getByUsername(friendname);
-    if (!friend) throw NotFoundException();
+    if (!friend) throw new NotFoundException();
 
     const user_id   = req.session.user_id!;
     const friend_id = friend.user_id;
 
     const friendshipRepo = new FriendshipRepo();
     const status = await friendshipRepo.getStatus({user_id, friend_id});
-    if (status !== "blocked") throw ForbiddenException();
+    if (status !== 'blocked') throw ForbiddenException();
 
     await friendshipRepo.delete({user_id, friend_id});
 

@@ -33,13 +33,11 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
         r.title,
         r.description,
         (
-          SELECT
-            i.image_filename
-          FROM recipe_image ri
-          INNER JOIN recipe_image ri ON ri.recipe_id = r.recipe_id
-          INNER JOIN image i         ON i.image_id = ri.image_id
-          WHERE ri.type = 1
-        ) image_filename
+          SELECT i.image_filename
+          FROM image i
+          INNER JOIN recipe_image ri ON i.image_id = ri.image_id
+          WHERE ri.recipe_id = r.recipe_id AND ri.type = 1
+        ) AS image_filename
       FROM recipe r
       INNER JOIN user u          ON u.user_id = r.author_id
       INNER JOIN recipe_type rt  ON rt.recipe_type_id = r.recipe_type_id

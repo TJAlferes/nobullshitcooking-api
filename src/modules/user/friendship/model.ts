@@ -31,14 +31,14 @@ export class Friendship {
 
 export function FriendshipStatus(status: string) {
   assert(status, string());
-  if ( status === "pending-sent"
-    || status === "pending-received"
-    || status === "accepted"
-    || status === "blocked"
+  if ( status === 'pending-sent'
+    || status === 'pending-received'
+    || status === 'accepted'
+    || status === 'blocked'
   ) {
     return status;
   }
-  throw ValidationException("Invalid friendship status.")
+  throw ValidationException('Invalid friendship status.')
 }
 
 type CreateParams = {

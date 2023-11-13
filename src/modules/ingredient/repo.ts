@@ -10,18 +10,14 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
     const sql = `
       SELECT
         i.ingredient_id,
-        CONCAT_WS(
-          ' ',
-          i.ingredient_brand,
-          i.ingredient_variety,
-          i.ingredient_name,
-          IFNULL(GROUP_CONCAT(n.alt_name SEPARATOR ' '), '')
-        ) AS fullname,
+        ${fullnameSql} AS fullname
       FROM ingredient i
       INNER JOIN ingredient_alt_name n ON i.ingredient_id = n.ingredient_id
-      WHERE owner_id = ? AND fullname LIKE ?
-      LIMIT 5
+      WHERE ${fullnameSql} LIKE ?
+      LIMIT 5;
     `;
+    //GROUP BY i.ingredient_id
+    //LIMIT 5;
     const [ rows ] = await this.pool.execute<IngredientSuggestionView[]>(sql, [
       owner_id,
       `%${term}%`
@@ -38,13 +34,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
         i.ingredient_brand,
         i.ingredient_variety,
         i.ingredient_name,
-        CONCAT_WS(
-          ' ',
-          i.ingredient_brand,
-          i.ingredient_variety,
-          i.ingredient_name,
-          IFNULL(GROUP_CONCAT(n.alt_name SEPARATOR ' '), '')
-        ) AS fullname,
+        ${fullnameSql} AS fullname,
         i.notes,
         m.image_filename
       FROM ingredient i
@@ -59,7 +49,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
     const params: Array<number|string> = [owner_id];
 
     if (term) {
-      sql += ` AND fullname LIKE ?`;
+      sql += ` AND ${fullnameSql} LIKE ?`;
       params.push(`%${term}%`);
     }
 
@@ -119,13 +109,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
         i.ingredient_brand,
         i.ingredient_variety,
         i.ingredient_name,
-        CONCAT_WS(
-          ' ',
-          i.ingredient_brand,
-          i.ingredient_variety,
-          i.ingredient_name,
-          IFNULL(GROUP_CONCAT(n.alt_name SEPARATOR ' '), '')
-        ) AS fullname,
+        ${fullnameSql} AS fullname,
         i.notes,
         m.image_filename
       FROM ingredient i
@@ -149,13 +133,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
         i.ingredient_brand,
         i.ingredient_variety,
         i.ingredient_name,
-        CONCAT_WS(
-          ' ',
-          i.ingredient_brand,
-          i.ingredient_variety,
-          i.ingredient_name,
-          IFNULL(GROUP_CONCAT(n.alt_name SEPARATOR ' '), '')
-        ) AS fullname,
+        ${fullnameSql} AS fullname,
         i.notes,
         m.image_filename
       FROM ingredient i
@@ -293,3 +271,13 @@ type DeleteOneParams = {
   owner_id:      string;
   ingredient_id: string;
 };
+
+const fullnameSql = `
+  CONCAT_WS(
+    ' ',
+    i.ingredient_brand,
+    i.ingredient_variety,
+    i.ingredient_name,
+    IFNULL(GROUP_CONCAT(n.alt_name SEPARATOR ' '), '')
+  )
+`;

@@ -34,8 +34,18 @@ export function ForbiddenException(message: string = "Forbidden") {
   return new ExceptionError(403, 'ForbiddenException', message);
 }
 
-export function NotFoundException(message: string = "Not Found") {
-  return new ExceptionError(404, 'NotFoundException', message);
+//export function NotFoundException(message: string = "Not Found") {
+//  return new ExceptionError(404, 'NotFoundException', message);
+//}
+export class NotFoundException extends Error {
+  code: number;
+  name: string;
+
+  constructor(message: string = 'Not Found') {
+    super(message);
+    this.code = 404;
+    this.name = 'NotFoundException';
+  }
 }
 
 export function ConflictException(message: string = "Conflict") {
