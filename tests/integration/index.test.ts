@@ -148,7 +148,7 @@ async function truncateTestDatabase() {
 
     console.log('Reset test MySQL DB tables begin.');
 
-    for (const tableName of tableNames) {
+    for (const tableName of tableNames.reverse()) {
       await pool.execute(`TRUNCATE TABLE ${tableName}`);
     }
 
