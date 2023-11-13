@@ -3,15 +3,15 @@ import type { Server }                      from 'node:http';
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import { createAdapter }                    from '@socket.io/redis-adapter';
 
-import { redisClients } from '../../connections/redis.js';
-import { FriendshipRepo } from '../user/friendship/repo.js';
-import { chatmessageController } from './message/controller.js';
-import type { ChatmessageView, PrivateChatmessageView } from './message/repo.js';
-//import { chatroomController } from './room/controller.js';
-import { chatroomUserController } from './room/user/controller.js';
-import { ChatUser } from './user/model.js';
-import { ChatUserRepo } from './user/repo.js';
-import { chatController } from './controller.js';
+import { redisClients } from '../../connections/redis';
+import { FriendshipRepo } from '../user/friendship/repo';
+import { chatmessageController } from './message/controller';
+import type { ChatmessageView, PrivateChatmessageView } from './message/repo';
+//import { chatroomController } from './room/controller';
+import { chatroomUserController } from './room/user/controller';
+import { ChatUser } from './user/model';
+import { ChatUserRepo } from './user/repo';
+import { chatController } from './controller';
 
 export function createSocketIOServer(httpServer: Server, sessionMiddleware: RequestHandler) {
   const io = new SocketIOServer<ClientToServerEvents, ServerToClientEvents>(

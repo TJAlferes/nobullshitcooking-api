@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import { create }    from 'superstruct';
 
-import { EquipmentRepo }  from '../equipment/repo.js';
-import { IngredientRepo } from '../ingredient/repo.js';
-import { RecipeRepo }     from '../recipe/repo.js';
-import { SearchTerm, validSearchRequest } from './model.js';
+import { EquipmentRepo }  from '../equipment/repo';
+import { IngredientRepo } from '../ingredient/repo';
+import { RecipeRepo }     from '../recipe/repo';
+import { SearchTerm, validSearchRequest } from './model';
 
 export const searchController = {
   async autosuggestEquipment(req: Request, res: Response) {

@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 
-import { MethodRepo } from './repo.js';
+import { MethodRepo } from './repo';
 
 export const methodController = {
   async viewAll(req: Request, res: Response) {

@@ -1,14 +1,14 @@
 import { DeleteObjectCommand } from '@aws-sdk/client-s3';
 import type { Request, Response } from 'express';
 
-import { ForbiddenException, NotFoundException} from '../../../utils/exceptions.js';
-import { AwsS3PrivateUploadsClient } from '../../aws-s3/private-uploads/client.js';
-import { Image } from '../../image/model.js';
-import { ImageRepo } from '../../image/repo.js';
-import { IngredientAltNameRepo } from '../../ingredient/alt-name/repo.js';
-import { IngredientAltNameService } from '../../ingredient/alt-name/service.js';
-import { Ingredient } from '../../ingredient/model.js';
-import { IngredientRepo } from '../../ingredient/repo.js';
+import { ForbiddenException, NotFoundException} from '../../../utils/exceptions';
+import { AwsS3PrivateUploadsClient } from '../../aws-s3/private-uploads/client';
+import { Image } from '../../image/model';
+import { ImageRepo } from '../../image/repo';
+import { IngredientAltNameRepo } from '../../ingredient/alt-name/repo';
+import { IngredientAltNameService } from '../../ingredient/alt-name/service';
+import { Ingredient } from '../../ingredient/model';
+import { IngredientRepo } from '../../ingredient/repo';
 
 export const privateIngredientController = {
   async viewAll(req: Request, res: Response) {

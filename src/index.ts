@@ -3,9 +3,9 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-import { userCron } from './modules/user/cron.js';
-import { passwordResetCron } from './modules/user/authentication/password-reset/cron.js';
-import { createAppServer } from './app.js';
+import { userCron } from './modules/user/cron';
+import { passwordResetCron } from './modules/user/authentication/password-reset/cron';
+import { createAppServer } from './app';
 
 export const userCronJob = new CronJob(
   '0 0 0 * * *',  // every day at midnight

@@ -1,6 +1,6 @@
 import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
-import { MySQLRepo } from '../../../shared/MySQL.js';
+import { MySQLRepo } from '../../../shared/MySQL';
 
 export class PasswordResetRepo extends MySQLRepo implements PasswordResetRepoInterface {
   async getPassword(user_id: string): Promise<string | undefined> {

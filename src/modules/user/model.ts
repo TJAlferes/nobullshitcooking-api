@@ -1,7 +1,7 @@
 import { assert, string } from 'superstruct';
 
-import { ValidationException } from '../../utils/exceptions.js';
-import { UUIDv7StringId, GenerateUUIDv7StringId } from '../shared/model.js';
+import { ValidationException } from '../../utils/exceptions';
+import { UUIDv7StringId, GenerateUUIDv7StringId } from '../shared/model';
 
 export class User {
   private readonly user_id;

@@ -2,16 +2,16 @@ import type { Request, Response } from 'express';
 import type { Session, SessionData } from 'express-session';
 
 import { publicRecipeController as controller } from "./controller.js";
-import { EquipmentRepo } from '../../equipment/repo.js';
-import { IngredientRepo } from '../../ingredient/repo.js';
-import { ImageRepo } from '../../image/repo.js';
-import { RecipeImageRepo } from '../../recipe/image/repo.js';
-import { RecipeEquipmentRepo } from '../../recipe/required-equipment/repo.js';
-import { RecipeIngredientRepo } from '../../recipe/required-ingredient/repo.js';
-import { RecipeMethodRepo } from '../../recipe/required-method/repo.js';
-import { RecipeSubrecipeRepo } from '../../recipe/required-subrecipe/repo.js';
-import { RecipeRepo } from '../../recipe/repo.js';
-//import type { ModifiedSession } from '../../../app.js';
+import { EquipmentRepo } from '../../equipment/repo';
+import { IngredientRepo } from '../../ingredient/repo';
+import { ImageRepo } from '../../image/repo';
+import { RecipeImageRepo } from '../../recipe/image/repo';
+import { RecipeEquipmentRepo } from '../../recipe/required-equipment/repo';
+import { RecipeIngredientRepo } from '../../recipe/required-ingredient/repo';
+import { RecipeMethodRepo } from '../../recipe/required-method/repo';
+import { RecipeSubrecipeRepo } from '../../recipe/required-subrecipe/repo';
+import { RecipeRepo } from '../../recipe/repo';
+//import type { ModifiedSession } from '../../../app';
 
 jest.mock('../../equipment/repo');
 jest.mock('../../ingredient/repo');

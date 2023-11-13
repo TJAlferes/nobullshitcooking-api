@@ -1,2 +1,2 @@
-export { catchExceptions } from './catchExceptions.js';
-export { userIsAuth }      from './userIsAuth.js';
+export { catchExceptions } from './catchExceptions';
+export { userIsAuth } from './userIsAuth';

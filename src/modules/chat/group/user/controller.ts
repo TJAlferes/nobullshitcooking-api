@@ -1,7 +1,7 @@
 /*import type { Request, Response } from 'express';
 
-import { ChatgroupUser }     from './model.js';
-import { ChatgroupUserRepo } from './repo.js';
+import { ChatgroupUser }     from './model';
+import { ChatgroupUserRepo } from './repo';
 import { ChatgroupRepo }     from "../repo.js";
 
 export const chatgroupUserController = {

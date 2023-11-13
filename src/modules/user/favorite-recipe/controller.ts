@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 
-import { ForbiddenException, NotFoundException} from '../../../utils/exceptions.js';
-import { NOBSC_USER_ID }      from '../../shared/model.js';
-import { RecipeRepo }         from '../../recipe/repo.js';
-import { FavoriteRecipe }     from './model.js';
-import { FavoriteRecipeRepo } from './repo.js';
+import { ForbiddenException, NotFoundException} from '../../../utils/exceptions';
+import { NOBSC_USER_ID }      from '../../shared/model';
+import { RecipeRepo }         from '../../recipe/repo';
+import { FavoriteRecipe }     from './model';
+import { FavoriteRecipeRepo } from './repo';
 
 export const userFavoriteRecipeController = {
   async viewByUserId(req: Request, res: Response) {

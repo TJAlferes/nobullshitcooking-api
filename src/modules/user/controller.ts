@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 
-import { UserService } from './service.js';
-import { UserRepo }    from './repo.js';
+import { UserService } from './service';
+import { UserRepo }    from './repo';
 
 export const userController = {
   async create(req: Request, res: Response) {

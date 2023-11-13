@@ -1,26 +1,26 @@
 import { CopyObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import type { Request, Response } from 'express';
 
-import { ForbiddenException, NotFoundException} from '../../../utils/exceptions.js';
-import { AwsS3PublicUploadsClient as s3Client } from '../../aws-s3/public-uploads/client.js';
-import { EquipmentRepo }           from '../../equipment/repo.js';
-import { IngredientRepo }          from '../../ingredient/repo.js';
-import { ImageRepo }               from '../../image/repo.js';
-import { RecipeImageRepo }         from '../../recipe/image/repo.js';
-import { RecipeImageService }      from '../../recipe/image/service.js';
-import { RecipeEquipmentRepo }     from '../../recipe/required-equipment/repo.js';
-import { RecipeEquipmentService }  from '../../recipe/required-equipment/service.js';
-import { RecipeIngredientRepo }    from '../../recipe/required-ingredient/repo.js';
-import { RecipeIngredientService } from '../../recipe/required-ingredient/service.js';
-import { RecipeMethodRepo }        from '../../recipe/required-method/repo.js';
-import { RecipeMethodService }     from '../../recipe/required-method/service.js';
-import { RecipeSubrecipeRepo }     from '../../recipe/required-subrecipe/repo.js';
-import { RecipeSubrecipeService }  from '../../recipe/required-subrecipe/service.js';
-import { Recipe }                  from '../../recipe/model.js';
-import { RecipeRepo }              from '../../recipe/repo.js';
-import { NOBSC_USER_ID, UNKNOWN_USER_ID } from '../../shared/model.js';
-import { UserRepo }                from '../repo.js';
-import { PublicRecipeService }     from './service.js';
+import { ForbiddenException, NotFoundException} from '../../../utils/exceptions';
+import { AwsS3PublicUploadsClient as s3Client } from '../../aws-s3/public-uploads/client';
+import { EquipmentRepo }           from '../../equipment/repo';
+import { IngredientRepo }          from '../../ingredient/repo';
+import { ImageRepo }               from '../../image/repo';
+import { RecipeImageRepo }         from '../../recipe/image/repo';
+import { RecipeImageService }      from '../../recipe/image/service';
+import { RecipeEquipmentRepo }     from '../../recipe/required-equipment/repo';
+import { RecipeEquipmentService }  from '../../recipe/required-equipment/service';
+import { RecipeIngredientRepo }    from '../../recipe/required-ingredient/repo';
+import { RecipeIngredientService } from '../../recipe/required-ingredient/service';
+import { RecipeMethodRepo }        from '../../recipe/required-method/repo';
+import { RecipeMethodService }     from '../../recipe/required-method/service';
+import { RecipeSubrecipeRepo }     from '../../recipe/required-subrecipe/repo';
+import { RecipeSubrecipeService }  from '../../recipe/required-subrecipe/service';
+import { Recipe }                  from '../../recipe/model';
+import { RecipeRepo }              from '../../recipe/repo';
+import { NOBSC_USER_ID, UNKNOWN_USER_ID } from '../../shared/model';
+import { UserRepo }                from '../repo';
+import { PublicRecipeService }     from './service';
 
 export const publicRecipeController = {
   async overviewAll(req: Request, res: Response) {

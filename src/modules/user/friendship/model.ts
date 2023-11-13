@@ -1,7 +1,7 @@
 import { assert, string } from 'superstruct';
 
-import { ValidationException } from '../../../utils/exceptions.js';
-import { UUIDv7StringId } from '../../shared/model.js';
+import { ValidationException } from '../../../utils/exceptions';
+import { UUIDv7StringId } from '../../shared/model';
 
 // problem: you're not expliciting defining valid state transitions in here,
 // you're doing most of it in the controller and some of it in the repo

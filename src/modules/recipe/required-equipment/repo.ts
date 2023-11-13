@@ -1,6 +1,6 @@
 import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
-import { MySQLRepo } from '../../shared/MySQL.js';
+import { MySQLRepo } from '../../shared/MySQL';
 
 export class RecipeEquipmentRepo extends MySQLRepo implements RecipeEquipmentRepoInterface {
   async viewByRecipeId(recipe_id: string) {

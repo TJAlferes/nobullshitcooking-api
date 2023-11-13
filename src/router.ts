@@ -1,30 +1,30 @@
 import { Router } from 'express';
-import { body }   from 'express-validator';
+import { body } from 'express-validator';
 
-import { AwsS3PrivateUploadsController } from './modules/aws-s3/private-uploads/controller.js';
-import { AwsS3PublicUploadsController } from './modules/aws-s3/public-uploads/controller.js';
-import { initialDataController } from './modules/initial-data/controller.js';
-import { userAuthenticationController } from './modules/user/authentication/controller.js';
-/*import { chatgroupUserRouter } from './modules/chat/group/user/router.js';
-import { chatgroupRouter } from './modules/chat/group/router.js';
-//import { chatmessageRouter } from './modules/chat/router.js';
-//import { chatroomUserRouter } from './modules/chat/room/user/router.js';
-import { chatroomRouter } from './modules/chat/room/router.js';
-//import { chatUserRouter } from './modules/chat/user/router.js';
-//import { chatRouter } from './modules/chat/router.js';*/
-import { equipmentTypeRouter } from './modules/equipment/type/router.js';
-import { equipmentRouter } from './modules/equipment/router.js';
-import { ingredientTypeRouter } from './modules/ingredient/type/router.js';
-import { ingredientRouter } from './modules/ingredient/router.js';
-import { cuisineRouter } from './modules/recipe/cuisine/router.js';
-import { methodRouter } from './modules/recipe/method/router.js';
-import { recipeTypeRouter } from './modules/recipe/type/router.js';
-import { recipeRouter } from './modules/recipe/router.js';
-import { searchRouter } from './modules/search/router.js';
-import { unitRouter } from './modules/shared/unit/router.js';
-import { userRouter } from './modules/user/router.js';
-import { profileController } from './modules/user/profile/controller.js';
-import { catchExceptions, userIsAuth } from './utils/index.js';
+import { AwsS3PrivateUploadsController } from './modules/aws-s3/private-uploads/controller';
+import { AwsS3PublicUploadsController } from './modules/aws-s3/public-uploads/controller';
+import { initialDataController } from './modules/initial-data/controller';
+import { userAuthenticationController } from './modules/user/authentication/controller';
+/*import { chatgroupUserRouter } from './modules/chat/group/user/router';
+import { chatgroupRouter } from './modules/chat/group/router';
+//import { chatmessageRouter } from './modules/chat/router';
+//import { chatroomUserRouter } from './modules/chat/room/user/router';
+import { chatroomRouter } from './modules/chat/room/router';
+//import { chatUserRouter } from './modules/chat/user/router';
+//import { chatRouter } from './modules/chat/router';*/
+import { equipmentTypeRouter } from './modules/equipment/type/router';
+import { equipmentRouter } from './modules/equipment/router';
+import { ingredientTypeRouter } from './modules/ingredient/type/router';
+import { ingredientRouter } from './modules/ingredient/router';
+import { cuisineRouter } from './modules/recipe/cuisine/router';
+import { methodRouter } from './modules/recipe/method/router';
+import { recipeTypeRouter } from './modules/recipe/type/router';
+import { recipeRouter } from './modules/recipe/router';
+import { searchRouter } from './modules/search/router';
+import { unitRouter } from './modules/shared/unit/router';
+import { userRouter } from './modules/user/router';
+import { profileController } from './modules/user/profile/controller';
+import { catchExceptions, userIsAuth } from './utils/index';
 
 const router = Router();
 

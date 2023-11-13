@@ -1,13 +1,13 @@
-import { ConflictException, NotFoundException, ForbiddenException } from '../../utils/exceptions.js';
-import { ImageRepo } from '../image/repo.js';
-import { PlanRepo } from '../plan/repo.js';
-import { RecipeRepo } from '../recipe/repo.js';
-import { EquipmentRepo } from '../equipment/repo.js';
-import { IngredientRepo } from '../ingredient/repo.js';
-import { NOBSC_USER_ID, UNKNOWN_USER_ID } from '../shared/model.js';
-import { User } from './model.js';
-import { UserRepoInterface } from './repo.js';
-import { UserAuthenticationService } from './authentication/service.js';
+import { ConflictException, NotFoundException, ForbiddenException } from '../../utils/exceptions';
+import { ImageRepo } from '../image/repo';
+import { PlanRepo } from '../plan/repo';
+import { RecipeRepo } from '../recipe/repo';
+import { EquipmentRepo } from '../equipment/repo';
+import { IngredientRepo } from '../ingredient/repo';
+import { NOBSC_USER_ID, UNKNOWN_USER_ID } from '../shared/model';
+import { User } from './model';
+import { UserRepoInterface } from './repo';
+import { UserAuthenticationService } from './authentication/service';
 
 export class UserService {
   private readonly repo: UserRepoInterface;

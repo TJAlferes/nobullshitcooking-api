@@ -1,20 +1,20 @@
-import compression                                  from 'compression';
-import RedisStore                                   from "connect-redis"
-import cors                                         from 'cors';
+import compression from 'compression';
+import RedisStore from "connect-redis"
+import cors from 'cors';
 import express, { Request, Response, NextFunction } from 'express';
 // Use https://github.com/animir/node-rate-limiter-flexible instead?
-import expressRateLimit                             from 'express-rate-limit';
-import expressSession, { Session, SessionData }     from 'express-session';
-import helmet                                       from 'helmet';
-import hpp                                          from 'hpp';
-import { createServer }                             from 'node:http';
-import type { Redis }                               from 'ioredis';
-import { pinoHttp }                                 from 'pino-http';  // logger
+import expressRateLimit from 'express-rate-limit';
+import expressSession, { Session, SessionData } from 'express-session';
+import helmet from 'helmet';
+import hpp from 'hpp';
+import { createServer } from 'node:http';
+import type { Redis } from 'ioredis';
+import { pinoHttp } from 'pino-http';  // logger
 
-import { redisClients }         from './connections/redis.js';
-import { createSocketIOServer } from './modules/chat/server.js';
-import { ExceptionError }       from './utils/exceptions.js';
-import { apiV1Router }          from './router.js';
+import { redisClients } from './connections/redis';
+import { createSocketIOServer } from './modules/chat/server';
+import { ExceptionError } from './utils/exceptions';
+import { apiV1Router } from './router';
 
 declare module "node:http" {
   interface IncomingMessage {

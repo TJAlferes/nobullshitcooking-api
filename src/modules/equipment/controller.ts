@@ -1,8 +1,8 @@
 import type { Request, Response } from 'express';
 
-import { NotFoundException } from '../../utils/exceptions.js';
-import { NOBSC_USER_ID } from '../shared/model.js';
-import { EquipmentRepo } from './repo.js';
+import { NotFoundException } from '../../utils/exceptions';
+import { NOBSC_USER_ID } from '../shared/model';
+import { EquipmentRepo } from './repo';
 
 export const equipmentController = {
   async viewAll(req: Request, res: Response) {

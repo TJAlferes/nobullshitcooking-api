@@ -4,8 +4,8 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Request, Response } from 'express';
 import { uuidv7 } from 'uuidv7';
 
-import { UnauthorizedException, ValidationException } from '../../../utils/exceptions.js';
-import { AwsS3PublicUploadsClient } from './client.js';
+import { UnauthorizedException, ValidationException } from '../../../utils/exceptions';
+import { AwsS3PublicUploadsClient } from './client';
 
 export const AwsS3PublicUploadsController = {
   // Allows users to upload their public images to AWS S3 directly from their browser,

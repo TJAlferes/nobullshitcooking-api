@@ -4,8 +4,8 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Request, Response } from 'express';
 import { uuidv7 } from 'uuidv7';
 
-import { UnauthorizedException, ValidationException } from '../../../utils/exceptions.js';
-import { AwsS3PrivateUploadsClient } from './client.js';
+import { UnauthorizedException, ValidationException } from '../../../utils/exceptions';
+import { AwsS3PrivateUploadsClient } from './client';
 
 export const AwsS3PrivateUploadsController = {
   // Allows users to upload their private images to AWS S3 directly from their browser,

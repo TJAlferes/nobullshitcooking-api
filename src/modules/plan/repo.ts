@@ -1,8 +1,8 @@
 import { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
 
-import type { RecipeOverview }            from '../recipe/repo.js';
-import { NOBSC_USER_ID, UNKNOWN_USER_ID } from '../shared/model.js';
-import { MySQLRepo }                      from '../shared/MySQL.js';
+import type { RecipeOverview }            from '../recipe/repo';
+import { NOBSC_USER_ID, UNKNOWN_USER_ID } from '../shared/model';
+import { MySQLRepo }                      from '../shared/MySQL';
 
 export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
   async viewAll({ author_id, owner_id }: OverviewAllParams) {

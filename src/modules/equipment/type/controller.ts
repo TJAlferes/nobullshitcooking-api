@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { EquipmentTypeRepo } from './repo.js';
+import { EquipmentTypeRepo } from './repo';
 
 export const equipmentTypeController = {
   async viewAll(req: Request, res: Response) {

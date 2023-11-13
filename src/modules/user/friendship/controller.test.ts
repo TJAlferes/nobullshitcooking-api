@@ -1,11 +1,11 @@
 import type { Request, Response } from 'express';
 import type { Session, SessionData } from 'express-session';
 
-import { friendshipController as controller } from './controller.js';
-import { FriendshipRepo } from './repo.js';
-import { UserRepo } from '../repo.js';
-import type { UserData } from '../repo.js';
-//import type { ModifiedSession } from '../../../app.js';
+import { friendshipController as controller } from './controller';
+import { FriendshipRepo } from './repo';
+import { UserRepo } from '../repo';
+import type { UserData } from '../repo';
+//import type { ModifiedSession } from '../../../app';
 
 jest.mock('./repo');
 jest.mock('../repo');

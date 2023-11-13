@@ -1,5 +1,5 @@
-import { UUIDv7StringId, GenerateUUIDv7StringId } from '../../../shared/model.js';
-import { Password } from '../../model.js';
+import { UUIDv7StringId, GenerateUUIDv7StringId } from '../../../shared/model';
+import { Password } from '../../model';
 
 export class PasswordReset {
   private reset_id;

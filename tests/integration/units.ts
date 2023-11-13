@@ -1,6 +1,6 @@
 import request from 'supertest';
 
-import { server } from './index.test.js';
+import { server } from './index.test';
 
 export function unitsTests() {
   describe('GET /v1/units/:unit_id', () => {

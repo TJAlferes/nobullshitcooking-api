@@ -1,7 +1,7 @@
 import request from 'supertest';
 import type { SuperAgentTest } from 'supertest';
 
-import { server } from '../index.test.js';
+import { server } from '../index.test';
 
 export function privateEquipmentTests() {
   let agent: SuperAgentTest;

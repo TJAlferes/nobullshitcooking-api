@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 
-import { CuisineRepo } from './repo.js';
+import { CuisineRepo } from './repo';
 
 export const cuisineController = {
   async viewAll(req: Request, res: Response) {

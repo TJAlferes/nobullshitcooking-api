@@ -1,10 +1,10 @@
 import { Socket } from 'socket.io';
 
-import { FriendshipRepo }  from '../../user/friendship/repo.js';
-import { UserRepo }        from '../../user/repo.js';
-import { ChatUserRepo }    from '../user/repo.js';
-import { Chatmessage }     from './model.js';
-import { ChatmessageRepo } from './repo.js';
+import { FriendshipRepo }  from '../../user/friendship/repo';
+import { UserRepo }        from '../../user/repo';
+import { ChatUserRepo }    from '../user/repo';
+import { Chatmessage }     from './model';
+import { ChatmessageRepo } from './repo';
 
 export function chatmessageController(socket: Socket) {
   return {

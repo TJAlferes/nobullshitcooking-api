@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { UnitRepo } from './repo.js';
+import { UnitRepo } from './repo';
 
 export const unitController = {
   async viewAll(req: Request, res: Response) {

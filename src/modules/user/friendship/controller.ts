@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 
-import { ForbiddenException, NotFoundException } from '../../../utils/exceptions.js';
-import { UserRepo } from '../repo.js';
-import { Friendship } from './model.js';
-import { FriendshipRepo } from './repo.js';
+import { ForbiddenException, NotFoundException } from '../../../utils/exceptions';
+import { UserRepo } from '../repo';
+import { Friendship } from './model';
+import { FriendshipRepo } from './repo';
 
 export const friendshipController = {
   async viewAll(req: Request, res: Response) {

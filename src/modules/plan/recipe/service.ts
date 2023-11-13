@@ -1,4 +1,4 @@
-import { ValidationException } from '../../../utils/exceptions.js';
+import { ValidationException } from '../../../utils/exceptions';
 import { PlanRecipe } from "./model.js";
 import type { IncludedRecipe } from "./model.js";
 import { PlanRecipeRepoInterface } from "./repo.js";

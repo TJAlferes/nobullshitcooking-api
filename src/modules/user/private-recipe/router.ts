@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { body, param } from 'express-validator';
 
-import { catchExceptions, userIsAuth }           from '../../../utils/index.js';
-import { privateRecipeController as controller } from './controller.js';
+import { catchExceptions, userIsAuth }           from '../../../utils/index';
+import { privateRecipeController as controller } from './controller';
 
 const router = Router();
 

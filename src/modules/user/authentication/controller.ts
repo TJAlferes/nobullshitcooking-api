@@ -1,24 +1,24 @@
 import type { Request, Response } from 'express';
 import { uuidv7 }                 from 'uuidv7';
 
-import { NotFoundException }         from '../../../utils/exceptions.js';
-import { socketIOServer }            from '../../../index.js';
-import { NOBSC_USER_ID }             from '../../shared/model.js';
-//import { ChatgroupRepo }             from '../../chat/group/repo.js';
-import { EquipmentRepo }             from '../../equipment/repo.js';
-import { IngredientRepo }            from '../../ingredient/repo.js';
-import { PlanRepo }                  from '../../plan/repo.js';
-import { RecipeRepo }                from '../../recipe/repo.js';
-import { FriendshipRepo }            from '../friendship/repo.js';
-import { UserImageRepo }             from '../image/repo.js';
-import { FavoriteRecipeRepo }        from '../favorite-recipe/repo.js';
-import { SavedRecipeRepo }           from '../saved-recipe/repo.js';
-import { UserRepo }                  from '../repo.js';
-import { UserService }               from '../service.js';
-import { UserAuthenticationService } from './service.js';
-import { PasswordReset }             from './password-reset/model.js';
-import { PasswordResetRepo }         from './password-reset/repo.js';
-import { PasswordResetService }      from './password-reset/service.js';
+import { NotFoundException }         from '../../../utils/exceptions';
+import { socketIOServer }            from '../../../index';
+import { NOBSC_USER_ID }             from '../../shared/model';
+//import { ChatgroupRepo }             from '../../chat/group/repo';
+import { EquipmentRepo }             from '../../equipment/repo';
+import { IngredientRepo }            from '../../ingredient/repo';
+import { PlanRepo }                  from '../../plan/repo';
+import { RecipeRepo }                from '../../recipe/repo';
+import { FriendshipRepo }            from '../friendship/repo';
+import { UserImageRepo }             from '../image/repo';
+import { FavoriteRecipeRepo }        from '../favorite-recipe/repo';
+import { SavedRecipeRepo }           from '../saved-recipe/repo';
+import { UserRepo }                  from '../repo';
+import { UserService }               from '../service';
+import { UserAuthenticationService } from './service';
+import { PasswordReset }             from './password-reset/model';
+import { PasswordResetRepo }         from './password-reset/repo';
+import { PasswordResetService }      from './password-reset/service';
 
 export const userAuthenticationController = {
   async resendConfirmationCode(req: Request, res: Response) {

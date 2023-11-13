@@ -1,10 +1,10 @@
 import type { Request, Response } from 'express';
 
-import { ForbiddenException, NotFoundException } from '../../../utils/exceptions.js';
-import { PlanRecipeRepo }    from '../../plan/recipe/repo.js';
-import { PlanRecipeService } from '../../plan/recipe/service.js';
-import { Plan }              from '../../plan/model.js';
-import { PlanRepo }          from '../../plan/repo.js';
+import { ForbiddenException, NotFoundException } from '../../../utils/exceptions';
+import { PlanRecipeRepo }    from '../../plan/recipe/repo';
+import { PlanRecipeService } from '../../plan/recipe/service';
+import { Plan }              from '../../plan/model';
+import { PlanRepo }          from '../../plan/repo';
 
 export const privatePlanController = {
   async viewAll(req: Request, res: Response) {

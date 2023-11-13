@@ -1,19 +1,19 @@
 import request from 'supertest';
 import type { SuperAgentTest } from 'supertest';
 
-import { server } from '../index.test.js';
+import { server } from '../index.test';
 
-export { authenticationTests } from './authentication.js';
-export { favoriteRecipesTests } from './favorite-recipes.js';
-export { friendshipsTests } from './friendships.js';
-export { privateEquipmentTests } from './private-equipment.js';
-export { privateIngredientsTests } from './private-ingredients.js';
-export { privatePlansTests } from './private-plans.js';
-export { privateRecipesTests } from './private-recipes.js';
-export { profileTests } from './profile.js';
-export { publicPlansTests } from './public-plans.js';
-export { publicRecipesTests } from './public-recipes.js';
-export { savedRecipesTests } from './saved-recipes.js';
+export { authenticationTests } from './authentication';
+export { favoriteRecipesTests } from './favorite-recipes';
+export { friendshipsTests } from './friendships';
+export { privateEquipmentTests } from './private-equipment';
+export { privateIngredientsTests } from './private-ingredients';
+export { privatePlansTests } from './private-plans';
+export { privateRecipesTests } from './private-recipes';
+export { profileTests } from './profile';
+export { publicPlansTests } from './public-plans';
+export { publicRecipesTests } from './public-recipes';
+export { savedRecipesTests } from './saved-recipes';
 
 export function usersTests() {
   describe('POST /v1/users', () => {

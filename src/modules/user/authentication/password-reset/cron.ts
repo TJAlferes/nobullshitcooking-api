@@ -1,5 +1,5 @@
 // TO DO
-import { pool } from '../../../../connections/mysql.js';
+import { pool } from '../../../../connections/mysql';
 
 export const passwordResetCron = {
   async deleteExpiredTemporaryPasswords() {

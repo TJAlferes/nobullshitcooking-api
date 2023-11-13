@@ -5,11 +5,11 @@ import {
   ForbiddenException,
   NotFoundException,
   UnauthorizedException
-} from '../../../utils/exceptions.js';
-import { UUIDv7StringId }        from '../../shared/model.js';
-import { emailUser }             from '../../aws-ses/service.js';
-import { Email, Password, User } from '../model.js';
-import { UserRepoInterface }     from '../repo.js';
+} from '../../../utils/exceptions';
+import { UUIDv7StringId }        from '../../shared/model';
+import { emailUser }             from '../../aws-ses/service';
+import { Email, Password, User } from '../model';
+import { UserRepoInterface }     from '../repo';
 //crypto.timingSafeEqual() ???
 
 export class UserAuthenticationService {

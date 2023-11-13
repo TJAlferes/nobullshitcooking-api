@@ -1,6 +1,6 @@
 import request from 'supertest';
 
-import { server } from './index.test.js';
+import { server } from './index.test';
 
 export function recipesTests() {
   describe('GET /v1/recipes/:title', () => {

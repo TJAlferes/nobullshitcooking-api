@@ -1,9 +1,9 @@
 import type { Request, Response } from 'express';
 
-import { ImageRepo }     from '../../image/repo.js';
-import { Image }         from '../../image/model.js';
-import { UserImage }     from './model.js';
-import { UserImageRepo } from './repo.js';
+import { ImageRepo }     from '../../image/repo';
+import { Image }         from '../../image/model';
+import { UserImage }     from './model';
+import { UserImageRepo } from './repo';
 
 export const userImageController = {
   async viewAll(req: Request, res: Response) {

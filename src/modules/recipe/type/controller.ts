@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 
-import { RecipeTypeRepo } from './repo.js';
+import { RecipeTypeRepo } from './repo';
 
 export const recipeTypeController = {
   async viewAll(req: Request, res: Response) {

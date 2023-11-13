@@ -1,7 +1,7 @@
 import { assert, string } from 'superstruct';
 
-import { ValidationException } from '../../utils/exceptions.js';
-import { GenerateUUIDv7StringId, UUIDv7StringId } from '../shared/model.js';
+import { ValidationException } from '../../utils/exceptions';
+import { GenerateUUIDv7StringId, UUIDv7StringId } from '../shared/model';
 
 export class Plan {
   private plan_id;

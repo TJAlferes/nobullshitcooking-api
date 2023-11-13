@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt';
 
-import { UnauthorizedException } from '../../../../utils/exceptions.js';
+import { UnauthorizedException } from '../../../../utils/exceptions';
 import { emailUser } from "../../../aws-ses/service.js";
-import { Email } from '../../model.js';
+import { Email } from '../../model';
 import { PasswordResetRepoInterface } from "./repo.js";
 
 export class PasswordResetService {

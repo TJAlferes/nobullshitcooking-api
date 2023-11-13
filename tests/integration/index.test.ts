@@ -3,10 +3,10 @@ import type { Server } from 'node:http';
 import type { Server as SocketIOServer } from 'socket.io';
 import request from 'supertest';
 
-import { seedTestDatabase } from '../../seeds/test/index.js';
-import { pool, testConfig } from '../../src/connections/mysql.js';
-import { redisClients } from '../../src/connections/redis.js';
-import { userCronJob, passwordResetCronJob, startServer } from '../../src/index.js';
+import { seedTestDatabase } from '../../seeds/test';
+import { pool, testConfig } from '../../src/connections/mysql';
+import { redisClients } from '../../src/connections/redis';
+import { userCronJob, passwordResetCronJob, startServer } from '../../src';
 import {
   authenticationTests,
   usersTests,
@@ -20,7 +20,7 @@ import {
   privatePlansTests,
   privateRecipesTests,
   savedRecipesTests
-} from './user/index.js';
+} from './user';
 import {
   //AwsS3Tests,
   unitsTests,
@@ -33,7 +33,7 @@ import {
   ingredientsTests,
   recipesTests,
   searchTests
-} from './index.js';
+} from '.';
 
 // No Bullshit Cooking API Integration Tests
 //

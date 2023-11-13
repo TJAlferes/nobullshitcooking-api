@@ -1,12 +1,12 @@
 import { DeleteObjectCommand } from '@aws-sdk/client-s3';
 import type { Request, Response } from 'express';
 
-import { ForbiddenException, NotFoundException } from '../../../utils/exceptions.js';
-import { AwsS3PrivateUploadsClient } from '../../aws-s3/private-uploads/client.js';
-import { Equipment } from '../../equipment/model.js';
-import { EquipmentRepo } from '../../equipment/repo.js';
-import { Image } from '../../image/model.js';
-import { ImageRepo } from '../../image/repo.js';
+import { ForbiddenException, NotFoundException } from '../../../utils/exceptions';
+import { AwsS3PrivateUploadsClient } from '../../aws-s3/private-uploads/client';
+import { Equipment } from '../../equipment/model';
+import { EquipmentRepo } from '../../equipment/repo';
+import { Image } from '../../image/model';
+import { ImageRepo } from '../../image/repo';
 
 export const privateEquipmentController = {
   async viewAll(req: Request, res: Response) {

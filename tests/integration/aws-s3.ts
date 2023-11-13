@@ -6,7 +6,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { mockClient } from 'aws-sdk-client-mock';
 import request from 'supertest';
 
-import { server } from './index.test.js';
+import { server } from './index.test';
 
 export function AwsS3Tests() {
   describe('POST /v1/private-uploads', () => {
