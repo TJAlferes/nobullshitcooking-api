@@ -1,5 +1,5 @@
 import compression from 'compression';
-import RedisStore from "connect-redis"
+import RedisStore from 'connect-redis'
 import cors from 'cors';
 import express, { Request, Response, NextFunction } from 'express';
 // Use https://github.com/animir/node-rate-limiter-flexible instead?
@@ -16,13 +16,13 @@ import { createSocketIOServer } from './modules/chat/server';
 import { ExceptionError } from './utils/exceptions';
 import { apiV1Router } from './router';
 
-declare module "node:http" {
+declare module 'node:http' {
   interface IncomingMessage {
     session: Session & Partial<SessionData>;
   }
 }
 
-declare module "express-session" {
+declare module 'express-session' {
   interface SessionData {
     user_id?:  string;
     username?: string;
@@ -39,10 +39,10 @@ export function createAppServer() {
 
     app.use((req: Request, res: Response, next: NextFunction) => {
       const max_age = 60 * 5;  // 5 minutes
-      if (req.method === "GET") {
-        res.set("Cache-control", `public, max-age=${max_age}`);
+      if (req.method === 'GET') {
+        res.set('Cache-control', `public, max-age=${max_age}`);
       } else {
-        res.set("Cache-control", "no-store");
+        res.set('Cache-control', 'no-store');
       }
       next();
     });
@@ -52,22 +52,24 @@ export function createAppServer() {
 
   const redisStore = new RedisStore({client: redisClients.sessionClient});
   const sessionMiddleware = expressSession({
-    cookie: (app.get('env') === 'production') ? {
-      httpOnly: true,    // if true, client-side JS can NOT see the cookie in document.cookie
-      maxAge: 86400000,  // 86400000 milliseconds = 1 day
-      sameSite: true,
-      secure: true
-    } : {
-      httpOnly: false,
-      maxAge: 86400000,
-      sameSite: false,
-      secure: false
-    },
-    resave:            false,
+    cookie: (app.get('env') === 'production')
+      ? {
+        httpOnly: true,
+        maxAge: 86400000,  // 86400000 milliseconds = 1 day
+        sameSite: 'none',
+        secure: true
+      }
+      : {
+        httpOnly: false,
+        maxAge: 86400000,
+        sameSite: false,
+        secure: false
+      },
+    resave: false,
     saveUninitialized: false,
-    secret:            process.env.SESSION_SECRET || "secret",
-    store:             redisStore,
-    unset:             "destroy"
+    secret: process.env.SESSION_SECRET || 'secret',
+    store: redisStore,
+    unset: 'destroy'
   });
 
   app.use(pinoHttp());  // logger
@@ -95,17 +97,17 @@ export function createAppServer() {
   app.use('/search/*', hpp({
     whitelist: [
       'filter',
-      'filters.equipmentTypes',
-      'filters.ingredientTypes',
-      'filters.recipeTypes',
+      'filters.equipment_types',
+      'filters.ingredient_types',
+      'filters.recipe_types',
       'filters.methods',
       'filters.cuisines',
-      'filters.productTypes',
-      'filters.productCategories',
+      'filters.product_types',
+      'filters.product_categories',
       'sorts',
     ]
   }));  // why???
-  //app.use(csurf());  // no longer maintained! is csrf protection still necessary? if so, find a different solution
+  //app.use(csurf());  // no longer maintained! TO DO: csrf-csrf Double-Submit Cookie
   app.use(compression());
 
   app.use('/v1', apiV1Router());
@@ -122,7 +124,7 @@ export function createAppServer() {
         res.status(error.code).json({message: error.message});
       } else {
         console.log(error.message);
-        res.status(500).json({error: error.message || 'Internal Server Error'});  // message: error.message
+        res.status(500).json({message: error.message || 'Internal Server Error'});
       }
     });
   } else {
@@ -131,7 +133,7 @@ export function createAppServer() {
         res.status(error.code).json({message: error.message});
       } else {
         console.log(error);
-        res.status(500).json({error});  // shows full stack trace, but...
+        res.status(500).json({message: error.message, error});
       }
     });
   }

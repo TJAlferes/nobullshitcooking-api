@@ -134,23 +134,25 @@ describe('friendshipController', () => {
   });
 
   describe('accept method', () => {
+    it('handles success', async () => {
+      mockGetByUsername.mockResolvedValue(user2Data as UserData);
+      await controller.accept(<Request>req, <Response>res);
+      expect(res.status).toHaveBeenCalledWith(204);
+    });
+
     it('handles when desired friend does not exist', async () => {
       mockGetByUsername.mockResolvedValue(undefined);
-      await controller.accept(<Request>req, <Response>res);
-      expect(res.status).toHaveBeenCalledWith(404);
+      await expect(async () => await controller.create(req as Request, res as Response))
+        .rejects.toThrow();
+      expect(NotFoundException).toHaveBeenCalled();
     });
 
     it('handles when status is not pending-received', async () => {
       mockGetStatus.mockResolvedValue('blocked');
       mockGetByUsername.mockResolvedValue(user2Data as UserData);
-      await controller.accept(<Request>req, <Response>res);
-      expect(res.status).toHaveBeenCalledWith(403);
-    });
-
-    it('handles success', async () => {
-      mockGetByUsername.mockResolvedValue(user2Data as UserData);
-      await controller.accept(<Request>req, <Response>res);
-      expect(res.status).toHaveBeenCalledWith(204);
+      await expect(async () => await controller.create(req as Request, res as Response))
+        .rejects.toThrow();
+      expect(ForbiddenException).toHaveBeenCalled();
     });
   });
 
