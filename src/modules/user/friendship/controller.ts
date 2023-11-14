@@ -21,7 +21,7 @@ export const friendshipController = {
     const userRepo = new UserRepo();
     const friend = await userRepo.getByUsername(friendname);
     //if (!friend) throw new Error('This line works, but the next line does not.');
-    if (!friend) throw new NotFoundException();
+    if (!friend) throw new NotFoundException('TEST');
 
     const user_id   = req.session.user_id!;
     const friend_id = friend.user_id;

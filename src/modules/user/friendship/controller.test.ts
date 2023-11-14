@@ -1,24 +1,18 @@
 import type { Request, Response } from 'express';
 import type { Session, SessionData } from 'express-session';
 
-import { ExceptionError, NotFoundException, ForbiddenException } from '../../../utils/exceptions';
+import { NotFoundException, ForbiddenException } from '../../../utils/exceptions';
 import { UserRepo } from '../repo';
 import type { UserData } from '../repo';
 import { FriendshipRepo } from './repo';
 import { friendshipController as controller } from './controller';
 
-//let NotFoundExceptionMock = jest.fn();
-//let ForbiddenExceptionMock = jest.fn();
-//jest.mock('../../../utils/exceptions', () => ({
-//  ExceptionError: jest.fn((code, name, message) => ({
-//    code,
-//    name,
-//    message,
-//    toString: jest.fn(() => JSON.stringify({code, name, message})),
-//  })),
-//  NotFoundException: jest.fn().mockImplementation(() => NotFoundExceptionMock),
-//  ForbiddenException: jest.fn().mockImplementation(() => ForbiddenExceptionMock)
-//}));
+class NotFoundExceptionMock extends Error {}
+class ForbiddenExceptionMock extends Error {}
+jest.mock('../../../utils/exceptions', () => ({
+  NotFoundException: jest.fn().mockImplementation(() => NotFoundExceptionMock),
+  ForbiddenException: jest.fn().mockImplementation(() => ForbiddenExceptionMock)
+}));
 
 let mockGetByUsername = jest.fn();
 jest.mock('../repo', () => ({
@@ -86,20 +80,16 @@ describe('friendshipController', () => {
     it('handles when desired friend does not exist', async () => {
       mockGetByUsername.mockResolvedValue(undefined);
       await expect(async () => await controller.create(req as Request, res as Response))
-        .rejects
-        .toThrow();
+        .rejects.toThrow();
+      expect(NotFoundException).toHaveBeenCalled();
     });
 
     it('handles when blocked by desired friend', async () => {
       mockGetStatus.mockResolvedValue('blocked');
       mockGetByUsername.mockResolvedValue(user2Data as UserData);
-      //req.params.friendname = 'fakeuser2';
-      try {
-        await controller.create(<Request>req, <Response>res);
-      } catch (err: any) {
-        expect(err.code).toBe(404);
-        expect(err.message).toBe('Not Found');
-      }
+      await expect(async () => await controller.create(req as Request, res as Response))
+        .rejects.toThrow();
+      expect(NotFoundException).toHaveBeenCalled();
     });
 
     it('handles when status is pending-sent', async () => {
@@ -107,12 +97,9 @@ describe('friendshipController', () => {
         .mockResolvedValueOnce(undefined)
         .mockResolvedValueOnce('pending-sent');
       mockGetByUsername.mockResolvedValue(user2Data as UserData);
-      try {
-        await controller.create(<Request>req, <Response>res);
-      } catch (err: any) {
-        expect(err.code).toBe(403);
-        expect(err.message).toBe('Already pending.');
-      }
+      await expect(async () => await controller.create(req as Request, res as Response))
+        .rejects.toThrow();
+      expect(ForbiddenException).toHaveBeenCalled();
     });
 
     it('handles when status is pending-received', async () => {
@@ -120,12 +107,9 @@ describe('friendshipController', () => {
         .mockResolvedValueOnce(undefined)
         .mockResolvedValueOnce('pending-received');
       mockGetByUsername.mockResolvedValue(user2Data as UserData);
-      try {
-        await controller.create(<Request>req, <Response>res);
-      } catch (err: any) {
-        expect(err.code).toBe(403);
-        expect(err.message).toBe('Already pending.');
-      }
+      await expect(async () => await controller.create(req as Request, res as Response))
+        .rejects.toThrow();
+      expect(ForbiddenException).toHaveBeenCalled();
     });
 
     it('handles when status is accepted', async () => {
@@ -133,12 +117,9 @@ describe('friendshipController', () => {
         .mockResolvedValueOnce(undefined)
         .mockResolvedValueOnce('accepted');
       mockGetByUsername.mockResolvedValue(user2Data as UserData);
-      try {
-        await controller.create(<Request>req, <Response>res);
-      } catch (err: any) {
-        expect(err.code).toBe(403);
-        expect(err.message).toBe('Already friends.');
-      }
+      await expect(async () => await controller.create(req as Request, res as Response))
+        .rejects.toThrow();
+      expect(ForbiddenException).toHaveBeenCalled();
     });
 
     it('handles when status is blocked', async () => {
@@ -146,12 +127,9 @@ describe('friendshipController', () => {
         .mockResolvedValueOnce(undefined)
         .mockResolvedValueOnce('blocked');
       mockGetByUsername.mockResolvedValue(user2Data as UserData);
-      try {
-        await controller.create(<Request>req, <Response>res);
-      } catch (err: any) {
-        expect(err.code).toBe(403);
-        expect(err.message).toBe('User blocked. First unblock.');
-      }
+      await expect(async () => await controller.create(req as Request, res as Response))
+        .rejects.toThrow();
+      expect(ForbiddenException).toHaveBeenCalled();
     });
   });
 
