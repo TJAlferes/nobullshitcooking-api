@@ -10,11 +10,11 @@ export function GenerateUUIDv7StringId() {
 export function UUIDv7StringId(id: string) {
   assert(id, string());
   if (id.length !== 36) {
-    throw ValidationException('Invalid ID.');
+    throw new ValidationException('Invalid ID.');
   }
   const pattern = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
   if (pattern.test(id) === false) {
-    throw ValidationException('Invalid ID.');
+    throw new ValidationException('Invalid ID.');
   }
   return id;
 }
@@ -33,14 +33,14 @@ export function Notes(notes: string | undefined) {
   assert(notes, defaulted(string(), ''));
   if (!notes) notes = '';
   if (notes.length > 1000) {
-    throw ValidationException('Notes must be no more than 1,000 characters.');
+    throw new ValidationException('Notes must be no more than 1,000 characters.');
   }
   return notes;
 }
 
 export function ImageFilename(filename: string) {
   if (filename.length > 100) {
-    throw ValidationException('Image filename must be no more than 100 characters.');
+    throw new ValidationException('Image filename must be no more than 100 characters.');
   }
   return filename;
 }

@@ -38,16 +38,16 @@ export const publicRecipeController = {
 
     const userRepo = new UserRepo();
     const user = await userRepo.getByUsername(author);
-    if (!user) throw NotFoundException();
+    if (!user) throw new NotFoundException();
 
     const author_id = user.user_id;
     const owner_id  = NOBSC_USER_ID;
 
     const recipeRepo = new RecipeRepo()
     const recipe = await recipeRepo.viewOneByTitle(title);
-    if (!recipe) throw NotFoundException();
-    if (author_id !== recipe.author_id) throw ForbiddenException();
-    if (owner_id !== recipe.owner_id) throw ForbiddenException();
+    if (!recipe) throw new NotFoundException();
+    if (author_id !== recipe.author_id) throw new ForbiddenException();
+    if (owner_id !== recipe.owner_id) throw new ForbiddenException();
     
     return res.status(200).json(recipe);
   },
@@ -59,9 +59,9 @@ export const publicRecipeController = {
 
     const repo = new RecipeRepo();
     const recipe = await repo.viewOneToEdit(recipe_id);
-    if (!recipe) throw NotFoundException();
-    if (author_id !== recipe.author_id) throw ForbiddenException();
-    if (owner_id !== recipe.owner_id) throw ForbiddenException();
+    if (!recipe) throw new NotFoundException();
+    if (author_id !== recipe.author_id) throw new ForbiddenException();
+    if (owner_id !== recipe.owner_id) throw new ForbiddenException();
 
     return res.status(200).json(recipe);
   },
@@ -172,9 +172,9 @@ export const publicRecipeController = {
     const recipeRepo     = new RecipeRepo();
 
     const recipe = await recipeRepo.viewOneByRecipeId(recipe_id);
-    if (!recipe) throw NotFoundException();
-    if (author_id !== recipe.author_id) throw ForbiddenException();
-    if (owner_id !== recipe.owner_id) throw ForbiddenException();
+    if (!recipe) throw new NotFoundException();
+    if (author_id !== recipe.author_id) throw new ForbiddenException();
+    if (owner_id !== recipe.owner_id) throw new ForbiddenException();
 
     const { checkForPrivateContent } = new PublicRecipeService({
       equipmentRepo,
@@ -238,14 +238,14 @@ export const publicRecipeController = {
 
     const recipeRepo = new RecipeRepo();
     const recipe = await recipeRepo.viewOneByRecipeId(recipe_id);
-    if (!recipe) throw NotFoundException();
-    if (author_id !== recipe.author_id) throw ForbiddenException();
+    if (!recipe) throw new NotFoundException();
+    if (author_id !== recipe.author_id) throw new ForbiddenException();
 
     const imageRepo = new ImageRepo();
 
     const recipe_image = await imageRepo.viewOne(recipe.recipe_image.image_id);
-    if (!recipe_image) throw NotFoundException();
-    if (author_id !== recipe_image.author_id) throw ForbiddenException();
+    if (!recipe_image) throw new NotFoundException();
+    if (author_id !== recipe_image.author_id) throw new ForbiddenException();
 
     // TO DO: append jpg ???
 
@@ -305,8 +305,8 @@ export const publicRecipeController = {
 
     // equipment images
     const equipment_image = await imageRepo.viewOne(recipe.equipment_image.image_id);
-    if (!equipment_image) throw NotFoundException();
-    if (author_id !== equipment_image.author_id) throw ForbiddenException();
+    if (!equipment_image) throw new NotFoundException();
+    if (author_id !== equipment_image.author_id) throw new ForbiddenException();
     await s3Client.send(new CopyObjectCommand({
       Bucket: 'nobsc-public-uploads',
       CopySource: `
@@ -328,8 +328,8 @@ export const publicRecipeController = {
 
     // ingredients images
     const ingredients_image = await imageRepo.viewOne(recipe.ingredients_image.image_id);
-    if (!ingredients_image) throw NotFoundException();
-    if (author_id !== ingredients_image.author_id) throw ForbiddenException();
+    if (!ingredients_image) throw new NotFoundException();
+    if (author_id !== ingredients_image.author_id) throw new ForbiddenException();
     await s3Client.send(new CopyObjectCommand({
       Bucket: 'nobsc-public-uploads',
       CopySource: `
@@ -351,8 +351,8 @@ export const publicRecipeController = {
 
     // cooking images
     const cooking_image = await imageRepo.viewOne(recipe.cooking_image.image_id);
-    if (!cooking_image) throw NotFoundException();
-    if (author_id !== cooking_image.author_id) throw ForbiddenException();
+    if (!cooking_image) throw new NotFoundException();
+    if (author_id !== cooking_image.author_id) throw new ForbiddenException();
     await s3Client.send(new CopyObjectCommand({
       Bucket: 'nobsc-public-uploads',
       CopySource: `

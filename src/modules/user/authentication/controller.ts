@@ -142,7 +142,7 @@ export const userAuthenticationController = {
 
     const userRepo = new UserRepo();
     const user = await userRepo.getByEmail(email);
-    if (!user) throw NotFoundException();
+    if (!user) throw new NotFoundException();
 
     const { hashPassword } = new UserAuthenticationService(userRepo);
     const temporary_password = uuidv7();
@@ -166,7 +166,7 @@ export const userAuthenticationController = {
 
     const userRepo = new UserRepo();
     const user = await userRepo.getByEmail(email);
-    if (!user) throw NotFoundException();
+    if (!user) throw new NotFoundException();
 
     const passwordResetRepo = new PasswordResetRepo();
     const passwordResetService = new PasswordResetService(passwordResetRepo);

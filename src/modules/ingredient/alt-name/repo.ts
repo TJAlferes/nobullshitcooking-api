@@ -1,3 +1,5 @@
+import { ResultSetHeader } from 'mysql2';
+
 import { MySQLRepo } from '../../shared/MySQL';
 
 export class IngredientAltNameRepo extends MySQLRepo implements IngredientAltNameRepoInterface {
@@ -6,7 +8,8 @@ export class IngredientAltNameRepo extends MySQLRepo implements IngredientAltNam
       INSERT INTO ingredient_alt_name (ingredient_id, alt_name)
       VALUES ${placeholders}
     `;
-    await this.pool.execute(sql, alt_names);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, alt_names);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async update({ ingredient_id, placeholders, alt_names }: UpdateParams) {
@@ -42,7 +45,8 @@ export class IngredientAltNameRepo extends MySQLRepo implements IngredientAltNam
 
   async deleteByIngredientId(ingredient_id: string) {
     const sql = `DELETE FROM ingredient_alt_name WHERE ingredient_id = ?`;
-    await this.pool.execute(sql, ingredient_id);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, ingredient_id);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }
 

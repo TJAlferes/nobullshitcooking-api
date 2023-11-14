@@ -50,7 +50,7 @@ export class Ingredient {
 export function IngredientBrand(brand: string) {
   assert(brand, defaulted(string(), ''));
   if (brand.length > 50) {
-    throw ValidationException('Ingredient brand must be no more than 50 characters.');
+    throw new ValidationException('Ingredient brand must be no more than 50 characters.');
   }
   return brand;
 }
@@ -58,7 +58,7 @@ export function IngredientBrand(brand: string) {
 export function IngredientVariety(variety: string) {
   assert(variety, defaulted(string(), ''));
   if (variety.length > 50) {
-    throw ValidationException('Ingredient variety must be no more than 50 characters.');
+    throw new ValidationException('Ingredient variety must be no more than 50 characters.');
   }
   return variety;
 }
@@ -66,7 +66,7 @@ export function IngredientVariety(variety: string) {
 export function IngredientName(name: string) {
   assert(name, string());
   if (name.length > 50) {
-    throw ValidationException('Ingredient name must be no more than 50 characters.');
+    throw new ValidationException('Ingredient name must be no more than 50 characters.');
   }
   return name;
 }

@@ -9,6 +9,7 @@ const router = Router();
 // for /users/:username/private-recipes
 
 export function privateRecipeRouter() {
+  // TO DO: test * for required and image
   const recipe_upload = [
     'recipe_type_id',
     'cuisine_id',
@@ -21,10 +22,10 @@ export function privateRecipeRouter() {
     'required_equipment.*',
     'required_ingredients.*',
     'required_subrecipes.*',
-    'recipe_image',
-    'equipment_image',
-    'ingredients_image',
-    'cooking_image'
+    'recipe_image*',
+    'equipment_image*',
+    'ingredients_image*',
+    'cooking_image*'
   ];
 
   router.get(

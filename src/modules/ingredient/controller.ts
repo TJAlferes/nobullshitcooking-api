@@ -20,8 +20,8 @@ export const ingredientController = {
 
     const repo = new IngredientRepo();
     const ingredient = await repo.viewOne(ingredient_id);
-    if (!ingredient) throw NotFoundException();
-    if (ingredient.owner_id !== owner_id) throw NotFoundException();  //ForbiddenException();
+    if (!ingredient) throw new NotFoundException();
+    if (ingredient.owner_id !== owner_id) throw new NotFoundException();  //ForbiddenException();
 
     return res.json(ingredient);
   }

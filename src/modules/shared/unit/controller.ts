@@ -5,17 +5,17 @@ import { UnitRepo } from './repo';
 export const unitController = {
   async viewAll(req: Request, res: Response) {
     const repo = new UnitRepo();
-    const rows = await repo.viewAll();
+    const units = await repo.viewAll();
 
-    return res.json(rows);
+    return res.json(units);
   },
 
   async viewOne(req: Request, res: Response) {
     const unit_id = Number(req.params.unit_id);
     
     const repo = new UnitRepo();
-    const row = await repo.viewOne(unit_id);
+    const unit = await repo.viewOne(unit_id);
 
-    return res.json(row);
+    return res.json(unit);
   }
 };

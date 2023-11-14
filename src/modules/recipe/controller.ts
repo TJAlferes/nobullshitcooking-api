@@ -22,9 +22,9 @@ export const recipeController = {
 
     const repo = new RecipeRepo();
     const recipe = await repo.viewOneByTitle(title);
-    if (!recipe) throw NotFoundException();
-    if (recipe.author_id !== author_id) throw NotFoundException();  //ForbiddenException(); 
-    if (recipe.owner_id !== owner_id) throw NotFoundException();  //ForbiddenException(); 
+    if (!recipe) throw new NotFoundException();
+    if (recipe.author_id !== author_id) throw new NotFoundException();  //ForbiddenException(); 
+    if (recipe.owner_id !== owner_id) throw new NotFoundException();  //ForbiddenException(); 
 
     return res.json(recipe);
   }

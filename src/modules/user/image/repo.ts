@@ -1,4 +1,4 @@
-import { RowDataPacket } from 'mysql2/promise';
+import { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
 
 import { MySQLRepo } from '../../shared/MySQL';
 
@@ -36,23 +36,27 @@ export class UserImageRepo extends MySQLRepo implements UserImageRepoInterface {
       INSERT INTO user_image (user_id, image_id, current)
       VALUES (:user_id, :image_id, :current)
     `;
-    await this.pool.execute(sql, {user_id, image_id, current});
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, {user_id, image_id, current});
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async setCurrent({ user_id, image_id }: SetCurrentParams) {
+    // TO DO: transaction???
     const sql1 = `
       UPDATE user_image
       SET current = false
       WHERE user_id = ? AND current = true
     `;
-    await this.pool.execute(sql1, user_id);
+    const [ result1 ] = await this.pool.execute<ResultSetHeader>(sql1, user_id);
+    if (result1.affectedRows < 1) throw new Error('Query not successful.');
 
     const sql2 = `
       UPDATE user_image
       SET current = true
       WHERE image_id = ?
     `;
-    await this.pool.execute(sql2, image_id);
+    const [ result2 ] = await this.pool.execute<ResultSetHeader>(sql2, image_id);
+    if (result2.affectedRows < 1) throw new Error('Query not successful.');
   }
 }
 

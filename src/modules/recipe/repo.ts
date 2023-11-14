@@ -284,9 +284,8 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
     if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
-  async deleteAll(owner_id: string) {
-
-  }
+  // TO DO: ???
+  async deleteAll(owner_id: string) {}
   
   async deleteOne({ owner_id, recipe_id }: DeleteOneParams) {
     const sql = `

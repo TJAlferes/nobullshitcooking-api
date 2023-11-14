@@ -21,7 +21,7 @@ export class RecipeEquipmentRepo extends MySQLRepo implements RecipeEquipmentRep
       VALUES ${placeholders}
     `;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, recipe_equipment);
-    if (!result) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async bulkUpdate({ recipe_id, placeholders, recipe_equipment }: BulkUpdateParams) {  // TO DO: change to namedPlaceholders using example below
@@ -50,12 +50,14 @@ export class RecipeEquipmentRepo extends MySQLRepo implements RecipeEquipmentRep
 
   async deleteByEquipmentId(equipment_id: string) {
     const sql = `DELETE FROM recipe_equipment WHERE equipment_id = ?`;
-    await this.pool.execute(sql, [equipment_id]);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [equipment_id]);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async deleteByRecipeId(recipe_id: string) {
     const sql = `DELETE FROM recipe_equipment WHERE recipe_id = ?`;
-    await this.pool.execute(sql, [recipe_id]);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [recipe_id]);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }
 

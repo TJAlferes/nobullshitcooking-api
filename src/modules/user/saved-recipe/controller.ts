@@ -22,15 +22,15 @@ export const userSavedRecipeController = {
 
     const recipeRepo = new RecipeRepo();
     const recipe = await recipeRepo.viewOneByRecipeId(recipe_id);
-    if (!recipe) throw NotFoundException();
+    if (!recipe) throw new NotFoundException();
     if (recipe.author_id === user_id) {
-      throw ForbiddenException(`
+      throw new ForbiddenException(`
         Your own recipes are saved when you create or update them.
         Use this "Save" to bookmark official recipes and public user recipes.
       `);
     }
     if (recipe.owner_id !== NOBSC_USER_ID) {
-      throw ForbiddenException("May only save public recipes.");
+      throw new ForbiddenException("May only save public recipes.");
     }
 
     const savedRecipe = SavedRecipe.create({user_id, recipe_id}).getDTO();

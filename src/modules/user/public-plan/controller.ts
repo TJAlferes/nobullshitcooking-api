@@ -27,9 +27,9 @@ export const publicPlanController = {
     
     const planRepo = new PlanRepo();
     const plan = await planRepo.viewOneByPlanId(plan_id);
-    if (!plan) throw NotFoundException();
-    if (plan.author_id !== author_id) throw ForbiddenException();
-    if (plan.owner_id !== owner_id) throw ForbiddenException();
+    if (!plan) throw new NotFoundException();
+    if (plan.author_id !== author_id) throw new ForbiddenException();
+    if (plan.owner_id !== owner_id) throw new ForbiddenException();
 
     return res.status(200).json(plan);
   },
@@ -61,9 +61,9 @@ export const publicPlanController = {
 
     const planRepo = new PlanRepo();
     const plan = await planRepo.viewOneByPlanId(plan_id);
-    if (!plan) throw NotFoundException();
-    if (plan.author_id !== author_id) throw ForbiddenException();
-    if (plan.owner_id !== owner_id) throw ForbiddenException();
+    if (!plan) throw new NotFoundException();
+    if (plan.author_id !== author_id) throw new ForbiddenException();
+    if (plan.owner_id !== owner_id) throw new ForbiddenException();
 
     const recipeRepo = new RecipeRepo();
     const { checkForPrivateContent } = new PublicPlanService(recipeRepo);

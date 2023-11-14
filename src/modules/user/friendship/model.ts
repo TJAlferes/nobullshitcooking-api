@@ -38,7 +38,7 @@ export function FriendshipStatus(status: string) {
   ) {
     return status;
   }
-  throw ValidationException('Invalid friendship status.')
+  throw new ValidationException('Invalid friendship status.')
 }
 
 type CreateParams = {

@@ -50,12 +50,14 @@ export class RecipeImageRepo extends MySQLRepo implements RecipeImageRepoInterfa
 
   async deleteByImageId(image_id: string) {
     const sql = `DELETE FROM recipe_image WHERE image_id = ? LIMIT 1`;
-    await this.pool.execute(sql, [image_id]);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [image_id]);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async deleteByRecipeId(recipe_id: string) {
     const sql = `DELETE FROM recipe_image WHERE recipe_id = ?`;
-    await this.pool.execute(sql, [recipe_id]);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [recipe_id]);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }
 

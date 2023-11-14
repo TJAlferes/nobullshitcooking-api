@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Request, Response } from 'express';
 import { uuidv7 } from 'uuidv7';
 
@@ -11,36 +11,36 @@ export const AwsS3PrivateUploadsController = {
   // Allows users to upload their private images to AWS S3 directly from their browser,
   // so their images never have to pass through our server
   async signUrlToUploadImage(req: Request, res: Response) {
-    if (!req.session.user_id) throw UnauthorizedException();
+    if (!req.session.user_id) throw new UnauthorizedException();
 
     if (!validSubfolders.includes(req.body.subfolder)) {
-      throw ValidationException("Invalid subfolder.");
+      throw new ValidationException('Invalid subfolder.');
     }
 
     const subfolder: Subfolder = req.body.subfolder;
     const filename = uuidv7();
     const objectKey = `nobsc-private-uploads/${subfolder}/${req.session.user_id}/${filename}`;
     
-    if (subfolder === "recipe") {
-      const mediumSignature = await sign(objectKey, "medium");
-      const thumbSignature  = await sign(objectKey, "thumb");
-      const tinySignature   = await sign(objectKey, "tiny");
+    if (subfolder === 'recipe') {
+      const mediumSignature = await sign(objectKey, 'medium');
+      const thumbSignature  = await sign(objectKey, 'thumb');
+      const tinySignature   = await sign(objectKey, 'tiny');
 
       return res.status(201).json({filename, mediumSignature, thumbSignature, tinySignature});
     }
 
-    if (subfolder === "equipment" || subfolder === "ingredient") {
-      const smallSignature = await sign(objectKey, "small");
-      const tinySignature  = await sign(objectKey, "tiny");
+    if (subfolder === 'equipment' || subfolder === 'ingredient') {
+      const smallSignature = await sign(objectKey, 'small');
+      const tinySignature  = await sign(objectKey, 'tiny');
 
       return res.status(201).json({filename, smallSignature, tinySignature});
     }
 
-    if ( subfolder === "recipe-cooking"
-      || subfolder === "recipe-equipment"
-      || subfolder === "recipe-ingredients"
+    if ( subfolder === 'recipe-cooking'
+      || subfolder === 'recipe-equipment'
+      || subfolder === 'recipe-ingredients'
     ) {
-      const mediumSignature = await sign(objectKey, "medium");
+      const mediumSignature = await sign(objectKey, 'medium');
 
       return res.status(201).json({filename, mediumSignature});
     }
@@ -48,13 +48,13 @@ export const AwsS3PrivateUploadsController = {
 
   // Allows users to view their private images
   async signUrlToViewImages(req: Request, res: Response) {
-    if (!req.session.user_id) throw UnauthorizedException();
+    if (!req.session.user_id) throw new UnauthorizedException();
 
     const signatures = [];
 
     for (const { subfolder, image_filename, size } of req.body.access_requests) {
       if (!validSubfolders.includes(subfolder)) {
-        throw ValidationException("Invalid subfolder.");
+        throw new ValidationException('Invalid subfolder.');
       }
   
       const signature = await getSignedUrl(AwsS3PrivateUploadsClient, new GetObjectCommand({
@@ -75,12 +75,12 @@ export const AwsS3PrivateUploadsController = {
 
   // Allows users to view their private image
   async signUrlToViewImage(req: Request, res: Response) {
-    if (!req.session.user_id) throw UnauthorizedException();
+    if (!req.session.user_id) throw new UnauthorizedException();
 
     const { subfolder, image_filename, size } = req.body;
 
     if (!validSubfolders.includes(subfolder)) {
-      throw ValidationException("Invalid subfolder.");
+      throw new ValidationException('Invalid subfolder.');
     }
   
     const signature = await getSignedUrl(AwsS3PrivateUploadsClient, new GetObjectCommand({
@@ -101,28 +101,28 @@ async function sign(objectKey: string, imageSize: string) {
   const signature = await getSignedUrl(AwsS3PrivateUploadsClient, new PutObjectCommand({
     Bucket: process.env.AWS_S3_PRIVATE_UPLOADS_BUCKET!,
     Key: `${objectKey}-${imageSize}`,
-    ContentType: "image/jpeg"
+    ContentType: 'image/jpeg'
   }));
 
   return signature;
 }
 
 const validSubfolders = [
-  "equipment",
-  "ingredient",
-  "recipe",
-  "recipe-cooking",
-  "recipe-equipment",
-  "recipe-ingredients"
+  'equipment',
+  'ingredient',
+  'recipe',
+  'recipe-cooking',
+  'recipe-equipment',
+  'recipe-ingredients'
 ];
 
 type Subfolder =
-  | "equipment"
-  | "ingredient"
-  | "recipe"
-  | "recipe-cooking"
-  | "recipe-equipment"
-  | "recipe-ingredients";
+  | 'equipment'
+  | 'ingredient'
+  | 'recipe'
+  | 'recipe-cooking'
+  | 'recipe-equipment'
+  | 'recipe-ingredients';
 
 /*
 objectKey =

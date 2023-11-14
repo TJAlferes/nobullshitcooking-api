@@ -24,9 +24,9 @@ export const privatePlanController = {
     
     const planRepo = new PlanRepo();
     const plan = await planRepo.viewOneByPlanId(plan_id);
-    if (!plan) throw NotFoundException();
-    if (plan.author_id !== author_id) throw ForbiddenException();
-    if (plan.owner_id !== owner_id) throw ForbiddenException();
+    if (!plan) throw new NotFoundException();
+    if (plan.author_id !== author_id) throw new ForbiddenException();
+    if (plan.owner_id !== owner_id) throw new ForbiddenException();
 
     return res.status(200).json(plan);
   },  // is this needed???
@@ -54,9 +54,9 @@ export const privatePlanController = {
 
     const planRepo = new PlanRepo();
     const plan = await planRepo.viewOneByPlanId(plan_id);
-    if (!plan) throw NotFoundException();
-    if (plan.author_id !== author_id) throw ForbiddenException();
-    if (plan.owner_id !== owner_id) throw ForbiddenException();
+    if (!plan) throw new NotFoundException();
+    if (plan.author_id !== author_id) throw new ForbiddenException();
+    if (plan.owner_id !== owner_id) throw new ForbiddenException();
 
     const updated_plan = Plan.update({plan_id, author_id, owner_id, plan_name}).getDTO();
     await planRepo.update(updated_plan);

@@ -24,8 +24,8 @@ export const privateEquipmentController = {
 
     const repo = new EquipmentRepo();
     const equipment = await repo.viewOne(equipment_id);
-    if (!equipment) throw NotFoundException();
-    if (owner_id !== equipment.owner_id) throw ForbiddenException();
+    if (!equipment) throw new NotFoundException();
+    if (owner_id !== equipment.owner_id) throw new ForbiddenException();
 
     return res.status(200).json(equipment);
   },
@@ -78,13 +78,13 @@ export const privateEquipmentController = {
 
     const equipmentRepo = new EquipmentRepo();
     const equipment = await equipmentRepo.viewOne(equipment_id);
-    if (!equipment) throw NotFoundException();
-    if (owner_id !== equipment.owner_id) throw ForbiddenException();
+    if (!equipment) throw new NotFoundException();
+    if (owner_id !== equipment.owner_id) throw new ForbiddenException();
 
     const imageRepo = new ImageRepo();
     const image = await imageRepo.viewOne(equipment.image_id);
-    if (!image) throw NotFoundException();
-    if (owner_id !== image.owner_id) throw ForbiddenException();
+    if (!image) throw new NotFoundException();
+    if (owner_id !== image.owner_id) throw new ForbiddenException();
 
     const updated_image = Image.update({
       image_id,
@@ -114,13 +114,13 @@ export const privateEquipmentController = {
 
     const equipmentRepo = new EquipmentRepo();
     const equipment = await equipmentRepo.viewOne(equipment_id);
-    if (!equipment) throw NotFoundException();
-    if (equipment.owner_id !== owner_id) throw ForbiddenException();
+    if (!equipment) throw new NotFoundException();
+    if (equipment.owner_id !== owner_id) throw new ForbiddenException();
 
     const imageRepo = new ImageRepo();
     const image = await imageRepo.viewOne(equipment.image_id);
-    if (!image) throw NotFoundException();
-    if (image.owner_id !== owner_id) throw ForbiddenException();
+    if (!image) throw new NotFoundException();
+    if (image.owner_id !== owner_id) throw new ForbiddenException();
 
     await AwsS3PrivateUploadsClient.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',

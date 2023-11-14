@@ -36,7 +36,7 @@ function DayNumber(day_number: number) {
   const possibleDayNumbers = [1, 2, 3, 4, 5, 6, 7];
 
   if (!possibleDayNumbers.includes(day_number)) {
-    throw ValidationException("Invalid day number.");
+    throw new ValidationException('Invalid day number.');
   }
 
   return day_number;
@@ -48,7 +48,7 @@ function RecipeNumber(recipe_number: number) {
   const possibleRecipeNumbers = [1, 2, 3, 4, 5, 6, 7];
 
   if (!possibleRecipeNumbers.includes(recipe_number)) {
-    throw ValidationException("Invalid recipe number.");
+    throw new ValidationException('Invalid recipe number.');
   }
 
   return recipe_number;

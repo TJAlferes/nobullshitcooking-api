@@ -5,17 +5,17 @@ import { RecipeTypeRepo } from './repo';
 export const recipeTypeController = {
   async viewAll(req: Request, res: Response) {
     const repo = new RecipeTypeRepo();
-    const rows = await repo.viewAll();
+    const recipe_types = await repo.viewAll();
 
-    return res.json(rows);
+    return res.json(recipe_types);
   },
 
   async viewOne(req: Request, res: Response) {
     const recipe_type_id = Number(req.params.recipe_type_id);
     
     const repo = new RecipeTypeRepo();
-    const row = await repo.viewOne(recipe_type_id);
+    const recipe_type = await repo.viewOne(recipe_type_id);
 
-    return res.json(row);
+    return res.json(recipe_type);
   }
 };

@@ -34,7 +34,7 @@ export async function emailUser({ from, to, subject, bodyText, bodyHtml, charset
   
   try {
     const data = await client.send(command);
-    console.log("Email sent! Data: ", data);
+    console.log('Email sent! Data: ', data);
   } catch (error: any) {
     console.log(error.message);
   } finally {}

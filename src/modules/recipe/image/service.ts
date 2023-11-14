@@ -18,7 +18,7 @@ export class RecipeImageService {
   }
 
   async bulkCreate({ recipe_id, author_id, owner_id, uploaded_images }: BulkCreateParams) {
-    if (uploaded_images.length !== 4) throw ValidationException('Recipe must have 4 images.');
+    if (uploaded_images.length !== 4) throw new ValidationException('Recipe must have 4 images.');
     
     const images: ImageDTO[] = [];
     const recipe_images: RecipeImageDTO[] = [];
@@ -57,7 +57,7 @@ export class RecipeImageService {
 
   // TO DO: thoroughly test
   async bulkUpdate({ author_id, owner_id, uploaded_images }: BulkUpdateParams) {
-    if (uploaded_images.length !== 4) throw ValidationException('Recipe must have 4 images.');
+    if (uploaded_images.length !== 4) throw new ValidationException('Recipe must have 4 images.');
 
     const images: ImageDTO[] = [];
 
@@ -160,20 +160,20 @@ export class RecipeImageService {
     // 1 image of a prepping/cooking detail/process/action
 
     if (recipe_images.length !== 4) {
-      throw ValidationException('Recipe must have 4 images.');
+      throw new ValidationException('Recipe must have 4 images.');
     }
 
     if (!recipe_images.some(ai => ai.type === 1)) {
-      throw ValidationException('Missing recipe image.');
+      throw new ValidationException('Missing recipe image.');
     }
     if (!recipe_images.some(ai => ai.type === 2)) {
-      throw ValidationException('Missing equipment image.');
+      throw new ValidationException('Missing equipment image.');
     }
     if (!recipe_images.some(ai => ai.type === 3)) {
-      throw ValidationException('Missing ingredients image.');
+      throw new ValidationException('Missing ingredients image.');
     }
     if (!recipe_images.some(ai => ai.type === 4)) {
-      throw ValidationException('Missing cooking image.');
+      throw new ValidationException('Missing cooking image.');
     }
   }
 }

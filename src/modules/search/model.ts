@@ -7,10 +7,10 @@ import { ValidationException } from '../../utils/exceptions';
 export function SearchTerm(term: string) {
   assert(term, string());
   if (term.length < 3) {
-    throw ValidationException('Search term must be at least 3 characters in length.');
+    throw new ValidationException('Search term must be at least 3 characters in length.');
   }
   if (term.length > 100) {
-    throw ValidationException('Search term must be at most 100 characters in length.');
+    throw new ValidationException('Search term must be at most 100 characters in length.');
   }
   return term;
 }

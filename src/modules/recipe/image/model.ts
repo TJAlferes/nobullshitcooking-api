@@ -33,7 +33,7 @@ function RecipeImageType(type: number) {
   if (type === 2) return type;  // 1 image of required equipment image
   if (type === 3) return type;  // 1 image of required ingredients image
   if (type === 4) return type;  // 1 image of prepping/cooking detail/process/action
-  throw ValidationException("Invalid recipe image type.");
+  throw new ValidationException('Invalid recipe image type.');
 }
 
 type CreateParams = {

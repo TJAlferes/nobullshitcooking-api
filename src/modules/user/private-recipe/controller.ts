@@ -35,9 +35,9 @@ export const privateRecipeController = {
 
     const repo = new RecipeRepo();
     const recipe = await repo.viewOneByRecipeId(recipe_id);
-    if (!recipe) throw NotFoundException();
-    if (author_id !== recipe.author_id) throw ForbiddenException();
-    if (owner_id !== recipe.owner_id) throw ForbiddenException();
+    if (!recipe) throw new NotFoundException();
+    if (author_id !== recipe.author_id) throw new ForbiddenException();
+    if (owner_id !== recipe.owner_id) throw new ForbiddenException();
     
     return res.status(200).json(recipe);
   },
@@ -49,9 +49,9 @@ export const privateRecipeController = {
 
     const repo = new RecipeRepo();
     const recipe = await repo.viewOneToEdit(recipe_id);
-    if (!recipe) throw NotFoundException();
-    if (author_id !== recipe.author_id) throw ForbiddenException();
-    if (owner_id !== recipe.owner_id) throw ForbiddenException();
+    if (!recipe) throw new NotFoundException();
+    if (author_id !== recipe.author_id) throw new ForbiddenException();
+    if (owner_id !== recipe.owner_id) throw new ForbiddenException();
 
     return res.status(200).json(recipe);
   },
@@ -146,9 +146,9 @@ export const privateRecipeController = {
 
     const recipeRepo = new RecipeRepo();
     const recipe = await recipeRepo.viewOneByRecipeId(recipe_id);
-    if (!recipe) throw NotFoundException();
-    if (author_id !== recipe.author_id) throw ForbiddenException();
-    if (owner_id !== recipe.owner_id) throw ForbiddenException();
+    if (!recipe) throw new NotFoundException();
+    if (author_id !== recipe.author_id) throw new ForbiddenException();
+    if (owner_id !== recipe.owner_id) throw new ForbiddenException();
 
     const updated_recipe = Recipe.update({
       recipe_id,
@@ -201,14 +201,14 @@ export const privateRecipeController = {
 
     const recipeRepo = new RecipeRepo();
     const recipe = await recipeRepo.viewOneByRecipeId(recipe_id);
-    if (!recipe) throw NotFoundException();
-    if (owner_id !== recipe.owner_id) throw ForbiddenException();
+    if (!recipe) throw new NotFoundException();
+    if (owner_id !== recipe.owner_id) throw new ForbiddenException();
 
     const imageRepo = new ImageRepo();
 
     const recipe_image = await imageRepo.viewOne(recipe.recipe_image.image_id);
-    if (!recipe_image) throw NotFoundException();
-    if (owner_id !== recipe_image.owner_id) throw ForbiddenException();
+    if (!recipe_image) throw new NotFoundException();
+    if (owner_id !== recipe_image.owner_id) throw new ForbiddenException();
     await s3Client.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',
       Key: `
@@ -236,8 +236,8 @@ export const privateRecipeController = {
     await imageRepo.deleteOne({owner_id, image_id: recipe_image.image_id});
 
     const equipment_image = await imageRepo.viewOne(recipe.equipment_image.image_id);
-    if (!equipment_image) throw NotFoundException();
-    if (owner_id !== equipment_image.owner_id) throw ForbiddenException();
+    if (!equipment_image) throw new NotFoundException();
+    if (owner_id !== equipment_image.owner_id) throw new ForbiddenException();
     await s3Client.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',
       Key: `
@@ -249,8 +249,8 @@ export const privateRecipeController = {
     await imageRepo.deleteOne({owner_id, image_id: equipment_image.image_id});
 
     const ingredients_image = await imageRepo.viewOne(recipe.ingredients_image.image_id);
-    if (!ingredients_image) throw NotFoundException();
-    if (owner_id !== ingredients_image.owner_id) throw ForbiddenException();
+    if (!ingredients_image) throw new NotFoundException();
+    if (owner_id !== ingredients_image.owner_id) throw new ForbiddenException();
     await s3Client.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',
       Key: `
@@ -262,8 +262,8 @@ export const privateRecipeController = {
     await imageRepo.deleteOne({owner_id, image_id: ingredients_image.image_id});
 
     const cooking_image = await imageRepo.viewOne(recipe.cooking_image.image_id);
-    if (!cooking_image) throw NotFoundException();
-    if (owner_id !== cooking_image.owner_id) throw ForbiddenException();
+    if (!cooking_image) throw new NotFoundException();
+    if (owner_id !== cooking_image.owner_id) throw new ForbiddenException();
     await s3Client.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',
       Key: `

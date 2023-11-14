@@ -9,6 +9,7 @@ const router = Router();
 // for /users/:username/public-recipes
 
 export function publicRecipeRouter() {
+  // TO DO: test * for required and image
   const recipe_upload = [
     'recipe_type_id',
     'cuisine_id',

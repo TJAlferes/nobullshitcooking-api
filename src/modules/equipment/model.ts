@@ -44,7 +44,7 @@ export class Equipment {
 export function EquipmentName(name: string) {
   assert(name, string());
   if (name.length > 100) {
-    throw ValidationException('Equipment name must be no more than 100 characters.');
+    throw new ValidationException('Equipment name must be no more than 100 characters.');
   }
   return name;
 }

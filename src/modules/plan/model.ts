@@ -38,7 +38,7 @@ export class Plan {
 export function PlanName(name: string) {
   assert(name, string());
   if (name.length > 50) {
-    throw ValidationException("Plan name must be no more than 50 characters");
+    throw new ValidationException('Plan name must be no more than 50 characters');
   }
   return name;
 }

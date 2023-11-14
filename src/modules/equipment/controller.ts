@@ -20,8 +20,8 @@ export const equipmentController = {
 
     const repo = new EquipmentRepo();
     const equipment = await repo.viewOne(equipment_id);
-    if (!equipment) throw NotFoundException();
-    if (equipment.owner_id !== owner_id) throw NotFoundException();  //ForbiddenException(); 
+    if (!equipment) throw new NotFoundException();
+    if (equipment.owner_id !== owner_id) throw new NotFoundException();  //ForbiddenException(); 
 
     return res.json(equipment);
   }

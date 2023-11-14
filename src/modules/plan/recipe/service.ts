@@ -51,13 +51,13 @@ export class PlanRecipeService {
 
     included_recipes.map(({ day_number, recipe_number }) => {
       if (dayNumbers.has(day_number)) {
-        throw ValidationException('Duplicate day_number in plan.');
+        throw new ValidationException('Duplicate day_number in plan.');
       } else {
         dayNumbers.add(day_number);
       }
 
       if (recipeNumbers.has(recipe_number)) {
-        throw ValidationException('Duplicate recipe_number in plan.');
+        throw new ValidationException('Duplicate recipe_number in plan.');
       } else {
         recipeNumbers.add(recipe_number);
       }

@@ -26,8 +26,8 @@ export const privateIngredientController = {
 
     const repo = new IngredientRepo();
     const ingredient = await repo.viewOne(ingredient_id);
-    if (!ingredient) throw NotFoundException();
-    if (owner_id !== ingredient.owner_id) throw ForbiddenException();
+    if (!ingredient) throw new NotFoundException();
+    if (owner_id !== ingredient.owner_id) throw new ForbiddenException();
 
     return res.status(200).json(ingredient);
   },
@@ -94,13 +94,13 @@ export const privateIngredientController = {
 
     const ingredientRepo = new IngredientRepo();
     const ingredient = await ingredientRepo.viewOne(ingredient_id);
-    if (!ingredient) throw NotFoundException();
-    if (owner_id !== ingredient.owner_id) throw ForbiddenException();
+    if (!ingredient) throw new NotFoundException();
+    if (owner_id !== ingredient.owner_id) throw new ForbiddenException();
 
     const imageRepo = new ImageRepo();
     const image = await imageRepo.viewOne(ingredient.image_id);
-    if (!image) throw NotFoundException();
-    if (owner_id !== image.owner_id) throw ForbiddenException();
+    if (!image) throw new NotFoundException();
+    if (owner_id !== image.owner_id) throw new ForbiddenException();
 
     const updated_image = Image.update({
       image_id,
@@ -136,13 +136,13 @@ export const privateIngredientController = {
 
     const ingredientRepo = new IngredientRepo();
     const ingredient = await ingredientRepo.viewOne(ingredient_id);
-    if (!ingredient) throw NotFoundException();
-    if (owner_id !== ingredient.owner_id) throw ForbiddenException();
+    if (!ingredient) throw new NotFoundException();
+    if (owner_id !== ingredient.owner_id) throw new ForbiddenException();
 
     const imageRepo = new ImageRepo();
     const image = await imageRepo.viewOne(ingredient.image_id);
-    if (!image) throw NotFoundException();
-    if (owner_id !== image.owner_id) throw ForbiddenException();
+    if (!image) throw new NotFoundException();
+    if (owner_id !== image.owner_id) throw new ForbiddenException();
 
     await AwsS3PrivateUploadsClient.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',

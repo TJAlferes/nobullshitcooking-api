@@ -22,12 +22,12 @@ export const userFavoriteRecipeController = {
 
     const recipeRepo = new RecipeRepo();
     const recipe = await recipeRepo.viewOneByRecipeId(recipe_id);
-    if (!recipe) throw NotFoundException();
+    if (!recipe) throw new NotFoundException();
     if (recipe.author_id === user_id) {
-      throw ForbiddenException('May not favorite own recipe.');
+      throw new ForbiddenException('May not favorite own recipe.');
     }
     if (recipe.owner_id !== NOBSC_USER_ID) {
-      throw ForbiddenException("May only favorite public recipes.");
+      throw new ForbiddenException("May only favorite public recipes.");
     }
 
     const favoriteRecipe = FavoriteRecipe.create({user_id, recipe_id}).getDTO();

@@ -19,7 +19,7 @@ export class RecipeMethodRepo extends MySQLRepo implements RecipeMethodRepoInter
     const sql = `INSERT INTO recipe_method (recipe_id, method_id) VALUES ${placeholders}`;
     await this.pool.execute(sql, recipe_methods);
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, recipe_methods);
-    if (!result) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
   
   async bulkUpdate({ recipe_id, placeholders, recipe_methods }: BulkUpdateParams) {  // TO DO: change to namedPlaceholders using example below
@@ -48,7 +48,8 @@ export class RecipeMethodRepo extends MySQLRepo implements RecipeMethodRepoInter
 
   async deleteByRecipeId(recipe_id: string) {
     const sql = `DELETE FROM recipe_method WHERE recipe_id = ?`;
-    await this.pool.execute(sql, [recipe_id]);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [recipe_id]);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }
 

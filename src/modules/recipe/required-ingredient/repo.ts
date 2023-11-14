@@ -25,7 +25,7 @@ export class RecipeIngredientRepo extends MySQLRepo implements RecipeIngredientR
     `;  // test these
     await this.pool.execute(sql, recipe_ingredients);
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, recipe_ingredients);
-    if (!result) throw new Error('Query not successful.');
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
   
   async bulkUpdate({ recipe_id, placeholders, recipe_ingredients }: BulkUpdateParams) {  // TO DO: change to namedPlaceholders using example below
@@ -54,12 +54,14 @@ export class RecipeIngredientRepo extends MySQLRepo implements RecipeIngredientR
 
   async deleteByIngredientId(ingredient_id: string) {
     const sql = `DELETE FROM recipe_ingredient WHERE ingredient_id = ?`;
-    await this.pool.execute(sql, [ingredient_id]);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [ingredient_id]);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async deleteByRecipeId(recipe_id: string) {
     const sql = `DELETE FROM recipe_ingredient WHERE recipe_id = ?`;
-    await this.pool.execute(sql, [recipe_id]);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [recipe_id]);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }
 
