@@ -14,7 +14,7 @@ export async function seedIngredient(conn: PoolConnection) {
       owner_id
     ) VALUES ${placeholders1}
   `;
-  await conn.query(sql1, images);
+  await conn.execute(sql1, images);
 
   const placeholders2 = '(?, ?, ?, ?, ?, ?, ?),'.repeat(ingredients.length).slice(0, -1);
   const sql2 = `
@@ -28,5 +28,5 @@ export async function seedIngredient(conn: PoolConnection) {
       image_id
     ) VALUES ${placeholders2}
   `;
-  await conn.query(sql2, ingredients);
+  await conn.execute(sql2, ingredients);
 }

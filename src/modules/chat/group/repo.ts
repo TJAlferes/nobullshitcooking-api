@@ -82,6 +82,11 @@ export interface ChatgroupRepoInterface {
   deleteOne:  (params: DeleteOneParams) => Promise<void>;
 }
 
+type ChatgroupView = RowDataPacket & {
+  chatgroup_id:   string;
+  chatgroup_name: string;
+};
+
 type InsertParams = {
   chatgroup_id:   string;
   owner_id:       string;

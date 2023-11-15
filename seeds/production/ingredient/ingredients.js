@@ -2951,4 +2951,4 @@ export const production_ingredients = [
     "notes": "",
     "image_id": "018b5ade-dc59-7836-a518-1ce009f6e28d"
   }
-]
+].flatMap(row => Object.values(row));

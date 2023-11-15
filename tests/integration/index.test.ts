@@ -114,42 +114,49 @@ describe ('NOBSC API', () => {
   describe('savedRecipe', savedRecipesTests);
 });
 
+const tableNames = [
+  'user',
+  'password_reset',
+  'image',
+  'user_image',
+  'friendship',
+  'equipment',
+  'ingredient',
+  'ingredient_alt_name',
+  'recipe',
+  'recipe_image',
+  'recipe_equipment',
+  'recipe_ingredient',
+  'recipe_method',
+  'recipe_subrecipe',
+  'favorite_recipe',
+  'saved_recipe',
+  'plan',
+  'plan_recipe',
+];
+
 async function truncateTestDatabase() {
   // Ensure this touches ONLY test DBs, NEVER prod DBs!!!
   // To that end, we use a separate pool here (instead of src/connections/mysql.ts).
   const pool = createPool(testConfig);
 
   try {
-    const tableNames = [
-      'user',
-      'password_reset',
-      'image',
-      'user_image',
-      'friendship',
-      //'chatgroup',
-      //'chatroom',
-      //'chatmessage',
-      //'chatgroup_user',
-      //'chatroom_user',
-      'equipment',
-      'ingredient',
-      //'ingredient_alt_name',
-      'recipe',
-      //'recipe_image',
-      //'recipe_equipment',
-      //'recipe_ingredient',
-      //'recipe_method',
-      //'recipe_subrecipe',
-      'favorite_recipe',
-      'saved_recipe',
-      'plan',
-      //'plan_recipe',
-    ];
-
     console.log('Reset test MySQL DB tables begin.');
 
     for (const tableName of tableNames.reverse()) {
-      await pool.execute(`TRUNCATE TABLE ${tableName}`);
+      const conn = await pool.getConnection();
+      await conn.beginTransaction();
+      try {
+        await conn.execute(`SET foreign_key_checks = 0;`);
+        await conn.execute(`TRUNCATE TABLE ${tableName}`);
+        await conn.execute(`SET foreign_key_checks = 1;`);
+        await conn.commit();
+      } catch (error) {
+        await conn.rollback();
+        throw error;
+      }finally {
+        conn.release();
+      }
     }
 
     await seedTestDatabase();
@@ -161,3 +168,29 @@ async function truncateTestDatabase() {
     await pool.end();
   }
 }
+
+/*const tableNames = [
+  'user',
+  'password_reset',
+  'image',
+  'user_image',
+  'friendship',
+  //'chatgroup',
+  //'chatroom',
+  //'chatmessage',
+  //'chatgroup_user',
+  //'chatroom_user',
+  'equipment',
+  'ingredient',
+  //'ingredient_alt_name',
+  'recipe',
+  //'recipe_image',
+  //'recipe_equipment',
+  //'recipe_ingredient',
+  //'recipe_method',
+  //'recipe_subrecipe',
+  'favorite_recipe',
+  'saved_recipe',
+  'plan',
+  //'plan_recipe',
+];*/

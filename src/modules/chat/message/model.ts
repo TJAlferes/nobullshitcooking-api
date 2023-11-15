@@ -22,12 +22,12 @@ export class Chatmessage {
     //this.video_id       = params.video_id ? UUIDv7StringId(params.video_id) : undefined;
     
     if (this.chatroom_id === null && this.receiver_id === null) {
-      throw ValidationException('Chatmessage must define its chatroom_id or receiver_id.');
+      throw new ValidationException('Chatmessage must define its chatroom_id or receiver_id.');
     }
     if (this.chatroom_id !== null && this.receiver_id !== null) {
       // chatroom_id means the message is public (to that chatroom)
       // reciever_id means the message is private (to that receiver and sender)
-      throw ValidationException('Chatmessage must be public or private, not both.');
+      throw new ValidationException('Chatmessage must be public or private, not both.');
     }
   }
 
@@ -52,10 +52,10 @@ export class Chatmessage {
 export function Username(username: string) {
   assert(username, string());
   if (username.length < 6) {
-    throw ValidationException('Username must be at least 6 characters.');
+    throw new ValidationException('Username must be at least 6 characters.');
   }
   if (username.length > 20) {
-    throw ValidationException('Username must be no more than 20 characters.');
+    throw new ValidationException('Username must be no more than 20 characters.');
   }
   return username;
 }
@@ -63,7 +63,7 @@ export function Username(username: string) {
 export function Content(content: string) {
   assert(content, string());
   if (content.length > 1000) {
-    throw ValidationException('Chatmessage content must be no more than 1,000 characters.');
+    throw new ValidationException('Chatmessage content must be no more than 1,000 characters.');
   }
   return content;
 }

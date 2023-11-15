@@ -6,7 +6,7 @@ const config: Config = {
   globalSetup: './global-setup.cjs',
   preset: 'ts-jest/presets/js-with-ts-esm', //'ts-jest',
   testEnvironment: 'node',
-  testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/tests/'],
+  testPathIgnorePatterns: ['<rootDir>/node_modules/'],
   testRegex: '/*.test.ts$',
   extensionsToTreatAsEsm: ['.ts'],
   verbose: true,

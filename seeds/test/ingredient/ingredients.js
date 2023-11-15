@@ -17,4 +17,4 @@ export const test_ingredients = [
     "notes": "",
     "image_id": "018b5ade-dc55-7db2-870h-00733ee1bedg"
   },
-];
+].flatMap(row => Object.values(row));

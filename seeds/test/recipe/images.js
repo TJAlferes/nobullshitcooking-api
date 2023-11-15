@@ -114,4 +114,4 @@ export const test_images = [
     "author_id": "44444444-4444-4444-4444-444444444444",
     "owner_id": "11111111-1111-1111-1111-111111111111"
   }
-];
+].flatMap(row => Object.values(row));

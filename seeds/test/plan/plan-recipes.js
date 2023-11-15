@@ -23,4 +23,4 @@ export const test_plan_recipes = [
     "day_number": 1,
     "recipe_number": 1
   }
-];
+].flatMap(row => Object.values(row));

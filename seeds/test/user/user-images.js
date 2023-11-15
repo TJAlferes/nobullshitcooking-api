@@ -14,4 +14,4 @@ export const test_user_images = [
     "image_id": "00000000-0000-0000-0000-000000000000",
     "current": true
   }
-];
+].flatMap(row => Object.values(row));

@@ -18,7 +18,7 @@ export async function seedRecipe(conn: PoolConnection) {
       owner_id
     ) VALUES ${placeholders1}
   `;
-  await conn.query(sql1, images);
+  await conn.execute(sql1, images);
 
   const placeholders2 = '(?, ?, ?, ?, ?, ?, ?, ?, ?, ?),'
     .repeat(recipes.length)
@@ -37,7 +37,7 @@ export async function seedRecipe(conn: PoolConnection) {
       directions
     ) VALUES ${placeholders2}
   `;
-  await conn.query(sql2, recipes);
+  await conn.execute(sql2, recipes);
 
   const placeholders3 = '(?, ?, ?)'.repeat(recipe_images.length).slice(0, -1);
   const sql3 = `
@@ -47,7 +47,7 @@ export async function seedRecipe(conn: PoolConnection) {
       type
     ) VALUES ${placeholders3}
   `;
-  await conn.query(sql3, recipe_images);
+  await conn.execute(sql3, recipe_images);
 
   const placeholders4 = '(?, ?, ?)'.repeat(recipe_equipment.length).slice(0, -1);
   const sql4 = `
@@ -57,7 +57,7 @@ export async function seedRecipe(conn: PoolConnection) {
       equipment_id
     ) VALUES ${placeholders4}
   `;
-  await conn.query(sql4, recipe_equipment);
+  await conn.execute(sql4, recipe_equipment);
 
   const placeholders5 = '(?, ?, ?, ?)'.repeat(recipe_ingredients.length).slice(0, -1);
   const sql5 = `
@@ -68,7 +68,7 @@ export async function seedRecipe(conn: PoolConnection) {
       ingredient_id
     ) VALUES ${placeholders5}
   `;
-  await conn.query(sql5, recipe_ingredients);
+  await conn.execute(sql5, recipe_ingredients);
 
   const placeholders6 = '(?, ?)'.repeat(recipe_methods.length).slice(0, -1);
   const sql6 = `
@@ -77,5 +77,5 @@ export async function seedRecipe(conn: PoolConnection) {
       method_id
     ) VALUES ${placeholders6}
   `;
-  await conn.query(sql6, recipe_methods);
+  await conn.execute(sql6, recipe_methods);
 }

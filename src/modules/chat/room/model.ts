@@ -33,10 +33,10 @@ export class Chatroom {
 export function ChatroomName(name: string) {
   assert(name, string());
   if (name.length < 2) {
-    throw ValidationException('Chatroom name must be at least 2 characters.');
+    throw new ValidationException('Chatroom name must be at least 2 characters.');
   }
   if (name.length > 32) {
-    throw ValidationException('Chatroom name must be no more than 32 characters.');
+    throw new ValidationException('Chatroom name must be no more than 32 characters.');
   }
   return name;
 }

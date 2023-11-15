@@ -23,7 +23,7 @@ export class UserAuthenticationService {
     const user = await this.doesUserExist(email);
 
     const confirmed = await this.isUserConfirmed(email);
-    if (confirmed) throw ConflictException("Already confirmed.");
+    if (confirmed) throw new ConflictException('Already confirmed.');
 
     await this.isCorrectPassword({email, password});
   
@@ -38,20 +38,20 @@ export class UserAuthenticationService {
 
     const existingUser = await this.repo.getByConfirmationCode(code);
     if (!existingUser) {
-      throw NotFoundException("An issue occurred, please double check your info and try again.");
+      throw new NotFoundException('An issue occurred, please double check your info and try again.');
     }
 
     if (null === existingUser.confirmation_code) {
-      throw ConflictException("Already confirmed.");
+      throw new ConflictException('Already confirmed.');
     }
 
     if (code !== existingUser.confirmation_code) {
-      throw NotFoundException("An issue occurred, please double check your info and try again.");
+      throw new NotFoundException('An issue occurred, please double check your info and try again.');
     }
 
     const password = await this.repo.getPassword(existingUser.email);
     if (!password) {
-      throw NotFoundException("An issue occurred, please double check your info and try again.");
+      throw new NotFoundException('An issue occurred, please double check your info and try again.');
     }
 
     const user = User.update({
@@ -70,7 +70,7 @@ export class UserAuthenticationService {
 
     const confirmed = await this.isUserConfirmed(email);
     if (!confirmed) {
-      throw UnauthorizedException("Please check your email for your confirmation code.");
+      throw new UnauthorizedException('Please check your email for your confirmation code.');
     }
 
     await this.isCorrectPassword({email, password});
@@ -84,7 +84,7 @@ export class UserAuthenticationService {
   async isUserConfirmed(email: string) {
     const validEmail = Email(email);
     const user = await this.repo.getByEmail(validEmail);
-    if (!user) throw NotFoundException("User does not exist.");
+    if (!user) throw new NotFoundException('User does not exist.');
     return null === user.confirmation_code;
   }
 
@@ -99,27 +99,27 @@ export class UserAuthenticationService {
     const password = Password(params.password);
 
     const currentHash = await this.repo.getPassword(email);
-    if (!currentHash) throw UnauthorizedException("Incorrect email or password.");
+    if (!currentHash) throw new UnauthorizedException('Incorrect email or password.');
 
     const correctPassword = await bcrypt.compare(password, currentHash);
-    if (!correctPassword) throw UnauthorizedException("Incorrect email or password.");
+    if (!correctPassword) throw new UnauthorizedException('Incorrect email or password.');
   }
 
   async doesUserExist(email: string) {
     const validEmail = Email(email);
     const user = await this.repo.getByEmail(validEmail);
-    if (!user) throw UnauthorizedException("Incorrect email or password.");
+    if (!user) throw new UnauthorizedException('Incorrect email or password.');
     return user;
   }
 
   async sendConfirmationCode({ email, confirmation_code }: SendConfirmationCodeParams) {
-    const charset  = "UTF-8";
-    const from     = "No Bullshit Cooking <staff@nobullshitcooking.com>";
+    const charset  = 'UTF-8';
+    const from     = 'No Bullshit Cooking <staff@nobullshitcooking.com>';
     const to       = email;
-    const subject  = "Confirmation Code For No Bullshit Cooking";
-    const bodyText = "Confirmation Code For No Bullshit Cooking\r\n"
-      + "Please enter the following confirmation code at:\r\n"
-      + "https://nobullshitcooking.com/verify\r\n"
+    const subject  = 'Confirmation Code For No Bullshit Cooking';
+    const bodyText = 'Confirmation Code For No Bullshit Cooking\r\n'
+      + 'Please enter the following confirmation code at:\r\n'
+      + 'https://nobullshitcooking.com/verify\r\n'
       + confirmation_code;
     const bodyHtml = `
       <html>

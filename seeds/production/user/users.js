@@ -20,4 +20,4 @@ export const production_users = [
     "username": "Tester",
     "confirmation_code": null
   },
-];
+].flatMap(row => Object.values(row));

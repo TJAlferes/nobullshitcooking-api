@@ -35,10 +35,10 @@ export class Chatgroup {
 function ChatgroupName(name: string) {
   assert(name, string());
   if (name.length < 2) {
-    throw ValidationException('Chatgroup name must be at least 2 characters.');
+    throw new ValidationException('Chatgroup name must be at least 2 characters.');
   }
   if (name.length > 32) {
-    throw ValidationException('Chatgroup name must be no more than 32 characters.');
+    throw new ValidationException('Chatgroup name must be no more than 32 characters.');
   }
   return name;
 }

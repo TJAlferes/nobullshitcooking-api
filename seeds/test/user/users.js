@@ -20,4 +20,4 @@ export const test_users = [
     "username": "FakeUnconfirmedUser1",
     "confirmation_code": "01010101-0101-0101-0101-010101010101"
   }
-];
+].flatMap(row => Object.values(row));

@@ -11,4 +11,4 @@ export const production_recipe_methods = [
     "recipe_id": "018b6942-6b2e-7942-8ab5-350bb57371c7",
     "method_id": 1
   }
-];
+].flatMap(row => Object.values(row));

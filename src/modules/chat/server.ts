@@ -18,13 +18,15 @@ export function createSocketIOServer(httpServer: Server, sessionMiddleware: Requ
     httpServer, 
     {
       cors: {
-        allowedHeaders: ["sessionId", "userInfo"],
-        credentials:    true,
-        methods:        ["GET", "POST"],
-        origin:         [
-          "https://nobullshitcooking.com",
-          "http://localhost:3000",
-          "http://localhost:8080"
+        allowedHeaders: ['session_id', 'user_id', 'username'],
+        credentials: true,
+        methods: ['GET', 'POST'],
+        origin: [
+          'https://nobullshitcooking.com',
+          'http://localhost:3000',
+          'http://localhost:3001',
+          'http://localhost:3003',
+          'http://localhost:8080'
         ]
       },
       pingTimeout: 60000
@@ -126,7 +128,7 @@ export function createSocketIOServer(httpServer: Server, sessionMiddleware: Requ
       }
 
       const friendshipRepo = new FriendshipRepo();
-      const friends = await friendshipRepo.viewAllOfStatus({user_id, status: "accepted"});
+      const friends = await friendshipRepo.viewAllOfStatus({user_id, status: 'accepted'});
       if (friends.length) {
         for (const friend of friends) {
           const onlineFriend = await chatuserRepo.getByUsername(friend.username);

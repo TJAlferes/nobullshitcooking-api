@@ -15,4 +15,4 @@ export const test_equipment = [
     "notes": "Good times...",
     "image_id": "018b5ade-5438-7ea2-a352-299b6a84f785"
   }
-];
+].flatMap(row => Object.values(row));

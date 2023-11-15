@@ -15,7 +15,7 @@ export async function seedUser(conn: PoolConnection) {
       owner_id
     ) VALUES ${placeholders1}
   `;
-  await conn.query(sql1, production_images);
+  await conn.execute(sql1, production_images);
 
   const placeholders2 = '(?, ?, ?, ?, ?),'.repeat(production_users.length).slice(0, -1);
   const sql2 = `
@@ -27,7 +27,7 @@ export async function seedUser(conn: PoolConnection) {
       confirmation_code
     ) VALUES ${placeholders2}
   `;
-  await conn.query(sql2, production_users);
+  await conn.execute(sql2, production_users);
 
   const placeholders3 = '(?, ?, ?),'.repeat(production_users.length).slice(0, -1);
   const sql3 = `
@@ -37,5 +37,5 @@ export async function seedUser(conn: PoolConnection) {
       current
     ) VALUES ${placeholders3}
   `;
-  await conn.query(sql3, production_user_images);
+  await conn.execute(sql3, production_user_images);
 }

@@ -6,4 +6,4 @@ export const production_images = [
     "author_id": "00000000-0000-0000-0000-000000000000",
     "owner_id": "11111111-1111-1111-1111-111111111111"
   }  // default user avatar
-];
+].flatMap(row => Object.values(row));
