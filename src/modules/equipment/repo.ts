@@ -107,10 +107,10 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
       FROM equipment e
       INNER JOIN equipment_type t ON e.equipment_type_id = t.equipment_type_id
       INNER JOIN image i          ON e.image_id          = i.image_id
-      WHERE e.owner_id = :owner_id
+      WHERE e.owner_id = ?
       ORDER BY e.equipment_name ASC
     `;
-    const [ rows ] = await this.pool.execute<EquipmentView[]>(sql, owner_id);
+    const [ rows ] = await this.pool.execute<EquipmentView[]>(sql, [owner_id]);
     return rows;
   }
 
@@ -129,9 +129,9 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
       FROM equipment e
       INNER JOIN equipment_type t ON e.equipment_type_id = t.equipment_type_id
       INNER JOIN image i          ON e.image_id          = i.image_id
-      WHERE e.equipment_id = :equipment_id
+      WHERE e.equipment_id = ?
     `;
-    const [ [ row ] ] = await this.pool.execute<EquipmentView[]>(sql, equipment_id);
+    const [ [ row ] ] = await this.pool.execute<EquipmentView[]>(sql, [equipment_id]);
     return row;
   }
 
@@ -188,7 +188,7 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
 
   async deleteAll(owner_id: string) {
     const sql = `DELETE FROM equipment WHERE owner_id = ?`;
-    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, owner_id);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [owner_id]);
     if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 

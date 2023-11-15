@@ -13,7 +13,7 @@ export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
 
   async viewOneByPlanId(plan_id: string) {
     const sql = `${viewSql} p.plan_id = ? ORDER BY pr.day_number`;
-    const [ [ row ] ] = await this.pool.execute<PlanView[]>(sql, plan_id);
+    const [ [ row ] ] = await this.pool.execute<PlanView[]>(sql, [plan_id]);
     return row;
   }
 
@@ -100,7 +100,7 @@ export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
 
   async deleteAll(owner_id: string) {
     const sql = `DELETE FROM plan WHERE owner_id = ?`;
-    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, owner_id);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [owner_id]);
     if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 

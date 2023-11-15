@@ -13,7 +13,7 @@ export class UserImageRepo extends MySQLRepo implements UserImageRepoInterface {
       INNER JOIN image i ON i.image_id = ui.image_id
       WHERE ui.user_id = ?
     `;
-    const [ rows ] = await this.pool.execute<UserImageView[]>(sql, user_id);
+    const [ rows ] = await this.pool.execute<UserImageView[]>(sql, [user_id]);
     return rows;
   }
 
@@ -27,7 +27,7 @@ export class UserImageRepo extends MySQLRepo implements UserImageRepoInterface {
       INNER JOIN image i ON i.image_id = ui.image_id
       WHERE ui.user_id = ? AND ui.current = true
     `;
-    const [ [ row ] ] = await this.pool.execute<UserImageView[]>(sql, user_id);
+    const [ [ row ] ] = await this.pool.execute<UserImageView[]>(sql, [user_id]);
     return row ? row : undefined;
   }
 
@@ -47,7 +47,7 @@ export class UserImageRepo extends MySQLRepo implements UserImageRepoInterface {
       SET current = false
       WHERE user_id = ? AND current = true
     `;
-    const [ result1 ] = await this.pool.execute<ResultSetHeader>(sql1, user_id);
+    const [ result1 ] = await this.pool.execute<ResultSetHeader>(sql1, [user_id]);
     if (result1.affectedRows < 1) throw new Error('Query not successful.');
 
     const sql2 = `
@@ -55,7 +55,7 @@ export class UserImageRepo extends MySQLRepo implements UserImageRepoInterface {
       SET current = true
       WHERE image_id = ?
     `;
-    const [ result2 ] = await this.pool.execute<ResultSetHeader>(sql2, image_id);
+    const [ result2 ] = await this.pool.execute<ResultSetHeader>(sql2, [image_id]);
     if (result2.affectedRows < 1) throw new Error('Query not successful.');
   }
 }

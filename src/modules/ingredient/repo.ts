@@ -12,7 +12,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
         i.ingredient_id,
         ${fullnameSql} AS fullname
       FROM ingredient i
-      INNER JOIN ingredient_alt_name n ON i.ingredient_id = n.ingredient_id
+      LEFT JOIN ingredient_alt_name n ON i.ingredient_id = n.ingredient_id
       WHERE ${fullnameSql} LIKE ?
       LIMIT 5;
     `;
@@ -39,7 +39,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
         m.image_filename
       FROM ingredient i
       INNER JOIN ingredient_type t     ON t.ingredient_type_id = i.ingredient_type_id
-      INNER JOIN ingredient_alt_name n ON i.ingredient_id      = n.ingredient_id
+      LEFT JOIN ingredient_alt_name n ON i.ingredient_id      = n.ingredient_id
       INNER JOIN image m               ON i.image_id           = m.image_id
       WHERE i.owner_id = ?
     `;
@@ -116,10 +116,10 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
       INNER JOIN ingredient_type t     ON i.ingredient_type_id = t.ingredient_type_id
       INNER JOIN ingredient_alt_name n ON i.ingredient_id      = n.ingredient_id
       INNER JOIN image m               ON i.image_id           = m.image_id
-      WHERE i.owner_id = :owner_id
+      WHERE i.owner_id = ?
       ORDER BY i.ingredient_name ASC
     `;
-    const [ rows ] = await this.pool.execute<IngredientView[]>(sql, owner_id);
+    const [ rows ] = await this.pool.execute<IngredientView[]>(sql, [owner_id]);
     return rows;
   }
 
@@ -127,7 +127,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
     const sql = `
       SELECT
         i.ingredient_id,
-        i.ingredient_type_id
+        i.ingredient_type_id,
         t.ingredient_type_name,
         i.owner_id,
         i.ingredient_brand,
@@ -138,9 +138,9 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
         m.image_filename
       FROM ingredient i
       INNER JOIN ingredient_type t     ON i.ingredient_type_id = t.ingredient_type_id
-      INNER JOIN ingredient_alt_name n ON i.ingredient_id      = n.ingredient_id
+      LEFT JOIN ingredient_alt_name n ON i.ingredient_id      = n.ingredient_id
       INNER JOIN image m               ON i.image_id           = m.image_id
-      WHERE i.ingredient_id = :ingredient_id
+      WHERE i.ingredient_id = ?
     `;
     const [ [ row ] ] = await this.pool.execute<IngredientView[]>(sql, [ingredient_id]);
     return row;
@@ -149,7 +149,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
   async insert(params: InsertParams) {
     const sql = `
       INSERT INTO ingredient (
-        ingredient_id
+        ingredient_id,
         ingredient_type_id,
         owner_id,
         ingredient_brand,
@@ -209,7 +209,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
 
   async deleteAll(owner_id: string) {
     const sql = `DELETE FROM ingredient WHERE owner_id = ?`;
-    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, owner_id);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [owner_id]);
     if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
@@ -278,6 +278,6 @@ const fullnameSql = `
     i.ingredient_brand,
     i.ingredient_variety,
     i.ingredient_name,
-    IFNULL(GROUP_CONCAT(n.alt_name SEPARATOR ' '), '')
+    IFNULL(n.alt_name, '')
   )
 `;

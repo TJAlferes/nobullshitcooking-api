@@ -15,7 +15,7 @@ export class ChatroomUserRepo extends MySQLRepo implements ChatroomUserRepoInter
       INNER JOIN image i ON i.image_id = ui.image_id
       WHERE cu.chatroom_id = ?
     `;
-    const [ rows ] = await this.pool.execute<ChatroomUserView[]>(sql, chatroom_id);
+    const [ rows ] = await this.pool.execute<ChatroomUserView[]>(sql, [chatroom_id]);
     return rows;
   }
   
@@ -43,13 +43,13 @@ export class ChatroomUserRepo extends MySQLRepo implements ChatroomUserRepoInter
 
   async deleteByChatroomId(chatroom_id: string) {
     const sql = `DELETE FROM chatroom_user WHERE chatroom_id = ? LIMIT 1`;
-    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, chatroom_id);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [chatroom_id]);
     if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async deleteByUserId(user_id: string) {
     const sql = `DELETE FROM chatroom_user WHERE user_id = ? LIMIT 1`;
-    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, user_id);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [user_id]);
     if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }

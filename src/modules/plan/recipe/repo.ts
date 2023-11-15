@@ -53,7 +53,7 @@ export class PlanRecipeRepo extends MySQLRepo implements PlanRecipeRepoInterface
 
   async deleteByPlanId(plan_id: string) {
     const sql = `DELETE FROM plan_recipe WHERE plan_id = ?`;
-    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, plan_id);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [plan_id]);
     if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }

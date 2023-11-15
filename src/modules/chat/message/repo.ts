@@ -15,7 +15,7 @@ export class ChatmessageRepo extends MySQLRepo implements ChatmessageRepoInterfa
       INNER JOIN user u ON u.user_id = cm.sender_id
       WHERE cm.chatroom_id = ?
     `;
-    const [ rows ] = await this.pool.execute<ChatmessageView[]>(sql, chatroom_id);
+    const [ rows ] = await this.pool.execute<ChatmessageView[]>(sql, [chatroom_id]);
     return rows;
   }
 

@@ -27,13 +27,13 @@ export class ChatgroupUserRepo extends MySQLRepo implements ChatgroupUserRepoInt
 
   async deleteByChatgroupId(chatgroup_id: string) {
     const sql = `DELETE FROM chatgroup_user WHERE chatgroup_id = ? LIMIT 1`;
-    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, chatgroup_id);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [chatgroup_id]);
     if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async deleteByUserId(user_id: string) {
     const sql = `DELETE FROM chatgroup_user WHERE user_id = ? LIMIT 1`;
-    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, user_id);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [user_id]);
     if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }

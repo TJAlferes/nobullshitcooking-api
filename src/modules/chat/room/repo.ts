@@ -11,13 +11,13 @@ export class ChatroomRepo extends MySQLRepo implements ChatroomRepoInterface {
       FROM chatroom
       WHERE chatgroup_id = :chatgroup_id
     `;
-    const [ rows ] = await this.pool.execute<ChatroomOverview[]>(sql, chatgroup_id);
+    const [ rows ] = await this.pool.execute<ChatroomOverview[]>(sql, [chatgroup_id]);
     return rows;
   }
 
   async viewByChatroomName(chatroom_name: string) {
     const sql = `SELECT chatroom_id FROM chatroom WHERE chatroom_name = ?`;
-    const [ [ row ] ] = await this.pool.execute<ChatroomId[]>(sql, chatroom_name);
+    const [ [ row ] ] = await this.pool.execute<ChatroomId[]>(sql, [chatroom_name]);
     return row.chatroom_id;
   }
 
@@ -58,7 +58,7 @@ export class ChatroomRepo extends MySQLRepo implements ChatroomRepoInterface {
       WHERE chatroom_id = :chatroom_id
       LIMIT 1
     `;
-    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, chatroom_id);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [chatroom_id]);
     if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }

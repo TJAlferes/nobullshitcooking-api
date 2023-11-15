@@ -45,7 +45,7 @@ export class IngredientAltNameRepo extends MySQLRepo implements IngredientAltNam
 
   async deleteByIngredientId(ingredient_id: string) {
     const sql = `DELETE FROM ingredient_alt_name WHERE ingredient_id = ?`;
-    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, ingredient_id);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [ingredient_id]);
     if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }

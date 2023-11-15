@@ -14,16 +14,16 @@ export class ChatgroupRepo extends MySQLRepo implements ChatgroupRepoInterface {
         cg.chatgroup_name
       FROM chatgroup cg
       INNER JOIN chatgroup_user cgu ON cgu.chatgroup_id = cg.chatgroup_id
-      WHERE cgu.user_id = :user_id
+      WHERE cgu.user_id = ?
     `;
-    const [ row ] = await this.pool.execute<ChatgroupView[]>(sql, user_id);
+    const [ row ] = await this.pool.execute<ChatgroupView[]>(sql, [user_id]);
     return row;
   }
 
   //async viewOne({ user_id, chatgroup_id }: ViewOneParams) {}
   async getOwnerId(chatgroup_id: string) {
     const sql = `SELECT owner_id FROM chatgroup WHERE chatgroup_id = ?`;
-    const [ [ row ] ] = await this.pool.execute<RowDataPacket[]>(sql, chatgroup_id);
+    const [ [ row ] ] = await this.pool.execute<RowDataPacket[]>(sql, [chatgroup_id]);
     return row.owner_id;
   }
 

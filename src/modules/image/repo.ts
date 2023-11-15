@@ -102,7 +102,7 @@ export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
 
   async deleteAll(owner_id: string) {
     const sql = `DELETE FROM image WHERE owner_id = ?`;
-    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, owner_id);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [owner_id]);
     if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 

@@ -168,19 +168,19 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
 
   async viewOneByRecipeId(recipe_id: string) {
     const sql = `${recipeDetailViewSQL} r.recipe_id = ?`;
-    const [ [ row ] ] = await this.pool.execute<RecipeView[]>(sql, recipe_id);
+    const [ [ row ] ] = await this.pool.execute<RecipeView[]>(sql, [recipe_id]);
     return row;
   }
 
   async viewOneByTitle(title: string) {
     const sql = `${recipeDetailViewSQL} r.title = ?`;
-    const [ [ row ] ] = await this.pool.execute<RecipeView[]>(sql, title);
+    const [ [ row ] ] = await this.pool.execute<RecipeView[]>(sql, [title]);
     return row;
   }
 
   async viewOneToEdit(recipe_id: string) {
     const sql = `${existingRecipeToEditViewSQL} r.recipe_id = ?`;
-    const [ [ row ] ] = await this.pool.execute<RecipeView[]>(sql, recipe_id);
+    const [ [ row ] ] = await this.pool.execute<RecipeView[]>(sql, [recipe_id]);
     return row;
   }
 
@@ -518,7 +518,7 @@ const recipeDetailViewSQL = `
       SELECT JSON_ARRAYAGG(JSON_OBJECT(
         'method_name', m.method_name
       ))
-      FROM methods m
+      FROM method m
       INNER JOIN recipe_method rm ON rm.method_id = m.method_id
       WHERE rm.recipe_id = r.recipe_id
     ) required_methods,
@@ -540,13 +540,13 @@ const recipeDetailViewSQL = `
                                  i.ingredient_brand,
                                  i.ingredient_variety,
                                  i.ingredient_name,
-                                 IFNULL(GROUP_CONCAT(n.alt_name SEPARATOR ' '), '')
+                                 IFNULL(n.alt_name, '')
                                )
       ))
-      FROM ingredients i
+      FROM ingredient i
       INNER JOIN recipe_ingredient ri  ON ri.ingredient_id = i.ingredient_id
       INNER JOIN unit u                ON u.unit_id = ri.unit_id
-      INNER JOIN ingredient_alt_name n ON n.ingredient_id = i.ingredient_id
+      LEFT JOIN ingredient_alt_name n ON n.ingredient_id = i.ingredient_id
       WHERE ri.recipe_id = r.recipe_id
     ) required_ingredients,
     (
@@ -622,7 +622,7 @@ const existingRecipeToEditViewSQL = `
         'ingredient_type_id', i.ingredient_type_id,
         'ingredient_id',      ri.ingredient_id
       ))
-      FROM ingredients recipe_ingredient ri
+      FROM ingredient recipe_ingredient ri
       WHERE ri.recipe_id = r.recipe_id
     ) ingredients,
     (
@@ -633,7 +633,7 @@ const existingRecipeToEditViewSQL = `
         'cuisine_id',      r.cuisine_id,
         'subrecipe_id',    rs.subrecipe_id
       ))
-      FROM recipes recipe_subrecipe rs
+      FROM recipe recipe_subrecipe rs
       WHERE rs.recipe_id = r.recipe_id
     ) subrecipes
   FROM recipe r
