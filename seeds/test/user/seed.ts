@@ -1,5 +1,6 @@
 import type { PoolConnection } from 'mysql2/promise';
 
+import { format } from '../../common/format';
 import { production_images as images } from '../../production/user/images.js';
 import { production_user_images } from '../../production/user/user-images.js';
 import { production_users } from '../../production/user/users.js';
@@ -21,7 +22,7 @@ export async function seedUser(conn: PoolConnection) {
       owner_id
     ) VALUES ${placeholders1}
   `;
-  await conn.execute(sql1, images);
+  await conn.execute(sql1, format(images));
 
   const placeholders2 = '(?, ?, ?, ?, ?),'.repeat(users.length).slice(0, -1);
   const sql2 = `
@@ -33,7 +34,7 @@ export async function seedUser(conn: PoolConnection) {
       confirmation_code
     ) VALUES ${placeholders2}
   `;
-  await conn.execute(sql2, users);
+  await conn.execute(sql2, format(users));
 
   const placeholders3 = '(?, ?, ?),'.repeat(user_images.length).slice(0, -1);
   const sql3 = `
@@ -43,7 +44,7 @@ export async function seedUser(conn: PoolConnection) {
       current
     ) VALUES ${placeholders3}
   `;
-  await conn.execute(sql3, user_images);
+  await conn.execute(sql3, format(user_images));
 
   const placeholders4 = '(?, ?, ?),'.repeat(user_images.length).slice(0, -1);
   const sql4 = `
@@ -53,5 +54,5 @@ export async function seedUser(conn: PoolConnection) {
       temporary_password
     ) VALUES ${placeholders4}
   `;
-  await conn.execute(sql4, test_password_resets);
+  await conn.execute(sql4, format(test_password_resets));
 }

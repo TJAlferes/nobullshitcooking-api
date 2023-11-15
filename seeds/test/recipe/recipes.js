@@ -47,4 +47,4 @@ export const test_recipes = [
     "total_time": "01:00:00",
     "directions": "Saute onion..."
   },
-].flatMap(row => Object.values(row));
+];

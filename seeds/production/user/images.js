@@ -1,3 +1,4 @@
+// default user avatar
 export const production_images = [
   {
     "image_id": "00000000-0000-0000-0000-000000000000",
@@ -5,5 +6,5 @@ export const production_images = [
     "caption": "NOBSC Default Avatar",
     "author_id": "00000000-0000-0000-0000-000000000000",
     "owner_id": "11111111-1111-1111-1111-111111111111"
-  }  // default user avatar
-].flatMap(row => Object.values(row));
+  }
+];

@@ -17,4 +17,4 @@ export const production_recipe_ingredients = [
     "unit_id": 1,
     "ingredient_id": "018b5ade-dc57-70d7-8dda-8edfdfe273da"
   }
-].flatMap(row => Object.values(row));
+];

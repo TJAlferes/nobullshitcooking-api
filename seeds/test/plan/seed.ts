@@ -1,5 +1,6 @@
 import type { PoolConnection } from 'mysql2/promise';
 
+import { format } from '../../common/format';
 import { test_plan_recipes } from './plan-recipes.js';
 import { test_plans } from './plans.js';
 
@@ -13,7 +14,7 @@ export async function seedPlan(conn: PoolConnection) {
       plan_name
     ) VALUES ${placeholders1}
   `;
-  await conn.query(sql1, test_plans);
+  await conn.query(sql1, format(test_plans));
 
   const placeholders2 = '(?, ?, ?, ?),'.repeat(test_plan_recipes.length).slice(0, -1);
   const sql2 = `
@@ -24,5 +25,5 @@ export async function seedPlan(conn: PoolConnection) {
       recipe_number
     ) VALUES ${placeholders2}
   `;
-  await conn.query(sql2, test_plan_recipes);
+  await conn.query(sql2, format(test_plan_recipes));
 }

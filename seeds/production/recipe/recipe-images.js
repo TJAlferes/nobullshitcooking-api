@@ -59,4 +59,4 @@ export const production_recipe_images = [
     "image_id": "018b6942-6b2e-7942-8ab5-3508177f4252",
     "type": 4
   }
-].flatMap(row => Object.values(row));
+];

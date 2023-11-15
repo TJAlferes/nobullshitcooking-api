@@ -1,5 +1,6 @@
 import type { PoolConnection } from 'mysql2/promise';
 
+import { format } from '../../common/format';
 import { production_equipment } from '../../production/equipment/equipment.js';
 import { production_images } from '../../production/equipment/images.js';
 import { test_equipment } from './equipment.js';
@@ -19,7 +20,7 @@ export async function seedEquipment(conn: PoolConnection) {
       owner_id
     ) VALUES ${placeholders1}
   `;
-  await conn.query(sql1, images);
+  await conn.query(sql1, format(images));
   
   const placeholders2 = '(?, ?, ?, ?, ?, ?),'.repeat(equipment.length).slice(0, -1);
   const sql2 = `
@@ -32,5 +33,5 @@ export async function seedEquipment(conn: PoolConnection) {
       image_id
     ) VALUES ${placeholders2}
   `;
-  await conn.query(sql2, equipment);
+  await conn.query(sql2, format(equipment));
 }

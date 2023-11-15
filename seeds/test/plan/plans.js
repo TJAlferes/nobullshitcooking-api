@@ -23,4 +23,4 @@ export const test_plans = [
     "owner_id": "11111111-1111-1111-1111-111111111111",
     "plan_name": "Public Plan"
   }
-].flatMap(row => Object.values(row));
+];

@@ -398,4 +398,4 @@ export const production_images = [
     "author_id": "11111111-1111-1111-1111-111111111111",
     "owner_id": "11111111-1111-1111-1111-111111111111"
   }
-].flatMap(row => Object.values(row));
+];

@@ -2,6 +2,7 @@ import type { PoolConnection } from 'mysql2/promise';
 
 import { production_images as images } from '../production/ingredient/images.js';
 import { production_ingredients as ingredients } from '../production/ingredient/ingredients.js';
+import { format } from './format';
 
 export async function seedIngredient(conn: PoolConnection) {
   const placeholders1 = '(?, ?, ?, ?, ?),'.repeat(images.length).slice(0, -1);
@@ -14,7 +15,7 @@ export async function seedIngredient(conn: PoolConnection) {
       owner_id
     ) VALUES ${placeholders1}
   `;
-  await conn.execute(sql1, images);
+  await conn.execute(sql1, format(images));
 
   const placeholders2 = '(?, ?, ?, ?, ?, ?, ?),'.repeat(ingredients.length).slice(0, -1);
   const sql2 = `
@@ -28,5 +29,5 @@ export async function seedIngredient(conn: PoolConnection) {
       image_id
     ) VALUES ${placeholders2}
   `;
-  await conn.execute(sql2, ingredients);
+  await conn.execute(sql2, format(ingredients));
 }

@@ -455,4 +455,4 @@ export const production_equipment = [
     "notes": "",
     "image_id": "018b5ade-544c-725c-a33e-2e0053182a7b"
   }
-].flatMap(row => Object.values(row));
+];

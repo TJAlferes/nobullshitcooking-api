@@ -9,4 +9,4 @@ export const test_recipe_equipment = [
     "amount": 1,
     "equipment_id": "018b5ade-5438-7d0c-b42b-f2641487f7cc"
   }
-].flatMap(row => Object.values(row));
+];
