@@ -55,7 +55,7 @@ export async function seedRecipe(conn: PoolConnection) {
   `;
   await conn.execute(sql2, format(recipes));
 
-  const placeholders3 = '(?, ?, ?)'.repeat(recipe_images.length).slice(0, -1);
+  const placeholders3 = '(?, ?, ?),'.repeat(recipe_images.length).slice(0, -1);
   const sql3 = `
     INSERT INTO recipe_image (
       recipe_id,
@@ -65,7 +65,7 @@ export async function seedRecipe(conn: PoolConnection) {
   `;
   await conn.execute(sql3, format(recipe_images));
 
-  const placeholders4 = '(?, ?, ?)'.repeat(recipe_equipment.length).slice(0, -1);
+  const placeholders4 = '(?, ?, ?),'.repeat(recipe_equipment.length).slice(0, -1);
   const sql4 = `
     INSERT INTO recipe_equipment (
       recipe_id,
@@ -75,7 +75,7 @@ export async function seedRecipe(conn: PoolConnection) {
   `;
   await conn.execute(sql4, format(recipe_equipment));
 
-  const placeholders5 = '(?, ?, ?, ?)'.repeat(recipe_ingredients.length).slice(0, -1);
+  const placeholders5 = '(?, ?, ?, ?),'.repeat(recipe_ingredients.length).slice(0, -1);
   const sql5 = `
     INSERT INTO recipe_ingredient (
       recipe_id,
@@ -86,7 +86,7 @@ export async function seedRecipe(conn: PoolConnection) {
   `;
   await conn.execute(sql5, format(recipe_ingredients));
 
-  const placeholders6 = '(?, ?)'.repeat(recipe_methods.length).slice(0, -1);
+  const placeholders6 = '(?, ?),'.repeat(recipe_methods.length).slice(0, -1);
   const sql6 = `
     INSERT INTO recipe_method (
       recipe_id,
@@ -97,7 +97,7 @@ export async function seedRecipe(conn: PoolConnection) {
 
   const placeholders7 = '(?, ?),'.repeat(test_favorite_recipes.length).slice(0, -1);
   const sql7 = `
-    INSERT INTO favorite_recipes (
+    INSERT INTO favorite_recipe (
       user_id,
       recipe_id
     ) VALUES ${placeholders7}
@@ -106,7 +106,7 @@ export async function seedRecipe(conn: PoolConnection) {
 
   const placeholders8 = '(?, ?),'.repeat(test_saved_recipes.length).slice(0, -1);
   const sql8 = `
-    INSERT INTO saved_recipes (
+    INSERT INTO saved_recipe (
       user_id,
       recipe_id
     ) VALUES ${placeholders8}

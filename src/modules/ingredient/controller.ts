@@ -16,6 +16,8 @@ export const ingredientController = {
 
   async viewOne(req: Request, res: Response) {
     const { ingredient_id } = req.params;
+    console.log('INGREDIENT_ID: ', ingredient_id);
+    console.log('INGREDIENT_ID: ', ingredient_id);
     const owner_id = NOBSC_USER_ID;
 
     const repo = new IngredientRepo();

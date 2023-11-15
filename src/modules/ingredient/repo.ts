@@ -142,7 +142,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
       INNER JOIN image m               ON i.image_id           = m.image_id
       WHERE i.ingredient_id = :ingredient_id
     `;
-    const [ [ row ] ] = await this.pool.execute<IngredientView[]>(sql, ingredient_id);
+    const [ [ row ] ] = await this.pool.execute<IngredientView[]>(sql, [ingredient_id]);
     return row;
   }
 

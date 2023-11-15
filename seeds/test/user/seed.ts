@@ -12,29 +12,29 @@ const users = [...production_users, ...test_users];
 const user_images = [...production_user_images, ...test_user_images];
 
 export async function seedUser(conn: PoolConnection) {
-  const placeholders1 = '(?, ?, ?, ?, ?),'.repeat(images.length).slice(0, -1);
+  const placeholders1 = '(?, ?, ?, ?, ?),'.repeat(users.length).slice(0, -1);
   const sql1 = `
-    INSERT INTO image (
-      image_id,
-      image_filename,
-      caption,
-      author_id,
-      owner_id
-    ) VALUES ${placeholders1}
-  `;
-  await conn.execute(sql1, format(images));
-
-  const placeholders2 = '(?, ?, ?, ?, ?),'.repeat(users.length).slice(0, -1);
-  const sql2 = `
     INSERT INTO user (
       user_id,
       email,
       password,
       username,
       confirmation_code
+    ) VALUES ${placeholders1}
+  `;
+  await conn.execute(sql1, format(users));
+
+  const placeholders2 = '(?, ?, ?, ?, ?),'.repeat(images.length).slice(0, -1);
+  const sql2 = `
+    INSERT INTO image (
+      image_id,
+      image_filename,
+      caption,
+      author_id,
+      owner_id
     ) VALUES ${placeholders2}
   `;
-  await conn.execute(sql2, format(users));
+  await conn.execute(sql2, format(images));
 
   const placeholders3 = '(?, ?, ?),'.repeat(user_images.length).slice(0, -1);
   const sql3 = `
@@ -46,7 +46,7 @@ export async function seedUser(conn: PoolConnection) {
   `;
   await conn.execute(sql3, format(user_images));
 
-  const placeholders4 = '(?, ?, ?),'.repeat(user_images.length).slice(0, -1);
+  const placeholders4 = '(?, ?, ?),'.repeat(test_password_resets.length).slice(0, -1);
   const sql4 = `
     INSERT INTO password_reset (
       reset_id,

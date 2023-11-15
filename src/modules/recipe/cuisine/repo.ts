@@ -28,7 +28,7 @@ export class CuisineRepo extends MySQLRepo implements CuisineRepoInterface {
       FROM cuisine
       WHERE cuisine_id = ?
     `;
-    const [ [ row ] ] = await this.pool.execute<CuisineView[]>(sql, cuisine_id);
+    const [ [ row ] ] = await this.pool.execute<CuisineView[]>(sql, [cuisine_id]);
     return row;
   }
 }

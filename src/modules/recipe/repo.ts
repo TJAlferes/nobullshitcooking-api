@@ -477,7 +477,7 @@ const recipeDetailViewSQL = `
     r.author_id,
     u.username AS author,
     (
-      i.image_filename
+      SELECT i.image_filename
       FROM image i
       INNER JOIN user_image ui ON i.image_id = ui.image_id
       INNER JOIN recipe r ON r.author_id = ui.user_id
