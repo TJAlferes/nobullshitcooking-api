@@ -555,7 +555,7 @@ const recipeDetailViewSQL = `
         'unit_name',       u.unit_name,
         'subrecipe_title', r.title
       ))
-      FROM recipes r
+      FROM recipe r
       INNER JOIN recipe_subrecipe rs ON rs.subrecipe_id = r.recipe_id
       INNER JOIN unit u              ON u.unit_id = rs.unit_id
       WHERE rs.recipe_id = r.recipe_id

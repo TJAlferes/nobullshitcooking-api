@@ -10,8 +10,8 @@
     "seed-dev": "ts-node seeds/development/index.ts",
     "seed-prod": "ts-node seeds/production/index.ts",
     "dev": "nodemon --watch src -e ts --exec 'ts-node' src/index.ts",
-    "unit-test": "jest src/ --color --detectOpenHandles",
-    "integration-test": "jest tests/ --color --detectOpenHandles",
+    "unit-test": "jest src/ --colors --detectOpenHandles",
+    "integration-test": "jest tests/ --colors --detectOpenHandles",
     "start": "node build/bundle.js",
     "build": "tsc"
   },
