@@ -53,13 +53,16 @@ afterAll(async () => {
   passwordResetCronJob.stop();
 
   socketio?.removeAllListeners();
+  socketio?.close(err => console.log(err?.message));
   socketio = null;
   
+  await server?.close(err => console.log(err?.message));  // or await server?.close();
+  //server?.closeAllConnections
   server = null;
 
   await pool.end();
 
-  redisClients.pubClient.disconnect();
+  redisClients.pubClient.disconnect();  // or .quit();
   redisClients.subClient.disconnect();
   redisClients.sessionClient.disconnect();
   //redisClients.workerClient.disconnect();
@@ -69,13 +72,13 @@ afterAll(async () => {
 
 afterEach(async () => {
   socketio?.disconnectSockets(true);
-  socketio?.close();
+  socketio?.close(err => console.log(err?.message));
 
   await truncateTestDatabase();
 
-  redisClients.pubClient.flushdb();
-  redisClients.subClient.flushdb();
-  redisClients.sessionClient.flushdb();
+  await redisClients.pubClient.flushdb();
+  //redisClients.subClient.flushdb();
+  await redisClients.sessionClient.flushdb();
   //redisClients.workerClient.flushdb();
 });
 
@@ -83,10 +86,7 @@ describe ('NOBSC API', () => {
   describe('GET /v1', () => {
     it('works', async () => {
       const res = await request(server).get('/v1');
-      expect(res.body).toEqual(`
-        No Bullshit Cooking API
-        Documentation at https://github.com/tjalferes/nobullshitcooking-api
-      `);  // res.text ???
+      expect(res.text).toBe('No Bullshit Cooking API\nDocumentation at https://github.com/tjalferes/nobullshitcooking-api');
     });
   });
   //describe('AwsS3', AwsS3Tests);

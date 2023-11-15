@@ -49,19 +49,6 @@ export function apiV1Router() {
     catchExceptions(initialDataController.view)
   );
 
-  router.get(
-    '/:username',
-    catchExceptions(profileController.view)
-  );
-
-  router.get(
-    '/',
-    (req, res) => res.send(`
-      No Bullshit Cooking API
-      Documentation at https://github.com/tjalferes/nobullshitcooking-api
-    `)
-  );
-
   router.post(
     '/confirm',
     sanitize(['confirmation_code']),
@@ -126,6 +113,18 @@ export function apiV1Router() {
     userIsAuth,
     sanitize(['subfolder', 'image_filename', 'size']),
     catchExceptions(AwsS3PublicUploadsController.signUrlToUploadImage)
+  );
+
+  //
+
+  router.get(
+    '/:username',
+    catchExceptions(profileController.view)
+  );
+
+  router.get(
+    '/',
+    (req, res) => res.send('No Bullshit Cooking API\nDocumentation at https://github.com/tjalferes/nobullshitcooking-api')
   );
 
   return router;

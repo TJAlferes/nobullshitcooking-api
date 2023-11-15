@@ -23,7 +23,7 @@ if (process.env.NODE_ENV === 'development') config = {host: 'redis-dev', port: 6
 const pubClient =     new Redis(config);
 const subClient =     pubClient.duplicate();  //new Redis(config);
 const sessionClient = new Redis(config);
-const workerClient =  new Redis(config);
+//const workerClient =  new Redis(config);
 
 if (process.env.NODE_ENV !== 'test') {
   pubClient.on('connect', () => console.log('pubClient connected'));
@@ -41,10 +41,15 @@ if (process.env.NODE_ENV !== 'test') {
   sessionClient.on('error',   () => console.log('sessionClient error'));
   sessionClient.on('close',   () => console.log('sessionClient closed'));
 
-  workerClient.on('connect', () => console.log('workerClient connected'));
-  workerClient.on('ready',   () => console.log('workerClient ready'));
-  workerClient.on('error',   () => console.log('workerClient error'));
-  workerClient.on('close',   () => console.log('workerClient closed'));
+  //workerClient.on('connect', () => console.log('workerClient connected'));
+  //workerClient.on('ready',   () => console.log('workerClient ready'));
+  //workerClient.on('error',   () => console.log('workerClient error'));
+  //workerClient.on('close',   () => console.log('workerClient closed'));
 }
 
-export const redisClients = {pubClient, subClient, sessionClient, workerClient};
+export const redisClients = {
+  pubClient,
+  subClient,
+  sessionClient,
+  //workerClient
+};

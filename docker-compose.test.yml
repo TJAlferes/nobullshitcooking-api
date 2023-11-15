@@ -36,6 +36,7 @@ services:
   
   nobsc-test:
     container_name: nobsc-test
+    tty: true
     build:
       context: .
       dockerfile: Dockerfile.test
