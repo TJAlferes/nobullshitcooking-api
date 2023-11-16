@@ -10,6 +10,7 @@ import hpp from 'hpp';
 import { createServer } from 'node:http';
 import type { Redis } from 'ioredis';
 import { pinoHttp } from 'pino-http';  // logger
+import process from 'node:process';
 
 import { redisClients } from './connections/redis';
 import { createSocketIOServer } from './modules/chat/server';
@@ -116,6 +117,7 @@ export function createAppServer() {
 
   process.on('unhandledRejection', (reason, promise: Promise<any>) => {
     console.log('Unhandled Rejection at: ', reason);
+    promise
   });
 
   if (process.env.NODE_ENV === 'production') {

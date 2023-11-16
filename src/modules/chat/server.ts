@@ -110,15 +110,17 @@ export function createSocketIOServer(httpServer: Server, sessionMiddleware: Requ
       }
     }
 
-    setInterval(checkInactiveClients, timeout);
+    const checkInactiveInterval = setInterval(checkInactiveClients, timeout);
   
     // Handlers for Socket.IO reserved events
   
     socket.on('error', (error: Error) => console.log('error: ', error));
-  
+
     socket.on('disconnecting', async (reason: string) => {
       const rooms = new Set(socket.rooms);
       const chatuserRepo = new ChatUserRepo();
+
+      clearInterval(checkInactiveInterval);
   
       // This works fine for chatrooms and friends, but what about chatgroups and non-friend private conversations???
 
@@ -138,6 +140,10 @@ export function createSocketIOServer(httpServer: Server, sessionMiddleware: Requ
       }
       
       await chatuserRepo.delete(username);  // or chatuserRepo.update({session_id, user_id, username, connected: false});
+    });
+
+    socket.on('disconnect', async (reason: string) => {
+      clearInterval(checkInactiveInterval);
     });
   
     /*socket.on('disconnect', async (reason: string) => {

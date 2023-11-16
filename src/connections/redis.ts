@@ -25,27 +25,25 @@ const subClient =     pubClient.duplicate();  //new Redis(config);
 const sessionClient = new Redis(config);
 //const workerClient =  new Redis(config);
 
-if (process.env.NODE_ENV !== 'test') {
-  pubClient.on('connect', () => console.log('pubClient connected'));
-  pubClient.on('ready',   () => console.log('pubClient ready'));
-  pubClient.on('error',   () => console.log('pubClient error'));
-  pubClient.on('close',   () => console.log('pubClient closed'));
+pubClient.on('connect', () => console.log('pubClient connected'));
+pubClient.on('ready',   () => console.log('pubClient ready'));
+pubClient.on('error',   () => console.log('pubClient error'));
+pubClient.on('close',   () => console.log('pubClient closed'));
 
-  subClient.on('connect', () => console.log('subClient connected'));
-  subClient.on('ready',   () => console.log('subClient ready'));
-  subClient.on('error',   () => console.log('subClient error'));
-  subClient.on('close',   () => console.log('subClient closed'));
+subClient.on('connect', () => console.log('subClient connected'));
+subClient.on('ready',   () => console.log('subClient ready'));
+subClient.on('error',   () => console.log('subClient error'));
+subClient.on('close',   () => console.log('subClient closed'));
 
-  sessionClient.on('connect', () => console.log('sessionClient connected'));
-  sessionClient.on('ready',   () => console.log('sessionClient ready'));
-  sessionClient.on('error',   () => console.log('sessionClient error'));
-  sessionClient.on('close',   () => console.log('sessionClient closed'));
+sessionClient.on('connect', () => console.log('sessionClient connected'));
+sessionClient.on('ready',   () => console.log('sessionClient ready'));
+sessionClient.on('error',   () => console.log('sessionClient error'));
+sessionClient.on('close',   () => console.log('sessionClient closed'));
 
-  //workerClient.on('connect', () => console.log('workerClient connected'));
-  //workerClient.on('ready',   () => console.log('workerClient ready'));
-  //workerClient.on('error',   () => console.log('workerClient error'));
-  //workerClient.on('close',   () => console.log('workerClient closed'));
-}
+//workerClient.on('connect', () => console.log('workerClient connected'));
+//workerClient.on('ready',   () => console.log('workerClient ready'));
+//workerClient.on('error',   () => console.log('workerClient error'));
+//workerClient.on('close',   () => console.log('workerClient closed'));
 
 export const redisClients = {
   pubClient,

@@ -18,35 +18,44 @@ beforeAll(() => {
   console.log('Integration tests started.');
 });
 
-afterAll(async () => {
-  await pool.end();
+afterEach(async () => {
+  redisClients.pubClient.disconnect();
+  redisClients.subClient.disconnect();
+  redisClients.sessionClient.disconnect();
 
   //socketIOServer?.removeAllListeners();
   //socketIOServer?.disconnectSockets(false);
+  //await new Promise(() => socketIOServer?.close(err => console.log(err?.message)));
   socketIOServer?.close(err => console.log(err?.message));
+  
+  await new Promise(() => userCronJob.stop());
+  await new Promise(() => passwordResetCronJob.stop());
 
-  await redisClients.pubClient.quit();
-  await redisClients.subClient.quit();
-  await redisClients.sessionClient.quit();
-
-  userCronJob.stop();
-  passwordResetCronJob.stop();
-
-  //httpServer.removeAllListeners();
+  //await new Promise(() => httpServer.removeAllListeners());
   //httpServer.closeAllConnections();
-  httpServer.close();
+  await new Promise(() => httpServer.close(err => {
+    if (err) {
+      console.error('httpServer.close() error: ', err);
+    } else {
+      console.log('httpServer.close() success.');
+    }
+  }));
 
+  await pool.end();
+});
+
+afterAll(() => {
   console.log('Integration tests finished.');
 });
 
-afterEach(async () => {
-  socketIOServer?.disconnectSockets(false);
+/*afterEach(async () => {
+  await new Promise(() => socketIOServer?.disconnectSockets(false));
 
   await redisClients.pubClient.flushdb();
   await redisClients.sessionClient.flushdb();
 
   await truncateTestDatabase();
-});
+});*/
 
 describe('NOBSC API', () => {
   describe('GET /v1', () => {
@@ -137,3 +146,25 @@ async function truncateTestDatabase() {
   'plan',
   //'plan_recipe',
 ];*/
+
+/*await redisClients.pubClient.quit((err, result) => {
+    if (err) {
+      console.error('pubClient.quit() errror: ', err);
+    } else {
+      console.log('pubClient.quit() success.', result);
+    }
+  });
+  await redisClients.subClient.quit((err, result) => {
+    if (err) {
+      console.error('subClient.quit() errror: ', err);
+    } else {
+      console.log('subClient.quit() success.', result);
+    }
+  });
+  await redisClients.sessionClient.quit((err, result) => {
+    if (err) {
+      console.error('sessionClient.quit() errror: ', err);
+    } else {
+      console.log('sessionClient.quit() success.', result);
+    }
+  });*/

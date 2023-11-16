@@ -29,7 +29,7 @@ import { catchExceptions, userIsAuth } from './utils/index';
 const router = Router();
 
 export function apiV1Router() {
-  router.use('/search', searchRouter());
+  /*router.use('/search', searchRouter());
   router.use('/cuisines', cuisineRouter());
   router.use('/equipments', equipmentRouter());
   router.use('/equipment-types', equipmentTypeRouter());
@@ -120,7 +120,7 @@ export function apiV1Router() {
   router.get(
     '/:username',
     catchExceptions(profileController.view)
-  );
+  );*/
 
   router.get(
     '/',
