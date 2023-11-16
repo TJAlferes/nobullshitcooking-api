@@ -3,6 +3,7 @@ FROM node:18.18.0
 RUN npm config set cache /custom-npm-cache-dir
 
 EXPOSE 3003
+EXPOSE 9229
 
 WORKDIR /app
 
@@ -13,4 +14,4 @@ RUN npm install && npm cache clean --force
 
 COPY . .
 
-CMD npm run integration-test -- --coverage --logHeapUsage --no-cache --runInBand --watchAll=false
+CMD ["npm", "run", "integration-test-inspect"]

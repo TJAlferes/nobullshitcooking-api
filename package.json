@@ -7,11 +7,13 @@
   "type": "module",
   "main": "src/index.js",
   "scripts": {
+    "node-inspect": "node --inspect=0.0.0.0:9229 src/index.ts",
     "seed-dev": "ts-node seeds/development/index.ts",
     "seed-prod": "ts-node seeds/production/index.ts",
     "dev": "nodemon --watch src -e ts --exec 'ts-node' src/index.ts",
     "unit-test": "jest src/ --colors --detectOpenHandles",
-    "integration-test": "jest tests/ --colors --detectOpenHandles",
+    "integration-test": "jest tests/ --colors --detectOpenHandles --detectLeaks --logHeapUsage --no-cache --runInBand --watchAll=false",
+    "integration-test-inspect": "node --inspect=0.0.0.0:9229 ./node_modules/jest/bin/jest.js tests/ --colors --detectOpenHandles --detectLeaks --logHeapUsage --no-cache --runInBand --watchAll=false",
     "start": "node build/bundle.js",
     "build": "tsc"
   },

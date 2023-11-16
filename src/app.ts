@@ -139,6 +139,7 @@ export function createAppServer() {
   }
 
   return {
+    app,
     httpServer,
     socketIOServer
   };

@@ -22,7 +22,7 @@ export const passwordResetCronJob = new CronJob(
 );
 
 export function startServer() {
-  const { httpServer, socketIOServer } = createAppServer();
+  const { app, httpServer, socketIOServer } = createAppServer();
 
   const PORT = process.env.NODE_ENV === 'production'
     ? Number(process.env.PORT) || 8081
@@ -39,7 +39,7 @@ export function startServer() {
     passwordResetCronJob.start();
   });
 
-  return {httpServer, socketIOServer};
+  return {app, httpServer, socketIOServer};
 }
 
-export const { httpServer, socketIOServer } = startServer();
+export const { app, httpServer, socketIOServer } = startServer();
