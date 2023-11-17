@@ -164,7 +164,6 @@ interface ClientToServerEvents {
   RejoinRoom:         (room: string) =>             void;
   SendMessage:        (text: string) =>             void;
   SendPrivateMessage: (text: string, to: string) => void;
-  //disconnecting
 }
 
 interface ServerToClientEvents {

@@ -2,7 +2,7 @@ import type { Request, Response } from 'express';
 import { uuidv7 } from 'uuidv7';
 
 import { NotFoundException } from '../../../utils/exceptions';
-import { socketIOServer } from '../../../index';
+import { socketIOServer } from '../../../app';
 import { NOBSC_USER_ID } from '../../shared/model';
 //import { ChatgroupRepo }             from '../../chat/group/repo';
 import { EquipmentRepo } from '../../equipment/repo';

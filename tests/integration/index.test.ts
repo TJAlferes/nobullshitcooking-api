@@ -7,7 +7,7 @@ import type { Server as SocketIOServer } from 'socket.io';
 import { seedTestDatabase } from '../../seeds/test';
 import { pool, testConfig } from '../../src/connections/mysql';
 import { redisClients } from '../../src/connections/redis';
-import { createAppServer } from '../../src/app';
+import { app, httpServer, socketIOServer  } from '../../src/app';
 
 // No Bullshit Cooking API Integration Tests
 //
@@ -21,7 +21,6 @@ describe('NOBSC API', () => {
 
   beforeAll(() => {
     console.log('Integration tests started.');
-    const { app, httpServer, socketIOServer } = createAppServer();
     testApp = app;
     testHttpServer = httpServer;
     testSocketIOServer = socketIOServer;
@@ -37,9 +36,30 @@ describe('NOBSC API', () => {
   });*/
   
   afterAll(async () => {
-    redisClients.pubClient.disconnect();
-    redisClients.subClient.disconnect();
-    redisClients.sessionClient.disconnect();
+    //redisClients.pubClient.disconnect();
+    //redisClients.subClient.disconnect();
+    //redisClients.sessionClient.disconnect();
+    await redisClients.pubClient.quit((err, result) => {
+      if (err) {
+        console.error('pubClient.quit() errror: ', err);
+      } else {
+        console.log('pubClient.quit() success.', result);
+      }
+    });
+    await redisClients.subClient.quit((err, result) => {
+      if (err) {
+        console.error('subClient.quit() errror: ', err);
+      } else {
+        console.log('subClient.quit() success.', result);
+      }
+    });
+    await redisClients.sessionClient.quit((err, result) => {
+      if (err) {
+        console.error('sessionClient.quit() errror: ', err);
+      } else {
+        console.log('sessionClient.quit() success.', result);
+      }
+    });
     await pool.end();
     testSocketIOServer?.close();
     testHttpServer?.close();

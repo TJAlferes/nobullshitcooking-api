@@ -5,7 +5,7 @@ dotenv.config();
 
 import { userCron } from './modules/user/cron';
 import { passwordResetCron } from './modules/user/authentication/password-reset/cron';
-import { createAppServer } from './app';
+import { httpServer } from './app';
 
 export const userCronJob = new CronJob(
   '0 0 0 * * *',  // every day at midnight
@@ -22,8 +22,6 @@ export const passwordResetCronJob = new CronJob(
 );
 
 export function startServer() {
-  const { app, httpServer, socketIOServer } = createAppServer();
-
   const PORT = process.env.NODE_ENV === 'production'
     ? Number(process.env.PORT) || 8081
     : Number(process.env.PORT) || 3003;
@@ -38,8 +36,6 @@ export function startServer() {
     userCronJob.start();
     passwordResetCronJob.start();
   });
-
-  return {app, httpServer, socketIOServer};
 }
 
-export const { app, httpServer, socketIOServer } = startServer();
+startServer();
