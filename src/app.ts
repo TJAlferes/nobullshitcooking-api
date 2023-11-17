@@ -14,6 +14,7 @@ import process from 'node:process';
 
 import { redisClients } from './connections/redis';
 import { createSocketIOServer } from './modules/chat/server';
+import { Server as SocketIOServer, Socket } from 'socket.io';
 import { ExceptionError } from './utils/exceptions';
 import { apiV1Router } from './router';
 
@@ -47,6 +48,12 @@ export function createAppServer() {
       }
       next();
     });
+
+    // TO DO: Is this causing memory leak???
+    app.use(expressRateLimit({
+      max: 100,
+      windowMs: 1 * 60 * 1000
+    }));  // limit each IP address's requests per minute
   }
 
   // Express Middleware
@@ -76,10 +83,6 @@ export function createAppServer() {
   app.use(pinoHttp());  // logger
   app.use(express.json());
   app.use(express.urlencoded({extended: true}));
-  app.use(expressRateLimit({
-    max: 100,
-    windowMs: 1 * 60 * 1000
-  }));  // limit each IP address's requests per minute
   app.use(sessionMiddleware);
   app.use(cors({
     credentials: true,
@@ -115,9 +118,8 @@ export function createAppServer() {
 
   const socketIOServer = createSocketIOServer(httpServer, sessionMiddleware);
 
-  process.on('unhandledRejection', (reason, promise: Promise<any>) => {
+  process.on('unhandledRejection', (reason) => {
     console.log('Unhandled Rejection at: ', reason);
-    promise
   });
 
   if (process.env.NODE_ENV === 'production') {

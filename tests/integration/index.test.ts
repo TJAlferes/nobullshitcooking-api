@@ -1,66 +1,54 @@
 import { createPool } from 'mysql2/promise';
 import request from 'supertest';
+import type { Express } from 'express';
+import type { Server } from 'http';
+import type { Server as SocketIOServer } from 'socket.io';
 
 import { seedTestDatabase } from '../../seeds/test';
 import { pool, testConfig } from '../../src/connections/mysql';
 import { redisClients } from '../../src/connections/redis';
-import { userCronJob, passwordResetCronJob, startServer } from '../../src';
+import { createAppServer } from '../../src/app';
 
 // No Bullshit Cooking API Integration Tests
 //
 // Register and run all integration tests from this file.
 // Avoid global seeds and fixtures, add data per test (per it).
 
-export const { app, httpServer, socketIOServer } = startServer();
-
-
-beforeAll(() => {
-  console.log('Integration tests started.');
-});
-
-afterEach(async () => {
-  redisClients.pubClient.disconnect();
-  redisClients.subClient.disconnect();
-  redisClients.sessionClient.disconnect();
-
-  //socketIOServer?.removeAllListeners();
-  //socketIOServer?.disconnectSockets(false);
-  //await new Promise(() => socketIOServer?.close(err => console.log(err?.message)));
-  socketIOServer?.close(err => console.log(err?.message));
-  
-  await new Promise(() => userCronJob.stop());
-  await new Promise(() => passwordResetCronJob.stop());
-
-  //await new Promise(() => httpServer.removeAllListeners());
-  //httpServer.closeAllConnections();
-  await new Promise(() => httpServer.close(err => {
-    if (err) {
-      console.error('httpServer.close() error: ', err);
-    } else {
-      console.log('httpServer.close() success.');
-    }
-  }));
-
-  await pool.end();
-});
-
-afterAll(() => {
-  console.log('Integration tests finished.');
-});
-
-/*afterEach(async () => {
-  await new Promise(() => socketIOServer?.disconnectSockets(false));
-
-  await redisClients.pubClient.flushdb();
-  await redisClients.sessionClient.flushdb();
-
-  await truncateTestDatabase();
-});*/
-
 describe('NOBSC API', () => {
+  let testApp: Express | null;
+  let testHttpServer: Server | null;
+  let testSocketIOServer: SocketIOServer | null;
+
+  beforeAll(() => {
+    console.log('Integration tests started.');
+    const { app, httpServer, socketIOServer } = createAppServer();
+    testApp = app;
+    testHttpServer = httpServer;
+    testSocketIOServer = socketIOServer;
+  });
+
+  /*afterEach(async () => {
+    testSocketIOServer?.disconnectSockets(false);
+  
+    await redisClients.pubClient.flushdb();
+    await redisClients.sessionClient.flushdb();
+  
+    await truncateTestDatabase();
+  });*/
+  
+  afterAll(async () => {
+    redisClients.pubClient.disconnect();
+    redisClients.subClient.disconnect();
+    redisClients.sessionClient.disconnect();
+    await pool.end();
+    testSocketIOServer?.close();
+    testHttpServer?.close();
+    console.log('Integration tests finished.');
+  });
+
   describe('GET /v1', () => {
     it('works', async () => {
-      const res = await request(app).get('/v1');
+      const res = await request(testApp).get('/v1');
       expect(res.text).toBe('No Bullshit Cooking API\nDocumentation at https://github.com/tjalferes/nobullshitcooking-api');
     });
   });

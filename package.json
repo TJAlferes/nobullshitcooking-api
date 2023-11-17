@@ -12,8 +12,7 @@
     "seed-prod": "ts-node seeds/production/index.ts",
     "dev": "nodemon --watch src -e ts --exec 'ts-node' src/index.ts",
     "unit-test": "jest src/ --colors --detectOpenHandles",
-    "integration-test": "jest tests/ --colors --detectOpenHandles --logHeapUsage --no-cache --runInBand --watchAll=false",
-    "integration-test-inspect": "node --inspect=0.0.0.0:9229 ./node_modules/jest/bin/jest.js tests/ --colors --detectOpenHandles --detectLeaks --logHeapUsage --no-cache --runInBand --watchAll=false",
+    "integration-test": "jest tests/ --verbose --colors --detectOpenHandles  --detectLeaks --logHeapUsage --no-cache --runInBand --watchAll=false",
     "start": "node build/bundle.js",
     "build": "tsc"
   },
