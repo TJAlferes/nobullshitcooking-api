@@ -1,11 +1,10 @@
 import request from 'supertest';
+import type { Express } from 'express';
 
-import { server } from './index.test';
-
-export function unitsTests() {
+export function unitsTests(app: Express) {
   describe('GET /v1/units/:unit_id', () => {
     it('handles success', async () => {
-      const res = await request(server).get('/v1/units/1');
+      const res = await request(app).get('/v1/units/1');
       expect(res.body).toEqual({
         unit_id:   1,
         unit_name: "teaspoon"

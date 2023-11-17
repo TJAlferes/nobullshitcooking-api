@@ -1,13 +1,37 @@
 import { createPool } from 'mysql2/promise';
 import request from 'supertest';
-import type { Express } from 'express';
-import type { Server } from 'http';
-import type { Server as SocketIOServer } from 'socket.io';
 
 import { seedTestDatabase } from '../../seeds/test';
 import { pool, testConfig } from '../../src/connections/mysql';
 import { redisClients } from '../../src/connections/redis';
 import { app, httpServer, socketIOServer  } from '../../src/app';
+//import {
+//  authenticationTests,
+//  usersTests,
+//  profileTests,
+//  friendshipsTests,
+//  publicPlansTests,
+//  publicRecipesTests,
+//  favoriteRecipesTests,
+//  privateEquipmentTests,
+//  privateIngredientsTests,
+//  privatePlansTests,
+//  privateRecipesTests,
+//  savedRecipesTests
+//} from './user';
+import {
+  //AwsS3Tests,
+  unitsTests,
+  equipmentTypesTests,
+  ingredientTypesTests,
+  recipeTypesTests,
+  methodsTests,
+  cuisinesTests,
+  equipmentTests,
+  ingredientsTests,
+  recipesTests,
+  searchTests
+} from '.';
 
 // No Bullshit Cooking API Integration Tests
 //
@@ -15,62 +39,60 @@ import { app, httpServer, socketIOServer  } from '../../src/app';
 // Avoid global seeds and fixtures, add data per test (per it).
 
 describe('NOBSC API', () => {
-  let testApp: Express | null;
-  let testHttpServer: Server | null;
-  let testSocketIOServer: SocketIOServer | null;
-
-  beforeAll(() => {
+  beforeAll(async () => {
     console.log('Integration tests started.');
-    testApp = app;
-    testHttpServer = httpServer;
-    testSocketIOServer = socketIOServer;
+    await seedTestDatabase();
+    //httpServer.listen
   });
 
   /*afterEach(async () => {
-    testSocketIOServer?.disconnectSockets(false);
-  
+    socketIOServer?.disconnectSockets(false);
     await redisClients.pubClient.flushdb();
     await redisClients.sessionClient.flushdb();
-  
     await truncateTestDatabase();
   });*/
   
   afterAll(async () => {
-    //redisClients.pubClient.disconnect();
-    //redisClients.subClient.disconnect();
-    //redisClients.sessionClient.disconnect();
-    await redisClients.pubClient.quit((err, result) => {
-      if (err) {
-        console.error('pubClient.quit() errror: ', err);
-      } else {
-        console.log('pubClient.quit() success.', result);
-      }
-    });
-    await redisClients.subClient.quit((err, result) => {
-      if (err) {
-        console.error('subClient.quit() errror: ', err);
-      } else {
-        console.log('subClient.quit() success.', result);
-      }
-    });
-    await redisClients.sessionClient.quit((err, result) => {
-      if (err) {
-        console.error('sessionClient.quit() errror: ', err);
-      } else {
-        console.log('sessionClient.quit() success.', result);
-      }
-    });
+    redisClients.pubClient.disconnect();
+    redisClients.subClient.disconnect();
+    redisClients.sessionClient.disconnect();
     await pool.end();
-    testSocketIOServer?.close();
-    testHttpServer?.close();
+    socketIOServer?.close();
+    httpServer?.close();
     console.log('Integration tests finished.');
   });
 
   describe('GET /v1', () => {
     it('works', async () => {
-      const res = await request(testApp).get('/v1');
+      const res = await request(app).get('/v1');
       expect(res.text).toBe('No Bullshit Cooking API\nDocumentation at https://github.com/tjalferes/nobullshitcooking-api');
     });
+
+    //describe('AwsS3', AwsS3Tests(app));
+
+    describe('units', () => unitsTests(app));
+    describe('equipmentTypes', () => equipmentTypesTests(app));
+    describe('ingredientTypes', () => ingredientTypesTests(app));
+    describe('recipeTypes', () => recipeTypesTests(app));
+    describe('methods', () => methodsTests(app));
+    describe('cuisines', () => cuisinesTests(app));
+    describe('equipment', () => equipmentTests(app));
+    describe('ingredients', () => ingredientsTests(app));
+    describe('recipes', () => recipesTests(app));
+    describe('search', () => searchTests(app));
+
+    //describe('authentication', authenticationTests(app));
+    //describe('users', usersTests(app));
+    //describe('profile', profileTests(app));
+    //describe('friendships', friendshipsTests(app));
+    //describe('publicPlans', publicPlansTests(app));
+    //describe('publicRecipes', publicRecipesTests(app));
+    //describe('favoriteRecipes', favoriteRecipesTests(app));
+    //describe('privateEquipment', privateEquipmentTests(app));
+    //describe('privateIngredients', privateIngredientsTests(app));
+    //describe('privatePlans', privatePlansTests(app));
+    //describe('privateRecipes', privateRecipesTests(app));
+    //describe('savedRecipe', savedRecipesTests(app));
   });
 });
 

@@ -1,11 +1,10 @@
 import request from 'supertest';
+import type { Express } from 'express';
 
-import { server } from './index.test';
-
-export function recipeTypesTests() {
+export function recipeTypesTests(app: Express) {
   describe('GET /v1/recipe-types/:recipe_type_id', () => {
     it('returns data correctly', async () => {
-      const res = await request(server).get('/v1/recipe-types/1');
+      const res = await request(app).get('/v1/recipe-types/1');
       expect(res.body).toEqual({
         recipe_type_id:   1,
         recipe_type_name: "Drink"

@@ -9,13 +9,13 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
     const owner_id = NOBSC_USER_ID;  // only public recipes are searchable 
     const sql = `
       SELECT
-        recipe_id,
+        recipe_id AS id,
         title AS text
       FROM recipe
       WHERE owner_id = ? AND title LIKE ?
       LIMIT 5
     `;
-    const [ rows ] = await this.pool.execute<RecipeSuggestionView[]>(sql, [
+    const [ rows ] = await this.pool.execute<SuggestionView[]>(sql, [
       owner_id,
       `%${term}%`
     ]);
@@ -299,7 +299,7 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
 }
 
 export interface RecipeRepoInterface {
-  autosuggest:           (term: string) =>                    Promise<RecipeSuggestionView[]>;
+  autosuggest:           (term: string) =>                    Promise<SuggestionView[]>;
   search:                (searchRequest: SearchRequest) =>    Promise<SearchResponse>;
   hasPrivate:            (recipe_ids: string[]) =>            Promise<boolean>;
   viewAllOfficialTitles: () =>                                Promise<TitleView[]>;
@@ -315,9 +315,9 @@ export interface RecipeRepoInterface {
   deleteOne:             (params: DeleteOneParams) =>         Promise<void>;
 }
 
-type RecipeSuggestionView = RowDataPacket & {
-  recipe_id: string;
-  text:      string;
+type SuggestionView = RowDataPacket & {
+  id: string;
+  text: string;
 };
 
 type TitleView = RowDataPacket & {

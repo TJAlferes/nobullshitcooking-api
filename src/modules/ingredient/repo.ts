@@ -9,16 +9,17 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
     const owner_id = NOBSC_USER_ID;  // only public equipment are searchable
     const sql = `
       SELECT
-        i.ingredient_id,
-        ${fullnameSql} AS fullname
+        i.ingredient_id AS id,
+        ${fullnameSql} AS text
       FROM ingredient i
-      LEFT JOIN ingredient_alt_name n ON i.ingredient_id = n.ingredient_id
+      INNER JOIN ingredient_alt_name n ON i.ingredient_id = n.ingredient_id
       WHERE ${fullnameSql} LIKE ?
       LIMIT 5;
     `;
+    //${fullnameSql} AS fullname
     //GROUP BY i.ingredient_id
     //LIMIT 5;
-    const [ rows ] = await this.pool.execute<IngredientSuggestionView[]>(sql, [
+    const [ rows ] = await this.pool.execute<SuggestionView[]>(sql, [
       owner_id,
       `%${term}%`
     ]);
@@ -111,7 +112,9 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
         i.ingredient_name,
         ${fullnameSql} AS fullname,
         i.notes,
-        m.image_filename
+        m.image_id,
+        m.image_filename,
+        m.caption
       FROM ingredient i
       INNER JOIN ingredient_type t     ON i.ingredient_type_id = t.ingredient_type_id
       INNER JOIN ingredient_alt_name n ON i.ingredient_id      = n.ingredient_id
@@ -135,11 +138,13 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
         i.ingredient_name,
         ${fullnameSql} AS fullname,
         i.notes,
-        m.image_filename
+        m.image_id,
+        m.image_filename,
+        m.caption
       FROM ingredient i
-      INNER JOIN ingredient_type t     ON i.ingredient_type_id = t.ingredient_type_id
+      INNER JOIN ingredient_type t    ON i.ingredient_type_id = t.ingredient_type_id
       LEFT JOIN ingredient_alt_name n ON i.ingredient_id      = n.ingredient_id
-      INNER JOIN image m               ON i.image_id           = m.image_id
+      INNER JOIN image m              ON i.image_id           = m.image_id
       WHERE i.ingredient_id = ?
     `;
     const [ [ row ] ] = await this.pool.execute<IngredientView[]>(sql, [ingredient_id]);
@@ -225,7 +230,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
 }
 
 export interface IngredientRepoInterface {
-  autosuggest: (term: string) =>                 Promise<IngredientSuggestionView[]>;
+  autosuggest: (term: string) =>                 Promise<SuggestionView[]>;
   search:      (searchRequest: SearchRequest) => Promise<SearchResponse>;
   hasPrivate:  (ingredient_ids: string[]) =>     Promise<boolean>;
   viewAll:     (owner_id: string) =>             Promise<IngredientView[]>;
@@ -236,9 +241,9 @@ export interface IngredientRepoInterface {
   deleteOne:   (params: DeleteOneParams) =>      Promise<void>;
 }
 
-type IngredientSuggestionView = RowDataPacket & {
-  ingredient_id: string;
-  text:          string;
+type SuggestionView = RowDataPacket & {
+  id: string;
+  text: string;
 };
 
 type IngredientView = RowDataPacket & {
@@ -251,7 +256,9 @@ type IngredientView = RowDataPacket & {
   ingredient_name:      string;
   fullname:             string;
   notes:                string;
+  image_id:             string;
   image_filename:       string;
+  caption:              string;
 };
 
 type InsertParams = {
@@ -273,11 +280,11 @@ type DeleteOneParams = {
 };
 
 const fullnameSql = `
-  CONCAT_WS(
+  TRIM(CONCAT_WS(
     ' ',
     i.ingredient_brand,
     i.ingredient_variety,
     i.ingredient_name,
     IFNULL(n.alt_name, '')
-  )
+  ))
 `;

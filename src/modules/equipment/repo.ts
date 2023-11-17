@@ -9,13 +9,13 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
     const owner_id = NOBSC_USER_ID;  // only public equipment are searchable
     const sql = `
       SELECT
-        equipment_id,
+        equipment_id AS id,
         equipment_name AS text
       FROM equipment
       WHERE owner_id = ? AND equipment_name LIKE ?
       LIMIT 5
     `;
-    const [ rows ] = await this.pool.execute<EquipmentSuggestionView[]>(sql, [
+    const [ rows ] = await this.pool.execute<SuggestionView[]>(sql, [
       owner_id,
       `%${term}%`
     ]);
@@ -102,7 +102,7 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
         e.equipment_name,
         e.notes,
         i.image_id,
-        i.image_filename
+        i.image_filename,
         i.caption
       FROM equipment e
       INNER JOIN equipment_type t ON e.equipment_type_id = t.equipment_type_id
@@ -124,7 +124,7 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
         e.equipment_name,
         e.notes,
         i.image_id,
-        i.image_filename
+        i.image_filename,
         i.caption
       FROM equipment e
       INNER JOIN equipment_type t ON e.equipment_type_id = t.equipment_type_id
@@ -204,7 +204,7 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
 }
 
 export interface EquipmentRepoInterface {
-  autosuggest: (term: string) =>                  Promise<EquipmentSuggestionView[]>;
+  autosuggest: (term: string) =>                  Promise<SuggestionView[]>;
   search:      (search_request: SearchRequest) => Promise<SearchResponse>;
   hasPrivate:  (equipment_ids: string[]) =>       Promise<boolean>;
   viewAll:     (owner_id: string) =>              Promise<EquipmentView[]>;
@@ -215,9 +215,9 @@ export interface EquipmentRepoInterface {
   deleteOne:   (params: DeleteOneParams) =>       Promise<void>;
 }
 
-type EquipmentSuggestionView = RowDataPacket & {
-  equipment_id: string;
-  text:         string;
+type SuggestionView = RowDataPacket & {
+  id: string;
+  text: string;
 };
 
 type EquipmentView = RowDataPacket & {
@@ -227,7 +227,9 @@ type EquipmentView = RowDataPacket & {
   equipment_type_name: string;
   equipment_name:      string;
   notes:               string;
+  image_id:            string;
   image_filename:      string;
+  caption:             string;
 };
 
 type InsertParams = {
