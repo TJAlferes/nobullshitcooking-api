@@ -5,20 +5,20 @@ import { seedTestDatabase } from '../../seeds/test';
 import { pool, testConfig } from '../../src/connections/mysql';
 import { redisClients } from '../../src/connections/redis';
 import { app, httpServer, socketIOServer  } from '../../src/app';
-//import {
-//  authenticationTests,
-//  usersTests,
-//  profileTests,
-//  friendshipsTests,
-//  publicPlansTests,
-//  publicRecipesTests,
-//  favoriteRecipesTests,
-//  privateEquipmentTests,
-//  privateIngredientsTests,
-//  privatePlansTests,
-//  privateRecipesTests,
-//  savedRecipesTests
-//} from './user';
+import {
+  authenticationTests,
+  usersTests,
+  profileTests,
+  friendshipsTests,
+  publicPlansTests,
+  publicRecipesTests,
+  favoriteRecipesTests,
+  privateEquipmentTests,
+  privateIngredientsTests,
+  privatePlansTests,
+  privateRecipesTests,
+  savedRecipesTests
+} from './user';
 import {
   //AwsS3Tests,
   unitsTests,
@@ -45,12 +45,12 @@ describe('NOBSC API', () => {
     //httpServer.listen
   });
 
-  /*afterEach(async () => {
+  afterEach(async () => {
     socketIOServer?.disconnectSockets(false);
     await redisClients.pubClient.flushdb();
     await redisClients.sessionClient.flushdb();
     await truncateTestDatabase();
-  });*/
+  });
   
   afterAll(async () => {
     redisClients.pubClient.disconnect();
@@ -71,29 +71,29 @@ describe('NOBSC API', () => {
 
   //describe('AwsS3', AwsS3Tests(app));
 
-  describe('units', () => unitsTests(app));
-  describe('equipmentTypes', () => equipmentTypesTests(app));
-  describe('ingredientTypes', () => ingredientTypesTests(app));
-  describe('recipeTypes', () => recipeTypesTests(app));
-  describe('methods', () => methodsTests(app));
-  describe('cuisines', () => cuisinesTests(app));
-  describe('equipment', () => equipmentTests(app));
-  describe('ingredients', () => ingredientsTests(app));
-  describe('recipes', () => recipesTests(app));
-  describe('search', () => searchTests(app));
+  //describe('units', () => unitsTests(app));
+  //describe('equipmentTypes', () => equipmentTypesTests(app));
+  //describe('ingredientTypes', () => ingredientTypesTests(app));
+  //describe('recipeTypes', () => recipeTypesTests(app));
+  //describe('methods', () => methodsTests(app));
+  //describe('cuisines', () => cuisinesTests(app));
+  //describe('equipment', () => equipmentTests(app));
+  //describe('ingredients', () => ingredientsTests(app));
+  //describe('recipes', () => recipesTests(app));
+  //describe('search', () => searchTests(app));
 
-  //describe('authentication', authenticationTests(app));
-  //describe('users', usersTests(app));
-  //describe('profile', profileTests(app));
-  //describe('friendships', friendshipsTests(app));
-  //describe('publicPlans', publicPlansTests(app));
-  //describe('publicRecipes', publicRecipesTests(app));
-  //describe('favoriteRecipes', favoriteRecipesTests(app));
-  //describe('privateEquipment', privateEquipmentTests(app));
-  //describe('privateIngredients', privateIngredientsTests(app));
-  //describe('privatePlans', privatePlansTests(app));
-  //describe('privateRecipes', privateRecipesTests(app));
-  //describe('savedRecipe', savedRecipesTests(app));
+  describe('authentication', () => authenticationTests(app));
+  //describe('users', () => usersTests(app));
+  //describe('profile', () => profileTests(app));
+  //describe('friendships', () => friendshipsTests(app));
+  //describe('publicPlans', () => publicPlansTests(app));
+  //describe('publicRecipes', () => publicRecipesTests(app));
+  //describe('favoriteRecipes', () => favoriteRecipesTests(app));
+  //describe('privateEquipment', () => privateEquipmentTests(app));
+  //describe('privateIngredients', () => privateIngredientsTests(app));
+  //describe('privatePlans', () => privatePlansTests(app));
+  //describe('privateRecipes', () => privateRecipesTests(app));
+  //describe('savedRecipe', () => savedRecipesTests(app));
 });
 
 const tableNames = [

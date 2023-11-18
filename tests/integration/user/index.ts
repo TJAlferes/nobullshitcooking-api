@@ -1,7 +1,6 @@
 import request from 'supertest';
 import type { SuperAgentTest } from 'supertest';
-
-import { server } from '../index.test';
+import type { Express } from 'express';
 
 export { authenticationTests } from './authentication';
 export { favoriteRecipesTests } from './favorite-recipes';
@@ -15,10 +14,10 @@ export { publicPlansTests } from './public-plans';
 export { publicRecipesTests } from './public-recipes';
 export { savedRecipesTests } from './saved-recipes';
 
-export function usersTests() {
+export function usersTests(app: Express) {
   describe('POST /v1/users', () => {
     it('handles email already in use', async () => {
-      const res = await request(server)
+      const res = await request(app)
         .post('/v1/users')
         .send({
           email: 'fakeuser1@gmail.com',
@@ -31,7 +30,7 @@ export function usersTests() {
     });
 
     it('handles username already in use', async () => {
-      const res = await request(server)
+      const res = await request(app)
         .post('/v1/users')
         .send({
           email: 'fakeuser@gmail.com',
@@ -44,8 +43,8 @@ export function usersTests() {
     });
     
     it('handles success', async () => {
-      const res = await request(server)
-        .post('/v1/users')
+      const res = await request(app)
+        .post('/v1/users')  // open handle
         .send({
           email: 'fakeuser@gmail.com',
           password: 'fakepassword',
@@ -62,7 +61,7 @@ export function usersTests() {
     let agent: SuperAgentTest;
 
     beforeEach(async () => {
-      agent = request.agent(server);
+      agent = request.agent(app);
 
       await agent
         .post('/v1/login')
@@ -109,7 +108,7 @@ export function usersTests() {
     let agent: SuperAgentTest;
 
     beforeEach(async () => {
-      agent = request.agent(server);
+      agent = request.agent(app);
 
       await agent
         .post('/v1/login')
@@ -147,7 +146,7 @@ export function usersTests() {
     let agent: SuperAgentTest;
 
     beforeEach(async () => {
-      agent = request.agent(server);
+      agent = request.agent(app);
 
       await agent
         .post('/v1/login')
@@ -192,7 +191,7 @@ export function usersTests() {
 
   describe('DELETE /v1/users/FakeUser1', () => {
     it('handles success', async () => {
-      const agent = request.agent(server);
+      const agent = request.agent(app);
 
       await agent
         .post('/v1/login')

@@ -1,9 +1,8 @@
 import request from 'supertest';
 import type { SuperAgentTest } from 'supertest';
+import type { Express } from 'express';
 
-import { server } from '../index.test';
-
-export function privateRecipesTests() {
+export function privateRecipesTests(app: Express) {
   const recipe_upload = {
     recipe_type_id: 4,
     cuisine_id: 4,
@@ -82,7 +81,7 @@ export function privateRecipesTests() {
   let agent: SuperAgentTest;
 
   beforeEach(async () => {
-    agent = request.agent(server);
+    agent = request.agent(app);
 
     await agent
       .post('/v1/login')

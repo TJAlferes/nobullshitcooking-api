@@ -14,9 +14,10 @@ export class FavoriteRecipeRepo extends MySQLRepo implements IFavoriteRecipeRepo
         r.title,
         i.image_filename
       FROM favorite_recipe f
-      INNER JOIN recipe r ON r.recipe_id = f.recipe_id
-      INNER JOIN user u   ON u.user_id = r.author_id
-      INNER JOIN image i  ON i.image_id = r.image_id
+      INNER JOIN recipe r        ON f.recipe_id = r.recipe_id
+      INNER JOIN user u          ON r.author_id = u.user_id
+      INNER JOIN recipe_image ri ON r.recipe_id = ri.recipe_id
+      INNER JOIN image i         ON ri.image_id = i.image_id
       WHERE f.user_id = ?
       ORDER BY r.title
     `;

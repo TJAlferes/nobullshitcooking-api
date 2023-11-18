@@ -14,9 +14,10 @@ export class SavedRecipeRepo extends MySQLRepo implements ISavedRecipeRepo {
         r.title,
         i.image_filename
       FROM saved_recipe s
-      INNER JOIN recipe r ON r.recipe_id = s.recipe_id
-      INNER JOIN user u   ON u.user_id = r.author_id
-      INNER JOIN image i  ON i.image_id = r.image_id
+      INNER JOIN recipe r        ON s.recipe_id = r.recipe_id
+      INNER JOIN user u          ON r.author_id = u.user_id
+      INNER JOIN recipe_image ri ON r.recipe_id = ri.recipe_id
+      INNER JOIN image i         ON ri.image_id = i.image_id
       WHERE s.user_id = ?
       ORDER BY r.title
     `;

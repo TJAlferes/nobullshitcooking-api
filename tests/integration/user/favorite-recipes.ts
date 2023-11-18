@@ -1,13 +1,12 @@
 import request from 'supertest';
 import type { SuperAgentTest } from 'supertest';
+import type { Express } from 'express';
 
-import { server } from '../index.test';
-
-export function favoriteRecipesTests() {
+export function favoriteRecipesTests(app: Express) {
   let agent: SuperAgentTest;
 
   beforeEach(async () => {
-    agent = request.agent(server);
+    agent = request.agent(app);
 
     await agent
       .post('/v1/login')

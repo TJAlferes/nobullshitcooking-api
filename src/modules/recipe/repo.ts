@@ -148,14 +148,14 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
         u.username AS author,
         r.title,
         (
-          SELECT i.image_filename
-          FROM recipe_image ri
-          INNER JOIN recipe_image ri ON ri.recipe_id = r.recipe_id
-          INNER JOIN image i         ON i.image_id = ri.image_id
-          WHERE ri.type = 1
+          SELECT i1.image_filename
+          FROM image i1
+          INNER JOIN recipe_image ri1 ON i1.image_id = ri1.image_id
+          WHERE ri1.recipe_id = r.recipe_id AND ri1.type = 1
+          LIMIT 1
         ) image_filename
       FROM recipe r
-      INNER JOIN user u ON recipe.author_id = user.user_id
+      INNER JOIN user u ON r.author_id = u.user_id
       WHERE r.author_id = ? AND r.owner_id = ?
     `;
     const [ rows ] = await this.pool.execute<(RecipeOverview & RowDataPacket)[]>(sql, [
@@ -548,21 +548,21 @@ const recipeDetailViewSQL = `
     ) required_equipment,
     (
       SELECT JSON_ARRAYAGG(JSON_OBJECT(
-        'amount',              ri.amount,
+        'amount',              rin.amount,
         'unit_name',           un.unit_name,
         'ingredient_fullname', TRIM(CONCAT_WS(
                                  ' ',
-                                 i.ingredient_brand,
-                                 i.ingredient_variety,
-                                 i.ingredient_name,
+                                 in.ingredient_brand,
+                                 in.ingredient_variety,
+                                 in.ingredient_name,
                                  IFNULL(n.alt_name, '')
                                ))
       ))
-      FROM ingredient i
-      INNER JOIN recipe_ingredient ri ON ri.ingredient_id = i.ingredient_id
-      LEFT JOIN unit un               ON ri.unit_id = un.unit_id
-      LEFT JOIN ingredient_alt_name n ON i.ingredient_id = n.ingredient_id
-      WHERE ri.recipe_id = r.recipe_id
+      FROM ingredient in
+      INNER JOIN recipe_ingredient rin ON rin.ingredient_id = in.ingredient_id
+      LEFT JOIN unit un               ON rin.unit_id = un.unit_id
+      LEFT JOIN ingredient_alt_name n ON in.ingredient_id = n.ingredient_id
+      WHERE rin.recipe_id = r.recipe_id
     ) required_ingredients,
     (
       SELECT JSON_ARRAYAGG(JSON_OBJECT(
@@ -632,7 +632,9 @@ const existingRecipeToEditViewSQL = `
       WHERE ri.recipe_id = r.recipe_id AND ri.type = 4
     ) AS cooking_image,
     (
-      SELECT rm.method_id
+      SELECT JSON_ARRAYAGG(JSON_OBJECT(
+        'method_id', rm.method_id
+      ))
       FROM recipe_method rm
       WHERE rm.recipe_id = r.recipe_id
     ) methods,
@@ -643,17 +645,19 @@ const existingRecipeToEditViewSQL = `
         'equipment_id',      re.equipment_id
       ))
       FROM recipe_equipment re
+      INNER JOIN e.equipment_id = re.equipment_id
       WHERE re.recipe_id = r.recipe_id
     ) equipment,
     (
       SELECT JSON_ARRAYAGG(JSON_OBJECT(
-        'amount',             ri.amount,
-        'unit_id',            ri.unit_id,
-        'ingredient_type_id', i.ingredient_type_id,
-        'ingredient_id',      ri.ingredient_id
+        'amount',             rin.amount,
+        'unit_id',            rin.unit_id,
+        'ingredient_type_id', in.ingredient_type_id,
+        'ingredient_id',      rin.ingredient_id
       ))
-      FROM ingredient recipe_ingredient ri
-      WHERE ri.recipe_id = r.recipe_id
+      FROM recipe_ingredient rin
+      INNER JOIN in.ingredient_id = rin.ingredient_id
+      WHERE rin.recipe_id = r.recipe_id
     ) ingredients,
     (
       SELECT JSON_ARRAYAGG(JSON_OBJECT(

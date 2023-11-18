@@ -1,25 +1,25 @@
 import { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
 
-import type { RecipeOverview } from '../recipe/repo';
 import { NOBSC_USER_ID, UNKNOWN_USER_ID } from '../shared/model';
 import { MySQLRepo } from '../shared/MySQL';
 
 export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
   async viewAll({ author_id, owner_id }: OverviewAllParams) {
-    const sql = viewSql;
+    const sql = `${viewSql} WHERE p.author_id = ? AND p.owner_id = ?`;
     const [ rows ] = await this.pool.execute<PlanView[]>(sql, [author_id, owner_id]);
     return rows;
   }  // for logged in user
 
   async viewOneByPlanId(plan_id: string) {
-    const sql = `${viewSql} p.plan_id = ? ORDER BY pr.day_number`;
+    const sql = `${viewSql} WHERE p.plan_id = ? ORDER BY pr.day_number`;
     const [ [ row ] ] = await this.pool.execute<PlanView[]>(sql, [plan_id]);
     return row;
   }
 
   async viewOneByPlanName({ plan_name, author_id, owner_id }: ViewOneByPlanNameParams) {
     const sql = `
-      ${viewSql} p.plan_name = ? AND p.author_id = ? AND p.owner_id = ?
+      ${viewSql}
+      WHERE p.plan_name = ? AND p.author_id = ? AND p.owner_id = ?
       ORDER BY pr.day_number
     `;
     const [ [ row ] ] = await this.pool.execute<PlanView[]>(sql, [
@@ -133,7 +133,18 @@ type PlanView = RowDataPacket & {
   author:    string;
   owner_id:  string;
   plan_name: string;
-  included_recipes: RecipeOverview[][];
+  included_recipes: IncludedRecipe[][];
+};
+
+type IncludedRecipe = {
+  day_number:     number;
+  recipe_number:  number;
+  recipe_id:      string;
+  author_id:      string;
+  author:         string;
+  owner_id:       string;
+  title:          string;
+  image_filename: string;
 };
 
 type OverviewAllParams = {
@@ -173,33 +184,66 @@ type DeleteOneParams = {
 const viewSql = `
   SELECT
     p.plan_id,
-    p.plan_name,
     p.author_id,
+    u1.username AS author,
     p.owner_id,
-    JSON_ARRAYAGG(
-      JSON_ARRAYAGG(
+    p.plan_name,
+    (
+      SELECT JSON_ARRAYAGG(
         JSON_OBJECT(
-          'recipe_id',      r.recipe_id
-          'author_id',      r.author_id,
-          'owner_id',       r.owner_id,
+          'day_number', pr.day_number,
+          'recipe_number', pr.recipe_number,
+          'recipe_id', r.recipe_id,
+          'author_id', r.author_id,
+          'author', (
+            SELECT u2.username
+            FROM user u2
+            WHERE r.author_id = u2.user_id
+          ),
+          'owner_id', r.owner_id,
           'recipe_type_id', r.recipe_type_id,
-          'cuisine_id',     r.cuisine_id,
-          'author',         u.username,
-          'title',          r.title,
+          'cuisine_id', r.cuisine_id,
+          'title', r.title,
           'image_filename', (
-            SELECT
-              i.image_filename
-            FROM recipe_image ri
-            INNER JOIN recipe_image ri ON ri.recipe_id = r.recipe_id
-            INNER JOIN image i         ON i.image_id = ri.image_id
-            INNER JOIN user u        ON r.author_id = u.user_id
-            WHERE ri.type = 1
-          ) image_filename
+            SELECT i1.image_filename
+            FROM image i1
+            INNER JOIN recipe_image ri1 ON i1.image_id = ri1.image_id
+            WHERE ri1.recipe_id = r.recipe_id AND ri1.type = 1
+            LIMIT 1
+          )
         )
-      ) ORDER BY pr.recipe_number
-    ) AS included_recipes
+      )
+      FROM plan_recipe pr
+      INNER JOIN recipe r ON pr.recipe_id = r.recipe_id
+      WHERE pr.plan_id = p.plan_id
+    ) included_recipes
   FROM plan p
-  LEFT JOIN plan_recipe pr ON p.plan_id     = pr.plan_id
-  LEFT JOIN recipe r       ON pr.recipe_id = r.recipe_id
-  WHERE
+  INNER JOIN user u1 ON p.author_id = u1.user_id
 `;
+
+/*
+JSON_ARRAYAGG(
+  JSON_ARRAYAGG(
+    JSON_OBJECT(
+      'recipe_id',      r.recipe_id
+      'author_id',      r.author_id,
+      'owner_id',       r.owner_id,
+      'recipe_type_id', r.recipe_type_id,
+      'cuisine_id',     r.cuisine_id,
+      'author',         u.username,
+      'title',          r.title,
+      'image_filename', (
+        SELECT i.image_filename
+        FROM recipe_image ri
+        INNER JOIN recipe_image ri ON ri.recipe_id = r.recipe_id
+        INNER JOIN image i         ON i.image_id = ri.image_id
+        INNER JOIN user u          ON r.author_id = u.user_id
+        WHERE ri.type = 1
+      ) image_filename
+    )
+  ) ORDER BY pr.recipe_number
+) AS included_recipes
+FROM plan p
+LEFT JOIN plan_recipe pr ON p.plan_id    = pr.plan_id
+LEFT JOIN recipe r       ON pr.recipe_id = r.recipe_id
+*/
