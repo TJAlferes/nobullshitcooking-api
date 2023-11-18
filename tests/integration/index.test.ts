@@ -67,33 +67,33 @@ describe('NOBSC API', () => {
       const res = await request(app).get('/v1');
       expect(res.text).toBe('No Bullshit Cooking API\nDocumentation at https://github.com/tjalferes/nobullshitcooking-api');
     });
-
-    //describe('AwsS3', AwsS3Tests(app));
-
-    describe('units', () => unitsTests(app));
-    describe('equipmentTypes', () => equipmentTypesTests(app));
-    describe('ingredientTypes', () => ingredientTypesTests(app));
-    describe('recipeTypes', () => recipeTypesTests(app));
-    describe('methods', () => methodsTests(app));
-    describe('cuisines', () => cuisinesTests(app));
-    describe('equipment', () => equipmentTests(app));
-    describe('ingredients', () => ingredientsTests(app));
-    describe('recipes', () => recipesTests(app));
-    describe('search', () => searchTests(app));
-
-    //describe('authentication', authenticationTests(app));
-    //describe('users', usersTests(app));
-    //describe('profile', profileTests(app));
-    //describe('friendships', friendshipsTests(app));
-    //describe('publicPlans', publicPlansTests(app));
-    //describe('publicRecipes', publicRecipesTests(app));
-    //describe('favoriteRecipes', favoriteRecipesTests(app));
-    //describe('privateEquipment', privateEquipmentTests(app));
-    //describe('privateIngredients', privateIngredientsTests(app));
-    //describe('privatePlans', privatePlansTests(app));
-    //describe('privateRecipes', privateRecipesTests(app));
-    //describe('savedRecipe', savedRecipesTests(app));
   });
+
+  //describe('AwsS3', AwsS3Tests(app));
+
+  describe('units', () => unitsTests(app));
+  describe('equipmentTypes', () => equipmentTypesTests(app));
+  describe('ingredientTypes', () => ingredientTypesTests(app));
+  describe('recipeTypes', () => recipeTypesTests(app));
+  describe('methods', () => methodsTests(app));
+  describe('cuisines', () => cuisinesTests(app));
+  describe('equipment', () => equipmentTests(app));
+  describe('ingredients', () => ingredientsTests(app));
+  describe('recipes', () => recipesTests(app));
+  describe('search', () => searchTests(app));
+
+  //describe('authentication', authenticationTests(app));
+  //describe('users', usersTests(app));
+  //describe('profile', profileTests(app));
+  //describe('friendships', friendshipsTests(app));
+  //describe('publicPlans', publicPlansTests(app));
+  //describe('publicRecipes', publicRecipesTests(app));
+  //describe('favoriteRecipes', favoriteRecipesTests(app));
+  //describe('privateEquipment', privateEquipmentTests(app));
+  //describe('privateIngredients', privateIngredientsTests(app));
+  //describe('privatePlans', privatePlansTests(app));
+  //describe('privateRecipes', privateRecipesTests(app));
+  //describe('savedRecipe', savedRecipesTests(app));
 });
 
 const tableNames = [

@@ -12,8 +12,8 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
         i.ingredient_id AS id,
         ${fullnameSql} AS text
       FROM ingredient i
-      INNER JOIN ingredient_alt_name n ON i.ingredient_id = n.ingredient_id
-      WHERE ${fullnameSql} LIKE ?
+      LEFT JOIN ingredient_alt_name n ON i.ingredient_id = n.ingredient_id
+      WHERE i.owner_id = ? AND ${fullnameSql} LIKE ?
       LIMIT 5;
     `;
     //${fullnameSql} AS fullname

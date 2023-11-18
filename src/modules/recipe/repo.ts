@@ -148,8 +148,7 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
         u.username AS author,
         r.title,
         (
-          SELECT
-            i.image_filename
+          SELECT i.image_filename
           FROM recipe_image ri
           INNER JOIN recipe_image ri ON ri.recipe_id = r.recipe_id
           INNER JOIN image i         ON i.image_id = ri.image_id
@@ -167,20 +166,20 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
   }  // for logged in user
 
   async viewOneByRecipeId(recipe_id: string) {
-    const sql = `${recipeDetailViewSQL} r.recipe_id = ?`;
+    const sql = `${recipeDetailViewSQL} WHERE r.recipe_id = ?`;
     const [ [ row ] ] = await this.pool.execute<RecipeView[]>(sql, [recipe_id]);
     return row;
   }
 
   async viewOneByTitle(title: string) {
-    const sql = `${recipeDetailViewSQL} r.title = ?`;
+    const sql = `${recipeDetailViewSQL} WHERE r.title = ?`;
     const [ [ row ] ] = await this.pool.execute<RecipeView[]>(sql, [title]);
     return row;
   }
 
   async viewOneToEdit(recipe_id: string) {
-    const sql = `${existingRecipeToEditViewSQL} r.recipe_id = ?`;
-    const [ [ row ] ] = await this.pool.execute<RecipeView[]>(sql, [recipe_id]);
+    const sql = `${existingRecipeToEditViewSQL} WHERE r.recipe_id = ?`;
+    const [ [ row ] ] = await this.pool.execute<EditRecipeView[]>(sql, [recipe_id]);
     return row;
   }
 
@@ -342,13 +341,12 @@ export type RecipeOverview = {
 
 export type RecipeView = RowDataPacket & {
   recipe_id:            string;
-  recipe_type_id:       number;
-  recipe_type_name:     string;
-  cuisine_id:           number;
-  cuisine_name:         string;
   author_id:            string;
   author:               string;
+  author_avatar:        string;
   owner_id:             string;
+  recipe_type_name:     string;
+  cuisine_name:         string;
   title:                string;
   description:          string;
   active_time:          string;
@@ -373,37 +371,37 @@ type AssociatedImageView = {
 };
 
 type RequiredMethodView = {
-  method_id:   number;
+  //method_id:   number;
   method_name: string;
 };
 
 type RequiredEquipmentView = {
   amount:            number | null;
-  equipment_id:      string;
-  equipment_type_id: number;
+  //equipment_id:      string;
+  //equipment_type_id: number;
   equipment_name:    string;
 };
 
 type RequiredIngredientView = {
   amount:             number | null;
-  unit_id:            number | null;
+  //unit_id:            number | null;
   unit_name:          string | null;  // LEFT or RIGHT JOIN to get the null ???
-  ingredient_id:      string;
-  ingredient_type_id: number;
-  ingredient_name:    string;
+  //ingredient_id:      string;
+  //ingredient_type_id: number;
+  ingredient_fullname: string;
 };
 
 type RequiredSubrecipeView = {
   amount:          number | null;
-  unit_id:         number | null;
+  //unit_id:         number | null;
   unit_name:       string | null;  // LEFT or RIGHT JOIN to get the null ???
-  subrecipe_id:    string;
-  recipe_type_id:  number;
-  cuisine_id:      number;
+  //subrecipe_id:    string;
+  //recipe_type_id:  number;
+  //cuisine_id:      number;
   subrecipe_title: string;
 };
 
-type EditRecipeView = {
+type EditRecipeView = RowDataPacket & {
   recipe_id:            string;
   recipe_type_id:       number;
   cuisine_id:           number;
@@ -480,9 +478,10 @@ const recipeDetailViewSQL = `
       SELECT i.image_filename
       FROM image i
       INNER JOIN user_image ui ON i.image_id = ui.image_id
-      INNER JOIN recipe r ON r.author_id = ui.user_id
-      WHERE ui.current = true
+      INNER JOIN recipe r2 ON ui.user_id = r2.author_id
+      WHERE ui.current = true AND r2.recipe_id = r.recipe_id
     ) AS author_avatar,
+    r.owner_id,
     rt.recipe_type_name,
     c.cuisine_name,
     r.title,
@@ -491,28 +490,44 @@ const recipeDetailViewSQL = `
     r.total_time,
     r.directions,
     (
-      SELECT i.image_id, i.image_filename, i.caption
+      SELECT JSON_OBJECT(
+        'image_id',       i.image_id,
+        'image_filename', i.image_filename,
+        'caption',        i.caption
+      )
       FROM image i
-      INNER JOIN recipe_image ri ON i.image_id = ri.image_id
-      WHERE ri.recipe_id = r.recipe_id AND ri.type = 1
+      INNER JOIN recipe_image rim ON i.image_id = rim.image_id
+      WHERE rim.recipe_id = r.recipe_id AND rim.type = 1
     ) AS recipe_image,
     (
-      SELECT i.image_id, i.image_filename, i.caption
+      SELECT JSON_OBJECT(
+        'image_id',       i.image_id,
+        'image_filename', i.image_filename,
+        'caption',        i.caption
+      )
       FROM image i
-      INNER JOIN recipe_image ri ON i.image_id = ri.image_id
-      WHERE ri.recipe_id = r.recipe_id AND ri.type = 2
+      INNER JOIN recipe_image rim ON i.image_id = rim.image_id
+      WHERE rim.recipe_id = r.recipe_id AND rim.type = 2
     ) AS equipment_image,
     (
-      SELECT i.image_id, i.image_filename, i.caption
+      SELECT JSON_OBJECT(
+        'image_id',       i.image_id,
+        'image_filename', i.image_filename,
+        'caption',        i.caption
+      )
       FROM image i
-      INNER JOIN recipe_image ri ON i.image_id = ri.image_id
-      WHERE ri.recipe_id = r.recipe_id AND ri.type = 3
+      INNER JOIN recipe_image rim ON i.image_id = rim.image_id
+      WHERE rim.recipe_id = r.recipe_id AND rim.type = 3
     ) AS ingredients_image,
     (
-      SELECT i.image_id, i.image_filename, i.caption
+      SELECT JSON_OBJECT(
+        'image_id',       i.image_id,
+        'image_filename', i.image_filename,
+        'caption',        i.caption
+      )
       FROM image i
-      INNER JOIN recipe_image ri ON i.image_id = ri.image_id
-      WHERE ri.recipe_id = r.recipe_id AND ri.type = 4
+      INNER JOIN recipe_image rim ON i.image_id = rim.image_id
+      WHERE rim.recipe_id = r.recipe_id AND rim.type = 4
     ) AS cooking_image,
     (
       SELECT JSON_ARRAYAGG(JSON_OBJECT(
@@ -534,37 +549,36 @@ const recipeDetailViewSQL = `
     (
       SELECT JSON_ARRAYAGG(JSON_OBJECT(
         'amount',              ri.amount,
-        'unit_name',           u.unit_name,
-        'ingredient_fullname', CONCAT_WS(
+        'unit_name',           un.unit_name,
+        'ingredient_fullname', TRIM(CONCAT_WS(
                                  ' ',
                                  i.ingredient_brand,
                                  i.ingredient_variety,
                                  i.ingredient_name,
                                  IFNULL(n.alt_name, '')
-                               )
+                               ))
       ))
       FROM ingredient i
-      INNER JOIN recipe_ingredient ri  ON ri.ingredient_id = i.ingredient_id
-      INNER JOIN unit u                ON u.unit_id = ri.unit_id
-      LEFT JOIN ingredient_alt_name n ON n.ingredient_id = i.ingredient_id
+      INNER JOIN recipe_ingredient ri ON ri.ingredient_id = i.ingredient_id
+      LEFT JOIN unit un               ON ri.unit_id = un.unit_id
+      LEFT JOIN ingredient_alt_name n ON i.ingredient_id = n.ingredient_id
       WHERE ri.recipe_id = r.recipe_id
     ) required_ingredients,
     (
       SELECT JSON_ARRAYAGG(JSON_OBJECT(
         'amount',          rs.amount,
-        'unit_name',       u.unit_name,
-        'subrecipe_title', r.title
+        'unit_name',       un.unit_name,
+        'subrecipe_title', r2.title
       ))
-      FROM recipe r
-      INNER JOIN recipe_subrecipe rs ON rs.subrecipe_id = r.recipe_id
-      INNER JOIN unit u              ON u.unit_id = rs.unit_id
+      FROM recipe r2
+      INNER JOIN recipe_subrecipe rs ON rs.subrecipe_id = r2.recipe_id
+      LEFT JOIN unit un              ON rs.unit_id = un.unit_id
       WHERE rs.recipe_id = r.recipe_id
     ) required_subrecipes
   FROM recipe r
   INNER JOIN user u         ON u.user_id = r.author_id
   INNER JOIN recipe_type rt ON rt.recipe_type_id = r.recipe_type_id
   INNER JOIN cuisine c      ON c.cuisine_id = r.cuisine_id
-  WHERE
 `;
 
 const existingRecipeToEditViewSQL = `
@@ -578,25 +592,41 @@ const existingRecipeToEditViewSQL = `
     r.total_time,
     r.directions,
     (
-      SELECT i.image_id, i.image_filename, i.caption
+      SELECT JSON_OBJECT(
+        'image_id',       i.image_id,
+        'image_filename', i.image_filename,
+        'caption',        i.caption
+      )
       FROM image i
       INNER JOIN recipe_image ri ON i.image_id = ri.image_id
       WHERE ri.recipe_id = r.recipe_id AND ri.type = 1
     ) AS recipe_image,
     (
-      SELECT i.image_id, i.image_filename, i.caption
+      SELECT JSON_OBJECT(
+        'image_id',       i.image_id,
+        'image_filename', i.image_filename,
+        'caption',        i.caption
+      )
       FROM image i
       INNER JOIN recipe_image ri ON i.image_id = ri.image_id
       WHERE ri.recipe_id = r.recipe_id AND ri.type = 2
     ) AS equipment_image,
     (
-      SELECT i.image_id, i.image_filename, i.caption
+      SELECT JSON_OBJECT(
+        'image_id',       i.image_id,
+        'image_filename', i.image_filename,
+        'caption',        i.caption
+      )
       FROM image i
       INNER JOIN recipe_image ri ON i.image_id = ri.image_id
       WHERE ri.recipe_id = r.recipe_id AND ri.type = 3
     ) AS ingredients_image,
     (
-      SELECT i.image_id, i.image_filename, i.caption
+      SELECT JSON_OBJECT(
+        'image_id',       i.image_id,
+        'image_filename', i.image_filename,
+        'caption',        i.caption
+      )
       FROM image i
       INNER JOIN recipe_image ri ON i.image_id = ri.image_id
       WHERE ri.recipe_id = r.recipe_id AND ri.type = 4
@@ -640,5 +670,4 @@ const existingRecipeToEditViewSQL = `
   INNER JOIN user u         ON u.user_id = r.author_id
   INNER JOIN recipe_type rt ON rt.recipe_type_id = r.recipe_type_id
   INNER JOIN cuisine c      ON c.cuisine_id = r.cuisine_id
-  WHERE
 `;

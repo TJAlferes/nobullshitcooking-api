@@ -31,7 +31,7 @@ const router = Router();
 export function apiV1Router() {
   router.use('/search', searchRouter());
   router.use('/cuisines', cuisineRouter());
-  router.use('/equipments', equipmentRouter());
+  router.use('/equipment', equipmentRouter());
   router.use('/equipment-types', equipmentTypeRouter());
   router.use('/ingredients', ingredientRouter());
   router.use('/ingredient-types', ingredientTypeRouter());
