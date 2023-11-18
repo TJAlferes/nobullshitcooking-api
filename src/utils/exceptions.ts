@@ -38,3 +38,13 @@ export class ConflictException extends ExceptionError {
     super(409, 'ConflictException', message);
   }
 }
+
+export function instanceOfAnyException(err: {}) {
+  if (err instanceof ExceptionError) return true;
+  if (err instanceof ValidationException) return true;
+  if (err instanceof UnauthorizedException) return true;
+  if (err instanceof ForbiddenException) return true;
+  if (err instanceof NotFoundException) return true;
+  if (err instanceof ConflictException) return true;
+  return false;
+}

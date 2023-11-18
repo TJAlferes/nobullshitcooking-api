@@ -3,7 +3,7 @@ import type { Server } from 'node:http';
 import { Server as SocketIOServer, Socket } from 'socket.io';
 import { createAdapter } from '@socket.io/redis-adapter';
 
-import { redisClients } from '../../connections/redis';
+import { redisClient } from '../../connections/redis';
 import { FriendshipRepo } from '../user/friendship/repo';
 import { chatmessageController } from './message/controller';
 import type { ChatmessageView, PrivateChatmessageView } from './message/repo';
@@ -32,9 +32,8 @@ export function createSocketIOServer(httpServer: Server, sessionMiddleware: Requ
       pingTimeout: 60000
     }
   );
-  
-  const { pubClient, subClient } = redisClients;
-  io.adapter(createAdapter(pubClient, subClient));
+
+  io.adapter(createAdapter(redisClient, redisClient));
   
   io.engine.use(sessionMiddleware);
   

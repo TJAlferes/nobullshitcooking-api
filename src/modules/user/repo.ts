@@ -7,7 +7,7 @@ export class UserRepo extends MySQLRepo implements UserRepoInterface {
     const sql = `SELECT password FROM user WHERE email = ?`;
     const [ [ row ] ] = await this.pool.query<PasswordData[]>(sql, [email]);
     return row.password;
-  }  // be very careful with this
+  }  // be very careful with this, never expose
 
   async getByUserId(user_id: string): Promise<UserData | undefined> {
     const sql = `
@@ -58,20 +58,32 @@ export class UserRepo extends MySQLRepo implements UserRepoInterface {
     if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
-  async update(params: UpdateParams) {
+  async update({ user_id, email, password, username, confirmation_code }: UpdateParams) {
     const sql = `
       UPDATE user
       SET
-        email             = :email,
-        password          = :password,
-        username          = :username,
-        password          = :password,
-        confirmation_code = :confirmation_code
-      WHERE user_id = :user_id
+        email             = ?,
+        password          = ?,
+        username          = ?,
+        confirmation_code = ?
+      WHERE user_id = ?
       LIMIT 1
     `;
-    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, params);
-    if (result.affectedRows < 1) throw new Error('Query not successful.');
+    await this.pool.execute(sql, [
+      email,
+      password,
+      username,
+      confirmation_code,
+      user_id
+    ]);
+    /*const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [
+      email,
+      password,
+      username,
+      confirmation_code,
+      user_id
+    ]);
+    if (result.affectedRows < 1) throw new Error('Query not successful.');*/
   }
 
   async delete(user_id: string) {

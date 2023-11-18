@@ -11,9 +11,9 @@ import type { Redis } from 'ioredis';
 import { pinoHttp } from 'pino-http';  // logger
 import process from 'node:process';
 
-import { redisClients } from './connections/redis';
+import { redisClient } from './connections/redis';
 import { createSocketIOServer } from './modules/chat/server';
-import { ExceptionError } from './utils/exceptions';
+import { instanceOfAnyException } from './utils/exceptions';
 import { apiV1Router } from './router';
 
 declare module 'node:http' {
@@ -61,7 +61,7 @@ if (app.get('env') === 'production') {
 
 // Express Middleware
 
-const redisStore = new RedisStore({client: redisClients.sessionClient});
+const redisStore = new RedisStore({client: redisClient});
 const sessionMiddleware = expressSession({
   cookie: (app.get('env') === 'production')
     ? {
@@ -127,8 +127,8 @@ process.on('unhandledRejection', (reason) => {
 
 if (process.env.NODE_ENV === 'production') {
   app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
-    if (error instanceof ExceptionError) {
-      res.status(error.code).json({message: error.message});
+    if (instanceOfAnyException(error)) {
+      res.status((error as any).code).json({message: error.message});
     } else {
       console.log(error.message);
       res.status(500).json({message: error.message || 'Internal Server Error'});
@@ -136,8 +136,8 @@ if (process.env.NODE_ENV === 'production') {
   });
 } else {
   app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
-    if (error instanceof ExceptionError) {
-      res.status(error.code).json({message: error.message});
+    if (instanceOfAnyException(error)) {
+      res.status((error as any).code).json({message: error.message});
     } else {
       console.log(error);
       res.status(500).json({message: error.message, error});

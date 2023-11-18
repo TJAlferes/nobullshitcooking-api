@@ -3,7 +3,7 @@ import request from 'supertest';
 
 import { seedTestDatabase } from '../../seeds/test';
 import { pool, testConfig } from '../../src/connections/mysql';
-import { redisClients } from '../../src/connections/redis';
+import { redisClient } from '../../src/connections/redis';
 import { app, httpServer, socketIOServer  } from '../../src/app';
 import {
   authenticationTests,
@@ -41,21 +41,22 @@ import {
 describe('NOBSC API', () => {
   beforeAll(async () => {
     console.log('Integration tests started.');
-    await seedTestDatabase();
     //httpServer.listen
   });
 
-  afterEach(async () => {
-    socketIOServer?.disconnectSockets(false);
-    await redisClients.pubClient.flushdb();
-    await redisClients.sessionClient.flushdb();
+  beforeEach(async () => {
     await truncateTestDatabase();
+    await seedTestDatabase();
+  });
+
+  afterEach(async () => {
+    await redisClient.flushdb();
+    socketIOServer?.disconnectSockets(false);
   });
   
   afterAll(async () => {
-    redisClients.pubClient.disconnect();
-    redisClients.subClient.disconnect();
-    redisClients.sessionClient.disconnect();
+    await truncateTestDatabase();
+    redisClient.disconnect();
     await pool.end();
     socketIOServer?.close();
     httpServer?.close();
@@ -121,10 +122,8 @@ async function truncateTestDatabase() {
   // Ensure this touches ONLY test DBs, NEVER prod DBs!!!
   // To that end, we use a separate pool here (instead of src/connections/mysql.ts).
   const pool = createPool(testConfig);
-
   try {
-    console.log('Reset test MySQL DB tables begin.');
-
+    console.log('Truncate test MySQL DB tables begin.');
     for (const tableName of tableNames.reverse()) {
       const conn = await pool.getConnection();
       await conn.beginTransaction();
@@ -140,12 +139,9 @@ async function truncateTestDatabase() {
         conn.release();
       }
     }
-
-    await seedTestDatabase();
-
-    console.log('Reset test MySQL DB tables success.');
+    console.log('Truncate test MySQL DB tables success.');
   } catch (error) {
-    console.error('Reset test MySQL DB tables error:', error);
+    console.error('Truncate test MySQL DB tables error:', error);
   } finally {
     await pool.end();
   }
