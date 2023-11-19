@@ -6,7 +6,7 @@ export class PasswordResetRepo extends MySQLRepo implements PasswordResetRepoInt
   async getPassword(user_id: string): Promise<string | undefined> {
     const sql = `SELECT temporary_password FROM password_reset WHERE user_id = ?`;
     const [ [ row ] ] = await this.pool.query<PasswordData[]>(sql, [user_id]);
-    return row.password;
+    return row.temporary_password;
   }  // be very careful with this
 
   async insert(params: InsertParams) {
@@ -32,7 +32,7 @@ export interface PasswordResetRepoInterface {
 }
 
 type PasswordData = RowDataPacket & {
-  password: string;
+  temporary_password: string;
 };
 
 type InsertParams = {

@@ -31,7 +31,7 @@ CREATE TABLE user (
 
 CREATE TABLE password_reset (
   `reset_id`           CHAR(36)  PRIMARY KEY,
-  `user_id`            CHAR(36)  NOT NULL,
+  `user_id`            CHAR(36)  NOT NULL UNIQUE,
   `temporary_password` CHAR(60)  NOT NULL,
   `created_at`         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE

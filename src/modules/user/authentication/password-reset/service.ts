@@ -17,7 +17,9 @@ export class PasswordResetService {
     temporary_password
   }: IsCorrectTemporaryPasswordParams) {
     const currentHash = await this.repo.getPassword(user_id);
-    if (!currentHash) throw new UnauthorizedException('Incorrect email or temporary password.');
+    if (!currentHash) {
+      throw new UnauthorizedException('Incorrect email or temporary password.');
+    }
 
     const correctTemporaryPassword = await bcrypt.compare(temporary_password, currentHash);
     if (!correctTemporaryPassword) {

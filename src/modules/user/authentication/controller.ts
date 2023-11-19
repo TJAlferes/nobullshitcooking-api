@@ -153,10 +153,10 @@ export const userAuthenticationController = {
     }).getDTO();
 
     const passwordResetRepo = new PasswordResetRepo();
-    const { sendTemporaryPassword } = new PasswordResetService(passwordResetRepo);
     await passwordResetRepo.insert(passwordReset);
 
-    await sendTemporaryPassword({email, temporary_password});
+    const passwordResetService = new PasswordResetService(passwordResetRepo);
+    await passwordResetService.sendTemporaryPassword({email, temporary_password});
 
     return res.status(201);
   },

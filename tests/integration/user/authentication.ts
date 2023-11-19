@@ -157,7 +157,7 @@ export function authenticationTests(app: Express) {
     });
   });
 
-  /*describe('POST /v1/forgot-password', () => {
+  describe('POST /v1/forgot-password', () => {
     it('handles success', async () => {
       const res = await request(app)
         .post('/v1/forgot-password')
@@ -182,22 +182,22 @@ export function authenticationTests(app: Express) {
         .send({
           email: 'fakeuser1@gmail.com',
           temporary_password: '01010101-0101-0101-0101-010101010101',  // in DB: "$2b$10$mHF4dvye9VGKPn16fDNnN..z/Ay4xH5Z5iUFcwgL.I/6c0qPRlqsO"
-          new_password: "newpassword"
+          new_password: 'newpassword'
         });
       
       expect(res.status).toBe(204);
     });
 
-    it('handles success', async () => {
+    it('handles not found', async () => {
       const res = await request(app)
         .patch('/v1/reset-password')
         .send({
           email: 'nonexistinguser@gmail.com',
           temporary_password: '01010101-0101-0101-0101-010101010101',  // in DB: "$2b$10$mHF4dvye9VGKPn16fDNnN..z/Ay4xH5Z5iUFcwgL.I/6c0qPRlqsO"
-          new_password: "newpassword"
+          new_password: 'newpassword'
         });
       
       expect(res.status).toBe(404);
     });
-  });*/
+  });
 }
