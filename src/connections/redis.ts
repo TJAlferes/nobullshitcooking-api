@@ -27,11 +27,33 @@ if (process.env.NODE_ENV === 'development') {
   };
 }
 
-export const redisClient = new Redis(config);
+const pubClient = new Redis(config);
+const subClient = pubClient.duplicate();  //new Redis(config);
+const sessionClient = new Redis(config);
 
-redisClient.on('connect', () => console.log('redisClient connected'));
-redisClient.on('ready',   () => console.log('redisClient ready'));
-redisClient.on('error',   () => console.log('redisClient error'));
+pubClient.on('connect', () => console.log('pubClient connected'));
+pubClient.on('ready', () => console.log('pubClient ready'));
+pubClient.on('error', () => console.log('pubClient error'));
 if (process.env.NODE_ENV !== 'test') {
-  redisClient.on('close', () => console.log('redisClient closed'));
+  pubClient.on('close', () => console.log('pubClient closed'));
 }
+
+subClient.on('connect', () => console.log('subClient connected'));
+subClient.on('ready', () => console.log('subClient ready'));
+subClient.on('error', () => console.log('subClient error'));
+if (process.env.NODE_ENV !== 'test') {
+  subClient.on('close', () => console.log('subClient closed'));
+}
+
+sessionClient.on('connect', () => console.log('sessionClient connected'));
+sessionClient.on('ready', () => console.log('sessionClient ready'));
+sessionClient.on('error', () => console.log('sessionClient error'));
+if (process.env.NODE_ENV !== 'test') {
+  sessionClient.on('close', () => console.log('sessionClient closed'));
+}
+
+export const redisClients = {
+  pubClient,
+  subClient,
+  sessionClient
+};

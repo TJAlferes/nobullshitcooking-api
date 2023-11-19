@@ -3,7 +3,7 @@ import request from 'supertest';
 
 import { seedTestDatabase } from '../../seeds/test';
 import { pool, testConfig } from '../../src/connections/mysql';
-import { redisClient } from '../../src/connections/redis';
+import { redisClients } from '../../src/connections/redis';
 import { app, httpServer, socketIOServer  } from '../../src/app';
 import {
   authenticationTests,
@@ -50,13 +50,18 @@ describe('NOBSC API', () => {
   });
 
   afterEach(async () => {
-    await redisClient.flushdb();
+    await redisClients.pubClient.flushdb();
+    await redisClients.sessionClient.flushdb();
     socketIOServer?.disconnectSockets(false);
+    socketIOServer?.close();  // ?
+    httpServer?.close();  // ?
   });
   
   afterAll(async () => {
     await truncateTestDatabase();
-    redisClient.disconnect();
+    redisClients.pubClient.disconnect();
+    redisClients.subClient.disconnect();
+    redisClients.sessionClient.disconnect();
     await pool.end();
     socketIOServer?.close();
     httpServer?.close();

@@ -69,21 +69,14 @@ export class UserRepo extends MySQLRepo implements UserRepoInterface {
       WHERE user_id = ?
       LIMIT 1
     `;
-    await this.pool.execute(sql, [
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [
       email,
       password,
       username,
       confirmation_code,
       user_id
     ]);
-    /*const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [
-      email,
-      password,
-      username,
-      confirmation_code,
-      user_id
-    ]);
-    if (result.affectedRows < 1) throw new Error('Query not successful.');*/
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async delete(user_id: string) {

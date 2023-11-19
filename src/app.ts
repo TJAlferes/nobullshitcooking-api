@@ -11,7 +11,7 @@ import type { Redis } from 'ioredis';
 import { pinoHttp } from 'pino-http';  // logger
 import process from 'node:process';
 
-import { redisClient } from './connections/redis';
+import { redisClients } from './connections/redis';
 import { createSocketIOServer } from './modules/chat/server';
 import { instanceOfAnyException } from './utils/exceptions';
 import { apiV1Router } from './router';
@@ -61,7 +61,7 @@ if (app.get('env') === 'production') {
 
 // Express Middleware
 
-const redisStore = new RedisStore({client: redisClient});
+const redisStore = new RedisStore({client: redisClients.sessionClient});
 const sessionMiddleware = expressSession({
   cookie: (app.get('env') === 'production')
     ? {

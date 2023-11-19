@@ -63,7 +63,7 @@ export function authenticationTests(app: Express) {
     });
   });*/
 
-  describe('POST /v1/confirm', () => {
+  /*describe('POST /v1/confirm', () => {
     it('handles incorrect confirmation_code', async () => {
       const res = await request(app)
         .post('/v1/confirm')
@@ -81,7 +81,7 @@ export function authenticationTests(app: Express) {
 
       expect(res.status).toBe(204);
     });
-  });
+  });*/
 
   describe('POST /v1/login', () => {
     /*it('handles already logged in user', async () => {

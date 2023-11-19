@@ -1,6 +1,6 @@
-import { redisClient } from '../../connections/redis';
+import { redisClients } from '../../connections/redis';
 
 // Base abstract class to be extended
 export abstract class RedisRepo {
-  client = redisClient;
+  client = redisClients.pubClient;
 }
