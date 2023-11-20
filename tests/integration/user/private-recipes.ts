@@ -53,13 +53,13 @@ export function privateRecipesTests(app: Express) {
     required_ingredients: [],
     required_subrecipes: [],
     recipe_image: {
-      image_id: "018b6942-6b2d-7b8d-90ag-ff43c22c0ed9",
+      image_id: "018b6942-6b2d-7b8d-90bf-ff43c22c0ed9",
       image_filename: "recipe_image",
       caption: "caption",
       type: 1
     },
     equipment_image: {
-      image_id: "018b6942-6b2d-7943-8ab6-34fea11517eg",
+      image_id: "018b6942-6b2d-7943-8ab6-34fea11517ff",
       image_filename: "equipment_image",
       caption: "caption",
       type: 2
@@ -128,7 +128,7 @@ export function privateRecipesTests(app: Express) {
       const res = await agent
         .patch('/v1/users/FakeUser1/private-recipes')
         .send({
-          recipe_id: "018b6942-6b2z-7949-8ab9-3509084cf00z",
+          recipe_id: "018b6942-6b2f-7943-8ab6-3509084c0000",
           ...recipe_update_upload
         });
 
@@ -139,7 +139,7 @@ export function privateRecipesTests(app: Express) {
       const res = await agent
         .patch('/v1/users/FakeUser1/private-recipes')
         .send({
-          recipe_id: "018b6942-6b2g-7944-8ab7-3509084cf00f",
+          recipe_id: "018b6942-6b3f-7944-8ab7-3509084cf00f",
           ...recipe_update_upload
         });
 
@@ -161,14 +161,14 @@ export function privateRecipesTests(app: Express) {
   describe('DELETE /v1/users/FakeUser1/private-recipes/:recipe_id', () => {
     it('handles not found', async () => {
       const res = await agent
-        .delete('/v1/users/FakeUser1/private-recipes/018b6942-6b2z-7949-8ab9-3509084cf00z');
+        .delete('/v1/users/FakeUser1/private-recipes/018b6942-6b2f-7943-8ab6-3509084c0000');
 
       expect(res.status).toBe(404);
     });
 
     it('handles forbidden', async () => {
       const res = await agent
-        .delete('/v1/users/FakeUser1/private-recipes/018b6942-6b2g-7944-8ab7-3509084cf00f');
+        .delete('/v1/users/FakeUser1/private-recipes/018b6942-6b3f-7944-8ab7-3509084cf00f');
 
       expect(res.status).toBe(403);
     });

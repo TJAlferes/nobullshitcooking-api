@@ -41,7 +41,7 @@ export function privateEquipmentTests(app: Express) {
       const res = await agent
         .patch('/v1/users/FakeUser1/private-equipment')
         .send({
-          equipment_id: "018b5ade-5449-7d0z-b42z-f262d9f0b6fz",
+          equipment_id: "018b5ade-5439-7d0d-b42c-f262d9f00000",
           equipment_type_id: 3,
           equipment_name: "Nonexisting Ladle",
           notes: "Good soups...",
@@ -89,7 +89,7 @@ export function privateEquipmentTests(app: Express) {
   describe('DELETE /v1/users/FakeUser1/private-equipment/:equipment_id', () => {
     it('handles not found', async () => {
       const res = await agent
-        .delete('/v1/users/FakeUser1/private-equipment/018b5ade-5449-7d0z-b42z-f262d9f0b6fz');
+        .delete('/v1/users/FakeUser1/private-equipment/018b5ade-5439-7d0d-b42c-f262d9f00000');
 
       expect(res.status).toBe(404); 
     });

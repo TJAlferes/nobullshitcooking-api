@@ -40,7 +40,7 @@ export function privatePlansTests(app: Express) {
       const res = await agent
         .patch('/v1/users/FakeUser1/private-plans')
         .send({
-          plan_id: "018b6942-973z-8y4z-0e4s-3509084crk2z",
+          plan_id: "018b6942-973a-8b4f-0e4f-3509084c0000",
           plan_name: "Updated Name",
           included_recipes: [
             
@@ -54,7 +54,7 @@ export function privatePlansTests(app: Express) {
       const res = await agent
         .patch('/v1/users/FakeUser1/private-plans')
         .send({
-          plan_id: "018b6942-973w-8y4i-0e4s-3509084crk2b",
+          plan_id: "018b6942-973b-8b4f-0e4f-3509084cff2b",
           plan_name: "Updated Name",
           included_recipes: [
             
@@ -68,7 +68,7 @@ export function privatePlansTests(app: Express) {
       const res = await agent
         .patch('/v1/users/FakeUser1/private-plans')
         .send({
-          plan_id: "018b6942-973v-8y4h-0e4r-3509084crk2a",
+          plan_id: "018b6942-973a-8b4f-0e4f-3509084cff2a",
           plan_name: "Updated Name",
           included_recipes: [
             
@@ -82,21 +82,21 @@ export function privatePlansTests(app: Express) {
   describe('DELETE /v1/users/FakeUser1/private-plans', () => {
     it('handles not found', async () => {
       const res = await agent
-        .delete('/v1/users/FakeUser1/private-plans/018b6942-973z-8y4z-0e4s-3509084crk2z');
+        .delete('/v1/users/FakeUser1/private-plans/018b6942-973a-8b4f-0e4f-3509084c0000');
       
       expect(res.status).toBe(404);
     });
 
     it('handles forbidden', async () => {
       const res = await agent
-        .delete('/v1/users/FakeUser1/private-plans/018b6942-973w-8y4i-0e4s-3509084crk2b');
+        .delete('/v1/users/FakeUser1/private-plans/018b6942-973b-8b4f-0e4f-3509084cff2b');
       
       expect(res.status).toBe(403);
     });
 
     it('handles success', async () => {
       const res = await agent
-        .delete('/v1/users/FakeUser1/private-plans/018b6942-973v-8y4h-0e4r-3509084crk2a');
+        .delete('/v1/users/FakeUser1/private-plans/018b6942-973a-8b4f-0e4f-3509084cff2a');
       
       expect(res.status).toBe(204);
     });
