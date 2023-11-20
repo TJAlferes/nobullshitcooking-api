@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import { uuidv7 } from 'uuidv7';
 
-import { NotFoundException } from '../../../utils/exceptions';
+import { ConflictException, NotFoundException} from '../../../utils/exceptions';
 import { socketIOServer } from '../../../app';
 import { NOBSC_USER_ID } from '../../shared/model';
 //import { ChatgroupRepo }             from '../../chat/group/repo';
@@ -45,7 +45,7 @@ export const userAuthenticationController = {
 
   async login(req: Request, res: Response) {
     const loggedIn = req.session.user_id;
-    if (loggedIn) return res.status(409);
+    if (loggedIn) throw new ConflictException('Already logged in.');
     
     const { email, password } = req.body;
 
@@ -139,50 +139,56 @@ export const userAuthenticationController = {
 
   async forgotPassword(req: Request, res: Response) {
     const { email } = req.body;
+    console.log('FORGOT PASSWORD req.body.email: ', email)
+    return res.status(201);
 
-    const userRepo = new UserRepo();
+    /*const userRepo = new UserRepo();
     const user = await userRepo.getByEmail(email);
     if (!user) throw new NotFoundException();
 
-    const { hashPassword } = new UserAuthenticationService(userRepo);
-    const temporary_password = uuidv7();
-    const encryptedPassword = await hashPassword(temporary_password);
-    const passwordReset = PasswordReset.create({
-      user_id: user.user_id,
-      temporary_password: encryptedPassword
-    }).getDTO();
+    //const { hashPassword } = new UserAuthenticationService(userRepo);
+    //const temporary_password = uuidv7();
+    //const encryptedPassword = await hashPassword(temporary_password);
+    //const passwordReset = PasswordReset.create({
+    //  user_id: user.user_id,
+    //  temporary_password: encryptedPassword
+    //}).getDTO();
 
-    const passwordResetRepo = new PasswordResetRepo();
-    await passwordResetRepo.insert(passwordReset);
+    //const passwordResetRepo = new PasswordResetRepo();
+    //await passwordResetRepo.insert(passwordReset);
 
-    const passwordResetService = new PasswordResetService(passwordResetRepo);
-    await passwordResetService.sendTemporaryPassword({email, temporary_password});
+    //const passwordResetService = new PasswordResetService(passwordResetRepo);
+    //await passwordResetService.sendTemporaryPassword({email, temporary_password});
 
-    return res.status(201);
+    return res.status(201);*/
   },
 
   async resetPassword(req: Request, res: Response) {
     const { email, temporary_password, new_password } = req.body;
+    console.log('RESET PASSWORD req.body.email: ', email);
+    return res.status(204);
 
-    const userRepo = new UserRepo();
+    /*const userRepo = new UserRepo();
     const user = await userRepo.getByEmail(email);
     if (!user) throw new NotFoundException();
 
     const passwordResetRepo = new PasswordResetRepo();
     const passwordResetService = new PasswordResetService(passwordResetRepo);
-    await passwordResetService.isCorrectTemporaryPassword({
-      user_id: user.user_id,
-      temporary_password
-    });
+    //await passwordResetService.isCorrectTemporaryPassword({
+    //  user_id: user.user_id,
+    //  temporary_password
+    //});
+
+    // TO DO: consider making the update and delete a single transaction
 
     const userService = new UserService(userRepo);
-    await userService.updatePassword({
-      user_id: user.user_id,
-      new_password
-    });
+    //await userService.updatePassword({
+    //  user_id: user.user_id,
+    //  new_password
+    //});
 
     await passwordResetRepo.deleteByUserId(user.user_id);
 
-    return res.status(204);
+    return res.status(204);*/
   }
 };

@@ -8,6 +8,9 @@ const config: Config = {
   testEnvironment: 'node',
   testPathIgnorePatterns: ['<rootDir>/node_modules/'],
   testRegex: '/*.test.ts$',
+  /*transform: {
+    '^.+\\.ts?$': ['ts-jest', {isolatedModules: true}],
+  },*/
   extensionsToTreatAsEsm: ['.ts'],
   verbose: true,
 };

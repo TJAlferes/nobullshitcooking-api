@@ -20,7 +20,7 @@ export async function seedEquipment(conn: PoolConnection) {
       owner_id
     ) VALUES ${placeholders1}
   `;
-  await conn.query(sql1, format(images));
+  await conn.execute(sql1, format(images));
   
   const placeholders2 = '(?, ?, ?, ?, ?, ?),'.repeat(equipment.length).slice(0, -1);
   const sql2 = `
@@ -33,5 +33,5 @@ export async function seedEquipment(conn: PoolConnection) {
       image_id
     ) VALUES ${placeholders2}
   `;
-  await conn.query(sql2, format(equipment));
+  await conn.execute(sql2, format(equipment));
 }

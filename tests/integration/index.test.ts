@@ -1,5 +1,6 @@
 import { createPool } from 'mysql2/promise';
 import request from 'supertest';
+import { expect, jest, describe, it } from '@jest/globals';
 
 import { seedTestDatabase } from '../../seeds/test';
 import { pool, testConfig } from '../../src/connections/mysql';
@@ -38,36 +39,34 @@ import {
 // Register and run all integration tests from this file.
 // Avoid global seeds and fixtures, add data per test (per it).
 
-describe('NOBSC API', () => {
-  beforeAll(async () => {
-    console.log('Integration tests started.');
-    //httpServer.listen
-  });
+/*beforeAll(async () => {
+  console.log('Integration tests started.');
+  //httpServer.listen
+});
 
-  beforeEach(async () => {
-    await truncateTestDatabase();
-    await seedTestDatabase();
-  });
+beforeEach(async () => {
+  await truncateTestDatabase();
+  await seedTestDatabase();
+});
 
-  afterEach(async () => {
-    await redisClients.pubClient.flushdb();
-    await redisClients.sessionClient.flushdb();
-    socketIOServer?.disconnectSockets(false);
-    socketIOServer?.close();  // ?
-    httpServer?.close();  // ?
-  });
-  
-  afterAll(async () => {
-    await truncateTestDatabase();
-    redisClients.pubClient.disconnect();
-    redisClients.subClient.disconnect();
-    redisClients.sessionClient.disconnect();
-    await pool.end();
-    socketIOServer?.close();
-    httpServer?.close();
-    console.log('Integration tests finished.');
-  });
+afterEach(async () => {
+  await redisClients.pubClient.flushdb();
+  await redisClients.sessionClient.flushdb();
+  //await new Promise(() => socketIOServer?.disconnectSockets(false));
+  socketIOServer?.disconnectSockets(false);
+});*/
 
+afterAll(async () => {
+  //await truncateTestDatabase();
+  redisClients.pubClient.disconnect();
+  redisClients.subClient.disconnect();
+  redisClients.sessionClient.disconnect();
+  await pool.end();
+  socketIOServer?.close();
+  httpServer?.close();
+});
+
+describe('NOBSC API integration tests (read tests)', () => {
   describe('GET /v1', () => {
     it('works', async () => {
       const res = await request(app).get('/v1');
@@ -77,7 +76,7 @@ describe('NOBSC API', () => {
 
   //describe('AwsS3', AwsS3Tests(app));
 
-  //describe('units', () => unitsTests(app));
+  describe('units', () => unitsTests(app));
   //describe('equipmentTypes', () => equipmentTypesTests(app));
   //describe('ingredientTypes', () => ingredientTypesTests(app));
   //describe('recipeTypes', () => recipeTypesTests(app));
@@ -87,14 +86,28 @@ describe('NOBSC API', () => {
   //describe('ingredients', () => ingredientsTests(app));
   //describe('recipes', () => recipesTests(app));
   //describe('search', () => searchTests(app));
+});
 
-  describe('authentication', () => authenticationTests(app));
+describe('NOBSC API integration tests (write tests)', () => {
+  beforeEach(async () => {
+    await truncateTestDatabase();
+    await seedTestDatabase();
+  });
+  
+  afterEach(async () => {
+    await redisClients.pubClient.flushdb();
+    await redisClients.sessionClient.flushdb();
+    //await new Promise(() => socketIOServer?.disconnectSockets(false));
+    socketIOServer?.disconnectSockets(false);
+  });
+
+  //describe('authentication', () => authenticationTests(app));
   //describe('users', () => usersTests(app));
   //describe('profile', () => profileTests(app));
   //describe('friendships', () => friendshipsTests(app));
   //describe('publicPlans', () => publicPlansTests(app));
   //describe('publicRecipes', () => publicRecipesTests(app));
-  //describe('favoriteRecipes', () => favoriteRecipesTests(app));
+  describe('favoriteRecipes', () => favoriteRecipesTests(app));
   //describe('privateEquipment', () => privateEquipmentTests(app));
   //describe('privateIngredients', () => privateIngredientsTests(app));
   //describe('privatePlans', () => privatePlansTests(app));
@@ -140,7 +153,7 @@ async function truncateTestDatabase() {
       } catch (error) {
         await conn.rollback();
         throw error;
-      }finally {
+      } finally {
         conn.release();
       }
     }

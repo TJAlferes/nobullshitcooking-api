@@ -13,13 +13,13 @@ export async function seedTestDatabase() {
   const conn = await pool.getConnection();
   await conn.beginTransaction();
   try {
-    console.log(`seedTestDatabase begin`);
+    //console.log(`seedTestDatabase begin`);
     await seedUser(conn);
     await seedEquipment(conn);
     await seedIngredient(conn);
     await seedRecipe(conn);
     await seedPlan(conn);
-    console.log(`seedTestDatabase success`);
+    //console.log(`seedTestDatabase success`);
     await conn.commit();
   } catch (err) {
     console.error('seedTestDatabase fail:', err);

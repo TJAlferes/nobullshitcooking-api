@@ -1,3 +1,4 @@
+//import bodyParser from 'body-parser';
 import compression from 'compression';
 import RedisStore from 'connect-redis'
 import cors from 'cors';
@@ -84,8 +85,12 @@ const sessionMiddleware = expressSession({
 });
 
 app.use(pinoHttp());  // logger
+
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+//app.use(bodyParser.json());
+//app.use(bodyParser.urlencoded({extended: true}));
+
 app.use(sessionMiddleware);
 app.use(cors({
   credentials: true,

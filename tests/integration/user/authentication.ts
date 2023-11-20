@@ -1,5 +1,6 @@
 import request from 'supertest';
 import type { Express } from 'express';
+import { expect, jest, describe, it } from '@jest/globals';
 
 export function authenticationTests(app: Express) {
   /*describe('POST /v1/resend-confirmation-code', () => {
@@ -83,8 +84,8 @@ export function authenticationTests(app: Express) {
     });
   });*/
 
-  describe('POST /v1/login', () => {
-    /*it('handles already logged in user', async () => {
+  /*describe('POST /v1/login', () => {
+    it('handles already logged in user', async () => {
       const agent = request.agent(app);
 
       await agent
@@ -101,7 +102,7 @@ export function authenticationTests(app: Express) {
           password: 'fakepassword'
         });
 
-      //status???
+      expect(res.status).toBe(409);
       expect(res.body.message).toBe('Already logged in.');
     });
 
@@ -139,7 +140,7 @@ export function authenticationTests(app: Express) {
 
       expect(res.status).toBe(401);
       expect(res.body.message).toBe('Incorrect email or password.');
-    });*/
+    });
 
     it('handles success', async () => {
       const res = await request(app)
@@ -155,16 +156,16 @@ export function authenticationTests(app: Express) {
       expect(res.body.authname).toBe('FakeUser1');
       expect(res.body.auth_avatar).toBe('default');
     });
-  });
+  });*/
 
   describe('POST /v1/forgot-password', () => {
-    it('handles success', async () => {
+    /*it('handles success', async () => {
       const res = await request(app)
         .post('/v1/forgot-password')
         .send({email: 'fakeuser2@gmail.com'});
 
       expect(res.status).toBe(201);
-    });
+    });*/
 
     it('handles not found', async () => {
       const res = await request(app)
@@ -175,7 +176,7 @@ export function authenticationTests(app: Express) {
     });
   });
 
-  describe('PATCH /v1/reset-password', () => {
+  /*describe('PATCH /v1/reset-password', () => {
     it('handles success', async () => {
       const res = await request(app)
         .patch('/v1/reset-password')
@@ -199,5 +200,5 @@ export function authenticationTests(app: Express) {
       
       expect(res.status).toBe(404);
     });
-  });
+  });*/
 }

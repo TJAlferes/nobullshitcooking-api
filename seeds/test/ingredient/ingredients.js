@@ -6,7 +6,7 @@ export const test_ingredients = [
     "ingredient_variety": "Heirloom",
     "ingredient_name": "Tomato",
     "notes": "",
-    "image_id": "018b5ade-dc54-7db1-870g-00733ee1bedf"
+    "image_id": "018b5ade-dc54-7db1-871f-00733ee1bedf"
   },
   {
     "ingredient_id": "018b5ade-dc56-7dc1-92de-3ff30123668c",
@@ -15,6 +15,6 @@ export const test_ingredients = [
     "ingredient_variety": "Heirloom",
     "ingredient_name": "Hot Pepper",
     "notes": "",
-    "image_id": "018b5ade-dc55-7db2-870h-00733ee1bedg"
+    "image_id": "018b5ade-dc55-7db2-872f-00733ee1beef"
   },
 ];
