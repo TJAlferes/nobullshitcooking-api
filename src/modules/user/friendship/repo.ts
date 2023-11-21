@@ -24,13 +24,13 @@ import { MySQLRepo } from '../../shared/MySQL';
 
 
 export class FriendshipRepo extends MySQLRepo implements FriendshipRepoInterface {
-  async getStatus(params: GetStatusParams): Promise<string | undefined> {
+  async getStatus({ user_id, friend_id }: GetStatusParams): Promise<string | undefined> {
     const sql = `
       SELECT status
       FROM friendship
       WHERE user_id = ? AND friend_id = ?
     `;
-    const [ [ row ] ] = await this.pool.execute<StatusData[]>(sql, params);
+    const [ [ row ] ] = await this.pool.execute<StatusData[]>(sql, [user_id, friend_id]);
     return row ? row.status : undefined;
   }
 
@@ -68,6 +68,7 @@ export class FriendshipRepo extends MySQLRepo implements FriendshipRepoInterface
       friend_id,
       status
     ]);
+    console.log('AFFECTED ROWS AFTER INSERT: ', result.affectedRows);
     if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
@@ -87,12 +88,20 @@ export class FriendshipRepo extends MySQLRepo implements FriendshipRepoInterface
   }
 
   async delete({ user_id, friend_id }: DeleteParams) {
+    const debugSql = 'SELECT * FROM friendship WHERE user_id = ? AND friend_id = ?';
+    const [ debug ] = await this.pool.execute<(InsertParams & RowDataPacket)[]>(debugSql, [user_id, friend_id]);
+    console.log('DEBUG: ', debug);
     const sql = `
       DELETE FROM friendship
       WHERE user_id = ? AND friend_id = ?
       LIMIT 1
     `;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [user_id, friend_id]);
+    console.log('AFFECTED ROWS: ', result.affectedRows);  // why still 0???
+    console.log('FIELD COUNT: ', result.fieldCount);
+    //console.log('INFO: ', result.info);
+    //console.log('SERVER STATUS: ', result.serverStatus);
+    //console.log('WARNING STATUS: ', result.warningStatus);
     if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }

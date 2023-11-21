@@ -84,7 +84,7 @@ const sessionMiddleware = expressSession({
   unset: 'destroy'
 });
 
-app.use(pinoHttp());  // logger
+//app.use(pinoHttp());  // logger
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));

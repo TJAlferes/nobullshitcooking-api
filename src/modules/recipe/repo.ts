@@ -645,7 +645,7 @@ const existingRecipeToEditViewSQL = `
         'equipment_id',      re.equipment_id
       ))
       FROM recipe_equipment re
-      INNER JOIN e.equipment_id = re.equipment_id
+      INNER JOIN equipment e ON e.equipment_id = re.equipment_id
       WHERE re.recipe_id = r.recipe_id
     ) equipment,
     (
@@ -656,7 +656,7 @@ const existingRecipeToEditViewSQL = `
         'ingredient_id',      rin.ingredient_id
       ))
       FROM recipe_ingredient rin
-      INNER JOIN in.ingredient_id = rin.ingredient_id
+      INNER JOIN ingredient in ON in.ingredient_id = rin.ingredient_id
       WHERE rin.recipe_id = r.recipe_id
     ) ingredients,
     (

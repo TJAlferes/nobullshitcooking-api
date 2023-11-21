@@ -80,7 +80,8 @@ export const friendshipController = {
     if (status !== 'pending-received') throw new ForbiddenException();
 
     await friendshipRepo.update({user_id, friend_id, status: 'accepted'});
-    await friendshipRepo.update({friend_id, user_id, status: 'accepted'});
+    //await friendshipRepo.update({friend_id, user_id, status: 'accepted'});
+    await friendshipRepo.update({user_id: friend_id, friend_id: user_id, status: 'accepted'});
 
     return res.status(204);
   },
@@ -100,7 +101,8 @@ export const friendshipController = {
     if (status !== 'pending-received') throw new ForbiddenException();
 
     await friendshipRepo.delete({user_id, friend_id});
-    await friendshipRepo.delete({friend_id, user_id});
+    //await friendshipRepo.delete({friend_id, user_id});
+    await friendshipRepo.delete({user_id: friend_id, friend_id: user_id});
 
     return res.status(204);
   },
@@ -120,7 +122,8 @@ export const friendshipController = {
     if (status !== 'accepted') throw new ForbiddenException();
 
     await friendshipRepo.delete({user_id, friend_id});
-    await friendshipRepo.delete({friend_id, user_id});
+    //await friendshipRepo.delete({friend_id, user_id});
+    await friendshipRepo.delete({user_id: friend_id, friend_id: user_id});
 
     return res.status(204);
   },
@@ -137,6 +140,11 @@ export const friendshipController = {
 
     const friendshipRepo = new FriendshipRepo();
 
+    // TO DO: do NOT throw err
+    // deleteIfExists
+    //
+    //
+    //
     await friendshipRepo.delete({user_id, friend_id});
 
     // This check prevents user_id from illegally getting unblocked by friend_id.
@@ -144,8 +152,12 @@ export const friendshipController = {
     // otherwise delete the friendship.
     const status = await friendshipRepo.getStatus({user_id: friend_id, friend_id: user_id});
     if (status !== 'blocked') {
-      await friendshipRepo.delete({friend_id, user_id});
+      //await friendshipRepo.delete({friend_id, user_id});
+      await friendshipRepo.delete({user_id: friend_id, friend_id: user_id});
     }
+    //
+    //
+    //
 
     // to clarify what's going on here:
     // user_id    is blocking          friend_id

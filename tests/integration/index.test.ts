@@ -1,6 +1,5 @@
 import { createPool } from 'mysql2/promise';
 import request from 'supertest';
-import { expect, jest, describe, it } from '@jest/globals';
 
 import { seedTestDatabase } from '../../seeds/test';
 import { pool, testConfig } from '../../src/connections/mysql';
@@ -39,25 +38,8 @@ import {
 // Register and run all integration tests from this file.
 // Avoid global seeds and fixtures, add data per test (per it).
 
-/*beforeAll(async () => {
-  console.log('Integration tests started.');
-  //httpServer.listen
-});
-
-beforeEach(async () => {
-  await truncateTestDatabase();
-  await seedTestDatabase();
-});
-
-afterEach(async () => {
-  await redisClients.pubClient.flushdb();
-  await redisClients.sessionClient.flushdb();
-  //await new Promise(() => socketIOServer?.disconnectSockets(false));
-  socketIOServer?.disconnectSockets(false);
-});*/
-
 afterAll(async () => {
-  //await truncateTestDatabase();
+  await truncateTestDatabase();
   redisClients.pubClient.disconnect();
   redisClients.subClient.disconnect();
   redisClients.sessionClient.disconnect();
@@ -66,27 +48,24 @@ afterAll(async () => {
   httpServer?.close();
 });
 
-describe('NOBSC API integration tests (read tests)', () => {
+/*describe('NOBSC API integration tests (read tests)', () => {
   describe('GET /v1', () => {
     it('works', async () => {
       const res = await request(app).get('/v1');
       expect(res.text).toBe('No Bullshit Cooking API\nDocumentation at https://github.com/tjalferes/nobullshitcooking-api');
     });
   });
-
-  //describe('AwsS3', AwsS3Tests(app));
-
   describe('units', () => unitsTests(app));
-  //describe('equipmentTypes', () => equipmentTypesTests(app));
-  //describe('ingredientTypes', () => ingredientTypesTests(app));
-  //describe('recipeTypes', () => recipeTypesTests(app));
-  //describe('methods', () => methodsTests(app));
-  //describe('cuisines', () => cuisinesTests(app));
-  //describe('equipment', () => equipmentTests(app));
-  //describe('ingredients', () => ingredientsTests(app));
-  //describe('recipes', () => recipesTests(app));
-  //describe('search', () => searchTests(app));
-});
+  describe('equipmentTypes', () => equipmentTypesTests(app));
+  describe('ingredientTypes', () => ingredientTypesTests(app));
+  describe('recipeTypes', () => recipeTypesTests(app));
+  describe('methods', () => methodsTests(app));
+  describe('cuisines', () => cuisinesTests(app));
+  describe('equipment', () => equipmentTests(app));
+  describe('ingredients', () => ingredientsTests(app));
+  describe('recipes', () => recipesTests(app));
+  describe('search', () => searchTests(app));
+});*/
 
 describe('NOBSC API integration tests (write tests)', () => {
   beforeEach(async () => {
@@ -97,22 +76,22 @@ describe('NOBSC API integration tests (write tests)', () => {
   afterEach(async () => {
     await redisClients.pubClient.flushdb();
     await redisClients.sessionClient.flushdb();
-    //await new Promise(() => socketIOServer?.disconnectSockets(false));
     socketIOServer?.disconnectSockets(false);
   });
 
   //describe('authentication', () => authenticationTests(app));
   //describe('users', () => usersTests(app));
   //describe('profile', () => profileTests(app));
-  //describe('friendships', () => friendshipsTests(app));
+  describe('friendships', () => friendshipsTests(app));
   //describe('publicPlans', () => publicPlansTests(app));
   //describe('publicRecipes', () => publicRecipesTests(app));
-  describe('favoriteRecipes', () => favoriteRecipesTests(app));
+  //describe('favoriteRecipes', () => favoriteRecipesTests(app));
   //describe('privateEquipment', () => privateEquipmentTests(app));
   //describe('privateIngredients', () => privateIngredientsTests(app));
   //describe('privatePlans', () => privatePlansTests(app));
   //describe('privateRecipes', () => privateRecipesTests(app));
   //describe('savedRecipe', () => savedRecipesTests(app));
+  //describe('AwsS3', AwsS3Tests(app));
 });
 
 const tableNames = [
@@ -141,7 +120,7 @@ async function truncateTestDatabase() {
   // To that end, we use a separate pool here (instead of src/connections/mysql.ts).
   const pool = createPool(testConfig);
   try {
-    console.log('Truncate test MySQL DB tables begin.');
+    //console.log('Truncate test MySQL DB tables begin.');
     for (const tableName of tableNames.reverse()) {
       const conn = await pool.getConnection();
       await conn.beginTransaction();
@@ -157,7 +136,7 @@ async function truncateTestDatabase() {
         conn.release();
       }
     }
-    console.log('Truncate test MySQL DB tables success.');
+    //console.log('Truncate test MySQL DB tables success.');
   } catch (error) {
     console.error('Truncate test MySQL DB tables error:', error);
   } finally {

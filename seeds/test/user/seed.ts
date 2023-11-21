@@ -1,4 +1,4 @@
-import type { PoolConnection } from 'mysql2/promise';
+import type { PoolConnection, ResultSetHeader } from 'mysql2/promise';
 
 import { format } from '../../common/format';
 import { production_images as images } from '../../production/user/images.js';
@@ -22,7 +22,8 @@ export async function seedUser(conn: PoolConnection) {
       confirmation_code
     ) VALUES ${placeholders1}
   `;
-  await conn.execute(sql1, format(users));
+  const [ res1 ] = await conn.execute<ResultSetHeader>(sql1, format(users));
+  if (res1.affectedRows < 1) throw new Error('Seed failure.');
 
   const placeholders2 = '(?, ?, ?, ?, ?),'.repeat(images.length).slice(0, -1);
   const sql2 = `
