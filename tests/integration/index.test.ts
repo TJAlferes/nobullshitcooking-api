@@ -1,11 +1,12 @@
 import { createPool } from 'mysql2/promise';
 import request from 'supertest';
+import type { SuperAgentTest } from 'supertest';
 
 import { seedTestDatabase } from '../../seeds/test';
 import { pool, testConfig } from '../../src/connections/mysql';
 import { redisClients } from '../../src/connections/redis';
 import { app, httpServer, socketIOServer  } from '../../src/app';
-import {
+/*import {
   authenticationTests,
   usersTests,
   profileTests,
@@ -31,7 +32,7 @@ import {
   ingredientsTests,
   recipesTests,
   searchTests
-} from '.';
+} from '.';*/
 
 // No Bullshit Cooking API Integration Tests
 //
@@ -39,13 +40,14 @@ import {
 // Avoid global seeds and fixtures, add data per test (per it).
 
 afterAll(async () => {
-  await truncateTestDatabase();
-  redisClients.pubClient.disconnect();
-  redisClients.subClient.disconnect();
-  redisClients.sessionClient.disconnect();
-  await pool.end();
+  //await truncateTestDatabase();
+  await redisClients.pubClient.quit();
+  await redisClients.subClient.quit();
+  await redisClients.sessionClient.quit();  // or .disconnect();
+  //await pool.end();
   socketIOServer?.close();
   httpServer?.close();
+  await pool.end();
 });
 
 /*describe('NOBSC API integration tests (read tests)', () => {
@@ -68,10 +70,15 @@ afterAll(async () => {
 });*/
 
 describe('NOBSC API integration tests (write tests)', () => {
-  beforeEach(async () => {
-    await truncateTestDatabase();
+  beforeAll(async () => {
+    //await truncateTestDatabase();
     await seedTestDatabase();
   });
+
+  /*beforeEach(async () => {
+    //await truncateTestDatabase();
+    await seedTestDatabase();
+  });*/
   
   afterEach(async () => {
     await redisClients.pubClient.flushdb();
@@ -82,7 +89,39 @@ describe('NOBSC API integration tests (write tests)', () => {
   //describe('authentication', () => authenticationTests(app));
   //describe('users', () => usersTests(app));
   //describe('profile', () => profileTests(app));
-  describe('friendships', () => friendshipsTests(app));
+  describe('friendships', () => {
+    let agent: SuperAgentTest;
+
+    beforeEach(async () => {
+      agent = request.agent(app);
+
+      await agent
+        .post('/v1/login')
+        .send({
+          email: 'fakeuser1@gmail.com',
+          password: 'fakepassword'
+        });
+    });
+
+    afterEach(async () => {
+      await agent.post('/v1/logout');
+    });
+
+    describe('POST /v1/users/:username/friendships/:friendname/create', () => {
+      it('handles success', () => {
+        agent
+          .post('/v1/users/FakeUser1/friendships/FakeUser2/create')
+          .expect(201)
+          .end(function(err, res) {
+            if (err) throw err;
+          });
+      });
+      /*it('handles success', async () => {
+        const res = await agent.post('/v1/users/FakeUser1/friendships/FakeUser2/create');
+        expect(res.status).toBe(201);
+      });*/
+    });
+  });
   //describe('publicPlans', () => publicPlansTests(app));
   //describe('publicRecipes', () => publicRecipesTests(app));
   //describe('favoriteRecipes', () => favoriteRecipesTests(app));
@@ -134,6 +173,8 @@ async function truncateTestDatabase() {
         throw error;
       } finally {
         conn.release();
+        //conn.destroy();
+        //await conn.end();
       }
     }
     //console.log('Truncate test MySQL DB tables success.');

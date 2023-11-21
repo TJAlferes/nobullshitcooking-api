@@ -15,10 +15,10 @@ export async function seedTestDatabase() {
   try {
     //console.log(`seedTestDatabase begin`);
     await seedUser(conn);
-    await seedEquipment(conn);
-    await seedIngredient(conn);
-    await seedRecipe(conn);
-    await seedPlan(conn);
+    //await seedEquipment(conn);
+    //await seedIngredient(conn);
+    //await seedRecipe(conn);
+    //await seedPlan(conn);
     //console.log(`seedTestDatabase success`);
     await conn.commit();
   } catch (err) {
