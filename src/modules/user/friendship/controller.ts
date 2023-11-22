@@ -17,8 +17,8 @@ export const friendshipController = {
 
   async create(req: Request, res: Response) {
     const { friendname } = req.params;
-
-    const userRepo = new UserRepo();
+    return res.status(201).json({friendname});
+    /*const userRepo = new UserRepo();
     const friend = await userRepo.getByUsername(friendname);
     if (!friend) throw new NotFoundException();
 
@@ -62,7 +62,7 @@ export const friendshipController = {
     }
     if (currentStatus === 'blocked') {
       throw new ForbiddenException('User blocked. First unblock.');
-    }
+    }*/
   },
 
   async accept(req: Request, res: Response) {

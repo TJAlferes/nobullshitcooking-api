@@ -5,13 +5,13 @@ const jestConfig: JestConfigWithTsJest = {
   coverageDirectory: 'coverage',
   globalSetup: './global-setup.cjs',
   //globalTeardown: '<rootDir>/tests/integration/teardown.ts',
-  moduleFileExtensions: ['ts', 'js'],
-  preset: 'ts-jest/presets/js-with-ts-esm',
+  moduleFileExtensions: ['ts', 'js', 'cjs'],
+  preset: 'ts-jest/presets/js-with-ts',  //'ts-jest/presets/js-with-ts-esm',
   //setupFilesAfterEnv: ['./tests/integration/setup-files-after-env.ts'],
   testEnvironment: 'node',
   testPathIgnorePatterns: ['<rootDir>/node_modules/'],
   testRegex: '/*.test.ts$',
-  extensionsToTreatAsEsm: ['.ts'],
+  //extensionsToTreatAsEsm: ['.ts'],
   verbose: true,
 };
 

@@ -4,7 +4,6 @@
   "description": "API for No Bullshit Cooking",
   "version": "1.0.0",
   "license": "ISC",
-  "type": "module",
   "main": "src/index.js",
   "scripts": {
     "node-inspect": "node --inspect=0.0.0.0:9229 src/index.ts",

@@ -9,7 +9,7 @@ import helmet from 'helmet';
 import hpp from 'hpp';
 import { createServer } from 'node:http';
 import type { Redis } from 'ioredis';
-import { pinoHttp } from 'pino-http';  // logger
+//import { pinoHttp } from 'pino-http';  // logger
 import process from 'node:process';
 
 import { redisClients } from './connections/redis';

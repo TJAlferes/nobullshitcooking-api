@@ -5,7 +5,8 @@ import type { SuperAgentTest } from 'supertest';
 import { seedTestDatabase } from '../../seeds/test';
 import { testConfig, pool } from '../../src/connections/mysql';
 import { redisClients } from '../../src/connections/redis';
-import { app, httpServer, socketIOServer  } from '../../src/app';
+import { app, httpServer, socketIOServer } from '../../src/app';
+
 /*import {
   authenticationTests,
   usersTests,
@@ -40,7 +41,7 @@ import {
 // Avoid global seeds and fixtures, add data per test (per it).
 
 //jest.setTimeout(15000);
-jest.useFakeTimers();
+//jest.useFakeTimers();
 
 beforeAll(async () => {
   //await truncateTestDatabase();
@@ -52,26 +53,37 @@ beforeAll(async () => {
   await seedTestDatabase();
 });*/
 
-/*describe('NOBSC API integration tests (read tests)', () => {
+async function add(a: number, b: number) {
+  const timeoutId = setTimeout(() => {}, 200);
+  clearTimeout(timeoutId);
+  return a + b;
+}
+
+describe('NOBSC API integration tests (read tests)', () => {
+  it('does something', async () => {
+    const res = await add(1, 1);
+    console.log('res: ', res);
+    expect(res).toEqual(2);
+  });
   describe('GET /v1', () => {
     it('works', async () => {
       const res = await request(app).get('/v1');
       expect(res.text).toBe('No Bullshit Cooking API\nDocumentation at https://github.com/tjalferes/nobullshitcooking-api');
     });
   });
-  describe('units', () => unitsTests(app));
-  describe('equipmentTypes', () => equipmentTypesTests(app));
-  describe('ingredientTypes', () => ingredientTypesTests(app));
-  describe('recipeTypes', () => recipeTypesTests(app));
-  describe('methods', () => methodsTests(app));
-  describe('cuisines', () => cuisinesTests(app));
-  describe('equipment', () => equipmentTests(app));
-  describe('ingredients', () => ingredientsTests(app));
-  describe('recipes', () => recipesTests(app));
-  describe('search', () => searchTests(app));
-});*/
+  //describe('units', () => unitsTests(app));
+  //describe('equipmentTypes', () => equipmentTypesTests(app));
+  //describe('ingredientTypes', () => ingredientTypesTests(app));
+  //describe('recipeTypes', () => recipeTypesTests(app));
+  //describe('methods', () => methodsTests(app));
+  //describe('cuisines', () => cuisinesTests(app));
+  //describe('equipment', () => equipmentTests(app));
+  //describe('ingredients', () => ingredientsTests(app));
+  //describe('recipes', () => recipesTests(app));
+  //describe('search', () => searchTests(app));
+});
 
-describe('NOBSC API integration tests (write tests)', () => {
+/*describe('NOBSC API integration tests (write tests)', () => {
   //describe('authentication', () => authenticationTests(app));
   //describe('users', () => usersTests(app));
   //describe('profile', () => profileTests(app));
@@ -90,25 +102,26 @@ describe('NOBSC API integration tests (write tests)', () => {
     });
 
     describe('POST /v1/users/:username/friendships/:friendname/create', () => {
-      /*it('handles success', () => {
-        agent
-          .post('/v1/users/FakeUser1/friendships/FakeUser2/create')
-          .expect(201)
-          .end(function(err, res) {
-            if (err) throw err;
-          });
-      });*/
-      /*it('handles success', async () => {
-        return agent
-          .post('/v1/users/FakeUser1/friendships/FakeUser2/create')
-          .expect(201)
-          .then(res => {
-            expect(res.status).toBe(201);
-          });
-      });*/
+      //it('handles success', () => {
+      //  agent
+      //    .post('/v1/users/FakeUser1/friendships/FakeUser2/create')
+      //    .expect(201)
+      //    .end(function(err, res) {
+      //      if (err) throw err;
+      //    });
+      //});
+      //it('handles success', async () => {
+      //  return agent
+      //    .post('/v1/users/FakeUser1/friendships/FakeUser2/create')
+      //    .expect(201)
+      //    .then(res => {
+      //      expect(res.status).toBe(201);
+      //    });
+      //});
       it('handles success', async () => {
         const res = await agent.post('/v1/users/FakeUser1/friendships/FakeUser2/create');
         expect(res.status).toBe(201);
+        expect(res.body.friendname).toBe('FakeUser2');
       });
     });
 
@@ -125,27 +138,38 @@ describe('NOBSC API integration tests (write tests)', () => {
   //describe('privateRecipes', () => privateRecipesTests(app));
   //describe('savedRecipe', () => savedRecipesTests(app));
   //describe('AwsS3', AwsS3Tests(app));
-});
+});*/
 
 afterEach(async () => {
-  await redisClients.pubClient.flushdb();
-  await redisClients.sessionClient.flushdb();  // ?
-  //socketIOServer?.disconnectSockets(false);
+  await redisClients.pubClient.flushall();
+  await redisClients.sessionClient.flushall();  // flushdb() ?
+  socketIOServer?.disconnectSockets(false);
+  //await redisClients.pubClient.quit(err => err && console.log(err));
+  //await redisClients.subClient.quit(err => err && console.log(err));
+  //await redisClients.sessionClient.quit(err => err && console.log(err));  // or .disconnect();
 });
 
 afterAll(async () => {
+  redisClients.pubClient.disconnect();
+  redisClients.subClient.disconnect();
+  redisClients.sessionClient.disconnect();
+  await pool.end();
+});
+
+/*afterAll(async () => {
   //await truncateTestDatabase();
   await redisClients.pubClient.quit(err => err && console.log(err));
   await redisClients.subClient.quit(err => err && console.log(err));
   await redisClients.sessionClient.quit(err => err && console.log(err));  // or .disconnect();
   //await pool.end();
-  /*setTimeout(async () => {
-    await pool.end();
-  }, 100);*/
-  //socketIOServer?.close(err => console.log(err));
-  //httpServer?.close(err => console.log(err));
+  pool.destroy();
+  //setTimeout(async () => {
+  //  await pool.end();
+  //}, 100);
+  socketIOServer?.close(err => console.log(err));
+  httpServer?.close(err => console.log(err));
   //jest.clearAllTimers();
-});
+});*/
 
 const tableNames = [
   'user',
@@ -168,7 +192,7 @@ const tableNames = [
   'plan_recipe',
 ];
 
-async function truncateTestDatabase() {
+/*async function truncateTestDatabase() {
   // Ensure this touches ONLY test DBs, NEVER prod DBs!!!
   // To that end, we use a separate pool here (instead of src/connections/mysql.ts).
   const pool = createPool(testConfig);
@@ -197,7 +221,7 @@ async function truncateTestDatabase() {
   } finally {
     await pool.end();
   }
-}
+}*/
 
 /*const tableNames = [
   'user',
