@@ -17,8 +17,8 @@ export const friendshipController = {
 
   async create(req: Request, res: Response) {
     const { friendname } = req.params;
-    return res.status(201).json({friendname});
-    /*const userRepo = new UserRepo();
+
+    const userRepo = new UserRepo();
     const friend = await userRepo.getByUsername(friendname);
     if (!friend) throw new NotFoundException();
 
@@ -62,7 +62,7 @@ export const friendshipController = {
     }
     if (currentStatus === 'blocked') {
       throw new ForbiddenException('User blocked. First unblock.');
-    }*/
+    }
   },
 
   async accept(req: Request, res: Response) {
@@ -136,11 +136,7 @@ export const friendshipController = {
     const friend_id = friend.user_id;
 
     const friendshipRepo = new FriendshipRepo();
-
-    // TO DO: do NOT throw err
-    // deleteIfExists
     await friendshipRepo.delete({user_id, friend_id});
-
     // This check prevents user_id from illegally getting unblocked by friend_id.
     // If friend_id has already blocked user_id, leave it be, don't delete that
     // otherwise delete the friendship.

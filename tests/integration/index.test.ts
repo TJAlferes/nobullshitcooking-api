@@ -7,7 +7,7 @@ import { testConfig, pool } from '../../src/connections/mysql';
 import { redisClients } from '../../src/connections/redis';
 import { app, httpServer, socketIOServer } from '../../src/app';
 
-/*import {
+import {
   authenticationTests,
   usersTests,
   profileTests,
@@ -20,7 +20,7 @@ import { app, httpServer, socketIOServer } from '../../src/app';
   privatePlansTests,
   privateRecipesTests,
   savedRecipesTests
-} from './user';*/
+} from './user';
 import {
   //AwsS3Tests,
   unitsTests,
@@ -48,11 +48,6 @@ beforeAll(async () => {
   await seedTestDatabase();
 });
 
-/*beforeEach(async () => {
-  //await truncateTestDatabase();
-  await seedTestDatabase();
-});*/
-
 async function add(a: number, b: number) {
   const timeoutId = setTimeout(() => {}, 200);
   clearTimeout(timeoutId);
@@ -79,56 +74,19 @@ describe('NOBSC API integration tests (read tests)', () => {
   //describe('cuisines', () => cuisinesTests(app));
   //describe('equipment', () => equipmentTests(app));
   //describe('ingredients', () => ingredientsTests(app));
-  describe('recipes', () => recipesTests(app));
+  //describe('recipes', () => recipesTests(app));
   //describe('search', () => searchTests(app));
 });
 
-/*describe('NOBSC API integration tests (write tests)', () => {
+describe('NOBSC API integration tests (write tests)', () => {
+  beforeEach(async () => {
+    await truncateTestDatabase();
+    await seedTestDatabase();
+  });
   //describe('authentication', () => authenticationTests(app));
   //describe('users', () => usersTests(app));
   //describe('profile', () => profileTests(app));
-  describe('friendships', () => {
-    let agent: SuperAgentTest;
-
-    beforeEach(async () => {
-      agent = request.agent(app);
-
-      await agent
-        .post('/v1/login')
-        .send({
-          email: 'fakeuser1@gmail.com',
-          password: 'fakepassword'
-        });
-    });
-
-    describe('POST /v1/users/:username/friendships/:friendname/create', () => {
-      //it('handles success', () => {
-      //  agent
-      //    .post('/v1/users/FakeUser1/friendships/FakeUser2/create')
-      //    .expect(201)
-      //    .end(function(err, res) {
-      //      if (err) throw err;
-      //    });
-      //});
-      //it('handles success', async () => {
-      //  return agent
-      //    .post('/v1/users/FakeUser1/friendships/FakeUser2/create')
-      //    .expect(201)
-      //    .then(res => {
-      //      expect(res.status).toBe(201);
-      //    });
-      //});
-      it('handles success', async () => {
-        const res = await agent.post('/v1/users/FakeUser1/friendships/FakeUser2/create');
-        expect(res.status).toBe(201);
-        expect(res.body.friendname).toBe('FakeUser2');
-      });
-    });
-
-    afterEach(async () => {
-      await agent.post('/v1/logout');
-    });
-  });
+  describe('friendships', () => friendshipsTests(app));
   //describe('publicPlans', () => publicPlansTests(app));
   //describe('publicRecipes', () => publicRecipesTests(app));
   //describe('favoriteRecipes', () => favoriteRecipesTests(app));
@@ -138,7 +96,7 @@ describe('NOBSC API integration tests (read tests)', () => {
   //describe('privateRecipes', () => privateRecipesTests(app));
   //describe('savedRecipe', () => savedRecipesTests(app));
   //describe('AwsS3', AwsS3Tests(app));
-});*/
+});
 
 afterEach(async () => {
   await redisClients.pubClient.flushall();
@@ -189,7 +147,7 @@ const tableNames = [
   'plan_recipe',
 ];
 
-/*async function truncateTestDatabase() {
+async function truncateTestDatabase() {
   // Ensure this touches ONLY test DBs, NEVER prod DBs!!!
   // To that end, we use a separate pool here (instead of src/connections/mysql.ts).
   const pool = createPool(testConfig);
@@ -218,7 +176,7 @@ const tableNames = [
   } finally {
     await pool.end();
   }
-}*/
+}
 
 /*const tableNames = [
   'user',

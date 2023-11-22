@@ -88,21 +88,17 @@ export class FriendshipRepo extends MySQLRepo implements FriendshipRepoInterface
   }
 
   async delete({ user_id, friend_id }: DeleteParams) {
-    const debugSql = 'SELECT * FROM friendship WHERE user_id = ? AND friend_id = ?';
-    const [ debug ] = await this.pool.execute<(InsertParams & RowDataPacket)[]>(debugSql, [user_id, friend_id]);
-    console.log('DEBUG: ', debug);
-    // TO DO: only execute code below if friendship exists
-    const sql = `
+    const sql1 = 'SELECT * FROM friendship WHERE user_id = ? AND friend_id = ?';
+    const [ [ exists ] ] = await this.pool.execute<(InsertParams & RowDataPacket)[]>(sql1, [user_id, friend_id]);
+    if (!exists) return;
+    // only execute code below if friendship exists
+    const sql2 = `
       DELETE FROM friendship
       WHERE user_id = ? AND friend_id = ?
       LIMIT 1
     `;
-    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [user_id, friend_id]);
-    console.log('AFFECTED ROWS: ', result.affectedRows);  // why still 0???
-    console.log('FIELD COUNT: ', result.fieldCount);
-    //console.log('INFO: ', result.info);
-    //console.log('SERVER STATUS: ', result.serverStatus);
-    //console.log('WARNING STATUS: ', result.warningStatus);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql2, [user_id, friend_id]);
+    console.log('AFFECTED ROWS: ', result.affectedRows);
     if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }

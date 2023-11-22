@@ -30,28 +30,21 @@ export function friendshipsTests(app: Express) {
   });
 
   describe('POST /v1/users/:username/friendships/:friendname/create', () => {
-    it('handles success', () => {
-      agent
-        .post('/v1/users/FakeUser1/friendships/FakeUser2/create')
-        .expect(201)
-        .end();
-    });
-    /*it('handles success', async () => {
+    it('handles success', async () => {
       const res = await agent.post('/v1/users/FakeUser1/friendships/FakeUser2/create');
       expect(res.status).toBe(201);
-    });*/
+    });
 
-    /*it('handles not found', async () => {
+    it('handles not found', async () => {
       const res = await agent.post('/v1/users/FakeUser1/friendships/NonExistingUser/create');
       expect(res.status).toBe(404);
     });
 
-    it('handles blocked by', async () => {
-      const debugRes = await agent2.post('/v1/users/FakeUser2/friendships/FakeUser1/block');
-      expect(debugRes.status).toBe(201);
-      //const res = await agent.post('/v1/users/FakeUser1/friendships/FakeUser2/create');
-      //expect(res.status).toBe(404);
-    });
+    /*it('handles blocked by', async () => {
+      await agent2.post('/v1/users/FakeUser2/friendships/FakeUser1/block');
+      const res = await agent.post('/v1/users/FakeUser1/friendships/FakeUser2/create');
+      expect(res.status).toBe(404);
+    });*/
 
     it('handles already pending sent', async () => {
       await agent.post('/v1/users/FakeUser1/friendships/FakeUser2/create');
@@ -60,19 +53,19 @@ export function friendshipsTests(app: Express) {
     });
 
     it('handles already pending received', async () => {
-      await agent.post('/v1/users/FakeUser2/friendships/FakeUser1/create');
+      await agent2.post('/v1/users/FakeUser2/friendships/FakeUser1/create');
       const res = await agent.post('/v1/users/FakeUser1/friendships/FakeUser2/create');
       expect(res.status).toBe(403);
     });
 
-    it('handles already friends', async () => {
-      await agent.post('/v1/users/FakeUser2/friendships/FakeUser1/create');
+    /*it('handles already friends', async () => {
+      await agent2.post('/v1/users/FakeUser2/friendships/FakeUser1/create');
       await agent.patch('/v1/users/FakeUser1/friendships/FakeUser2/accept');
       const res = await agent.post('/v1/users/FakeUser1/friendships/FakeUser2/create');
       expect(res.status).toBe(403);
-    });
+    });*/
 
-    it('handles blocked', async () => {
+    /*it('handles blocked', async () => {
       await agent.post('/v1/users/FakeUser1/friendships/FakeUser2/block');
       const res = await agent.post('/v1/users/FakeUser1/friendships/FakeUser2/create');
       expect(res.status).toBe(403);
