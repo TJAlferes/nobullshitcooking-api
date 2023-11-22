@@ -3,7 +3,7 @@ import request from 'supertest';
 import type { SuperAgentTest } from 'supertest';
 
 import { seedTestDatabase } from '../../seeds/test';
-import { pool, testConfig } from '../../src/connections/mysql';
+import { testConfig, pool } from '../../src/connections/mysql';
 import { redisClients } from '../../src/connections/redis';
 import { app, httpServer, socketIOServer  } from '../../src/app';
 /*import {
@@ -39,16 +39,18 @@ import {
 // Register and run all integration tests from this file.
 // Avoid global seeds and fixtures, add data per test (per it).
 
-afterAll(async () => {
+//jest.setTimeout(15000);
+jest.useFakeTimers();
+
+beforeAll(async () => {
   //await truncateTestDatabase();
-  await redisClients.pubClient.quit();
-  await redisClients.subClient.quit();
-  await redisClients.sessionClient.quit();  // or .disconnect();
-  //await pool.end();
-  socketIOServer?.close();
-  httpServer?.close();
-  await pool.end();
+  await seedTestDatabase();
 });
+
+/*beforeEach(async () => {
+  //await truncateTestDatabase();
+  await seedTestDatabase();
+});*/
 
 /*describe('NOBSC API integration tests (read tests)', () => {
   describe('GET /v1', () => {
@@ -70,22 +72,6 @@ afterAll(async () => {
 });*/
 
 describe('NOBSC API integration tests (write tests)', () => {
-  beforeAll(async () => {
-    //await truncateTestDatabase();
-    await seedTestDatabase();
-  });
-
-  /*beforeEach(async () => {
-    //await truncateTestDatabase();
-    await seedTestDatabase();
-  });*/
-  
-  afterEach(async () => {
-    await redisClients.pubClient.flushdb();
-    await redisClients.sessionClient.flushdb();
-    socketIOServer?.disconnectSockets(false);
-  });
-
   //describe('authentication', () => authenticationTests(app));
   //describe('users', () => usersTests(app));
   //describe('profile', () => profileTests(app));
@@ -103,23 +89,31 @@ describe('NOBSC API integration tests (write tests)', () => {
         });
     });
 
-    afterEach(async () => {
-      await agent.post('/v1/logout');
-    });
-
     describe('POST /v1/users/:username/friendships/:friendname/create', () => {
-      it('handles success', () => {
+      /*it('handles success', () => {
         agent
           .post('/v1/users/FakeUser1/friendships/FakeUser2/create')
           .expect(201)
           .end(function(err, res) {
             if (err) throw err;
           });
-      });
+      });*/
       /*it('handles success', async () => {
+        return agent
+          .post('/v1/users/FakeUser1/friendships/FakeUser2/create')
+          .expect(201)
+          .then(res => {
+            expect(res.status).toBe(201);
+          });
+      });*/
+      it('handles success', async () => {
         const res = await agent.post('/v1/users/FakeUser1/friendships/FakeUser2/create');
         expect(res.status).toBe(201);
-      });*/
+      });
+    });
+
+    afterEach(async () => {
+      await agent.post('/v1/logout');
     });
   });
   //describe('publicPlans', () => publicPlansTests(app));
@@ -131,6 +125,26 @@ describe('NOBSC API integration tests (write tests)', () => {
   //describe('privateRecipes', () => privateRecipesTests(app));
   //describe('savedRecipe', () => savedRecipesTests(app));
   //describe('AwsS3', AwsS3Tests(app));
+});
+
+afterEach(async () => {
+  await redisClients.pubClient.flushdb();
+  await redisClients.sessionClient.flushdb();  // ?
+  //socketIOServer?.disconnectSockets(false);
+});
+
+afterAll(async () => {
+  //await truncateTestDatabase();
+  await redisClients.pubClient.quit(err => err && console.log(err));
+  await redisClients.subClient.quit(err => err && console.log(err));
+  await redisClients.sessionClient.quit(err => err && console.log(err));  // or .disconnect();
+  //await pool.end();
+  /*setTimeout(async () => {
+    await pool.end();
+  }, 100);*/
+  //socketIOServer?.close(err => console.log(err));
+  //httpServer?.close(err => console.log(err));
+  //jest.clearAllTimers();
 });
 
 const tableNames = [

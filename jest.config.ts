@@ -1,19 +1,18 @@
-import type { Config } from 'jest';
+import type { JestConfigWithTsJest } from 'ts-jest'
 
-const config: Config = {
+const jestConfig: JestConfigWithTsJest = {
   collectCoverage: true,
   coverageDirectory: 'coverage',
   globalSetup: './global-setup.cjs',
+  //globalTeardown: '<rootDir>/tests/integration/teardown.ts',
   moduleFileExtensions: ['ts', 'js'],
-  preset: 'ts-jest/presets/js-with-ts-esm', //'ts-jest',
+  preset: 'ts-jest/presets/js-with-ts-esm',
+  //setupFilesAfterEnv: ['./tests/integration/setup-files-after-env.ts'],
   testEnvironment: 'node',
   testPathIgnorePatterns: ['<rootDir>/node_modules/'],
   testRegex: '/*.test.ts$',
-  /*transform: {
-    '^.+\\.ts?$': 'ts-jest',
-  },*/
   extensionsToTreatAsEsm: ['.ts'],
   verbose: true,
 };
 
-export default config;
+export default jestConfig;

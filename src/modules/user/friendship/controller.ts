@@ -50,7 +50,7 @@ export const friendshipController = {
       await friendshipRepo.insert(friendship1);
       await friendshipRepo.insert(friendship2);
 
-      return res.status(201);
+      return res.status(201).json({});
     }
     if ( currentStatus === 'pending-sent'
       || currentStatus === 'pending-received'

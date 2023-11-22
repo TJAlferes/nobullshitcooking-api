@@ -126,8 +126,9 @@ app.use('/v1', apiV1Router());
 
 export const socketIOServer = createSocketIOServer(httpServer, sessionMiddleware);
 
-process.on('unhandledRejection', (reason) => {
-  console.log('Unhandled Rejection at: ', reason);
+process.on('unhandledRejection', (reason, promise) => {
+  console.log('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Application specific logging, throwing an error, or other logic here
 });
 
 if (process.env.NODE_ENV === 'production') {

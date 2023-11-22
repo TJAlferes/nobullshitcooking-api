@@ -59,7 +59,6 @@ export class FriendshipRepo extends MySQLRepo implements FriendshipRepoInterface
   }
 
   async insert({ user_id, friend_id, status }: InsertParams) {
-    //try {
     const sql = `
       INSERT INTO friendship (user_id, friend_id, status)
       VALUES (?, ?, ?)
@@ -71,10 +70,6 @@ export class FriendshipRepo extends MySQLRepo implements FriendshipRepoInterface
     ]);
     //console.log('AFFECTED ROWS AFTER INSERT: ', result.affectedRows);
     if (result.affectedRows < 1) throw new Error('Query not successful.');
-    //} catch (error) {
-    //  console.error('Error during insert:', error);
-    //  throw error;
-    //}
   }
 
   async update({ user_id, friend_id, status }: UpdateParams) {

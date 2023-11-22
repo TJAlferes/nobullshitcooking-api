@@ -13,6 +13,7 @@
     "dev": "nodemon --watch src -e ts --exec 'ts-node' src/index.ts",
     "unit-test": "jest src/ --colors --detectOpenHandles",
     "integration-test": "jest tests/integration/index.test.ts --verbose --colors --detectOpenHandles --logHeapUsage --runInBand --watchAll=false",
+    "integration-test-b": "ts-node tests/integration/index-b.test.ts",
     "interactive-test": "docker exec -it nobsc-test bash && cd /app",
     "start": "node build/bundle.js",
     "build": "tsc"

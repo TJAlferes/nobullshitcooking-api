@@ -1,13 +1,13 @@
 import { createPool } from 'mysql2/promise';
 
 import { testConfig } from '../../src/connections/mysql';
-import { seedEquipment } from './equipment/seed';
-import { seedIngredient } from './ingredient/seed';
-import { seedPlan } from './plan/seed';
-import { seedRecipe } from './recipe/seed';
+//import { seedEquipment } from './equipment/seed';
+//import { seedIngredient } from './ingredient/seed';
+//import { seedPlan } from './plan/seed';
+//import { seedRecipe } from './recipe/seed';
 import { seedUser } from './user/seed';
 
-// Runs between each integration test
+// Runs before each integration test
 export async function seedTestDatabase() {
   const pool = createPool(testConfig);
   const conn = await pool.getConnection();

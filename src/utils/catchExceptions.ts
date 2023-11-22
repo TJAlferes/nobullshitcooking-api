@@ -5,9 +5,18 @@ export const catchExceptions = (fn: Function) =>
     Promise
       .resolve(fn(req, res, next))
       .catch(err => {
-        //console.log(err);
+        console.log(err);
         next(err);
       });
 
 // TO DO: instead of manually wrapping this around every route handler (controller),
 //        see if we can set just once (maybe as middleware?)
+
+export const tryCatch = (fn: Function) =>
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await fn(req, res);
+    } catch (error) {
+      return next(error);
+    }
+  };

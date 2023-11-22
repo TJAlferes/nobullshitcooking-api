@@ -3,9 +3,9 @@ import type { PoolConnection, ResultSetHeader } from 'mysql2/promise';
 import { format } from '../../common/format';
 //import { production_images as images } from '../../production/user/images.js';
 //import { production_user_images } from '../../production/user/user-images.js';
-import { production_users } from '../../production/user/users.js';
+import { production_users } from '../../production/user/users';
 //import { test_user_images } from './user-images.js';
-import { test_users } from './users.js';
+import { test_users } from './users';
 //import { test_password_resets } from './password-resets.js';
 
 const users = [...production_users, ...test_users];
