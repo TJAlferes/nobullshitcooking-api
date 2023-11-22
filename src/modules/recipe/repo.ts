@@ -552,16 +552,16 @@ const recipeDetailViewSQL = `
         'unit_name',           un.unit_name,
         'ingredient_fullname', TRIM(CONCAT_WS(
                                  ' ',
-                                 in.ingredient_brand,
-                                 in.ingredient_variety,
-                                 in.ingredient_name,
+                                 i.ingredient_brand,
+                                 i.ingredient_variety,
+                                 i.ingredient_name,
                                  IFNULL(n.alt_name, '')
                                ))
       ))
-      FROM ingredient in
-      INNER JOIN recipe_ingredient rin ON rin.ingredient_id = in.ingredient_id
-      LEFT JOIN unit un               ON rin.unit_id = un.unit_id
-      LEFT JOIN ingredient_alt_name n ON in.ingredient_id = n.ingredient_id
+      FROM ingredient i
+      INNER JOIN recipe_ingredient rin ON rin.ingredient_id = i.ingredient_id
+      LEFT JOIN unit un                ON rin.unit_id = un.unit_id
+      LEFT JOIN ingredient_alt_name n  ON i.ingredient_id = n.ingredient_id
       WHERE rin.recipe_id = r.recipe_id
     ) required_ingredients,
     (

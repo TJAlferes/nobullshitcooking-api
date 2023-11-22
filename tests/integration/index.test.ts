@@ -20,7 +20,7 @@ import { app, httpServer, socketIOServer } from '../../src/app';
   privatePlansTests,
   privateRecipesTests,
   savedRecipesTests
-} from './user';
+} from './user';*/
 import {
   //AwsS3Tests,
   unitsTests,
@@ -33,7 +33,7 @@ import {
   ingredientsTests,
   recipesTests,
   searchTests
-} from '.';*/
+} from '.';
 
 // No Bullshit Cooking API Integration Tests
 //
@@ -79,7 +79,7 @@ describe('NOBSC API integration tests (read tests)', () => {
   //describe('cuisines', () => cuisinesTests(app));
   //describe('equipment', () => equipmentTests(app));
   //describe('ingredients', () => ingredientsTests(app));
-  //describe('recipes', () => recipesTests(app));
+  describe('recipes', () => recipesTests(app));
   //describe('search', () => searchTests(app));
 });
 
@@ -144,9 +144,6 @@ afterEach(async () => {
   await redisClients.pubClient.flushall();
   await redisClients.sessionClient.flushall();  // flushdb() ?
   socketIOServer?.disconnectSockets(false);
-  //await redisClients.pubClient.quit(err => err && console.log(err));
-  //await redisClients.subClient.quit(err => err && console.log(err));
-  //await redisClients.sessionClient.quit(err => err && console.log(err));  // or .disconnect();
 });
 
 afterAll(async () => {

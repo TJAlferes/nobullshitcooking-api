@@ -1,15 +1,15 @@
 import type { PoolConnection, ResultSetHeader } from 'mysql2/promise';
 
 import { format } from '../../common/format';
-//import { production_images as images } from '../../production/user/images.js';
-//import { production_user_images } from '../../production/user/user-images.js';
+import { production_images as images } from '../../production/user/images.js';
+import { production_user_images } from '../../production/user/user-images.js';
 import { production_users } from '../../production/user/users';
-//import { test_user_images } from './user-images.js';
+import { test_user_images } from './user-images.js';
 import { test_users } from './users';
-//import { test_password_resets } from './password-resets.js';
+import { test_password_resets } from './password-resets.js';
 
 const users = [...production_users, ...test_users];
-//const user_images = [...production_user_images, ...test_user_images];
+const user_images = [...production_user_images, ...test_user_images];
 
 export async function seedUser(conn: PoolConnection) {
   const placeholders1 = '(?, ?, ?, ?, ?),'.repeat(users.length).slice(0, -1);
@@ -25,7 +25,7 @@ export async function seedUser(conn: PoolConnection) {
   const [ res1 ] = await conn.execute<ResultSetHeader>(sql1, format(users));
   if (res1.affectedRows < 1) throw new Error('Seed failure.');
 
-  /*const placeholders2 = '(?, ?, ?, ?, ?),'.repeat(images.length).slice(0, -1);
+  const placeholders2 = '(?, ?, ?, ?, ?),'.repeat(images.length).slice(0, -1);
   const sql2 = `
     INSERT INTO image (
       image_id,
@@ -55,5 +55,5 @@ export async function seedUser(conn: PoolConnection) {
       temporary_password
     ) VALUES ${placeholders4}
   `;
-  await conn.execute(sql4, format(test_password_resets));*/
+  await conn.execute(sql4, format(test_password_resets));
 }
