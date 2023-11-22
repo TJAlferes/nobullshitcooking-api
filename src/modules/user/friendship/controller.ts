@@ -27,6 +27,7 @@ export const friendshipController = {
 
     const friendshipRepo = new FriendshipRepo();
     const status = await friendshipRepo.getStatus({user_id: friend_id, friend_id: user_id});
+    console.log('blocked: ', status);
     if (status === 'blocked') throw new NotFoundException();
 
     const currentStatus = await friendshipRepo.getStatus({user_id, friend_id});
@@ -50,7 +51,7 @@ export const friendshipController = {
       await friendshipRepo.insert(friendship1);
       await friendshipRepo.insert(friendship2);
 
-      return res.status(201).json({});
+      return res.status(201).json();
     }
     if ( currentStatus === 'pending-sent'
       || currentStatus === 'pending-received'
@@ -82,7 +83,7 @@ export const friendshipController = {
     await friendshipRepo.update({user_id, friend_id, status: 'accepted'});
     await friendshipRepo.update({user_id: friend_id, friend_id: user_id, status: 'accepted'});
 
-    return res.status(204);
+    return res.status(204).json();
   },
 
   async reject(req: Request, res: Response) {
@@ -102,7 +103,7 @@ export const friendshipController = {
     await friendshipRepo.delete({user_id, friend_id});
     await friendshipRepo.delete({user_id: friend_id, friend_id: user_id});
 
-    return res.status(204);
+    return res.status(204).json();
   },
 
   async delete(req: Request, res: Response) {
@@ -122,7 +123,7 @@ export const friendshipController = {
     await friendshipRepo.delete({user_id, friend_id});
     await friendshipRepo.delete({user_id: friend_id, friend_id: user_id});
 
-    return res.status(204);
+    return res.status(204).json();
   },
 
   async block(req: Request, res: Response) {
@@ -150,7 +151,7 @@ export const friendshipController = {
     // friend_id  is being blocked by  user_id
     await friendshipRepo.insert({user_id, friend_id, status: 'blocked'});
 
-    return res.status(204);
+    return res.status(201).json();
   },
 
   async unblock(req: Request, res: Response) {
@@ -169,6 +170,6 @@ export const friendshipController = {
 
     await friendshipRepo.delete({user_id, friend_id});
 
-    return res.status(204);
+    return res.status(204).json();
   }
 };

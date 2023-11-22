@@ -40,11 +40,11 @@ export function friendshipsTests(app: Express) {
       expect(res.status).toBe(404);
     });
 
-    /*it('handles blocked by', async () => {
+    it('handles blocked by', async () => {
       await agent2.post('/v1/users/FakeUser2/friendships/FakeUser1/block');
       const res = await agent.post('/v1/users/FakeUser1/friendships/FakeUser2/create');
       expect(res.status).toBe(404);
-    });*/
+    });
 
     it('handles already pending sent', async () => {
       await agent.post('/v1/users/FakeUser1/friendships/FakeUser2/create');
@@ -58,23 +58,23 @@ export function friendshipsTests(app: Express) {
       expect(res.status).toBe(403);
     });
 
-    /*it('handles already friends', async () => {
+    it('handles already friends', async () => {
       await agent2.post('/v1/users/FakeUser2/friendships/FakeUser1/create');
       await agent.patch('/v1/users/FakeUser1/friendships/FakeUser2/accept');
       const res = await agent.post('/v1/users/FakeUser1/friendships/FakeUser2/create');
       expect(res.status).toBe(403);
-    });*/
+    });
 
-    /*it('handles blocked', async () => {
+    it('handles blocked', async () => {
       await agent.post('/v1/users/FakeUser1/friendships/FakeUser2/block');
       const res = await agent.post('/v1/users/FakeUser1/friendships/FakeUser2/create');
       expect(res.status).toBe(403);
-    });*/
+    });
   });
 
-  /*describe('PATCH /v1/users/:username/friendships/:friendname/accept', () => {
+  describe('PATCH /v1/users/:username/friendships/:friendname/accept', () => {
     it('handles success', async () => {
-      await agent.post('/v1/users/FakeUser2/friendships/FakeUser1/create');
+      await agent2.post('/v1/users/FakeUser2/friendships/FakeUser1/create');
       const res = await agent.patch('/v1/users/FakeUser1/friendships/FakeUser2/accept');
       expect(res.status).toBe(204);
     });
@@ -85,7 +85,7 @@ export function friendshipsTests(app: Express) {
     });
 
     it('handles forbidden', async () => {
-      await agent.post('/v1/users/FakeUser2/friendships/FakeUser1/block');
+      await agent2.post('/v1/users/FakeUser2/friendships/FakeUser1/block');
       const res = await agent.patch('/v1/users/FakeUser1/friendships/FakeUser2/accept');
       expect(res.status).toBe(403);
     });
@@ -93,7 +93,7 @@ export function friendshipsTests(app: Express) {
 
   describe('DELETE /v1/users/:username/friendships/:friendname/reject', () => {
     it('handles success', async () => {
-      await agent.post('/v1/users/FakeUser2/friendships/FakeUser1/create');
+      await agent2.post('/v1/users/FakeUser2/friendships/FakeUser1/create');
       const res = await agent.delete('/v1/users/FakeUser1/friendships/FakeUser2/reject');
       expect(res.status).toBe(204);
     });
@@ -104,7 +104,7 @@ export function friendshipsTests(app: Express) {
     });
 
     it('handles forbidden', async () => {
-      await agent.post('/v1/users/FakeUser2/friendships/FakeUser1/block');
+      await agent2.post('/v1/users/FakeUser2/friendships/FakeUser1/block');
       const res = await agent.delete('/v1/users/FakeUser1/friendships/FakeUser2/reject');
       expect(res.status).toBe(403);
     });
@@ -112,8 +112,8 @@ export function friendshipsTests(app: Express) {
 
   describe('DELETE /v1/users/:username/friendships/:friendname/delete', () => {
     it('handles success', async () => {
-      await agent.post('/v1/users/FakeUser2/friendships/FakeUser1/create');
-      await agent.post('/v1/users/FakeUser1/friendships/FakeUser2/accept');
+      await agent2.post('/v1/users/FakeUser2/friendships/FakeUser1/create');
+      await agent.patch('/v1/users/FakeUser1/friendships/FakeUser2/accept');
       const res = await agent.delete('/v1/users/FakeUser1/friendships/FakeUser2/delete');
       expect(res.status).toBe(204);
     });
@@ -124,7 +124,7 @@ export function friendshipsTests(app: Express) {
     });
 
     it('handles forbidden', async () => {
-      await agent.post('/v1/users/FakeUser2/friendships/FakeUser1/block');
+      await agent2.post('/v1/users/FakeUser2/friendships/FakeUser1/block');
       const res = await agent.delete('/v1/users/FakeUser1/friendships/FakeUser2/delete');
       expect(res.status).toBe(403);
     });
@@ -159,5 +159,5 @@ export function friendshipsTests(app: Express) {
       const res = await agent.delete('/v1/users/FakeUser1/friendships/FakeUser2/unblock');
       expect(res.status).toBe(403);
     });
-  });*/
+  });
 }
