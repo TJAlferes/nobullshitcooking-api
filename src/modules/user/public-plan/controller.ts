@@ -51,7 +51,7 @@ export const publicPlanController = {
     const planRecipeService = new PlanRecipeService(new PlanRecipeRepo());
     await planRecipeService.bulkCreate({plan_id: plan.plan_id, included_recipes});
 
-    return res.status(201);
+    return res.status(201).json();
   },
 
   async update(req: Request, res: Response) {
@@ -75,7 +75,7 @@ export const publicPlanController = {
     const planRecipeService = new PlanRecipeService(new PlanRecipeRepo());
     await planRecipeService.bulkUpdate({plan_id: updated_plan.plan_id, included_recipes});
 
-    return res.status(204);
+    return res.status(204).json();
   },
 
   async unattributeOne(req: Request, res: Response) {
@@ -85,6 +85,6 @@ export const publicPlanController = {
     const planRepo = new PlanRepo();
     await planRepo.unattributeOne({author_id, plan_id});
 
-    return res.status(204);
+    return res.status(204).json();
   }
 };

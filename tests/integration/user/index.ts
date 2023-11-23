@@ -156,7 +156,7 @@ export function usersTests(app: Express) {
   });
 
   describe('DELETE /v1/users/FakeUser1', () => {
-    it.only('handles success', async () => {
+    it('handles success', async () => {
       const agent = request.agent(app);
 
       await agent

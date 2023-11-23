@@ -38,7 +38,7 @@ export const userSavedRecipeController = {
     const savedRecipeRepo = new SavedRecipeRepo();
     await savedRecipeRepo.insert(savedRecipe);
 
-    return res.status(201);
+    return res.status(201).json();
   },
 
   async delete(req: Request, res: Response) {
@@ -50,6 +50,6 @@ export const userSavedRecipeController = {
     const repo = new SavedRecipeRepo();
     await repo.delete(savedRecipe);
 
-    return res.status(204);
+    return res.status(204).json();
   }
 };

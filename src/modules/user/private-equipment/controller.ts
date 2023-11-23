@@ -60,7 +60,7 @@ export const privateEquipmentController = {
     const equipmentRepo = new EquipmentRepo();
     await equipmentRepo.insert(equipment);
     
-    return res.status(201);
+    return res.status(201).json();
   },
 
   async update(req: Request, res: Response) {
@@ -105,7 +105,7 @@ export const privateEquipmentController = {
     }).getDTO();
     await equipmentRepo.update(updated_equipment);
 
-    return res.status(204);
+    return res.status(204).json();
   },
 
   async deleteOne(req: Request, res: Response) {
@@ -143,6 +143,6 @@ export const privateEquipmentController = {
 
     await equipmentRepo.deleteOne({equipment_id, owner_id});
 
-    return res.status(204);
+    return res.status(204).json();
   }
 };

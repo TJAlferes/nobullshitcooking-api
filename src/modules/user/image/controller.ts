@@ -45,7 +45,7 @@ export const userImageController = {
     const userImageRepo = new UserImageRepo();
     await userImageRepo.insert(userImage);
   
-    return res.status(204);
+    return res.status(204).json();
   },
 
   async setCurrent(req: Request, res: Response) {
@@ -55,7 +55,7 @@ export const userImageController = {
     const userImageRepo = new UserImageRepo();
     await userImageRepo.setCurrent({user_id, image_id});
   
-    return res.status(204);
+    return res.status(204).json();
   },
 
   async delete(req: Request, res: Response) {
@@ -65,6 +65,6 @@ export const userImageController = {
     const imageRepo = new ImageRepo();
     await imageRepo.deleteOne({owner_id, image_id});
   
-    return res.status(204);
+    return res.status(204).json();
   }
 };

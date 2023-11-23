@@ -119,7 +119,7 @@ export const privateRecipeController = {
       ]
     });
 
-    return res.status(201);
+    return res.status(201).json();
   },
 
   async update(req: Request, res: Response) {
@@ -192,7 +192,7 @@ export const privateRecipeController = {
       ]
     });
 
-    return res.status(204);
+    return res.status(204).json();
   },
 
   async deleteOne(req: Request, res: Response) {
@@ -276,6 +276,6 @@ export const privateRecipeController = {
 
     await recipeRepo.deleteOne({owner_id, recipe_id});
 
-    return res.status(204);
+    return res.status(204).json();
   }
 };

@@ -73,7 +73,7 @@ export const privateIngredientController = {
       await create({ingredient_id: ingredient.ingredient_id, alt_names});
     }
 
-    return res.status(201);
+    return res.status(201).json();
   },
 
   async update(req: Request, res: Response) {
@@ -127,7 +127,7 @@ export const privateIngredientController = {
     const { update } = new IngredientAltNameService(ingredientAltNameRepo);
     await update({ingredient_id, alt_names});
 
-    return res.status(204);
+    return res.status(204).json();
   },
 
   async deleteOne(req: Request, res: Response) {
@@ -165,6 +165,6 @@ export const privateIngredientController = {
 
     await ingredientRepo.deleteOne({ingredient_id, owner_id});
     
-    return res.status(204);
+    return res.status(204).json();
   }
 };

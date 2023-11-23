@@ -142,7 +142,7 @@ export const publicRecipeController = {
       ]
     });
 
-    return res.status(201);
+    return res.status(201).json();
   },
 
   async update(req: Request, res: Response) {
@@ -229,7 +229,7 @@ export const publicRecipeController = {
       ]
     });
 
-    return res.status(204);
+    return res.status(204).json();
   },
 
   async unattributeOne(req: Request, res: Response) {
@@ -374,6 +374,6 @@ export const publicRecipeController = {
 
     await recipeRepo.unattributeOne({author_id, recipe_id});
 
-    return res.status(204);
+    return res.status(204).json();
   }
 };

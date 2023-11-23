@@ -35,7 +35,7 @@ export const userFavoriteRecipeController = {
     const favoriteRecipeRepo = new FavoriteRecipeRepo();
     await favoriteRecipeRepo.insert(favoriteRecipe);
 
-    return res.status(201);
+    return res.status(201).json();
   },
 
   async delete(req: Request, res: Response) {
@@ -47,6 +47,6 @@ export const userFavoriteRecipeController = {
     const repo = new FavoriteRecipeRepo();
     await repo.delete(favoriteRecipe);
 
-    return res.status(204);
+    return res.status(204).json();
   }
 };
