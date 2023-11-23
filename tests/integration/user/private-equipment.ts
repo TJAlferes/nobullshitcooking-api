@@ -1,6 +1,12 @@
+import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { mockClient } from 'aws-sdk-client-mock';
+import type { AwsClientStub } from 'aws-sdk-client-mock';
 import request from 'supertest';
 import type { SuperAgentTest } from 'supertest';
 import type { Express } from 'express';
+
+const AwsS3ClientMock: AwsClientStub<S3Client> = mockClient(S3Client);
+//AwsS3ClientMock.onAnyCommand().resolves();
 
 export function privateEquipmentTests(app: Express) {
   let agent: SuperAgentTest;

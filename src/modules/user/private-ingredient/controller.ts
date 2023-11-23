@@ -109,7 +109,7 @@ export const privateIngredientController = {
       author_id,
       owner_id
     }).getDTO();
-    await imageRepo.insert(updated_image);
+    await imageRepo.update(updated_image);
 
     const updated_ingredient = Ingredient.update({
       ingredient_id,

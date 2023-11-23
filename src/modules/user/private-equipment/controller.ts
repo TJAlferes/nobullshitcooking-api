@@ -41,6 +41,8 @@ export const privateEquipmentController = {
     const author_id         = req.session.user_id!;
     const owner_id          = req.session.user_id!;
 
+    // TO DO: if image_filename === 'default' then no need to create image record,
+    //        just reference the default equipment image_id (<-- TO DO)
     const image = Image.create({
       image_filename,
       caption,
@@ -93,7 +95,7 @@ export const privateEquipmentController = {
       author_id,
       owner_id
     }).getDTO();
-    await imageRepo.insert(updated_image);
+    await imageRepo.update(updated_image);
 
     const updated_equipment = Equipment.update({
       equipment_id,
@@ -117,9 +119,13 @@ export const privateEquipmentController = {
     if (!equipment) throw new NotFoundException();
     if (equipment.owner_id !== owner_id) throw new ForbiddenException();
 
+    await equipmentRepo.deleteOne({equipment_id, owner_id});
+
+    // TO DO: if they're using the default image...
     const imageRepo = new ImageRepo();
     const image = await imageRepo.viewOne(equipment.image_id);
     if (!image) throw new NotFoundException();
+    // If they don't own the image, then don't delete the image from S3 and MySQL
     if (image.owner_id !== owner_id) throw new ForbiddenException();
 
     await AwsS3PrivateUploadsClient.send(new DeleteObjectCommand({
@@ -128,7 +134,7 @@ export const privateEquipmentController = {
         nobsc-private-uploads/equipment
         /${owner_id}
         /${image.image_filename}-small
-      `
+      ` // or ${author_id} ???
     }));
     await AwsS3PrivateUploadsClient.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',
@@ -136,12 +142,12 @@ export const privateEquipmentController = {
         nobsc-private-uploads/equipment
         /${owner_id}
         /${image.image_filename}-tiny
-      `
+      ` // or ${author_id} ???
     }));
 
+    // TO DO: make sure they are authorized
+    // TO DO: if they're using the default image...
     await imageRepo.deleteOne({owner_id, image_id: image.image_id});
-
-    await equipmentRepo.deleteOne({equipment_id, owner_id});
 
     return res.status(204).json();
   }
