@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { ForbiddenException, NotFoundException } from '../../../utils/exceptions';
+import { ConflictException, ForbiddenException, NotFoundException } from '../../../utils/exceptions';
 import { NOBSC_USER_ID } from '../../shared/model';
 import { RecipeRepo } from '../../recipe/repo';
 import { FavoriteRecipe } from './model';
@@ -33,6 +33,9 @@ export const userFavoriteRecipeController = {
     const favoriteRecipe = FavoriteRecipe.create({user_id, recipe_id}).getDTO();
 
     const favoriteRecipeRepo = new FavoriteRecipeRepo();
+    const exists = await favoriteRecipeRepo.getOne(favoriteRecipe);
+    if (exists) throw new ConflictException();
+
     await favoriteRecipeRepo.insert(favoriteRecipe);
 
     return res.status(201).json();
@@ -45,6 +48,9 @@ export const userFavoriteRecipeController = {
     const favoriteRecipe = FavoriteRecipe.create({user_id, recipe_id}).getDTO();
 
     const repo = new FavoriteRecipeRepo();
+    const exists = await repo.getOne(favoriteRecipe);
+    if (!exists) throw new NotFoundException();
+
     await repo.delete(favoriteRecipe);
 
     return res.status(204).json();

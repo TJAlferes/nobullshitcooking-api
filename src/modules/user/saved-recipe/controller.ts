@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 
-import { ForbiddenException, NotFoundException} from '../../../utils/exceptions';
+import { ConflictException, ForbiddenException, NotFoundException} from '../../../utils/exceptions';
 import { NOBSC_USER_ID } from '../../shared/model';
 import { RecipeRepo } from '../../recipe/repo';
 import { SavedRecipe } from './model';
@@ -36,6 +36,9 @@ export const userSavedRecipeController = {
     const savedRecipe = SavedRecipe.create({user_id, recipe_id}).getDTO();
 
     const savedRecipeRepo = new SavedRecipeRepo();
+    const exists = await savedRecipeRepo.getOne(savedRecipe);
+    if (exists) throw new ConflictException();
+
     await savedRecipeRepo.insert(savedRecipe);
 
     return res.status(201).json();
@@ -48,6 +51,9 @@ export const userSavedRecipeController = {
     const savedRecipe = SavedRecipe.create({user_id, recipe_id}).getDTO();
     
     const repo = new SavedRecipeRepo();
+    const exists = await repo.getOne(savedRecipe);
+    if (!exists) throw new NotFoundException();
+
     await repo.delete(savedRecipe);
 
     return res.status(204).json();

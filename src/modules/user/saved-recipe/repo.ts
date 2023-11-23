@@ -25,8 +25,13 @@ export class SavedRecipeRepo extends MySQLRepo implements ISavedRecipeRepo {
     return rows;
   }
 
+  async getOne({ user_id, recipe_id }: GetOneParams) {
+    const sql = `SELECT * FROM saved_recipe WHERE user_id = ? AND recipe_id = ?`;
+    const [ [ row ] ] = await this.pool.execute<GetOneRow[]>(sql, [user_id, recipe_id]);
+    return row ? row : undefined;
+  }
+
   async insert(params: InsertParams) {
-    await this.delete(params);
     const sql = `
       INSERT INTO saved_recipe (user_id, recipe_id)
       VALUES (:user_id, :recipe_id)
@@ -60,6 +65,7 @@ export class SavedRecipeRepo extends MySQLRepo implements ISavedRecipeRepo {
 
 export interface ISavedRecipeRepo {
   viewByUserId:        (user_id: string) =>      Promise<SavedRecipeView[]>;
+  getOne:              (params: GetOneParams) => Promise<GetOneRow | undefined>;
   insert:              (params: InsertParams) => Promise<void>;
   delete:              (params: DeleteParams) => Promise<void>;
   deleteAllByRecipeId: (recipe_id: string) =>    Promise<void>;
@@ -76,12 +82,13 @@ type SavedRecipeView = RowDataPacket & {
   image_filename: string;
 };
 
-type InsertParams = {
+type GetOneRow = RowDataPacket & GetOneParams;
+
+type GetOneParams = {
   user_id:   string;
   recipe_id: string;
 };
 
-type DeleteParams = {
-  user_id:   string;
-  recipe_id: string;
-};
+type InsertParams = GetOneParams;
+
+type DeleteParams = GetOneParams;

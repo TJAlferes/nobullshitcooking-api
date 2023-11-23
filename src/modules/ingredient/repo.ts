@@ -163,7 +163,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
         notes,
         image_id
       ) VALUES (
-        :ingredient_id
+        :ingredient_id,
         :ingredient_type_id,
         :owner_id,
         :ingredient_brand,

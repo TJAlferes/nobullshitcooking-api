@@ -170,7 +170,7 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
       SET
         equipment_type_id = :equipment_type_id,
         equipment_name    = :equipment_name,
-        notes             = :notes
+        notes             = :notes,
         image_id          = :image_id
       WHERE owner_id = :owner_id AND equipment_id = :equipment_id
       LIMIT 1
