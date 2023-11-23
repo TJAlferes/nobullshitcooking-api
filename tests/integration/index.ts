@@ -1,4 +1,3 @@
-//export { AwsS3Tests } from './aws-s3';
 export { cuisinesTests } from './cuisines';
 export { equipmentTests } from './equipment';
 export { equipmentTypesTests } from './equipmentTypes';

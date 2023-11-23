@@ -2,7 +2,6 @@ import bcrypt from 'bcrypt';
 
 import {
   ConflictException,
-  ForbiddenException,
   NotFoundException,
   UnauthorizedException
 } from '../../../utils/exceptions';
@@ -22,10 +21,10 @@ export class UserAuthenticationService {
   async resendConfirmationCode({ email, password }: ResendConfirmationCodeParams) {
     const user = await this.doesUserExist(email);
 
+    await this.isCorrectPassword({email, password});
+
     const confirmed = await this.isUserConfirmed(email);
     if (confirmed) throw new ConflictException('Already confirmed.');
-
-    await this.isCorrectPassword({email, password});
   
     await this.sendConfirmationCode({
       email:             user.email,

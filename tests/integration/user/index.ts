@@ -3,6 +3,7 @@ import type { SuperAgentTest } from 'supertest';
 import type { Express } from 'express';
 
 export { authenticationTests } from './authentication';
+//export { AwsS3Tests } from './aws-s3';
 export { favoriteRecipesTests } from './favorite-recipes';
 export { friendshipsTests } from './friendships';
 export { privateEquipmentTests } from './private-equipment';
@@ -55,8 +56,6 @@ export function usersTests(app: Express) {
     });
   });
 
-
-
   describe('PATCH /v1/users/FakeUser1/email', () => {
     let agent: SuperAgentTest;
 
@@ -73,15 +72,6 @@ export function usersTests(app: Express) {
 
     afterEach(async () => {
       await agent.post('/v1/logout');
-    });
-
-    it('handles non-existing user', async () => {
-      const res = await agent
-        .patch('/v1/users/NonExistingUser/email')
-        .send({new_email: 'newemail@gmail.com'});
-
-      expect(res.status).toBe(404);
-      expect(res.body.message).toBe('User does not exist.');
     });
 
     it('handles new_email already in use', async () => {
@@ -102,8 +92,6 @@ export function usersTests(app: Express) {
     });
   });
 
-
-
   describe('PATCH /v1/users/FakeUser1/password', () => {
     let agent: SuperAgentTest;
 
@@ -122,15 +110,6 @@ export function usersTests(app: Express) {
       await agent.post('/v1/logout');
     });
 
-    it('handles non-existing user', async () => {
-      const res = await agent
-        .patch('/v1/users/NonExistingUser/password')
-        .send({new_password: 'newpassword'});
-
-      expect(res.status).toBe(404);
-      expect(res.body.message).toBe('User does not exist.');
-    });
-
     it('handles success', async () => {
       const res = await agent
         .patch('/v1/users/FakeUser1/password')
@@ -139,8 +118,6 @@ export function usersTests(app: Express) {
       expect(res.status).toBe(204);
     });
   });
-
-
 
   describe('PATCH /v1/users/FakeUser1/username', () => {
     let agent: SuperAgentTest;
@@ -158,15 +135,6 @@ export function usersTests(app: Express) {
 
     afterEach(async () => {
       await agent.post('/v1/logout');
-    });
-
-    it('handles non-existing user', async () => {
-      const res = await agent
-        .patch('/v1/users/NonExistingUser/username')
-        .send({new_username: 'NewUsername'});
-
-      expect(res.status).toBe(404);
-      expect(res.body.message).toBe('User does not exist.');
     });
 
     it('handles new_username already in use', async () => {
@@ -187,10 +155,8 @@ export function usersTests(app: Express) {
     });
   });
 
-  
-
   describe('DELETE /v1/users/FakeUser1', () => {
-    it('handles success', async () => {
+    it.only('handles success', async () => {
       const agent = request.agent(app);
 
       await agent

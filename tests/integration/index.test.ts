@@ -40,26 +40,11 @@ import {
 // Register and run all integration tests from this file.
 // Avoid global seeds and fixtures, add data per test (per it).
 
-//jest.setTimeout(15000);
-//jest.useFakeTimers();
-
 beforeAll(async () => {
-  //await truncateTestDatabase();
   await seedTestDatabase();
 });
 
-async function add(a: number, b: number) {
-  const timeoutId = setTimeout(() => {}, 200);
-  clearTimeout(timeoutId);
-  return a + b;
-}
-
 describe('NOBSC API integration tests (read tests)', () => {
-  it('does something', async () => {
-    const res = await add(1, 1);
-    console.log('res: ', res);
-    expect(res).toEqual(2);
-  });
   describe('GET /v1', () => {
     it('works', async () => {
       const res = await request(app).get('/v1');
@@ -83,10 +68,10 @@ describe('NOBSC API integration tests (write tests)', () => {
     await truncateTestDatabase();
     await seedTestDatabase();
   });
-  //describe('authentication', () => authenticationTests(app));
-  //describe('users', () => usersTests(app));
+  describe('authentication', () => authenticationTests(app));
+  describe('users', () => usersTests(app));
   //describe('profile', () => profileTests(app));
-  describe('friendships', () => friendshipsTests(app));
+  //describe('friendships', () => friendshipsTests(app));
   //describe('publicPlans', () => publicPlansTests(app));
   //describe('publicRecipes', () => publicRecipesTests(app));
   //describe('favoriteRecipes', () => favoriteRecipesTests(app));
@@ -100,7 +85,7 @@ describe('NOBSC API integration tests (write tests)', () => {
 
 afterEach(async () => {
   await redisClients.pubClient.flushall();
-  await redisClients.sessionClient.flushall();  // flushdb() ?
+  await redisClients.sessionClient.flushall();
   socketIOServer?.disconnectSockets(false);
 });
 
@@ -109,22 +94,9 @@ afterAll(async () => {
   redisClients.subClient.disconnect();
   redisClients.sessionClient.disconnect();
   await pool.end();
+  //socketIOServer?.close(err => console.log(err));
+  //httpServer?.close(err => console.log(err));
 });
-
-/*afterAll(async () => {
-  //await truncateTestDatabase();
-  await redisClients.pubClient.quit(err => err && console.log(err));
-  await redisClients.subClient.quit(err => err && console.log(err));
-  await redisClients.sessionClient.quit(err => err && console.log(err));  // or .disconnect();
-  //await pool.end();
-  pool.destroy();
-  //setTimeout(async () => {
-  //  await pool.end();
-  //}, 100);
-  socketIOServer?.close(err => console.log(err));
-  httpServer?.close(err => console.log(err));
-  //jest.clearAllTimers();
-});*/
 
 const tableNames = [
   'user',
@@ -132,6 +104,11 @@ const tableNames = [
   'image',
   'user_image',
   'friendship',
+  //'chatgroup',
+  //'chatroom',
+  //'chatmessage',
+  //'chatgroup_user',
+  //'chatroom_user',
   'equipment',
   'ingredient',
   'ingredient_alt_name',
@@ -149,7 +126,8 @@ const tableNames = [
 
 async function truncateTestDatabase() {
   // Ensure this touches ONLY test DBs, NEVER prod DBs!!!
-  // To that end, we use a separate pool here (instead of src/connections/mysql.ts).
+  // To that end, we use a separate pool here (instead of src/connections/mysql.ts)
+  // and directly pass in the testConfig.
   const pool = createPool(testConfig);
   try {
     //console.log('Truncate test MySQL DB tables begin.');
@@ -166,8 +144,6 @@ async function truncateTestDatabase() {
         throw error;
       } finally {
         conn.release();
-        //conn.destroy();
-        //await conn.end();
       }
     }
     //console.log('Truncate test MySQL DB tables success.');
@@ -177,51 +153,3 @@ async function truncateTestDatabase() {
     await pool.end();
   }
 }
-
-/*const tableNames = [
-  'user',
-  'password_reset',
-  'image',
-  'user_image',
-  'friendship',
-  //'chatgroup',
-  //'chatroom',
-  //'chatmessage',
-  //'chatgroup_user',
-  //'chatroom_user',
-  'equipment',
-  'ingredient',
-  //'ingredient_alt_name',
-  'recipe',
-  //'recipe_image',
-  //'recipe_equipment',
-  //'recipe_ingredient',
-  //'recipe_method',
-  //'recipe_subrecipe',
-  'favorite_recipe',
-  'saved_recipe',
-  'plan',
-  //'plan_recipe',
-];*/
-
-/*await redisClients.pubClient.quit((err, result) => {
-    if (err) {
-      console.error('pubClient.quit() errror: ', err);
-    } else {
-      console.log('pubClient.quit() success.', result);
-    }
-  });
-  await redisClients.subClient.quit((err, result) => {
-    if (err) {
-      console.error('subClient.quit() errror: ', err);
-    } else {
-      console.log('subClient.quit() success.', result);
-    }
-  });
-  await redisClients.sessionClient.quit((err, result) => {
-    if (err) {
-      console.error('sessionClient.quit() errror: ', err);
-    } else {
-      console.log('sessionClient.quit() success.', result);
-    }
-  });*/

@@ -110,25 +110,30 @@ export class UserService {
     // IMPORTANT: Never allow this user to be deleted.
     if (user_id === UNKNOWN_USER_ID) throw new ForbiddenException();
 
-    const imageRepo = new ImageRepo();
-    await imageRepo.unattributeAll(user_id);
-    await imageRepo.deleteAll(user_id);
-
-    const planRepo = new PlanRepo();
-    await planRepo.unattributeAll(user_id);
-    await planRepo.deleteAll(user_id);
+    //const planRepo = new PlanRepo();
+    //await planRepo.unattributeAll(user_id);  // currently ON DELETE CASCASE in MySQL
+    //await planRepo.deleteAll(user_id);  // currently ON DELETE CASCASE in MySQL
 
     const recipeRepo = new RecipeRepo();
     await recipeRepo.unattributeAll(user_id);
     await recipeRepo.deleteAll(user_id);
+    // TO DO: still delete their private images from AWS S3
 
     const equipmentRepo = new EquipmentRepo();
     await equipmentRepo.deleteAll(user_id);
+    // TO DO: still delete their private images from AWS S3
 
     const ingredientRepo = new IngredientRepo();
     await ingredientRepo.deleteAll(user_id);
+    // TO DO: still delete their private images from AWS S3
 
-    //delete their chatgroups???
+    // TO DO: how to delete their chatgroups  // currently ON DELETE CASCASE in MySQL
+    // and chatrooms and chatmessages and private messages ???
+    // TO DO: still delete their private images from AWS S3
+
+    const imageRepo = new ImageRepo();
+    await imageRepo.unattributeAll(user_id);
+    await imageRepo.deleteAll(user_id);
 
     await this.repo.delete(user_id);
   }

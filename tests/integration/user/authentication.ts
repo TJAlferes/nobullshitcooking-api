@@ -3,13 +3,25 @@ import type { Express } from 'express';
 import { expect, jest, describe, it } from '@jest/globals';
 
 export function authenticationTests(app: Express) {
-  /*describe('POST /v1/resend-confirmation-code', () => {
+  describe('POST /v1/resend-confirmation-code', () => {
     it('handles non-existing user', async () => {
       const res = await request(app)
         .post('/v1/resend-confirmation-code')
         .send({
           email: 'nonexistinguser@gmail.com',
           password: 'fakepassword'
+        });
+
+      expect(res.status).toBe(401);
+      expect(res.body.message).toBe('Incorrect email or password.');
+    });
+
+    it('handles incorrect password', async () => {
+      const res = await request(app)
+        .post('/v1/resend-confirmation-code')
+        .send({
+          email: 'fakeuser1@gmail.com',
+          password: 'incorrect'
         });
 
       expect(res.status).toBe(401);
@@ -28,23 +40,11 @@ export function authenticationTests(app: Express) {
       expect(res.body.message).toBe('Already confirmed.');
     });
 
-    it('handles incorrect password', async () => {
-      const res = await request(app)
-        .post('/v1/resend-confirmation-code')
-        .send({
-          email: 'fakeuser1@gmail.com',
-          password: 'incorrect'
-        });
-
-      expect(res.status).toBe(401);
-      expect(res.body.message).toBe('Incorrect email or password.');
-    });
-
     it('handles success', async () => {
       const agent = request.agent(app);
 
       await agent
-        .post('/v1/users')  // open handle
+        .post('/v1/users')
         .send({
           email: 'fakeuser@gmail.com',
           password: 'fakepassword',
@@ -59,12 +59,10 @@ export function authenticationTests(app: Express) {
         });
 
       expect(res.status).toBe(204);
-
-      //agent.del
     });
-  });*/
+  });
 
-  /*describe('POST /v1/confirm', () => {
+  describe('POST /v1/confirm', () => {
     it('handles incorrect confirmation_code', async () => {
       const res = await request(app)
         .post('/v1/confirm')
@@ -82,9 +80,9 @@ export function authenticationTests(app: Express) {
 
       expect(res.status).toBe(204);
     });
-  });*/
+  });
 
-  /*describe('POST /v1/login', () => {
+  describe('POST /v1/login', () => {
     it('handles already logged in user', async () => {
       const agent = request.agent(app);
 
@@ -156,16 +154,16 @@ export function authenticationTests(app: Express) {
       expect(res.body.authname).toBe('FakeUser1');
       expect(res.body.auth_avatar).toBe('default');
     });
-  });*/
+  });
 
   describe('POST /v1/forgot-password', () => {
-    /*it('handles success', async () => {
+    it('handles success', async () => {
       const res = await request(app)
         .post('/v1/forgot-password')
         .send({email: 'fakeuser2@gmail.com'});
 
       expect(res.status).toBe(201);
-    });*/
+    });
 
     it('handles not found', async () => {
       const res = await request(app)
@@ -176,7 +174,7 @@ export function authenticationTests(app: Express) {
     });
   });
 
-  /*describe('PATCH /v1/reset-password', () => {
+  describe('PATCH /v1/reset-password', () => {
     it('handles success', async () => {
       const res = await request(app)
         .patch('/v1/reset-password')
@@ -200,5 +198,5 @@ export function authenticationTests(app: Express) {
       
       expect(res.status).toBe(404);
     });
-  });*/
+  });
 }

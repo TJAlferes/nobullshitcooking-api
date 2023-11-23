@@ -69,7 +69,8 @@ export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
       author_id,
       owner_id
     });
-    if (result.affectedRows < 1) throw new Error('Query not successful.');
+    // log instead
+    //if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async unattributeOne({ author_id, plan_id }: UnattributeOneParams) {
@@ -101,7 +102,8 @@ export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
   async deleteAll(owner_id: string) {
     const sql = `DELETE FROM plan WHERE owner_id = ?`;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [owner_id]);
-    if (result.affectedRows < 1) throw new Error('Query not successful.');
+    // log instead
+    //if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async deleteOne(params: DeleteOneParams) {

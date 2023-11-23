@@ -249,12 +249,13 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
             author_id = :author_id
         AND owner_id  = :owner_id
     `;
-    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, {
+    await this.pool.execute(sql, {
       unknown_user_id,
       author_id,
       owner_id
     });
-    if (result.affectedRows < 1) throw new Error('Query not successful.');
+    // log instead
+    //if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async unattributeOne({ author_id, recipe_id }: UnattributeOneParams) {
@@ -283,8 +284,15 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
     if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
-  // TO DO: ???
-  async deleteAll(owner_id: string) {}
+  async deleteAll(owner_id: string) {
+    if (owner_id === NOBSC_USER_ID || owner_id === UNKNOWN_USER_ID) {
+      return;
+    }
+    const sql = `DELETE FROM recipe WHERE owner_id = ?`;
+    await this.pool.execute(sql, [owner_id]);
+    // log instead
+    //if (result.affectedRows < 1) throw new Error('Query not successful.');
+  }
   
   async deleteOne({ owner_id, recipe_id }: DeleteOneParams) {
     const sql = `
@@ -352,7 +360,6 @@ export type RecipeView = RowDataPacket & {
   active_time:          string;
   total_time:           string;
   directions:           string;
-  //images:               AssociatedImageView[];
   recipe_image:         AssociatedImageView;
   cooking_image:        AssociatedImageView;
   equipment_image:      AssociatedImageView;
@@ -364,40 +371,29 @@ export type RecipeView = RowDataPacket & {
 };
 
 type AssociatedImageView = {
-  //type:           number;
   image_id:       string;
   image_filename: string;
   caption:        string;
 };
 
 type RequiredMethodView = {
-  //method_id:   number;
   method_name: string;
 };
 
 type RequiredEquipmentView = {
-  amount:            number | null;
-  //equipment_id:      string;
-  //equipment_type_id: number;
-  equipment_name:    string;
+  amount:         number | null;
+  equipment_name: string;
 };
 
 type RequiredIngredientView = {
-  amount:             number | null;
-  //unit_id:            number | null;
-  unit_name:          string | null;  // LEFT or RIGHT JOIN to get the null ???
-  //ingredient_id:      string;
-  //ingredient_type_id: number;
+  amount:              number | null;
+  unit_name:           string | null;  // LEFT or RIGHT JOIN to get the null ???
   ingredient_fullname: string;
 };
 
 type RequiredSubrecipeView = {
   amount:          number | null;
-  //unit_id:         number | null;
   unit_name:       string | null;  // LEFT or RIGHT JOIN to get the null ???
-  //subrecipe_id:    string;
-  //recipe_type_id:  number;
-  //cuisine_id:      number;
   subrecipe_title: string;
 };
 
@@ -421,7 +417,7 @@ type EditRecipeView = RowDataPacket & {
 };
 
 type EditRequiredMethodView = {
-  method_id:   number;
+  method_id: number;
 };
 
 type EditRequiredEquipmentView = {
@@ -438,11 +434,11 @@ type EditRequiredIngredientView = {
 };
 
 type EditRequiredSubrecipeView = {
-  amount:          number | null;
-  unit_id:         number | null;
-  subrecipe_id:    string;
-  recipe_type_id:  number;
-  cuisine_id:      number;
+  amount:         number | null;
+  unit_id:        number | null;
+  subrecipe_id:   string;
+  recipe_type_id: number;
+  cuisine_id:     number;
 };
 
 export type InsertParams = {

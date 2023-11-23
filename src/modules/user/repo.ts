@@ -1,5 +1,6 @@
 import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
+import { NOBSC_USER_ID, UNKNOWN_USER_ID } from '../shared/model';
 import { MySQLRepo } from '../shared/MySQL';
 
 export class UserRepo extends MySQLRepo implements UserRepoInterface {
@@ -80,6 +81,13 @@ export class UserRepo extends MySQLRepo implements UserRepoInterface {
   }
 
   async delete(user_id: string) {
+    // These checks should only be in the service, but given the consequences,
+    // I'm putting them here too, just in case.
+    // IMPORTANT: Never allow this user to be deleted.
+    if (user_id === NOBSC_USER_ID) return;
+    // IMPORTANT: Never allow this user to be deleted.
+    if (user_id === UNKNOWN_USER_ID) return;
+
     const sql = `DELETE FROM user WHERE user_id = ? LIMIT 1`;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [user_id]);
     if (result.affectedRows < 1) throw new Error('Query not successful.');

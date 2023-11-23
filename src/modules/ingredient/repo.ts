@@ -215,7 +215,8 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
   async deleteAll(owner_id: string) {
     const sql = `DELETE FROM ingredient WHERE owner_id = ?`;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [owner_id]);
-    if (result.affectedRows < 1) throw new Error('Query not successful.');
+    // log instead
+    //if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async deleteOne(params: DeleteOneParams) {

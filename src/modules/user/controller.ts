@@ -9,7 +9,7 @@ export const userController = {
     const userService = new UserService(userRepo);
     await userService.create(req.body);
 
-    return res.status(201);
+    return res.status(201).json();
   },
   
   async updateEmail(req: Request, res: Response) {
@@ -20,7 +20,7 @@ export const userController = {
     const userService = new UserService(userRepo);
     await userService.updateEmail({user_id, new_email});
 
-    return res.status(204);
+    return res.status(204).json();
   },
 
   async updatePassword(req: Request, res: Response) {
@@ -31,7 +31,7 @@ export const userController = {
     const userService = new UserService(userRepo);
     await userService.updatePassword({user_id, new_password});
 
-    return res.status(204);
+    return res.status(204).json();
   },
 
   async updateUsername(req: Request, res: Response) {
@@ -42,7 +42,7 @@ export const userController = {
     const userService = new UserService(userRepo);
     await userService.updateUsername({user_id, new_username});
 
-    return res.status(204);
+    return res.status(204).json();
   },
 
   async delete(req: Request, res: Response) {
@@ -52,6 +52,6 @@ export const userController = {
     const userService = new UserService(userRepo);
     await userService.delete(user_id);
 
-    return res.status(204);
+    return res.status(204).json();
   }
 };

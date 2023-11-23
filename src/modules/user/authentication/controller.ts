@@ -29,7 +29,7 @@ export const userAuthenticationController = {
 
     await service.resendConfirmationCode({email, password});
 
-    return res.status(204);
+    return res.status(204).json();
   },
 
   async confirm(req: Request, res: Response) {
@@ -40,7 +40,7 @@ export const userAuthenticationController = {
 
     await service.confirm(confirmation_code);
 
-    return res.status(204);
+    return res.status(204).json();
   },
 
   async login(req: Request, res: Response) {
@@ -131,6 +131,8 @@ export const userAuthenticationController = {
     // disconnect all Socket.IO connections linked to this session ID
     socketIOServer.in(session_id).disconnectSockets();
     return res.status(204).end();
+    // old code:
+    //const session_id = req.session.user_id!;
     //req.session!.destroy(() => {
     //  // disconnect all Socket.IO connections linked to this session ID
     //  socketIOServer.in(session_id).disconnectSockets();
@@ -141,56 +143,52 @@ export const userAuthenticationController = {
 
   async forgotPassword(req: Request, res: Response) {
     const { email } = req.body;
-    console.log('FORGOT PASSWORD req.body.email: ', email)
-    return res.status(201);
 
-    /*const userRepo = new UserRepo();
+    const userRepo = new UserRepo();
     const user = await userRepo.getByEmail(email);
     if (!user) throw new NotFoundException();
 
-    //const { hashPassword } = new UserAuthenticationService(userRepo);
-    //const temporary_password = uuidv7();
-    //const encryptedPassword = await hashPassword(temporary_password);
-    //const passwordReset = PasswordReset.create({
-    //  user_id: user.user_id,
-    //  temporary_password: encryptedPassword
-    //}).getDTO();
+    const { hashPassword } = new UserAuthenticationService(userRepo);
+    const temporary_password = uuidv7();
+    const encryptedPassword = await hashPassword(temporary_password);
+    const passwordReset = PasswordReset.create({
+      user_id: user.user_id,
+      temporary_password: encryptedPassword
+    }).getDTO();
 
-    //const passwordResetRepo = new PasswordResetRepo();
-    //await passwordResetRepo.insert(passwordReset);
+    const passwordResetRepo = new PasswordResetRepo();
+    await passwordResetRepo.insert(passwordReset);
 
-    //const passwordResetService = new PasswordResetService(passwordResetRepo);
-    //await passwordResetService.sendTemporaryPassword({email, temporary_password});
+    const passwordResetService = new PasswordResetService(passwordResetRepo);
+    await passwordResetService.sendTemporaryPassword({email, temporary_password});
 
-    return res.status(201);*/
+    return res.status(201).json();
   },
 
   async resetPassword(req: Request, res: Response) {
     const { email, temporary_password, new_password } = req.body;
-    console.log('RESET PASSWORD req.body.email: ', email);
-    return res.status(204);
 
-    /*const userRepo = new UserRepo();
+    const userRepo = new UserRepo();
     const user = await userRepo.getByEmail(email);
     if (!user) throw new NotFoundException();
 
     const passwordResetRepo = new PasswordResetRepo();
     const passwordResetService = new PasswordResetService(passwordResetRepo);
-    //await passwordResetService.isCorrectTemporaryPassword({
-    //  user_id: user.user_id,
-    //  temporary_password
-    //});
+    await passwordResetService.isCorrectTemporaryPassword({
+      user_id: user.user_id,
+      temporary_password
+    });
 
     // TO DO: consider making the update and delete a single transaction
 
     const userService = new UserService(userRepo);
-    //await userService.updatePassword({
-    //  user_id: user.user_id,
-    //  new_password
-    //});
+    await userService.updatePassword({
+      user_id: user.user_id,
+      new_password
+    });
 
     await passwordResetRepo.deleteByUserId(user.user_id);
 
-    return res.status(204);*/
+    return res.status(204).json();
   }
 };

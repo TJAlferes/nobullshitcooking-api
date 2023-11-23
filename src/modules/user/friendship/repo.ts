@@ -68,7 +68,6 @@ export class FriendshipRepo extends MySQLRepo implements FriendshipRepoInterface
       friend_id,
       status
     ]);
-    //console.log('AFFECTED ROWS AFTER INSERT: ', result.affectedRows);
     if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
@@ -90,15 +89,13 @@ export class FriendshipRepo extends MySQLRepo implements FriendshipRepoInterface
   async delete({ user_id, friend_id }: DeleteParams) {
     const sql1 = 'SELECT * FROM friendship WHERE user_id = ? AND friend_id = ?';
     const [ [ exists ] ] = await this.pool.execute<(InsertParams & RowDataPacket)[]>(sql1, [user_id, friend_id]);
-    if (!exists) return;
-    // only execute code below if friendship exists
+    if (!exists) return;  // only execute code below if friendship exists
     const sql2 = `
       DELETE FROM friendship
       WHERE user_id = ? AND friend_id = ?
       LIMIT 1
     `;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql2, [user_id, friend_id]);
-    console.log('AFFECTED ROWS: ', result.affectedRows);
     if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }
