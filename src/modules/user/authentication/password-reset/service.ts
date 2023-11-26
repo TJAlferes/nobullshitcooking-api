@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 import { UnauthorizedException } from '../../../../utils/exceptions';
 import { emailUser } from '../../../aws-ses/service';
