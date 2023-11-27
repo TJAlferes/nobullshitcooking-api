@@ -5,6 +5,13 @@ import { NOBSC_USER_ID } from '../shared/model';
 import { EquipmentRepo } from './repo';
 
 export const equipmentController = {
+  async viewAllOfficialNames(req: Request, res: Response) {
+    const repo = new EquipmentRepo();
+    const names = await repo.viewAllOfficialNames();
+
+    return res.json(names);
+  },  // for Next.js getStaticPaths
+
   async viewAll(req: Request, res: Response) {
     const owner_id = NOBSC_USER_ID;
 

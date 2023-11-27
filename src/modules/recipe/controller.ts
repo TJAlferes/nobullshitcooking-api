@@ -29,11 +29,3 @@ export const recipeController = {
     return res.json(recipe);
   }
 };
-
-// TO DO: move to shared
-//function unslugify(title: string) {
-//  return title
-//    .split('-')
-//    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-//    .join(' ');
-//}

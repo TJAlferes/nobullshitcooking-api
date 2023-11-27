@@ -1,11 +1,11 @@
 import type { PoolConnection } from 'mysql2/promise';
 
-import { production_images as images } from '../production/recipe/images.js';
-import { production_recipes as recipes } from '../production/recipe/recipes.js';
-import { production_recipe_images as recipe_images } from '../production/recipe/recipe-images.js';
-import { production_recipe_equipment as recipe_equipment } from '../production/recipe/recipe-equipment.js';
-import { production_recipe_ingredients as recipe_ingredients } from '../production/recipe/recipe-ingredients.js';
-import { production_recipe_methods as recipe_methods } from '../production/recipe/recipe-methods.js';
+import { production_images as images } from '../production/recipe/images';
+import { production_recipes as recipes } from '../production/recipe/recipes';
+import { production_recipe_images as recipe_images } from '../production/recipe/recipe-images';
+import { production_recipe_equipment as recipe_equipment } from '../production/recipe/recipe-equipment';
+import { production_recipe_ingredients as recipe_ingredients } from '../production/recipe/recipe-ingredients';
+import { production_recipe_methods as recipe_methods } from '../production/recipe/recipe-methods';
 import { format } from './format';
 
 export async function seedRecipe(conn: PoolConnection) {
@@ -40,7 +40,7 @@ export async function seedRecipe(conn: PoolConnection) {
   `;
   await conn.execute(sql2, format(recipes));
 
-  const placeholders3 = '(?, ?, ?)'.repeat(recipe_images.length).slice(0, -1);
+  const placeholders3 = '(?, ?, ?),'.repeat(recipe_images.length).slice(0, -1);
   const sql3 = `
     INSERT INTO recipe_image (
       recipe_id,
@@ -50,7 +50,7 @@ export async function seedRecipe(conn: PoolConnection) {
   `;
   await conn.execute(sql3, format(recipe_images));
 
-  const placeholders4 = '(?, ?, ?)'.repeat(recipe_equipment.length).slice(0, -1);
+  const placeholders4 = '(?, ?, ?),'.repeat(recipe_equipment.length).slice(0, -1);
   const sql4 = `
     INSERT INTO recipe_equipment (
       recipe_id,
@@ -60,7 +60,7 @@ export async function seedRecipe(conn: PoolConnection) {
   `;
   await conn.execute(sql4, format(recipe_equipment));
 
-  const placeholders5 = '(?, ?, ?, ?)'.repeat(recipe_ingredients.length).slice(0, -1);
+  const placeholders5 = '(?, ?, ?, ?),'.repeat(recipe_ingredients.length).slice(0, -1);
   const sql5 = `
     INSERT INTO recipe_ingredient (
       recipe_id,
@@ -71,7 +71,7 @@ export async function seedRecipe(conn: PoolConnection) {
   `;
   await conn.execute(sql5, format(recipe_ingredients));
 
-  const placeholders6 = '(?, ?)'.repeat(recipe_methods.length).slice(0, -1);
+  const placeholders6 = '(?, ?),'.repeat(recipe_methods.length).slice(0, -1);
   const sql6 = `
     INSERT INTO recipe_method (
       recipe_id,

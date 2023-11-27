@@ -5,6 +5,13 @@ import { NOBSC_USER_ID } from '../shared/model';
 import { IngredientRepo } from './repo';
 
 export const ingredientController = {
+  async viewAllOfficialFullnames(req: Request, res: Response) {
+    const repo = new IngredientRepo();
+    const fullnames = await repo.viewAllOfficialFullnames();
+
+    return res.json(fullnames);
+  },  // for Next.js getStaticPaths
+
   async viewAll(req: Request, res: Response) {
     const owner_id = NOBSC_USER_ID;
 

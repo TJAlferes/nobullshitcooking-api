@@ -7,7 +7,9 @@ import { seedPlan } from './plan/seed';
 import { seedRecipe } from './recipe/seed';
 import { seedUser } from './user/seed';
 
-// Runs before each integration test
+// Runs before each integration test in test environment
+// along with tests/integration/index.test.ts truncateTestDatabase,
+// so tests have clean slate
 export async function seedTestDatabase() {
   const pool = createPool(testConfig);
   const conn = await pool.getConnection();

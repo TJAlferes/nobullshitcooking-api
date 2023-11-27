@@ -1,7 +1,7 @@
 import type { PoolConnection } from 'mysql2/promise';
 
-import { production_images as images } from '../production/equipment/images.js';
-import { production_equipment as equipment } from '../production/equipment/equipment.js';
+import { production_images as images } from '../production/equipment/images';
+import { production_equipment as equipment } from '../production/equipment/equipment';
 import { format } from './format';
 
 export async function seedEquipment(conn: PoolConnection) {

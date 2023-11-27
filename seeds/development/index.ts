@@ -6,6 +6,8 @@ import { seedIngredient } from '../common/ingredient';
 import { seedRecipe } from '../common/recipe';
 import { seedUser } from '../common/user';
 
+// Runs before server startup in development environment,
+// so developers can play around with example data
 export async function seedDevelopmentDatabase() {
   const pool = createPool(developmentConfig);
   const conn = await pool.getConnection();
@@ -27,5 +29,3 @@ export async function seedDevelopmentDatabase() {
     await pool.end();
   }
 }
-
-seedDevelopmentDatabase();

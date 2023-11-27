@@ -10,10 +10,15 @@ const router = Router();
 
 export function equipmentRouter() {
   router.get(
+    '/names',
+    catchExceptions(equipmentController.viewAllOfficialNames)
+  );
+
+  /*router.get(
     '/:equipment_id',
     [param('equipment_id').not().isEmpty().trim().escape()],
     catchExceptions(equipmentController.viewOne)
-  );
+  );*/
 
   router.get('/', catchExceptions(equipmentController.viewAll));
 

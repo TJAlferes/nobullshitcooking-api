@@ -100,6 +100,13 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
       return rows.length > 0 ? true : false;
   }  // TO DO: thoroughly integration test this
 
+  async viewAllOfficialFullnames() {
+    const owner_id  = NOBSC_USER_ID;
+    const sql = `SELECT ${fullnameSql} AS fullname FROM ingredient i WHERE i.owner_id = ?`;
+    const [ rows ] = await this.pool.execute<FullnameView[]>(sql, [owner_id]);
+    return rows;
+  }  // for Next.js getStaticPaths
+
   async viewAll(owner_id: string) {
     const sql = `
       SELECT
@@ -234,6 +241,7 @@ export interface IngredientRepoInterface {
   autosuggest: (term: string) =>                 Promise<SuggestionView[]>;
   search:      (searchRequest: SearchRequest) => Promise<SearchResponse>;
   hasPrivate:  (ingredient_ids: string[]) =>     Promise<boolean>;
+  viewAllOfficialFullnames: () => Promise<FullnameView[]>;
   viewAll:     (owner_id: string) =>             Promise<IngredientView[]>;
   viewOne:     (ingredient_id: string) =>        Promise<IngredientView>;
   insert:      (params: InsertParams) =>         Promise<void>;
@@ -245,6 +253,10 @@ export interface IngredientRepoInterface {
 type SuggestionView = RowDataPacket & {
   id: string;
   text: string;
+};
+
+type FullnameView = RowDataPacket & {
+  fullname: string;
 };
 
 type IngredientView = RowDataPacket & {

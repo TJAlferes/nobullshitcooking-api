@@ -92,6 +92,13 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
     return rows.length > 0 ? true : false;
   }  // TO DO: thoroughly integration test this
 
+  async viewAllOfficialNames() {
+    const owner_id  = NOBSC_USER_ID;
+    const sql = `SELECT equipment_name FROM equipment WHERE owner_id = ?`;
+    const [ rows ] = await this.pool.execute<NameView[]>(sql, [owner_id]);
+    return rows;
+  }  // for Next.js getStaticPaths
+
   async viewAll(owner_id: string) {
     const sql = `
       SELECT
@@ -208,6 +215,7 @@ export interface EquipmentRepoInterface {
   autosuggest: (term: string) =>                  Promise<SuggestionView[]>;
   search:      (search_request: SearchRequest) => Promise<SearchResponse>;
   hasPrivate:  (equipment_ids: string[]) =>       Promise<boolean>;
+  viewAllOfficialNames: () => Promise<NameView[]>;
   viewAll:     (owner_id: string) =>              Promise<EquipmentView[]>;
   viewOne:     (equipment_id: string) =>          Promise<EquipmentView>;
   insert:      (params: InsertParams) =>          Promise<void>;
@@ -219,6 +227,10 @@ export interface EquipmentRepoInterface {
 type SuggestionView = RowDataPacket & {
   id: string;
   text: string;
+};
+
+type NameView = RowDataPacket & {
+  equipment_name: string;
 };
 
 type EquipmentView = RowDataPacket & {

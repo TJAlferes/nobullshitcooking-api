@@ -15,7 +15,7 @@ export function recipeRouter() {
     '/:title',
     [param('title').not().isEmpty().trim().escape()],
     catchExceptions(controller.viewOneByTitle)
-  );
+  );  // not needed???
 
   return router;
 }
