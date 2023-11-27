@@ -142,6 +142,27 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
     return row;
   }
 
+  async viewOneByName(equipment_name: string) {
+    const sql = `
+      SELECT
+        e.equipment_id,
+        e.equipment_type_id,
+        t.equipment_type_name,
+        e.owner_id,
+        e.equipment_name,
+        e.notes,
+        i.image_id,
+        i.image_filename,
+        i.caption
+      FROM equipment e
+      INNER JOIN equipment_type t ON e.equipment_type_id = t.equipment_type_id
+      INNER JOIN image i          ON e.image_id          = i.image_id
+      WHERE e.equipment_name = ?
+    `;
+    const [ [ row ] ] = await this.pool.execute<EquipmentView[]>(sql, [equipment_name]);
+    return row;
+  }
+
   async insert(params: InsertParams) {
     const sql = `
       INSERT INTO equipment (
@@ -218,6 +239,7 @@ export interface EquipmentRepoInterface {
   viewAllOfficialNames: () => Promise<NameView[]>;
   viewAll:     (owner_id: string) =>              Promise<EquipmentView[]>;
   viewOne:     (equipment_id: string) =>          Promise<EquipmentView>;
+  viewOneByName: (equipment_name: string) =>          Promise<EquipmentView>;
   insert:      (params: InsertParams) =>          Promise<void>;
   update:      (params: UpdateParams) =>          Promise<void>;
   deleteAll:   (owner_id: string) =>              Promise<void>;

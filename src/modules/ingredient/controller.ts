@@ -12,6 +12,18 @@ export const ingredientController = {
     return res.json(fullnames);
   },  // for Next.js getStaticPaths
 
+  async viewOneByFullname(req: Request, res: Response) {
+    const { fullname } = req.params;
+    const owner_id = NOBSC_USER_ID;
+
+    const repo = new IngredientRepo();
+    const ingredient = await repo.viewOneByFullname(fullname);
+    if (!ingredient) throw new NotFoundException();
+    if (ingredient.owner_id !== owner_id) throw new NotFoundException();  //ForbiddenException(); 
+
+    return res.json(ingredient);
+  },  // for Next.js getStaticProps
+
   async viewAll(req: Request, res: Response) {
     const owner_id = NOBSC_USER_ID;
 

@@ -13,20 +13,20 @@ export function ingredientRouter() {
     '/fullnames',
     catchExceptions(controller.viewAllOfficialFullnames)
   );
-
-  /*router.get(
+  
+  router.get(
     '/:fullname',
     [param('fullname').not().isEmpty().trim().escape()],
     catchExceptions(controller.viewOneByFullname)
-  );*/
+  );
 
-  router.get(
+  /*router.get(
     '/:ingredient_id',
     [param('ingredient_id').not().isEmpty().trim().escape()],
     catchExceptions(controller.viewOne)
   );
 
-  router.get('/', catchExceptions(controller.viewAll));
+  router.get('/', catchExceptions(controller.viewAll));*/
 
   return router;
 }

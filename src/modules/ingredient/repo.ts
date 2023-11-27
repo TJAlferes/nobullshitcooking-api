@@ -102,7 +102,11 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
 
   async viewAllOfficialFullnames() {
     const owner_id  = NOBSC_USER_ID;
-    const sql = `SELECT ${fullnameSql} AS fullname FROM ingredient i WHERE i.owner_id = ?`;
+    const sql = `
+      SELECT ${fullnameSql} AS fullname
+      FROM ingredient i
+      INNER JOIN ingredient_alt_name n ON i.ingredient_id = n.ingredient_id
+      WHERE i.owner_id = ?`;
     const [ rows ] = await this.pool.execute<FullnameView[]>(sql, [owner_id]);
     return rows;
   }  // for Next.js getStaticPaths
@@ -155,6 +159,31 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
       WHERE i.ingredient_id = ?
     `;
     const [ [ row ] ] = await this.pool.execute<IngredientView[]>(sql, [ingredient_id]);
+    return row;
+  }
+
+  async viewOneByFullname(fullname: string) {
+    const sql = `
+      SELECT
+        i.ingredient_id,
+        i.ingredient_type_id,
+        t.ingredient_type_name,
+        i.owner_id,
+        i.ingredient_brand,
+        i.ingredient_variety,
+        i.ingredient_name,
+        ${fullnameSql} AS fullname,
+        i.notes,
+        m.image_id,
+        m.image_filename,
+        m.caption
+      FROM ingredient i
+      INNER JOIN ingredient_type t    ON i.ingredient_type_id = t.ingredient_type_id
+      LEFT JOIN ingredient_alt_name n ON i.ingredient_id      = n.ingredient_id
+      INNER JOIN image m              ON i.image_id           = m.image_id
+      WHERE ${fullnameSql} = ?
+    `;
+    const [ [ row ] ] = await this.pool.execute<IngredientView[]>(sql, [fullname]);
     return row;
   }
 
@@ -244,6 +273,7 @@ export interface IngredientRepoInterface {
   viewAllOfficialFullnames: () => Promise<FullnameView[]>;
   viewAll:     (owner_id: string) =>             Promise<IngredientView[]>;
   viewOne:     (ingredient_id: string) =>        Promise<IngredientView>;
+  viewOneByFullname:     (fullname: string) =>        Promise<IngredientView>;
   insert:      (params: InsertParams) =>         Promise<void>;
   update:      (params: InsertParams) =>         Promise<void>;
   deleteAll:   (owner_id: string) =>             Promise<void>;

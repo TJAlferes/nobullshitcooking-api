@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { param } from 'express-validator';
 
 import { catchExceptions } from '../../utils';
-import { equipmentController } from './controller';
+import { equipmentController as controller } from './controller';
 
 const router = Router();
 
@@ -11,16 +11,22 @@ const router = Router();
 export function equipmentRouter() {
   router.get(
     '/names',
-    catchExceptions(equipmentController.viewAllOfficialNames)
+    catchExceptions(controller.viewAllOfficialNames)
+  );
+
+  router.get(
+    '/:equipment_name',
+    [param('equipment_name').not().isEmpty().trim().escape()],
+    catchExceptions(controller.viewOneByName)
   );
 
   /*router.get(
     '/:equipment_id',
     [param('equipment_id').not().isEmpty().trim().escape()],
-    catchExceptions(equipmentController.viewOne)
+    catchExceptions(controller.viewOne)
   );*/
 
-  router.get('/', catchExceptions(equipmentController.viewAll));
+  router.get('/', catchExceptions(controller.viewAll));
 
   return router;
 }
