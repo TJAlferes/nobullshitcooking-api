@@ -6,6 +6,7 @@ dotenv.config();
 import { userCron } from './modules/user/cron';
 import { passwordResetCron } from './modules/user/authentication/password-reset/cron';
 import { httpServer } from './app';
+import { seedDevelopmentDatabase } from '../seeds/development';
 
 export const userCronJob = new CronJob(
   '0 0 0 * * *',  // every day at midnight
@@ -21,7 +22,7 @@ export const passwordResetCronJob = new CronJob(
   }
 );
 
-export function startServer() {
+export async function startServer() {
   const PORT = process.env.NODE_ENV === 'production'
     ? Number(process.env.PORT) || 8081
     : Number(process.env.PORT) || 3003;
@@ -29,6 +30,10 @@ export function startServer() {
   const HOST = process.env.NODE_ENV === 'production'
     ? '127.0.0.1'
     : '0.0.0.0';
+
+  if (process.env.NODE_ENV === 'development') {
+    await seedDevelopmentDatabase();
+  }
 
   httpServer.listen(PORT, HOST, () => {
     console.log('HTTP server listening on port ' + PORT);
