@@ -14,6 +14,7 @@ export const equipmentController = {
 
   async viewOneByName(req: Request, res: Response) {
     const { equipment_name } = req.params;
+    console.log('equipment_name: ', equipment_name);
     const owner_id = NOBSC_USER_ID;
 
     const repo = new EquipmentRepo();
@@ -21,6 +22,7 @@ export const equipmentController = {
     if (!equipment) throw new NotFoundException();
     if (equipment.owner_id !== owner_id) throw new NotFoundException();  //ForbiddenException(); 
 
+    console.log('e.equipment_name: ', equipment.equipment_name);
     return res.json(equipment);
   },  // for Next.js getStaticProps
 

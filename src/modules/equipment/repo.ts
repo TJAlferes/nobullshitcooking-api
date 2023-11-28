@@ -94,7 +94,7 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
 
   async viewAllOfficialNames() {
     const owner_id  = NOBSC_USER_ID;
-    const sql = `SELECT equipment_name FROM equipment WHERE owner_id = ?`;
+    const sql = `SELECT equipment_name AS name FROM equipment WHERE owner_id = ?`;
     const [ rows ] = await this.pool.execute<NameView[]>(sql, [owner_id]);
     return rows;
   }  // for Next.js getStaticPaths
@@ -252,7 +252,7 @@ type SuggestionView = RowDataPacket & {
 };
 
 type NameView = RowDataPacket & {
-  equipment_name: string;
+  name: string;
 };
 
 type EquipmentView = RowDataPacket & {
