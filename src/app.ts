@@ -76,13 +76,13 @@ const sessionMiddleware = expressSession({
     },
   resave: false,
   saveUninitialized: false,
-  secret: process.env.SESSION_SECRET || 'secret',
+  secret: process.env.SESSION_SECRET || 'secret',  // TO DO: finish
   store: redisStore,
   unset: 'destroy'
 });
 if (app.get('env') !== 'test') app.use(pinoHttp());  // logger
-app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.json({limit: '1kb'}));
+app.use(express.urlencoded({extended: true, limit: '1kb'}));
 app.use(sessionMiddleware);
 app.use(cors({
   credentials: true,

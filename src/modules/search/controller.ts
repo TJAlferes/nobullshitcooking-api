@@ -4,11 +4,11 @@ import { create } from 'superstruct';
 import { EquipmentRepo } from '../equipment/repo';
 import { IngredientRepo } from '../ingredient/repo';
 import { RecipeRepo } from '../recipe/repo';
-import { SearchTerm, validSearchRequest } from './model';
+import { AutosuggestTerm, validSearchRequest } from './model';
 
 export const searchController = {
   async autosuggestEquipment(req: Request, res: Response) {
-    const term = SearchTerm(req.query.term as string);
+    const term = AutosuggestTerm(req.query.term as string);
     const repo = new EquipmentRepo();
     const found = await repo.autosuggest(term);
 
@@ -16,7 +16,7 @@ export const searchController = {
   },
 
   async autosuggestIngredients(req: Request, res: Response) {
-    const term = SearchTerm(req.query.term as string);
+    const term = AutosuggestTerm(req.query.term as string);
     const repo = new IngredientRepo();
     const found = await repo.autosuggest(term);
 
@@ -24,7 +24,7 @@ export const searchController = {
   },
 
   async autosuggestRecipes(req: Request, res: Response) {
-    const term = SearchTerm(req.query.term as string);
+    const term = AutosuggestTerm(req.query.term as string);
     const repo = new RecipeRepo();
     const found = await repo.autosuggest(term);
 
@@ -32,7 +32,7 @@ export const searchController = {
   },
 
   async searchEquipment(req: Request, res: Response) {
-    const searchRequest = create(req.query, validSearchRequest);
+    const searchRequest = create(req.query, validSearchRequest);  //
     const repo = new EquipmentRepo();
     const found = await repo.search(searchRequest);
 
