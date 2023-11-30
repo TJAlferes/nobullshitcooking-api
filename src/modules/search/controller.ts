@@ -9,6 +9,7 @@ import { AutosuggestTerm, validSearchRequest } from './model';
 export const searchController = {
   async autosuggestEquipment(req: Request, res: Response) {
     const term = AutosuggestTerm(req.query.term as string);
+    
     const repo = new EquipmentRepo();
     const found = await repo.autosuggest(term);
 
@@ -17,6 +18,7 @@ export const searchController = {
 
   async autosuggestIngredients(req: Request, res: Response) {
     const term = AutosuggestTerm(req.query.term as string);
+
     const repo = new IngredientRepo();
     const found = await repo.autosuggest(term);
 
@@ -25,6 +27,7 @@ export const searchController = {
 
   async autosuggestRecipes(req: Request, res: Response) {
     const term = AutosuggestTerm(req.query.term as string);
+
     const repo = new RecipeRepo();
     const found = await repo.autosuggest(term);
 
@@ -33,6 +36,7 @@ export const searchController = {
 
   async searchEquipment(req: Request, res: Response) {
     const searchRequest = create(req.query, validSearchRequest);  //
+
     const repo = new EquipmentRepo();
     const found = await repo.search(searchRequest);
 
@@ -41,6 +45,7 @@ export const searchController = {
 
   async searchIngredients(req: Request, res: Response) {
     const searchRequest = create(req.query, validSearchRequest);
+
     const repo = new IngredientRepo();
     const found = await repo.search(searchRequest);
 
@@ -49,6 +54,7 @@ export const searchController = {
 
   async searchRecipes(req: Request, res: Response) {
     const searchRequest = create(req.query, validSearchRequest);
+
     const repo = new RecipeRepo();
     const found = await repo.search(searchRequest);
 

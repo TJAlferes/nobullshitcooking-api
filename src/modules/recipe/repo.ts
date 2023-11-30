@@ -69,7 +69,7 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
 
     if (cuisines.length > 0) {
       const placeholders = '?,'.repeat(cuisines.length).slice(0, -1);
-      sql += ` AND c.code IN (${placeholders})`;  
+      sql += ` AND c.country_code IN (${placeholders})`;
       params.push(...cuisines);
     }
 
