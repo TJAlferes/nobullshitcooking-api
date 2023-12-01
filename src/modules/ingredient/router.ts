@@ -16,17 +16,9 @@ export function ingredientRouter() {
   
   router.get(
     '/:fullname',
-    [param('fullname').not().isEmpty().trim().escape()],
+    [param('fullname').trim().not().isEmpty()],
     catchExceptions(controller.viewOneByFullname)
   );
-
-  /*router.get(
-    '/:ingredient_id',
-    [param('ingredient_id').not().isEmpty().trim().escape()],
-    catchExceptions(controller.viewOne)
-  );
-
-  router.get('/', catchExceptions(controller.viewAll));*/
 
   return router;
 }

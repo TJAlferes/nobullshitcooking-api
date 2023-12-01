@@ -16,16 +16,18 @@ export const recipeController = {
   },  // for Next.js getStaticPaths
 
   async viewOneByTitle(req: Request, res: Response) {
-    const { title } = req.params;
+    const title = decodeURIComponent(req.params.title)
     const author_id = NOBSC_USER_ID;
     const owner_id = NOBSC_USER_ID;
 
     const repo = new RecipeRepo();
     const recipe = await repo.viewOneByTitle(title);
     if (!recipe) throw new NotFoundException();
-    if (recipe.author_id !== author_id) throw new NotFoundException();  //ForbiddenException(); 
-    if (recipe.owner_id !== owner_id) throw new NotFoundException();  //ForbiddenException(); 
+    console.log('RECIPE TITLE: ', recipe.title);
+    console.log('RECIPE TITLE: ', recipe.title);
+    if (recipe.author_id !== author_id) throw new NotFoundException(); 
+    if (recipe.owner_id !== owner_id) throw new NotFoundException(); 
 
     return res.json(recipe);
-  }
+  }  // for Next.js getStaticProps
 };

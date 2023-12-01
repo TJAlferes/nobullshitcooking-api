@@ -13,13 +13,13 @@ export const ingredientController = {
   },  // for Next.js getStaticPaths
 
   async viewOneByFullname(req: Request, res: Response) {
-    const { fullname } = req.params;
+    const fullname = decodeURIComponent(req.params.fullname);
     const owner_id = NOBSC_USER_ID;
 
     const repo = new IngredientRepo();
     const ingredient = await repo.viewOneByFullname(fullname);
     if (!ingredient) throw new NotFoundException();
-    if (ingredient.owner_id !== owner_id) throw new NotFoundException();  //ForbiddenException(); 
+    if (ingredient.owner_id !== owner_id) throw new NotFoundException();
 
     return res.json(ingredient);
   },  // for Next.js getStaticProps
@@ -40,7 +40,7 @@ export const ingredientController = {
     const repo = new IngredientRepo();
     const ingredient = await repo.viewOne(ingredient_id);
     if (!ingredient) throw new NotFoundException();
-    if (ingredient.owner_id !== owner_id) throw new NotFoundException();  //ForbiddenException();
+    if (ingredient.owner_id !== owner_id) throw new NotFoundException();
 
     return res.json(ingredient);
   }

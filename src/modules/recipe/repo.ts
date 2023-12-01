@@ -349,10 +349,10 @@ export type RecipeOverview = {
 
 export type RecipeView = RowDataPacket & {
   recipe_id:            string;
+  owner_id:             string;
   author_id:            string;
   author:               string;
-  author_avatar:        string;
-  owner_id:             string;
+  author_avatar:        ImageView;
   recipe_type_name:     string;
   cuisine_name:         string;
   title:                string;
@@ -368,6 +368,10 @@ export type RecipeView = RowDataPacket & {
   required_equipment:   RequiredEquipmentView[];
   required_ingredients: RequiredIngredientView[];
   required_subrecipes:  RequiredSubrecipeView[];
+};
+
+type ImageView = {
+  image_filename: string;
 };
 
 type AssociatedImageView = {
@@ -468,16 +472,16 @@ type DeleteOneParams = {
 const recipeDetailViewSQL = `
   SELECT
     r.recipe_id,
+    r.owner_id,
     r.author_id,
     u.username AS author,
     (
-      SELECT i.image_filename
+      SELECT JSON_OBJECT('image_filename', i.image_filename)
       FROM image i
       INNER JOIN user_image ui ON i.image_id = ui.image_id
       INNER JOIN recipe r2 ON ui.user_id = r2.author_id
       WHERE ui.current = true AND r2.recipe_id = r.recipe_id
     ) AS author_avatar,
-    r.owner_id,
     rt.recipe_type_name,
     c.cuisine_name,
     r.title,

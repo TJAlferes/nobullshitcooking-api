@@ -13,9 +13,9 @@ export function recipeRouter() {
 
   router.get(
     '/:title',
-    [param('title').not().isEmpty().trim().escape()],
+    [param('title').trim().not().isEmpty()],
     catchExceptions(controller.viewOneByTitle)
-  );  // not needed???
+  );
 
   return router;
 }

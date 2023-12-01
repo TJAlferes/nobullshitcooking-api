@@ -13,16 +13,14 @@ export const equipmentController = {
   },  // for Next.js getStaticPaths
 
   async viewOneByName(req: Request, res: Response) {
-    const { equipment_name } = req.params;
-    console.log('equipment_name: ', equipment_name);
+    const equipment_name = decodeURIComponent(req.params.equipment_name);
     const owner_id = NOBSC_USER_ID;
 
     const repo = new EquipmentRepo();
     const equipment = await repo.viewOneByName(equipment_name);
     if (!equipment) throw new NotFoundException();
-    if (equipment.owner_id !== owner_id) throw new NotFoundException();  //ForbiddenException(); 
+    if (equipment.owner_id !== owner_id) throw new NotFoundException(); 
 
-    console.log('e.equipment_name: ', equipment.equipment_name);
     return res.json(equipment);
   },  // for Next.js getStaticProps
 
@@ -42,7 +40,7 @@ export const equipmentController = {
     const repo = new EquipmentRepo();
     const equipment = await repo.viewOne(equipment_id);
     if (!equipment) throw new NotFoundException();
-    if (equipment.owner_id !== owner_id) throw new NotFoundException();  //ForbiddenException(); 
+    if (equipment.owner_id !== owner_id) throw new NotFoundException(); 
 
     return res.json(equipment);
   }

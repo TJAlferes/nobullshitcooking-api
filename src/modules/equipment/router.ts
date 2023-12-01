@@ -16,17 +16,9 @@ export function equipmentRouter() {
 
   router.get(
     '/:equipment_name',
-    [param('equipment_name').not().isEmpty().trim().escape()],
+    [param('equipment_name').trim().not().isEmpty()],
     catchExceptions(controller.viewOneByName)
   );
-
-  /*router.get(
-    '/:equipment_id',
-    [param('equipment_id').not().isEmpty().trim().escape()],
-    catchExceptions(controller.viewOne)
-  );
-
-  router.get('/', catchExceptions(controller.viewAll));*/
 
   return router;
 }
