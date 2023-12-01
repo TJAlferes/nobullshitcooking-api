@@ -111,9 +111,9 @@ app.use('/search/*', hpp({
     'sorts',
   ]
 }));  // why???
-// no longer maintained! TO DO: csrf-csrf Double-Submit Cookie
-// TO DO: don't do csrf-csrf, just don't have <form> tags and follow OWASP guidelines
-//app.use(csurf());
+// TO DO: follow OWASP guidelines
+// TO DO: csrf-csrf Double-Submit Cookie (or even better: csrf-sync Synchronizer Token)
+//app.use(csurf());  // no longer maintained!
 app.use(compression());
 
 app.use('/v1', apiV1Router());

@@ -3,9 +3,9 @@ import { SESClient, CloneReceiptRuleSetCommand } from '@aws-sdk/client-ses';
 export async function emailUser({ from, to, subject, bodyText, bodyHtml, charset}: EmailUserParams) {
   if (process.env.NODE_ENV === 'test') return;  // TO DO: aws-sdk-client-mock
 
-  const client = new SESClient({});
+  const client = new SESClient({region: 'us-east-1'});
 
-  const params = { 
+  const params = {
     Source: from, 
     Destination: { 
       ToAddresses: [to]

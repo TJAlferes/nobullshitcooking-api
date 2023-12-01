@@ -19,7 +19,7 @@ export const AwsS3PublicUploadsController = {
 
     const subfolder: Subfolder = req.body.subfolder;
     const filename = uuidv7();
-    const objectKey = `nobsc-public-uploads/${subfolder}${req.session.user_id}/${filename}`;
+    const objectKey = `nobsc-public-uploads/${subfolder}/${req.session.user_id}/${filename}`;
     
     if (subfolder === 'recipe') {
       const mediumSignature = await sign(objectKey, 'medium');

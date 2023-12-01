@@ -11,19 +11,19 @@ const router = Router();
 export function searchRouter() {
   router.get(
     '/auto/equipment',
-    [sanitizeTerm],
+    [sanitizeAutosuggestTerm],
     catchExceptions(searchController.autosuggestEquipment)
   );
 
   router.get(
     '/auto/ingredients',
-    [sanitizeTerm],
+    [sanitizeAutosuggestTerm],
     catchExceptions(searchController.autosuggestIngredients)
   );
 
   router.get(
     '/auto/recipes',
-    [sanitizeTerm],
+    [sanitizeAutosuggestTerm],
     catchExceptions(searchController.autosuggestRecipes)
   );
   
@@ -48,30 +48,30 @@ export function searchRouter() {
   return router;
 }
 
-const sanitizeTerm = query('term').trim().escape().notEmpty();
+const sanitizeAutosuggestTerm = query('term').trim().notEmpty();
 
-const sanitizeSorts             = sanitizeQuery('sorts.*');
-const sanitizeResultsPerPage    = sanitizeQuery('results_per_page');
-const sanitizeCurrentPage       = sanitizeQuery('current_page');
-const sanitizeEquipmentFilters  = sanitizeQuery('filters.equipment_types.*');
+const sanitizeSearchTerm = sanitizeQuery('term');
+const sanitizeResultsPerPage = sanitizeQuery('results_per_page');
+const sanitizeCurrentPage = sanitizeQuery('current_page');
+const sanitizeEquipmentFilters = sanitizeQuery('filters.equipment_types.*');
 const sanitizeIngredientFilters = sanitizeQuery('filters.ingredient_types.*');
-const sanitizeRecipeFilters     = sanitizeQuery([
+const sanitizeRecipeFilters = sanitizeQuery([
   'filters.recipe_types.*',
   'filters.methods.*',
   'filters.cuisines.*'
 ]);
+const sanitizeSorts = sanitizeQuery('sorts.*');
 
 const defaults = [
-  sanitizeTerm,
-  sanitizeSorts,
+  sanitizeSearchTerm,
   sanitizeResultsPerPage,
-  sanitizeCurrentPage
+  sanitizeCurrentPage,
+  sanitizeSorts
 ];
 
-function sanitizeQuery(params: string | string[]) {  // sanitizeParams ?
-  return query(params)
+function sanitizeQuery(qs: string | string[]) {
+  return query(qs)
     .trim()
-    .escape()
     .optional({
       nullable: true,
       checkFalsy: true
