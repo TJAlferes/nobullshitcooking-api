@@ -13,7 +13,7 @@ export function recipeRouter() {
 
   router.get(
     '/:title',
-    [param('title').trim().not().isEmpty()],
+    [param('title').trim().notEmpty()],
     catchExceptions(controller.viewOneByTitle)
   );
 

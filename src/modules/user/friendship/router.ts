@@ -61,5 +61,5 @@ export function friendshipRouter() {
 }
 
 function sanitizeParams(keys: string | string[]) {
-  return param(keys).not().isEmpty().trim().escape();
+  return param(keys).trim().notEmpty();
 }

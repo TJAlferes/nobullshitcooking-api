@@ -13,7 +13,7 @@ export function ingredientTypeRouter() {
 
   router.get(
     '/:ingredient_type_id',
-    [param('ingredient_type_id').not().isEmpty().trim().escape()],
+    [param('ingredient_type_id').trim().notEmpty()],
     catchExceptions(ingredientTypeController.viewOne)
   );
 

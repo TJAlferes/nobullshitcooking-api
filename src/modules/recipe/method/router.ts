@@ -11,7 +11,7 @@ const router = Router();
 export function methodRouter() {
   router.get(
     '/:method_id',
-    [param('method_id').not().isEmpty().trim().escape()],
+    [param('method_id').trim().notEmpty()],
     catchExceptions(controller.viewOne)
   );
 

@@ -16,7 +16,7 @@ export function equipmentRouter() {
 
   router.get(
     '/:equipment_name',
-    [param('equipment_name').trim().not().isEmpty()],
+    [param('equipment_name').trim().notEmpty()],
     catchExceptions(controller.viewOneByName)
   );
 

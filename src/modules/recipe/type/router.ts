@@ -11,7 +11,7 @@ const router = Router();
 export function recipeTypeRouter() {
   router.get(
     '/:recipe_type_id',
-    [param('recipe_type_id').not().isEmpty().trim().escape()],
+    [param('recipe_type_id').trim().notEmpty()],
     catchExceptions(controller.viewOne)
   );
 

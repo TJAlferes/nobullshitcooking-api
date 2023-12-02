@@ -11,7 +11,7 @@ const router = Router();
 export function cuisineRouter() {
   router.get(
     '/:cuisine_id',
-    [param('cuisine_id').not().isEmpty().trim().escape()],
+    [param('cuisine_id').trim().notEmpty()],
     catchExceptions(controller.viewOne)
   );
 

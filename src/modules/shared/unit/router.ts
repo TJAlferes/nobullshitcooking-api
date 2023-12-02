@@ -11,7 +11,7 @@ const router = Router();
 export function unitRouter() {
   router.get(
     '/:unit_id',
-    [param('unit_id').not().isEmpty().trim().escape()],
+    [param('unit_id').trim().notEmpty()],
     catchExceptions(unitController.viewOne)
   );
 

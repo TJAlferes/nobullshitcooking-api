@@ -13,7 +13,7 @@ export function equipmentTypeRouter() {
 
   router.get(
     '/:equipment_type_id',
-    [param('equipment_type_id').not().isEmpty().trim().escape()],
+    [param('equipment_type_id').trim().notEmpty()],
     catchExceptions(equipmentTypeController.viewOne)
   );
 

@@ -50,7 +50,7 @@ export function chatgroupRouter() {
   return router;
 }
 
-function sanitize(keys: string | string[]) {
-  return body(keys).not().isEmpty().trim().escape();
+function sanitizeBody(keys: string | string[]) {
+  return body(keys).trim().notEmpty();
 }
 */

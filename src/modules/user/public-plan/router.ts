@@ -45,9 +45,9 @@ export function publicPlanRouter() {
 }
 
 function sanitizeBody(keys: string | string[]) {
-  return body(keys).not().isEmpty().trim().escape();
+  return body(keys).trim().notEmpty();
 }
 
 function sanitizeParams(keys: string | string[]) {
-  return param(keys).not().isEmpty().trim().escape();
+  return param(keys).trim().notEmpty();
 }
