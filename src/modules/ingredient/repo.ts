@@ -1,6 +1,6 @@
 import { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
 
-import type { SearchRequest, SearchResponse } from '../search/model';
+import type { SearchRequest, SearchResponse, IngredientCard } from '../search/model';
 import { NOBSC_USER_ID } from '../shared/model';
 import { MySQLRepo } from '../shared/MySQL';
 
@@ -75,7 +75,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
 
     sql += ` LIMIT ? OFFSET ?`;
 
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [
+    const [ results ] = await this.pool.execute<IngredientCard[]>(sql, [
       ...params,
       `${limit}`,
       `${offset}`
@@ -84,7 +84,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
     const total_pages = (total_results <= limit) ? 1 : Math.ceil(total_results / limit);
 
     return {
-      results: rows,
+      results,
       total_results,
       total_pages
     };

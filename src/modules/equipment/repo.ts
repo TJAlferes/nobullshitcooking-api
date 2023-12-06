@@ -1,6 +1,6 @@
 import { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
 
-import type { SearchRequest, SearchResponse } from '../search/model';
+import type { SearchRequest, SearchResponse, EquipmentCard } from '../search/model';
 import { NOBSC_USER_ID } from '../shared/model';
 import { MySQLRepo } from '../shared/MySQL';
 
@@ -67,7 +67,7 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
 
     sql += ` LIMIT ? OFFSET ?`;
 
-    const [ results ] = await this.pool.execute<RowDataPacket[]>(sql, [
+    const [ results ] = await this.pool.execute<EquipmentCard[]>(sql, [
       ...params,
       `${limit}`,
       `${offset}`
