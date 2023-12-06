@@ -10,63 +10,36 @@ const router = Router();
 
 export function searchRouter() {
   router.get(
-    '/auto/equipment',
-    [sanitizeAutosuggestTerm],
-    catchExceptions(searchController.autosuggestEquipment)
-  );
-
-  router.get(
-    '/auto/ingredients',
-    [sanitizeAutosuggestTerm],
-    catchExceptions(searchController.autosuggestIngredients)
-  );
-
-  router.get(
-    '/auto/recipes',
-    [sanitizeAutosuggestTerm],
-    catchExceptions(searchController.autosuggestRecipes)
+    '/auto',
+    [sanitizeIndex, sanitizeAutosuggestTerm],
+    catchExceptions(searchController.autosuggest)
   );
   
   router.get(
-    '/find/equipment',
-    [...defaults, sanitizeEquipmentFilters],
-    catchExceptions(searchController.searchEquipment)
-  );
-
-  router.get(
-    '/find/ingredients',
-    [...defaults, sanitizeIngredientFilters],
-    catchExceptions(searchController.searchIngredients)
-  );
-
-  router.get(
-    '/find/recipes',
-    [...defaults, sanitizeRecipeFilters],
-    catchExceptions(searchController.searchRecipes)
+    '/find',
+    [...defaults],
+    catchExceptions(searchController.search)
   );
 
   return router;
 }
 
+const sanitizeIndex = query('index').trim().notEmpty();
+
 const sanitizeAutosuggestTerm = query('term').trim().notEmpty();
 
 const sanitizeSearchTerm = sanitizeQuery('term');
-const sanitizeResultsPerPage = sanitizeQuery('results_per_page');
-const sanitizeCurrentPage = sanitizeQuery('current_page');
-const sanitizeEquipmentFilters = sanitizeQuery('filters.equipment_types.*');
-const sanitizeIngredientFilters = sanitizeQuery('filters.ingredient_types.*');
-const sanitizeRecipeFilters = sanitizeQuery([
-  'filters.recipe_types.*',
-  'filters.methods.*',
-  'filters.cuisines.*'
-]);
+const sanitizeFilters = sanitizeQuery('filters.*.*');  // TO DO: test well
 const sanitizeSorts = sanitizeQuery('sorts.*');
-
+const sanitizeCurrentPage = sanitizeQuery('current_page');
+const sanitizeResultsPerPage = sanitizeQuery('results_per_page');
 const defaults = [
+  sanitizeIndex,
   sanitizeSearchTerm,
-  sanitizeResultsPerPage,
+  sanitizeFilters,
+  sanitizeSorts,
   sanitizeCurrentPage,
-  sanitizeSorts
+  sanitizeResultsPerPage
 ];
 
 function sanitizeQuery(qs: string | string[]) {

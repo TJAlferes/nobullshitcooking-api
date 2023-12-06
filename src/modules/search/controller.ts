@@ -1,63 +1,66 @@
 import type { Request, Response } from 'express';
 import { create } from 'superstruct';
 
+import { NotFoundException } from '../../utils/exceptions';
 import { EquipmentRepo } from '../equipment/repo';
 import { IngredientRepo } from '../ingredient/repo';
 import { RecipeRepo } from '../recipe/repo';
-import { AutosuggestTerm, validSearchRequest } from './model';
+import { SearchIndex, AutosuggestTerm, validSearchRequest } from './model';
 
 export const searchController = {
-  async autosuggestEquipment(req: Request, res: Response) {
+  async autosuggest(req: Request, res: Response) {
+    const index = SearchIndex(req.query.index as string);
     const term = AutosuggestTerm(req.query.term as string);
     
-    const repo = new EquipmentRepo();
-    const found = await repo.autosuggest(term);
+    if (index === 'equipment') {
+      const repo = new EquipmentRepo();
+      const found = await repo.autosuggest(term);
 
-    return res.json(found);
+      return res.json(found);
+    }
+
+    if (index === 'ingredients') {
+      const repo = new IngredientRepo();
+      const found = await repo.autosuggest(term);
+
+      return res.json(found);
+    }
+
+    if (index === 'recipes') {
+      const repo = new RecipeRepo();
+      const found = await repo.autosuggest(term);
+
+      return res.json(found);
+    }
+
+    throw new NotFoundException();
   },
 
-  async autosuggestIngredients(req: Request, res: Response) {
-    const term = AutosuggestTerm(req.query.term as string);
-
-    const repo = new IngredientRepo();
-    const found = await repo.autosuggest(term);
-
-    return res.json(found);
-  },
-
-  async autosuggestRecipes(req: Request, res: Response) {
-    const term = AutosuggestTerm(req.query.term as string);
-
-    const repo = new RecipeRepo();
-    const found = await repo.autosuggest(term);
-
-    return res.json(found);
-  },
-
-  async searchEquipment(req: Request, res: Response) {
-    const searchRequest = create(req.query, validSearchRequest);  //
-
-    const repo = new EquipmentRepo();
-    const found = await repo.search(searchRequest);
-
-    return res.json(found);
-  },
-
-  async searchIngredients(req: Request, res: Response) {
+  async search(req: Request, res: Response) {
     const searchRequest = create(req.query, validSearchRequest);
+    const index = SearchIndex(req.query.index as string);
 
-    const repo = new IngredientRepo();
-    const found = await repo.search(searchRequest);
+    if (index === 'equipment') {
+      const repo = new EquipmentRepo();
+      const found = await repo.search(searchRequest);
 
-    return res.json(found);
-  },
+      return res.json(found);
+    }
 
-  async searchRecipes(req: Request, res: Response) {
-    const searchRequest = create(req.query, validSearchRequest);
+    if (index === 'ingredients') {
+      const repo = new IngredientRepo();
+      const found = await repo.search(searchRequest);
 
-    const repo = new RecipeRepo();
-    const found = await repo.search(searchRequest);
+      return res.json(found);
+    }
 
-    return res.json(found);
+    if (index === 'recipes') {
+      const repo = new RecipeRepo();
+      const found = await repo.search(searchRequest);
+
+      return res.json(found);
+    }
+
+    throw new NotFoundException();
   }
 };
