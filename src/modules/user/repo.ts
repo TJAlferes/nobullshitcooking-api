@@ -1,4 +1,4 @@
-import { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
+import type { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
 import { NOBSC_USER_ID, UNKNOWN_USER_ID } from '../shared/model';
 import { MySQLRepo } from '../shared/MySQL';
@@ -30,14 +30,15 @@ export class UserRepo extends MySQLRepo implements UserRepoInterface {
     return row;
   }
 
-  async getByUsername(username: string): Promise<UserData | undefined> {
+  async getByUsername(username: string) {
     const sql = `
       SELECT user_id, email, username, confirmation_code
       FROM user
       WHERE username = ?
     `;
     const [ [ row ] ] = await this.pool.execute<UserData[]>(sql, [username]);
-    return row;
+    console.log(row);
+    return row ? row : undefined;
   }
 
   async getByConfirmationCode(confirmation_code: string): Promise<UserData | undefined> {

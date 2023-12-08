@@ -23,7 +23,6 @@ import { recipeRouter } from './modules/recipe/router';
 import { searchRouter } from './modules/search/router';
 import { unitRouter } from './modules/shared/unit/router';
 import { userRouter } from './modules/user/router';
-import { profileController } from './modules/user/profile/controller';
 import { catchExceptions, userIsAuth } from './utils/index';
 
 const router = Router();
@@ -113,13 +112,6 @@ export function apiV1Router() {
     userIsAuth,
     sanitize(['subfolder', 'image_filename', 'size']),
     catchExceptions(AwsS3PublicUploadsController.signUrlToUploadImage)
-  );
-
-  //
-
-  router.get(
-    '/:username',
-    catchExceptions(profileController.view)
   );
 
   router.get(

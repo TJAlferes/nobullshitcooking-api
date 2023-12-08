@@ -1,7 +1,8 @@
 import { Router } from 'express';
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 
 import { catchExceptions, userIsAuth } from '../../utils';
+import { profileController } from './profile/controller';
 //import { chatgroupRouter } from './chatgroup/router';
 import { privateEquipmentRouter } from './private-equipment/router';
 import { privateIngredientRouter } from './private-ingredient/router';
@@ -31,6 +32,12 @@ export function userRouter() {
   router.use('/:username/saved-recipes', savedRecipeRouter());
   router.use('/:username/friendships', friendshipRouter());
 
+  router.get(
+    '/:username',
+    sanitizeParams('username'),
+    catchExceptions(profileController.view)
+  );
+
   router.post(
     '/',
     sanitizeBody(['email', 'password', 'username']),
@@ -40,6 +47,7 @@ export function userRouter() {
   router.patch(
     '/:username/email',
     userIsAuth,
+    sanitizeParams('username'),
     sanitizeBody('new_email'),
     catchExceptions(userController.updateEmail)
   );
@@ -47,6 +55,7 @@ export function userRouter() {
   router.patch(
     '/:username/password',
     userIsAuth,
+    sanitizeParams('username'),
     sanitizeBody('new_password'),
     catchExceptions(userController.updatePassword)
   );
@@ -54,6 +63,7 @@ export function userRouter() {
   router.patch(
     '/:username/username',
     userIsAuth,
+    sanitizeParams('username'),
     sanitizeBody('new_username'),
     catchExceptions(userController.updateUsername)
   );
@@ -61,6 +71,7 @@ export function userRouter() {
   router.delete(
     '/:username',
     userIsAuth,
+    sanitizeParams('username'),
     catchExceptions(userController.delete)
   );
   
@@ -69,4 +80,8 @@ export function userRouter() {
 
 function sanitizeBody(keys: string | string[]) {
   return body(keys).trim().notEmpty();
+}
+
+function sanitizeParams(keys: string | string[]) {
+  return param(keys).trim().notEmpty();
 }
