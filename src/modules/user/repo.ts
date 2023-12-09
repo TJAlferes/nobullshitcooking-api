@@ -4,30 +4,30 @@ import { NOBSC_USER_ID, UNKNOWN_USER_ID } from '../shared/model';
 import { MySQLRepo } from '../shared/MySQL';
 
 export class UserRepo extends MySQLRepo implements UserRepoInterface {
-  async getPassword(email: string): Promise<string | undefined> {
+  async getPassword(email: string) {
     const sql = `SELECT password FROM user WHERE email = ?`;
     const [ [ row ] ] = await this.pool.query<PasswordData[]>(sql, [email]);
-    return row.password;
+    return row ? row.password : undefined;
   }  // be very careful with this, never expose
 
-  async getByUserId(user_id: string): Promise<UserData | undefined> {
+  async getByUserId(user_id: string) {
     const sql = `
       SELECT user_id, email, username, confirmation_code
       FROM user
       WHERE user_id = ?
     `;
     const [ [ row ] ] = await this.pool.query<UserData[]>(sql, [user_id]);
-    return row;
+    return row ? row : undefined;
   }
 
-  async getByEmail(email: string): Promise<UserData | undefined> {
+  async getByEmail(email: string) {
     const sql = `
       SELECT user_id, email, username, confirmation_code
       FROM user
       WHERE email = ?
     `;
     const [ [ row ] ] = await this.pool.query<UserData[]>(sql, [email]);
-    return row;
+    return row ? row : undefined;
   }
 
   async getByUsername(username: string) {
@@ -37,18 +37,17 @@ export class UserRepo extends MySQLRepo implements UserRepoInterface {
       WHERE username = ?
     `;
     const [ [ row ] ] = await this.pool.execute<UserData[]>(sql, [username]);
-    console.log(row);
     return row ? row : undefined;
   }
 
-  async getByConfirmationCode(confirmation_code: string): Promise<UserData | undefined> {
+  async getByConfirmationCode(confirmation_code: string) {
     const sql = `
       SELECT user_id, email, username, confirmation_code
       FROM user
       WHERE confirmation_code = ?
     `;
     const [ [ row ] ] = await this.pool.execute<UserData[]>(sql, [confirmation_code]);
-    return row;
+    return row ? row : undefined;
   }
 
   async insert(params: InsertParams) {

@@ -46,6 +46,7 @@ export class UserService {
     });
   }
 
+  // should we also send them through the confirmation code flow again???
   async updateEmail({ user_id, new_email }: UpdateEmailParams) {
     const existingUser = await this.repo.getByUserId(user_id);
     if (!existingUser) throw new NotFoundException('User does not exist.');
