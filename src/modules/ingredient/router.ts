@@ -20,5 +20,10 @@ export function ingredientRouter() {
     catchExceptions(controller.viewOneByFullname)
   );
 
+  router.get(
+    '/',
+    catchExceptions(controller.viewAll)
+  );
+
   return router;
 }

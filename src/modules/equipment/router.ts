@@ -20,5 +20,10 @@ export function equipmentRouter() {
     catchExceptions(controller.viewOneByName)
   );
 
+  router.get(
+    '/',
+    catchExceptions(controller.viewAll)
+  );
+
   return router;
 }

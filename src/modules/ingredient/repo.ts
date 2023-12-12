@@ -105,7 +105,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
     const sql = `
       SELECT ${fullnameSql} AS fullname
       FROM ingredient i
-      INNER JOIN ingredient_alt_name n ON i.ingredient_id = n.ingredient_id
+      LEFT JOIN ingredient_alt_name n ON i.ingredient_id = n.ingredient_id
       WHERE i.owner_id = ?`;
     const [ rows ] = await this.pool.execute<FullnameView[]>(sql, [owner_id]);
     return rows;
@@ -128,7 +128,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
         m.caption
       FROM ingredient i
       INNER JOIN ingredient_type t     ON i.ingredient_type_id = t.ingredient_type_id
-      INNER JOIN ingredient_alt_name n ON i.ingredient_id      = n.ingredient_id
+      LEFT JOIN ingredient_alt_name n ON i.ingredient_id      = n.ingredient_id
       INNER JOIN image m               ON i.image_id           = m.image_id
       WHERE i.owner_id = ?
       ORDER BY i.ingredient_name ASC
@@ -294,8 +294,8 @@ type IngredientView = RowDataPacket & {
   ingredient_type_id:   number;
   ingredient_type_name: string;
   owner_id:             string;
-  ingredient_brand:     string;
-  ingredient_variety:   string;
+  ingredient_brand:     string | null;
+  ingredient_variety:   string | null;
   ingredient_name:      string;
   fullname:             string;
   notes:                string;
