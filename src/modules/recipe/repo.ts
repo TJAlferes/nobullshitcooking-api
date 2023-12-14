@@ -148,22 +148,22 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
         u.username AS author,
         r.title,
         (
-          SELECT i1.image_filename
-          FROM image i1
-          INNER JOIN recipe_image ri1 ON i1.image_id = ri1.image_id
-          WHERE ri1.recipe_id = r.recipe_id AND ri1.type = 1
+          SELECT i.image_filename
+          FROM image i
+          INNER JOIN recipe_image ri ON i.image_id = ri.image_id
+          WHERE ri.recipe_id = r.recipe_id AND ri.type = 1
           LIMIT 1
         ) image_filename
       FROM recipe r
       INNER JOIN user u ON r.author_id = u.user_id
       WHERE r.author_id = ? AND r.owner_id = ?
     `;
-    const [ rows ] = await this.pool.execute<(RecipeOverview & RowDataPacket)[]>(sql, [
+    const [ rows ] = await this.pool.execute<RecipeOverview[]>(sql, [
       author_id,
       owner_id
     ]);
     return rows;
-  }  // for logged in user
+  }  // for logged in user, for plan creation
 
   async viewOneByRecipeId(recipe_id: string) {
     const sql = `${recipeDetailViewSQL} WHERE r.recipe_id = ?`;
@@ -310,7 +310,7 @@ export interface RecipeRepoInterface {
   search:                (searchRequest: SearchRequest) =>    Promise<SearchResponse>;
   hasPrivate:            (recipe_ids: string[]) =>            Promise<boolean>;
   viewAllOfficialTitles: () =>                                Promise<TitleView[]>;
-  overviewAll:           (params: OverviewAllParams) =>       Promise<(RecipeOverview & RowDataPacket)[]>;
+  overviewAll:           (params: OverviewAllParams) =>       Promise<RecipeOverview[]>;
   viewOneByRecipeId:     (recipe_id: string) =>               Promise<RecipeView>;
   viewOneByTitle:        (title: string) =>                   Promise<RecipeView>;
   viewOneToEdit:         (recipe_id: string) =>               Promise<EditRecipeView>;
@@ -336,7 +336,7 @@ type OverviewAllParams = {
   owner_id:  string;
 };
 
-export type RecipeOverview = {
+export type RecipeOverview = RowDataPacket & {
   recipe_id:      string;
   author_id:      string;
   owner_id:       string;

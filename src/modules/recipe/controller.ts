@@ -29,5 +29,15 @@ export const recipeController = {
     if (recipe.owner_id !== owner_id) throw new NotFoundException(); 
 
     return res.json(recipe);
-  }  // for Next.js getStaticProps
+  },  // for Next.js getStaticProps
+
+  async overviewAllOfficialRecipes(req: Request, res: Response) {
+    const author_id = NOBSC_USER_ID;
+    const owner_id = NOBSC_USER_ID;
+
+    const repo = new RecipeRepo();
+    const official_recipes = await repo.overviewAll({author_id, owner_id});
+
+    return res.status(200).json(official_recipes);
+  }
 };

@@ -17,5 +17,10 @@ export function recipeRouter() {
     catchExceptions(controller.viewOneByTitle)
   );
 
+  router.get(
+    '/',
+    catchExceptions(controller.overviewAllOfficialRecipes)
+  );
+
   return router;
 }
