@@ -18,14 +18,24 @@ export class PlanRecipeRepo extends MySQLRepo implements PlanRecipeRepoInterface
   }  // Where is this used?
 
   async bulkInsert({ placeholders, plan_recipes }: BulkInsertParams) {  // TO DO: change to namedPlaceholders using example below
+    const flat_recipes = plan_recipes.flatMap(({
+      plan_id,
+      recipe_id,
+      day_number,
+      recipe_number
+    }) => ([
+      plan_id,
+      recipe_id,
+      day_number,
+      recipe_number
+    ]));
     const sql = `
       INSERT INTO plan_recipe (plan_id, recipe_id, day_number, recipe_number)
       VALUES ${placeholders}
     `;
-    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, plan_recipes);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, flat_recipes);
     if (result.affectedRows < 1) throw new Error('Query not successful.');
-    // just change bulkInserts to transactions?
-  }
+  }  // just change bulkInserts to transactions?
 
   async bulkUpdate({ plan_id, placeholders, plan_recipes }: BulkUpdateParams) {  // TO DO: change to namedPlaceholders using example below
     // Rather than updating current values in the database, we delete them,
