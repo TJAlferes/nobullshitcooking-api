@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import { uuidv7 } from 'uuidv7';
 
-import { ConflictException, NotFoundException} from '../../../utils/exceptions';
+import { ConflictException, NotFoundException, UnauthorizedException} from '../../../utils/exceptions';
 import { socketIOServer } from '../../../app';
 import { NOBSC_USER_ID } from '../../shared/model';
 //import { ChatgroupRepo }             from '../../chat/group/repo';
@@ -104,41 +104,74 @@ export const userAuthenticationController = {
       //chatgroupRepo.viewAll(user_id)
     ]);
 
-    req.session.user_id  = user_id;
-    req.session.username = username;
+    // regenerate the session, which is good practice to help
+    // guard against forms of session fixation
+    req.session.regenerate(function (err) {
+      if (err) {
+        console.log(err);
+        throw new UnauthorizedException();
+      }
 
-    return res.status(201).json({
-      auth_id: user_id,
-      auth_email: email,
-      authname: username,
-      auth_avatar: my_avatar?.image_filename,
-      my_friendships,
-      my_public_plans,
-      my_public_recipes,
-      my_favorite_recipes,
-      my_private_equipment,
-      my_private_ingredients,
-      my_private_plans,
-      my_private_recipes,
-      my_saved_recipes,
-      //my_chatgroups: []
+      req.session.user_id  = user_id;
+      req.session.username = username;
+
+      // save the session before redirection to ensure page
+      // load does not happen before session is saved
+      req.session.save(function (err) {
+        if (err) {
+          console.log(err);
+          throw new UnauthorizedException();
+        }
+
+        res.status(201).json({
+          auth_id: user_id,
+          auth_email: email,
+          authname: username,
+          auth_avatar: my_avatar?.image_filename,
+          my_friendships,
+          my_public_plans,
+          my_public_recipes,
+          my_favorite_recipes,
+          my_private_equipment,
+          my_private_ingredients,
+          my_private_plans,
+          my_private_recipes,
+          my_saved_recipes,
+          //my_chatgroups: []
+        });
+      });
     });
   },
 
   async logout(req: Request, res: Response) {
     const session_id = req.session.user_id!;
+    req.session.user_id = undefined;
+    req.session.username = undefined;
     req.session!.destroy(() => {});
     // disconnect all Socket.IO connections linked to this session ID
     socketIOServer.in(session_id).disconnectSockets();
     return res.status(204).end();
     // old code:
-    //const session_id = req.session.user_id!;
     //req.session!.destroy(() => {
     //  // disconnect all Socket.IO connections linked to this session ID
     //  socketIOServer.in(session_id).disconnectSockets();
     //  return res.status(204).end();
     //});
     //res.end();
+
+    // clear the user from the session object and save.
+    // this will ensure that re-using the old session id
+    // does not have a logged in user
+    /*req.session.user = null
+    req.session.save(function (err) {
+      if (err) next(err)
+      // regenerate the session, which is good practice to help
+      // guard against forms of session fixation
+      req.session.regenerate(function (err) {
+        if (err) next(err)
+        res.redirect('/')
+      })
+    })*/
   },
 
   async forgotPassword(req: Request, res: Response) {

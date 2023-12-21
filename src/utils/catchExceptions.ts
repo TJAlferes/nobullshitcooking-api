@@ -5,7 +5,7 @@ export const catchExceptions = (fn: Function) =>
     Promise
       .resolve(fn(req, res, next))
       .catch(err => {
-        //console.log(err);
+        console.log(err);
         next(err);
       });
 

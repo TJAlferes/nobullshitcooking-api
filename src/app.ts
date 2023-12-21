@@ -6,16 +6,16 @@ import { rateLimit } from 'express-rate-limit';
 import expressSession, { Session, SessionData } from 'express-session';
 import helmet from 'helmet';
 import hpp from 'hpp';
-import { createServer } from 'node:http';
+import { createServer } from 'http';
 import { pinoHttp } from 'pino-http';  // logger
-import process from 'node:process';
+import process from 'process';
 
 import { redisClients } from './connections/redis';
 import { createSocketIOServer } from './modules/chat/server';
 import { instanceOfAnyException } from './utils/exceptions';
 import { apiV1Router } from './router';
 
-declare module 'node:http' {
+declare module 'http' {
   interface IncomingMessage {
     session: Session & Partial<SessionData>;
   }
@@ -61,31 +61,34 @@ if (app.get('env') === 'production') {
 
 const redisStore = new RedisStore({client: redisClients.sessionClient});
 const sessionMiddleware = expressSession({
-  cookie: (app.get('env') === 'production')
+  cookie: app.get('env') === 'production'
     ? {
+      maxAge: 86400000,  // 86400000 ms = 1 day
       httpOnly: true,
-      maxAge: 86400000,  // 86400000 milliseconds = 1 day
-      sameSite: 'none',
+      sameSite: 'strict',
       secure: true
     }
     : {
-      httpOnly: false,
       maxAge: 86400000,
-      sameSite: false,
-      secure: false
+      httpOnly: false,
+      sameSite: 'lax'
     },
   resave: false,
   saveUninitialized: false,
-  secret: process.env.SESSION_SECRET || 'secret',  // TO DO: finish
+  secret: app.get('env') === 'production'
+    ? process.env.SESSION_SECRET!
+    : 'secret',
   store: redisStore,
   unset: 'destroy'
 });
 if (app.get('env') !== 'test') app.use(pinoHttp());  // logger
-app.use(express.json({limit: '1kb'}));
-app.use(express.urlencoded({extended: true, limit: '1kb'}));
+app.use(express.json({limit: '10kb'}));
+app.use(express.urlencoded({extended: true, limit: '10kb'}));
 app.use(sessionMiddleware);
 app.use(cors({
+  allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
   credentials: true,
+  methods: 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
   origin: (app.get('env') === 'production')
     ? ['https://nobullshitcooking.com']
     : [

@@ -11,6 +11,7 @@ export class PlanRecipeService {
   }
 
   async bulkCreate({ plan_id, included_recipes }: BulkCreateParams) {
+    console.log('included_recipes: ', included_recipes);
     if (included_recipes.length < 1) return;
 
     const placeholders = '(?, ?, ?, ?),'
@@ -18,10 +19,16 @@ export class PlanRecipeService {
       .slice(0, -1);
 
     const plan_recipes = included_recipes.map(included_recipe =>
-      PlanRecipe.create({plan_id, ...included_recipe}).getDTO()
+      PlanRecipe.create({
+        plan_id,
+        recipe_id: included_recipe.recipe_id,
+        day_number: Number(included_recipe.day_number),
+        recipe_number: Number(included_recipe.recipe_number)
+      }).getDTO()
     );
-
-    this.ensureUniqueNumbers(included_recipes);
+    
+    this.ensureUniqueDayNumbers(included_recipes);
+    this.ensureUniqueRecipeNumbers(included_recipes);
 
     await this.repo.bulkInsert({placeholders, plan_recipes});
   }
@@ -40,14 +47,14 @@ export class PlanRecipeService {
       PlanRecipe.create({plan_id, ...included_recipe}).getDTO()
     );
     
-    this.ensureUniqueNumbers(included_recipes);
+    this.ensureUniqueDayNumbers(included_recipes);
+    this.ensureUniqueRecipeNumbers(included_recipes);
 
     await this.repo.bulkUpdate({plan_id, placeholders, plan_recipes});
   }
 
-  ensureUniqueNumbers(included_recipes: IncludedRecipe[]) {
+  ensureUniqueDayNumbers(included_recipes: IncludedRecipe[]) {
     const dayNumbers = new Set<number>();
-    const recipeNumbers = new Set<number>();
 
     included_recipes.map(({ day_number, recipe_number }) => {
       if (dayNumbers.has(day_number)) {
@@ -55,11 +62,27 @@ export class PlanRecipeService {
       } else {
         dayNumbers.add(day_number);
       }
+    });
+  }
 
-      if (recipeNumbers.has(recipe_number)) {
-        throw new ValidationException('Duplicate recipe_number in plan.');
-      } else {
-        recipeNumbers.add(recipe_number);
+  ensureUniqueRecipeNumbers(included_recipes: IncludedRecipe[]) {
+    included_recipes.map(({ day_number, recipe_number }) => {
+      const days: number[][] = [];
+
+      days[day_number]
+        ? days[day_number].push(recipe_number)
+        : days[day_number] = [recipe_number];
+
+      for (const day of days) {
+        const recipeNumbers = new Set<number>();
+
+        day.map(recipe_number => {
+          if (recipeNumbers.has(recipe_number)) {
+            throw new ValidationException('Duplicate recipe_number in plan.');
+          } else {
+            recipeNumbers.add(recipe_number);
+          }
+        });
       }
     });
   }
