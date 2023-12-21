@@ -3,16 +3,23 @@ import { ResultSetHeader } from 'mysql2';
 import { MySQLRepo } from '../../shared/MySQL';
 
 export class IngredientAltNameRepo extends MySQLRepo implements IngredientAltNameRepoInterface {
-  async insert({ placeholders, alt_names }: InsertParams) {
+  async bulkInsert({ placeholders, alt_names }: InsertParams) {
+    const flat = alt_names.flatMap(({
+      ingredient_id,
+      alt_name
+    }) => ([
+      ingredient_id,
+      alt_name
+    ]));
     const sql = `
       INSERT INTO ingredient_alt_name (ingredient_id, alt_name)
       VALUES ${placeholders}
     `;
-    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, alt_names);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, flat);
     if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
-  async update({ ingredient_id, placeholders, alt_names }: UpdateParams) {
+  async bulkUpdate({ ingredient_id, placeholders, alt_names }: UpdateParams) {
     // Rather than updating current values in the database, we delete them,
     // and if there are new values, we insert them.
     const conn = await this.pool.getConnection();
@@ -24,12 +31,19 @@ export class IngredientAltNameRepo extends MySQLRepo implements IngredientAltNam
       await conn.query(sql, [ingredient_id]);
 
       if (alt_names.length) {
+        const flat = alt_names.flatMap(({
+          ingredient_id,
+          alt_name
+        }) => ([
+          ingredient_id,
+          alt_name
+        ]));
         let sql = `
           INSERT INTO ingredient_alt_name (ingredient_id, alt_name)
           VALUES ${placeholders}
         `;
 
-        await conn.query(sql, alt_names);
+        await conn.query(sql, flat);
       }
     } catch (err) {
 
@@ -51,8 +65,8 @@ export class IngredientAltNameRepo extends MySQLRepo implements IngredientAltNam
 }
 
 export interface IngredientAltNameRepoInterface {
-  insert:               (params: InsertParams) =>  Promise<void>;
-  update:               (params: UpdateParams) =>  Promise<void>;
+  bulkInsert:           (params: InsertParams) =>  Promise<void>;
+  bulkUpdate:           (params: UpdateParams) =>  Promise<void>;
   deleteByIngredientId: (ingredient_id: string) => Promise<void>;
 }
 

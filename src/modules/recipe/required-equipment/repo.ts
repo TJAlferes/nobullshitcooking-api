@@ -16,11 +16,20 @@ export class RecipeEquipmentRepo extends MySQLRepo implements RecipeEquipmentRep
   }
 
   async bulkInsert({ placeholders, recipe_equipment }: BulkInsertParams) {  // TO DO: change to namedPlaceholders using example below
+    const flat = recipe_equipment.flatMap(({
+      recipe_id,
+      amount,
+      equipment_id
+    }) => ([
+      recipe_id,
+      amount,
+      equipment_id
+    ]));
     const sql = `
       INSERT INTO recipe_equipment (recipe_id, amount, equipment_id)
       VALUES ${placeholders}
     `;
-    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, recipe_equipment);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, flat);
     if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
@@ -33,11 +42,20 @@ export class RecipeEquipmentRepo extends MySQLRepo implements RecipeEquipmentRep
       let sql = `DELETE FROM recipe_equipment WHERE recipe_id = ?`;
       await conn.query(sql, [recipe_id]);
       if (recipe_equipment.length > 0) {
+        const flat = recipe_equipment.flatMap(({
+          recipe_id,
+          amount,
+          equipment_id
+        }) => ([
+          recipe_id,
+          amount,
+          equipment_id
+        ]));
         let sql = `
           INSERT INTO recipe_equipment (recipe_id, amount, equipment_id)
           VALUES ${placeholders}
         `;
-        await conn.query(sql, recipe_equipment);
+        await conn.query(sql, flat);
       }
       await conn.commit();
     } catch (err) {

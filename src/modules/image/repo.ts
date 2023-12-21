@@ -20,11 +20,24 @@ export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
   }
 
   async bulkInsert({ placeholders, images }: BulkInsertParams) {
+    const flat = images.flatMap(({
+      image_id,
+      image_filename,
+      caption,
+      author_id,
+      owner_id
+    }) => ([
+      image_id,
+      image_filename,
+      caption,
+      author_id,
+      owner_id
+    ]));
     const sql = `
       INSERT INTO image (image_id, image_filename, caption, author_id, owner_id)
       VALUES ${placeholders}
     `;
-    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, images);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, flat);
     if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 

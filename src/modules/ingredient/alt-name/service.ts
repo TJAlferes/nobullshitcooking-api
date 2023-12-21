@@ -17,7 +17,7 @@ export class IngredientAltNameService {
       IngredientAltName.create({ingredient_id, alt_name}).getDTO()
     );
 
-    await this.repo.insert({placeholders, alt_names: valid_alt_names});
+    await this.repo.bulkInsert({placeholders, alt_names: valid_alt_names});
   }
 
   async update({ ingredient_id, alt_names }: UpdateParams) {
@@ -32,7 +32,7 @@ export class IngredientAltNameService {
       IngredientAltName.create({ingredient_id, alt_name}).getDTO()
     );
 
-    await this.repo.update({ingredient_id, placeholders, alt_names: valid_alt_names});
+    await this.repo.bulkUpdate({ingredient_id, placeholders, alt_names: valid_alt_names});
   }
 }
 

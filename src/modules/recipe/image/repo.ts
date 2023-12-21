@@ -15,11 +15,20 @@ export class RecipeImageRepo extends MySQLRepo implements RecipeImageRepoInterfa
   }
 
   async bulkInsert({ placeholders, recipe_images }: BulkInsertParams) {
+    const flat = recipe_images.flatMap(({
+      recipe_id,
+      image_id,
+      type
+    }) => ([
+      recipe_id,
+      image_id,
+      type
+    ]));
     const sql = `
       INSERT INTO recipe_image (recipe_id, image_id, type)
       VALUES ${placeholders}
     `;
-    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, recipe_images);
+    const [ result ] = await this.pool.execute<ResultSetHeader>(sql, flat);
     if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
