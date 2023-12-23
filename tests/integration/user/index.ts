@@ -56,7 +56,7 @@ export function usersTests(app: Express) {
     });
   });
 
-  describe('PATCH /v1/users/FakeUser1/email', () => {
+  describe('PATCH /v1/users/:username/email', () => {
     let agent: SuperAgentTest;
 
     beforeEach(async () => {
@@ -92,7 +92,7 @@ export function usersTests(app: Express) {
     });
   });
 
-  describe('PATCH /v1/users/FakeUser1/password', () => {
+  describe('PATCH /v1/users/:username/password', () => {
     let agent: SuperAgentTest;
 
     beforeEach(async () => {
@@ -119,7 +119,7 @@ export function usersTests(app: Express) {
     });
   });
 
-  describe('PATCH /v1/users/FakeUser1/username', () => {
+  describe('PATCH /v1/users/:username/username', () => {
     let agent: SuperAgentTest;
 
     beforeEach(async () => {
@@ -155,7 +155,7 @@ export function usersTests(app: Express) {
     });
   });
 
-  describe('DELETE /v1/users/FakeUser1', () => {
+  describe('DELETE /v1/users/:username', () => {
     it('handles success', async () => {
       const agent = request.agent(app);
 

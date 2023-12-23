@@ -1,6 +1,8 @@
 import request from 'supertest';
 import type { Express } from 'express';
 
+// TO DO: update
+
 export function searchTests(app: Express) {
   describe('GET /v1/search/auto/equipment', () => {
     it('handles success', async () => {

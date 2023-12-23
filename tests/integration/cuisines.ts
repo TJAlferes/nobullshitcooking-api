@@ -13,5 +13,10 @@ export function cuisinesTests(app: Express) {
         country_name:   "Algeria"
       });
     });
+
+    it('handles not found', async () => {
+      const res = await request(app).get('/v1/cuisines/999');
+      expect(res.status).toBe(404);
+    });
   });
 }

@@ -3,9 +3,11 @@ import type { Express } from 'express';
 
 export function ingredientsTests(app: Express) {
   describe('GET /v1/ingredients/:ingredient_id', () => {
-    it('returns data correctly', async () => {
+    it('handles success', async () => {
       const res = await request(app)
         .get('/v1/ingredients/018b5ade-dc58-70c4-bf36-2edcf351ef12');
+
+      expect(res.status).toBe(200);
       expect(res.body).toEqual({
         ingredient_id: '018b5ade-dc58-70c4-bf36-2edcf351ef12',
         ingredient_type_id: 16,
@@ -20,6 +22,12 @@ export function ingredientsTests(app: Express) {
         image_filename: 'sage',
         caption: ' Sage'
       });
+    });
+
+    it('handles not found', async () => {
+      const res = await request(app)
+        .get('/v1/ingredients/018b5ade-dc58-70c4-bf36-2edcf3f00000');
+      expect(res.status).toBe(404);
     });
   });
 }

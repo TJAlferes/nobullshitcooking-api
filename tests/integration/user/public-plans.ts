@@ -20,7 +20,7 @@ export function publicPlansTests(app: Express) {
     await agent.post('/v1/logout');
   });
 
-  describe('POST /v1/users/FakeUser1/public-plans', () => {
+  describe('POST /v1/users/:username/public-plans', () => {
     it('handles success', async () => {
       const res = await agent
         .post('/v1/users/FakeUser1/public-plans')
@@ -35,7 +35,7 @@ export function publicPlansTests(app: Express) {
     });
   });
 
-  describe('PATCH /v1/users/FakeUser1/public-plans', () => {
+  describe('PATCH /v1/users/:username/public-plans', () => {
     it('handles not found', async () => {
       const res = await agent
         .patch('/v1/users/FakeUser1/public-plans')
@@ -47,7 +47,7 @@ export function publicPlansTests(app: Express) {
           ]
         });
       
-      expect(res.status).toBe(204);
+      expect(res.status).toBe(404);
     });
 
     it('handles forbidden', async () => {
@@ -79,17 +79,17 @@ export function publicPlansTests(app: Express) {
     });
   });
 
-  describe('DELETE /v1/users/FakeUser1/public-plans', () => {
+  describe('DELETE /v1/users/:username/public-plans/:plan_id', () => {
     it('handles not found', async () => {
       const res = await agent
-        .delete('/v1/users/FakeUser1/private-plans/11116942-973a-8b4f-0e4f-3509084c0000');
+        .delete('/v1/users/FakeUser1/public-plans/11116942-973a-8b4f-0e4f-3509084c0000');
       
       expect(res.status).toBe(404);
     });
 
     it('handles forbidden', async () => {
       const res = await agent
-        .delete('/v1/users/FakeUser1/private-plans/11116942-973b-8b4f-0e4f-3509084cff2b');
+        .delete('/v1/users/FakeUser1/public-plans/11116942-973b-8b4f-0e4f-3509084cff2b');
       
       expect(res.status).toBe(403);
     });

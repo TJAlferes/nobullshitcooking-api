@@ -26,7 +26,7 @@ export function privateEquipmentTests(app: Express) {
     await agent.post('/v1/logout');
   });
 
-  describe('POST /v1/users/FakeUser1/private-equipment', () => {
+  describe('POST /v1/users/:username/private-equipment', () => {
     it('handles success', async () => {
       const res = await agent
         .post('/v1/users/FakeUser1/private-equipment')
@@ -42,7 +42,7 @@ export function privateEquipmentTests(app: Express) {
     });
   });
 
-  describe('PATCH /v1/users/FakeUser1/private-equipment', () => {
+  describe('PATCH /v1/users/:username/private-equipment', () => {
     it('handles not found', async () => {
       const res = await agent
         .patch('/v1/users/FakeUser1/private-equipment')
@@ -92,7 +92,7 @@ export function privateEquipmentTests(app: Express) {
     });
   });
 
-  describe('DELETE /v1/users/FakeUser1/private-equipment/:equipment_id', () => {
+  describe('DELETE /v1/users/:username/private-equipment/:equipment_id', () => {
     it('handles not found', async () => {
       const res = await agent
         .delete('/v1/users/FakeUser1/private-equipment/018b5ade-5439-7d0d-b42c-f262d9f00000');

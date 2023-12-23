@@ -3,9 +3,11 @@ import type { Express } from 'express';
 
 export function equipmentTests(app: Express) {
   describe('GET /v1/equipment/:equipment_id', () => {
-    it('returns data correctly', async () => {
+    it('handles success', async () => {
       const res = await request(app)
         .get('/v1/equipment/018b5ade-5438-7d0c-b42b-f2641487f7cc');
+
+      expect(res.status).toBe(200);
       expect(res.body).toEqual({
         equipment_id: '018b5ade-5438-7d0c-b42b-f2641487f7cc',
         equipment_type_id: 2,
@@ -17,6 +19,12 @@ export function equipmentTests(app: Express) {
         image_filename: 'chefs-knife',
         caption: "Chef's Knife",
       });
+    });
+
+    it('handles not found', async () => {
+      const res = await request(app)
+        .get('/v1/equipment/018b5ade-5438-7d0c-b42b-f26414f00000');
+      expect(res.status).toBe(404);
     });
   });
 }

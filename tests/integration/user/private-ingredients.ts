@@ -20,7 +20,7 @@ export function privateIngredientsTests(app: Express) {
     await agent.post('/v1/logout');
   });
 
-  describe('POST /v1/users/FakeUser1/private-ingredients', () => {
+  describe('POST /v1/users/:username/private-ingredients', () => {
     it('handles success', async () => {
       const res = await agent
         .post('/v1/users/FakeUser1/private-ingredients')
@@ -39,7 +39,7 @@ export function privateIngredientsTests(app: Express) {
     });
   });
 
-  describe('PATCH /v1/users/FakeUser1/private-ingredients', () => {
+  describe('PATCH /v1/users/:username/private-ingredients', () => {
     it('handles not found', async () => {
       const res = await agent
         .patch('/v1/users/FakeUser1/private-ingredients')
@@ -98,7 +98,7 @@ export function privateIngredientsTests(app: Express) {
     });
   });
 
-  describe('DELETE /v1/users/FakeUser1/private-ingredients', () => {
+  describe('DELETE /v1/users/:username/private-ingredients/:ingredient_id', () => {
     it('handles not found', async () => {
       const res = await agent
         .delete('/v1/users/FakeUser1/private-ingredients/018b5ade-dc55-7dc0-92dd-3ff301230000');

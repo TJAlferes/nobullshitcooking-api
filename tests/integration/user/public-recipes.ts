@@ -95,7 +95,7 @@ export function publicRecipesTests(app: Express) {
     await agent.post('/v1/logout');
   });
 
-  describe('GET /v1/users/FakeUser1/public-recipes/:recipe_id/edit', () => {
+  describe('GET /v1/users/:username/public-recipes/:recipe_id/edit', () => {
     it('handles success', async () => {
       const res = await agent
         .get('/v1/users/FakeUser1/public-recipes/pubb6942-6b2f-7943-8ab6-3509084cf00e/edit');
@@ -104,7 +104,7 @@ export function publicRecipesTests(app: Express) {
     });
   });
 
-  describe('GET /v1/users/FakeUser1/public-recipes/:title', () => {
+  describe('GET /v1/users/:username/public-recipes/:title', () => {
     it('handles success', async () => {
       const res = await agent
         .get('/v1/users/FakeUser1/public-recipes/Public%20Grilled%20Chicken');
@@ -113,7 +113,7 @@ export function publicRecipesTests(app: Express) {
     });
   });
 
-  describe('POST /v1/users/FakeUser1/public-recipes', () => {
+  describe('POST /v1/users/:username/public-recipes', () => {
     it('handles success', async () => {
       const res = await agent
         .post('/v1/users/FakeUser1/public-recipes')
@@ -123,7 +123,7 @@ export function publicRecipesTests(app: Express) {
     });
   });
 
-  describe('PATCH /v1/users/FakeUser1/public-recipes', () => {
+  describe('PATCH /v1/users/:username/public-recipes', () => {
     it('handles not found', async () => {
       const res = await agent
         .patch('/v1/users/FakeUser1/public-recipes')
@@ -158,7 +158,7 @@ export function publicRecipesTests(app: Express) {
     });
   });
 
-  describe('DELETE /v1/users/FakeUser1/public-recipes/:recipe_id', () => {
+  describe('DELETE /v1/users/:username/public-recipes/:recipe_id', () => {
     it('handles not found', async () => {
       const res = await agent
         .delete('/v1/users/FakeUser1/public-recipes/11116942-6b2f-7943-8ab6-3509084c0000');

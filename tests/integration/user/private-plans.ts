@@ -20,7 +20,7 @@ export function privatePlansTests(app: Express) {
     await agent.post('/v1/logout');
   });
 
-  describe('POST /v1/users/FakeUser1/private-plans', () => {
+  describe('POST /v1/users/:username/private-plans', () => {
     it('handles success', async () => {
       const res = await agent
         .post('/v1/users/FakeUser1/private-plans')
@@ -35,7 +35,7 @@ export function privatePlansTests(app: Express) {
     });
   });
 
-  describe('PATCH /v1/users/FakeUser1/private-plans', () => {
+  describe('PATCH /v1/users/:username/private-plans', () => {
     it('handles not found', async () => {
       const res = await agent
         .patch('/v1/users/FakeUser1/private-plans')
@@ -79,7 +79,7 @@ export function privatePlansTests(app: Express) {
     });
   });
 
-  describe('DELETE /v1/users/FakeUser1/private-plans', () => {
+  describe('DELETE /v1/users/:username/private-plans/:plan_id', () => {
     it('handles not found', async () => {
       const res = await agent
         .delete('/v1/users/FakeUser1/private-plans/018b6942-973a-8b4f-0e4f-3509084c0000');

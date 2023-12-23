@@ -20,7 +20,7 @@ export function favoriteRecipesTests(app: Express) {
     await agent.post('/v1/logout');
   });
 
-  describe('GET /v1/users/FakeUser1/favorite-recipes', () => {
+  describe('GET /v1/users/:username/favorite-recipes', () => {
     it('handles success', async () => {
       const res = await agent.get('/v1/users/FakeUser1/favorite-recipes');
 
@@ -28,7 +28,7 @@ export function favoriteRecipesTests(app: Express) {
     });
   });
 
-  describe('POST /v1/users/FakeUser1/favorite-recipes', () => {
+  describe('POST /v1/users/:username/favorite-recipes/:recipe_id', () => {
     it('handles not found', async () => {
       const res = await agent
         .post('/v1/users/FakeUser1/favorite-recipes/018b6942-6b3f-7944-8ab7-3509084c0000');
@@ -51,7 +51,7 @@ export function favoriteRecipesTests(app: Express) {
     });
   });
 
-  describe('DELETE /v1/users/FakeUser1/favorite-recipes', () => {
+  describe('DELETE /v1/users/:username/favorite-recipes/:recipe_id', () => {
     it('handles not found', async () => {
       const res = await agent
         .delete('/v1/users/FakeUser1/favorite-recipes/018b6942-6b2e-7942-8ab5-350bb5730000');

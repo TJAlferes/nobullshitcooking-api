@@ -3,8 +3,10 @@ import type { Express } from 'express';
 
 export function recipesTests(app: Express) {
   describe('GET /v1/recipes/:title', () => {
-    it('returns data correctly', async () => {
+    it('handles success', async () => {
       const res = await request(app).get('/v1/recipes/Beef%20Stew');
+
+      expect(res.status).toBe(200);
       expect(res.body).toEqual({
         recipe_id: '018b6942-6b2e-7942-8ab5-350bb57371c7',
         author_id: '11111111-1111-1111-1111-111111111111',

@@ -95,7 +95,7 @@ export function privateRecipesTests(app: Express) {
     await agent.post('/v1/logout');
   });
 
-  describe('GET /v1/users/FakeUser1/private-recipes/:recipe_id/edit', () => {
+  describe('GET /v1/users/:username/private-recipes/:recipe_id/edit', () => {
     it('handles success', async () => {
       const res = await agent
         .get('/v1/users/FakeUser1/private-recipes/018b6942-6b2f-7943-8ab6-3509084cf00e/edit');
@@ -104,7 +104,7 @@ export function privateRecipesTests(app: Express) {
     });
   });
 
-  describe('GET /v1/users/FakeUser1/private-recipes/:recipe_id', () => {
+  describe('GET /v1/users/:username/private-recipes/:recipe_id', () => {
     it('handles success', async () => {
       const res = await agent
         .get('/v1/users/FakeUser1/private-recipes/018b6942-6b2f-7943-8ab6-3509084cf00e');
@@ -113,7 +113,7 @@ export function privateRecipesTests(app: Express) {
     });
   });
 
-  describe('POST /v1/users/FakeUser1/private-recipes', () => {
+  describe('POST /v1/users/:username/private-recipes', () => {
     it('handles success', async () => {
       const res = await agent
         .post('/v1/users/FakeUser1/private-recipes')
@@ -123,7 +123,7 @@ export function privateRecipesTests(app: Express) {
     });
   });
 
-  describe('PATCH /v1/users/FakeUser1/private-recipes', () => {
+  describe('PATCH /v1/users/:username/private-recipes', () => {
     it('handles not found', async () => {
       const res = await agent
         .patch('/v1/users/FakeUser1/private-recipes')
@@ -158,7 +158,7 @@ export function privateRecipesTests(app: Express) {
     });
   });
 
-  describe('DELETE /v1/users/FakeUser1/private-recipes/:recipe_id', () => {
+  describe('DELETE /v1/users/:username/private-recipes/:recipe_id', () => {
     it('handles not found', async () => {
       const res = await agent
         .delete('/v1/users/FakeUser1/private-recipes/018b6942-6b2f-7943-8ab6-3509084c0000');
