@@ -34,10 +34,10 @@ export const publicRecipeController = {
   },
 
   async viewOne(req: Request, res: Response) {
-    const { author, title } = req.params;
+    const { username, title } = req.params;
 
     const userRepo = new UserRepo();
-    const user = await userRepo.getByUsername(author);
+    const user = await userRepo.getByUsername(username);
     if (!user) throw new NotFoundException();
 
     const author_id = user.user_id;

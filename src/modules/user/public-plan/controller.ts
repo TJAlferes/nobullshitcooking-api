@@ -7,6 +7,7 @@ import { PlanRecipeRepo } from '../../plan/recipe/repo';
 import { PlanRecipeService } from '../../plan/recipe/service';
 import { Plan } from '../../plan/model';
 import { PlanRepo } from '../../plan/repo';
+import { UserRepo } from '../repo';
 import { PublicPlanService } from './service';
 
 export const publicPlanController = {
@@ -21,12 +22,17 @@ export const publicPlanController = {
   },
 
   async viewOne(req: Request, res: Response) {
-    const { plan_id } = req.params;
-    const author_id = req.session.user_id!;
+    const { username, plan_name } = req.params;
+
+    const userRepo = new UserRepo();
+    const user = await userRepo.getByUsername(username);
+    if (!user) throw new NotFoundException();
+
+    const author_id = user.user_id;
     const owner_id  = NOBSC_USER_ID;
     
     const planRepo = new PlanRepo();
-    const plan = await planRepo.viewOneByPlanId(plan_id);
+    const plan = await planRepo.viewOneByPlanName({plan_name, author_id, owner_id});
     if (!plan) throw new NotFoundException();
     if (plan.author_id !== author_id) throw new ForbiddenException();
     if (plan.owner_id !== owner_id) throw new ForbiddenException();

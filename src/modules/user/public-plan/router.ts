@@ -10,8 +10,8 @@ const router = Router();
 
 export function publicPlanRouter() {
   router.get(
-    '/:plan_id',
-    sanitizeParams('plan_id'),
+    '/:plan_name',
+    sanitizeParams('plan_name'),
     catchExceptions(controller.viewOne)
   );
 
