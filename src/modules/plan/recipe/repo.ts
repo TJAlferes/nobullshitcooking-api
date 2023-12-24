@@ -4,30 +4,29 @@ import { MySQLRepo } from '../../shared/MySQL';
 
 export class PlanRecipeRepo extends MySQLRepo implements PlanRecipeRepoInterface {
   async viewByPlanId(plan_id: string) {
-    // TO DO: finish
-    // pr.day_number
-    // pr.recipe_number
-    // pr.recipe_id
-    // r.author_id,
-    // u.author,
-    // r.owner_id,
-    // r.recipe_type_id,
-    // r.cuisine_id,
-    // r.title,
-    // ri.image_filename
     const sql = `
-      SELECT r.image_filename, r.title
+      SELECT
+        pr.day_number
+        pr.recipe_number
+        pr.recipe_id
+        r.author_id,
+        u.author,
+        r.owner_id,
+        r.recipe_type_id,
+        r.cuisine_id,
+        r.title,
+        i.image_filename
       FROM plan_recipe pr
-      INNER JOIN recipe r ON r.recipe_id = pr.recipe_id
+      INNER JOIN recipe r        ON r.recipe_id  = pr.recipe_id
       INNER JOIN recipe_image ri ON ri.recipe_id = pr.recipe_id
-      INNER JOIN image i 
+      INNER JOIN image i         ON i.image_id   = ri.image_id
       WHERE pr.plan_id = ?
     `;
     const [ rows ] = await this.pool.execute<PlanRecipeView[]>(sql, [plan_id]);
     return rows;
-  }  // Where is this used?
+  }
 
-  async bulkInsert({ placeholders, plan_recipes }: BulkInsertParams) {  // TO DO: change to namedPlaceholders using example below
+  async bulkInsert({ placeholders, plan_recipes }: BulkInsertParams) {
     const flat = plan_recipes.flatMap(({
       plan_id,
       recipe_id,
@@ -112,8 +111,15 @@ type BulkUpdateParams = BulkInsertParams & {
   plan_id: string;
 };
 
-// just guessing for now, find out on frontend
 type PlanRecipeView = RowDataPacket & {
+  day_number:     number;
+  recipe_number:  number;
+  recipe_id:      string;
+  author_id:      string;
+  author:         string;
+  owner_id:       string;
+  recipe_type_id: number;
+  cuisine_id:     number;
   image_filename: string;
   title:          string;
 };

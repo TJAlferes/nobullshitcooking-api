@@ -1,20 +1,21 @@
 import { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
 
-import type { RecipeOverview } from '../recipe/repo';
 import { NOBSC_USER_ID, UNKNOWN_USER_ID } from '../shared/model';
 import { MySQLRepo } from '../shared/MySQL';
 
 export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
   async viewAll({ author_id, owner_id }: OverviewAllParams) {
     const sql = `${viewSql} WHERE p.author_id = ? AND p.owner_id = ?`;
-    const [ rows ] = await this.pool.execute<PlanView[]>(sql, [author_id, owner_id]);
-    return rows;
-  }  // for logged in user
+    const [ rows ] = await this.pool.execute<PlanRecord[]>(sql, [author_id, owner_id]);
+    const results = organize(rows);
+    return results;
+  }
 
   async viewOneByPlanId(plan_id: string) {
     const sql = `${viewSql} WHERE p.plan_id = ? ORDER BY pr.day_number`;
-    const [ [ row ] ] = await this.pool.execute<PlanView[]>(sql, [plan_id]);
-    return row;
+    const [ [ row ] ] = await this.pool.execute<PlanRecord[]>(sql, [plan_id]);
+    const [ result ] = organize([row]);
+    return result;
   }
 
   async viewOneByPlanName({ plan_name, author_id, owner_id }: ViewOneByPlanNameParams) {
@@ -23,13 +24,14 @@ export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
       WHERE p.plan_name = ? AND p.author_id = ? AND p.owner_id = ?
       ORDER BY pr.day_number
     `;
-    const [ [ row ] ] = await this.pool.execute<PlanView[]>(sql, [
+    const [ [ row ] ] = await this.pool.execute<PlanRecord[]>(sql, [
       plan_name,
       author_id,
       owner_id
     ]);
-    return row;
-  }  // for controller.update
+    const [ result ] = organize([row]);
+    return result;
+  }
 
   async insert(params: InsertParams) {
     const sql = `
@@ -130,7 +132,16 @@ export interface PlanRepoInterface {
   deleteOne:         (params: DeleteOneParams) =>         Promise<void>;
 }
 
-type PlanView = RowDataPacket & {
+type PlanRecord = RowDataPacket & {
+  plan_id:   string;
+  author_id: string;
+  author:    string;
+  owner_id:  string;
+  plan_name: string;
+  included_recipes: IncludedRecipe[];
+};
+
+type PlanView = {
   plan_id:   string;
   author_id: string;
   author:    string;
@@ -139,8 +150,24 @@ type PlanView = RowDataPacket & {
   included_recipes: IncludedRecipes;
 };
 
-type IncludedRecipes = {
-  [index: number]: RecipeOverview[];  // ?
+type IncludedRecipe = RowDataPacket & RecipeOverview & {
+  day_number:    number;
+  recipe_number: number;
+};
+
+type RecipeOverview = {
+  recipe_id:      string;
+  author_id:      string;
+  owner_id:       string;
+  recipe_type_id: number;
+  cuisine_id:     number;
+  author:         string;
+  title:          string;
+  image_filename: string;
+};
+
+export type IncludedRecipes = {
+  [index: number]: RecipeOverview[];
   1: RecipeOverview[];
   2: RecipeOverview[];
   3: RecipeOverview[];
@@ -222,45 +249,47 @@ const viewSql = `
     ) included_recipes
   FROM plan p
   INNER JOIN user u1 ON p.author_id = u1.user_id
-`;  //
+`;
 
-/*
-// Sophisticated SQL query
-// OR
-// Simple SQL query and TS maps
-// to get:
+function organize(rows: PlanRecord[]) {
+  const results: PlanView[] = [];
 
-included_recipes: {
-  1: [
-    {recipe_id: ...,},
-    {recipe_id: ...,}
-  ]
+  rows.forEach(row => {
+    const recipes: IncludedRecipes = {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: []};
+
+    row.included_recipes.map(({
+      day_number,
+      recipe_number,
+      recipe_id,
+        author_id,
+        owner_id,
+        recipe_type_id,
+        cuisine_id,
+        author,
+        title,
+        image_filename
+    }) => {
+      recipes[day_number][recipe_number] = {
+        recipe_id,
+        author_id,
+        owner_id,
+        recipe_type_id,
+        cuisine_id,
+        author,
+        title,
+        image_filename
+      }
+    });
+
+    results.push({
+      plan_id: row.plan_id,
+      author_id: row.author_id,
+      author: row.author,
+      owner_id: row.owner_id,
+      plan_name: row.plan_name,
+      included_recipes: recipes
+    });
+  });
+
+  return results;
 }
-*/
-
-/*
-JSON_ARRAYAGG(
-  JSON_ARRAYAGG(
-    JSON_OBJECT(
-      'recipe_id',      r.recipe_id
-      'author_id',      r.author_id,
-      'owner_id',       r.owner_id,
-      'recipe_type_id', r.recipe_type_id,
-      'cuisine_id',     r.cuisine_id,
-      'author',         u.username,
-      'title',          r.title,
-      'image_filename', (
-        SELECT i.image_filename
-        FROM recipe_image ri
-        INNER JOIN recipe_image ri ON ri.recipe_id = r.recipe_id
-        INNER JOIN image i         ON i.image_id = ri.image_id
-        INNER JOIN user u          ON r.author_id = u.user_id
-        WHERE ri.type = 1
-      ) image_filename
-    )
-  ) ORDER BY pr.recipe_number
-) AS included_recipes
-FROM plan p
-LEFT JOIN plan_recipe pr ON p.plan_id    = pr.plan_id
-LEFT JOIN recipe r       ON pr.recipe_id = r.recipe_id
-*/
