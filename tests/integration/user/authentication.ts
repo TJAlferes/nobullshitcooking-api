@@ -4,6 +4,27 @@ import type { Express } from 'express';
 
 export function authenticationTests(app: Express) {
   describe('POST /v1/resend-confirmation-code', () => {
+    it('handles success', async () => {
+      const agent = request.agent(app);
+
+      await agent
+        .post('/v1/users')
+        .send({
+          email: 'fakeuser@gmail.com',
+          password: 'fakepassword',
+          username: 'FakeUser'
+        });
+      
+      const res = await agent
+        .post('/v1/resend-confirmation-code')
+        .send({
+          email: 'fakeuser@gmail.com',
+          password: 'fakepassword'
+        });
+
+      expect(res.status).toBe(204);
+    });
+
     it('handles non-existing user', async () => {
       const res = await request(app)
         .post('/v1/resend-confirmation-code')
@@ -39,30 +60,17 @@ export function authenticationTests(app: Express) {
       expect(res.status).toBe(409);
       expect(res.body.message).toBe('Already confirmed.');
     });
-
-    it('handles success', async () => {
-      const agent = request.agent(app);
-
-      await agent
-        .post('/v1/users')
-        .send({
-          email: 'fakeuser@gmail.com',
-          password: 'fakepassword',
-          username: 'FakeUser'
-        });
-      
-      const res = await agent
-        .post('/v1/resend-confirmation-code')
-        .send({
-          email: 'fakeuser@gmail.com',
-          password: 'fakepassword'
-        });
-
-      expect(res.status).toBe(204);
-    });
   });
 
   describe('POST /v1/confirm', () => {
+    it('handles success', async () => {
+      const res = await request(app)
+        .post('/v1/confirm')
+        .send({confirmation_code: '01010101-0101-0101-0101-010101010101'});
+
+      expect(res.status).toBe(204);
+    });
+
     it('handles incorrect confirmation_code', async () => {
       const res = await request(app)
         .post('/v1/confirm')
@@ -72,17 +80,24 @@ export function authenticationTests(app: Express) {
       expect(res.body.message)
         .toBe('An issue occurred, please double check your info and try again.');
     });
-
-    it('handles success', async () => {
-      const res = await request(app)
-        .post('/v1/confirm')
-        .send({confirmation_code: '01010101-0101-0101-0101-010101010101'});
-
-      expect(res.status).toBe(204);
-    });
   });
 
   describe('POST /v1/login', () => {
+    it('handles success', async () => {
+      const res = await request(app)
+        .post('/v1/login')
+        .send({
+          email: 'fakeuser1@gmail.com',
+          password: 'fakepassword'
+        });
+
+      expect(res.status).toBe(201);
+      expect(res.body.auth_id).toBe('33333333-3333-3333-3333-333333333333');
+      expect(res.body.auth_email).toBe('fakeuser1@gmail.com');
+      expect(res.body.authname).toBe('FakeUser1');
+      expect(res.body.auth_avatar).toBe('default');
+    });
+    
     it('handles already logged in user', async () => {
       const agent = request.agent(app);
 
@@ -138,21 +153,6 @@ export function authenticationTests(app: Express) {
 
       expect(res.status).toBe(401);
       expect(res.body.message).toBe('Incorrect email or password.');
-    });
-
-    it('handles success', async () => {
-      const res = await request(app)
-        .post('/v1/login')
-        .send({
-          email: 'fakeuser1@gmail.com',
-          password: 'fakepassword'
-        });
-
-      expect(res.status).toBe(201);
-      expect(res.body.auth_id).toBe('33333333-3333-3333-3333-333333333333');
-      expect(res.body.auth_email).toBe('fakeuser1@gmail.com');
-      expect(res.body.authname).toBe('FakeUser1');
-      expect(res.body.auth_avatar).toBe('default');
     });
   });
 

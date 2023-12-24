@@ -17,6 +17,18 @@ export { savedRecipesTests } from './saved-recipes';
 
 export function usersTests(app: Express) {
   describe('POST /v1/users', () => {
+    it('handles success', async () => {
+      const res = await request(app)
+        .post('/v1/users')
+        .send({
+          email: 'fakeuser@gmail.com',
+          password: 'fakepassword',
+          username: 'FakeUser'
+        });
+
+      expect(res.status).toBe(201);
+    });
+
     it('handles email already in use', async () => {
       const res = await request(app)
         .post('/v1/users')
@@ -42,18 +54,6 @@ export function usersTests(app: Express) {
       expect(res.status).toBe(409);
       expect(res.body.message).toBe('Username already in use.');
     });
-    
-    it('handles success', async () => {
-      const res = await request(app)
-        .post('/v1/users')  // open handle
-        .send({
-          email: 'fakeuser@gmail.com',
-          password: 'fakepassword',
-          username: 'FakeUser'
-        });
-
-      expect(res.status).toBe(201);
-    });
   });
 
   describe('PATCH /v1/users/:username/email', () => {
@@ -74,6 +74,14 @@ export function usersTests(app: Express) {
       await agent.post('/v1/logout');
     });
 
+    it('handles success', async () => {
+      const res = await agent
+        .patch('/v1/users/FakeUser1/email')
+        .send({new_email: 'newemail@gmail.com'});
+
+      expect(res.status).toBe(204);
+    });
+
     it('handles new_email already in use', async () => {
       const res = await agent
         .patch('/v1/users/FakeUser1/email')
@@ -81,14 +89,6 @@ export function usersTests(app: Express) {
 
       expect(res.status).toBe(409);
       expect(res.body.message).toBe('Email already in use.');
-    });
-
-    it('handles success', async () => {
-      const res = await agent
-        .patch('/v1/users/FakeUser1/email')
-        .send({new_email: 'newemail@gmail.com'});
-
-      expect(res.status).toBe(204);
     });
   });
 
@@ -137,6 +137,14 @@ export function usersTests(app: Express) {
       await agent.post('/v1/logout');
     });
 
+    it('handles success', async () => {
+      const res = await agent
+        .patch('/v1/users/FakeUser1/username')
+        .send({new_username: 'NewUsername'});
+
+      expect(res.status).toBe(204);
+    });
+
     it('handles new_username already in use', async () => {
       const res = await agent
         .patch('/v1/users/FakeUser1/username')
@@ -144,14 +152,6 @@ export function usersTests(app: Express) {
 
       expect(res.status).toBe(409);
       expect(res.body.message).toBe('Username already in use.');
-    });
-
-    it('handles success', async () => {
-      const res = await agent
-        .patch('/v1/users/FakeUser1/username')
-        .send({new_username: 'NewUsername'});
-
-      expect(res.status).toBe(204);
     });
   });
 

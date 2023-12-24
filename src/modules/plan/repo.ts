@@ -1,5 +1,6 @@
 import { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
 
+import type { RecipeOverview } from '../recipe/repo';
 import { NOBSC_USER_ID, UNKNOWN_USER_ID } from '../shared/model';
 import { MySQLRepo } from '../shared/MySQL';
 
@@ -28,7 +29,7 @@ export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
       owner_id
     ]);
     return row;
-  }
+  }  // for controller.update
 
   async insert(params: InsertParams) {
     const sql = `
@@ -135,18 +136,18 @@ type PlanView = RowDataPacket & {
   author:    string;
   owner_id:  string;
   plan_name: string;
-  included_recipes: IncludedRecipe[][];
+  included_recipes: IncludedRecipes;
 };
 
-type IncludedRecipe = {
-  day_number:     number;
-  recipe_number:  number;
-  recipe_id:      string;
-  author_id:      string;
-  author:         string;
-  owner_id:       string;
-  title:          string;
-  image_filename: string;
+type IncludedRecipes = {
+  [index: number]: RecipeOverview[];  // ?
+  1: RecipeOverview[];
+  2: RecipeOverview[];
+  3: RecipeOverview[];
+  4: RecipeOverview[];
+  5: RecipeOverview[];
+  6: RecipeOverview[];
+  7: RecipeOverview[];
 };
 
 type OverviewAllParams = {
@@ -221,7 +222,21 @@ const viewSql = `
     ) included_recipes
   FROM plan p
   INNER JOIN user u1 ON p.author_id = u1.user_id
-`;
+`;  //
+
+/*
+// Sophisticated SQL query
+// OR
+// Simple SQL query and TS maps
+// to get:
+
+included_recipes: {
+  1: [
+    {recipe_id: ...,},
+    {recipe_id: ...,}
+  ]
+}
+*/
 
 /*
 JSON_ARRAYAGG(

@@ -61,5 +61,11 @@ export function recipesTests(app: Express) {
         required_subrecipes: null
       });
     });
+
+    it('handles not found', async () => {
+      const res = await request(app).get('/v1/recipes/Non%20Existing');
+
+      expect(res.status).toBe(404);
+    });
   });
 }

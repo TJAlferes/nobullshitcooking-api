@@ -5,6 +5,16 @@ import { MySQLRepo } from '../../shared/MySQL';
 export class PlanRecipeRepo extends MySQLRepo implements PlanRecipeRepoInterface {
   async viewByPlanId(plan_id: string) {
     // TO DO: finish
+    // pr.day_number
+    // pr.recipe_number
+    // pr.recipe_id
+    // r.author_id,
+    // u.author,
+    // r.owner_id,
+    // r.recipe_type_id,
+    // r.cuisine_id,
+    // r.title,
+    // ri.image_filename
     const sql = `
       SELECT r.image_filename, r.title
       FROM plan_recipe pr
@@ -37,7 +47,7 @@ export class PlanRecipeRepo extends MySQLRepo implements PlanRecipeRepoInterface
     if (result.affectedRows < 1) throw new Error('Query not successful.');
   }  // just change bulkInserts to transactions?
 
-  async bulkUpdate({ plan_id, placeholders, plan_recipes }: BulkUpdateParams) {  // TO DO: change to namedPlaceholders using example below
+  async bulkUpdate({ plan_id, placeholders, plan_recipes }: BulkUpdateParams) {
     // Rather than updating current values in the database, we delete them,
     // and if there are new values, we insert them.
     const conn = await this.pool.getConnection();

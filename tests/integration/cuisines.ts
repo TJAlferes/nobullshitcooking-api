@@ -3,14 +3,16 @@ import type { Express } from 'express';
 
 export function cuisinesTests(app: Express) {
   describe('GET /v1/cuisines/:cuisine_id', () => {
-    it('returns data correctly', async () => {
+    it('handles success', async () => {
       const res = await request(app).get('/v1/cuisines/1');
+
+      expect(res.status).toBe(200);
       expect(res.body).toEqual({
-        cuisine_id:     1,
-        cuisine_name:   "Algerian",
-        continent_code: "AF",
-        country_code:   "DZA",
-        country_name:   "Algeria"
+        cuisine_id: 1,
+        cuisine_name: 'Algerian',
+        continent_code: 'AF',
+        country_code: 'DZA',
+        country_name: 'Algeria'
       });
     });
 

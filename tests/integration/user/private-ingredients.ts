@@ -2,6 +2,8 @@ import request from 'supertest';
 import type { SuperAgentTest } from 'supertest';
 import type { Express } from 'express';
 
+// TO DO: add alt_names tests
+
 export function privateIngredientsTests(app: Express) {
   let agent: SuperAgentTest;
 
@@ -26,13 +28,13 @@ export function privateIngredientsTests(app: Express) {
         .post('/v1/users/FakeUser1/private-ingredients')
         .send({
           ingredient_type_id: 4,
-          ingredient_brand: "Brand",
-          ingredient_variety: "Variety",
-          ingredient_name: "Name",
+          ingredient_brand: 'Brand',
+          ingredient_variety: 'Variety',
+          ingredient_name: 'Name',
           alt_names: [],
-          notes: "Notes...",
-          image_filename: "default",
-          caption: ""
+          notes: 'Notes...',
+          image_filename: 'default',
+          caption: ''
         });
 
       expect(res.status).toBe(201);
@@ -40,20 +42,39 @@ export function privateIngredientsTests(app: Express) {
   });
 
   describe('PATCH /v1/users/:username/private-ingredients', () => {
+    it('handles success', async () => {
+      const res = await agent
+        .patch('/v1/users/FakeUser1/private-ingredients')
+        .send({
+          ingredient_id: '018b5ade-dc55-7dc0-92dd-3ff30123668b',
+          ingredient_type_id: 4,
+          ingredient_brand: 'Brand',
+          ingredient_variety: 'Variety',
+          ingredient_name: 'Name',
+          alt_names: [],
+          notes: 'Notes...',
+          image_id: '018b5ade-dc54-7db1-870g-00733ee1bedf',
+          image_filename: 'default',
+          caption: ''
+        });
+
+      expect(res.status).toBe(204);
+    });
+
     it('handles not found', async () => {
       const res = await agent
         .patch('/v1/users/FakeUser1/private-ingredients')
         .send({
-          ingredient_id: "018b5ade-dc55-7dc0-92dd-3ff301230000",
+          ingredient_id: '018b5ade-dc55-7dc0-92dd-3ff301230000',
           ingredient_type_id: 4,
-          ingredient_brand: "Brand",
-          ingredient_variety: "Variety",
-          ingredient_name: "Name",
+          ingredient_brand: 'Brand',
+          ingredient_variety: 'Variety',
+          ingredient_name: 'Name',
           alt_names: [],
-          notes: "Notes...",
-          image_id: "018b5ade-dc54-7db1-870g-00733ee1bedf",
-          image_filename: "default",
-          caption: ""
+          notes: 'Notes...',
+          image_id: '018b5ade-dc54-7db1-870g-00733ee1bedf',
+          image_filename: 'default',
+          caption: ''
         });
 
       expect(res.status).toBe(404);
@@ -63,42 +84,30 @@ export function privateIngredientsTests(app: Express) {
       const res = await agent
         .patch('/v1/users/FakeUser1/private-ingredients')
         .send({
-          ingredient_id: "018b5ade-dc56-7dc1-92de-3ff30123668c",
+          ingredient_id: '018b5ade-dc56-7dc1-92de-3ff30123668c',
           ingredient_type_id: 4,
-          ingredient_brand: "Brand",
-          ingredient_variety: "Variety",
-          ingredient_name: "Name",
+          ingredient_brand: 'Brand',
+          ingredient_variety: 'Variety',
+          ingredient_name: 'Name',
           alt_names: [],
-          notes: "Notes...",
-          image_id: "018b5ade-dc55-7db2-870h-00733ee1bedg",
-          image_filename: "default",
-          caption: ""
+          notes: 'Notes...',
+          image_id: '018b5ade-dc55-7db2-870h-00733ee1bedg',
+          image_filename: 'default',
+          caption: ''
         });
 
       expect(res.status).toBe(403);
     });
-
-    it('handles success', async () => {
-      const res = await agent
-        .patch('/v1/users/FakeUser1/private-ingredients')
-        .send({
-          ingredient_id: "018b5ade-dc55-7dc0-92dd-3ff30123668b",
-          ingredient_type_id: 4,
-          ingredient_brand: "Brand",
-          ingredient_variety: "Variety",
-          ingredient_name: "Name",
-          alt_names: [],
-          notes: "Notes...",
-          image_id: "018b5ade-dc54-7db1-870g-00733ee1bedf",
-          image_filename: "default",
-          caption: ""
-        });
-
-      expect(res.status).toBe(204);
-    });
   });
 
   describe('DELETE /v1/users/:username/private-ingredients/:ingredient_id', () => {
+    it('handles success', async () => {
+      const res = await agent
+        .delete('/v1/users/FakeUser1/private-ingredients/018b5ade-dc55-7dc0-92dd-3ff30123668b');
+
+      expect(res.status).toBe(204);
+    });
+
     it('handles not found', async () => {
       const res = await agent
         .delete('/v1/users/FakeUser1/private-ingredients/018b5ade-dc55-7dc0-92dd-3ff301230000');
@@ -111,13 +120,6 @@ export function privateIngredientsTests(app: Express) {
         .delete('/v1/users/FakeUser1/private-ingredients/018b5ade-dc56-7dc1-92de-3ff30123668c');
 
       expect(res.status).toBe(403);
-    });
-
-    it('handles success', async () => {
-      const res = await agent
-        .delete('/v1/users/FakeUser1/private-ingredients/018b5ade-dc55-7dc0-92dd-3ff30123668b');
-
-      expect(res.status).toBe(204);
     });
   });
 }

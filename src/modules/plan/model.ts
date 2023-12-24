@@ -37,6 +37,9 @@ export class Plan {
 
 export function PlanName(name: string) {
   assert(name, string());
+  if (name.length < 5) {
+    throw new ValidationException('Plan name must be no less than 5 characters');
+  }
   if (name.length > 50) {
     throw new ValidationException('Plan name must be no more than 50 characters');
   }
@@ -54,15 +57,3 @@ type UpdateParams = CreateParams & {
 }
 
 type ConstructorParams = UpdateParams;
-
-/*type PlanDay = {
-  plan_id:    string;
-  day_id:     string;
-  day_number: number;
-};
-
-type PlanDayRecipe = {
-  day_id:        string;
-  recipe_id:     string;
-  recipe_number: number;
-};*/
