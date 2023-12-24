@@ -17,7 +17,7 @@ export const privatePlanController = {
     return res.status(200).json(plans);
   },
 
-  async viewOne(req: Request, res: Response) {
+  /*async viewOne(req: Request, res: Response) {
     const { plan_id } = req.params;
     const author_id = req.session.user_id!;
     const owner_id  = req.session.user_id!;
@@ -29,7 +29,7 @@ export const privatePlanController = {
     if (plan.owner_id !== owner_id) throw new ForbiddenException();
 
     return res.status(200).json(plan);
-  },  // is this needed???
+  },  // is this needed??? */
 
   async create(req: Request, res: Response) {
     const { plan_name, included_recipes } = req.body;

@@ -18,7 +18,7 @@ export const publicPlanController = {
     const planRepo = new PlanRepo();
     const rows = await planRepo.viewAll({author_id, owner_id});
 
-    return res.json(rows);
+    return res.status(200).json(rows);
   },
 
   async viewOne(req: Request, res: Response) {

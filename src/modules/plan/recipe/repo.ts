@@ -3,7 +3,7 @@ import { RowDataPacket, ResultSetHeader } from 'mysql2/promise';
 import { MySQLRepo } from '../../shared/MySQL';
 
 export class PlanRecipeRepo extends MySQLRepo implements PlanRecipeRepoInterface {
-  async viewByPlanId(plan_id: string) {
+  /*async viewByPlanId(plan_id: string) {
     const sql = `
       SELECT
         pr.day_number
@@ -24,7 +24,7 @@ export class PlanRecipeRepo extends MySQLRepo implements PlanRecipeRepoInterface
     `;
     const [ rows ] = await this.pool.execute<PlanRecipeView[]>(sql, [plan_id]);
     return rows;
-  }
+  }*/
 
   async bulkInsert({ placeholders, plan_recipes }: BulkInsertParams) {
     const flat = plan_recipes.flatMap(({
@@ -89,7 +89,7 @@ export class PlanRecipeRepo extends MySQLRepo implements PlanRecipeRepoInterface
 }
 
 export interface PlanRecipeRepoInterface {
-  viewByPlanId:   (plan_id: string) =>          Promise<PlanRecipeView[]>;
+  //viewByPlanId:   (plan_id: string) =>          Promise<PlanRecipeView[]>;
   bulkInsert:     (params: BulkInsertParams) => Promise<void>;
   bulkUpdate:     (params: BulkUpdateParams) => Promise<void>;
   deleteByPlanId: (plan_id: string) =>          Promise<void>;
@@ -111,7 +111,7 @@ type BulkUpdateParams = BulkInsertParams & {
   plan_id: string;
 };
 
-type PlanRecipeView = RowDataPacket & {
+/*type PlanRecipeView = RowDataPacket & {
   day_number:     number;
   recipe_number:  number;
   recipe_id:      string;
@@ -122,4 +122,4 @@ type PlanRecipeView = RowDataPacket & {
   cuisine_id:     number;
   image_filename: string;
   title:          string;
-};
+};*/

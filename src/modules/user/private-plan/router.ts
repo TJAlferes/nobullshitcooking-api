@@ -9,12 +9,12 @@ const router = Router();
 // for /users/:username/private-plans
 
 export function privatePlanRouter() {
-  router.get(
+  /*router.get(
     '/:plan_id',
     userIsAuth,
     sanitizeParams('plan_id'),
     catchExceptions(controller.viewOne)
-  );  // is this needed???
+  );  // is this needed??? */
 
   router.get(
     '/',

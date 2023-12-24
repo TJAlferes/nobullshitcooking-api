@@ -2,7 +2,11 @@ import { PublicPlanService, RecipeRepoInterface } from './service';
 
 describe('PublicRecipeService', () => {
   const included_recipes = [
-    {recipe_id: "1", day_number: 1, recipe_number: 1}
+    {
+      recipe_id: "1",
+      day_number: 1,
+      recipe_number: 1
+    }
   ];
   let recipeRepoMock: jest.Mocked<RecipeRepoInterface>;
   let service: PublicPlanService;
