@@ -1,6 +1,11 @@
+import { S3Client } from '@aws-sdk/client-s3';
+import { mockClient } from 'aws-sdk-client-mock';
+import type { AwsClientStub } from 'aws-sdk-client-mock';
 import request from 'supertest';
 import type { SuperAgentTest } from 'supertest';
 import type { Express } from 'express';
+
+import { AwsS3PublicUploadsClient } from '../../../src/modules/aws-s3/public-uploads/client';
 
 export { authenticationTests } from './authentication';
 //export { AwsS3Tests } from './aws-s3';
@@ -14,6 +19,11 @@ export { profileTests } from './profile';
 export { publicPlansTests } from './public-plans';
 export { publicRecipesTests } from './public-recipes';
 export { savedRecipesTests } from './saved-recipes';
+
+const S3ClientMock: AwsClientStub<S3Client> = mockClient(AwsS3PublicUploadsClient);
+//AwsS3ClientMock.onAnyCommand().resolves();
+
+// TO DO: avatar tests
 
 export function usersTests(app: Express) {
   describe('POST /v1/users', () => {

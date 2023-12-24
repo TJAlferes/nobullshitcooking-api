@@ -1,6 +1,14 @@
+import { S3Client } from '@aws-sdk/client-s3';
+import { mockClient } from 'aws-sdk-client-mock';
+import type { AwsClientStub } from 'aws-sdk-client-mock';
 import request from 'supertest';
 import type { SuperAgentTest } from 'supertest';
 import type { Express } from 'express';
+
+import { AwsS3PublicUploadsClient } from '../../../src/modules/aws-s3/public-uploads/client';
+
+const S3ClientMock: AwsClientStub<S3Client> = mockClient(AwsS3PublicUploadsClient);
+//AwsS3ClientMock.onAnyCommand().resolves();
 
 // TO DO: test required_*
 
@@ -83,6 +91,8 @@ export function publicRecipesTests(app: Express) {
   let agent: SuperAgentTest;
 
   beforeEach(async () => {
+    S3ClientMock.reset();
+
     agent = request.agent(app);
 
     await agent
@@ -95,6 +105,10 @@ export function publicRecipesTests(app: Express) {
 
   afterEach(async () => {
     await agent.post('/v1/logout');
+  });
+
+  afterAll(() => {
+    S3ClientMock.restore();
   });
 
   describe('GET /v1/users/:username/public-recipes/:recipe_id/edit', () => {
@@ -126,6 +140,17 @@ export function publicRecipesTests(app: Express) {
   });
 
   describe('PATCH /v1/users/:username/public-recipes', () => {
+    it('handles success', async () => {
+      const res = await agent
+        .patch('/v1/users/FakeUser1/public-recipes')
+        .send({
+          recipe_id: '11116942-6b2f-7943-8ab6-3509084cf00e',
+          ...recipe_update_upload
+        });
+
+      expect(res.status).toBe(204);
+    });
+
     it('handles not found', async () => {
       const res = await agent
         .patch('/v1/users/FakeUser1/public-recipes')
@@ -147,20 +172,16 @@ export function publicRecipesTests(app: Express) {
 
       expect(res.status).toBe(403);
     });
-
-    it('handles success', async () => {
-      const res = await agent
-        .patch('/v1/users/FakeUser1/public-recipes')
-        .send({
-          recipe_id: '11116942-6b2f-7943-8ab6-3509084cf00e',
-          ...recipe_update_upload
-        });
-
-      expect(res.status).toBe(204);
-    });
   });
 
   describe('DELETE /v1/users/:username/public-recipes/:recipe_id', () => {
+    it('handles success', async () => {
+      const res = await agent
+        .delete('/v1/users/FakeUser1/public-recipes/11116942-6b2f-7943-8ab6-3509084cf00e');
+
+      expect(res.status).toBe(204);
+    });
+    
     it('handles not found', async () => {
       const res = await agent
         .delete('/v1/users/FakeUser1/public-recipes/11116942-6b2f-7943-8ab6-3509084c0000');
@@ -173,13 +194,6 @@ export function publicRecipesTests(app: Express) {
         .delete('/v1/users/FakeUser1/public-recipes/018b6942-6b3f-7944-8ab7-3509084cf00f');
 
       expect(res.status).toBe(403);
-    });
-
-    it('handles success', async () => {
-      const res = await agent
-        .delete('/v1/users/FakeUser1/public-recipes/11116942-6b2f-7943-8ab6-3509084cf00e');
-
-      expect(res.status).toBe(204);
     });
   });
 }

@@ -1,6 +1,14 @@
+import { S3Client } from '@aws-sdk/client-s3';
+import { mockClient } from 'aws-sdk-client-mock';
+import type { AwsClientStub } from 'aws-sdk-client-mock';
 import request from 'supertest';
 import type { SuperAgentTest } from 'supertest';
 import type { Express } from 'express';
+
+import { AwsS3PrivateUploadsClient } from '../../../src/modules/aws-s3/private-uploads/client';
+
+const S3ClientMock: AwsClientStub<S3Client> = mockClient(AwsS3PrivateUploadsClient);
+//AwsS3ClientMock.onAnyCommand().resolves();
 
 // TO DO: test required_*
 
@@ -83,6 +91,8 @@ export function privateRecipesTests(app: Express) {
   let agent: SuperAgentTest;
 
   beforeEach(async () => {
+    S3ClientMock.reset();
+
     agent = request.agent(app);
 
     await agent
@@ -95,6 +105,10 @@ export function privateRecipesTests(app: Express) {
 
   afterEach(async () => {
     await agent.post('/v1/logout');
+  });
+
+  afterAll(() => {
+    S3ClientMock.restore();
   });
 
   describe('GET /v1/users/:username/private-recipes/:recipe_id/edit', () => {
