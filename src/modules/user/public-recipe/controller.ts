@@ -90,12 +90,12 @@ export const publicRecipeController = {
     const equipmentRepo  = new EquipmentRepo();
     const ingredientRepo = new IngredientRepo();
     const recipeRepo     = new RecipeRepo();
-    const { checkForPrivateContent } = new PublicRecipeService({
+    const publicRecipeService = new PublicRecipeService({
       equipmentRepo,
       ingredientRepo,
       recipeRepo
     });
-    await checkForPrivateContent({
+    await publicRecipeService.checkForPrivateContent({
       required_equipment,
       required_ingredients,
       required_subrecipes,
@@ -176,12 +176,12 @@ export const publicRecipeController = {
     if (author_id !== recipe.author_id) throw new ForbiddenException();
     if (owner_id !== recipe.owner_id) throw new ForbiddenException();
 
-    const { checkForPrivateContent } = new PublicRecipeService({
+    const publicRecipeService = new PublicRecipeService({
       equipmentRepo,
       ingredientRepo,
       recipeRepo
     });
-    await checkForPrivateContent({
+    await publicRecipeService.checkForPrivateContent({
       required_equipment,
       required_ingredients,
       required_subrecipes,

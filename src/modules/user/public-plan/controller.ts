@@ -46,8 +46,8 @@ export const publicPlanController = {
     const owner_id  = NOBSC_USER_ID;
 
     const recipeRepo = new RecipeRepo();
-    const { checkForPrivateContent } = new PublicPlanService(recipeRepo);
-    await checkForPrivateContent(included_recipes);  // important
+    const publicPlanService = new PublicPlanService(recipeRepo);
+    await publicPlanService.checkForPrivateContent(included_recipes);  // important
 
     const plan = Plan.create({author_id, owner_id, plan_name}).getDTO();
 
@@ -72,8 +72,8 @@ export const publicPlanController = {
     if (plan.owner_id !== owner_id) throw new ForbiddenException();
 
     const recipeRepo = new RecipeRepo();
-    const { checkForPrivateContent } = new PublicPlanService(recipeRepo);
-    await checkForPrivateContent(included_recipes);  // important
+    const publicPlanService = new PublicPlanService(recipeRepo);
+    await publicPlanService.checkForPrivateContent(included_recipes);  // important
 
     const updated_plan = Plan.update({plan_id, author_id, owner_id, plan_name}).getDTO();
     await planRepo.update(updated_plan);

@@ -68,9 +68,8 @@ export const privateIngredientController = {
     await ingredientRepo.insert(ingredient);
 
     if (alt_names.length > 0) {
-      const ingredientAltNameRepo = new IngredientAltNameRepo();
-      const { create } = new IngredientAltNameService(ingredientAltNameRepo);
-      await create({ingredient_id: ingredient.ingredient_id, alt_names});
+      const ingredientAltNameService = new IngredientAltNameService(new IngredientAltNameRepo());
+      await ingredientAltNameService.create({ingredient_id: ingredient.ingredient_id, alt_names});
     }
 
     return res.status(201).json();
@@ -122,10 +121,9 @@ export const privateIngredientController = {
       image_id
     }).getDTO();
     await ingredientRepo.update(updated_ingredient);
-
-    const ingredientAltNameRepo = new IngredientAltNameRepo();
-    const { update } = new IngredientAltNameService(ingredientAltNameRepo);
-    await update({ingredient_id, alt_names});
+    
+    const ingredientAltNameService = new IngredientAltNameService(new IngredientAltNameRepo());
+    await ingredientAltNameService.update({ingredient_id, alt_names});
 
     return res.status(204).json();
   },
