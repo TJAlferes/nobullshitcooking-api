@@ -1,6 +1,6 @@
 import { ConflictException, NotFoundException, ForbiddenException } from '../../utils/exceptions';
 import { ImageRepo } from '../image/repo';
-import { PlanRepo } from '../plan/repo';
+import { PlanRepo } from '../plan/repo';  // ?
 import { RecipeRepo } from '../recipe/repo';
 import { EquipmentRepo } from '../equipment/repo';
 import { IngredientRepo } from '../ingredient/repo';
@@ -17,8 +17,8 @@ export class UserService {
   }
 
   async create(params: CreateParams) {
-    const { hashPassword, sendConfirmationCode } = new UserAuthenticationService(this.repo);
-    const encryptedPassword = await hashPassword(params.password);
+    const userAuthenticationService = new UserAuthenticationService(this.repo);
+    const encryptedPassword = await userAuthenticationService.hashPassword(params.password);
 
     const user = User.create({
       email:    params.email,
@@ -40,7 +40,7 @@ export class UserService {
       confirmation_code: user.confirmation_code!
     });
     
-    await sendConfirmationCode({
+    await userAuthenticationService.sendConfirmationCode({
       email:             user.email,
       confirmation_code: user.confirmation_code!
     });
@@ -71,8 +71,8 @@ export class UserService {
     const existingUser = await this.repo.getByUserId(user_id);
     if (!existingUser) throw new NotFoundException('User does not exist.');
 
-    const { hashPassword } = new UserAuthenticationService(this.repo);
-    const encryptedPassword = await hashPassword(new_password);
+    const userAuthenticationService = new UserAuthenticationService(this.repo);
+    const encryptedPassword = await userAuthenticationService.hashPassword(new_password);
     
     const user = User.update({
       user_id,

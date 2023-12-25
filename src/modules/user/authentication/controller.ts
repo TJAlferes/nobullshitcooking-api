@@ -181,9 +181,9 @@ export const userAuthenticationController = {
     const user = await userRepo.getByEmail(email);
     if (!user) throw new NotFoundException();
 
-    const { hashPassword } = new UserAuthenticationService(userRepo);
+    const userAuthenticationService = new UserAuthenticationService(userRepo);
     const temporary_password = uuidv7();
-    const encryptedPassword = await hashPassword(temporary_password);
+    const encryptedPassword = await userAuthenticationService.hashPassword(temporary_password);
     const passwordReset = PasswordReset.create({
       user_id: user.user_id,
       temporary_password: encryptedPassword

@@ -113,7 +113,7 @@ export class UserAuthenticationService {
 
   async sendConfirmationCode({ email, confirmation_code }: SendConfirmationCodeParams) {
     const charset  = 'UTF-8';
-    const from     = 'No Bullshit Cooking <staff@nobullshitcooking.com>';
+    const from     = 'No Bullshit Cooking <noreply@nobullshitcooking.com>';
     const to       = email;
     const subject  = 'Confirmation Code For No Bullshit Cooking';
     const bodyText = 'Confirmation Code For No Bullshit Cooking\r\n'

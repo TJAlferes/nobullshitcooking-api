@@ -12,7 +12,7 @@ export const recipeController = {
     const repo = new RecipeRepo();
     const titles = await repo.viewAllOfficialTitles();
 
-    return res.json(titles);
+    return res.status(200).json(titles);
   },  // for Next.js getStaticPaths
 
   async viewOneByTitle(req: Request, res: Response) {
@@ -23,12 +23,10 @@ export const recipeController = {
     const repo = new RecipeRepo();
     const recipe = await repo.viewOneByTitle(title);
     if (!recipe) throw new NotFoundException();
-    console.log('RECIPE TITLE: ', recipe.title);
-    console.log('RECIPE TITLE: ', recipe.title);
     if (recipe.author_id !== author_id) throw new NotFoundException(); 
     if (recipe.owner_id !== owner_id) throw new NotFoundException(); 
 
-    return res.json(recipe);
+    return res.status(200).json(recipe);
   },  // for Next.js getStaticProps
 
   async overviewAllOfficialRecipes(req: Request, res: Response) {
