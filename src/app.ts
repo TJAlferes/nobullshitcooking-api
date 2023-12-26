@@ -1,6 +1,8 @@
 import compression from 'compression';
 import RedisStore from 'connect-redis'
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import { doubleCsrf } from 'csrf-csrf';
 import express, { Request, Response, NextFunction } from 'express';
 import { rateLimit } from 'express-rate-limit';
 import expressSession, { Session, SessionData } from 'express-session';
@@ -75,16 +77,28 @@ const sessionMiddleware = expressSession({
     },
   resave: false,
   saveUninitialized: false,
-  secret: app.get('env') === 'production'
-    ? process.env.SESSION_SECRET!
-    : 'secret',
+  secret: process.env.SESSION_SECRET!,
   store: redisStore,
   unset: 'destroy'
 });
+const { generateToken, doubleCsrfProtection } = doubleCsrf({
+  cookieOptions: {
+    secure: app.get('env') === 'production' ? true : false
+  },
+  getSecret: () => process.env.CSRF_SECRET!,
+  size: 32
+});
+
 if (app.get('env') !== 'test') app.use(pinoHttp());  // logger
 app.use(express.json({limit: '10kb'}));
 app.use(express.urlencoded({extended: true, limit: '10kb'}));
 app.use(sessionMiddleware);
+app.use(cookieParser(process.env.COOKIE_SECRET!));
+app.get("/csrf-token", (req, res) => {
+  const csrfToken = generateToken(req, res, true);
+  return res.json({csrfToken});
+});
+if (app.get('env') !== 'test') app.use(doubleCsrfProtection);
 app.use(cors({
   allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
   credentials: true,
@@ -98,10 +112,9 @@ app.use(cors({
       'http://localhost:8080'
     ]
 }));
-//app.options('*', cors());  // ???
 app.use(helmet());
 app.use(hpp());
-app.use('/search/*', hpp({
+/*app.use('/search/*', hpp({
   whitelist: [
     'filter',
     'filters.equipment_types',
@@ -113,10 +126,7 @@ app.use('/search/*', hpp({
     'filters.product_categories',
     'sorts',
   ]
-}));  // why???
-// TO DO: follow OWASP guidelines
-// TO DO: csrf-csrf Double-Submit Cookie (or even better: csrf-sync Synchronizer Token)
-//app.use(csurf());  // no longer maintained!
+}));  // why???*/
 app.use(compression());
 
 app.use('/v1', apiV1Router());
