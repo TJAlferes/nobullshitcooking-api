@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 
 import { AwsS3PrivateUploadsController } from './modules/aws-s3/private-uploads/controller';
 import { AwsS3PublicUploadsController } from './modules/aws-s3/public-uploads/controller';
@@ -50,19 +50,19 @@ export function apiV1Router() {
 
   router.post(
     '/confirm',
-    sanitize(['confirmation_code']),
+    sanitizeBody(['confirmation_code']),
     catchExceptions(userAuthenticationController.confirm)
   );
 
   router.post(
     '/resend-confirmation-code',
-    sanitize(['email', 'password']),
+    sanitizeBody(['email', 'password']),
     catchExceptions(userAuthenticationController.resendConfirmationCode)
   );
 
   router.post(
     '/login',
-    sanitize(['email', 'password']),
+    sanitizeBody(['email', 'password']),
     catchExceptions(userAuthenticationController.login)
   );
 
@@ -74,13 +74,13 @@ export function apiV1Router() {
 
   router.post(
     '/forgot-password',
-    sanitize(['email']),
+    sanitizeBody(['email']),
     catchExceptions(userAuthenticationController.forgotPassword)
   );
 
   router.patch(
     '/reset-password',
-    sanitize(['email', 'temporary_password', 'new_password']),
+    sanitizeBody(['email', 'temporary_password', 'new_password']),
     catchExceptions(userAuthenticationController.resetPassword)
   );
 
@@ -89,28 +89,28 @@ export function apiV1Router() {
   router.post(
     '/aws-s3-private-uploads',
     userIsAuth,
-    sanitize('subfolder'),
+    sanitizeBody('subfolder'),
     catchExceptions(AwsS3PrivateUploadsController.signUrlToUploadImage)
   );
 
-  router.get(
+  router.post(
     '/aws-s3-private-uploads/many',
     userIsAuth,
-    sanitize('access_requests.*.*'),
+    sanitizeBody('access_requests.*.*'),
     catchExceptions(AwsS3PrivateUploadsController.signUrlToViewImages)
   );
 
-  router.get(
+  router.post(
     '/aws-s3-private-uploads/one',
     userIsAuth,
-    sanitize(['subfolder', 'image_filename', 'size']),
+    sanitizeBody(['subfolder', 'image_filename', 'size']),
     catchExceptions(AwsS3PrivateUploadsController.signUrlToViewImage)
   );
 
   router.post(
     '/aws-s3-public-uploads',
     userIsAuth,
-    sanitize(['subfolder', 'image_filename', 'size']),
+    sanitizeBody('subfolder'),
     catchExceptions(AwsS3PublicUploadsController.signUrlToUploadImage)
   );
 
@@ -122,6 +122,10 @@ export function apiV1Router() {
   return router;
 }
 
-function sanitize(keys: string | string[]) {
-  return body(keys).not().isEmpty().trim().escape();
+function sanitizeBody(keys: string | string[]) {
+  return body(keys).trim().notEmpty();
+}
+
+function sanitizeParams(keys: string | string[]) {
+  return param(keys).trim().notEmpty();
 }
