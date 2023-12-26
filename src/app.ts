@@ -83,7 +83,9 @@ const sessionMiddleware = expressSession({
 });
 const { generateToken, doubleCsrfProtection } = doubleCsrf({
   cookieOptions: {
-    secure: app.get('env') === 'production' ? true : false
+    //sameSite: ,
+    secure: app.get('env') === 'production' ? true : false,
+    signed: true
   },
   getSecret: () => process.env.CSRF_SECRET!,
   size: 32
