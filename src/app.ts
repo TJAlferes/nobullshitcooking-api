@@ -94,15 +94,8 @@ const { generateToken, doubleCsrfProtection } = doubleCsrf({
 if (app.get('env') !== 'test') app.use(pinoHttp());  // logger
 app.use(express.json({limit: '10kb'}));
 app.use(express.urlencoded({extended: true, limit: '10kb'}));
-app.use(sessionMiddleware);
-app.use(cookieParser(process.env.COOKIE_SECRET!));
-app.get("/csrf-token", (req, res) => {
-  const csrfToken = generateToken(req, res, true);
-  return res.json({csrfToken});
-});
-if (app.get('env') !== 'test') app.use(doubleCsrfProtection);
 app.use(cors({
-  allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+  allowedHeaders: 'Origin, X-Requested-With, X-CSRF-TOKEN, Content-Type, Accept, Authorization',
   credentials: true,
   methods: 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
   origin: (app.get('env') === 'production')
@@ -114,6 +107,13 @@ app.use(cors({
       'http://localhost:8080'
     ]
 }));
+app.use(sessionMiddleware);
+app.use(cookieParser(process.env.COOKIE_SECRET!));
+app.get('/v1/csrf-token', (req, res) => {
+  const csrfToken = generateToken(req, res, true);
+  return res.json({csrfToken});
+});  // make async???
+if (app.get('env') !== 'test') app.use(doubleCsrfProtection);
 app.use(helmet());
 app.use(hpp());
 /*app.use('/search/*', hpp({
