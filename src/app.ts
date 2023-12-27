@@ -27,7 +27,7 @@ declare module 'express-session' {
   interface SessionData {
     user_id?:   string;
     username?:  string;
-    csrfToken?: string;
+    //csrfToken?: string;
   }
 }
 
@@ -87,13 +87,13 @@ export const { generateToken, doubleCsrfProtection } = doubleCsrf({
     ? '__Host-psifi.x-csrf-token'
     : 'x-csrf-token',
   cookieOptions: {
-    //sameSite: ,
+    sameSite: app.get('env') === 'production' ? 'strict' : false,
     secure: app.get('env') === 'production' ? true : false,
     signed: true
   },
   getSecret: () => process.env.CSRF_SECRET!,
   size: 32,
-  //getTokenFromRequest: () => req.session.csrfToken
+  getTokenFromRequest: (req) => req.headers["x-csrf-token"] as string
 });
 
 if (app.get('env') === 'production') {
@@ -121,22 +121,15 @@ app.use(cors({
     ]
 }));
 app.use(sessionMiddleware);
-app.use(cookieParser(process.env.COOKIE_SECRET!));
-/*app.use(async (req, res, next) => {
-  try {
-    const token = await // TO DO here: get token from redis
-    req.asyncCsrfToken = token;
-    next();
-  } catch (error) {
-    next(error);
+app.use(cookieParser(process.env.COOKIE_SECRET!, {
+  decode: (str) => {
+    const D = str.indexOf('%') !== -1
+      ? decodeURIComponent(str)
+      : str;
+    console.log(D);
+    return D;
   }
-});*/
-/*app.use((req, res, next) => {
-  const csrfToken = req.csrfToken;
-  // Set the CSRF token on the request object
-  req.asyncCsrfToken = csrfToken;
-  next();
-});*/
+}));
 app.get('/v1/csrf-token', (req, res) => {
   const csrfToken = generateToken(req, res, false, false);  //generateToken(req, res, true);
   return res.json({csrfToken});
