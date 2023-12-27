@@ -25,8 +25,9 @@ declare module 'http' {
 
 declare module 'express-session' {
   interface SessionData {
-    user_id?:  string;
-    username?: string;
+    user_id?:   string;
+    username?:  string;
+    csrfToken?: string;
   }
 }
 
@@ -81,17 +82,29 @@ const sessionMiddleware = expressSession({
   store: redisStore,
   unset: 'destroy'
 });
-const { generateToken, doubleCsrfProtection } = doubleCsrf({
+export const { generateToken, doubleCsrfProtection } = doubleCsrf({
+  cookieName: app.get('env') === 'production'
+    ? '__Host-psifi.x-csrf-token'
+    : 'x-csrf-token',
   cookieOptions: {
     //sameSite: ,
     secure: app.get('env') === 'production' ? true : false,
     signed: true
   },
   getSecret: () => process.env.CSRF_SECRET!,
-  size: 32
+  size: 32,
+  //getTokenFromRequest: () => req.session.csrfToken
 });
 
-if (app.get('env') !== 'test') app.use(pinoHttp());  // logger
+if (app.get('env') === 'production') {
+  app.use(pinoHttp());
+} else if (app.get('env') === 'development') {
+  app.use(pinoHttp({
+    transport: {
+      target: 'pino-pretty'
+    }
+  }));
+}
 app.use(express.json({limit: '10kb'}));
 app.use(express.urlencoded({extended: true, limit: '10kb'}));
 app.use(cors({
@@ -109,10 +122,25 @@ app.use(cors({
 }));
 app.use(sessionMiddleware);
 app.use(cookieParser(process.env.COOKIE_SECRET!));
+/*app.use(async (req, res, next) => {
+  try {
+    const token = await // TO DO here: get token from redis
+    req.asyncCsrfToken = token;
+    next();
+  } catch (error) {
+    next(error);
+  }
+});*/
+/*app.use((req, res, next) => {
+  const csrfToken = req.csrfToken;
+  // Set the CSRF token on the request object
+  req.asyncCsrfToken = csrfToken;
+  next();
+});*/
 app.get('/v1/csrf-token', (req, res) => {
-  const csrfToken = generateToken(req, res, true);
+  const csrfToken = generateToken(req, res, false, false);  //generateToken(req, res, true);
   return res.json({csrfToken});
-});  // make async???
+});
 if (app.get('env') !== 'test') app.use(doubleCsrfProtection);
 app.use(helmet());
 app.use(hpp());

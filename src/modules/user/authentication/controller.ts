@@ -4,7 +4,7 @@ import { uuidv7 } from 'uuidv7';
 import { ConflictException, NotFoundException, UnauthorizedException} from '../../../utils/exceptions';
 import { socketIOServer } from '../../../app';
 import { NOBSC_USER_ID } from '../../shared/model';
-//import { ChatgroupRepo }             from '../../chat/group/repo';
+//import { ChatgroupRepo } from '../../chat/group/repo';
 import { EquipmentRepo } from '../../equipment/repo';
 import { IngredientRepo } from '../../ingredient/repo';
 import { PlanRepo } from '../../plan/repo';
@@ -104,6 +104,8 @@ export const userAuthenticationController = {
       //chatgroupRepo.viewAll(user_id)
     ]);
 
+    //const csrfToken = generateToken(req, res, true);
+
     // regenerate the session, which is good practice to help
     // guard against forms of session fixation
     req.session.regenerate(function (err) {
@@ -112,8 +114,9 @@ export const userAuthenticationController = {
         throw new UnauthorizedException();
       }
 
-      req.session.user_id  = user_id;
+      req.session.user_id = user_id;
       req.session.username = username;
+      //req.session.csrfToken = csrfToken;
 
       // save the session before redirection to ensure page
       // load does not happen before session is saved
