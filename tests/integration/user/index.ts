@@ -87,7 +87,10 @@ export function usersTests(app: Express) {
     it('handles success', async () => {
       const res = await agent
         .patch('/v1/users/FakeUser1/email')
-        .send({new_email: 'newemail@gmail.com'});
+        .send({
+          new_email: 'newemail@gmail.com',
+          password: 'fakepassword'
+        });
 
       expect(res.status).toBe(204);
     });
@@ -95,7 +98,10 @@ export function usersTests(app: Express) {
     it('handles new_email already in use', async () => {
       const res = await agent
         .patch('/v1/users/FakeUser1/email')
-        .send({new_email: 'fakeuser2@gmail.com'});
+        .send({
+          new_email: 'fakeuser2@gmail.com',
+          password: 'fakepassword'
+        });
 
       expect(res.status).toBe(409);
       expect(res.body.message).toBe('Email already in use.');
@@ -123,7 +129,10 @@ export function usersTests(app: Express) {
     it('handles success', async () => {
       const res = await agent
         .patch('/v1/users/FakeUser1/password')
-        .send({new_password: 'newpassword'});
+        .send({
+          new_password: 'newpassword',
+          current_password: 'fakepassword'
+        });
 
       expect(res.status).toBe(204);
     });
@@ -165,7 +174,7 @@ export function usersTests(app: Express) {
     });
   });
 
-  describe('DELETE /v1/users/:username', () => {
+  describe('POST /v1/users/:username/delete', () => {
     it('handles success', async () => {
       const agent = request.agent(app);
 
@@ -176,7 +185,9 @@ export function usersTests(app: Express) {
           password: 'fakepassword'
         });
 
-      const res = await agent.delete('/v1/users/FakeUser1');
+      const res = await agent
+        .post('/v1/users/FakeUser1/delete')
+        .send({password: 'fakepassword'});
 
       expect(res.status).toBe(204);
     });

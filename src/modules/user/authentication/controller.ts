@@ -215,12 +215,16 @@ export const userAuthenticationController = {
       temporary_password
     });
 
+    const current_password = await userRepo.getPassword(user.email);
+    if (!current_password) throw new NotFoundException();
+
     // TO DO: consider making the update and delete a single transaction
 
     const userService = new UserService(userRepo);
     await userService.updatePassword({
       user_id: user.user_id,
-      new_password
+      new_password,
+      current_password
     });
 
     await passwordResetRepo.deleteByUserId(user.user_id);

@@ -1,4 +1,4 @@
-import { ConflictException, NotFoundException, ForbiddenException } from '../../utils/exceptions';
+import { ConflictException, NotFoundException, ForbiddenException, UnauthorizedException } from '../../utils/exceptions';
 import { ImageRepo } from '../image/repo';
 import { PlanRepo } from '../plan/repo';  // ?
 import { RecipeRepo } from '../recipe/repo';
@@ -46,15 +46,19 @@ export class UserService {
     });
   }
 
-  // should we also send them through the confirmation code flow again???
-  async updateEmail({ user_id, new_email }: UpdateEmailParams) {
+  // TO DO: first send confirmation code to their new_email
+  async updateEmail({ user_id, new_email, password }: UpdateEmailParams) {
     const existingUser = await this.repo.getByUserId(user_id);
     if (!existingUser) throw new NotFoundException('User does not exist.');
 
     const emailExists = await this.repo.getByEmail(new_email);
     if (emailExists) throw new ConflictException('Email already in use.');
 
-    const password = await this.repo.getPassword(existingUser.email);
+    const userAuthenticationService = new UserAuthenticationService(this.repo);
+    await userAuthenticationService.isCorrectPassword({
+      email: existingUser.email,
+      password
+    });
     
     const user = User.update({
       user_id,
@@ -67,11 +71,17 @@ export class UserService {
     await this.repo.update(user);
   }
 
-  async updatePassword({ user_id, new_password }: UpdatePasswordParams) {
+  async updatePassword({ user_id, new_password, current_password }: UpdatePasswordParams) {
     const existingUser = await this.repo.getByUserId(user_id);
     if (!existingUser) throw new NotFoundException('User does not exist.');
 
     const userAuthenticationService = new UserAuthenticationService(this.repo);
+
+    await userAuthenticationService.isCorrectPassword({
+      email: existingUser.email,
+      password: current_password
+    });
+
     const encryptedPassword = await userAuthenticationService.hashPassword(new_password);
     
     const user = User.update({
@@ -105,11 +115,14 @@ export class UserService {
     await this.repo.update(user);
   }
 
-  async delete(user_id: string) {
+  async delete({ user_id, password }: DeleteParams) {
     // IMPORTANT: Never allow this user to be deleted.
     if (user_id === NOBSC_USER_ID) throw new ForbiddenException();
     // IMPORTANT: Never allow this user to be deleted.
     if (user_id === UNKNOWN_USER_ID) throw new ForbiddenException();
+
+    // get current user by user_id
+    //if (password !== existingUser.password)
 
     //const planRepo = new PlanRepo();
     //await planRepo.unattributeAll(user_id);  // currently ON DELETE CASCASE in MySQL
@@ -149,14 +162,21 @@ type CreateParams = {
 type UpdateEmailParams = {
   user_id:   string;
   new_email: string;
+  password:  string;
 };
 
 type UpdatePasswordParams = {
-  user_id:      string;
-  new_password: string;
+  user_id:          string;
+  new_password:     string;
+  current_password: string;
 };
 
 type UpdateUsernameParams = {
   user_id:      string;
   new_username: string;
+};
+
+type DeleteParams = {
+  user_id:  string;
+  password: string;
 };

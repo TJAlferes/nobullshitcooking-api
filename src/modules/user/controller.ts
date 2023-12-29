@@ -13,23 +13,23 @@ export const userController = {
   },
   
   async updateEmail(req: Request, res: Response) {
-    const { new_email } = req.body;
+    const { new_email, password } = req.body;
     const user_id       = req.session.user_id!;
 
     const userRepo    = new UserRepo();
     const userService = new UserService(userRepo);
-    await userService.updateEmail({user_id, new_email});
+    await userService.updateEmail({user_id, new_email, password});
 
     return res.status(204).json();
   },
 
   async updatePassword(req: Request, res: Response) {
-    const { new_password } = req.body;
+    const { new_password, current_password } = req.body;
     const user_id          = req.session.user_id!;
 
     const userRepo    = new UserRepo();
     const userService = new UserService(userRepo);
-    await userService.updatePassword({user_id, new_password});
+    await userService.updatePassword({user_id, new_password, current_password});
 
     return res.status(204).json();
   },
@@ -46,11 +46,12 @@ export const userController = {
   },
 
   async delete(req: Request, res: Response) {
+    const { password } = req.body;
     const user_id = req.session.user_id!;
 
     const userRepo    = new UserRepo();
     const userService = new UserService(userRepo);
-    await userService.delete(user_id);
+    await userService.delete({user_id, password});
 
     return res.status(204).json();
   }

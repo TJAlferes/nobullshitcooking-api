@@ -48,7 +48,7 @@ export function userRouter() {
     '/:username/email',
     userIsAuth,
     sanitizeParams('username'),
-    sanitizeBody('new_email'),
+    sanitizeBody(['new_email', 'password']),
     catchExceptions(userController.updateEmail)
   );
 
@@ -56,7 +56,7 @@ export function userRouter() {
     '/:username/password',
     userIsAuth,
     sanitizeParams('username'),
-    sanitizeBody('new_password'),
+    sanitizeBody(['new_password', 'current_password']),
     catchExceptions(userController.updatePassword)
   );
 
@@ -68,10 +68,11 @@ export function userRouter() {
     catchExceptions(userController.updateUsername)
   );
 
-  router.delete(
-    '/:username',
+  router.post(
+    '/:username/delete',
     userIsAuth,
     sanitizeParams('username'),
+    sanitizeBody('password'),
     catchExceptions(userController.delete)
   );
   
