@@ -150,24 +150,23 @@ export const socketIOServer = createSocketIOServer(httpServer, sessionMiddleware
 
 process.on('unhandledRejection', (reason, promise) => {
   console.log('Unhandled Rejection at:', promise, 'reason:', reason);
-  // TO DO: log or throw an error
+  // TO DO: log
 });
 
 if (process.env.NODE_ENV === 'production') {
-  app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
+  app.use((error: any, req: Request, res: Response, next: NextFunction) => {
     if (instanceOfAnyException(error)) {
-      res.status((error as any).code).json({message: error.message});
-    } else {
-      console.log(error.message);
+      res.status(error.code).json({message: error.message});
+    } else if (error instanceof Error) {
       res.status(500).json({message: error.message || 'Internal Server Error'});
     }
   });
 } else {
-  app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
+  app.use((error: any, req: Request, res: Response, next: NextFunction) => {
     if (instanceOfAnyException(error)) {
-      res.status((error as any).code).json({message: error.message});
-    } else {
-      console.log(error);
+      res.status(error.code).json({message: error.message});
+    } else if (error instanceof Error) {
+      console.log(error);  //
       res.status(500).json({message: error.message, error});
     }
   });

@@ -39,12 +39,12 @@ export class ConflictException extends ExceptionError {
   }
 }
 
-export function instanceOfAnyException(err: {}) {
-  if (err instanceof ExceptionError) return true;
+export function instanceOfAnyException(err: any) {
   if (err instanceof ValidationException) return true;
   if (err instanceof UnauthorizedException) return true;
   if (err instanceof ForbiddenException) return true;
   if (err instanceof NotFoundException) return true;
   if (err instanceof ConflictException) return true;
+  if (err instanceof ExceptionError) return true;  //
   return false;
 }

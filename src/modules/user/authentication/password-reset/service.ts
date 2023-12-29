@@ -29,12 +29,12 @@ export class PasswordResetService {
 
   async sendTemporaryPassword({ email, temporary_password }: SendTemporaryPasswordParams) {
     const charset  = 'UTF-8';
-    const from     = 'No Bullshit Cooking <staff@nobullshitcooking.com>';
+    const from     = 'No Bullshit Cooking <noreply@nobullshitcooking.com>';
     const to       = email;
     const subject  = 'Temporary Password For No Bullshit Cooking';
     const bodyText = 'Temporary Password For No Bullshit Cooking\r\n'
       + 'Please enter the following temporary password at:\r\n'
-      + 'https://nobullshitcooking.com/login\r\n'
+      + 'https://nobullshitcooking.com/reset-password\r\n'
       + temporary_password;
     const bodyHtml = `
       <html>
@@ -42,7 +42,7 @@ export class PasswordResetService {
       <body>
         <h1>Temporary Password For No Bullshit Cooking</h1>
         <p>Please enter the following temporary password at:</p>
-        <p>https://nobullshitcooking.com/login</p>
+        <p>https://nobullshitcooking.com/reset-password</p>
         ${temporary_password}
       </body>
       </html>

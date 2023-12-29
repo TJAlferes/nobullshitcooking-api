@@ -43,6 +43,12 @@ export class User {
 
 export function Email(email: string) {
   assert(email, string());
+  if (email.length < 5) {
+    throw new ValidationException('Email must be at least 5 characters.');
+  }
+  if (email.length > 60) {
+    throw new ValidationException('Email must be no more than 60 characters.');
+  }
   // Potential issue: This invalidates some older/alternative email types.
   if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
     throw new ValidationException('Invalid email.');
