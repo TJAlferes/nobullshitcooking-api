@@ -35,11 +35,10 @@ export async function emailUser({ from, to, subject, bodyText, bodyHtml, charset
   };
   
   try {
-    const data = await sesClient.send(new SendEmailCommand(params));
-    console.log('Email sent! Data: ', data);
+    await sesClient.send(new SendEmailCommand(params));
   } catch (error: any) {
     console.log(error.message);
-  } finally {}
+  }
 }
 
 type EmailUserParams = {

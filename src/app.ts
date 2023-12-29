@@ -27,7 +27,6 @@ declare module 'express-session' {
   interface SessionData {
     user_id?:   string;
     username?:  string;
-    //csrfToken?: string;
   }
 }
 
@@ -99,11 +98,12 @@ export const { generateToken, doubleCsrfProtection } = doubleCsrf({
 if (app.get('env') === 'production') {
   app.use(pinoHttp());
 } else if (app.get('env') === 'development') {
-  app.use(pinoHttp({
+  /*app.use(pinoHttp({
     transport: {
       target: 'pino-pretty'
     }
-  }));
+  }));*/
+  app.use(pinoHttp());
 }
 app.use(express.json({limit: '10kb'}));
 app.use(express.urlencoded({extended: true, limit: '10kb'}));
@@ -121,15 +121,7 @@ app.use(cors({
     ]
 }));
 app.use(sessionMiddleware);
-app.use(cookieParser(process.env.COOKIE_SECRET!, {
-  decode: (str) => {
-    const D = str.indexOf('%') !== -1
-      ? decodeURIComponent(str)
-      : str;
-    console.log(D);
-    return D;
-  }
-}));
+app.use(cookieParser(process.env.COOKIE_SECRET!));
 app.get('/v1/csrf-token', (req, res) => {
   const csrfToken = generateToken(req, res, false, false);  //generateToken(req, res, true);
   return res.json({csrfToken});

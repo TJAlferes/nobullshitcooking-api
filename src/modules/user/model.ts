@@ -22,7 +22,7 @@ export class User {
 
   static create(params: CreateParams): User {
     const user_id           = GenerateUUIDv7StringId();
-    const confirmation_code = GenerateUUIDv7StringId();
+    const confirmation_code = GenerateUUIDv7StringId();  // TO DO: use a cryptographically secure string instead
     return new User({...params, user_id, confirmation_code});
   }
 
@@ -52,11 +52,11 @@ export function Email(email: string) {
 
 export function Password(password: string) {
   assert(password, string());
-  if (password.length < 6) {
-    throw new ValidationException('Password must be at least 6 characters.');
+  if (password.length < 8) {
+    throw new ValidationException('Password must be at least 8 characters.');
   }
-  if (password.length > 60) {
-    throw new ValidationException('Password must be no more than 60 characters.');
+  if (password.length > 64) {
+    throw new ValidationException('Password must be no more than 64 characters.');
   }
   return password;
 }

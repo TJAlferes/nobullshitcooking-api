@@ -118,7 +118,7 @@ export class UserAuthenticationService {
     const subject  = 'Confirmation Code For No Bullshit Cooking';
     const bodyText = 'Confirmation Code For No Bullshit Cooking\r\n'
       + 'Please enter the following confirmation code at:\r\n'
-      + 'https://nobullshitcooking.com/verify\r\n'
+      + 'https://nobullshitcooking.com/confirm\r\n'
       + confirmation_code;
     const bodyHtml = `
       <html>
@@ -126,7 +126,7 @@ export class UserAuthenticationService {
       <body>
         <h1>Confirmation Code For No Bullshit Cooking</h1>
         <p>Please enter the following confirmation code at:</p>
-        <p>https://nobullshitcooking.com/verify</p>
+        <p>https://nobullshitcooking.com/confirm</p>
         ${confirmation_code}
       </body>
       </html>
