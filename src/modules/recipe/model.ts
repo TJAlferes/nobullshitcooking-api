@@ -126,7 +126,7 @@ export type RecipeUpload = {
   required_ingredients: RequiredIngredient[];
   required_subrecipes:  RequiredSubrecipe[];
   recipe_image:         ImageUpload & {
-    thumb: File | null;
+    small: File | null;
     tiny:  File | null;
   },
   equipment_image:      ImageUpload,

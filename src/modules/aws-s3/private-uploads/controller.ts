@@ -23,10 +23,10 @@ export const AwsS3PrivateUploadsController = {
     
     if (subfolder === 'recipe') {
       const mediumSignature = await sign(objectKey, 'medium');
-      const thumbSignature  = await sign(objectKey, 'thumb');
+      const smallSignature  = await sign(objectKey, 'small');
       const tinySignature   = await sign(objectKey, 'tiny');
 
-      return res.status(201).json({filename, mediumSignature, thumbSignature, tinySignature});
+      return res.status(201).json({filename, mediumSignature, smallSignature, tinySignature});
     }
 
     if (subfolder === 'equipment' || subfolder === 'ingredient') {
@@ -58,7 +58,7 @@ export const AwsS3PrivateUploadsController = {
       }
   
       const signature = await getSignedUrl(AwsS3PrivateUploadsClient, new GetObjectCommand({
-        Bucket: process.env.AWS_S3_PRIVATE_UPLOADS_BUCKET!,
+        Bucket: 'nobsc-private-uploads',
         Key: `
           nobsc-private-uploads
           /${subfolder}
@@ -84,7 +84,7 @@ export const AwsS3PrivateUploadsController = {
     }
   
     const signature = await getSignedUrl(AwsS3PrivateUploadsClient, new GetObjectCommand({
-      Bucket: process.env.AWS_S3_PRIVATE_UPLOADS_BUCKET!,
+      Bucket: 'nobsc-private-uploads',
       Key: `
         nobsc-private-uploads
         /${subfolder}
@@ -99,7 +99,7 @@ export const AwsS3PrivateUploadsController = {
 
 async function sign(objectKey: string, imageSize: string) {
   const signature = await getSignedUrl(AwsS3PrivateUploadsClient, new PutObjectCommand({
-    Bucket: process.env.AWS_S3_PRIVATE_UPLOADS_BUCKET!,
+    Bucket: 'nobsc-private-uploads',
     Key: `${objectKey}-${imageSize}`,
     ContentType: 'image/jpeg'
   }));
@@ -135,8 +135,8 @@ nobsc-private-uploads/  recipe-ingredients/${user_id}/${uuidv7()}.jpeg
 
 imageSize =
 large  (not yet used)
-medium 560px by 560px  344
-small  280px by 280px  172
-thumb  100px by 100px   62
-tiny    28px by  28px   18
+medium 560px by 560px
+small  280px by 280px
+thumb  100px by 100px
+tiny    28px by  28px
 */

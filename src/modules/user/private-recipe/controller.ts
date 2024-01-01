@@ -222,7 +222,7 @@ export const privateRecipeController = {
       Key: `
         nobsc-private-uploads/recipe
         /${owner_id}
-        /${recipe_image.image_filename}-thumb
+        /${recipe_image.image_filename}-small
       `
     }));
     await s3Client.send(new DeleteObjectCommand({

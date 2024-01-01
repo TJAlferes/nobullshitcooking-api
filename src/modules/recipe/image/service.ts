@@ -86,7 +86,7 @@ export class RecipeImageService {
             Key: `
               nobsc-${ownership}-uploads/recipe
               /${author_id}
-              /${curr_image.image_filename}-thumb
+              /${curr_image.image_filename}-small
             `
           }));
           await s3Client.send(new DeleteObjectCommand({

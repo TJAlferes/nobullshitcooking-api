@@ -268,12 +268,12 @@ export const publicRecipeController = {
 
       await s3Client.send(new CopyObjectCommand({
         Bucket: bucket,
-        CopySource: `${source}-thumb`,
-        Key: `${copyKey}-thumb`
+        CopySource: `${source}-small`,
+        Key: `${copyKey}-small`
       }));
       await s3Client.send(new DeleteObjectCommand({
         Bucket: bucket,
-        Key: `${delKey}-thumb`
+        Key: `${delKey}-small`
       }));
 
       await s3Client.send(new CopyObjectCommand({
