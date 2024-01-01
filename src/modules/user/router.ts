@@ -21,7 +21,7 @@ const router = Router();
 // for /users
 
 export function userRouter() {
-  router.use(':/username/avatars', userImageRouter());
+  router.use('/:username/avatars', userImageRouter());
   router.use('/:username/public-plans', publicPlanRouter());
   router.use('/:username/public-recipes', publicRecipeRouter());
   router.use('/:username/favorite-recipes', favoriteRecipeRouter());

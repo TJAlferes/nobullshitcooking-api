@@ -25,12 +25,12 @@ export const userImageController = {
   },
 
   async create(req: Request, res: Response) {
-    const new_avatar = req.body.new_avatar;
-    const user_id    = req.session.user_id!;
+    const { new_avatar } = req.body;
+    const user_id = req.session.user_id!;
   
     const image = Image.create({
       author_id:      user_id,
-      owner_id:       user_id,
+      owner_id:       user_id,  // ?
       image_filename: new_avatar,
       caption:        ""
     }).getDTO();
@@ -44,13 +44,16 @@ export const userImageController = {
     }).getDTO();
     const userImageRepo = new UserImageRepo();
     await userImageRepo.insert(userImage);
+    await userImageRepo.setCurrent({user_id, image_id: image.image_id});  // eh...
+
+    console.log('END OF CONTROLLER METHOD');
   
     return res.status(204).json();
   },
 
   async setCurrent(req: Request, res: Response) {
     const { image_id } = req.params;
-    const user_id      = req.session.user_id!;
+    const user_id = req.session.user_id!;
 
     const userImageRepo = new UserImageRepo();
     await userImageRepo.setCurrent({user_id, image_id});
@@ -60,7 +63,7 @@ export const userImageController = {
 
   async delete(req: Request, res: Response) {
     const { image_id } = req.params;
-    const owner_id     = req.session.user_id!;
+    const owner_id = req.session.user_id!;
 
     const imageRepo = new ImageRepo();
     await imageRepo.deleteOne({owner_id, image_id});
