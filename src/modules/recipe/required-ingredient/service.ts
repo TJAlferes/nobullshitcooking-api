@@ -23,8 +23,8 @@ export class RecipeIngredientService {
 
   async bulkUpdate({ recipe_id, required_ingredients }: BulkUpdateParams) {
     if (required_ingredients.length < 1) {
-      const result = await this.repo.deleteByRecipeId(recipe_id);
-      return result;
+      await this.repo.deleteByRecipeId(recipe_id);
+      return;
     }
 
     const placeholders = '(?, ?, ?, ?),'
@@ -33,8 +33,7 @@ export class RecipeIngredientService {
     const recipe_ingredients = required_ingredients.map(ri => 
       RecipeIngredient.create({recipe_id, ...ri}).getDTO()
     );
-    const result = await this.repo.bulkUpdate({recipe_id, placeholders, recipe_ingredients});
-    return result;
+    await this.repo.bulkUpdate({recipe_id, placeholders, recipe_ingredients});
   }
 }
 

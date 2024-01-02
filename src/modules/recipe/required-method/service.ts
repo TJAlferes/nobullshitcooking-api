@@ -21,16 +21,15 @@ export class RecipeMethodService {
 
   async bulkUpdate({ recipe_id, required_methods }: BulkUpdateParams) {
     if (required_methods.length < 1) {
-      const result = await this.repo.deleteByRecipeId(recipe_id);
-      return result;
+      await this.repo.deleteByRecipeId(recipe_id);
+      return;
     }
 
     const placeholders = '(?, ?),'.repeat(required_methods.length).slice(0, -1);
     const recipe_methods = required_methods.map(rm =>
       RecipeMethod.create({recipe_id, ...rm}).getDTO()
     );
-    const result = await this.repo.bulkUpdate({recipe_id, placeholders, recipe_methods});
-    return result;
+    await this.repo.bulkUpdate({recipe_id, placeholders, recipe_methods});
   }
 }
 

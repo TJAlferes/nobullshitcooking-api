@@ -38,7 +38,8 @@ export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
       VALUES ${placeholders}
     `;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, flat);
-    if (result.affectedRows < 1) throw new Error('Query not successful.');
+    //if (result.affectedRows < 1) throw new Error('Query not successful.');
+    return result.affectedRows >= 1;
   }
 
   async insert(params: InsertParams) {
@@ -137,7 +138,7 @@ export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
 
 export interface ImageRepoInterface {
   viewOne:        (image_id: string) =>             Promise<ImageView>;
-  bulkInsert:     (params: BulkInsertParams) =>     Promise<void>;
+  bulkInsert:     (params: BulkInsertParams) =>     Promise<boolean>;
   insert:         (params: InsertParams) =>         Promise<void>;
   update:         (params: UpdateParams) =>         Promise<void>;
   unattributeAll: (author_id: string) =>            Promise<void>;

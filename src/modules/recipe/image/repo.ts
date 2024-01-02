@@ -29,7 +29,8 @@ export class RecipeImageRepo extends MySQLRepo implements RecipeImageRepoInterfa
       VALUES ${placeholders}
     `;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, flat);
-    if (result.affectedRows < 1) throw new Error('Query not successful.');
+    //if (result.affectedRows < 1) throw new Error('Query not successful.');
+    return result.affectedRows >= 1;
   }
 
   // TO DO: if not needed, delete this code...
@@ -72,7 +73,7 @@ export class RecipeImageRepo extends MySQLRepo implements RecipeImageRepoInterfa
 
 export interface RecipeImageRepoInterface {
   viewByRecipeId:   (recipe_id: string) =>        Promise<RecipeImageView[]>;
-  bulkInsert:       (params: BulkInsertParams) => Promise<void>;
+  bulkInsert:       (params: BulkInsertParams) => Promise<boolean>;
   //bulkUpdate:       (params: BulkUpdateParams) => Promise<void>;
   deleteByImageId:  (image_id: string) =>         Promise<void>;
   deleteByRecipeId: (recipe_id: string) =>        Promise<void>;

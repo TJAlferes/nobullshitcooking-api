@@ -18,7 +18,10 @@ export class RecipeImageService {
   }
 
   async bulkCreate({ recipe_id, author_id, owner_id, uploaded_images }: BulkCreateParams) {
-    if (uploaded_images.length !== 4) throw new ValidationException('Recipe must have 4 images.');
+    if (uploaded_images.length !== 4) {
+      //throw new ValidationException('Recipe must have 4 images.');
+      return false;
+    }
     
     const images: ImageDTO[] = [];
     const recipe_images: RecipeImageDTO[] = [];
@@ -42,22 +45,26 @@ export class RecipeImageService {
       recipe_images.push(recipe_image);
     }
 
-    await this.imageRepo.bulkInsert({
+    const result1 = await this.imageRepo.bulkInsert({
       placeholders: '(?, ?, ?, ?, ?),(?, ?, ?, ?, ?),(?, ?, ?, ?, ?),(?, ?, ?, ?, ?)',
       images
     });
+    if (!result1) return false;
 
     this.checkRecipeImagesTypes(recipe_images);
 
-    await this.recipeImageRepo.bulkInsert({
+    const result2 = await this.recipeImageRepo.bulkInsert({
       placeholders: '(?, ?, ?),(?, ?, ?),(?, ?, ?),(?, ?, ?)',
       recipe_images
     });
+    if (!result2) return false;
   }
 
   // TO DO: thoroughly test
   async bulkUpdate({ author_id, owner_id, uploaded_images }: BulkUpdateParams) {
-    if (uploaded_images.length !== 4) throw new ValidationException('Recipe must have 4 images.');
+    if (uploaded_images.length !== 4) {
+      throw new ValidationException('Recipe must have 4 images.');
+    }
 
     const images: ImageDTO[] = [];
 
@@ -75,60 +82,36 @@ export class RecipeImageService {
         if (uploaded_image.type === 1) {
           await s3Client.send(new DeleteObjectCommand({
             Bucket: `nobsc-${ownership}-uploads`,
-            Key: `
-              nobsc-${ownership}-uploads/recipe
-              /${author_id}
-              /${curr_image.image_filename}-medium
-            `
+            Key: `nobsc-${ownership}-uploads/recipe/${author_id}/${curr_image.image_filename}-medium`
           }));
           await s3Client.send(new DeleteObjectCommand({
             Bucket: `nobsc-${ownership}-uploads`,
-            Key: `
-              nobsc-${ownership}-uploads/recipe
-              /${author_id}
-              /${curr_image.image_filename}-small
-            `
+            Key: `nobsc-${ownership}-uploads/recipe/${author_id}/${curr_image.image_filename}-small`
           }));
           await s3Client.send(new DeleteObjectCommand({
             Bucket: `nobsc-${ownership}-uploads`,
-            Key: `
-              nobsc-${ownership}-uploads/recipe
-              /${author_id}
-              /${curr_image.image_filename}-tiny
-            `
+            Key: `nobsc-${ownership}-uploads/recipe/${author_id}/${curr_image.image_filename}-tiny`
           }));
         }
 
         if (uploaded_image.type === 2) {
           await s3Client.send(new DeleteObjectCommand({
             Bucket: `nobsc-${ownership}-uploads`,
-            Key: `
-              nobsc-${ownership}-uploads/recipe-equipment
-              /${author_id}
-              /${curr_image.image_filename}-medium
-            `
+            Key: `nobsc-${ownership}-uploads/recipe-equipment/${author_id}/${curr_image.image_filename}-medium`
           }));
         }
 
         if (uploaded_image.type === 3) {
           await s3Client.send(new DeleteObjectCommand({
             Bucket: `nobsc-${ownership}-uploads`,
-            Key: `
-              nobsc-${ownership}-uploads/recipe-ingredients
-              /${author_id}
-              /${curr_image.image_filename}-medium
-            `
+            Key: `nobsc-${ownership}-uploads/recipe-ingredients/${author_id}/${curr_image.image_filename}-medium`
           }));
         }
 
         if (uploaded_image.type === 4) {
           await s3Client.send(new DeleteObjectCommand({
             Bucket: `nobsc-${ownership}-uploads`,
-            Key: `
-              nobsc-${ownership}-uploads/recipe-cooking
-              /${author_id}
-              /${curr_image.image_filename}-medium
-            `
+            Key: `nobsc-${ownership}-uploads/recipe-cooking/${author_id}/${curr_image.image_filename}-medium`
           }));
         }
       }
@@ -143,6 +126,7 @@ export class RecipeImageService {
 
       images.push(image);
     }
+
 
     for (const image of images) {
       await this.imageRepo.update(image);

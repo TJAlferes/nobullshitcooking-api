@@ -21,16 +21,15 @@ export class RecipeEquipmentService {
 
   async bulkUpdate({ recipe_id, required_equipment }: BulkUpdateParams) {
     if (required_equipment.length < 1) {
-      const result = await this.repo.deleteByRecipeId(recipe_id);
-      return result;
+      await this.repo.deleteByRecipeId(recipe_id);
+      return;
     }
 
     const placeholders = '(?, ?, ?),'.repeat(required_equipment.length).slice(0, -1);
     const recipe_equipment = required_equipment.map(re => 
       RecipeEquipment.create({recipe_id, ...re}).getDTO()
     );
-    const result = await this.repo.bulkUpdate({recipe_id, placeholders, recipe_equipment});
-    return result;
+    await this.repo.bulkUpdate({recipe_id, placeholders, recipe_equipment});
   }
 }
 

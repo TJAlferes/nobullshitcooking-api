@@ -1,7 +1,7 @@
 import { CopyObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import type { Request, Response } from 'express';
 
-import { ForbiddenException, NotFoundException} from '../../../utils/exceptions';
+import { ValidationException, ForbiddenException, NotFoundException} from '../../../utils/exceptions';
 import { AwsS3PublicUploadsClient as s3Client } from '../../aws-s3/public-uploads/client';
 import { EquipmentRepo }           from '../../equipment/repo';
 import { IngredientRepo }          from '../../ingredient/repo';
@@ -87,11 +87,6 @@ export const publicRecipeController = {
     const author_id      = req.session.user_id!;
     const owner_id       = NOBSC_USER_ID;
 
-    // NOTE: MySQL does not support nested transactions
-    // So here's what we do instead: we have our own "rollback" logic:
-    // If any fail, we call recipeRepo.deleteOne (and imageRepo.deleteOne),
-    // (the other tables will then be taken care of by their ON DELETE CASCADE)
-
     const equipmentRepo  = new EquipmentRepo();
     const ingredientRepo = new IngredientRepo();
     const recipeRepo     = new RecipeRepo();
@@ -105,6 +100,11 @@ export const publicRecipeController = {
       required_ingredients,
       required_subrecipes,
     });  // important
+
+    // NOTE: MySQL does not support nested transactions
+    // So here's what we do instead: we have our own "rollback" logic:
+    // If anything below fails, we call recipeRepo.deleteOne
+    // (the other tables will then be taken care of by their ON DELETE CASCADE)
 
     const recipe = Recipe.create({
       recipe_type_id,
@@ -120,22 +120,38 @@ export const publicRecipeController = {
     await recipeRepo.insert(recipe);
 
     const recipeMethodService = new RecipeMethodService(new RecipeMethodRepo());
-    await recipeMethodService.bulkCreate(required_methods);
+    const result1 = await recipeMethodService.bulkCreate(required_methods);
+    if (!result1) {
+      await recipeRepo.deleteOne({owner_id, recipe_id: recipe.recipe_id});
+      throw new ValidationException('Recipe creation failed -- check required methods.');
+    }
 
     const recipeEquipmentService = new RecipeEquipmentService(new RecipeEquipmentRepo());
-    await recipeEquipmentService.bulkCreate(required_equipment);
+    const result2 = await recipeEquipmentService.bulkCreate(required_equipment);
+    if (!result2) {
+      await recipeRepo.deleteOne({owner_id, recipe_id: recipe.recipe_id});
+      throw new ValidationException('Recipe creation failed -- check required equipment.');
+    }
 
     const recipeIngredientService = new RecipeIngredientService(new RecipeIngredientRepo());
-    await recipeIngredientService.bulkCreate(required_ingredients);
+    const result3 = await recipeIngredientService.bulkCreate(required_ingredients);
+    if (!result3) {
+      await recipeRepo.deleteOne({owner_id, recipe_id: recipe.recipe_id});
+      throw new ValidationException('Recipe creation failed -- check required ingredients.');
+    }
 
     const recipeSubrecipeService = new RecipeSubrecipeService(new RecipeSubrecipeRepo());
-    await recipeSubrecipeService.bulkCreate(required_subrecipes);
+    const result4 = await recipeSubrecipeService.bulkCreate(required_subrecipes);
+    if (!result4) {
+      await recipeRepo.deleteOne({owner_id, recipe_id: recipe.recipe_id});
+      throw new ValidationException('Recipe creation failed -- check required subrecipes.');
+    }
 
     const recipeImageService = new RecipeImageService({
       imageRepo: new ImageRepo(),
       recipeImageRepo: new RecipeImageRepo()
     });
-    await recipeImageService.bulkCreate({
+    const result5 = await recipeImageService.bulkCreate({
       recipe_id: recipe.recipe_id,
       author_id,
       owner_id,
@@ -146,6 +162,10 @@ export const publicRecipeController = {
         cooking_image
       ]
     });
+    if (!result5) {
+      await recipeRepo.deleteOne({owner_id, recipe_id: recipe.recipe_id});
+      throw new ValidationException('Recipe creation failed -- check images.');
+    }
 
     //
 
@@ -194,11 +214,6 @@ export const publicRecipeController = {
       required_subrecipes,
     });  // important
 
-    // NOTE: MySQL does not support nested transactions
-    // So here's what we do instead: we have our own "rollback" logic:
-    // If anything below fails, we call recipeRepo.deleteOne
-    // (the other tables will then be taken care of by their ON DELETE CASCADE)
-
     const updated_recipe = Recipe.update({
       recipe_id,
       recipe_type_id,
@@ -214,38 +229,22 @@ export const publicRecipeController = {
     await recipeRepo.update(updated_recipe);
 
     const recipeMethodService = new RecipeMethodService(new RecipeMethodRepo());
-    const result1 = await recipeMethodService.bulkUpdate(required_methods);  // TO DO: fix all these
-    if (!result1) {
-      recipeRepo.deleteOne({owner_id, recipe_id});
-      throw new Error('Recipe creation failed -- check required methods.');
-    }
+    await recipeMethodService.bulkUpdate(required_methods);
 
     const recipeEquipmentService = new RecipeEquipmentService(new RecipeEquipmentRepo());
-    const result2 = await recipeEquipmentService.bulkUpdate(required_equipment);
-    if (!result2) {
-      recipeRepo.deleteOne({owner_id, recipe_id});
-      throw new Error('Recipe creation not failed -- check required equipment.');
-    }
+    await recipeEquipmentService.bulkUpdate(required_equipment);
 
     const recipeIngredientService = new RecipeIngredientService(new RecipeIngredientRepo());
-    const result3 = await recipeIngredientService.bulkUpdate(required_ingredients);
-    if (!result3) {
-      recipeRepo.deleteOne({owner_id, recipe_id});
-      throw new Error('Recipe creation not failed -- check required ingredients.');
-    }
+    await recipeIngredientService.bulkUpdate(required_ingredients);
 
     const recipeSubrecipeService = new RecipeSubrecipeService(new RecipeSubrecipeRepo());
-    const result4 = await recipeSubrecipeService.bulkUpdate(required_subrecipes);
-    if (!result4) {
-      recipeRepo.deleteOne({owner_id, recipe_id});
-      throw new Error('Recipe creation not failed -- check required subrecipes.');
-    }
+    await recipeSubrecipeService.bulkUpdate(required_subrecipes);
 
     const recipeImageService = new RecipeImageService({
       imageRepo: new ImageRepo(),
       recipeImageRepo: new RecipeImageRepo()
     });
-    const result5 = await recipeImageService.bulkUpdate({
+    await recipeImageService.bulkUpdate({
       //recipe_id,
       author_id,
       owner_id,
@@ -256,10 +255,6 @@ export const publicRecipeController = {
         cooking_image
       ]
     });
-    if (!result4) {
-      recipeRepo.deleteOne({owner_id, recipe_id});
-      throw new Error('Recipe creation not failed -- check images.');
-    }
 
     return res.status(204).json();
   },

@@ -37,7 +37,6 @@ export class RecipeSubrecipeRepo extends MySQLRepo implements RecipeSubrecipeRep
   }
   
   async bulkUpdate({ recipe_id, placeholders, recipe_subrecipes }: BulkUpdateParams) {  // TO DO: change to namedPlaceholders using example below
-    let result = true;
     // Rather than updating current values in the database, we delete them,
     // and if there are new values, we insert them.
     const conn = await this.pool.getConnection();
@@ -66,12 +65,10 @@ export class RecipeSubrecipeRepo extends MySQLRepo implements RecipeSubrecipeRep
       await conn.commit();
     } catch (err) {
       await conn.rollback();
-      //throw err;
-      result = false;
+      throw err;
     } finally {
       conn.release();
     }
-    return result;
   }
 
   async deleteByRecipeId(recipe_id: string) {
@@ -90,7 +87,7 @@ export class RecipeSubrecipeRepo extends MySQLRepo implements RecipeSubrecipeRep
 export interface RecipeSubrecipeRepoInterface {
   viewByRecipeId:       (recipe_id: string) =>        Promise<RecipeSubrecipeView[]>;
   bulkInsert:           (params: BulkInsertParams) => Promise<boolean>;
-  bulkUpdate:           (params: BulkUpdateParams) => Promise<boolean>;
+  bulkUpdate:           (params: BulkUpdateParams) => Promise<void>;
   deleteBySubrecipeId:  (subrecipe_id: string) =>     Promise<void>;
   deleteByRecipeId:     (recipe_id: string) =>        Promise<void>;
 }
