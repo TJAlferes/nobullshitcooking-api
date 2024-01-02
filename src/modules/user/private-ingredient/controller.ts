@@ -144,19 +144,11 @@ export const privateIngredientController = {
 
     await AwsS3PrivateUploadsClient.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',
-      Key: `
-        nobsc-private-uploads/ingredient
-        /${owner_id}
-        /${image.image_filename}-small
-      `
+      Key: `ingredient/${owner_id}/${image.image_filename}-small.jpg`
     }));
     await AwsS3PrivateUploadsClient.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',
-      Key: `
-        nobsc-private-uploads/ingredient
-        /${owner_id}
-        /${image.image_filename}-tiny
-      `
+      Key: `ingredient/${owner_id}/${image.image_filename}-tiny.jpg`
     }));
 
     await imageRepo.deleteOne({owner_id, image_id: image.image_id});

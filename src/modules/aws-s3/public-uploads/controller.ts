@@ -19,7 +19,7 @@ export const AwsS3PublicUploadsController = {
 
     const subfolder: Subfolder = req.body.subfolder;
     const filename = uuidv7();
-    const objectKey = `nobsc-public-uploads/${subfolder}/${req.session.user_id}/${filename}`;
+    const objectKey = `${subfolder}/${req.session.user_id}/${filename}`;
     
     if (subfolder === 'recipe') {
       const mediumSignature = await sign(objectKey, 'medium');
@@ -50,7 +50,7 @@ export const AwsS3PublicUploadsController = {
 async function sign(objectKey: string, imageSize: string) {
   const signature = await getSignedUrl(AwsS3PublicUploadsClient, new PutObjectCommand({
     Bucket: 'nobsc-public-uploads',
-    Key: `${objectKey}-${imageSize}`,
+    Key: `${objectKey}-${imageSize}.jpg`,
     ContentType: 'image/jpeg'
   }));
 

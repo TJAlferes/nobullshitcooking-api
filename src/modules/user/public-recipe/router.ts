@@ -9,7 +9,7 @@ const router = Router();
 // for /users/:username/public-recipes
 
 export function publicRecipeRouter() {
-  // TO DO: test * for required and image
+  // TO DO: test image
   const recipe_upload = [
     'recipe_type_id',
     'cuisine_id',
@@ -18,10 +18,10 @@ export function publicRecipeRouter() {
     'active_time',
     'total_time',
     'directions',
-    'required_methods.*',  // TO DO: add another .* for these???
-    'required_equipment.*',
-    'required_ingredients.*',
-    'required_subrecipes.*',
+    'required_methods.*.*',
+    'required_equipment..**',
+    'required_ingredients.*.*',
+    'required_subrecipes.*.*',
     'recipe_image*',
     'equipment_image*',
     'ingredients_image*',

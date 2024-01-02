@@ -25,7 +25,7 @@ import { PublicRecipeService }     from './service';
 export const publicRecipeController = {
   async overviewAll(req: Request, res: Response) {
     const author_id = req.session.user_id!;
-    const owner_id  = NOBSC_USER_ID
+    const owner_id  = NOBSC_USER_ID;
 
     const repo = new RecipeRepo();
     const recipes = await repo.overviewAll({author_id, owner_id});

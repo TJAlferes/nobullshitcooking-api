@@ -58,6 +58,8 @@ export class RecipeImageService {
       recipe_images
     });
     if (!result2) return false;
+
+    return true;
   }
 
   // TO DO: thoroughly test
@@ -82,36 +84,36 @@ export class RecipeImageService {
         if (uploaded_image.type === 1) {
           await s3Client.send(new DeleteObjectCommand({
             Bucket: `nobsc-${ownership}-uploads`,
-            Key: `nobsc-${ownership}-uploads/recipe/${author_id}/${curr_image.image_filename}-medium`
+            Key: `recipe/${author_id}/${curr_image.image_filename}-medium.jpg`
           }));
           await s3Client.send(new DeleteObjectCommand({
             Bucket: `nobsc-${ownership}-uploads`,
-            Key: `nobsc-${ownership}-uploads/recipe/${author_id}/${curr_image.image_filename}-small`
+            Key: `recipe/${author_id}/${curr_image.image_filename}-small.jpg`
           }));
           await s3Client.send(new DeleteObjectCommand({
             Bucket: `nobsc-${ownership}-uploads`,
-            Key: `nobsc-${ownership}-uploads/recipe/${author_id}/${curr_image.image_filename}-tiny`
+            Key: `recipe/${author_id}/${curr_image.image_filename}-tiny.jpg`
           }));
         }
 
         if (uploaded_image.type === 2) {
           await s3Client.send(new DeleteObjectCommand({
             Bucket: `nobsc-${ownership}-uploads`,
-            Key: `nobsc-${ownership}-uploads/recipe-equipment/${author_id}/${curr_image.image_filename}-medium`
+            Key: `recipe-equipment/${author_id}/${curr_image.image_filename}-medium.jpg`
           }));
         }
 
         if (uploaded_image.type === 3) {
           await s3Client.send(new DeleteObjectCommand({
             Bucket: `nobsc-${ownership}-uploads`,
-            Key: `nobsc-${ownership}-uploads/recipe-ingredients/${author_id}/${curr_image.image_filename}-medium`
+            Key: `recipe-ingredients/${author_id}/${curr_image.image_filename}-medium.jpg`
           }));
         }
 
         if (uploaded_image.type === 4) {
           await s3Client.send(new DeleteObjectCommand({
             Bucket: `nobsc-${ownership}-uploads`,
-            Key: `nobsc-${ownership}-uploads/recipe-cooking/${author_id}/${curr_image.image_filename}-medium`
+            Key: `recipe-cooking/${author_id}/${curr_image.image_filename}-medium.jpg`
           }));
         }
       }

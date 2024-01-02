@@ -19,7 +19,7 @@ export const AwsS3PrivateUploadsController = {
 
     const subfolder: Subfolder = req.body.subfolder;
     const filename = uuidv7();
-    const objectKey = `nobsc-private-uploads/${subfolder}/${req.session.user_id}/${filename}`;
+    const objectKey = `${subfolder}/${req.session.user_id}/${filename}`;
     
     if (subfolder === 'recipe') {
       const mediumSignature = await sign(objectKey, 'medium');
@@ -59,12 +59,7 @@ export const AwsS3PrivateUploadsController = {
   
       const signature = await getSignedUrl(AwsS3PrivateUploadsClient, new GetObjectCommand({
         Bucket: 'nobsc-private-uploads',
-        Key: `
-          nobsc-private-uploads
-          /${subfolder}
-          /${req.session.user_id}
-          /${image_filename}-${size}
-        `
+        Key: `${subfolder}/${req.session.user_id}/${image_filename}-${size}.jpg`
       }));
 
       signatures.push(signature);
@@ -85,12 +80,7 @@ export const AwsS3PrivateUploadsController = {
   
     const signature = await getSignedUrl(AwsS3PrivateUploadsClient, new GetObjectCommand({
       Bucket: 'nobsc-private-uploads',
-      Key: `
-        nobsc-private-uploads
-        /${subfolder}
-        /${req.session.user_id}
-        /${image_filename}-${size}
-      `
+      Key: `${subfolder}/${req.session.user_id}/${image_filename}-${size}.jpg`
     }));
 
     return res.status(201).json({signature});
@@ -100,7 +90,7 @@ export const AwsS3PrivateUploadsController = {
 async function sign(objectKey: string, imageSize: string) {
   const signature = await getSignedUrl(AwsS3PrivateUploadsClient, new PutObjectCommand({
     Bucket: 'nobsc-private-uploads',
-    Key: `${objectKey}-${imageSize}`,
+    Key: `${objectKey}-${imageSize}.jpg`,
     ContentType: 'image/jpeg'
   }));
 

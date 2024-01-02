@@ -130,19 +130,11 @@ export const privateEquipmentController = {
 
     await AwsS3PrivateUploadsClient.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',
-      Key: `
-        nobsc-private-uploads/equipment
-        /${owner_id}
-        /${image.image_filename}-small
-      ` // or ${author_id} ???
+      Key: `equipment/${owner_id}/${image.image_filename}-small.jpg`
     }));
     await AwsS3PrivateUploadsClient.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',
-      Key: `
-        nobsc-private-uploads/equipment
-        /${owner_id}
-        /${image.image_filename}-tiny
-      ` // or ${author_id} ???
+      Key: `equipment/${owner_id}/${image.image_filename}-tiny.jpg`
     }));
 
     // TO DO: make sure they are authorized
