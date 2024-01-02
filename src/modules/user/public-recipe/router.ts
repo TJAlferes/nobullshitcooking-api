@@ -18,7 +18,7 @@ export function publicRecipeRouter() {
     'active_time',
     'total_time',
     'directions',
-    'required_methods.*',
+    'required_methods.*',  // TO DO: add another .* for these???
     'required_equipment.*',
     'required_ingredients.*',
     'required_subrecipes.*',

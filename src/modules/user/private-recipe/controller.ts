@@ -1,7 +1,7 @@
 import { DeleteObjectCommand } from '@aws-sdk/client-s3';
 import type { Request, Response } from 'express';
 
-import { ForbiddenException, NotFoundException} from '../../../utils/exceptions';
+import { ValidationException, ForbiddenException, NotFoundException} from '../../../utils/exceptions';
 import { AwsS3PrivateUploadsClient as s3Client } from '../../aws-s3/private-uploads/client';
 import { ImageRepo }               from '../../image/repo';
 import { RecipeImageRepo }         from '../../recipe/image/repo';
@@ -77,6 +77,11 @@ export const privateRecipeController = {
     const author_id      = req.session.user_id!;
     const owner_id       = req.session.user_id!;
 
+    // NOTE: MySQL does not support nested transactions
+    // So here's what we do instead: we have our own "rollback" logic:
+    // If anything below fails, we call recipeRepo.deleteOne
+    // (the other tables will then be taken care of by their ON DELETE CASCADE)
+
     const recipeRepo = new RecipeRepo();
     const recipe = Recipe.create({
       recipe_type_id,
@@ -92,22 +97,50 @@ export const privateRecipeController = {
     await recipeRepo.insert(recipe);
 
     const recipeMethodService = new RecipeMethodService(new RecipeMethodRepo());
-    await recipeMethodService.bulkCreate(required_methods);
+    const result1 = await recipeMethodService.bulkCreate({
+      recipe_id: recipe.recipe_id,
+      required_methods
+    });
+    if (!result1) {
+      await recipeRepo.deleteOne({owner_id, recipe_id: recipe.recipe_id});
+      throw new ValidationException('Recipe creation failed -- check required methods.');
+    }
 
     const recipeEquipmentService = new RecipeEquipmentService(new RecipeEquipmentRepo());
-    await recipeEquipmentService.bulkCreate(required_equipment);
+    const result2 = await recipeEquipmentService.bulkCreate({
+      recipe_id: recipe.recipe_id,
+      required_equipment
+    });
+    if (!result2) {
+      await recipeRepo.deleteOne({owner_id, recipe_id: recipe.recipe_id});
+      throw new ValidationException('Recipe creation failed -- check required equipment.');
+    }
 
     const recipeIngredientService = new RecipeIngredientService(new RecipeIngredientRepo());
-    await recipeIngredientService.bulkCreate(required_ingredients);
+    const result3 = await recipeIngredientService.bulkCreate({
+      recipe_id: recipe.recipe_id,
+      required_ingredients
+    });
+    if (!result3) {
+      await recipeRepo.deleteOne({owner_id, recipe_id: recipe.recipe_id});
+      throw new ValidationException('Recipe creation failed -- check required ingredients.');
+    }
 
     const recipeSubrecipeService = new RecipeSubrecipeService(new RecipeSubrecipeRepo());
-    await recipeSubrecipeService.bulkCreate(required_subrecipes);
+    const result4 = await recipeSubrecipeService.bulkCreate({
+      recipe_id: recipe.recipe_id,
+      required_subrecipes
+    });
+    if (!result4) {
+      await recipeRepo.deleteOne({owner_id, recipe_id: recipe.recipe_id});
+      throw new ValidationException('Recipe creation failed -- check required subrecipes.');
+    }
 
     const recipeImageService = new RecipeImageService({
       imageRepo: new ImageRepo(),
       recipeImageRepo: new RecipeImageRepo()
     });
-    await recipeImageService.bulkCreate({
+    const result5 = await recipeImageService.bulkCreate({
       recipe_id: recipe.recipe_id,
       author_id,
       owner_id,
@@ -118,6 +151,10 @@ export const privateRecipeController = {
         cooking_image
       ]
     });
+    if (!result5) {
+      await recipeRepo.deleteOne({owner_id, recipe_id: recipe.recipe_id});
+      throw new ValidationException('Recipe creation failed -- check images.');
+    }
 
     return res.status(201).json();
   },
@@ -165,23 +202,23 @@ export const privateRecipeController = {
     await recipeRepo.update(updated_recipe);
 
     const recipeMethodService = new RecipeMethodService(new RecipeMethodRepo());
-    await recipeMethodService.bulkUpdate(required_methods);
+    await recipeMethodService.bulkUpdate({recipe_id, required_methods});
 
     const recipeEquipmentService = new RecipeEquipmentService(new RecipeEquipmentRepo());
-    await recipeEquipmentService.bulkUpdate(required_equipment);
+    await recipeEquipmentService.bulkUpdate({recipe_id, required_equipment});
 
     const recipeIngredientService = new RecipeIngredientService(new RecipeIngredientRepo());
-    await recipeIngredientService.bulkUpdate(required_ingredients);
+    await recipeIngredientService.bulkUpdate({recipe_id, required_ingredients});
 
     const recipeSubrecipeService = new RecipeSubrecipeService(new RecipeSubrecipeRepo());
-    await recipeSubrecipeService.bulkUpdate(required_subrecipes);
+    await recipeSubrecipeService.bulkUpdate({recipe_id, required_subrecipes});
 
     const recipeImageService = new RecipeImageService({
       imageRepo: new ImageRepo(),
       recipeImageRepo: new RecipeImageRepo()
     });
     await recipeImageService.bulkUpdate({
-      //recipe_id,
+      //recipe_id,  ???
       author_id,
       owner_id,
       uploaded_images: [
@@ -211,27 +248,15 @@ export const privateRecipeController = {
     if (owner_id !== recipe_image.owner_id) throw new ForbiddenException();
     await s3Client.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',
-      Key: `
-        nobsc-private-uploads/recipe
-        /${owner_id}
-        /${recipe_image.image_filename}-medium
-      `
+      Key: `nobsc-private-uploads/recipe/${owner_id}/${recipe_image.image_filename}-medium`
     }));
     await s3Client.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',
-      Key: `
-        nobsc-private-uploads/recipe
-        /${owner_id}
-        /${recipe_image.image_filename}-small
-      `
+      Key: `nobsc-private-uploads/recipe/${owner_id}/${recipe_image.image_filename}-small`
     }));
     await s3Client.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',
-      Key: `
-        nobsc-private-uploads/recipe
-        /${owner_id}
-        /${recipe_image.image_filename}-tiny
-      `
+      Key: `nobsc-private-uploads/recipe/${owner_id}/${recipe_image.image_filename}-tiny`
     }));
     await imageRepo.deleteOne({owner_id, image_id: recipe_image.image_id});
 
@@ -240,11 +265,7 @@ export const privateRecipeController = {
     if (owner_id !== equipment_image.owner_id) throw new ForbiddenException();
     await s3Client.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',
-      Key: `
-        nobsc-private-uploads/recipe-equipment
-        /${owner_id}
-        /${equipment_image.image_filename}-medium
-      `
+      Key: `nobsc-private-uploads/recipe-equipment/${owner_id}/${equipment_image.image_filename}-medium`
     }));
     await imageRepo.deleteOne({owner_id, image_id: equipment_image.image_id});
 
@@ -253,11 +274,7 @@ export const privateRecipeController = {
     if (owner_id !== ingredients_image.owner_id) throw new ForbiddenException();
     await s3Client.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',
-      Key: `
-        nobsc-private-uploads/recipe-ingredients
-        /${owner_id}
-        /${ingredients_image.image_filename}-medium
-      `
+      Key: `nobsc-private-uploads/recipe-ingredients/${owner_id}/${ingredients_image.image_filename}-medium`
     }));
     await imageRepo.deleteOne({owner_id, image_id: ingredients_image.image_id});
 
@@ -266,11 +283,7 @@ export const privateRecipeController = {
     if (owner_id !== cooking_image.owner_id) throw new ForbiddenException();
     await s3Client.send(new DeleteObjectCommand({
       Bucket: 'nobsc-private-uploads',
-      Key: `
-        nobsc-private-uploads/recipe-cooking
-        /${owner_id}
-        /${cooking_image.image_filename}-medium
-      `
+      Key: `nobsc-private-uploads/recipe-cooking/${owner_id}/${cooking_image.image_filename}-medium`
     }));
     await imageRepo.deleteOne({owner_id, image_id: cooking_image.image_id});
 

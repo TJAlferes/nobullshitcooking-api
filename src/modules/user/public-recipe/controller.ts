@@ -120,28 +120,40 @@ export const publicRecipeController = {
     await recipeRepo.insert(recipe);
 
     const recipeMethodService = new RecipeMethodService(new RecipeMethodRepo());
-    const result1 = await recipeMethodService.bulkCreate(required_methods);
+    const result1 = await recipeMethodService.bulkCreate({
+      recipe_id: recipe.recipe_id,
+      required_methods
+    });
     if (!result1) {
       await recipeRepo.deleteOne({owner_id, recipe_id: recipe.recipe_id});
       throw new ValidationException('Recipe creation failed -- check required methods.');
     }
 
     const recipeEquipmentService = new RecipeEquipmentService(new RecipeEquipmentRepo());
-    const result2 = await recipeEquipmentService.bulkCreate(required_equipment);
+    const result2 = await recipeEquipmentService.bulkCreate({
+      recipe_id: recipe.recipe_id,
+      required_equipment
+    });
     if (!result2) {
       await recipeRepo.deleteOne({owner_id, recipe_id: recipe.recipe_id});
       throw new ValidationException('Recipe creation failed -- check required equipment.');
     }
 
     const recipeIngredientService = new RecipeIngredientService(new RecipeIngredientRepo());
-    const result3 = await recipeIngredientService.bulkCreate(required_ingredients);
+    const result3 = await recipeIngredientService.bulkCreate({
+      recipe_id: recipe.recipe_id,
+      required_ingredients
+    });
     if (!result3) {
       await recipeRepo.deleteOne({owner_id, recipe_id: recipe.recipe_id});
       throw new ValidationException('Recipe creation failed -- check required ingredients.');
     }
 
     const recipeSubrecipeService = new RecipeSubrecipeService(new RecipeSubrecipeRepo());
-    const result4 = await recipeSubrecipeService.bulkCreate(required_subrecipes);
+    const result4 = await recipeSubrecipeService.bulkCreate({
+      recipe_id: recipe.recipe_id,
+      required_subrecipes
+    });
     if (!result4) {
       await recipeRepo.deleteOne({owner_id, recipe_id: recipe.recipe_id});
       throw new ValidationException('Recipe creation failed -- check required subrecipes.');
@@ -166,8 +178,6 @@ export const publicRecipeController = {
       await recipeRepo.deleteOne({owner_id, recipe_id: recipe.recipe_id});
       throw new ValidationException('Recipe creation failed -- check images.');
     }
-
-    //
 
     return res.status(201).json();
   },
@@ -229,23 +239,23 @@ export const publicRecipeController = {
     await recipeRepo.update(updated_recipe);
 
     const recipeMethodService = new RecipeMethodService(new RecipeMethodRepo());
-    await recipeMethodService.bulkUpdate(required_methods);
+    await recipeMethodService.bulkUpdate({recipe_id, required_methods});
 
     const recipeEquipmentService = new RecipeEquipmentService(new RecipeEquipmentRepo());
-    await recipeEquipmentService.bulkUpdate(required_equipment);
+    await recipeEquipmentService.bulkUpdate({recipe_id, required_equipment});
 
     const recipeIngredientService = new RecipeIngredientService(new RecipeIngredientRepo());
-    await recipeIngredientService.bulkUpdate(required_ingredients);
+    await recipeIngredientService.bulkUpdate({recipe_id, required_ingredients});
 
     const recipeSubrecipeService = new RecipeSubrecipeService(new RecipeSubrecipeRepo());
-    await recipeSubrecipeService.bulkUpdate(required_subrecipes);
+    await recipeSubrecipeService.bulkUpdate({recipe_id, required_subrecipes});
 
     const recipeImageService = new RecipeImageService({
       imageRepo: new ImageRepo(),
       recipeImageRepo: new RecipeImageRepo()
     });
     await recipeImageService.bulkUpdate({
-      //recipe_id,
+      //recipe_id,  ???
       author_id,
       owner_id,
       uploaded_images: [
