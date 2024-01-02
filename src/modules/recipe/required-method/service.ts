@@ -9,30 +9,28 @@ export class RecipeMethodService {
   }
 
   async bulkCreate({ recipe_id, required_methods }: BulkCreateParams) {
-    if (required_methods.length < 1) return;
+    if (required_methods.length < 1) return true;
 
-    const placeholders = '(?, ?),'.repeat(required_methods.length).slice(0, -1);  // if 3 methods, then: (?, ?),(?, ?),(?, ?)
-    
+    const placeholders = '(?, ?),'.repeat(required_methods.length).slice(0, -1);
     const recipe_methods = required_methods.map(rm =>
       RecipeMethod.create({recipe_id, ...rm}).getDTO()
     );
-
-    await this.repo.bulkInsert({placeholders, recipe_methods});
+    const result = await this.repo.bulkInsert({placeholders, recipe_methods});
+    return result;
   }
 
   async bulkUpdate({ recipe_id, required_methods }: BulkUpdateParams) {
     if (required_methods.length < 1) {
-      await this.repo.deleteByRecipeId(recipe_id);
-      return;
+      const result = await this.repo.deleteByRecipeId(recipe_id);
+      return result;
     }
 
     const placeholders = '(?, ?),'.repeat(required_methods.length).slice(0, -1);
-
     const recipe_methods = required_methods.map(rm =>
       RecipeMethod.create({recipe_id, ...rm}).getDTO()
     );
-    
-    await this.repo.bulkUpdate({recipe_id, placeholders, recipe_methods});
+    const result = await this.repo.bulkUpdate({recipe_id, placeholders, recipe_methods});
+    return result;
   }
 }
 

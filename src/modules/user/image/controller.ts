@@ -45,8 +45,6 @@ export const userImageController = {
     const userImageRepo = new UserImageRepo();
     await userImageRepo.insert(userImage);
     await userImageRepo.setCurrent({user_id, image_id: image.image_id});  // eh...
-
-    console.log('END OF CONTROLLER METHOD');
   
     return res.status(204).json();
   },

@@ -9,34 +9,32 @@ export class RecipeSubrecipeService {
   }
 
   async bulkCreate({ recipe_id, required_subrecipes }: BulkCreateParams) {
-    if (required_subrecipes.length < 1) return;
+    if (required_subrecipes.length < 1) return true;
 
     const placeholders = '(?, ?, ?, ?),'
       .repeat(required_subrecipes.length)
-      .slice(0, -1);  // use namedPlaceholders instead???
-
+      .slice(0, -1);
     const recipe_subrecipes = required_subrecipes.map(rs =>
       RecipeSubrecipe.create({recipe_id, ...rs}).getDTO()
     );
-
-    await this.repo.bulkInsert({placeholders, recipe_subrecipes});
+    const result = await this.repo.bulkInsert({placeholders, recipe_subrecipes});
+    return result;
   }
 
   async bulkUpdate({ recipe_id, required_subrecipes }: BulkUpdateParams) {
     if (required_subrecipes.length < 1) {
-      await this.repo.deleteByRecipeId(recipe_id);
-      return;
+      const result = await this.repo.deleteByRecipeId(recipe_id);
+      return result;
     }
 
     const placeholders = '(?, ?, ?, ?),'
       .repeat(required_subrecipes.length)
-      .slice(0, -1);  // use namedPlaceholders instead???
-
+      .slice(0, -1);
     const recipe_subrecipes = required_subrecipes.map(rs =>
       RecipeSubrecipe.create({recipe_id, ...rs}).getDTO()
     );
-
-    await this.repo.bulkUpdate({recipe_id, placeholders, recipe_subrecipes});
+    const result = await this.repo.bulkUpdate({recipe_id, placeholders, recipe_subrecipes});
+    return result;
   }
 }
 

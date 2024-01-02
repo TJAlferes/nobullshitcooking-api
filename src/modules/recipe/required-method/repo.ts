@@ -25,10 +25,11 @@ export class RecipeMethodRepo extends MySQLRepo implements RecipeMethodRepoInter
     ]));
     const sql = `INSERT INTO recipe_method (recipe_id, method_id) VALUES ${placeholders}`;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, flat);
-    if (result.affectedRows < 1) throw new Error('Query not successful.');
+    return result.affectedRows >= 1;
   }
   
   async bulkUpdate({ recipe_id, placeholders, recipe_methods }: BulkUpdateParams) {  // TO DO: change to namedPlaceholders using example below
+    let result = true;
     // Rather than updating current values in the database, we delete them,
     // and if there are new values, we insert them.
     const conn = await this.pool.getConnection();
@@ -53,24 +54,27 @@ export class RecipeMethodRepo extends MySQLRepo implements RecipeMethodRepoInter
       await conn.commit();
     } catch (err) {
       await conn.rollback();
-      throw err;
+      //throw err;
+      result = false;
     } finally {
       conn.release();
     }
+    return result;
   }
 
   async deleteByRecipeId(recipe_id: string) {
     const sql = `DELETE FROM recipe_method WHERE recipe_id = ?`;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [recipe_id]);
-    if (result.affectedRows < 1) throw new Error('Query not successful.');
+    //if (result.affectedRows < 1) throw new Error('Query not successful.');
+    return result.affectedRows >= 1;
   }
 }
 
 export interface RecipeMethodRepoInterface {
   viewByRecipeId:    (recipe_id: string) =>        Promise<RecipeMethodView[]>;
-  bulkInsert:        (params: BulkInsertParams) => Promise<void>;
-  bulkUpdate:        (params: BulkUpdateParams) => Promise<void>;
-  deleteByRecipeId:  (recipe_id: string) =>        Promise<void>;
+  bulkInsert:        (params: BulkInsertParams) => Promise<boolean>;
+  bulkUpdate:        (params: BulkUpdateParams) => Promise<boolean>;
+  deleteByRecipeId:  (recipe_id: string) =>        Promise<boolean>;
 }
 
 type RecipeMethodRow = {

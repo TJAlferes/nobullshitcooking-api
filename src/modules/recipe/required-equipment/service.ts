@@ -9,30 +9,28 @@ export class RecipeEquipmentService {
   }
 
   async bulkCreate({ recipe_id, required_equipment }: BulkCreateParams) {
-    if (required_equipment.length < 1) return;
+    if (required_equipment.length < 1) return true;
 
     const placeholders = '(?, ?, ?),'.repeat(required_equipment.length).slice(0, -1);
-
     const recipe_equipment = required_equipment.map(re => 
       RecipeEquipment.create({recipe_id, ...re}).getDTO()
     );
-
-    await this.repo.bulkInsert({placeholders, recipe_equipment});
+    const result = await this.repo.bulkInsert({placeholders, recipe_equipment});
+    return result;
   }
 
   async bulkUpdate({ recipe_id, required_equipment }: BulkUpdateParams) {
     if (required_equipment.length < 1) {
-      await this.repo.deleteByRecipeId(recipe_id);  // ???
-      return;
+      const result = await this.repo.deleteByRecipeId(recipe_id);
+      return result;
     }
 
     const placeholders = '(?, ?, ?),'.repeat(required_equipment.length).slice(0, -1);
-
     const recipe_equipment = required_equipment.map(re => 
       RecipeEquipment.create({recipe_id, ...re}).getDTO()
     );
-
-    await this.repo.bulkUpdate({recipe_id, placeholders, recipe_equipment});
+    const result = await this.repo.bulkUpdate({recipe_id, placeholders, recipe_equipment});
+    return result;
   }
 }
 

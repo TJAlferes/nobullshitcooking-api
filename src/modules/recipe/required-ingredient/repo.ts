@@ -35,10 +35,11 @@ export class RecipeIngredientRepo extends MySQLRepo implements RecipeIngredientR
       VALUES ${placeholders}
     `;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, flat);
-    if (result.affectedRows < 1) throw new Error('Query not successful.');
+    return result.affectedRows >= 1;
   }
   
   async bulkUpdate({ recipe_id, placeholders, recipe_ingredients }: BulkUpdateParams) {  // TO DO: change to namedPlaceholders using example below
+    let result = true;
     // Rather than updating current values in the database, we delete them,
     // and if there are new values, we insert them.
     const conn = await this.pool.getConnection();
@@ -67,10 +68,12 @@ export class RecipeIngredientRepo extends MySQLRepo implements RecipeIngredientR
       await conn.commit();
     } catch (err) {
       await conn.rollback();
-      throw err;
+      //throw err;
+      result = false;
     } finally {
       conn.release();
     }
+    return result;
   }
 
   async deleteByIngredientId(ingredient_id: string) {
@@ -88,8 +91,8 @@ export class RecipeIngredientRepo extends MySQLRepo implements RecipeIngredientR
 
 export interface RecipeIngredientRepoInterface {
   viewByRecipeId:       (recipe_id: string) =>        Promise<RecipeIngredientView[]>;
-  bulkInsert:           (params: BulkInsertParams) => Promise<void>;
-  bulkUpdate:           (params: BulkUpdateParams) => Promise<void>;
+  bulkInsert:           (params: BulkInsertParams) => Promise<boolean>;
+  bulkUpdate:           (params: BulkUpdateParams) => Promise<boolean>;
   deleteByIngredientId: (ingredient_id: string) =>    Promise<void>;
   deleteByRecipeId:     (recipe_id: string) =>        Promise<void>;
 }

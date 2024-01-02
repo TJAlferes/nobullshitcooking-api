@@ -72,13 +72,16 @@ export function Description(description: string) {
 function Time(time: string) {
   assert(time, string());
 
+  if (time.length !== 5) throw new ValidationException('Invalid time.');
+  if (time.charAt(2) !== ':') throw new ValidationException('Invalid time.');
+
   const [ hours, minutes ] = time.split(':');
   if (hours.length !== 2) throw new ValidationException('Invalid time.');
   if (minutes.length !== 2) throw new ValidationException('Invalid time.');
   
   const hrs = parseInt(hours);
   const mins = parseInt(minutes);
-  if (isNaN(hrs) || isNaN(mins) || hrs < 0 || hrs > 23 || mins < 0 || mins > 59) {
+  if (isNaN(hrs) || isNaN(mins) || hrs < 0 || hrs > 99 || mins < 0 || mins > 59) {
     throw new ValidationException('Invalid time.');
   }
   
