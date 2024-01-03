@@ -21,18 +21,19 @@ export const profileController = {
     const avatar = await userImageRepo.viewCurrent(user_id);
 
     const recipeRepo = new RecipeRepo();
-    const publicRecipes = await recipeRepo.overviewAll({
+    const public_recipes = await recipeRepo.overviewAll({
       author_id: user_id,
       owner_id:  NOBSC_USER_ID
     });
 
     const favoriteRecipeRepo = new FavoriteRecipeRepo();
-    const favoriteRecipes = await favoriteRecipeRepo.viewByUserId(user_id);
+    const favorite_recipes = await favoriteRecipeRepo.viewByUserId(user_id);
     
     return res.status(200).json({
+      user_id,
       avatar: avatar ? avatar.image_filename : 'default',
-      publicRecipes,
-      favoriteRecipes
+      public_recipes,
+      favorite_recipes
     });
   }
 };

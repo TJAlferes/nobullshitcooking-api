@@ -121,15 +121,20 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
         i.ingredient_brand,
         i.ingredient_variety,
         i.ingredient_name,
+        (
+          SELECT JSON_ARRAYAGG(ian.alt_name)
+          FROM ingredient_alt_name ian
+          WHERE i.ingredient_id = ian.ingredient_id
+        ) alt_names,
         ${fullnameSql} AS fullname,
         i.notes,
         m.image_id,
         m.image_filename,
         m.caption
       FROM ingredient i
-      INNER JOIN ingredient_type t     ON i.ingredient_type_id = t.ingredient_type_id
+      INNER JOIN ingredient_type t    ON i.ingredient_type_id = t.ingredient_type_id
       LEFT JOIN ingredient_alt_name n ON i.ingredient_id      = n.ingredient_id
-      INNER JOIN image m               ON i.image_id           = m.image_id
+      INNER JOIN image m              ON i.image_id           = m.image_id
       WHERE i.owner_id = ?
       ORDER BY i.ingredient_name ASC
     `;
@@ -147,6 +152,11 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
         i.ingredient_brand,
         i.ingredient_variety,
         i.ingredient_name,
+        (
+          SELECT JSON_ARRAYAGG(ian.alt_name)
+          FROM ingredient_alt_name ian
+          WHERE i.ingredient_id = ian.ingredient_id
+        ) alt_names,
         ${fullnameSql} AS fullname,
         i.notes,
         m.image_id,
@@ -172,6 +182,11 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
         i.ingredient_brand,
         i.ingredient_variety,
         i.ingredient_name,
+        (
+          SELECT JSON_ARRAYAGG(ian.alt_name)
+          FROM ingredient_alt_name ian
+          WHERE i.ingredient_id = ian.ingredient_id
+        ) alt_names,
         ${fullnameSql} AS fullname,
         i.notes,
         m.image_id,
