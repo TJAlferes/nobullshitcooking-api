@@ -83,13 +83,14 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
   }
 
   async hasPrivate(equipment_ids: string[]) {
+    const placeholders = '?,'.repeat(equipment_ids.length).slice(0, -1);
     const sql = `
       SELECT *
       FROM equipment
-      WHERE equipment_id IN ? AND (owner_id = ?)
+      WHERE equipment_id IN (${placeholders}) AND owner_id != ?
     `;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [equipment_ids, NOBSC_USER_ID]);
-    return rows.length > 0 ? true : false;
+    return rows.length > 0;
   }  // TO DO: thoroughly integration test this
 
   async viewAllOfficialNames() {

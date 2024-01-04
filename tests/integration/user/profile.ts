@@ -10,8 +10,9 @@ export function profileTests(app: Express) {
       expect(res.body).toEqual({
         user_id: '33333333-3333-3333-3333-333333333333',
         avatar: 'default',
-        public_recipes: [],
-        favorite_recipes: []
+        public_plans: [],  //
+        public_recipes: [],  //
+        favorite_recipes: []  //
       });
     });
 

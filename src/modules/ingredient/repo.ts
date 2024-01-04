@@ -91,13 +91,14 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
   }
 
   async hasPrivate(ingredient_ids: string[]) {
+    const placeholders = '?,'.repeat(ingredient_ids.length).slice(0, -1);
     const sql = `
       SELECT *
       FROM ingredient
-      WHERE ingredient_id IN ? AND (owner_id = ?)
+      WHERE ingredient_id IN (${placeholders}) AND owner_id != ?
       `;
       const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [ingredient_ids, NOBSC_USER_ID]);
-      return rows.length > 0 ? true : false;
+      return rows.length > 0;
   }  // TO DO: thoroughly integration test this
 
   async viewAllOfficialFullnames() {

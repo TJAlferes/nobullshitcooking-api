@@ -120,10 +120,11 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
   }
 
   async hasPrivate(recipe_ids: string[]) {
+    const placeholders = '?,'.repeat(recipe_ids.length).slice(0, -1);
     const sql = `
       SELECT *
       FROM recipe
-      WHERE recipe_id IN ? AND (author_id = owner_id)
+      WHERE recipe_id IN (${placeholders}) AND author_id = owner_id
     `;
     const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, recipe_ids);
     return rows.length > 0 ? true : false;

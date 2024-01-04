@@ -6,6 +6,7 @@ import { FavoriteRecipeRepo } from '../favorite-recipe/repo';
 import { UserImageRepo } from '../image/repo';
 import { UserRepo } from '../repo';
 import { NotFoundException } from '../../../utils/exceptions';
+import { PlanRepo } from '../../plan/repo';
 
 export const profileController = {
   async view(req: Request, res: Response) {
@@ -20,6 +21,12 @@ export const profileController = {
     const userImageRepo = new UserImageRepo();
     const avatar = await userImageRepo.viewCurrent(user_id);
 
+    const planRepo = new PlanRepo();
+    const public_plans = await planRepo.viewAll({
+      author_id: user_id,
+      owner_id:  NOBSC_USER_ID
+    });
+
     const recipeRepo = new RecipeRepo();
     const public_recipes = await recipeRepo.overviewAll({
       author_id: user_id,
@@ -32,6 +39,7 @@ export const profileController = {
     return res.status(200).json({
       user_id,
       avatar: avatar ? avatar.image_filename : 'default',
+      public_plans,
       public_recipes,
       favorite_recipes
     });
