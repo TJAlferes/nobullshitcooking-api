@@ -1,4 +1,4 @@
-import type { Request, Response } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 
 import { ForbiddenException, NotFoundException } from '../../../utils/exceptions';
 import { RecipeRepo } from '../../recipe/repo';
@@ -40,7 +40,7 @@ export const publicPlanController = {
     return res.status(200).json(plan);
   },
 
-  async create(req: Request, res: Response) {
+  async create(req: Request, res: Response, next: NextFunction) {
     const { plan_name, included_recipes } = req.body;
     const author_id = req.session.user_id!;
     const owner_id  = NOBSC_USER_ID;
@@ -55,7 +55,13 @@ export const publicPlanController = {
     await planRepo.insert(plan);
 
     const planRecipeService = new PlanRecipeService(new PlanRecipeRepo());
-    await planRecipeService.bulkCreate({plan_id: plan.plan_id, included_recipes});
+    try {
+      await planRecipeService.bulkCreate({plan_id: plan.plan_id, included_recipes});
+    } catch (err) {
+      // rollback (MySQL does not support nested transactions, so we do this)
+      await planRepo.deleteOne({plan_id: plan.plan_id, owner_id});
+      next(err);
+    }
 
     return res.status(201).json();
   },

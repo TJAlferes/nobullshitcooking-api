@@ -1,5 +1,5 @@
 import { CopyObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
-import type { Request, Response } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 
 import { ValidationException, ForbiddenException, NotFoundException} from '../../../utils/exceptions';
 import { AwsS3PublicUploadsClient as s3Client } from '../../aws-s3/public-uploads/client';
@@ -66,7 +66,7 @@ export const publicRecipeController = {
     return res.status(200).json(recipe);
   },
 
-  async create(req: Request, res: Response) {
+  async create(req: Request, res: Response, next: NextFunction) {
     const {
       title,
       description,
@@ -120,63 +120,68 @@ export const publicRecipeController = {
     await recipeRepo.insert(recipe);
 
     const recipeMethodService = new RecipeMethodService(new RecipeMethodRepo());
-    const result1 = await recipeMethodService.bulkCreate({
-      recipe_id: recipe.recipe_id,
-      required_methods
-    });
-    if (!result1) {
+    try {
+      await recipeMethodService.bulkCreate({
+        recipe_id: recipe.recipe_id,
+        required_methods
+      });
+    } catch (err) {
       await recipeRepo.deleteOne({owner_id, recipe_id: recipe.recipe_id});
-      throw new ValidationException('Recipe creation failed -- check required methods.');
+      next(err);
     }
 
     const recipeEquipmentService = new RecipeEquipmentService(new RecipeEquipmentRepo());
-    const result2 = await recipeEquipmentService.bulkCreate({
-      recipe_id: recipe.recipe_id,
-      required_equipment
-    });
-    if (!result2) {
+    try {
+      await recipeEquipmentService.bulkCreate({
+        recipe_id: recipe.recipe_id,
+        required_equipment
+      });
+    } catch (err) {
       await recipeRepo.deleteOne({owner_id, recipe_id: recipe.recipe_id});
-      throw new ValidationException('Recipe creation failed -- check required equipment.');
+      next(err);
     }
 
     const recipeIngredientService = new RecipeIngredientService(new RecipeIngredientRepo());
-    const result3 = await recipeIngredientService.bulkCreate({
-      recipe_id: recipe.recipe_id,
-      required_ingredients
-    });
-    if (!result3) {
+    try {
+      await recipeIngredientService.bulkCreate({
+        recipe_id: recipe.recipe_id,
+        required_ingredients
+      });
+    } catch (err) {
       await recipeRepo.deleteOne({owner_id, recipe_id: recipe.recipe_id});
-      throw new ValidationException('Recipe creation failed -- check required ingredients.');
+      next(err);
     }
 
     const recipeSubrecipeService = new RecipeSubrecipeService(new RecipeSubrecipeRepo());
-    const result4 = await recipeSubrecipeService.bulkCreate({
-      recipe_id: recipe.recipe_id,
-      required_subrecipes
-    });
-    if (!result4) {
+    try {
+      await recipeSubrecipeService.bulkCreate({
+        recipe_id: recipe.recipe_id,
+        required_subrecipes
+      });
+    } catch (err) {
       await recipeRepo.deleteOne({owner_id, recipe_id: recipe.recipe_id});
-      throw new ValidationException('Recipe creation failed -- check required subrecipes.');
+      next(err);
     }
 
     const recipeImageService = new RecipeImageService({
       imageRepo: new ImageRepo(),
       recipeImageRepo: new RecipeImageRepo()
     });
-    const result5 = await recipeImageService.bulkCreate({
-      recipe_id: recipe.recipe_id,
-      author_id,
-      owner_id,
-      uploaded_images: [
-        recipe_image,
-        equipment_image,
-        ingredients_image,
-        cooking_image
-      ]
-    });
-    if (!result5) {
+    try {
+      await recipeImageService.bulkCreate({
+        recipe_id: recipe.recipe_id,
+        author_id,
+        owner_id,
+        uploaded_images: [
+          recipe_image,
+          equipment_image,
+          ingredients_image,
+          cooking_image
+        ]
+      });
+    } catch (err) {
       await recipeRepo.deleteOne({owner_id, recipe_id: recipe.recipe_id});
-      throw new ValidationException('Recipe creation failed -- check images.');
+      next(err);
     }
 
     return res.status(201).json();

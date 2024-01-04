@@ -9,14 +9,13 @@ export class RecipeMethodService {
   }
 
   async bulkCreate({ recipe_id, required_methods }: BulkCreateParams) {
-    if (required_methods.length < 1) return true;
+    if (required_methods.length < 1) return;
 
     const placeholders = '(?, ?),'.repeat(required_methods.length).slice(0, -1);
     const recipe_methods = required_methods.map(({ method_id }) =>
       RecipeMethod.create({recipe_id, method_id: Number(method_id)}).getDTO()
     );
-    const result = await this.repo.bulkInsert({placeholders, recipe_methods});
-    return result;
+    await this.repo.bulkInsert({placeholders, recipe_methods});
   }
 
   async bulkUpdate({ recipe_id, required_methods }: BulkUpdateParams) {

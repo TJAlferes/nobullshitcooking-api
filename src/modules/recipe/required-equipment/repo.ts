@@ -30,7 +30,7 @@ export class RecipeEquipmentRepo extends MySQLRepo implements RecipeEquipmentRep
       VALUES ${placeholders}
     `;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, flat);
-    return result.affectedRows >= 1;
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 
   async bulkUpdate({ recipe_id, placeholders, recipe_equipment }: BulkUpdateParams) {  // TO DO: change to namedPlaceholders using example below
@@ -81,7 +81,7 @@ export class RecipeEquipmentRepo extends MySQLRepo implements RecipeEquipmentRep
 
 export interface RecipeEquipmentRepoInterface {
   viewByRecipeId:      (recipe_id: string) =>        Promise<RecipeEquipmentView[]>;
-  bulkInsert:          (params: BulkInsertParams) => Promise<boolean>;
+  bulkInsert:          (params: BulkInsertParams) => Promise<void>;
   bulkUpdate:          (params: BulkUpdateParams) => Promise<void>;
   deleteByEquipmentId: (equipment_id: string) =>     Promise<void>;
   deleteByRecipeId:    (recipe_id: string) =>        Promise<void>;

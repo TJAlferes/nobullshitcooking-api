@@ -33,7 +33,7 @@ export class RecipeSubrecipeRepo extends MySQLRepo implements RecipeSubrecipeRep
       VALUES ${placeholders}
     `;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, flat);
-    return result.affectedRows >= 1;
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
   
   async bulkUpdate({ recipe_id, placeholders, recipe_subrecipes }: BulkUpdateParams) {  // TO DO: change to namedPlaceholders using example below
@@ -86,7 +86,7 @@ export class RecipeSubrecipeRepo extends MySQLRepo implements RecipeSubrecipeRep
 
 export interface RecipeSubrecipeRepoInterface {
   viewByRecipeId:       (recipe_id: string) =>        Promise<RecipeSubrecipeView[]>;
-  bulkInsert:           (params: BulkInsertParams) => Promise<boolean>;
+  bulkInsert:           (params: BulkInsertParams) => Promise<void>;
   bulkUpdate:           (params: BulkUpdateParams) => Promise<void>;
   deleteBySubrecipeId:  (subrecipe_id: string) =>     Promise<void>;
   deleteByRecipeId:     (recipe_id: string) =>        Promise<void>;

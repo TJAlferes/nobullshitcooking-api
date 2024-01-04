@@ -9,7 +9,7 @@ export class RecipeSubrecipeService {
   }
 
   async bulkCreate({ recipe_id, required_subrecipes }: BulkCreateParams) {
-    if (required_subrecipes.length < 1) return true;
+    if (required_subrecipes.length < 1) return;
 
     const placeholders = '(?, ?, ?, ?),'
       .repeat(required_subrecipes.length)
@@ -17,8 +17,7 @@ export class RecipeSubrecipeService {
     const recipe_subrecipes = required_subrecipes.map(rs =>
       RecipeSubrecipe.create({recipe_id, ...rs}).getDTO()
     );
-    const result = await this.repo.bulkInsert({placeholders, recipe_subrecipes});
-    return result;
+    await this.repo.bulkInsert({placeholders, recipe_subrecipes});
   }
 
   async bulkUpdate({ recipe_id, required_subrecipes }: BulkUpdateParams) {

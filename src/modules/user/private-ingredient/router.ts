@@ -11,13 +11,13 @@ const router = Router();
 export function privateIngredientRouter() {
   const ingredientInfo = [
     'ingredient_type_id',
-    'ingredient_brand',
-    'ingredient_variety',
+    'ingredient_brand',  // TO DO: make optional
+    'ingredient_variety',  // TO DO: make optional
     'ingredient_name',
-    'alt_names.*',
+    'alt_names.*',  // TO DO: make optional
     'notes',
     'image_filename',
-    'caption'
+    'caption'  // TO DO: how is this passing through if '' ???
   ];
 
   router.get(

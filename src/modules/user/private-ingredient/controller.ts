@@ -1,7 +1,7 @@
 import { DeleteObjectCommand } from '@aws-sdk/client-s3';
-import type { Request, Response } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 
-import { ForbiddenException, NotFoundException} from '../../../utils/exceptions';
+import { ForbiddenException, NotFoundException, ValidationException} from '../../../utils/exceptions';
 import { AwsS3PrivateUploadsClient } from '../../aws-s3/private-uploads/client';
 import { Image } from '../../image/model';
 import { ImageRepo } from '../../image/repo';
@@ -32,7 +32,7 @@ export const privateIngredientController = {
     return res.status(200).json(ingredient);
   },
 
-  async create(req: Request, res: Response) {
+  async create(req: Request, res: Response, next: NextFunction) {
     const {
       ingredient_brand,
       ingredient_variety,
@@ -69,7 +69,20 @@ export const privateIngredientController = {
 
     if (alt_names.length > 0) {
       const ingredientAltNameService = new IngredientAltNameService(new IngredientAltNameRepo());
-      await ingredientAltNameService.create({ingredient_id: ingredient.ingredient_id, alt_names});
+
+      try {
+        await ingredientAltNameService.create({
+          ingredient_id: ingredient.ingredient_id,
+          alt_names
+        });
+      } catch (err) {
+        // rollback (MySQL does not support nested transactions, so we do this)
+        await ingredientRepo.deleteOne({
+          ingredient_id: ingredient.ingredient_id,
+          owner_id
+        });
+        next(err);
+      }
     }
 
     return res.status(201).json();

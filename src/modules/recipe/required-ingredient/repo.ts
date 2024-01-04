@@ -35,7 +35,7 @@ export class RecipeIngredientRepo extends MySQLRepo implements RecipeIngredientR
       VALUES ${placeholders}
     `;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, flat);
-    return result.affectedRows >= 1;
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
   
   async bulkUpdate({ recipe_id, placeholders, recipe_ingredients }: BulkUpdateParams) {  // TO DO: change to namedPlaceholders using example below
@@ -88,7 +88,7 @@ export class RecipeIngredientRepo extends MySQLRepo implements RecipeIngredientR
 
 export interface RecipeIngredientRepoInterface {
   viewByRecipeId:       (recipe_id: string) =>        Promise<RecipeIngredientView[]>;
-  bulkInsert:           (params: BulkInsertParams) => Promise<boolean>;
+  bulkInsert:           (params: BulkInsertParams) => Promise<void>;
   bulkUpdate:           (params: BulkUpdateParams) => Promise<void>;
   deleteByIngredientId: (ingredient_id: string) =>    Promise<void>;
   deleteByRecipeId:     (recipe_id: string) =>        Promise<void>;

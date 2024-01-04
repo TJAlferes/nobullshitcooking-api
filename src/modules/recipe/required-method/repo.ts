@@ -25,7 +25,7 @@ export class RecipeMethodRepo extends MySQLRepo implements RecipeMethodRepoInter
     ]));
     const sql = `INSERT INTO recipe_method (recipe_id, method_id) VALUES ${placeholders}`;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, flat);
-    return result.affectedRows >= 1;
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
   
   async bulkUpdate({ recipe_id, placeholders, recipe_methods }: BulkUpdateParams) {  // TO DO: change to namedPlaceholders using example below
@@ -62,16 +62,15 @@ export class RecipeMethodRepo extends MySQLRepo implements RecipeMethodRepoInter
   async deleteByRecipeId(recipe_id: string) {
     const sql = `DELETE FROM recipe_method WHERE recipe_id = ?`;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [recipe_id]);
-    //if (result.affectedRows < 1) throw new Error('Query not successful.');
-    return result.affectedRows >= 1;
+    if (result.affectedRows < 1) throw new Error('Query not successful.');
   }
 }
 
 export interface RecipeMethodRepoInterface {
   viewByRecipeId:    (recipe_id: string) =>        Promise<RecipeMethodView[]>;
-  bulkInsert:        (params: BulkInsertParams) => Promise<boolean>;
+  bulkInsert:        (params: BulkInsertParams) => Promise<void>;
   bulkUpdate:        (params: BulkUpdateParams) => Promise<void>;
-  deleteByRecipeId:  (recipe_id: string) =>        Promise<boolean>;
+  deleteByRecipeId:  (recipe_id: string) =>        Promise<void>;
 }
 
 type RecipeMethodRow = {

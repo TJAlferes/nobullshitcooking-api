@@ -18,10 +18,7 @@ export class RecipeImageService {
   }
 
   async bulkCreate({ recipe_id, author_id, owner_id, uploaded_images }: BulkCreateParams) {
-    if (uploaded_images.length !== 4) {
-      //throw new ValidationException('Recipe must have 4 images.');
-      return false;
-    }
+    if (uploaded_images.length !== 4) throw new ValidationException('Recipe must have 4 images.');
     
     const images: ImageDTO[] = [];
     const recipe_images: RecipeImageDTO[] = [];
@@ -45,28 +42,22 @@ export class RecipeImageService {
       recipe_images.push(recipe_image);
     }
 
-    const result1 = await this.imageRepo.bulkInsert({
+    await this.imageRepo.bulkInsert({
       placeholders: '(?, ?, ?, ?, ?),(?, ?, ?, ?, ?),(?, ?, ?, ?, ?),(?, ?, ?, ?, ?)',
       images
     });
-    if (!result1) return false;
 
     this.checkRecipeImagesTypes(recipe_images);
 
-    const result2 = await this.recipeImageRepo.bulkInsert({
+    await this.recipeImageRepo.bulkInsert({
       placeholders: '(?, ?, ?),(?, ?, ?),(?, ?, ?),(?, ?, ?)',
       recipe_images
     });
-    if (!result2) return false;
-
-    return true;
   }
 
   // TO DO: thoroughly test
   async bulkUpdate({ author_id, owner_id, uploaded_images }: BulkUpdateParams) {
-    if (uploaded_images.length !== 4) {
-      throw new ValidationException('Recipe must have 4 images.');
-    }
+    if (uploaded_images.length !== 4) throw new ValidationException('Recipe must have 4 images.');
 
     const images: ImageDTO[] = [];
 
