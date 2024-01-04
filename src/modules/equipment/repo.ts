@@ -89,7 +89,7 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
       FROM equipment
       WHERE equipment_id IN (${placeholders}) AND owner_id != ?
     `;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [equipment_ids, NOBSC_USER_ID]);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [...equipment_ids, NOBSC_USER_ID]);
     return rows.length > 0;
   }  // TO DO: thoroughly integration test this
 

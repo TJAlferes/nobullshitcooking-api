@@ -124,9 +124,9 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
     const sql = `
       SELECT *
       FROM recipe
-      WHERE recipe_id IN (${placeholders}) AND author_id = owner_id
+      WHERE recipe_id IN (${placeholders}) AND owner_id != ?
     `;
-    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, recipe_ids);
+    const [ rows ] = await this.pool.execute<RowDataPacket[]>(sql, [...recipe_ids, NOBSC_USER_ID]);
     return rows.length > 0 ? true : false;
   }  // TO DO: thoroughly integration test this
 

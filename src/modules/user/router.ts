@@ -21,16 +21,16 @@ const router = Router();
 // for /users
 
 export function userRouter() {
-  router.use('/:username/avatars', userImageRouter());
-  router.use('/:username/public-plans', publicPlanRouter());
-  router.use('/:username/public-recipes', publicRecipeRouter());
-  router.use('/:username/favorite-recipes', favoriteRecipeRouter());
-  router.use('/:username/private-equipment', privateEquipmentRouter());
-  router.use('/:username/private-ingredients', privateIngredientRouter());
-  router.use('/:username/private-plans', privatePlanRouter());
-  router.use('/:username/private-recipes', privateRecipeRouter());
-  router.use('/:username/saved-recipes', savedRecipeRouter());
-  router.use('/:username/friendships', friendshipRouter());
+  router.use('/:username/avatars', sanitizeParams('username'), userImageRouter());
+  router.use('/:username/public-plans', sanitizeParams('username'), publicPlanRouter());
+  router.use('/:username/public-recipes', sanitizeParams('username'), publicRecipeRouter());
+  router.use('/:username/favorite-recipes', sanitizeParams('username'), favoriteRecipeRouter());
+  router.use('/:username/private-equipment', sanitizeParams('username'), privateEquipmentRouter());
+  router.use('/:username/private-ingredients', sanitizeParams('username'), privateIngredientRouter());
+  router.use('/:username/private-plans', sanitizeParams('username'), privatePlanRouter());
+  router.use('/:username/private-recipes', sanitizeParams('username'), privateRecipeRouter());
+  router.use('/:username/saved-recipes', sanitizeParams('username'), savedRecipeRouter());
+  router.use('/:username/friendships', sanitizeParams('username'), friendshipRouter());
 
   router.get(
     '/:username',

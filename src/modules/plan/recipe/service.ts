@@ -51,15 +51,15 @@ export class PlanRecipeService {
   }
 
   ensureUniqueRecipeNumbers(included_recipes: IncludedRecipe[]) {
-    const days: number[][] = [];
+    const days: number[][] = [[], [], [], [], [], [], []];
 
     included_recipes.map(({ day_number, recipe_number }) => {
-      days[day_number - 1]
-        ? days[day_number - 1].push(recipe_number)
-        : days[day_number - 1] = [recipe_number];
+      days[day_number - 1].push(recipe_number);
     });
 
     for (const day of days) {
+      if (day.length < 2) continue;
+
       const recipeNumbers = new Set<number>();
 
       day.map(recipe_number => {
