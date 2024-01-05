@@ -4,14 +4,14 @@ import { body, param } from 'express-validator';
 import { catchExceptions, userIsAuth } from '../../../utils';
 import { publicPlanController as controller } from './controller';
 
-const router = Router();
+//const router = Router();
 
 // for /users/:username/public-plans
 
-export function publicPlanRouter() {
+export function publicPlanRouter(router: Router) {
   router.get(
     '/:plan_name',
-    sanitizeParams('plan_name'),
+    sanitizeParams(['username', 'plan_name']),
     catchExceptions(controller.viewOne)
   );
 

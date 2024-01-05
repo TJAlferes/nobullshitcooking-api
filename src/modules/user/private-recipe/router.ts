@@ -4,11 +4,11 @@ import { body, param } from 'express-validator';
 import { catchExceptions, userIsAuth } from '../../../utils';
 import { privateRecipeController as controller } from './controller';
 
-const router = Router();
+//const router = Router();
 
 // for /users/:username/private-recipes
 
-export function privateRecipeRouter() {
+export function privateRecipeRouter(router: Router) {
   // TO DO: test image
   const recipe_upload = [
     'recipe_type_id',

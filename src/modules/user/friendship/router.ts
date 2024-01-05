@@ -4,11 +4,11 @@ import { param } from 'express-validator';
 import { catchExceptions, tryCatch, userIsAuth } from '../../../utils';
 import { friendshipController as controller } from './controller';
 
-const router = Router();
+//const router = Router();
 
 // for /users/:username/friendships
 
-export function friendshipRouter() {
+export function friendshipRouter(router: Router) {
   router.get(
     '/',
     userIsAuth,

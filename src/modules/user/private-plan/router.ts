@@ -4,11 +4,11 @@ import { body, param } from 'express-validator';
 import { catchExceptions, userIsAuth } from '../../../utils';
 import { privatePlanController as controller } from './controller';
 
-const router = Router();
+//const router = Router();
 
 // for /users/:username/private-plans
 
-export function privatePlanRouter() {
+export function privatePlanRouter(router: Router) {
   /*router.get(
     '/:plan_id',
     userIsAuth,

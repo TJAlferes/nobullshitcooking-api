@@ -41,7 +41,7 @@ export function apiV1Router() {
   //router.use('/chatgroups', chatgroupRouter());
   //router.use('/chatrooms', chatroomRouter());
   //router.use('/chatmessages', chatmessageRouter());
-  router.use('/users', userRouter());
+  router.use('/users', userRouter(router));
 
   router.get(
     '/initial-data',

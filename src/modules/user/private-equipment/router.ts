@@ -4,11 +4,11 @@ import { body, param } from 'express-validator';
 import { catchExceptions, userIsAuth } from '../../../utils';
 import { privateEquipmentController as controller } from './controller';
 
-const router = Router();
+//const router = Router();
 
 // for /users/:username/private-equipment
 
-export function privateEquipmentRouter() {
+export function privateEquipmentRouter(router: Router) {
   const equipment_upload = [
     'equipment_type_id',
     'equipment_name',

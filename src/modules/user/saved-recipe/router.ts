@@ -4,11 +4,11 @@ import { param }  from 'express-validator';
 import { catchExceptions, userIsAuth } from '../../../utils';
 import { userSavedRecipeController as controller } from './controller';
 
-const router = Router();
+//const router = Router();
 
 // for /users/:user_id/saved-recipes
 
-export function savedRecipeRouter() {
+export function savedRecipeRouter(router: Router) {
   router.get(
     '/',
     userIsAuth,
