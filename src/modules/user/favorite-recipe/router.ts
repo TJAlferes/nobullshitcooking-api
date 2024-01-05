@@ -4,11 +4,11 @@ import { param } from 'express-validator';
 import { catchExceptions, userIsAuth } from '../../../utils';
 import { userFavoriteRecipeController as controller } from './controller';
 
-//const router = Router();
+const router = Router({mergeParams: true});
 
 // for /users/:username/favorite-recipes
 
-export function favoriteRecipeRouter(router: Router) {
+export function favoriteRecipeRouter() {
   router.get(
     '/',
     userIsAuth,

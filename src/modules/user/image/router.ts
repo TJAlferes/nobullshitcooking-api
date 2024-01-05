@@ -4,11 +4,11 @@ import { body, param } from 'express-validator';
 import { catchExceptions, userIsAuth } from '../../../utils';
 import { userImageController as controller } from './controller';
 
-//const router = Router();
+const router = Router({mergeParams: true});
 
 // for /users/:username/avatars
 
-export function userImageRouter(router: Router) {
+export function userImageRouter() {
   router.get(
     '/current',
     catchExceptions(controller.viewCurrent)

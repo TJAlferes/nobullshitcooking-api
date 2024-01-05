@@ -4,11 +4,11 @@ import { body, param } from 'express-validator';
 import { catchExceptions, userIsAuth } from '../../../utils';
 import { publicRecipeController as controller } from './controller';
 
-//const router = Router();
+const router = Router({mergeParams: true});
 
 // for /users/:username/public-recipes
 
-export function publicRecipeRouter(router: Router) {
+export function publicRecipeRouter() {
   // TO DO: test image
   const recipe_upload = [
     'recipe_type_id',

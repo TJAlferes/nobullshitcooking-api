@@ -4,7 +4,7 @@ import { body, param } from 'express-validator';
 import { chatgroupController } from './controller';
 import { catchExceptions, userIsAuth } from '../../../index';
 
-const router = Router();
+const router = Router({mergeParams: true});
 
 // for /users/:username/chatgroups
 

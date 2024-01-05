@@ -29,3 +29,5 @@ export async function seedDevelopmentDatabase() {
     await pool.end();
   }
 }
+
+seedDevelopmentDatabase();

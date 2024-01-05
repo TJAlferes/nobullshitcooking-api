@@ -4,11 +4,11 @@ import { body, param } from 'express-validator';
 import { catchExceptions, userIsAuth } from '../../../utils';
 import { publicPlanController as controller } from './controller';
 
-//const router = Router();
+const router = Router({mergeParams: true});
 
 // for /users/:username/public-plans
 
-export function publicPlanRouter(router: Router) {
+export function publicPlanRouter() {
   router.get(
     '/:plan_name',
     sanitizeParams(['username', 'plan_name']),

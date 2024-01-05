@@ -12,18 +12,14 @@ export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
   }
 
   async viewOneByPlanId(plan_id: string) {
-    const sql = `${viewSql} WHERE p.plan_id = ? ORDER BY pr.day_number`;
+    const sql = `${viewSql} WHERE p.plan_id = ?`;
     const [ [ row ] ] = await this.pool.execute<PlanRecord[]>(sql, [plan_id]);
     const [ result ] = organize([row]);
     return result;
   }
 
   async viewOneByPlanName({ plan_name, author_id, owner_id }: ViewOneByPlanNameParams) {
-    const sql = `
-      ${viewSql}
-      WHERE p.plan_name = ? AND p.author_id = ? AND p.owner_id = ?
-      ORDER BY pr.day_number
-    `;
+    const sql = `${viewSql} WHERE p.plan_name = ? AND p.author_id = ? AND p.owner_id = ?`;
     const [ [ row ] ] = await this.pool.execute<PlanRecord[]>(sql, [
       plan_name,
       author_id,

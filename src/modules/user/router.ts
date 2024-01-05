@@ -16,21 +16,21 @@ import { favoriteRecipeRouter } from './favorite-recipe/router';
 import { userController } from './controller';
 import { userImageRouter } from './image/router';
 
-//const router = Router();
+const router = Router();
 
 // for /users
 
-export function userRouter(router: Router) {
-  router.use('/:username/avatars', sanitizeParams('username'), userImageRouter(router));
-  router.use('/:username/public-plans', sanitizeParams('username'), publicPlanRouter(router));
-  router.use('/:username/public-recipes', sanitizeParams('username'), publicRecipeRouter(router));
-  router.use('/:username/favorite-recipes', sanitizeParams('username'), favoriteRecipeRouter(router));
-  router.use('/:username/private-equipment', sanitizeParams('username'), privateEquipmentRouter(router));
-  router.use('/:username/private-ingredients', sanitizeParams('username'), privateIngredientRouter(router));
-  router.use('/:username/private-plans', sanitizeParams('username'), privatePlanRouter(router));
-  router.use('/:username/private-recipes', sanitizeParams('username'), privateRecipeRouter(router));
-  router.use('/:username/saved-recipes', sanitizeParams('username'), savedRecipeRouter(router));
-  router.use('/:username/friendships', sanitizeParams('username'), friendshipRouter(router));
+export function userRouter() {
+  router.use('/:username/avatars', sanitizeParams('username'), userImageRouter());
+  router.use('/:username/public-plans', sanitizeParams('username'), publicPlanRouter());
+  router.use('/:username/public-recipes', sanitizeParams('username'), publicRecipeRouter());
+  router.use('/:username/favorite-recipes', sanitizeParams('username'), favoriteRecipeRouter());
+  router.use('/:username/private-equipment', sanitizeParams('username'), privateEquipmentRouter());
+  router.use('/:username/private-ingredients', sanitizeParams('username'), privateIngredientRouter());
+  router.use('/:username/private-plans', sanitizeParams('username'), privatePlanRouter());
+  router.use('/:username/private-recipes', sanitizeParams('username'), privateRecipeRouter());
+  router.use('/:username/saved-recipes', sanitizeParams('username'), savedRecipeRouter());
+  router.use('/:username/friendships', sanitizeParams('username'), friendshipRouter());
 
   router.get(
     '/:username',

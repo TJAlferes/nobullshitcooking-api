@@ -9,13 +9,15 @@
     "node-inspect": "node --inspect=0.0.0.0:9229 src/index.ts",
     "seed-dev": "ts-node seeds/development/index.ts",
     "seed-prod": "ts-node seeds/production/index.ts",
-    "dev": "nodemon --watch src -e ts --exec 'ts-node' src/index.ts",
+    "dev": "nodemon -e ts --exec 'ts-node src/index.ts' --verbose --legacy-watch",
     "unit-test": "jest src/ --colors --detectOpenHandles",
     "integration-test": "jest tests/integration/index.test.ts --verbose --colors --detectOpenHandles --logHeapUsage --runInBand --watchAll=false",
-    "integration-test-b": "ts-node tests/integration/index-b.test.ts",
     "interactive-test": "docker exec -it nobsc-test bash && cd /app",
     "start": "node build/bundle.js",
     "build": "tsc"
+  },
+  "nodemonConfig": {
+    "watch": ["src"]
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.374.0",

@@ -4,11 +4,11 @@ import { body, param } from 'express-validator';
 import { catchExceptions, userIsAuth } from '../../../utils';
 import { privateIngredientController as controller } from './controller';
 
-//const router = Router();
+const router = Router({mergeParams: true});
 
 // for /users/:username/private-ingredients
 
-export function privateIngredientRouter(router: Router) {
+export function privateIngredientRouter() {
   const ingredientInfo = [
     'ingredient_type_id',
     'ingredient_brand',  // TO DO: make optional
