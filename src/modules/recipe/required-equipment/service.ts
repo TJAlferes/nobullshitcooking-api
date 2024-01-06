@@ -12,8 +12,15 @@ export class RecipeEquipmentService {
     if (required_equipment.length < 1) return;
 
     const placeholders = '(?, ?, ?),'.repeat(required_equipment.length).slice(0, -1);
-    const recipe_equipment = required_equipment.map(re => 
-      RecipeEquipment.create({recipe_id, ...re}).getDTO()
+    const recipe_equipment = required_equipment.map(({
+      amount,
+      equipment_id
+    }) => 
+      RecipeEquipment.create({
+        recipe_id,
+        amount: Number(amount),
+        equipment_id
+      }).getDTO()
     );
     await this.repo.bulkInsert({placeholders, recipe_equipment});
   }
@@ -25,8 +32,15 @@ export class RecipeEquipmentService {
     }
 
     const placeholders = '(?, ?, ?),'.repeat(required_equipment.length).slice(0, -1);
-    const recipe_equipment = required_equipment.map(re => 
-      RecipeEquipment.create({recipe_id, ...re}).getDTO()
+    const recipe_equipment = required_equipment.map(({
+      amount,
+      equipment_id
+    }) => 
+      RecipeEquipment.create({
+        recipe_id,
+        amount: Number(amount),
+        equipment_id
+      }).getDTO()
     );
     await this.repo.bulkUpdate({recipe_id, placeholders, recipe_equipment});
   }

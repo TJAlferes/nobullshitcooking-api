@@ -14,8 +14,17 @@ export class RecipeSubrecipeService {
     const placeholders = '(?, ?, ?, ?),'
       .repeat(required_subrecipes.length)
       .slice(0, -1);
-    const recipe_subrecipes = required_subrecipes.map(rs =>
-      RecipeSubrecipe.create({recipe_id, ...rs}).getDTO()
+    const recipe_subrecipes = required_subrecipes.map(({
+      amount,
+      unit_id,
+      subrecipe_id
+    }) =>
+      RecipeSubrecipe.create({
+        recipe_id,
+        amount: Number(amount),
+        unit_id: Number(unit_id),
+        subrecipe_id
+      }).getDTO()
     );
     await this.repo.bulkInsert({placeholders, recipe_subrecipes});
   }
@@ -29,8 +38,17 @@ export class RecipeSubrecipeService {
     const placeholders = '(?, ?, ?, ?),'
       .repeat(required_subrecipes.length)
       .slice(0, -1);
-    const recipe_subrecipes = required_subrecipes.map(rs =>
-      RecipeSubrecipe.create({recipe_id, ...rs}).getDTO()
+    const recipe_subrecipes = required_subrecipes.map(({
+      amount,
+      unit_id,
+      subrecipe_id
+    }) =>
+      RecipeSubrecipe.create({
+        recipe_id,
+        amount: Number(amount),
+        unit_id: Number(unit_id),
+        subrecipe_id
+      }).getDTO()
     );
     await this.repo.bulkUpdate({recipe_id, placeholders, recipe_subrecipes});
   }

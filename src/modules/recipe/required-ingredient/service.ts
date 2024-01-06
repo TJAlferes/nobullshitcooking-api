@@ -14,8 +14,17 @@ export class RecipeIngredientService {
     const placeholders = '(?, ?, ?, ?),'
       .repeat(required_ingredients.length)
       .slice(0, -1);
-    const recipe_ingredients = required_ingredients.map(ri => 
-      RecipeIngredient.create({recipe_id, ...ri}).getDTO()
+    const recipe_ingredients = required_ingredients.map(({
+      amount,
+      unit_id,
+      ingredient_id
+    }) => 
+      RecipeIngredient.create({
+        recipe_id,
+        amount: Number(amount),
+        unit_id: Number(unit_id),
+        ingredient_id
+      }).getDTO()
     );
     await this.repo.bulkInsert({placeholders, recipe_ingredients});
   }
@@ -29,8 +38,17 @@ export class RecipeIngredientService {
     const placeholders = '(?, ?, ?, ?),'
       .repeat(required_ingredients.length)
       .slice(0, -1);
-    const recipe_ingredients = required_ingredients.map(ri => 
-      RecipeIngredient.create({recipe_id, ...ri}).getDTO()
+    const recipe_ingredients = required_ingredients.map(({
+      amount,
+      unit_id,
+      ingredient_id
+    }) => 
+      RecipeIngredient.create({
+        recipe_id,
+        amount: Number(amount),
+        unit_id: Number(unit_id),
+        ingredient_id
+      }).getDTO()
     );
     await this.repo.bulkUpdate({recipe_id, placeholders, recipe_ingredients});
   }

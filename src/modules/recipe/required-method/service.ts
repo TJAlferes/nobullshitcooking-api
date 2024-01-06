@@ -13,7 +13,10 @@ export class RecipeMethodService {
 
     const placeholders = '(?, ?),'.repeat(required_methods.length).slice(0, -1);
     const recipe_methods = required_methods.map(({ method_id }) =>
-      RecipeMethod.create({recipe_id, method_id: Number(method_id)}).getDTO()
+      RecipeMethod.create({
+        recipe_id,
+        method_id: Number(method_id)
+      }).getDTO()
     );
     await this.repo.bulkInsert({placeholders, recipe_methods});
   }
