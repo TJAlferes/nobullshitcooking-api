@@ -69,13 +69,15 @@ export class RecipeEquipmentRepo extends MySQLRepo implements RecipeEquipmentRep
   async deleteByEquipmentId(equipment_id: string) {
     const sql = `DELETE FROM recipe_equipment WHERE equipment_id = ?`;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [equipment_id]);
-    if (result.affectedRows < 1) throw new Error('Query not successful.');
+    //if (result.affectedRows < 1) throw new Error('Query not successful.');
+    return result.affectedRows >= 1;
   }
 
   async deleteByRecipeId(recipe_id: string) {
     const sql = `DELETE FROM recipe_equipment WHERE recipe_id = ?`;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [recipe_id]);
-    if (result.affectedRows < 1) throw new Error('Query not successful.');
+    //if (result.affectedRows < 1) throw new Error('Query not successful.');
+    return result.affectedRows >= 1;
   }
 }
 
@@ -83,8 +85,8 @@ export interface RecipeEquipmentRepoInterface {
   viewByRecipeId:      (recipe_id: string) =>        Promise<RecipeEquipmentView[]>;
   bulkInsert:          (params: BulkInsertParams) => Promise<void>;
   bulkUpdate:          (params: BulkUpdateParams) => Promise<void>;
-  deleteByEquipmentId: (equipment_id: string) =>     Promise<void>;
-  deleteByRecipeId:    (recipe_id: string) =>        Promise<void>;
+  deleteByEquipmentId: (equipment_id: string) =>     Promise<boolean>;
+  deleteByRecipeId:    (recipe_id: string) =>        Promise<boolean>;
 }
 
 type RecipeEquipmentRow = {

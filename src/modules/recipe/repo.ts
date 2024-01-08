@@ -585,6 +585,8 @@ const recipeDetailViewSQL = `
 const existingRecipeToEditViewSQL = `
   SELECT
     r.recipe_id,
+    r.author_id,
+    r.owner_id,
     r.recipe_type_id,
     r.cuisine_id,
     r.title,

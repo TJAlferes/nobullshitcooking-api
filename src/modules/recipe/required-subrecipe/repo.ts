@@ -74,13 +74,15 @@ export class RecipeSubrecipeRepo extends MySQLRepo implements RecipeSubrecipeRep
   async deleteByRecipeId(recipe_id: string) {
     const sql = `DELETE FROM recipe_subrecipe WHERE recipe_id = ?`;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [recipe_id]);
-    if (result.affectedRows < 1) throw new Error('Query not successful.');
+    //if (result.affectedRows < 1) throw new Error('Query not successful.');
+    return result.affectedRows >= 1;
   }
 
   async deleteBySubrecipeId(subrecipe_id: string) {
     const sql = `DELETE FROM recipe_subrecipe WHERE subrecipe_id = ?`;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [subrecipe_id]);
-    if (result.affectedRows < 1) throw new Error('Query not successful.');
+    //if (result.affectedRows < 1) throw new Error('Query not successful.');
+    return result.affectedRows >= 1;
   }
 }
 
@@ -88,8 +90,8 @@ export interface RecipeSubrecipeRepoInterface {
   viewByRecipeId:       (recipe_id: string) =>        Promise<RecipeSubrecipeView[]>;
   bulkInsert:           (params: BulkInsertParams) => Promise<void>;
   bulkUpdate:           (params: BulkUpdateParams) => Promise<void>;
-  deleteBySubrecipeId:  (subrecipe_id: string) =>     Promise<void>;
-  deleteByRecipeId:     (recipe_id: string) =>        Promise<void>;
+  deleteBySubrecipeId:  (subrecipe_id: string) =>     Promise<boolean>;
+  deleteByRecipeId:     (recipe_id: string) =>        Promise<boolean>;
 }
 
 type RecipeSubrecipeRow = {

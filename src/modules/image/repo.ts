@@ -13,9 +13,9 @@ export class ImageRepo extends MySQLRepo implements ImageRepoInterface {
         author_id,
         owner_id
       FROM image
-      WHERE image_id = :image_id
+      WHERE image_id = ?
     `;
-    const [ [ row ] ] = await this.pool.execute<ImageView[]>(sql, {image_id});
+    const [ [ row ] ] = await this.pool.execute<ImageView[]>(sql, [image_id]);
     return row;
   }
 

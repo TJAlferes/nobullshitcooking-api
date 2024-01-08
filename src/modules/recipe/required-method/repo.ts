@@ -62,7 +62,8 @@ export class RecipeMethodRepo extends MySQLRepo implements RecipeMethodRepoInter
   async deleteByRecipeId(recipe_id: string) {
     const sql = `DELETE FROM recipe_method WHERE recipe_id = ?`;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [recipe_id]);
-    if (result.affectedRows < 1) throw new Error('Query not successful.');
+    //if (result.affectedRows < 1) throw new Error('Query not successful.');
+    return result.affectedRows >= 1;
   }
 }
 
@@ -70,7 +71,7 @@ export interface RecipeMethodRepoInterface {
   viewByRecipeId:    (recipe_id: string) =>        Promise<RecipeMethodView[]>;
   bulkInsert:        (params: BulkInsertParams) => Promise<void>;
   bulkUpdate:        (params: BulkUpdateParams) => Promise<void>;
-  deleteByRecipeId:  (recipe_id: string) =>        Promise<void>;
+  deleteByRecipeId:  (recipe_id: string) =>        Promise<boolean>;
 }
 
 type RecipeMethodRow = {

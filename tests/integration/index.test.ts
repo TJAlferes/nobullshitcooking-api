@@ -63,7 +63,7 @@ describe('NOBSC API integration tests (read tests)', () => {
   //describe('search', () => searchTests(app));
 });
 
-describe('NOBSC API integration tests (write tests)', () => {
+describe.only('NOBSC API integration tests (write tests)', () => {
   beforeEach(async () => {
     await truncateTestDatabase();
     await seedTestDatabase();
@@ -91,6 +91,7 @@ afterEach(async () => {
 });
 
 afterAll(async () => {
+  await truncateTestDatabase();
   redisClients.pubClient.disconnect();
   redisClients.subClient.disconnect();
   redisClients.sessionClient.disconnect();
