@@ -24,7 +24,7 @@ export class Recipe {
     this.title          = Title(params.title);
     this.description    = Description(params.description);
     this.active_time    = Time(params.active_time);
-    this.total_time     = Time(params.active_time);
+    this.total_time     = Time(params.total_time);
     this.directions     = Directions(params.directions);
   }
 
@@ -75,16 +75,17 @@ function Time(time: string) {
   if (time.length !== 5) throw new ValidationException('Invalid time.');
   if (time.charAt(2) !== ':') throw new ValidationException('Invalid time.');
 
-  const [ hours, minutes ] = time.split(':');
+  const [ hours, minutes ] = time.slice().split(':');
   if (hours.length !== 2) throw new ValidationException('Invalid time.');
   if (minutes.length !== 2) throw new ValidationException('Invalid time.');
   
-  const hrs = parseInt(hours);
-  const mins = parseInt(minutes);
+  const hrs = hours.charAt(0) === '0' ? parseInt(hours) : parseInt(hours.charAt(1));
+  const mins = minutes.charAt(0) === '0' ? parseInt(minutes) : parseInt(minutes.charAt(1));
   if (isNaN(hrs) || isNaN(mins) || hrs < 0 || hrs > 99 || mins < 0 || mins > 59) {
     throw new ValidationException('Invalid time.');
   }
   
+  console.log('Time: ', time);
   return time;
 }
 

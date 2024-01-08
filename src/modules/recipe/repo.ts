@@ -640,7 +640,7 @@ const existingRecipeToEditViewSQL = `
       ))
       FROM recipe_method rm
       WHERE rm.recipe_id = r.recipe_id
-    ) methods,
+    ) required_methods,
     (
       SELECT JSON_ARRAYAGG(JSON_OBJECT(
         'amount',            re.amount,
@@ -650,7 +650,7 @@ const existingRecipeToEditViewSQL = `
       FROM recipe_equipment re
       INNER JOIN equipment e ON e.equipment_id = re.equipment_id
       WHERE re.recipe_id = r.recipe_id
-    ) equipment,
+    ) required_equipment,
     (
       SELECT JSON_ARRAYAGG(JSON_OBJECT(
         'amount',             rin.amount,
@@ -661,7 +661,7 @@ const existingRecipeToEditViewSQL = `
       FROM recipe_ingredient rin
       INNER JOIN ingredient i ON i.ingredient_id = rin.ingredient_id
       WHERE rin.recipe_id = r.recipe_id
-    ) ingredients,
+    ) required_ingredients,
     (
       SELECT JSON_ARRAYAGG(JSON_OBJECT(
         'amount',         rs.amount,
@@ -672,7 +672,7 @@ const existingRecipeToEditViewSQL = `
       ))
       FROM recipe_subrecipe rs
       WHERE rs.recipe_id = r.recipe_id
-    ) subrecipes
+    ) required_subrecipes
   FROM recipe r
   INNER JOIN user u         ON u.user_id = r.author_id
   INNER JOIN recipe_type rt ON rt.recipe_type_id = r.recipe_type_id

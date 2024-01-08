@@ -158,7 +158,7 @@ export function publicRecipesTests(app: Express) {
   });
 
   describe('PATCH /v1/users/:username/public-recipes', () => {
-    it.only('handles success', async () => {
+    it('handles success', async () => {
       const res = await agent
         .patch('/v1/users/FakeUser1/public-recipes')
         .send({
