@@ -23,8 +23,6 @@ export const publicPlanController = {
 
   async viewOne(req: Request, res: Response) {
     const { username, plan_name } = req.params;
-    console.log('USERNAME ', username);
-    console.log('PLAN_NAME', plan_name);
 
     const userRepo = new UserRepo();
     const user = await userRepo.getByUsername(username);

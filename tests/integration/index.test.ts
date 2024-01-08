@@ -96,8 +96,6 @@ afterAll(async () => {
   redisClients.subClient.disconnect();
   redisClients.sessionClient.disconnect();
   await pool.end();
-  //socketIOServer?.close(err => console.log(err));
-  //httpServer?.close(err => console.log(err));
 });
 
 const tableNames = [

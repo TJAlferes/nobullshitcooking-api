@@ -27,7 +27,6 @@ export const friendshipController = {
 
     const friendshipRepo = new FriendshipRepo();
     const status = await friendshipRepo.getStatus({user_id: friend_id, friend_id: user_id});
-    console.log('blocked: ', status);
     if (status === 'blocked') throw new NotFoundException();
 
     const currentStatus = await friendshipRepo.getStatus({user_id, friend_id});

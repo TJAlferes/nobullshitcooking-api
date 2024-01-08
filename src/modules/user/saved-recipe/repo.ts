@@ -10,14 +10,18 @@ export class SavedRecipeRepo extends MySQLRepo implements ISavedRecipeRepo {
         r.recipe_type_id,
         r.cuisine_id,
         r.owner_id,
+        r.author_id,
         u.username AS author,
         r.title,
-        i.image_filename
+        (
+          SELECT i.image_filename
+          FROM image i
+          INNER JOIN recipe_image ri ON i.image_id = ri.image_id
+          WHERE ri.recipe_id = r.recipe_id AND ri.type = 1
+        ) AS image_filename
       FROM saved_recipe s
-      INNER JOIN recipe r        ON s.recipe_id = r.recipe_id
-      INNER JOIN user u          ON r.author_id = u.user_id
-      INNER JOIN recipe_image ri ON r.recipe_id = ri.recipe_id
-      INNER JOIN image i         ON ri.image_id = i.image_id
+      INNER JOIN recipe r ON s.recipe_id = r.recipe_id
+      INNER JOIN user u   ON r.author_id = u.user_id
       WHERE s.user_id = ?
       ORDER BY r.title
     `;
@@ -77,6 +81,7 @@ type SavedRecipeView = RowDataPacket & {
   recipe_type_id: number;
   cuisine_id:     number;
   owner_id:       string;
+  author_id:      string;
   author:         string;
   title:          string;
   image_filename: string;

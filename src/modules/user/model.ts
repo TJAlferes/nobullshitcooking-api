@@ -69,13 +69,17 @@ export function Password(password: string) {
 
 export function Username(username: string) {
   assert(username, string());
-  if (username.length < 6) {
+  const name = username.slice().trim().replace(/\s/g, '');
+  if (username.length !== name.length) {
+    throw new ValidationException('Username may not have spaces.');
+  }
+  if (name.length < 6) {
     throw new ValidationException('Username must be at least 6 characters.');
   }
-  if (username.length > 20) {
+  if (name.length > 20) {
     throw new ValidationException('Username must be no more than 20 characters.');
   }
-  return username;
+  return name;
 }
 
 export type CreateParams = {
