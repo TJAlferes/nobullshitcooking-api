@@ -50,6 +50,9 @@ services:
       NODE_ENV: test
       NODE_PATH: /app/node_modules
       PORT: 3003
+      SESSION_SECRET: secret
+      CSRF_SECRET: secret
+      COOKIE_SECRET: secret
       TEST_MYSQL_URI: mysql://root:password@localhost:3306/nobsc
       TEST_MYSQL_HOST: mysql-test
       TEST_MYSQL_USER: root

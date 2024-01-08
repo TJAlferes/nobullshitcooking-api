@@ -89,22 +89,34 @@ export function publicRecipesTests(app: Express) {
   };
 
   let agent: SuperAgentTest;
+  let csrfToken = '';
 
   beforeEach(async () => {
     S3ClientMock.reset();
 
     agent = request.agent(app);
 
+    const res = await agent
+      .get('/v1/csrf-token')
+      .withCredentials(true);
+
+    csrfToken = res.body.csrfToken;
+
     await agent
       .post('/v1/login')
+      .set('X-CSRF-Token', csrfToken)
       .send({
         email: 'fakeuser1@gmail.com',
         password: 'fakepassword'
-      });
+      })
+      .withCredentials(true);
   });
 
   afterEach(async () => {
-    await agent.post('/v1/logout');
+    await agent
+      .post('/v1/logout')
+      .set('X-CSRF-Token', csrfToken)
+      .withCredentials(true);
   });
 
   afterAll(() => {
@@ -114,7 +126,9 @@ export function publicRecipesTests(app: Express) {
   describe('GET /v1/users/:username/public-recipes/:recipe_id/edit', () => {
     it('handles success', async () => {
       const res = await agent
-        .get('/v1/users/FakeUser1/public-recipes/11116942-6b2f-7943-8ab6-3509084cf00e/edit');
+        .get('/v1/users/FakeUser1/public-recipes/11116942-6b2f-7943-8ab6-3509084cf00e/edit')
+        .set('X-CSRF-Token', csrfToken)
+        .withCredentials(true);
 
       expect(res.status).toBe(200);
     });
@@ -123,7 +137,9 @@ export function publicRecipesTests(app: Express) {
   describe('GET /v1/users/:username/public-recipes/:title', () => {
     it('handles success', async () => {
       const res = await agent
-        .get('/v1/users/FakeUser1/public-recipes/Public%20Grilled%20Chicken');
+        .get('/v1/users/FakeUser1/public-recipes/Public%20Grilled%20Chicken')
+        .set('X-CSRF-Token', csrfToken)
+        .withCredentials(true);
 
       expect(res.status).toBe(200);
     });
@@ -133,7 +149,9 @@ export function publicRecipesTests(app: Express) {
     it('handles success', async () => {
       const res = await agent
         .post('/v1/users/FakeUser1/public-recipes')
-        .send(recipe_upload);
+        .send(recipe_upload)
+        .set('X-CSRF-Token', csrfToken)
+        .withCredentials(true);
 
       expect(res.status).toBe(201);
     });

@@ -74,9 +74,9 @@ describe('NOBSC API integration tests (write tests)', () => {
   //describe('friendships', () => friendshipsTests(app));
 
   //describe('publicPlans', () => publicPlansTests(app));
-  //describe('publicRecipes', () => publicRecipesTests(app));
+  describe('publicRecipes', () => publicRecipesTests(app));
   //describe('favoriteRecipes', () => favoriteRecipesTests(app));
-  describe('privateEquipment', () => privateEquipmentTests(app));
+  //describe('privateEquipment', () => privateEquipmentTests(app));
   //describe('privateIngredients', () => privateIngredientsTests(app));
   //describe('privatePlans', () => privatePlansTests(app));
   //describe('privateRecipes', () => privateRecipesTests(app));

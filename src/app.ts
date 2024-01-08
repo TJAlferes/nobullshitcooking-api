@@ -126,7 +126,7 @@ app.get('/v1/csrf-token', (req, res) => {
   const csrfToken = generateToken(req, res, false, false);  //generateToken(req, res, true);
   return res.json({csrfToken});
 });
-if (app.get('env') !== 'test') app.use(doubleCsrfProtection);
+app.use(doubleCsrfProtection);
 app.use(helmet());
 app.use(hpp());
 /*app.use('/search/*', hpp({

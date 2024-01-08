@@ -6,15 +6,17 @@
   "license": "ISC",
   "main": "src/index.js",
   "scripts": {
+    "dev-seeds": "ts-node seeds/development/index.ts",
+    "dev-server": "nodemon -e ts --exec 'ts-node src/index.ts' --verbose --legacy-watch",
+
+    "unit-tests": "jest src/ --colors --detectOpenHandles",
+    "integration-tests": "jest tests/integration/index.test.ts --verbose --colors --detectOpenHandles --logHeapUsage --runInBand --watchAll=false",
     "node-inspect": "node --inspect=0.0.0.0:9229 src/index.ts",
-    "seed-dev": "ts-node seeds/development/index.ts",
-    "seed-prod": "ts-node seeds/production/index.ts",
-    "dev": "nodemon -e ts --exec 'ts-node src/index.ts' --verbose --legacy-watch",
-    "unit-test": "jest src/ --colors --detectOpenHandles",
-    "integration-test": "jest tests/integration/index.test.ts --verbose --colors --detectOpenHandles --logHeapUsage --runInBand --watchAll=false",
-    "interactive-test": "docker exec -it nobsc-test bash && cd /app",
-    "start": "node build/bundle.js",
-    "build": "tsc"
+
+    "build": "tsc",
+    "prod-seeds": "ts-node seeds/production/index.ts",
+    "prod-server": "node build/bundle.js",
+    "start": "node build/bundle.js"
   },
   "nodemonConfig": {
     "watch": ["src"]

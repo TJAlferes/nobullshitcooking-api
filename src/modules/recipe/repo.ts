@@ -653,22 +653,22 @@ const existingRecipeToEditViewSQL = `
       SELECT JSON_ARRAYAGG(JSON_OBJECT(
         'amount',             rin.amount,
         'unit_id',            rin.unit_id,
-        'ingredient_type_id', in.ingredient_type_id,
+        'ingredient_type_id', i.ingredient_type_id,
         'ingredient_id',      rin.ingredient_id
       ))
       FROM recipe_ingredient rin
-      INNER JOIN ingredient in ON in.ingredient_id = rin.ingredient_id
+      INNER JOIN ingredient i ON i.ingredient_id = rin.ingredient_id
       WHERE rin.recipe_id = r.recipe_id
     ) ingredients,
     (
       SELECT JSON_ARRAYAGG(JSON_OBJECT(
-        'amount',          rs.amount,
-        'unit_id',         rs.unit_id,
-        'recipe_type_id',  r.recipe_type_id,
-        'cuisine_id',      r.cuisine_id,
-        'subrecipe_id',    rs.subrecipe_id
+        'amount',         rs.amount,
+        'unit_id',        rs.unit_id,
+        'recipe_type_id', r.recipe_type_id,
+        'cuisine_id',     r.cuisine_id,
+        'subrecipe_id',   rs.subrecipe_id
       ))
-      FROM recipe recipe_subrecipe rs
+      FROM recipe_subrecipe rs
       WHERE rs.recipe_id = r.recipe_id
     ) subrecipes
   FROM recipe r
