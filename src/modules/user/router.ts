@@ -10,11 +10,11 @@ import { privatePlanRouter } from './private-plan/router';
 import { privateRecipeRouter } from './private-recipe/router';
 import { savedRecipeRouter } from './saved-recipe/router';
 import { friendshipRouter } from './friendship/router';
+import { userImageRouter } from './image/router';
 import { publicPlanRouter } from './public-plan/router';
 import { publicRecipeRouter } from './public-recipe/router';
 import { favoriteRecipeRouter } from './favorite-recipe/router';
 import { userController } from './controller';
-import { userImageRouter } from './image/router';
 
 const router = Router();
 

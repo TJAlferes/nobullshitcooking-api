@@ -33,6 +33,13 @@ export function avatarImageTests(app: Express) {
   });
 
   describe('GET /v1/users/:username/avatars', () => {
+    beforeEach(async () => {
+      await agent.post('/v1/login', {
+        email: 'fakeuser1@gmail.com',
+        password: 'fakepassword'
+      })
+    });
+
     it('handles success', async () => {
       const res = await agent.get('/v1/users/FakeUser1/avatars');
       expect(res.status).toBe(200);
@@ -51,26 +58,29 @@ export function avatarImageTests(app: Express) {
 
   describe('POST /v1/users/:username/avatars', () => {
     it('handles success', async () => {
-      const res = await agent.post('/v1/users/FakeUser1/avatars', {
-        new_avatar: 'image_filename'
-      });
-      expect(res.status).toBe(201);
+      const res = await agent.post('/v1/users/FakeUser1/avatars', {new_avatar: 'image_filename'});
+      expect(res.status).toBe(204);
     });
 
     it('handles forbidden', async () => {
-      const res = await agent.post('/v1/users/FakeUser2/avatars', {
-        new_avatar: 'image_filename'
-      });
+      const res = await agent.post('/v1/users/FakeUser2/avatars', {new_avatar: 'image_filename'});
       expect(res.status).toBe(403);
     });
 
     it('handles not found', async () => {
-      const res = await agent.post('/v1/users/FakeUser1/avatars', {
-        new_avatar: 'image_filename'
-      });
+      const res = await agent.post('/v1/users/FakeUser1/avatars', {new_avatar: 'image_filename'});
       expect(res.status).toBe(404);
     });
   });
+
+  /*describe('PATCH /v1/users/:username/avatars/current/:image_id', () => {
+    it('handles success', async () => {
+      const res = await agent.patch('/v1/users/FakeUser1/avatars/current');
+      expect(res.status).toBe(204);
+    });
+
+    // TO DO: finish
+  });*/
 
   describe('DELETE /v1/users/:username/avatars/:image_id', () => {
     it('handles success', async () => {

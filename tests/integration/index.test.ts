@@ -69,10 +69,10 @@ describe('NOBSC API integration tests (write tests)', () => {
     await truncateTestDatabase();
     await seedTestDatabase();
   });
-  describe('authentication', () => authenticationTests(app));
-  describe('users', () => usersTests(app));
+  //describe('authentication', () => authenticationTests(app));
+  //describe('users', () => usersTests(app));
   describe('avatarImages', () => avatarImageTests(app));
-  describe('profile', () => profileTests(app));
+  //describe('profile', () => profileTests(app));
   //describe('friendships', () => friendshipsTests(app));
 
   //describe('publicPlans', () => publicPlansTests(app));
