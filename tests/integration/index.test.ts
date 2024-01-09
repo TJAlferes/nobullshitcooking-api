@@ -68,19 +68,19 @@ describe('NOBSC API integration tests (write tests)', () => {
     await truncateTestDatabase();
     await seedTestDatabase();
   });
-  describe('authentication', () => authenticationTests(app));
+  //describe('authentication', () => authenticationTests(app));
   //describe('users', () => usersTests(app));
   //describe('profile', () => profileTests(app));
   //describe('friendships', () => friendshipsTests(app));
 
   //describe('publicPlans', () => publicPlansTests(app));
   //describe('publicRecipes', () => publicRecipesTests(app));
-  //describe('favoriteRecipes', () => favoriteRecipesTests(app));
+  describe('favoriteRecipes', () => favoriteRecipesTests(app));
   //describe('privateEquipment', () => privateEquipmentTests(app));
   //describe('privateIngredients', () => privateIngredientsTests(app));
   //describe('privatePlans', () => privatePlansTests(app));
   //describe('privateRecipes', () => privateRecipesTests(app));
-  //describe('savedRecipe', () => savedRecipesTests(app));
+  describe('savedRecipe', () => savedRecipesTests(app));
   //describe('AwsS3', AwsS3Tests(app));
 });
 

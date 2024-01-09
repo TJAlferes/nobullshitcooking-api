@@ -91,16 +91,14 @@ export function publicRecipesTests(app: Express) {
   let agent: SuperAgentTest;
   let csrfToken = '';
 
+  beforeAll(async () => {
+    agent = request.agent(app);
+    const res = await agent.get('/v1/csrf-token');
+    csrfToken = res.body.csrfToken;
+  });
+
   beforeEach(async () => {
     S3ClientMock.reset();
-
-    agent = request.agent(app);
-
-    const res = await agent
-      .get('/v1/csrf-token')
-      .withCredentials(true);
-
-    csrfToken = res.body.csrfToken;
 
     await agent
       .post('/v1/login')

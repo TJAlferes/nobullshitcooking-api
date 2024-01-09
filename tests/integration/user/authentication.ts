@@ -8,9 +8,7 @@ export function authenticationTests(app: Express) {
 
   beforeAll(async () => {
     agent = request.agent(app);
-
     const res = await agent.get('/v1/csrf-token');
-
     csrfToken = res.body.csrfToken;
   });
 

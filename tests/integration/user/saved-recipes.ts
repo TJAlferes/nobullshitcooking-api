@@ -4,20 +4,30 @@ import type { Express } from 'express';
 
 export function savedRecipesTests(app: Express) {
   let agent: SuperAgentTest;
+  let csrfToken = '';
+
+  beforeAll(async () => {
+    agent = request.agent(app);
+    const res = await agent.get('/v1/csrf-token');
+    csrfToken = res.body.csrfToken;
+  });
 
   beforeEach(async () => {
-    agent = request.agent(app);
-
     await agent
       .post('/v1/login')
       .send({
         email: 'fakeuser1@gmail.com',
         password: 'fakepassword'
-      });
+      })
+      .set('X-CSRF-Token', csrfToken)
+      .withCredentials(true);
   });
 
   afterEach(async () => {
-    await agent.post('/v1/logout');
+    await agent
+      .post('/v1/logout')
+      .set('X-CSRF-Token', csrfToken)
+      .withCredentials(true);
   });
 
   describe('GET /v1/users/:username/saved-recipes', () => {
@@ -31,21 +41,27 @@ export function savedRecipesTests(app: Express) {
   describe('POST /v1/users/:username/saved-recipes/:recipe_id', () => {
     it('handles success', async () => {
       const res = await agent
-        .post('/v1/users/FakeUser1/saved-recipes/11116942-6b3f-7944-8ab7-3509084cf00f');
+        .post('/v1/users/FakeUser1/saved-recipes/11116942-6b3f-7944-8ab7-3509084cf00f')
+        .set('X-CSRF-Token', csrfToken)
+        .withCredentials(true);
 
       expect(res.status).toBe(201);
     });
     
     it('handles not found', async () => {
       const res = await agent
-        .post('/v1/users/FakeUser1/saved-recipes/11116942-6b3f-7944-8ab7-3509084c0000');
+        .post('/v1/users/FakeUser1/saved-recipes/11116942-6b3f-7944-8ab7-3509084c0000')
+        .set('X-CSRF-Token', csrfToken)
+        .withCredentials(true);
 
       expect(res.status).toBe(404); 
     });
 
     it('handles forbidden', async () => {
       const res = await agent
-        .post('/v1/users/FakeUser1/saved-recipes/018b6942-6b3f-7944-8ab7-3509084cf00f');
+        .post('/v1/users/FakeUser1/saved-recipes/018b6942-6b3f-7944-8ab7-3509084cf00f')
+        .set('X-CSRF-Token', csrfToken)
+        .withCredentials(true);
 
       expect(res.status).toBe(403); 
     });
@@ -54,14 +70,18 @@ export function savedRecipesTests(app: Express) {
   describe('DELETE /v1/users/:username/saved-recipes/:recipe_id', () => {
     it('handles success', async () => {
       const res = await agent
-        .delete('/v1/users/FakeUser1/saved-recipes/018b6942-6b2e-7942-8ab5-350a8c183a41');
+        .delete('/v1/users/FakeUser1/saved-recipes/018b6942-6b2e-7942-8ab5-350a8c183a41')
+        .set('X-CSRF-Token', csrfToken)
+        .withCredentials(true);
 
       expect(res.status).toBe(204); 
     });
 
     it('handles not found', async () => {
       const res = await agent
-        .delete('/v1/users/FakeUser1/saved-recipes/018b6942-6b2e-7942-8ab5-350a8c180000');
+        .delete('/v1/users/FakeUser1/saved-recipes/018b6942-6b2e-7942-8ab5-350a8c180000')
+        .set('X-CSRF-Token', csrfToken)
+        .withCredentials(true);
 
       expect(res.status).toBe(404); 
     });
