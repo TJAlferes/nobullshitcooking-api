@@ -38,12 +38,6 @@ export function userRouter() {
     catchExceptions(profileController.view)
   );
 
-  router.post(
-    '/',
-    sanitizeBody(['email', 'password', 'username']),
-    catchExceptions(userController.create)
-  );
-
   router.patch(
     '/:username/email',
     userIsAuth,
@@ -74,6 +68,12 @@ export function userRouter() {
     sanitizeParams('username'),
     sanitizeBody('password'),
     catchExceptions(userController.delete)
+  );
+
+  router.post(
+    '/',
+    sanitizeBody(['email', 'password', 'username']),
+    catchExceptions(userController.create)
   );
   
   return router;

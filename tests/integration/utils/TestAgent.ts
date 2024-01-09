@@ -10,12 +10,19 @@ export class TestAgent {
     this.agent = request.agent(app);
   }
 
-  async getToken() {
+  async setCsrfToken() {
     const res = await this.agent.get('/v1/csrf-token');
     this.csrfToken = res.body.csrfToken;
   }
 
-  async post(url: string, body: any) {
+  async get(url: string, withCredentials: boolean = true) {
+    const res = await this.agent
+      .get(url)
+      .withCredentials(withCredentials);
+    return res;
+  }
+
+  async post(url: string, body: any = {}) {
     const res = await this.agent
       .post(url)
       .send(body)
@@ -24,7 +31,7 @@ export class TestAgent {
     return res;
   }
 
-  async patch(url: string, body: any) {
+  async patch(url: string, body: any = {}) {
     const res = await this.agent
       .patch(url)
       .send(body)

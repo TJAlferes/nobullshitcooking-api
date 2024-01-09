@@ -10,6 +10,7 @@ import { app, httpServer, socketIOServer } from '../../src/app';
 import {
   authenticationTests,
   usersTests,
+  avatarImageTests,
   profileTests,
   friendshipsTests,
   publicPlansTests,
@@ -68,10 +69,11 @@ describe('NOBSC API integration tests (write tests)', () => {
     await truncateTestDatabase();
     await seedTestDatabase();
   });
-  //describe('authentication', () => authenticationTests(app));
-  //describe('users', () => usersTests(app));
-  //describe('profile', () => profileTests(app));
-  describe('friendships', () => friendshipsTests(app));
+  describe('authentication', () => authenticationTests(app));
+  describe('users', () => usersTests(app));
+  describe('avatarImages', () => avatarImageTests(app));
+  describe('profile', () => profileTests(app));
+  //describe('friendships', () => friendshipsTests(app));
 
   //describe('publicPlans', () => publicPlansTests(app));
   //describe('publicRecipes', () => publicRecipesTests(app));

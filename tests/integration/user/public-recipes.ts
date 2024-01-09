@@ -2,10 +2,9 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { mockClient } from 'aws-sdk-client-mock';
 import type { AwsClientStub } from 'aws-sdk-client-mock';
 import type { Express } from 'express';
-import request from 'supertest';
-import type { SuperAgentTest } from 'supertest';
 
 import { AwsS3PublicUploadsClient } from '../../../src/modules/aws-s3/public-uploads/client';
+import { TestAgent } from '../utils/TestAgent';
 
 const S3ClientMock: AwsClientStub<S3Client> = mockClient(AwsS3PublicUploadsClient);
 //AwsS3ClientMock.onAnyCommand().resolves();
@@ -88,33 +87,24 @@ export function publicRecipesTests(app: Express) {
     }
   };
 
-  let agent: SuperAgentTest;
-  let csrfToken = '';
+  let agent: TestAgent;
 
   beforeAll(async () => {
-    agent = request.agent(app);
-    const res = await agent.get('/v1/csrf-token');
-    csrfToken = res.body.csrfToken;
+    agent = new TestAgent(app);
+    await agent.setCsrfToken();
   });
 
   beforeEach(async () => {
     S3ClientMock.reset();
 
-    await agent
-      .post('/v1/login')
-      .send({
-        email: 'fakeuser1@gmail.com',
-        password: 'fakepassword'
-      })
-      .set('X-CSRF-Token', csrfToken)
-      .withCredentials(true);
+    await agent.post('/v1/login', {
+      email: 'fakeuser1@gmail.com',
+      password: 'fakepassword'
+    });
   });
 
   afterEach(async () => {
-    await agent
-      .post('/v1/logout')
-      .set('X-CSRF-Token', csrfToken)
-      .withCredentials(true);
+    await agent.post('/v1/logout');
   });
 
   afterAll(() => {
@@ -124,10 +114,7 @@ export function publicRecipesTests(app: Express) {
   describe('GET /v1/users/:username/public-recipes/:recipe_id/edit', () => {
     it('handles success', async () => {
       const res = await agent
-        .get('/v1/users/FakeUser1/public-recipes/11116942-6b2f-7943-8ab6-3509084cf00e/edit')
-        .set('X-CSRF-Token', csrfToken)
-        .withCredentials(true);
-
+        .get('/v1/users/FakeUser1/public-recipes/11116942-6b2f-7943-8ab6-3509084cf00e/edit');
       expect(res.status).toBe(200);
     });
   });
@@ -135,22 +122,14 @@ export function publicRecipesTests(app: Express) {
   describe('GET /v1/users/:username/public-recipes/:title', () => {
     it('handles success', async () => {
       const res = await agent
-        .get('/v1/users/FakeUser1/public-recipes/Public%20Grilled%20Chicken')
-        .set('X-CSRF-Token', csrfToken)
-        .withCredentials(true);
-
+        .get('/v1/users/FakeUser1/public-recipes/Public%20Grilled%20Chicken');
       expect(res.status).toBe(200);
     });
   });
 
   describe('POST /v1/users/:username/public-recipes', () => {
     it('handles success', async () => {
-      const res = await agent
-        .post('/v1/users/FakeUser1/public-recipes')
-        .send(recipe_upload)
-        .set('X-CSRF-Token', csrfToken)
-        .withCredentials(true);
-
+      const res = await agent.post('/v1/users/FakeUser1/public-recipes', recipe_upload);
       expect(res.status).toBe(201);
     });
   });
@@ -158,40 +137,28 @@ export function publicRecipesTests(app: Express) {
   describe('PATCH /v1/users/:username/public-recipes', () => {
     it('handles success', async () => {
       const res = await agent
-        .patch('/v1/users/FakeUser1/public-recipes')
-        .send({
+        .patch('/v1/users/FakeUser1/public-recipes', {
           recipe_id: '11116942-6b2f-7943-8ab6-3509084cf00e',
           ...recipe_update_upload
-        })
-        .set('X-CSRF-Token', csrfToken)
-        .withCredentials(true);
-
+        });
       expect(res.status).toBe(204);
     });
 
     it('handles not found', async () => {
       const res = await agent
-        .patch('/v1/users/FakeUser1/public-recipes')
-        .send({
+        .patch('/v1/users/FakeUser1/public-recipes', {
           recipe_id: '11116942-6b2f-7943-8ab6-3509084c0000',
           ...recipe_update_upload
-        })
-        .set('X-CSRF-Token', csrfToken)
-        .withCredentials(true);
-
+        });
       expect(res.status).toBe(404);
     });
 
     it('handles forbidden', async () => {
       const res = await agent
-        .patch('/v1/users/FakeUser1/public-recipes')
-        .send({
+        .patch('/v1/users/FakeUser1/public-recipes', {
           recipe_id: '018b6942-6b3f-7944-8ab7-3509084cf00f',
           ...recipe_update_upload
-        })
-        .set('X-CSRF-Token', csrfToken)
-        .withCredentials(true);
-
+        });
       expect(res.status).toBe(403);
     });
   });
@@ -199,28 +166,19 @@ export function publicRecipesTests(app: Express) {
   describe('DELETE /v1/users/:username/public-recipes/:recipe_id', () => {
     it('handles success', async () => {
       const res = await agent
-        .delete('/v1/users/FakeUser1/public-recipes/11116942-6b2f-7943-8ab6-3509084cf00e')
-        .set('X-CSRF-Token', csrfToken)
-        .withCredentials(true);
-
+        .delete('/v1/users/FakeUser1/public-recipes/11116942-6b2f-7943-8ab6-3509084cf00e');
       expect(res.status).toBe(204);
     });
     
     it('handles not found', async () => {
       const res = await agent
-        .delete('/v1/users/FakeUser1/public-recipes/11116942-6b2f-7943-8ab6-3509084c0000')
-        .set('X-CSRF-Token', csrfToken)
-        .withCredentials(true);
-
+        .delete('/v1/users/FakeUser1/public-recipes/11116942-6b2f-7943-8ab6-3509084c0000');
       expect(res.status).toBe(404);
     });
 
     it('handles forbidden', async () => {
       const res = await agent
-        .delete('/v1/users/FakeUser1/public-recipes/018b6942-6b3f-7944-8ab7-3509084cf00f')
-        .set('X-CSRF-Token', csrfToken)
-        .withCredentials(true);
-
+        .delete('/v1/users/FakeUser1/public-recipes/018b6942-6b3f-7944-8ab7-3509084cf00f');
       expect(res.status).toBe(403);
     });
   });
