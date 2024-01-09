@@ -1,6 +1,5 @@
-import { ConflictException, NotFoundException, ForbiddenException, UnauthorizedException } from '../../utils/exceptions';
+import { ConflictException, NotFoundException, ForbiddenException } from '../../utils/exceptions';
 import { ImageRepo } from '../image/repo';
-import { PlanRepo } from '../plan/repo';  // ?
 import { RecipeRepo } from '../recipe/repo';
 import { EquipmentRepo } from '../equipment/repo';
 import { IngredientRepo } from '../ingredient/repo';
@@ -95,6 +94,25 @@ export class UserService {
     await this.repo.update(user);
   }
 
+  async resetPassword({ user_id, new_password }: ResetPasswordParams) {
+    const existingUser = await this.repo.getByUserId(user_id);
+    if (!existingUser) throw new NotFoundException('User does not exist.');
+
+    const userAuthenticationService = new UserAuthenticationService(this.repo);
+
+    const encryptedPassword = await userAuthenticationService.hashPassword(new_password);
+    
+    const user = User.update({
+      user_id,
+      email:             existingUser.email,
+      password:          encryptedPassword,  // the update
+      username:          existingUser.username,
+      confirmation_code: existingUser.confirmation_code
+    }).getDTO();
+
+    await this.repo.update(user);
+  }
+
   async updateUsername({ user_id, new_username }: UpdateUsernameParams) {
     const existingUser = await this.repo.getByUserId(user_id);
     if (!existingUser) throw new NotFoundException('User does not exist.');
@@ -169,6 +187,11 @@ type UpdatePasswordParams = {
   user_id:          string;
   new_password:     string;
   current_password: string;
+};
+
+type ResetPasswordParams = {
+  user_id:      string;
+  new_password: string;
 };
 
 type UpdateUsernameParams = {

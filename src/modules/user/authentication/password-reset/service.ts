@@ -2,14 +2,26 @@ import bcrypt from 'bcryptjs';
 
 import { UnauthorizedException } from '../../../../utils/exceptions';
 import { emailUser } from '../../../aws-ses/service';
-import { Email } from '../../model';
 import { PasswordResetRepoInterface } from './repo';
+import { UserService } from '../../service';
 
 export class PasswordResetService {
   private readonly repo: PasswordResetRepoInterface;
 
   constructor(repo: PasswordResetRepoInterface) {
     this.repo = repo;
+  }
+
+  async resetPassword({
+    user_id,
+    temporary_password,
+    new_password,
+    userService
+  }: ResetPasswordParams) {
+    await this.isCorrectTemporaryPassword({user_id, temporary_password});
+    // TO DO: consider making the update and delete a single transaction
+    await userService.resetPassword({user_id, new_password});
+    await this.repo.deleteByUserId(user_id);
   }
 
   async isCorrectTemporaryPassword({
@@ -51,6 +63,13 @@ export class PasswordResetService {
     await emailUser({from, to, subject, bodyText, bodyHtml, charset});
   }
 }
+
+type ResetPasswordParams = {
+  user_id:            string;
+  temporary_password: string;
+  new_password:       string;
+  userService:        UserService;
+};
 
 type IsCorrectTemporaryPasswordParams = {
   user_id:            string;

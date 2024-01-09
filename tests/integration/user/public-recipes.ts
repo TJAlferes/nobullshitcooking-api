@@ -1,9 +1,9 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { mockClient } from 'aws-sdk-client-mock';
 import type { AwsClientStub } from 'aws-sdk-client-mock';
+import type { Express } from 'express';
 import request from 'supertest';
 import type { SuperAgentTest } from 'supertest';
-import type { Express } from 'express';
 
 import { AwsS3PublicUploadsClient } from '../../../src/modules/aws-s3/public-uploads/client';
 

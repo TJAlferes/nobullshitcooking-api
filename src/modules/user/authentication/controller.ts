@@ -147,13 +147,16 @@ export const userAuthenticationController = {
   },
 
   async logout(req: Request, res: Response) {
-    const session_id = req.session.user_id!;
+    const session_id = req.session.user_id!;  // TO DO: ... not correct..?
+
     req.session.user_id = undefined;
     req.session.username = undefined;
     req.session!.destroy(() => {});
     // disconnect all Socket.IO connections linked to this session ID
     socketIOServer.in(session_id).disconnectSockets();
+
     return res.status(204).end();
+
     // old code:
     //req.session!.destroy(() => {
     //  // disconnect all Socket.IO connections linked to this session ID
@@ -205,29 +208,17 @@ export const userAuthenticationController = {
     const { email, temporary_password, new_password } = req.body;
 
     const userRepo = new UserRepo();
+
     const user = await userRepo.getByEmail(email);
     if (!user) throw new NotFoundException();
-
-    const passwordResetRepo = new PasswordResetRepo();
-    const passwordResetService = new PasswordResetService(passwordResetRepo);
-    await passwordResetService.isCorrectTemporaryPassword({
+    
+    const passwordResetService = new PasswordResetService(new PasswordResetRepo());
+    await passwordResetService.resetPassword({
       user_id: user.user_id,
-      temporary_password
-    });
-
-    const current_password = await userRepo.getPassword(user.email);
-    if (!current_password) throw new NotFoundException();
-
-    // TO DO: consider making the update and delete a single transaction
-
-    const userService = new UserService(userRepo);
-    await userService.updatePassword({
-      user_id: user.user_id,
+      temporary_password,
       new_password,
-      current_password
+      userService: new UserService(userRepo)
     });
-
-    await passwordResetRepo.deleteByUserId(user.user_id);
 
     return res.status(204).json();
   }
