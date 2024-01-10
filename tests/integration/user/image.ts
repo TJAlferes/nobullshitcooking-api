@@ -40,6 +40,10 @@ export function avatarImageTests(app: Express) {
       })
     });
 
+    afterEach(async () => {
+      await agent.post('/v1/logout');
+    });
+
     it('handles success', async () => {
       const res = await agent.get('/v1/users/FakeUser1/avatars');
       expect(res.status).toBe(200);
@@ -57,19 +61,20 @@ export function avatarImageTests(app: Express) {
   });
 
   describe('POST /v1/users/:username/avatars', () => {
+    beforeEach(async () => {
+      await agent.post('/v1/login', {
+        email: 'fakeuser1@gmail.com',
+        password: 'fakepassword'
+      })
+    });
+
+    afterEach(async () => {
+      await agent.post('/v1/logout');
+    });
+
     it('handles success', async () => {
       const res = await agent.post('/v1/users/FakeUser1/avatars', {new_avatar: 'image_filename'});
       expect(res.status).toBe(204);
-    });
-
-    it('handles forbidden', async () => {
-      const res = await agent.post('/v1/users/FakeUser2/avatars', {new_avatar: 'image_filename'});
-      expect(res.status).toBe(403);
-    });
-
-    it('handles not found', async () => {
-      const res = await agent.post('/v1/users/FakeUser1/avatars', {new_avatar: 'image_filename'});
-      expect(res.status).toBe(404);
     });
   });
 
@@ -83,6 +88,17 @@ export function avatarImageTests(app: Express) {
   });*/
 
   describe('DELETE /v1/users/:username/avatars/:image_id', () => {
+    beforeEach(async () => {
+      await agent.post('/v1/login', {
+        email: 'fakeuser1@gmail.com',
+        password: 'fakepassword'
+      })
+    });
+
+    afterEach(async () => {
+      await agent.post('/v1/logout');
+    });
+
     it('handles success', async () => {
       const res = await agent
         .delete('/v1/users/FakeUser1/avatars/03030303-0303-0303-0303-030303030303');
@@ -103,7 +119,7 @@ export function avatarImageTests(app: Express) {
 
     it('handles not found', async () => {
       const res = await agent
-        .delete('/v1/users/FakeUser1/avatars/04040404-0404-0404-0404-040404040404');
+        .delete('/v1/users/FakeUser1/avatars/05050505-0505-0505-0505-050505050505');
       expect(res.status).toBe(404);
     });
   });

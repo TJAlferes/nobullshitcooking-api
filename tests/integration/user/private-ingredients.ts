@@ -1,11 +1,10 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { mockClient } from 'aws-sdk-client-mock';
 import type { AwsClientStub } from 'aws-sdk-client-mock';
-import request from 'supertest';
-import type { SuperAgentTest } from 'supertest';
 import type { Express } from 'express';
 
 import { AwsS3PrivateUploadsClient } from '../../../src/modules/aws-s3/private-uploads/client';
+import { TestAgent } from '../utils/TestAgent';
 
 const S3ClientMock: AwsClientStub<S3Client> = mockClient(AwsS3PrivateUploadsClient);
 //AwsS3ClientMock.onAnyCommand().resolves();
@@ -13,19 +12,20 @@ const S3ClientMock: AwsClientStub<S3Client> = mockClient(AwsS3PrivateUploadsClie
 // TO DO: add alt_names tests
 
 export function privateIngredientsTests(app: Express) {
-  let agent: SuperAgentTest;
+  let agent: TestAgent;
+
+  beforeAll(async () => {
+    agent = new TestAgent(app);
+    await agent.setCsrfToken();
+  });
 
   beforeEach(async () => {
     S3ClientMock.reset();
 
-    agent = request.agent(app);
-
-    await agent
-      .post('/v1/login')
-      .send({
-        email: 'fakeuser1@gmail.com',
-        password: 'fakepassword'
-      });
+    await agent.post('/v1/login', {
+      email: 'fakeuser1@gmail.com',
+      password: 'fakepassword'
+    });
   });
 
   afterEach(async () => {
@@ -39,8 +39,7 @@ export function privateIngredientsTests(app: Express) {
   describe('POST /v1/users/:username/private-ingredients', () => {
     it('handles success', async () => {
       const res = await agent
-        .post('/v1/users/FakeUser1/private-ingredients')
-        .send({
+        .post('/v1/users/FakeUser1/private-ingredients', {
           ingredient_type_id: 4,
           ingredient_brand: 'Brand',
           ingredient_variety: 'Variety',
@@ -58,8 +57,7 @@ export function privateIngredientsTests(app: Express) {
   describe('PATCH /v1/users/:username/private-ingredients', () => {
     it('handles success', async () => {
       const res = await agent
-        .patch('/v1/users/FakeUser1/private-ingredients')
-        .send({
+        .patch('/v1/users/FakeUser1/private-ingredients', {
           ingredient_id: '018b5ade-dc55-7dc0-92dd-3ff30123668b',
           ingredient_type_id: 4,
           ingredient_brand: 'Brand',
@@ -77,8 +75,7 @@ export function privateIngredientsTests(app: Express) {
 
     it('handles not found', async () => {
       const res = await agent
-        .patch('/v1/users/FakeUser1/private-ingredients')
-        .send({
+        .patch('/v1/users/FakeUser1/private-ingredients', {
           ingredient_id: '018b5ade-dc55-7dc0-92dd-3ff301230000',
           ingredient_type_id: 4,
           ingredient_brand: 'Brand',
@@ -96,8 +93,7 @@ export function privateIngredientsTests(app: Express) {
 
     it('handles forbidden', async () => {
       const res = await agent
-        .patch('/v1/users/FakeUser1/private-ingredients')
-        .send({
+        .patch('/v1/users/FakeUser1/private-ingredients', {
           ingredient_id: '018b5ade-dc56-7dc1-92de-3ff30123668c',
           ingredient_type_id: 4,
           ingredient_brand: 'Brand',
@@ -118,21 +114,18 @@ export function privateIngredientsTests(app: Express) {
     it('handles success', async () => {
       const res = await agent
         .delete('/v1/users/FakeUser1/private-ingredients/018b5ade-dc55-7dc0-92dd-3ff30123668b');
-
       expect(res.status).toBe(204);
     });
 
     it('handles not found', async () => {
       const res = await agent
         .delete('/v1/users/FakeUser1/private-ingredients/018b5ade-dc55-7dc0-92dd-3ff301230000');
-
       expect(res.status).toBe(404);
     });
 
     it('handles forbidden', async () => {
       const res = await agent
         .delete('/v1/users/FakeUser1/private-ingredients/018b5ade-dc56-7dc1-92de-3ff30123668c');
-
       expect(res.status).toBe(403);
     });
   });

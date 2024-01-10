@@ -1,19 +1,20 @@
-import request from 'supertest';
-import type { SuperAgentTest } from 'supertest';
 import type { Express } from 'express';
 
+import { TestAgent } from '../utils/TestAgent';
+
 export function privatePlansTests(app: Express) {
-  let agent: SuperAgentTest;
+  let agent: TestAgent;
+
+  beforeAll(async () => {
+    agent = new TestAgent(app);
+    await agent.setCsrfToken();
+  });
 
   beforeEach(async () => {
-    agent = request.agent(app);
-
-    await agent
-      .post('/v1/login')
-      .send({
-        email: 'fakeuser1@gmail.com',
-        password: 'fakepassword'
-      });
+    await agent.post('/v1/login', {
+      email: 'fakeuser1@gmail.com',
+      password: 'fakepassword'
+    });
   });
 
   afterEach(async () => {
@@ -23,8 +24,7 @@ export function privatePlansTests(app: Express) {
   describe('POST /v1/users/:username/private-plans', () => {
     it('handles success', async () => {
       const res = await agent
-        .post('/v1/users/FakeUser1/private-plans')
-        .send({
+        .post('/v1/users/FakeUser1/private-plans', {
           plan_name: 'Name',
           included_recipes: [
             {
@@ -60,8 +60,7 @@ export function privatePlansTests(app: Express) {
 
     it('handles success', async () => {
       const res = await agent
-        .patch('/v1/users/FakeUser1/private-plans')
-        .send({
+        .patch('/v1/users/FakeUser1/private-plans', {
           plan_id: '018b6942-973a-8b4f-0e4f-3509084cff2a',
           plan_name: 'Updated Name',
           included_recipes
@@ -72,8 +71,7 @@ export function privatePlansTests(app: Express) {
 
     it('handles not found', async () => {
       const res = await agent
-        .patch('/v1/users/FakeUser1/private-plans')
-        .send({
+        .patch('/v1/users/FakeUser1/private-plans', {
           plan_id: '018b6942-973a-8b4f-0e4f-3509084c0000',
           plan_name: 'Updated Name',
           included_recipes
@@ -84,8 +82,7 @@ export function privatePlansTests(app: Express) {
 
     it('handles forbidden', async () => {
       const res = await agent
-        .patch('/v1/users/FakeUser1/private-plans')
-        .send({
+        .patch('/v1/users/FakeUser1/private-plans', {
           plan_id: '018b6942-973b-8b4f-0e4f-3509084cff2b',
           plan_name: 'Updated Name',
           included_recipes
@@ -99,21 +96,18 @@ export function privatePlansTests(app: Express) {
     it('handles success', async () => {
       const res = await agent
         .delete('/v1/users/FakeUser1/private-plans/018b6942-973a-8b4f-0e4f-3509084cff2a');
-      
       expect(res.status).toBe(204);
     });
 
     it('handles not found', async () => {
       const res = await agent
         .delete('/v1/users/FakeUser1/private-plans/018b6942-973a-8b4f-0e4f-3509084c0000');
-      
       expect(res.status).toBe(404);
     });
 
     it('handles forbidden', async () => {
       const res = await agent
         .delete('/v1/users/FakeUser1/private-plans/018b6942-973b-8b4f-0e4f-3509084cff2b');
-      
       expect(res.status).toBe(403);
     });
   });

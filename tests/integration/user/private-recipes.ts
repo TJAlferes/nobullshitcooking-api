@@ -1,11 +1,10 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { mockClient } from 'aws-sdk-client-mock';
 import type { AwsClientStub } from 'aws-sdk-client-mock';
-import request from 'supertest';
-import type { SuperAgentTest } from 'supertest';
 import type { Express } from 'express';
 
 import { AwsS3PrivateUploadsClient } from '../../../src/modules/aws-s3/private-uploads/client';
+import { TestAgent } from '../utils/TestAgent';
 
 const S3ClientMock: AwsClientStub<S3Client> = mockClient(AwsS3PrivateUploadsClient);
 //AwsS3ClientMock.onAnyCommand().resolves();
@@ -88,19 +87,20 @@ export function privateRecipesTests(app: Express) {
     }
   };
 
-  let agent: SuperAgentTest;
+  let agent: TestAgent;
+
+  beforeAll(async () => {
+    agent = new TestAgent(app);
+    await agent.setCsrfToken();
+  });
 
   beforeEach(async () => {
     S3ClientMock.reset();
 
-    agent = request.agent(app);
-
-    await agent
-      .post('/v1/login')
-      .send({
-        email: 'fakeuser1@gmail.com',
-        password: 'fakepassword'
-      });
+    await agent.post('/v1/login', {
+      email: 'fakeuser1@gmail.com',
+      password: 'fakepassword'
+    });
   });
 
   afterEach(async () => {
@@ -115,7 +115,6 @@ export function privateRecipesTests(app: Express) {
     it('handles success', async () => {
       const res = await agent
         .get('/v1/users/FakeUser1/private-recipes/018b6942-6b2f-7943-8ab6-3509084cf00e/edit');
-
       expect(res.status).toBe(200);
     });
   });
@@ -124,17 +123,13 @@ export function privateRecipesTests(app: Express) {
     it('handles success', async () => {
       const res = await agent
         .get('/v1/users/FakeUser1/private-recipes/018b6942-6b2f-7943-8ab6-3509084cf00e');
-
       expect(res.status).toBe(200);
     });
   });
 
   describe('POST /v1/users/:username/private-recipes', () => {
     it('handles success', async () => {
-      const res = await agent
-        .post('/v1/users/FakeUser1/private-recipes')
-        .send(recipe_upload);
-
+      const res = await agent.post('/v1/users/FakeUser1/private-recipes', recipe_upload);
       expect(res.status).toBe(201);
     });
   });
@@ -142,34 +137,28 @@ export function privateRecipesTests(app: Express) {
   describe('PATCH /v1/users/:username/private-recipes', () => {
     it('handles success', async () => {
       const res = await agent
-        .patch('/v1/users/FakeUser1/private-recipes')
-        .send({
+        .patch('/v1/users/FakeUser1/private-recipes', {
           recipe_id: '018b6942-6b2f-7943-8ab6-3509084cf00e',
           ...recipe_update_upload
         });
-
       expect(res.status).toBe(204);
     });
 
     it('handles not found', async () => {
       const res = await agent
-        .patch('/v1/users/FakeUser1/private-recipes')
-        .send({
+        .patch('/v1/users/FakeUser1/private-recipes', {
           recipe_id: '018b6942-6b2f-7943-8ab6-3509084c0000',
           ...recipe_update_upload
         });
-
       expect(res.status).toBe(404);
     });
 
     it('handles forbidden', async () => {
       const res = await agent
-        .patch('/v1/users/FakeUser1/private-recipes')
-        .send({
+        .patch('/v1/users/FakeUser1/private-recipes', {
           recipe_id: '018b6942-6b3f-7944-8ab7-3509084cf00f',
           ...recipe_update_upload
         });
-
       expect(res.status).toBe(403);
     });
   });
@@ -178,21 +167,18 @@ export function privateRecipesTests(app: Express) {
     it('handles success', async () => {
       const res = await agent
         .delete('/v1/users/FakeUser1/private-recipes/018b6942-6b2f-7943-8ab6-3509084cf00e');
-
       expect(res.status).toBe(204);
     });
 
     it('handles not found', async () => {
       const res = await agent
         .delete('/v1/users/FakeUser1/private-recipes/018b6942-6b2f-7943-8ab6-3509084c0000');
-
       expect(res.status).toBe(404);
     });
 
     it('handles forbidden', async () => {
       const res = await agent
         .delete('/v1/users/FakeUser1/private-recipes/018b6942-6b3f-7944-8ab7-3509084cf00f');
-
       expect(res.status).toBe(403);
     });
   });
