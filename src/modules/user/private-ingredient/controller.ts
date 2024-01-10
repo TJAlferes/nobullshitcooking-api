@@ -150,6 +150,8 @@ export const privateIngredientController = {
     if (!ingredient) throw new NotFoundException();
     if (owner_id !== ingredient.owner_id) throw new ForbiddenException();
 
+    await ingredientRepo.deleteOne({ingredient_id, owner_id});
+
     const imageRepo = new ImageRepo();
     const image = await imageRepo.viewOne(ingredient.image_id);
     if (!image) throw new NotFoundException();
@@ -165,8 +167,6 @@ export const privateIngredientController = {
     }));
 
     await imageRepo.deleteOne({owner_id, image_id: image.image_id});
-
-    await ingredientRepo.deleteOne({ingredient_id, owner_id});
     
     return res.status(204).json();
   }

@@ -60,14 +60,16 @@ export class IngredientAltNameRepo extends MySQLRepo implements IngredientAltNam
   async deleteByIngredientId(ingredient_id: string) {
     const sql = `DELETE FROM ingredient_alt_name WHERE ingredient_id = ?`;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [ingredient_id]);
-    if (result.affectedRows < 1) throw new Error('Query not successful.');
+    // TO DO: log instead
+    //if (result.affectedRows < 1) throw new Error('Query not successful.');
+    return result.affectedRows >= 1;
   }
 }
 
 export interface IngredientAltNameRepoInterface {
   bulkInsert:           (params: InsertParams) =>  Promise<void>;
   bulkUpdate:           (params: UpdateParams) =>  Promise<void>;
-  deleteByIngredientId: (ingredient_id: string) => Promise<void>;
+  deleteByIngredientId: (ingredient_id: string) => Promise<boolean>;
 }
 
 type IngredientAltNameRow = {

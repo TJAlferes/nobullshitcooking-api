@@ -65,7 +65,7 @@ export function privateIngredientsTests(app: Express) {
           ingredient_name: 'Name',
           alt_names: [],
           notes: 'Notes...',
-          image_id: '018b5ade-dc54-7db1-870g-00733ee1bedf',
+          image_id: '018b5ade-dc54-7db1-871f-00733ee1bedf',
           image_filename: 'default',
           caption: ''
         });
@@ -83,7 +83,7 @@ export function privateIngredientsTests(app: Express) {
           ingredient_name: 'Name',
           alt_names: [],
           notes: 'Notes...',
-          image_id: '018b5ade-dc54-7db1-870g-00733ee1bedf',
+          image_id: '018b5ade-dc54-7db1-870f-00733ee1bedf',
           image_filename: 'default',
           caption: ''
         });
