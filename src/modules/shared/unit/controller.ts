@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 
+import { NotFoundException } from '../../../utils/exceptions';
 import { UnitRepo } from './repo';
 
 export const unitController = {
@@ -15,6 +16,7 @@ export const unitController = {
     
     const repo = new UnitRepo();
     const unit = await repo.viewOne(unit_id);
+    if (!unit) throw new NotFoundException();
 
     return res.json(unit);
   }

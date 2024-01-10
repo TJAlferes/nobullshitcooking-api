@@ -4,8 +4,7 @@ import type { Express } from 'express';
 export function ingredientsTests(app: Express) {
   describe('GET /v1/ingredients/:ingredient_id', () => {
     it('handles success', async () => {
-      const res = await request(app)
-        .get('/v1/ingredients/018b5ade-dc58-70c4-bf36-2edcf351ef12');
+      const res = await request(app).get('/v1/ingredients/Sage');
 
       expect(res.status).toBe(200);
       expect(res.body).toEqual({
@@ -16,6 +15,7 @@ export function ingredientsTests(app: Express) {
         ingredient_brand: '',
         ingredient_variety: '',
         ingredient_name: 'Sage',
+        alt_names: null,
         fullname: 'Sage',
         notes: '',
         image_id: '018b5ade-dc58-70c4-bf36-2edba2480d3a',
@@ -25,8 +25,7 @@ export function ingredientsTests(app: Express) {
     });
 
     it('handles not found', async () => {
-      const res = await request(app)
-        .get('/v1/ingredients/018b5ade-dc58-70c4-bf36-2edcf3f00000');
+      const res = await request(app).get('/v1/ingredients/Non%20Existing');
       expect(res.status).toBe(404);
     });
   });

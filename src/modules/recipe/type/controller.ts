@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express';
 
+import { NotFoundException } from '../../../utils/exceptions';
 import { RecipeTypeRepo } from './repo';
 
 export const recipeTypeController = {
@@ -15,6 +16,7 @@ export const recipeTypeController = {
     
     const repo = new RecipeTypeRepo();
     const recipe_type = await repo.viewOne(recipe_type_id);
+    if (!recipe_type) throw new NotFoundException();
 
     return res.json(recipe_type);
   }
