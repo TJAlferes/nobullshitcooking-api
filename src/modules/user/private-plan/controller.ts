@@ -78,6 +78,10 @@ export const privatePlanController = {
     const owner_id = req.session.user_id!;
 
     const planRepo = new PlanRepo();
+    const plan = await planRepo.viewOneByPlanId(plan_id);
+    if (!plan) throw new NotFoundException();
+    if (plan.owner_id !== owner_id) throw new ForbiddenException();
+
     await planRepo.deleteOne({plan_id, owner_id});
 
     return res.status(204).json();

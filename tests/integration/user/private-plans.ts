@@ -25,7 +25,7 @@ export function privatePlansTests(app: Express) {
     it('handles success', async () => {
       const res = await agent
         .post('/v1/users/FakeUser1/private-plans', {
-          plan_name: 'Name',
+          plan_name: 'Plan Name',
           included_recipes: [
             {
               recipe_id: '018b6942-6b2f-7943-8ab6-3509084cf00e',

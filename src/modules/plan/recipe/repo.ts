@@ -84,7 +84,9 @@ export class PlanRecipeRepo extends MySQLRepo implements PlanRecipeRepoInterface
   async deleteByPlanId(plan_id: string) {
     const sql = `DELETE FROM plan_recipe WHERE plan_id = ?`;
     const [ result ] = await this.pool.execute<ResultSetHeader>(sql, [plan_id]);
+    // log instead
     if (result.affectedRows < 1) throw new Error('Query not successful.');
+    return result.affectedRows >= 1;
   }
 }
 
@@ -92,7 +94,7 @@ export interface PlanRecipeRepoInterface {
   //viewByPlanId:   (plan_id: string) =>          Promise<PlanRecipeView[]>;
   bulkInsert:     (params: BulkInsertParams) => Promise<void>;
   bulkUpdate:     (params: BulkUpdateParams) => Promise<void>;
-  deleteByPlanId: (plan_id: string) =>          Promise<void>;
+  deleteByPlanId: (plan_id: string) =>          Promise<boolean>;
 }
 
 type PlanRecipeRow = {

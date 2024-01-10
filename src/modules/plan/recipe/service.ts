@@ -17,12 +17,16 @@ export class PlanRecipeService {
       .repeat(included_recipes.length)
       .slice(0, -2);
 
-    const plan_recipes = included_recipes.map(included_recipe =>
+    const plan_recipes = included_recipes.map(({
+      recipe_id,
+      day_number,
+      recipe_number
+    }) =>
       PlanRecipe.create({
         plan_id,
-        recipe_id: included_recipe.recipe_id,
-        day_number: Number(included_recipe.day_number),
-        recipe_number: Number(included_recipe.recipe_number)
+        recipe_id,
+        day_number: Number(day_number),
+        recipe_number: Number(recipe_number)
       }).getDTO()
     );
     
@@ -41,8 +45,17 @@ export class PlanRecipeService {
       .repeat(included_recipes.length)
       .slice(0, -1);
     
-    const plan_recipes = included_recipes.map(included_recipe =>
-      PlanRecipe.create({plan_id, ...included_recipe}).getDTO()
+    const plan_recipes = included_recipes.map(({
+      recipe_id,
+      day_number,
+      recipe_number
+    }) =>
+      PlanRecipe.create({
+        plan_id,
+        recipe_id,
+        day_number: Number(day_number),
+        recipe_number: Number(recipe_number)
+      }).getDTO()
     );
 
     this.ensureUniqueRecipeNumbers(included_recipes);

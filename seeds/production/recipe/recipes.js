@@ -7,8 +7,8 @@ export const production_recipes = [
     "owner_id": "11111111-1111-1111-1111-111111111111",
     "title": "Grilled Chicken",
     "description": "A classic",
-    "active_time": "01:00:00",
-    "total_time": "09:00:00",
+    "active_time": "01:00",
+    "total_time": "09:00",
     "directions": "Marinate chicken..."
   },
   {
@@ -19,8 +19,8 @@ export const production_recipes = [
     "owner_id": "11111111-1111-1111-1111-111111111111",
     "title": "Fish Soup",
     "description": "Warms you up",
-    "active_time": "00:15:00",
-    "total_time": "01:00:00",
+    "active_time": "00:15",
+    "total_time": "01:00",
     "directions": "Saute onion..."
   },
   {
@@ -31,8 +31,8 @@ export const production_recipes = [
     "owner_id": "11111111-1111-1111-1111-111111111111",
     "title": "Beef Stew",
     "description": "Satisfying",
-    "active_time": "00:30:00",
-    "total_time": "04:00:00",
+    "active_time": "00:30",
+    "total_time": "04:00",
     "directions": "Sear beef..."
   }
 ];

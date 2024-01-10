@@ -7,6 +7,7 @@ export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
   async viewAll({ author_id, owner_id }: OverviewAllParams) {
     const sql = `${viewSql} WHERE p.author_id = ? AND p.owner_id = ?`;
     const [ rows ] = await this.pool.execute<PlanRecord[]>(sql, [author_id, owner_id]);
+    if (!rows) return undefined;
     const results = organize(rows);
     return results;
   }
@@ -14,6 +15,7 @@ export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
   async viewOneByPlanId(plan_id: string) {
     const sql = `${viewSql} WHERE p.plan_id = ?`;
     const [ [ row ] ] = await this.pool.execute<PlanRecord[]>(sql, [plan_id]);
+    if (!row) return undefined;
     const [ result ] = organize([row]);
     return result;
   }
@@ -25,6 +27,7 @@ export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
       author_id,
       owner_id
     ]);
+    if (!row) return undefined;
     const [ result ] = organize([row]);
     return result;
   }
@@ -117,9 +120,9 @@ export class PlanRepo extends MySQLRepo implements PlanRepoInterface {
 }
 
 export interface PlanRepoInterface {
-  viewAll:           (params: OverviewAllParams) =>       Promise<PlanView[]>;
-  viewOneByPlanId:   (plan_id: string) =>                 Promise<PlanView>;
-  viewOneByPlanName: (params: ViewOneByPlanNameParams) => Promise<PlanView>; 
+  viewAll:           (params: OverviewAllParams) =>       Promise<PlanView[] | undefined>;
+  viewOneByPlanId:   (plan_id: string) =>                 Promise<PlanView | undefined>;
+  viewOneByPlanName: (params: ViewOneByPlanNameParams) => Promise<PlanView | undefined>; 
   insert:            (params: InsertParams) =>            Promise<void>;
   update:            (params: UpdateParams) =>            Promise<void>;
   unattributeAll:    (author_id: string) =>               Promise<void>;
@@ -250,32 +253,38 @@ const viewSql = `
 function organize(rows: PlanRecord[]) {
   const results: PlanView[] = [];
 
-  rows.forEach(row => {
+  if (!rows || rows.length < 1) return results;
+
+  for (const row of rows) {
+    if (!row) continue;
+
     const recipes: IncludedRecipes = {1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: []};
 
-    row.included_recipes.map(({
-      day_number,
-      recipe_number,
-      recipe_id,
-        author_id,
-        owner_id,
-        recipe_type_id,
-        cuisine_id,
-        author,
-        title,
-        image_filename
-    }) => {
-      recipes[day_number][recipe_number] = {
+    if (row.included_recipes) {
+      row.included_recipes.map(({
+        day_number,
+        recipe_number,
         recipe_id,
-        author_id,
-        owner_id,
-        recipe_type_id,
-        cuisine_id,
-        author,
-        title,
-        image_filename
-      }
-    });
+          author_id,
+          owner_id,
+          recipe_type_id,
+          cuisine_id,
+          author,
+          title,
+          image_filename
+      }) => {
+        recipes[day_number][recipe_number] = {
+          recipe_id,
+          author_id,
+          owner_id,
+          recipe_type_id,
+          cuisine_id,
+          author,
+          title,
+          image_filename
+        }
+      });
+    }
 
     results.push({
       plan_id: row.plan_id,
@@ -285,7 +294,7 @@ function organize(rows: PlanRecord[]) {
       plan_name: row.plan_name,
       included_recipes: recipes
     });
-  });
+  }
 
   return results;
 }

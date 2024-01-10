@@ -93,8 +93,14 @@ export const publicPlanController = {
   async unattributeOne(req: Request, res: Response) {
     const { plan_id } = req.params;
     const author_id = req.session.user_id!;
+    const owner_id  = NOBSC_USER_ID;
 
     const planRepo = new PlanRepo();
+    const plan = await planRepo.viewOneByPlanId(plan_id);
+    if (!plan) throw new NotFoundException();
+    if (plan.author_id !== author_id) throw new ForbiddenException();
+    if (plan.owner_id !== owner_id) throw new ForbiddenException();
+
     await planRepo.unattributeOne({author_id, plan_id});
 
     return res.status(204).json();
