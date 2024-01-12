@@ -276,15 +276,15 @@ function organize(rows: PlanRecord[]) {
         day_number,
         recipe_number,
         recipe_id,
-          author_id,
-          owner_id,
-          recipe_type_id,
-          cuisine_id,
-          author,
-          title,
-          image_filename
+        author_id,
+        owner_id,
+        recipe_type_id,
+        cuisine_id,
+        author,
+        title,
+        image_filename
       }) => {
-        recipes[day_number][recipe_number] = {
+        recipes[day_number][recipe_number - 1] = {
           recipe_id,
           author_id,
           owner_id,

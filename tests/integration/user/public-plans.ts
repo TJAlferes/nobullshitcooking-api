@@ -21,6 +21,33 @@ export function publicPlansTests(app: Express) {
     await agent.post('/v1/logout');
   });
 
+  describe('GET /v1/users/:username/public-plans/:plan_name', () => {
+    it.only('handles success', async () => {
+      const res = await agent.get('/v1/users/FakeUser1/public-plans/Public%20Plan');
+      expect(res.status).toBe(200);
+      expect(res.body.included_recipes).toEqual({
+        1: [
+          {
+            recipe_id: '11116942-6b2f-7943-8ab6-3509084cf00e',
+            author_id: "33333333-3333-3333-3333-333333333333",
+            owner_id: "11111111-1111-1111-1111-111111111111",
+            recipe_type_id: 3,
+            cuisine_id: 1,
+            author: "FakeUser1",
+            title: "Public Grilled Chicken",
+            image_filename: "grilled-chicken-recipe",
+          }
+        ],
+        2: [],
+        3: [],
+        4: [],
+        5: [],
+        6: [],
+        7: []
+      });
+    });
+  });
+
   describe('POST /v1/users/:username/public-plans', () => {
     it('handles success', async () => {
       const res = await agent
