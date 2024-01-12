@@ -52,19 +52,19 @@ describe('NOBSC API integration tests (read tests)', () => {
       expect(res.text).toBe('No Bullshit Cooking API\nDocumentation at https://github.com/tjalferes/nobullshitcooking-api');
     });
   });
-  //describe('units', () => unitsTests(app));
-  //describe('equipmentTypes', () => equipmentTypesTests(app));
-  //describe('ingredientTypes', () => ingredientTypesTests(app));
-  //describe('recipeTypes', () => recipeTypesTests(app));
-  //describe('methods', () => methodsTests(app));
-  //describe('cuisines', () => cuisinesTests(app));
-  //describe('equipment', () => equipmentTests(app));
+  describe('units', () => unitsTests(app));
+  describe('equipmentTypes', () => equipmentTypesTests(app));
+  describe('ingredientTypes', () => ingredientTypesTests(app));
+  describe('recipeTypes', () => recipeTypesTests(app));
+  describe('methods', () => methodsTests(app));
+  describe('cuisines', () => cuisinesTests(app));
+  describe('equipment', () => equipmentTests(app));
   describe('ingredients', () => ingredientsTests(app));
-  //describe('recipes', () => recipesTests(app));
+  describe('recipes', () => recipesTests(app));
   describe('search', () => searchTests(app));
 });
 
-/*describe('NOBSC API integration tests (write tests)', () => {
+describe('NOBSC API integration tests (write tests)', () => {
   beforeEach(async () => {
     await truncateTestDatabase();
     await seedTestDatabase();
@@ -84,7 +84,7 @@ describe('NOBSC API integration tests (read tests)', () => {
   describe('privateRecipes', () => privateRecipesTests(app));
   describe('savedRecipe', () => savedRecipesTests(app));
   //describe('AwsS3', AwsS3Tests(app));
-});*/
+});
 
 afterEach(async () => {
   await redisClients.pubClient.flushall();

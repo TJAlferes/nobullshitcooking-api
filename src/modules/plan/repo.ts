@@ -132,21 +132,26 @@ export interface PlanRepoInterface {
 }
 
 type PlanRecord = RowDataPacket & {
-  plan_id:   string;
-  author_id: string;
-  author:    string;
-  owner_id:  string;
-  plan_name: string;
+  plan_id:          string;
+  author_id:        string;
+  author:           string;
+  owner_id:         string;
+  plan_name:        string;
   included_recipes: IncludedRecipe[];
 };
 
 type PlanView = {
-  plan_id:   string;
-  author_id: string;
-  author:    string;
-  owner_id:  string;
-  plan_name: string;
+  plan_id:          string;
+  author_id:        string;
+  author:           string;
+  author_avatar:    ImageView;
+  owner_id:         string;
+  plan_name:        string;
   included_recipes: IncludedRecipes;
+};
+
+type ImageView = {
+  image_filename: string;
 };
 
 type IncludedRecipe = RowDataPacket & RecipeOverview & {
@@ -215,6 +220,12 @@ const viewSql = `
     p.plan_id,
     p.author_id,
     u1.username AS author,
+    (
+      SELECT JSON_OBJECT('image_filename', i.image_filename)
+      FROM image i
+      INNER JOIN user_image ui ON i.image_id = ui.image_id
+      WHERE ui.user_id = p.author_id AND ui.current = true
+    ) AS author_avatar,
     p.owner_id,
     p.plan_name,
     (
@@ -290,6 +301,7 @@ function organize(rows: PlanRecord[]) {
       plan_id: row.plan_id,
       author_id: row.author_id,
       author: row.author,
+      author_avatar: row.author_avatar,
       owner_id: row.owner_id,
       plan_name: row.plan_name,
       included_recipes: recipes
