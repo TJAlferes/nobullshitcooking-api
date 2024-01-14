@@ -574,12 +574,10 @@ INSERT INTO cuisine (continent_code, country_code, cuisine_name, country_name) V
 ("OC", "TUV", "Tuvaluan",          "Tuvalu"),
 ("OC", "VUT", "Vanuatuan",         "Vanuatu");
 
-
+-- ==============================================================================
 
 CREATE FULLTEXT INDEX fulltext_idx_equipment_name ON equipment (equipment_name);
 
-CREATE FULLTEXT INDEX fulltext_idx_ingredient_brand   ON ingredient (ingredient_brand);
-CREATE FULLTEXT INDEX fulltext_idx_ingredient_variety ON ingredient (ingredient_variety);
-CREATE FULLTEXT INDEX fulltext_idx_ingredient_name    ON ingredient (ingredient_name);
+CREATE FULLTEXT INDEX fulltext_idx_ingredient_fullname ON ingredient (ingredient_brand, ingredient_variety, ingredient_name);
 
 CREATE FULLTEXT INDEX fulltext_idx_title ON recipe (title);

@@ -49,10 +49,13 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
     // order may not matter if we used named placeholders instead of ? placeholders
 
     let params: Array<number|string> = [owner_id];
+    let match = '';
 
     if (term) {
-      sql += ` AND r.title LIKE ?`;
-      params.push(`%${term}%`);
+      //sql += ` AND r.title LIKE ?`;
+      //params.push(`%${term}%`);
+      const escapedTerm = this.pool.escape(term);
+      match = `MATCH (r.title) AGAINST (${escapedTerm} IN BOOLEAN MODE)`;
     }
 
     const recipe_types = filters?.recipe_types ?? [];
@@ -92,6 +95,8 @@ export class RecipeRepo extends MySQLRepo implements RecipeRepoInterface {
     }
 
     //if (needed_sorts)
+
+    if (term) sql += ` AND ${match}`;
 
     const [ [ { count } ] ] = await this.pool.execute<RowDataPacket[]>(
       `SELECT COUNT(*) AS count FROM (${sql}) results`,

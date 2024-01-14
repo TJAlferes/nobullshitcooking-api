@@ -40,10 +40,13 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
     // order matters
 
     const params: Array<number|string> = [owner_id];
+    let match = '';
 
     if (term) {
-      sql += ` AND e.equipment_name LIKE ?`;
-      params.push(`%${term}%`);
+      //sql += ` AND e.equipment_name LIKE ?`;
+      //params.push(`%${term}%`);
+      const escapedTerm = this.pool.escape(term);
+      match = `MATCH (e.equipment_name) AGAINST (${escapedTerm} IN BOOLEAN MODE)`;
     }
 
     const equipment_types = filters?.equipment_types ?? [];
@@ -55,6 +58,8 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
     }
 
     //if (needed_sorts)
+
+    if (term) sql += ` AND ${match}`;
 
     const [ [ { count } ] ] = await this.pool.execute<RowDataPacket[]>(
       `SELECT COUNT(*) AS count FROM (${sql}) results`,

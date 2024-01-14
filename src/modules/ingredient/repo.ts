@@ -26,7 +26,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
     return rows;
   }
 
-  async search({ term, filters, sorts, current_page, results_per_page }: SearchRequest) {
+  async search({ term, filters, current_page, results_per_page }: SearchRequest) {
     const owner_id = NOBSC_USER_ID;  // only public equipment are searchable
     let sql = `
       SELECT
@@ -48,10 +48,11 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
     // order matters
 
     const params: Array<number|string> = [owner_id];
+    let match = '';
 
     if (term) {
-      sql += ` AND ${fullnameSql} LIKE ?`;
-      params.push(`%${term}%`);
+      const escapedTerm = this.pool.escape(term);
+      match = `MATCH (i.ingredient_brand, i.ingredient_variety, i.ingredient_name) AGAINST (${escapedTerm} IN BOOLEAN MODE)`;
     }
 
     const ingredient_types = filters?.ingredient_types ?? [];
@@ -63,6 +64,8 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
     }
 
     //if (needed_sorts)
+
+    if (term) sql += ` AND ${match}`;
 
     const [ [ { count } ] ] = await this.pool.execute<RowDataPacket[]>(
       `SELECT COUNT(*) AS count FROM (${sql}) results`,
@@ -79,7 +82,7 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
       ...params,
       `${limit}`,
       `${offset}`
-    ]);  // order matters
+    ]);
 
     const total_pages = (total_results <= limit) ? 1 : Math.ceil(total_results / limit);
 

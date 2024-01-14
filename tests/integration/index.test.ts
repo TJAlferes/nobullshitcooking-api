@@ -61,29 +61,29 @@ describe('NOBSC API integration tests (read tests)', () => {
   //describe('equipment', () => equipmentTests(app));
   //describe('ingredients', () => ingredientsTests(app));
   //describe('recipes', () => recipesTests(app));
-  //describe('search', () => searchTests(app));
+  describe('search', () => searchTests(app));
 });
 
-describe('NOBSC API integration tests (write tests)', () => {
+/*describe('NOBSC API integration tests (write tests)', () => {
   beforeEach(async () => {
     await truncateTestDatabase();
     await seedTestDatabase();
   });
-  //describe('authentication', () => authenticationTests(app));
-  //describe('users', () => usersTests(app));
-  //describe('avatarImages', () => avatarImageTests(app));
-  //describe('profile', () => profileTests(app));
-  //describe('friendships', () => friendshipsTests(app));
+  describe('authentication', () => authenticationTests(app));
+  describe('users', () => usersTests(app));
+  describe('avatarImages', () => avatarImageTests(app));
+  describe('profile', () => profileTests(app));
+  describe('friendships', () => friendshipsTests(app));
   describe('publicPlans', () => publicPlansTests(app));
-  //describe('publicRecipes', () => publicRecipesTests(app));
-  //describe('favoriteRecipes', () => favoriteRecipesTests(app));
-  //describe('privateEquipment', () => privateEquipmentTests(app));
-  //describe('privateIngredients', () => privateIngredientsTests(app));
-  //describe('privatePlans', () => privatePlansTests(app));
-  //describe('privateRecipes', () => privateRecipesTests(app));
-  //describe('savedRecipe', () => savedRecipesTests(app));
+  describe('publicRecipes', () => publicRecipesTests(app));
+  describe('favoriteRecipes', () => favoriteRecipesTests(app));
+  describe('privateEquipment', () => privateEquipmentTests(app));
+  describe('privateIngredients', () => privateIngredientsTests(app));
+  describe('privatePlans', () => privatePlansTests(app));
+  describe('privateRecipes', () => privateRecipesTests(app));
+  describe('savedRecipe', () => savedRecipesTests(app));
   //describe('AwsS3', AwsS3Tests(app));
-});
+});*/
 
 afterEach(async () => {
   await redisClients.pubClient.flushall();
