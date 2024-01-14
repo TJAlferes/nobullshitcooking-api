@@ -40,13 +40,14 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
     // order matters
 
     const params: Array<number|string> = [owner_id];
-    let match = '';
 
     if (term) {
-      //sql += ` AND e.equipment_name LIKE ?`;
-      //params.push(`%${term}%`);
-      const escapedTerm = this.pool.escape(term);
-      match = `MATCH (e.equipment_name) AGAINST (${escapedTerm} IN BOOLEAN MODE)`;
+      // We generate escaped substrings of length 4 or more from the provided term
+      const substrings = Array.from({ length: term.length - 3 }, (_, index) => term.slice(0, term.length - index));
+      const escapedSubstrings = substrings.map(substring => this.pool.escape(`%${substring}%`).replace(/\\/g, ''));
+
+      const likes = escapedSubstrings.map(escapedSubstring => `e.equipment_name LIKE ${escapedSubstring}`).join(' OR ');
+      sql += ` AND (${likes})`;
     }
 
     const equipment_types = filters?.equipment_types ?? [];
@@ -58,8 +59,6 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
     }
 
     //if (needed_sorts)
-
-    if (term) sql += ` AND ${match}`;
 
     const [ [ { count } ] ] = await this.pool.execute<RowDataPacket[]>(
       `SELECT COUNT(*) AS count FROM (${sql}) results`,
@@ -76,7 +75,7 @@ export class EquipmentRepo extends MySQLRepo implements EquipmentRepoInterface {
       ...params,
       `${limit}`,
       `${offset}`
-    ]);  // order matters
+    ]);
 
     const total_pages = (total_results <= limit) ? 1 : Math.ceil(total_results / limit);
 

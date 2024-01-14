@@ -48,11 +48,14 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
     // order matters
 
     const params: Array<number|string> = [owner_id];
-    let match = '';
 
     if (term) {
-      const escapedTerm = this.pool.escape(term);
-      match = `MATCH (i.ingredient_brand, i.ingredient_variety, i.ingredient_name) AGAINST (${escapedTerm} IN BOOLEAN MODE)`;
+      // We generate escaped substrings of length 4 or more from the provided term
+      const substrings = Array.from({ length: term.length - 3 }, (_, index) => term.slice(0, term.length - index));
+      const escapedSubstrings = substrings.map(substring => this.pool.escape(`%${substring}%`).replace(/\\/g, ''));
+
+      const likes = escapedSubstrings.map(escapedSubstring => `CONCAT(i.ingredient_brand, ' ', i.ingredient_variety, ' ', i.ingredient_name) LIKE ${escapedSubstring}`).join(' OR ');
+      sql += ` AND (${likes})`;
     }
 
     const ingredient_types = filters?.ingredient_types ?? [];
@@ -64,8 +67,6 @@ export class IngredientRepo extends MySQLRepo implements IngredientRepoInterface
     }
 
     //if (needed_sorts)
-
-    if (term) sql += ` AND ${match}`;
 
     const [ [ { count } ] ] = await this.pool.execute<RowDataPacket[]>(
       `SELECT COUNT(*) AS count FROM (${sql}) results`,
