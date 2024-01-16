@@ -13,12 +13,15 @@ dist/
 *.log
 
 init/
-seeds/development/
-seeds/test/
+seeds/
 tests/
+./src/**/*.test.ts
+./src/**/*.test.js
+
 .dockerignore
 .docker-compose.test.yml
 .docker-compose.yml
+# ???
 Dockerfile
 Dockerfile.dev
 Dockerfile.test
