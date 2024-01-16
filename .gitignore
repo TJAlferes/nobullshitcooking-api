@@ -6,5 +6,6 @@ logs
 npm-debug.log*
 .npm
 .npmrc
+build/
 dist/
 coverage/

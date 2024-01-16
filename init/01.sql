@@ -576,8 +576,8 @@ INSERT INTO cuisine (continent_code, country_code, cuisine_name, country_name) V
 
 -- ==============================================================================
 
-CREATE FULLTEXT INDEX fulltext_idx_equipment_name ON equipment (equipment_name);
+-- CREATE FULLTEXT INDEX fulltext_idx_equipment_name ON equipment (equipment_name);
 
-CREATE FULLTEXT INDEX fulltext_idx_ingredient_fullname ON ingredient (ingredient_brand, ingredient_variety, ingredient_name);
+-- CREATE FULLTEXT INDEX fulltext_idx_ingredient_fullname ON ingredient (ingredient_brand, ingredient_variety, ingredient_name);
 
-CREATE FULLTEXT INDEX fulltext_idx_title ON recipe (title);
+-- CREATE FULLTEXT INDEX fulltext_idx_title ON recipe (title);
