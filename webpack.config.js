@@ -1,12 +1,13 @@
-import { CleanWebpackPlugin } from 'clean-webpack-plugin';
-import path from 'path';
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const path = require('path');
 
 module.exports = {
-  entry: './dist/src/index.ts',
+  entry: './dist/src/index.js',
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: 'bundle.js'
   },
+  mode: 'production',
   target: 'node',
   plugins: [
     new CleanWebpackPlugin()
@@ -25,5 +26,9 @@ module.exports = {
         ]
       }
     ]
+  },
+  externals: {
+    bufferutil: "bufferutil",
+    "utf-8-validate": "utf-8-validate",
   }
 };

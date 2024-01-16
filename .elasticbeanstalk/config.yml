@@ -1,2 +1,2 @@
 deploy:
-  artifact: build/bundle.zip
+  artifact: artifact/nobsc-api.zip

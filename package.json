@@ -11,11 +11,9 @@
     "unit-tests": "jest src/ --colors --detectOpenHandles",
     "integration-tests": "jest tests/integration/index.test.ts --verbose --colors --detectOpenHandles --logHeapUsage --runInBand --watchAll=false",
     "node-inspect": "node --inspect=0.0.0.0:9229 src/index.ts",
-    "build-tsc": "tsc",
     "build-webpack": "webpack --config webpack.config.js",
-    "create-artifact": "npm run build-webpack && zip -r nobsc-api.zip build/ package.json package.lock.json",
+    "create-artifact": "npm run build-webpack && cd artifact && 7z a -r nobsc-api.zip build/ package.json package.lock.json && cd -",
     "prod-seeds": "ts-node seeds/production/index.ts",
-    "prod-server": "node build/bundle.js",
     "start": "node build/bundle.js"
   },
   "nodemonConfig": {

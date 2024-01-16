@@ -5,7 +5,8 @@ let config = {};
 if (process.env.NODE_ENV === 'production') {
   config = {
     host: process.env.ELASTICACHE_PROD_PRIMARY,
-    port: 6379
+    port: 6379,
+    //token
   };
 }
 

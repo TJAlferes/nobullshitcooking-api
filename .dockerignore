@@ -28,6 +28,7 @@ yarn-error.log
 #global-setup.cjs
 
 # Build and output files
+artifact/
 coverage/
 dist/
 lib/
