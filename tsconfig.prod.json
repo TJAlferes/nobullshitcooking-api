@@ -8,7 +8,7 @@
     "sourceMap": true, /* Generates corresponding '.map' file. */
     "outDir": "./dist", /* Redirect output structure to the directory. */
     // "composite": true,  /* Enable project compilation */
-    "noEmit": true, /* Do not emit outputs. */
+    "noEmit": false, /* Do not emit outputs. */
     "importHelpers": false, // maybe true ???  /* Import emit helpers from 'tslib'. */
     "strict": true,
     "strictNullChecks": true,
