@@ -2,7 +2,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const path = require('path');
 
 module.exports = {
-  entry: './dist/src/index.js',
+  entry: './src/index.ts',
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: 'bundle.js'
@@ -10,7 +10,10 @@ module.exports = {
   mode: 'production',
   target: 'node',
   plugins: [
-    new CleanWebpackPlugin()
+    new CleanWebpackPlugin(),
+    new webpack.IgnorePlugin({
+      resourceRegExp: /\.(env)$/
+    })
   ],
   module: {
     rules: [

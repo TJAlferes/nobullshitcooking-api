@@ -27,10 +27,11 @@
     "forceConsistentCasingInFileNames": true,  /* Disallow inconsistently-cased references to the same file. */
     "skipLibCheck": true
   },
+  "files": [],
   "include": [
-    ".ebextensions",
-    ".elasticbeanstalk",
-    "./src/**",
+    //"./.ebextensions",
+    "./.elasticbeanstalk",
+    "./src/**/*",
   ],
   "exclude": [
     ".env",
