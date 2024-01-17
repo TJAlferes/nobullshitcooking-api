@@ -12,8 +12,9 @@
     "integration-tests": "jest tests/integration/index.test.ts --verbose --colors --detectOpenHandles --logHeapUsage --runInBand --watchAll=false",
     "node-inspect": "node --inspect=0.0.0.0:9229 src/index.ts",
     "clean": "rimraf -g artifact/* build/* dist/*",
+    "build-tsc": "tsc -p tsconfig.prod.json",
     "build-webpack": "webpack --config webpack.config.js",
-    "create-artifact": "npm run clean && npm run build-webpack && cd artifact && 7z a -r nobsc-api.zip ../build/ ../package.json ../package.lock.json && cd ..",
+    "create-artifact": "npm run clean && npm run build-tsc && cd artifact && 7z a -r nobsc-api.zip ../build/ ../package.json ../package.lock.json && cd ..",
     "prod-seeds": "ts-node seeds/production/index.ts",
     "start": "node build/bundle.js"
   },

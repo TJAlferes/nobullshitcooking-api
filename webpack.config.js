@@ -1,3 +1,4 @@
+//const { IgnorePlugin } = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const path = require('path');
 
@@ -11,9 +12,9 @@ module.exports = {
   target: 'node',
   plugins: [
     new CleanWebpackPlugin(),
-    new webpack.IgnorePlugin({
-      resourceRegExp: /\.(env)$/
-    })
+    //new IgnorePlugin({
+    //  resourceRegExp: /\.(env)$/
+    //})
   ],
   module: {
     rules: [
