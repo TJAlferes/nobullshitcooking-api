@@ -6,6 +6,7 @@ dotenv.config();
 import { userCron } from './modules/user/cron';
 import { passwordResetCron } from './modules/user/authentication/password-reset/cron';
 import { httpServer } from './app';
+import { testMySQLConnection } from './connections/mysql';
 
 export const userCronJob = new CronJob(
   '0 0 0 * * *',  // every day at midnight
@@ -36,6 +37,8 @@ export async function startServer() {
     userCronJob.start();
     passwordResetCronJob.start();
   });
+
+  await testMySQLConnection();
 }
 
 startServer();

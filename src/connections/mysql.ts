@@ -7,7 +7,7 @@ export const commonConfig = {
   queueLimit:         0,
   namedPlaceholders:  true,
   timezone:           'Z',  // UTC +00:00
-  dateStrings:        true
+  dateStrings:        true,
 };
 export const productionConfig: PoolOptions = {
   ...commonConfig,
@@ -15,6 +15,8 @@ export const productionConfig: PoolOptions = {
   user:     process.env.RDS_USERNAME,
   password: process.env.RDS_PASSWORD,
   database: process.env.RDS_DB_NAME,
+  insecureAuth: true,  //
+  port: 3306
 };
 export const testConfig: PoolOptions = {
   ...commonConfig,
@@ -44,3 +46,16 @@ export function getConfig() {
 }
 
 export const pool = createPool(getConfig());  // TO DO: set up proper retry logic
+
+export async function testMySQLConnection() {
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    await connection.ping();
+    console.log('MySQL Connection success.');
+    connection.release();
+  } catch (error: any) {
+    console.error('MySQL Connection error message: ', error.message);
+    if (connection) connection.release();
+  }
+}

@@ -2,16 +2,16 @@ import Redis from 'ioredis';
 import type { RedisOptions } from 'ioredis';
 
 let config: RedisOptions = {};
+let subConfig: RedisOptions = {};
 
 if (process.env.NODE_ENV === 'production') {
-  config= {
+  config = {
     host: process.env.ELASTICACHE_PROD_PRIMARY,
-    //password: process.env.REDIS_AUTH_TOKEN,
     port: 6379,
     tls: {},
-    lazyConnect: true,
-    //username: 'default',
-  } as RedisOptions;
+    lazyConnect: true
+  };
+  subConfig = {...config, host: process.env.ELASTICACHE_PROD_READER, readOnly: true}
 }
 
 if (process.env.NODE_ENV === 'test') {
@@ -23,6 +23,7 @@ if (process.env.NODE_ENV === 'test') {
     retryStrategy: (times: number) => null,
     showFriendlyErrorStack: true
   };
+  subConfig = config;
 }
 
 if (process.env.NODE_ENV === 'development') {
@@ -30,10 +31,11 @@ if (process.env.NODE_ENV === 'development') {
     host: 'redis-dev',
     port: 6379
   };
+  subConfig = config;
 }
 
 const pubClient = new Redis(config);
-const subClient = pubClient.duplicate();  //new Redis(config);
+const subClient = new Redis(subConfig);
 const sessionClient = new Redis(config);
 
 pubClient.on('connect', () => console.log('pubClient connected'));
