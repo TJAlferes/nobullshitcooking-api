@@ -1,13 +1,17 @@
-import { Redis } from 'ioredis';
+import Redis from 'ioredis';
+import type { RedisOptions } from 'ioredis';
 
-let config = {};
+let config: RedisOptions = {};
 
 if (process.env.NODE_ENV === 'production') {
-  config = {
+  config= {
     host: process.env.ELASTICACHE_PROD_PRIMARY,
+    //password: process.env.REDIS_AUTH_TOKEN,
     port: 6379,
-    //token
-  };
+    tls: {},
+    lazyConnect: true,
+    //username: 'default',
+  } as RedisOptions;
 }
 
 if (process.env.NODE_ENV === 'test') {
@@ -34,21 +38,21 @@ const sessionClient = new Redis(config);
 
 pubClient.on('connect', () => console.log('pubClient connected'));
 pubClient.on('ready', () => console.log('pubClient ready'));
-pubClient.on('error', () => console.log('pubClient error'));
+pubClient.on('error', (err) => console.log('pubClient error: ', err.message));
 if (process.env.NODE_ENV !== 'test') {
   pubClient.on('close', () => console.log('pubClient closed'));
 }
 
 subClient.on('connect', () => console.log('subClient connected'));
 subClient.on('ready', () => console.log('subClient ready'));
-subClient.on('error', () => console.log('subClient error'));
+subClient.on('error', (err) => console.log('subClient error: ', err.message));
 if (process.env.NODE_ENV !== 'test') {
   subClient.on('close', () => console.log('subClient closed'));
 }
 
 sessionClient.on('connect', () => console.log('sessionClient connected'));
 sessionClient.on('ready', () => console.log('sessionClient ready'));
-sessionClient.on('error', () => console.log('sessionClient error'));
+sessionClient.on('error', (err) => console.log('sessionClient error: ', err.message));
 if (process.env.NODE_ENV !== 'test') {
   sessionClient.on('close', () => console.log('sessionClient closed'));
 }

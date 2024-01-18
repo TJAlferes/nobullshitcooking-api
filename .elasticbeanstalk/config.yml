@@ -1,2 +1,21 @@
+branch-defaults:
+  master:
+    environment: nobsc-api-staging
 deploy:
   artifact: artifact/nobsc-api.zip
+environment-defaults:
+  nobsc-api-staging:
+    branch: null
+    repository: null
+global:
+  application_name: nobullshitcooking-api
+  default_ec2_keyname: aws-eb
+  default_platform: Node.js 18 running on 64bit Amazon Linux 2023
+  default_region: us-east-1
+  include_git_submodules: true
+  instance_profile: null
+  platform_name: null
+  platform_version: null
+  profile: eb-cli
+  sc: git
+  workspace_type: Application
