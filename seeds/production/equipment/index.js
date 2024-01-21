@@ -73,23 +73,24 @@ data.map(([
   image_filename
 ]) => {
   const image_id = uuidv7();
+  const equipment_id = uuidv7();
 
-  image_records.push({
+  image_records.push([
     image_id,
     image_filename,
-    caption: equipment_name,
-    author_id: NOBSC_USER_ID,
-    owner_id: NOBSC_USER_ID
-  });
+    '',
+    NOBSC_USER_ID,
+    NOBSC_USER_ID
+  ]);
 
-  equipment_records.push({
-    equipment_id: uuidv7(),
+  equipment_records.push([
+    equipment_id,
     equipment_type_id,
-    owner_id: NOBSC_USER_ID,
+    NOBSC_USER_ID,
     equipment_name,
-    notes: "",
+    '',
     image_id
-  });
+  ]);
 });
 
 fs.writeFileSync(

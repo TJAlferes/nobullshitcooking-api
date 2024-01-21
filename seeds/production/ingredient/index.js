@@ -361,25 +361,25 @@ data.map(([
   image_filename
 ]) => {
   const image_id = uuidv7();
+  const ingredient_id = uuidv7();
 
-  image_records.push({
+  image_records.push([
     image_id,
     image_filename,
-    caption: `${ingredient_variety} ${ingredient_name}`,
-    author_id: NOBSC_USER_ID,
-    owner_id: NOBSC_USER_ID
-  });
+    '',
+    NOBSC_USER_ID,
+    NOBSC_USER_ID
+  ]);
 
-  ingredient_records.push({
-    ingredient_id: uuidv7(),
+  ingredient_records.push([
+    ingredient_id,
     ingredient_type_id,
-    owner_id: NOBSC_USER_ID,
-    //ingredient_brand: "",
+    NOBSC_USER_ID,
     ingredient_variety,
     ingredient_name,
-    notes: "",
+    '',
     image_id
-  });
+  ]);
 });
 
 fs.writeFileSync(

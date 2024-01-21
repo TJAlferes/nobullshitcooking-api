@@ -21,8 +21,6 @@ tests/
 .dockerignore
 .docker-compose.test.yml
 .docker-compose.yml
-# ???
-Dockerfile
 Dockerfile.dev
 Dockerfile.test
 jest.config.ts

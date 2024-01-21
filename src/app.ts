@@ -144,6 +144,10 @@ app.use(hpp());
 }));  // why???*/
 app.use(compression());
 
+app.get(
+  '/',
+  (req, res) => res.send('No Bullshit Cooking API\nDocumentation at https://github.com/tjalferes/nobullshitcooking-api')
+);
 app.use('/v1', apiV1Router());
 
 export const socketIOServer = createSocketIOServer(httpServer, sessionMiddleware);

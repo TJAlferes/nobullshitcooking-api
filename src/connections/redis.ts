@@ -11,7 +11,12 @@ if (process.env.NODE_ENV === 'production') {
     tls: {},
     lazyConnect: true,
   } as RedisOptions;
-  subClientConfig = {...config, host: process.env.ELASTICACHE_PROD_READER, readOnly: true};
+  subClientConfig = {
+    ...config,
+    host: process.env.ELASTICACHE_PROD_READER,
+    password: process.env.REDIS_AUTH_TOKEN,
+    readOnly: true
+  };
 }
 
 if (process.env.NODE_ENV === 'test') {
@@ -34,6 +39,7 @@ if (process.env.NODE_ENV === 'development') {
 
 const pubClient = new Redis(config);
 const subClient = new Redis(process.env.NODE_ENV === 'production' ? subClientConfig : config);
+//const subClient = new Redis(config);
 const sessionClient = new Redis(config);
 
 pubClient.on('connect', () => console.log('pubClient connected'));
