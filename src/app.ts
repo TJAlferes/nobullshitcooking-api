@@ -112,7 +112,10 @@ app.use(cors({
   credentials: true,
   methods: 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
   origin: (app.get('env') === 'production')
-    ? ['https://nobullshitcooking.com']
+    ? [
+      'https://nobullshitcooking.com',
+      'https://www.nobullshitcooking.com'
+    ]
     : [
       'http://localhost:3000',
       'http://localhost:3001',

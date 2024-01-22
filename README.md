@@ -2,7 +2,7 @@
 
 [![codecov](https://codecov.io/gh/tjalferes/nobullshitcooking-api/branch/master/graph/badge.svg)](https://codecov.io/gh/tjalferes/nobullshitcooking-api)
 
-# [No Bullshit Cooking](https://nobullshitcooking.com/)
+# [https://nobullshitcooking.com](https://nobullshitcooking.com/)
 
 > "All civilization is the deoccultization of knowledge."
 
@@ -33,18 +33,23 @@ user
 ## API Endpoints (Version 1)
 
 **GET /v1/cuisines**
+
 View all cuisines.
 
 **GET /v1/cuisines/:cuisine_id**
+
 View one cuisine by cuisine_id.
 
 **/v1/cuisine-equipment/:id GET**
+
 View the equipment of one cuisine by cuisine id.
 
 **/v1/cuisine-ingredient/:id GET**
+
 View the ingredients of one cuisine by cuisine id.
 
 **/v1/cuisine-supplier/:id GET**
+
 View the suppliers of one cuisine by cuisine id.
 
 **/v1/data-init GET**
