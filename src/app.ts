@@ -61,6 +61,9 @@ if (app.get('env') === 'production') {
 
 // Express Middleware
 
+// TO DO: find out if you can still set sameSite to 'lax' or 'strict' if possible
+// if not, then find out more about CSP
+
 const redisStore = new RedisStore({client: redisClients.sessionClient});
 const sessionMiddleware = expressSession({
   cookie: app.get('env') === 'production'
@@ -68,7 +71,8 @@ const sessionMiddleware = expressSession({
       maxAge: 86400000,  // 86400000 ms = 1 day
       httpOnly: true,
       //sameSite: 'strict',
-      sameSite: 'lax',
+      //sameSite: 'lax',
+      sameSite: 'none',
       secure: true
     }
     : {
@@ -88,7 +92,8 @@ export const { generateToken, doubleCsrfProtection } = doubleCsrf({
     : 'x-csrf-token',
   cookieOptions: {
     //sameSite: app.get('env') === 'production' ? 'strict' : false,
-    sameSite: app.get('env') === 'production' ? 'lax' : false,
+    //sameSite: app.get('env') === 'production' ? 'lax' : false,
+    sameSite: app.get('env') === 'production' ? 'none' : false,
     secure: app.get('env') === 'production' ? true : false,
     signed: true
   },

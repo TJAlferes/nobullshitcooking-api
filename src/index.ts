@@ -7,6 +7,7 @@ import { userCron } from './modules/user/cron';
 import { passwordResetCron } from './modules/user/authentication/password-reset/cron';
 import { httpServer } from './app';
 import { testMySQLConnection } from './connections/mysql';
+import { connectRedisClient, redisClients } from './connections/redis';
 
 export const userCronJob = new CronJob(
   '0 0 0 * * *',  // every day at midnight
@@ -39,6 +40,9 @@ export async function startServer() {
   });
 
   await testMySQLConnection();
+  await connectRedisClient(redisClients.sessionClient);
+  await connectRedisClient(redisClients.pubClient);
+  await connectRedisClient(redisClients.subClient);
 }
 
 startServer();

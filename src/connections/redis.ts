@@ -69,3 +69,17 @@ export const redisClients = {
   subClient,
   sessionClient
 };
+
+export async function connectRedisClient(client: Redis) {
+  try {
+    await client.connect();
+    const result = await client.ping();
+    if (result === 'PONG') {
+      console.log('Redis Connection success.');
+    } else {
+      console.error('IN TRY: Redis Connection error message: ', result);
+    }
+  } catch (error: any) {
+    console.error('IN CATCH: Redis Connection error message: ', error.message);
+  }
+}
