@@ -67,7 +67,8 @@ const sessionMiddleware = expressSession({
     ? {
       maxAge: 86400000,  // 86400000 ms = 1 day
       httpOnly: true,
-      sameSite: 'strict',
+      //sameSite: 'strict',
+      sameSite: 'lax',
       secure: true
     }
     : {
@@ -86,7 +87,8 @@ export const { generateToken, doubleCsrfProtection } = doubleCsrf({
     ? '__Host-psifi.x-csrf-token'
     : 'x-csrf-token',
   cookieOptions: {
-    sameSite: app.get('env') === 'production' ? 'strict' : false,
+    //sameSite: app.get('env') === 'production' ? 'strict' : false,
+    sameSite: app.get('env') === 'production' ? 'lax' : false,
     secure: app.get('env') === 'production' ? true : false,
     signed: true
   },
@@ -157,7 +159,6 @@ export const socketIOServer = createSocketIOServer(httpServer, sessionMiddleware
 
 process.on('unhandledRejection', (reason, promise) => {
   console.log('Unhandled Rejection at:', promise, 'reason:', reason);
-  // TO DO: log
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -167,6 +168,7 @@ if (process.env.NODE_ENV === 'production') {
     } else if (error instanceof Error) {
       res.status(500).json({message: error.message || 'Internal Server Error'});
     }
+    console.log(error);
   });
 } else {
   app.use((error: any, req: Request, res: Response, next: NextFunction) => {

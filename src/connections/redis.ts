@@ -7,6 +7,7 @@ let subClientConfig: RedisOptions = {};
 if (process.env.NODE_ENV === 'production') {
   config = {
     host: process.env.ELASTICACHE_PROD_PRIMARY,
+    password: process.env.REDIS_AUTH_TOKEN,  //
     port: 6379,
     tls: {},
     lazyConnect: true,
