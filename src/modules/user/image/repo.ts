@@ -48,7 +48,7 @@ export class UserImageRepo extends MySQLRepo implements UserImageRepoInterface {
       WHERE user_id = ? AND current = true
     `;
     const [ result1 ] = await this.pool.execute<ResultSetHeader>(sql1, [user_id]);
-    if (result1.affectedRows < 1) throw new Error('Query not successful.');
+    //if (result1.affectedRows < 1) throw new Error('Query not successful.');
 
     const sql2 = `
       UPDATE user_image

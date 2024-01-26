@@ -130,7 +130,7 @@ export const userAuthenticationController = {
           auth_id: user_id,
           auth_email: email,
           authname: username,
-          auth_avatar: my_avatar?.image_filename,
+          auth_avatar: my_avatar ? my_avatar.image_filename : 'default',
           my_friendships,
           my_public_plans,
           my_public_recipes,
