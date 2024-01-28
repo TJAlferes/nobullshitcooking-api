@@ -9,6 +9,8 @@
 > "Simplicity is the secret to everything really. The more you add, the more you take away."
 
 ## Database Tables
+![schema-a](https://github.com/TJAlferes/nobullshitcooking-api/assets/19824877/9b17c72e-84b6-4a44-917e-d9580bf15c4a)
+![schema-b](https://github.com/TJAlferes/nobullshitcooking-api/assets/19824877/42f405bc-09b8-42fa-b72b-b7170f85519e)
 
 cuisine
 equipment
