@@ -155,7 +155,7 @@ app.use(hpp());
 }));  // why???*/
 app.use(compression());
 
-app.use(express.static('documentation'));
+app.use('/documentation', express.static('documentation'));
 app.get('/documentation', (req, res) => {
   const file = path.join(__dirname, 'documentation', 'index.html');
   res.sendFile(file);

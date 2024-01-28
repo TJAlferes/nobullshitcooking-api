@@ -14,7 +14,7 @@
     "clean": "rimraf -g artifact/* build/* dist/*",
     "build-tsc": "tsc -p tsconfig.prod.json",
     "build-webpack": "webpack --config webpack.config.js",
-    "create-artifact": "npm run clean && npm run build-tsc && 7z a artifact/nobsc-api.zip dist/ package.json package-lock.json",
+    "create-artifact": "npm run clean && npm run build-tsc && 7z a artifact/nobsc-api.zip dist/ documentation/ package.json package-lock.json",
     "prod-seeds": "ts-node seeds/production/index.ts",
     "start": "node dist/index.js"
   },
