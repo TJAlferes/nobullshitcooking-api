@@ -2,35 +2,11 @@
 
 [![codecov](https://codecov.io/gh/tjalferes/nobullshitcooking-api/branch/master/graph/badge.svg)](https://codecov.io/gh/tjalferes/nobullshitcooking-api)
 
-# [https://nobullshitcooking.com](https://nobullshitcooking.com/)
-
-> "All civilization is the deoccultization of knowledge."
-
-> "Simplicity is the secret to everything really. The more you add, the more you take away."
+# Website: [https://nobullshitcooking.com](https://nobullshitcooking.com/)
 
 ## Database Tables
 ![schema-a](https://github.com/TJAlferes/nobullshitcooking-api/assets/19824877/9b17c72e-84b6-4a44-917e-d9580bf15c4a)
 ![schema-b](https://github.com/TJAlferes/nobullshitcooking-api/assets/19824877/b59d6e61-916a-40a3-b232-6a986012fe14)
-
-cuisine
-equipment
-equipment_type
-favorite_recipe
-friendship
-ingredient
-ingredient_type
-unit
-method
-plan
-recipe
-recipe_equipment
-recipe_ingredient
-recipe_method
-recipe_subrecipe
-recipe_type
-saved_recipe
-staff
-user
 
 ## API Endpoints (Version 1)
 
