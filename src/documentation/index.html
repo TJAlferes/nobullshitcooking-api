@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>No Bullshit Cooking API v1 Documentation</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+  <body>
+    <h1>No Bullshit Cooking API v1 Documentation</h1>
+
+    <h4>Search Endpoints</h4>
+    <div>GET /v1/search/auto View search autosuggestions.</div>
+    <div>GET /v1/search/find View search results.</div>
+
+    <h4>Data Endpoints</h4>
+    <div>GET /v1/equipment-types/:equipment_type_id</div>
+    <div>GET /v1/equipment-types</div>
+    <div>GET /v1/equipment/:equipment_name</div>
+    <div>GET /v1/equipment</div>
+    <div>GET /v1/ingredient-types/:ingredient_type_id</div>
+    <div>GET /v1/ingredient-types</div>
+    <div>GET /v1/ingredients/:fullname</div>
+    <div>GET /v1/ingredients</div>
+    <div>GET /v1/cuisines/:cuisine_id</div>
+    <div>GET /v1/cuisines</div>
+    <div>GET /v1/methods/:method_id</div>
+    <div>GET /v1/methods</div>
+    <div>GET /v1/units/:unit_id</div>
+    <div>GET /v1/units</div>
+    <div>GET /v1/recipe-types/:recipe_type_id</div>
+    <div>GET /v1/recipe-types</div>
+    <div>GET /v1/recipes/:title</div>
+    <div>GET /v1/recipes</div>
+
+    <h4>Authentication Endpoints</h4>
+    <div>POST /v1/confirm</div>
+    <div>POST /v1/resend-confirmation-code</div>
+    <div>POST /v1/login</div>
+    <div>POST /v1/logout</div>
+    <div>POST /v1/forgot-password</div>
+    <div>POST /v1/reset-password</div>
+
+    <h4>AWS S3 Signed URL Endpoints</h4>
+    <div>POST /v1/aws-s3-private-uploads</div>
+    <div>POST /v1/aws-s3-public-uploads</div>
+
+    <h4>User Account Endpoints</h4>
+    <div>GET /v1/users/:username</div>
+    <div>PATCH /v1/users/:username/email</div>
+    <div>PATCH /v1/users/:username/password</div>
+    <div>PATCH /v1/users/:username/username</div>
+    <div>POST /v1/users/:username/delete</div>
+    <div>POST /v1/users/:username</div>
+    <div>GET /v1/users/:username/avatars/current</div>
+    <div>GET /v1/users/:username/avatars</div>
+    <div>POST /v1/users/:username/avatars</div>
+    <div>DELETE /v1/users/:username/avatars/:image_id</div>
+
+    <h4>Public Plans Endpoints</h4>
+    <div>GET /v1/users/:username/public-plans/:plan_name</div>
+    <div>GET /v1/users/:username/public-plans</div>
+    <div>POST /v1/users/:username/public-plans</div>
+    <div>PATCH /v1/users/:username/public-plans</div>
+    <div>DELETE /v1/users/:username/public-plans/:plan_id</div>
+
+    <h4>Private Plans Endpoints</h4>
+    <div>GET /v1/users/:username/private-plans</div>
+    <div>POST /v1/users/:username/private-plans</div>
+    <div>PATCH /v1/users/:username/private-plans</div>
+    <div>DELETE /v1/users/:username/private-plans/:plan_id</div>
+
+    <h4>Public Recipes Endpoints</h4>
+    <div>GET /v1/users/:username/public-recipes/:recipe_id/edit</div>
+    <div>GET /v1/users/:username/public-recipes/:title</div>
+    <div>GET /v1/users/:username/public-recipes</div>
+    <div>POST /v1/users/:username/public-recipes</div>
+    <div>PATCH /v1/users/:username/public-recipes</div>
+    <div>DELETE /v1/users/:username/public-recipes/:recipe_id</div>
+
+    <h4>Private Recipes Endpoints</h4>
+    <div>GET /v1/users/:username/private-recipes/:recipe_id/edit</div>
+    <div>GET /v1/users/:username/private-recipes/:recipe_id</div>
+    <div>GET /v1/users/:username/private-recipes</div>
+    <div>POST /v1/users/:username/private-recipes</div>
+    <div>PATCH /v1/users/:username/private-recipes</div>
+    <div>DELETE /v1/users/:username/private-recipes/:recipe_id</div>
+
+    <h4>Private Equipment Endpoints</h4>
+    <div>GET /v1/users/:username/private-equipment/:equipment_id</div>
+    <div>GET /v1/users/:username/private-equipment</div>
+    <div>POST /v1/users/:username/private-equipment</div>
+    <div>PATCH /v1/users/:username/private-equipment</div>
+    <div>DELETE /v1/users/:username/private-equipment/:equipment_id</div>
+
+    <h4>Private Ingredients Endpoints</h4>
+    <div>GET /v1/users/:username/private-ingredients/:ingredient_id</div>
+    <div>GET /v1/users/:username/private-ingredients</div>
+    <div>POST /v1/users/:username/private-ingredients</div>
+    <div>PATCH /v1/users/:username/private-ingredients</div>
+    <div>DELETE /v1/users/:username/private-ingredients/:ingredient_id</div>
+
+    <h4>Favorite Recipes Endpoints</h4>
+    <div>GET /v1/users/:username/favorite-recipes</div>
+    <div>POST /v1/users/:username/favorite-recipes/:recipe_id</div>
+    <div>DELETE /v1/users/:username/favorite-recipes/:recipe_id</div>
+
+    <h4>Saved Recipes Endpoints</h4>
+    <div>GET /v1/users/:username/saved-recipes</div>
+    <div>POST /v1/users/:username/saved-recipes/:recipe_id</div>
+    <div>DELETE /v1/users/:username/saved-recipes/:recipe_id</div>
+
+    <h4>Friendships Endpoints</h4>
+    <div>GET /v1/users/:username/friendships</div>
+    <div>POST /v1/users/:username/friendships/:friendname/create</div>
+    <div>PATCH /v1/users/:username/friendships/:friendname/accept</div>
+    <div>DELETE /v1/users/:username/friendships/:friendname/reject</div>
+    <div>DELETE /v1/users/:username/friendships/:friendname/delete</div>
+    <div>POST /v1/users/:username/friendships/:friendname/block</div>
+    <div>DELETE /v1/users/:username/friendships/:friendname/unblock</div>
+  </body>
+</html>

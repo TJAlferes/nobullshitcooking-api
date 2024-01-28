@@ -10,6 +10,7 @@ import helmet from 'helmet';
 import hpp from 'hpp';
 import { createServer } from 'http';
 import { pinoHttp } from 'pino-http';  // logger
+import path from 'path';
 import process from 'process';
 
 import { redisClients } from './connections/redis';
@@ -153,6 +154,12 @@ app.use(hpp());
   ]
 }));  // why???*/
 app.use(compression());
+
+app.use(express.static('documentation'));
+app.get('/documentation', (req, res) => {
+  const file = path.join(__dirname, 'documentation', 'index.html');
+  res.sendFile(file);
+});
 
 app.get(
   '/',

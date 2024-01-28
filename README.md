@@ -10,6 +10,16 @@
 
 ## API Endpoints (Version 1)
 
+**GET /v1/search/auto**
+
+View search autosuggestions.
+
+**GET /v1/search/find**
+
+View search results.
+
+**POST /v1/aws-s3-private-uploads
+
 **GET /v1/cuisines**
 
 View all cuisines.
@@ -17,26 +27,6 @@ View all cuisines.
 **GET /v1/cuisines/:cuisine_id**
 
 View one cuisine by cuisine_id.
-
-**/v1/cuisine-equipment/:id GET**
-
-View the equipment of one cuisine by cuisine id.
-
-**/v1/cuisine-ingredient/:id GET**
-
-View the ingredients of one cuisine by cuisine id.
-
-**/v1/cuisine-supplier/:id GET**
-
-View the suppliers of one cuisine by cuisine id.
-
-**/v1/data-init GET**
-
-View all initial data when first visiting the site.
-
-**/v1/equipment/official/all GET**
-
-View all official equipment.
 
 **/v1/equipment/:id GET**
 
@@ -52,7 +42,7 @@ View one equipment type by id.
 
 **/v1/favorite-recipe GET**
 
-View most favorited. (TO DO: fix this)
+View most favorited.
 
 **/v1/ingredient/official/all GET**
 
@@ -106,30 +96,6 @@ View all recipe types.
 
 View one recipe type by id.
 
-**/v1/search/autocomplete/equipment POST**
-
-View equipment search autocompletions.
-
-**/v1/search/autocomplete/ingredients POST**
-
-View ingredients search autocompletions.
-
-**/v1/search/autocomplete/recipes POST**
-
-View recipes search autocompletions.
-
-**/v1/search/find/equipment POST**
-
-View equipment search results.
-
-**/v1/search/find/ingredients POST**
-
-View ingredients search results.
-
-**/v1/search/find/recipes POST**
-
-View recipes search results.
-
 **/v1/supplier GET**
 
 View all official suppliers.
@@ -167,18 +133,6 @@ Update the user account.
 **/v1/user/auth/delete-account POST**
 
 Delete the user account.
-
-**/v1/user/content/all POST**
-
-View all content (posts) created by the authenticated user.
-
-**/v1/user/content/one POST**
-
-View one content (posts) created by the authenticated user.
-
-**/v1/user/content/subscribed/all POST**
-
-View all content (posts) from users the authenticated user is subscribed to.
 
 **/v1/user/equipment/all POST**
 
@@ -241,10 +195,6 @@ Block a user.
 Unblock a user.
 
 **/v1/user/get-signed-url/avatar POST**
-
-Get a signed URL to allow access to upload image to AWS S3 bucket.
-
-**/v1/user/get-signed-url/content POST**
 
 Get a signed URL to allow access to upload image to AWS S3 bucket.
 
@@ -363,85 +313,3 @@ Save one recipe by the authenticated user.
 **/v1/user/saved-recipe/delete DELETE**
 
 Unsave one recipe by the authenticated user.
-
-### STAFF
-
-**/v1/staff/auth/login POST**
-
-Attempt to sign the staff in.
-
-**/v1/staff/auth/logout POST**
-
-Sign the staff out.
-
-**staff/content/create POST**
-
-Create a new official content (page or post).
-
-**staff/content/update PUT**
-
-Update one official content (page or post).
-
-**staff/content/delete DELETE**
-
-Delete one official content (page or post).
-
-**staff/cuisine-equipment/create POST**
-
-Add an equipment to the cuisine.
-
-**staff/cuisine-equipment/delete DELETE**
-
-Delete an equipment from the cuisine.
-
-**staff/cuisine-ingredient/create POST**
-
-Add an ingredient to the cuisine.
-
-**staff/cuisine-ingredient/delete DELETE**
-
-Delete an ingredient from the cuisine.
-
-**staff/cuisine-supplier/create POST**
-
-Add a supplier to the cuisine.
-
-**staff/cuisine-supplier/delete DELETE**
-
-Delete a supplier from the cuisine.
-
-**staff/equipment/create POST**
-
-Create a new official equipment.
-
-**staff/equipment/update PUT**
-
-Update one official equipment.
-
-**staff/equipment/delete DELETE**
-
-Delete one official equipment.
-
-**staff/ingredient/create POST**
-
-Create a new official ingredient.
-
-**staff/ingredient/update PUT**
-
-Update one official ingredient.
-
-**staff/ingredient/delete DELETE**
-
-Delete one official ingredient.
-
-**staff/recipe/create POST**
-
-Create a new official recipe.
-
-**staff/recipe/update PUT**
-
-Update one official recipe.
-
-**staff/recipe/delete DELETE**
-
-Delete one official recipe.
