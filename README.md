@@ -6,7 +6,7 @@
 
 ## Database Tables
 ![schema-a](https://github.com/TJAlferes/nobullshitcooking-api/assets/19824877/9b17c72e-84b6-4a44-917e-d9580bf15c4a)
-![schema-b](https://github.com/TJAlferes/nobullshitcooking-api/assets/19824877/b59d6e61-916a-40a3-b232-6a986012fe14)
+![schema-b](https://github.com/TJAlferes/nobullshitcooking-api/assets/19824877/067c9ebe-b499-4155-b38f-a7796e45ef82)
 
 ## API Endpoints (Version 1)
 
