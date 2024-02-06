@@ -6,13 +6,65 @@
   <link rel="stylesheet" href="styles.css">
 </head>
   <body>
-    <h1>No Bullshit Cooking API v1 Documentation</h1>
+    <h1>No Bullshit Cooking API v1 Documentation (INCOMPLETE)</h1>
 
-    <h4>Search Endpoints</h4>
+    <div>This document aims to help both less technical audiences (executives, managers) and more technical audiences (developers).</div>
+    <div>Front-end developers should read "HTTP Endpoints".</div>
+    <div>Back-end developers should read everything, especially "src Code".</div>
+
+    <h2>Summary (INCOMPLETE)</h2>
+
+    <div>This API serves the UI of the No Bullshit Cooking website.
+    <!--While the UI itself contains the layout and look of the website pages, links to navigate around, and buttons to perform actions,
+    much of the actual content and information on the website pages comes from this API.
+    The website UI loads (reads) that content from this API, and when needed, saves (writes) newly created or updated content back to this API.
+    Depending on the nature of the data and action, it is stored temporarily in a cache (Redis) or permanently in an object storage (S3) or relational database (MySQL).-->
+    User sessions are temporarily stored in the Redis cache, image files are stored in the S3 object storage, and most other data are stored in the MySQL relational database.
+    <!--The UI does not save data directly into the storage, instead, it hands it off to the API, the API takes care of any errors and authenticates and authorizes before then saving into storage.
+    The API is similar to both a restaurant waiter/waitress and a castle guard: it brings the UI what it needs, and it makes sure only valid information can enter the database.--></div>
+
+    <h3>Overall System</h3>
+
+    <img src="diagrams/system.png" />
+
+    <div>Communication between the UI and API occurs primarily in JSON format using the HTTP/1.1 protocol.</div>
+
+    <h3>Relational Database</h3>
+
+    <img src="diagrams/db.png" />
+
+    <div>The diagram above illustrates, without technical details, relationships in the database.
+    (Coming soon: business rules and technical details)</div>
+
+    <h2>src Code (INCOMPLETE)</h2>
+
+    <img src="diagrams/flow.png" />
+
+    <div>The diagram above illustrates, without technical details, the general architecture of the code.</div>
+
+    <div>Be aware of the following as you read the code in the src/ folder:</div>
+    <ol>
+    <li>Most code is broken down into modules in the src/modules folder.</li>
+    <li>Most modules are broken down into types of objects:
+      routers, controllers, services, models, repos.</li>
+    <li>Each database table has its own model and its own repo: 
+      for example, the recipe table has a Recipe model and a RecipeRepo.</li>
+    <li>Each repo reads from and writes to its database, 
+      though may also read from and write to other databases through SQL JOINs: 
+      for example, the RecipeRepo primarily communicates with the recipe table, 
+      but also communicates with other related tables, such as the user table.</li>
+    <li>Likewise, each controller and each service 
+      primarily handles tasks related to its own module, 
+      but may call on other services and repos from other modules.</li>
+    </ol>
+
+    <h2>HTTP Endpoints (INCOMPLETE)</h2>
+
+    <h4>Search</h4>
     <div>GET /v1/search/auto View search autosuggestions.</div>
     <div>GET /v1/search/find View search results.</div>
 
-    <h4>Data Endpoints</h4>
+    <h4>General Data</h4>
     <div>GET /v1/equipment-types/:equipment_type_id</div>
     <div>GET /v1/equipment-types</div>
     <div>GET /v1/equipment/:equipment_name</div>
@@ -32,7 +84,7 @@
     <div>GET /v1/recipes/:title</div>
     <div>GET /v1/recipes</div>
 
-    <h4>Authentication Endpoints</h4>
+    <h4>User Authentication</h4>
     <div>POST /v1/confirm</div>
     <div>POST /v1/resend-confirmation-code</div>
     <div>POST /v1/login</div>
@@ -40,11 +92,11 @@
     <div>POST /v1/forgot-password</div>
     <div>POST /v1/reset-password</div>
 
-    <h4>AWS S3 Signed URL Endpoints</h4>
+    <h4>AWS S3 Signed URL</h4>
     <div>POST /v1/aws-s3-private-uploads</div>
     <div>POST /v1/aws-s3-public-uploads</div>
 
-    <h4>User Account Endpoints</h4>
+    <h4>User Account</h4>
     <div>GET /v1/users/:username</div>
     <div>PATCH /v1/users/:username/email</div>
     <div>PATCH /v1/users/:username/password</div>
@@ -56,20 +108,20 @@
     <div>POST /v1/users/:username/avatars</div>
     <div>DELETE /v1/users/:username/avatars/:image_id</div>
 
-    <h4>Public Plans Endpoints</h4>
+    <h4>Public Plans</h4>
     <div>GET /v1/users/:username/public-plans/:plan_name</div>
     <div>GET /v1/users/:username/public-plans</div>
     <div>POST /v1/users/:username/public-plans</div>
     <div>PATCH /v1/users/:username/public-plans</div>
     <div>DELETE /v1/users/:username/public-plans/:plan_id</div>
 
-    <h4>Private Plans Endpoints</h4>
+    <h4>Private Plans</h4>
     <div>GET /v1/users/:username/private-plans</div>
     <div>POST /v1/users/:username/private-plans</div>
     <div>PATCH /v1/users/:username/private-plans</div>
     <div>DELETE /v1/users/:username/private-plans/:plan_id</div>
 
-    <h4>Public Recipes Endpoints</h4>
+    <h4>Public Recipes</h4>
     <div>GET /v1/users/:username/public-recipes/:recipe_id/edit</div>
     <div>GET /v1/users/:username/public-recipes/:title</div>
     <div>GET /v1/users/:username/public-recipes</div>
@@ -77,7 +129,7 @@
     <div>PATCH /v1/users/:username/public-recipes</div>
     <div>DELETE /v1/users/:username/public-recipes/:recipe_id</div>
 
-    <h4>Private Recipes Endpoints</h4>
+    <h4>Private Recipes</h4>
     <div>GET /v1/users/:username/private-recipes/:recipe_id/edit</div>
     <div>GET /v1/users/:username/private-recipes/:recipe_id</div>
     <div>GET /v1/users/:username/private-recipes</div>
@@ -85,31 +137,31 @@
     <div>PATCH /v1/users/:username/private-recipes</div>
     <div>DELETE /v1/users/:username/private-recipes/:recipe_id</div>
 
-    <h4>Private Equipment Endpoints</h4>
+    <h4>Private Equipment</h4>
     <div>GET /v1/users/:username/private-equipment/:equipment_id</div>
     <div>GET /v1/users/:username/private-equipment</div>
     <div>POST /v1/users/:username/private-equipment</div>
     <div>PATCH /v1/users/:username/private-equipment</div>
     <div>DELETE /v1/users/:username/private-equipment/:equipment_id</div>
 
-    <h4>Private Ingredients Endpoints</h4>
+    <h4>Private Ingredients</h4>
     <div>GET /v1/users/:username/private-ingredients/:ingredient_id</div>
     <div>GET /v1/users/:username/private-ingredients</div>
     <div>POST /v1/users/:username/private-ingredients</div>
     <div>PATCH /v1/users/:username/private-ingredients</div>
     <div>DELETE /v1/users/:username/private-ingredients/:ingredient_id</div>
 
-    <h4>Favorite Recipes Endpoints</h4>
+    <h4>Favorite Recipes</h4>
     <div>GET /v1/users/:username/favorite-recipes</div>
     <div>POST /v1/users/:username/favorite-recipes/:recipe_id</div>
     <div>DELETE /v1/users/:username/favorite-recipes/:recipe_id</div>
 
-    <h4>Saved Recipes Endpoints</h4>
+    <h4>Saved Recipes</h4>
     <div>GET /v1/users/:username/saved-recipes</div>
     <div>POST /v1/users/:username/saved-recipes/:recipe_id</div>
     <div>DELETE /v1/users/:username/saved-recipes/:recipe_id</div>
 
-    <h4>Friendships Endpoints</h4>
+    <h4>Friendships</h4>
     <div>GET /v1/users/:username/friendships</div>
     <div>POST /v1/users/:username/friendships/:friendname/create</div>
     <div>PATCH /v1/users/:username/friendships/:friendname/accept</div>
